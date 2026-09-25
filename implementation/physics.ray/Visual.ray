@@ -120,6 +120,8 @@ Picture := class < id: String, what: String, width: N, height: N, frames: N {
   record: Recording? = None
   /* the picture in parts, where it has them: a page may lay them out as it likes; the whole is still `paint` */
   panes: Pane[] = []
+  /* rendered only when named (`npx ray visuals <id>`), never with every visual */
+  on_request: boolean = false
   /* the painter, made fresh per render and handed the frames - off disk where recorded, live where not */
   paint: Program
   played (): Played? => {

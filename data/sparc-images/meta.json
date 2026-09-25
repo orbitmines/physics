@@ -1,0 +1,9 @@
+{
+  "what": "each SPARC galaxy's light, north up and east left, IMAGE pixels a side, galaxy after galaxy, rows from the bottom",
+  "source": "https://alasky.cds.unistra.fr/hips-image-services/hips2fits",
+  "paper": "S4G (Sheth et al. 2010), SEIP (Spitzer), unWISE (Lang 2014), cut out by hips2fits (CDS)",
+  "units": ["light: the survey's own units, 0 where there is no image (sparc-orientation says which)"],
+  "names": [],
+  "columns": ["light"],
+  "rows": 2867200
+}

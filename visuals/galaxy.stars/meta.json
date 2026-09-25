@@ -1,0 +1,48 @@
+{
+  "what": "galaxy.stars",
+  "columns": [
+    "x",
+    "y"
+  ],
+  "rows": 1966080,
+  "measured": "2026-09-24T21:12:32.128Z",
+  "film": [
+    31,
+    35,
+    159,
+    106
+  ],
+  "names": [
+    "KK98-251",
+    "NGC0247",
+    "UGC08699",
+    "UGC02487"
+  ],
+  "stars": 4096,
+  "frames": 120,
+  "reach": [
+    4.069000148773194,
+    18.901999950408936,
+    33.41000099182129,
+    104.49399642944336
+  ],
+  "source": [
+    "unWISE W1 3.4um",
+    "S4G 3.6um",
+    "S4G 3.6um",
+    "unWISE W1 3.4um"
+  ],
+  "pa": [
+    5.1936649806973065,
+    178,
+    100,
+    75
+  ],
+  "span": [
+    224.51351502219904,
+    261.6466881232749,
+    535.7625355001792,
+    774.918115431173
+  ],
+  "about": "the filmed galaxies face on, their stars laid where the light is (or the laid mass, where there is no image): x and y in kpc, star after star, frame after frame, from the moment the picture was taken, over FILM_TURNS of the outermost radius; span in Myr"
+}

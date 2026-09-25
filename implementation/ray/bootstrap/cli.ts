@@ -36,6 +36,37 @@ function installCatalogue(rt: Runtime) {
     }
     return readFileSync(at, "utf8");
   };
+  /* an image: [width, height, then every pixel row by row from the bottom, as FITS lays them] - [] when what came back is no image */
+  rt.hosted["Catalogue.fits"] = (url, as) => {
+    mkdirSync(raw, { recursive: true });
+    const at = resolve(raw, as as string);
+    if (!existsSync(at) || process.env.RAY_REFETCH) {
+      process.stderr.write(`  GET      ${url} ... `);
+      try { execFileSync("curl", ["-sSL", "-m", "120", "-A", "orbitmines-physics (research)", "-o", at, url as string]); } catch { writeFileSync(at, ""); }
+      process.stderr.write(`${(statSync(at).size / 1024).toFixed(0)} kB\n`);
+    }
+    const b = readFileSync(at);
+    if (b.length < 2880 || b.subarray(0, 6).toString("latin1") !== "SIMPLE") return [];
+    const cards: Record<string, string> = {};
+    let off = 0;
+    for (let done = false; !done && off + 80 <= b.length; off += 80) {
+      const card = b.subarray(off, off + 80).toString("latin1");
+      const key = card.slice(0, 8).trim();
+      if (key === "END") done = true;
+      else if (card[8] === "=") cards[key] = card.slice(10).split("/")[0].trim().replace(/'/g, "").trim();
+    }
+    off = Math.ceil(off / 2880) * 2880;
+    const bitpix = Number(cards.BITPIX), w = Number(cards.NAXIS1), h = Number(cards.NAXIS2);
+    const scale = Number(cards.BSCALE ?? 1), zero = Number(cards.BZERO ?? 0), size = Math.abs(bitpix) / 8;
+    if (!(w > 0 && h > 0) || off + w * h * size > b.length) return [];
+    const view = new DataView(b.buffer, b.byteOffset + off, w * h * size);
+    const out: number[] = [w, h];
+    for (let i = 0; i < w * h; i++) {
+      const raw_ = bitpix === -32 ? view.getFloat32(i * 4) : bitpix === -64 ? view.getFloat64(i * 8) : bitpix === 16 ? view.getInt16(i * 2) : bitpix === 32 ? view.getInt32(i * 4) : view.getUint8(i);
+      out.push(raw_ * scale + zero);
+    }
+    return out;
+  };
   rt.hosted["Catalogue.pdf_text"] = (as) => {
     try { return execFileSync("pdftotext", ["-layout", resolve(raw, as as string), "-"], { encoding: "utf8", maxBuffer: 64 << 20 }); }
     catch { throw new RayError("this table needs `pdftotext` (poppler-utils) - its publisher offers no machine-readable version"); }

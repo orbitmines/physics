@@ -24,6 +24,7 @@ Catalogue := class < id: String, what: String, source: String, paper: String {
 
   static fetch (url: String, as: String): String
   static pdf_text (as: String): String
+  static fits (url: String, as: String): Real[]
   static save_f32 (path: String, values: Real[])
   static number (text: String): Real?
   static numbers (text: String): Real[]
@@ -177,6 +178,119 @@ Borrowed := class {
       g
     }))
     ["D", "R", "Vobs", "e_Vobs", "Vgas", "Vdisk", "Vbul", "SBdisk", "SBbul"].for(w => { c.column(w, rows.map(r => t.num(r, w))) })
+    c
+  }
+
+  /*
+   * WHAT EACH GALAXY LOOKS LIKE: its light at 3.6 microns - the old stars SPARC's own disc masses are read off -
+   * cut out around it by the CDS's hips2fits (the name resolved by Sesame), from S4G where S4G has it, else Spitzer's
+   * IRAC 1, else unWISE W1 at 3.4 microns. IMAGE pixels a side, wide enough to hold REACH times its outermost measured
+   * radius. And which way it lies on the sky: SIMBAD's position angle, where SIMBAD has one
+   */
+  static HIPS = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits"
+  static SIMBAD_TAP = "https://simbad.cds.unistra.fr/simbad/sim-tap/sync"
+  static SURVEYS = ["ov-gso/P/S4G/irac1", "CDS/P/SPITZER/IRAC1", "CDS/P/unWISE/W1"]
+  static SURVEY_NAMES = ["S4G 3.6um", "Spitzer IRAC1 3.6um", "unWISE W1 3.4um"]
+  static IMAGE = 128
+  static REACH = 1.3
+  static CACHE = { }
+  /* a name as SIMBAD writes it: the catalogue's letters, a space, and the number without its leading noughts */
+  static simbad_name (name: String): String => {
+    cs := name.chars
+    k := 0
+    while k < cs.length & ((cs[k] >= 65 & cs[k] <= 90) | (cs[k] >= 97 & cs[k] <= 122)) { k = k + 1 }
+    return name if k == 0 | k >= cs.length
+    m := k
+    while m < cs.length - 1 & cs[m] == 48 & cs[m + 1] >= 48 & cs[m + 1] <= 57 { m = m + 1 }
+    "{String(chars: cs.take(k))} {String(chars: cs.drop(m))}"
+  }
+  static squeezed (s: String): String => s.replace(" ", "").replace("\"", "").upper
+  static url_encoded (s: String): String => s.replace("%", "%25").replace(" ", "%20").replace("'", "%27").replace(",", "%2C").replace("(", "%28").replace(")", "%29").replace("=", "%3D").replace("/", "%2F").replace("+", "%2B").replace("[", "%5B").replace("]", "%5D")
+  /* SIMBAD's position angles for every galaxy it knows by the name SPARC gives, degrees east of north; NaN where it has none */
+  static angles (): Real[] => {
+    return Borrowed.CACHE["angles"] if Borrowed.CACHE["angles"] != None
+    names := Borrowed.galaxy_names
+    quote := "'"
+    listed := names.map(n => "{quote}{Borrowed.simbad_name(n)}{quote}").join(",")
+    query := "SELECT ident.id, basic.galdim_angle FROM basic JOIN ident ON oid = oidref WHERE ident.id IN ({listed})"
+    text := Catalogue.fetch("{Borrowed.SIMBAD_TAP}?request=doQuery&lang=adql&format=csv&query={Borrowed.url_encoded(query)}", "simbad-angles.csv")
+    found := { }
+    text.lines.drop(1).for(l => {
+      parts := l.split(",")
+      if parts.length >= 2 {
+        v := Catalogue.number(parts[1])
+        found[Borrowed.squeezed(parts[0])] = v if v != None
+      }
+    })
+    out := names.map(n => found[Borrowed.squeezed(Borrowed.simbad_name(n))] ?? Real.NAN)
+    Borrowed.CACHE["angles"] = out
+    out
+  }
+  /* each galaxy's outermost measured radius, kpc */
+  static reaches (): Real[] => {
+    return Borrowed.CACHE["reaches"] if Borrowed.CACHE["reaches"] != None
+    names := Borrowed.galaxy_names
+    t := Mrt(text: Catalogue.fetch("{Borrowed.SPARC}/MassModels_Lelli2016c.mrt", "MassModels_Lelli2016c.mrt"))
+    most := { }
+    t.rows.for(r => {
+      id := t.at(r, "ID")
+      most[id] = Fmt.max(most[id] ?? 0, t.num(r, "R"))
+    })
+    out := names.map(n => most[n] ?? 0)
+    Borrowed.CACHE["reaches"] = out
+    out
+  }
+  /* the cut-outs: [survey index or -1, the field of view in degrees, then the pixels], one a galaxy */
+  static images (): Array => {
+    return Borrowed.CACHE["images"] if Borrowed.CACHE["images"] != None
+    t := Borrowed.galaxies
+    names := Borrowed.galaxy_names
+    reaches := Borrowed.reaches
+    P := Borrowed.IMAGE
+    out := []
+    Array.range(names.length).for(g => {
+      D := t.num(t.rows[g], "D")
+      fov := 2 * Borrowed.REACH * reaches[g] / (D * 1000) * 180 / Real.PI
+      got := None
+      which := -1
+      Array.range(Borrowed.SURVEYS.length).for(k => {
+        if got == None & D > 0 & reaches[g] > 0 {
+          url := "{Borrowed.HIPS}?hips={Borrowed.url_encoded(Borrowed.SURVEYS[k])}&width={P}&height={P}&fov={fov}&object={Borrowed.url_encoded(names[g])}&format=fits"
+          px := Catalogue.fits(url, "image-{names[g]}-{k}.fits")
+          if px.length == P * P + 2 {
+            lit := 0
+            px.drop(2).for(v => { lit = lit + 1 if Fmt.finite(v) & v != 0 })
+            if lit > 0.6 * P * P {
+              got = px.drop(2).map(v => Fmt.finite(v) ? v : 0)
+              which = k
+            }
+          }
+        }
+      })
+      out.push([which, fov, got ?? Array.filled(P * P, 0)])
+    })
+    Borrowed.CACHE["images"] = out
+    out
+  }
+  data "sparc-orientation" () => {
+    names := Borrowed.galaxy_names
+    c := Catalogue(id: "sparc-orientation", what: "how each SPARC galaxy lies on the sky and which image of it there is", source: "{Borrowed.SIMBAD_TAP} (galdim_angle); {Borrowed.HIPS}", paper: "SIMBAD (Wenger et al. 2000); hips2fits (CDS); S4G (Sheth et al. 2010), SEIP (Spitzer), unWISE (Lang 2014)")
+    c.units = ["galaxy: row in sparc-galaxies", "pa: deg east of north, NaN where SIMBAD has none", "fov: deg across the cut-out", "survey: 0 S4G 3.6um, 1 Spitzer IRAC1, 2 unWISE W1, -1 none", "reach: kpc, the outermost measured radius"]
+    c.names = names
+    images := Borrowed.images
+    c.column("galaxy", Array.range(names.length).map(g => g))
+    c.column("pa", Borrowed.angles)
+    c.column("fov", images.map(im => im[1]))
+    c.column("survey", images.map(im => im[0]))
+    c.column("reach", Borrowed.reaches)
+    c
+  }
+  data "sparc-images" () => {
+    c := Catalogue(id: "sparc-images", what: "each SPARC galaxy's light, north up and east left, IMAGE pixels a side, galaxy after galaxy, rows from the bottom", source: Borrowed.HIPS, paper: "S4G (Sheth et al. 2010), SEIP (Spitzer), unWISE (Lang 2014), cut out by hips2fits (CDS)")
+    c.units = ["light: the survey's own units, 0 where there is no image (sparc-orientation says which)"]
+    all := []
+    Borrowed.images.for(im => { im[2].for(v => { all.push(v) }) })
+    c.column("light", all)
     c
   }
 

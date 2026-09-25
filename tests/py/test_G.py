@@ -194,6 +194,42 @@ class TestG(unittest.TestCase):
             it.tick
         self.assertTrue(lt(Solve.settles(it), 1), "lt(Solve.settles(it), 1)")
 
+    def test_tests_galaxy_ray_10_on_ring(self):
+        it = Annulus(inner=4, outer=6, thick=0.2)
+        guard = 0
+        while not (eq(it.outer, 6)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs((sub(mul(mul(it.pull(200, 4, 64), 200), 200), 1))), 0.002), "lt(abs((sub(mul(mul(it.pull(200, 4, 64), 200), 200), 1))), 0.002)")
+
+    def test_tests_galaxy_ray_11_on_ring(self):
+        it = Annulus(inner=4, outer=6, thick=0.2)
+        guard = 0
+        while not (eq(it.outer, 6)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(abs(it.pull(0.01, 4, 64)), 0.001), "lt(abs(it.pull(0.01, 4, 64)), 0.001)")
+
+    def test_tests_galaxy_ray_13_on_ring(self):
+        it = Annulus(inner=4, outer=6, thick=0.2)
+        guard = 0
+        while not (eq(it.outer, 6)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(gt(mul(it.pull(7, 4, 64), 49), 1), "gt(mul(it.pull(7, 4, 64), 49), 1)")
+
+    def test_tests_galaxy_ray_14_on_ring(self):
+        it = Annulus(inner=4, outer=6, thick=0.2)
+        guard = 0
+        while not (eq(it.outer, 6)):
+            guard += 1
+            if guard > 8 or not hasattr(type(it), "tick"): self.skipTest("the refinement never held")
+            it.tick
+        self.assertTrue(lt(it.pull(3, 4, 64), 0), "lt(it.pull(3, 4, 64), 0)")
+
     def test_tests_medium_ray_10_on_law(self):
         it = Aggregate.of(G)
         guard = 0

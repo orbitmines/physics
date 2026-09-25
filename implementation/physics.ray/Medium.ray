@@ -29,8 +29,13 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   tags: N = 1
   aggregate: Aggregate = Aggregate.of(this.theory, this.DEG, this.D)
   cells (): N => this.N * this.N
-  /* the front's plane and one per tagged kind of body */
-  planes (): N => this.tags < 1 ? 1 : this.tags
+  /*
+   * EVERY BODY APART (`apart`): each body keeps its own rays - its own beam, as a lone body does - however many there
+   * are, rather than one beam per tagged kind. What changes is only how a point meets them (`meet_gathered`)
+   */
+  apart: boolean = false
+  /* the front's plane and one per tagged kind of body - or one per body, where every body is apart */
+  planes (): N => this.apart ? this.holes.length + 1 : (this.tags < 1 ? 1 : this.tags)
   /* how many ticks have run; `t` is the name a panel's marks read it by */
   ticks: N = 0
   t (): N => this.ticks
@@ -178,7 +183,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   }
 
   /* the body whose rays are on a plane */
-  body_of (z: N): Hole? => this.holes.filter(h => this.plane_of(h) == z).first
+  body_of (z: N): Hole? => this.apart ? (z >= 1 & z <= this.holes.length ? this.holes[z - 1] : None) : this.holes.filter(h => this.plane_of(h) == z).first
 
   /* THE LINE'S TERMS, as the reading wrote them */
   terms (): Array => this.theory.equation.terms
@@ -327,13 +332,18 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   column_of (c: N): N => c % this.N
   row_of (c: N): N => (c - c % this.N) / this.N
   /* which plane a body's rays are on: its tag, or the vacuum's where nothing is tagged */
-  plane_of (h: Hole): N => (h.tag == None | h.tag < 1) ? 0 : (h.tag < this.planes ? h.tag : this.planes - 1)
+  plane_of (h: Hole): N => this.apart ? this.holes.index_of(h) + 1 : ((h.tag == None | h.tag < 1) ? 0 : (h.tag < this.planes ? h.tag : this.planes - 1))
 
   /* a body put in: where it stands, in cells, and the momentum it was thrown with */
   add (h: Hole): Hole => {
     h.momentum = Vector(components: [h.px, h.py])
     h.advance = Vector.zero(2)
     this.holes.push(h)
+    /* a body apart brings its own beam, and its own row of what a panel reads of it */
+    if this.apart {
+      this.beam.push(Array.filled(this.rungs, 0))
+      this.swept.push(Array.filled(this.cells, 0))
+    }
     this.block
     h
   }
@@ -451,7 +461,72 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * have in common, one head on to the other. What that folds stands at the cell; what it takes of the rays themselves
    * is what the model's own `reach` counts, and at these rates it is a millionth of them a tick
    */
+  /*
+   * MEET, WITH EVERY BODY APART: the same meeting, but what arrives at a point is gathered first by the way it comes
+   * from - GATHER bins round the point, each holding what arrived on it and, weighed by what came, the way it came.
+   * A way holds at most one ray out of the beat's phase, so what arrives on one way is one bundle there however many
+   * bodies sent it; then bundle meets facing bundle as body met body. Where no two bodies' rays share a bin this is
+   * the pairwise meeting exactly - same activities, same ways, same overlap - and it costs the bins, not the pairs
+   */
+  static GATHER = 96
+  gather (): N => Medium.GATHER
+  bin_of (dx: Real, dy: Real): N => {
+    angle := dy.atan2(dx)
+    turned := angle < 0 ? angle + Real.TAU : angle
+    (turned / Real.TAU * Real.of(this.gather)).round % this.gather
+  }
+  meet_gathered () => {
+    B := this.gather
+    Array.range(this.cells).for(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      s := this.symbols(this.rho_was[c], this.nf_was[c])
+      sums := Array.filled(B, 0)
+      wx := Array.filled(B, 0)
+      wy := Array.filled(B, 0)
+      Array.range(this.planes - 1).for(i => {
+        got := this.sent_to(i + 1, x, y)
+        if got[0] > 0 {
+          b := this.bin_of(got[1], got[2])
+          sums[b] = sums[b] + got[0]
+          wx[b] = wx[b] + got[0] * got[1]
+          wy[b] = wy[b] + got[0] * got[2]
+        }
+      })
+      Array.range(B).for(a => {
+        if sums[a] > 0 {
+          na := Fmt.hypot(wx[a], wy[a])
+          ax := na > 0 ? wx[a] / na : 0
+          ay := na > 0 ? wy[a] / na : 0
+          Array.range(B).for(b => {
+            if b != a & sums[b] > 0 {
+              nb := Fmt.hypot(wx[b], wy[b])
+              over := nb > 0 ? this.facing_share(ax, ay, wx[b] / nb, wy[b] / nb) : 0
+              if over > 0 {
+                this.meets.for(t => {
+                  w := this.share(t, s) * this.activity(sums[a]) * this.activity(sums[b]) * over
+                  this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+                  this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+                  this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+                })
+              }
+            }
+          })
+          /* and against the vacuum's own, one way of the lattice's facing the bundle head on */
+          if this.vacuum {
+            this.meets.for(t => {
+              w := this.share(t, s) * this.activity(sums[a]) * this.activity(this.rho_inf) / Real.of(this.DEG)
+              this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+              this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+              this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+            })
+          }
+        }
+      })
+    })
+  }
   meet () => {
+    return this.meet_gathered if this.apart
     cells := this.cells
     P := this.planes
     Array.range(cells).for(c => {

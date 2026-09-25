@@ -7883,6 +7883,7 @@ export class Medium extends Node {
   set A(v: number) { this.write("A", v); }
   get K(): number { return this.read("K"); }
   set K(v: number) { this.write("K", v); }
+  static GATHER = 96;
   get DEG(): number { return this.read("DEG", () => this.theory.lattice.DEG); }
   set DEG(v: number) { this.write("DEG", v); }
   get D(): number { return this.read("D", () => this.theory.lattice.D); }
@@ -7894,8 +7895,10 @@ export class Medium extends Node {
   get cells(): number {
     return mul(this.N, this.N);
   }
+  get apart(): boolean { return this.read("apart", () => false); }
+  set apart(v: boolean) { this.write("apart", v); }
   get planes(): number {
-    return (lt(this.tags, 1) ? 1 : this.tags);
+    return (this.apart ? add(this.holes.length, 1) : ((lt(this.tags, 1) ? 1 : this.tags)));
   }
   get ticks(): number { return this.read("ticks", () => 0); }
   set ticks(v: number) { this.write("ticks", v); }
@@ -8042,9 +8045,9 @@ export class Medium extends Node {
     return (lt(got, 0) ? 0 : got);
   }
   body_of(z: number): (Hole | null) {
-    return first(this.holes.filter(((h: any) => {
+    return (this.apart ? (((ge(z, 1) && le(z, this.holes.length)) ? elem(this.holes, sub(z, 1)) : null)) : first(this.holes.filter(((h: any) => {
       return eq(this.plane_of(h), z);
-    })));
+    }))));
   }
   get terms(): any[] {
     return this.theory.equation.terms;
@@ -8200,12 +8203,16 @@ export class Medium extends Node {
     return div((sub(c, mod(c, this.N))), this.N);
   }
   plane_of(h: Hole): number {
-    return (((eq(h.tag, null) || lt(h.tag, 1))) ? 0 : ((lt(h.tag, this.planes) ? h.tag : sub(this.planes, 1))));
+    return (this.apart ? add(index_of(this.holes, h), 1) : ((((eq(h.tag, null) || lt(h.tag, 1))) ? 0 : ((lt(h.tag, this.planes) ? h.tag : sub(this.planes, 1))))));
   }
   add(h: Hole): Hole {
     h.momentum = new Vector({ components: [h.px, h.py] });
     h.advance = Vector.zero(2);
     push(this.holes, h);
+    if (this.apart) {
+      push(this.beam, filled(this.rungs, 0));
+      push(this.swept, filled(this.cells, 0));
+    }
     this.block;
     return h;
   }
@@ -8328,7 +8335,67 @@ export class Medium extends Node {
       this.gone[c] = 0;
     };
   }
+  get gather(): number {
+    return Medium.GATHER;
+  }
+  bin_of(dx: number, dy: number): number {
+    let angle = Math.atan2(dy, dx);
+    let turned = (lt(angle, 0) ? add(angle, (2 * Math.PI)) : angle);
+    return mod(Math.round((mul(div(turned, (2 * Math.PI)), this.gather))), this.gather);
+  }
+  get meet_gathered() {
+    let B = this.gather;
+    for (let c = 0; c < this.cells; c++) {
+      let x = this.column_of(c);
+      let y = this.row_of(c);
+      let s = this.symbols(elem(this.rho_was, c), elem(this.nf_was, c));
+      let sums = filled(B, 0);
+      let wx = filled(B, 0);
+      let wy = filled(B, 0);
+      for (let i = 0; i < sub(this.planes, 1); i++) {
+        let got = this.sent_to(add(i, 1), x, y);
+        if (gt(elem(got, 0), 0)) {
+          let b = this.bin_of(elem(got, 1), elem(got, 2));
+          sums[b] = add(elem(sums, b), elem(got, 0));
+          wx[b] = add(elem(wx, b), mul(elem(got, 0), elem(got, 1)));
+          wy[b] = add(elem(wy, b), mul(elem(got, 0), elem(got, 2)));
+        }
+      };
+      for (let a = 0; a < B; a++) {
+        if (gt(elem(sums, a), 0)) {
+          let na = Fmt.hypot(elem(wx, a), elem(wy, a));
+          let ax = (gt(na, 0) ? div(elem(wx, a), na) : 0);
+          let ay = (gt(na, 0) ? div(elem(wy, a), na) : 0);
+          for (let b = 0; b < B; b++) {
+            if ((!eq(b, a) && gt(elem(sums, b), 0))) {
+              let nb = Fmt.hypot(elem(wx, b), elem(wy, b));
+              let over = (gt(nb, 0) ? this.facing_share(ax, ay, div(elem(wx, b), nb), div(elem(wy, b), nb)) : 0);
+              if (gt(over, 0)) {
+                for (const t of [...this.meets]) {
+                  let w = mul(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(elem(sums, b))), over);
+                  this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
+                  this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
+                  this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
+                };
+              }
+            }
+          };
+          if (this.vacuum) {
+            for (const t of [...this.meets]) {
+              let w = div(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(this.rho_inf)), this.DEG);
+              this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
+              this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
+              this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
+            };
+          }
+        }
+      };
+    };
+  }
   get meet() {
+    if (this.apart) {
+      return this.meet_gathered;
+    }
     let cells = this.cells;
     let P = this.planes;
     for (let c = 0; c < cells; c++) {
@@ -8849,6 +8916,8 @@ export class Picture extends Node {
   set record(v: (Recording | null)) { this.write("record", v); }
   get panes(): Pane[] { return this.read("panes", () => []); }
   set panes(v: Pane[]) { this.write("panes", v); }
+  get on_request(): boolean { return this.read("on_request", () => false); }
+  set on_request(v: boolean) { this.write("on_request", v); }
   get paint(): Program { return this.read("paint"); }
   set paint(v: Program) { this.write("paint", v); }
   get played(): (Played | null) {
@@ -10322,6 +10391,9 @@ export class Galaxies extends Node {
   static SETTLE = 24;
   static CURVE_ROWS = 3;
   static CURVE_COLS = 4;
+  static SIMULATED = `npx ray measure galaxy.simulated`;
+  static FITTED = `#9fd3f5`;
+  static ARMS = ({});
   static freedoms_of(data: Measured): string[] {
     return (data.header[`freedoms`] ?? Galaxies.FREEDOMS);
   }
@@ -10514,23 +10586,21 @@ export class Galaxies extends Node {
       return Fmt.max(elem(top, gx), fallback);
     });
   }
-  static typical_of(line: number[]): number[] {
-    let step = 0.05;
-    let n = add(Math.round((div((sub(Galaxies.XMAX, Galaxies.XMIN)), step))), 1);
-    let heaps = range(n).map(((i: any) => {
-      return [];
-    }));
-    for (let k = 0; k < Math.floor((div(line.length, 2))); k++) {
-      let b = Math.round((div((sub(elem(line, mul(2, k)), Galaxies.XMIN)), step)));
-      if ((ge(b, 0) && lt(b, n))) {
-        push(elem(heaps, b), elem(line, add(mul(2, k), 1)));
+  static possible_at(deg: number): any[] {
+    let got = Measured.of(`galaxy.possible`);
+    if (eq(got, null)) {
+      fail(`galaxy.possible is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
+    }
+    let ds = got.columns[`deg`];
+    let k = 0;
+    for (let i = 0; i < got.rows; i++) {
+      if (lt(Math.abs((sub(elem(ds, i), deg))), Math.abs((sub(elem(ds, k), deg))))) {
+        k = i;
       }
     };
-    return heaps.map(((h: any) => {
-      return ((h.length === 0) ? NaN : elem(Expr.sorted(h), Math.floor((div(h.length, 2)))));
-    }));
+    return elem(got.header[`bins`], k);
   }
-  static panel(s: Surface, data: Measured, what: string, deg: number, support: number[], typical: number[]) {
+  static panel(s: Surface, data: Measured, what: string, deg: number, support: number[], possible: any[]) {
     s.fill_style(Galaxies.BACK);
     s.fill_rect(0, 0, s.width, s.height);
     s.font(`12px ui-monospace, monospace`);
@@ -10781,16 +10851,27 @@ export class Galaxies extends Node {
     s.stroke;
     s.dash([]);
     s.alpha(1);
-    let mid = Galaxies.typical_of(typical);
+    let landed = elem(possible, 0);
+    let mid = elem(possible, 1);
+    let step = Simulation.BIN;
+    s.fill_style(`rgba(74,168,235,0.35)`);
+    for (let i = 0; i < mid.length; i++) {
+      if (gt(elem(landed, i), 0)) {
+        let px = X(add(Galaxies.XMIN, mul(i, step)));
+        let top_ = Y(elem(elem(possible, 3), i));
+        let low_ = Y(elem(elem(possible, 2), i));
+        s.fill_rect(sub(px, 1.5), sub(top_, 1.5), 3, add(sub(low_, top_), 3));
+      }
+    };
     s.stroke_style(Galaxies.MODEL);
     s.line_width(3);
     s.begin_path;
     let started = false;
     for (let i = 0; i < mid.length; i++) {
       let v = elem(mid, i);
-      if (Fmt.finite(v)) {
-        let px = X(add(add(Galaxies.XMIN, mul(i, 0.05)), shift));
-        let py = Y(add(v, shift));
+      if ((gt(elem(landed, i), 0) && Fmt.finite(v))) {
+        let px = X(add(Galaxies.XMIN, mul(i, step)));
+        let py = Y(v);
         if (started) {
           s.line_to(px, py);
         } else {
@@ -10845,12 +10926,12 @@ export class Galaxies extends Node {
     });
     Galaxies.along(s, diagonal, (-2.2), `Newton + GR`, Galaxies.NEWT, (-9), diagonal);
     let ceiling = Galaxies.ceiling_of(data);
-    let typical_at = ((t: number) => {
-      let i = Math.round((div((sub(sub(t, shift), Galaxies.XMIN)), 0.05)));
-      return (((ge(i, 0) && lt(i, mid.length)) && Fmt.finite(elem(mid, i))) ? add(elem(mid, i), shift) : law_drawn(t));
+    let possible_line = ((t: number) => {
+      let i = Math.round((div((sub(t, Galaxies.XMIN)), step)));
+      return ((((ge(i, 0) && lt(i, mid.length)) && gt(elem(landed, i), 0)) && Fmt.finite(elem(mid, i))) ? elem(mid, i) : law_drawn(t));
     });
     let on_law = ((t: number) => {
-      return [X(t), Y(typical_at(t))];
+      return [X(t), Y(possible_line(t))];
     });
     let on_top = ((t: number) => {
       return [X(t), Y(add(ceiling(sub(t, shift), sub(law_drawn(t), shift)), shift))];
@@ -10872,7 +10953,7 @@ export class Galaxies extends Node {
       return [X(t), Y(Galaxies.discs_at(t))];
     });
     Galaxies.along(s, on_discs, elem(ds, Math.floor((div(ds.length, 2)))), `Genzel high-z discs`, Galaxies.DISCC, (-14), on_discs);
-    Galaxies.along(s, on_law, (-3.3), `${Law.theory}: a galaxy, run`, Galaxies.MODEL, (-12), on_law);
+    Galaxies.along(s, on_law, (-3.3), `${Law.theory}: every galaxy, run`, Galaxies.MODEL, (-12), on_law);
     let deep = ((t: number) => {
       return [X(t), Y(mul(0.5, t))];
     });
@@ -11142,6 +11223,9 @@ export class Galaxies extends Node {
     return mul(mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), H);
   }
   static get curve_pick(): number[] {
+    return Galaxies.pick(mul(Galaxies.CURVE_ROWS, Galaxies.CURVE_COLS));
+  }
+  static pick(want: number): number[] {
     let t = Sparc.curves;
     let C = t.columns;
     let counts = ({});
@@ -11165,144 +11249,574 @@ export class Galaxies extends Node {
     let sorted = sorted_by(ids, ((g: any) => {
       return tops[`${g}`];
     }));
-    let want = mul(Galaxies.CURVE_ROWS, Galaxies.CURVE_COLS);
     let out = [];
     for (let k = 0; k < want; k++) {
       push(out, elem(sorted, Math.round((div(mul((sub(sorted.length, 1)), k), (sub(want, 1)))))));
     };
     return out;
   }
-  static curve_of(g: number): number[][] {
-    let t = Sparc.curves;
-    let C = t.columns;
+  static get simulated(): Measured {
+    let got = Measured.of(`galaxy.simulated`);
+    if (eq(got, null)) {
+      fail(`galaxy.simulated is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
+    }
+    return got;
+  }
+  static get fields(): Measured {
+    let got = Measured.of(`galaxy.fields`);
+    if (eq(got, null)) {
+      fail(`galaxy.fields is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
+    }
+    return got;
+  }
+  static rows_in(m: Measured, g: number): number[] {
+    let col = m.columns[`galaxy`];
     let out = [];
-    for (let i = 0; i < t.rows; i++) {
-      if (((eq(elem(C[`galaxy`], i), g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0))) {
-        let R = mul(elem(C[`R`], i), Sparc.KPC);
-        let gas = mul(elem(C[`Vgas`], i), Sparc.KMS);
-        let disk = mul(elem(C[`Vdisk`], i), Sparc.KMS);
-        let bul = mul(elem(C[`Vbul`], i), Sparc.KMS);
-        let gbar = div((add(add(mul(gas, Math.abs(gas)), mul(mul(Sparc.YD, disk), Math.abs(disk))), mul(mul(Sparc.YB, bul), Math.abs(bul)))), R);
-        push(out, [elem(C[`R`], i), elem(C[`Vobs`], i), elem(C[`e_Vobs`], i), gbar, R]);
+    for (let i = 0; i < m.rows; i++) {
+      if (eq(elem(col, i), g)) {
+        push(out, i);
       }
     };
     return out;
   }
+  static off_of(g: number, fitted: boolean): number {
+    let sim = Galaxies.simulated;
+    let j = index_of(sim.header[`ids`], g);
+    if (eq(j, null)) {
+      return NaN;
+    }
+    return (fitted ? elem(sim.header[`rms1`], j) : elem(sim.header[`rms0`], j));
+  }
+  static percent(dex: number): string {
+    return (Fmt.finite(dex) ? `${Fmt.fixed(mul(100, (sub(Math.pow(10, dex), 1))), 0)}%` : `—`);
+  }
+  static curve_box(s: Surface, g: number, bx0: number, by0: number, bx1: number, by1: number) {
+    let sim = Galaxies.simulated;
+    let fld = Galaxies.fields;
+    let S = sim.columns;
+    let F = fld.columns;
+    let rows = Galaxies.rows_in(sim, g);
+    let tab = Galaxies.rows_in(fld, g);
+    let top = 0;
+    let reach = 0;
+    for (const i of [...rows]) {
+      top = Fmt.max(top, add(elem(S[`Vobs`], i), elem(S[`e_Vobs`], i)));
+      reach = Fmt.max(reach, elem(S[`R`], i));
+    };
+    top = mul(top, 1.15);
+    reach = mul(reach, 1.05);
+    let X = ((r: number) => {
+      return add(bx0, mul(div(r, reach), (sub(bx1, bx0))));
+    });
+    let Y = ((v: number) => {
+      return sub(by1, mul(div(v, top), (sub(by1, by0))));
+    });
+    s.stroke_style(Galaxies.GRID);
+    s.line_width(1);
+    s.stroke_rect(bx0, by0, sub(bx1, bx0), sub(by1, by0));
+    let line = ((column: string) => {
+      s.begin_path;
+      let started = false;
+      for (const i of [...tab]) {
+        let r = elem(F[`r`], i);
+        let v = elem(elem(F, column), i);
+        if ((le(r, reach) && Fmt.finite(v))) {
+          if (started) {
+            s.line_to(X(r), Y(Fmt.min(v, top)));
+          } else {
+            s.move_to(X(r), Y(Fmt.min(v, top)));
+          }
+          started = true;
+        }
+      };
+      return s.stroke;
+    });
+    s.stroke_style(Galaxies.NEWT);
+    s.line_width(1);
+    s.dash([5, 4]);
+    line(`vN`);
+    s.dash([3, 3]);
+    s.stroke_style(Galaxies.FITTED);
+    line(`v1`);
+    s.dash([]);
+    s.stroke_style(Galaxies.MODEL);
+    s.line_width(2);
+    line(`v0`);
+    s.stroke_style(Galaxies.MODEL);
+    s.line_width(1);
+    for (const i of [...rows]) {
+      let v = elem(S[`vs`], i);
+      if (Fmt.finite(v)) {
+        s.begin_path;
+        s.arc(X(elem(S[`R`], i)), Y(Fmt.min(v, top)), 2.4, 0, 7);
+        s.stroke;
+      }
+    };
+    s.stroke_style(Galaxies.POINTS);
+    s.fill_style(Galaxies.POINTS);
+    for (const i of [...rows]) {
+      let px = X(elem(S[`R`], i));
+      s.begin_path;
+      s.move_to(px, Y(sub(elem(S[`Vobs`], i), elem(S[`e_Vobs`], i))));
+      s.line_to(px, Y(Fmt.min(add(elem(S[`Vobs`], i), elem(S[`e_Vobs`], i)), top)));
+      s.stroke;
+      s.fill_rect(sub(px, 1.4), sub(Y(elem(S[`Vobs`], i)), 1.4), 2.8, 2.8);
+    };
+    s.font(`10px ui-monospace, monospace`);
+    s.text_align(`left`);
+    s.fill_style(Galaxies.SEEN);
+    s.fill_text(`${elem(Sparc.names, g)}`, add(bx0, 4), add(by0, 12));
+    let off0 = Galaxies.percent(Galaxies.off_of(g, false));
+    let off1 = Galaxies.percent(Galaxies.off_of(g, true));
+    s.fill_style(Galaxies.MODEL);
+    s.fill_text(`${off0} off`, add(bx0, 4), add(by0, 24));
+    s.fill_style(Galaxies.FITTED);
+    s.fill_text(`${off1} fitted`, add(add(bx0, 4), s.measure(`${off0} off  `)), add(by0, 24));
+    s.fill_style(Galaxies.FAINT);
+    s.fill_text(`${Fmt.fixed(top, 0)}`, sub(bx0, 32), add(by0, 8));
+    s.fill_text(`0`, sub(bx0, 32), by1);
+    s.text_align(`right`);
+    s.fill_text(`${Fmt.fixed(reach, 0)} kpc`, bx1, add(by1, 14));
+    return s.text_align(`left`);
+  }
+  static curve_key(s: Surface, y: number) {
+    s.font(`11px ui-monospace, monospace`);
+    s.text_align(`left`);
+    s.fill_style(Galaxies.POINTS);
+    s.fill_text(`■ measured (SPARC, borrowed)`, 22, y);
+    s.fill_style(Galaxies.MODEL);
+    s.fill_text(`— run, SPARC's own Υ, D, i   ○ its tracers`, 232, y);
+    s.fill_style(Galaxies.FITTED);
+    s.fill_text(`-- run, the data's freedoms fitted`, 560, y);
+    s.fill_style(Galaxies.NEWT);
+    return s.fill_text(`-- Newton`, 820, y);
+  }
+  static sample_off(fitted: boolean): number {
+    let S = Galaxies.simulated.columns;
+    let n = Galaxies.simulated.rows;
+    let s = 0;
+    let m = 0;
+    for (let i = 0; i < n; i++) {
+      let v = (fitted ? elem(S[`v1`], i) : elem(S[`v0`], i));
+      if ((gt(elem(S[`kept`], i), 0) && gt(v, 0))) {
+        let d = Fmt.log10(div(v, elem(S[`Vobs`], i)));
+        s = add(s, mul(d, d));
+        m = add(m, 1);
+      }
+    };
+    return (gt(m, 0) ? Math.sqrt((div(s, m))) : NaN);
+  }
   static curves_panel(s: Surface) {
     s.fill_style(Galaxies.BACK);
     s.fill_rect(0, 0, s.width, s.height);
-    let a0 = Galaxies.a0_at((eq(Law.theory, `G`) ? 18 : 18));
+    let sim = Galaxies.simulated;
     let picked = Galaxies.curve_pick;
-    let names = Sparc.names;
     s.font(`13px ui-monospace, monospace`);
     s.fill_style(Galaxies.SEEN);
     s.text_align(`left`);
-    s.fill_text(`ROTATION CURVES, ONE GALAXY A PANEL`, 22, 26);
+    s.fill_text(`ROTATION CURVES, EACH GALAXY RUN`, 22, 26);
     s.font(`11px ui-monospace, monospace`);
     s.fill_style(Galaxies.FAINT);
-    let a0_text = Fmt.exponential(a0, 3);
-    s.fill_text(`the law on each galaxy's own gas, disc and bulge — a₀ = ${a0_text} m/s², the chain's at 18 ways and H₀ ${Fmt.fixed(Galaxies.H0, 1)}; nothing fitted`, 22, 44);
+    let a0_text = Fmt.exponential(sim.header[`a0`], 3);
+    let deg_text = Fmt.fixed(sim.header[`deg`], 1);
+    let whole0 = Galaxies.percent(Galaxies.sample_off(false));
+    let whole1 = Galaxies.percent(Galaxies.sample_off(true));
+    s.fill_text(`each laid from its own gas, disc and bulge and run; a₀ ${a0_text} m/s² (DEG ${deg_text}); all ${whole0} off, ${whole1} with Υ, D, i fitted`, 22, 44);
     let W = div((sub(s.width, 44)), Galaxies.CURVE_COLS);
     let H = div((sub(s.height, 96)), Galaxies.CURVE_ROWS);
     for (let k = 0; k < picked.length; k++) {
-      let g = elem(picked, k);
       let col = mod(k, Galaxies.CURVE_COLS);
       let row = Math.round((div((sub(k, col)), Galaxies.CURVE_COLS)));
       let ox = add(22, mul(col, W));
       let oy = add(62, mul(row, H));
-      let bx0 = add(ox, 34);
-      let bx1 = sub(add(ox, W), 10);
-      let by0 = add(oy, 16);
-      let by1 = sub(add(oy, H), 26);
-      let X = ((r: number) => {
-        return add(bx0, mul(div(r, reach), (sub(bx1, bx0))));
-      });
-      let Y = ((v: number) => {
-        return sub(by1, mul(div(v, top), (sub(by1, by0))));
-      });
-      s.stroke_style(Galaxies.GRID);
-      s.line_width(1);
-      s.stroke_rect(bx0, by0, sub(bx1, bx0), sub(by1, by0));
-      let rows = Galaxies.curve_of(g);
-      let top = 0;
-      let reach = 0;
-      for (const r of [...rows]) {
-        top = Fmt.max(top, add(elem(r, 1), elem(r, 2)));
-        reach = Fmt.max(reach, elem(r, 0));
-      };
-      top = mul(top, 1.15);
-      reach = mul(reach, 1.05);
-      s.stroke_style(Galaxies.NEWT);
-      s.dash([5, 4]);
-      s.begin_path;
-      for (let i = 0; i < rows.length; i++) {
-        let v = div(Math.sqrt((mul(elem(elem(rows, i), 4), elem(elem(rows, i), 3)))), Sparc.KMS);
-        if (eq(i, 0)) {
-          s.move_to(X(elem(elem(rows, i), 0)), Y(v));
-        } else {
-          s.line_to(X(elem(elem(rows, i), 0)), Y(v));
-        }
-      };
-      s.stroke;
-      s.dash([]);
-      s.stroke_style(Galaxies.MODEL);
-      s.line_width(2);
-      s.begin_path;
-      for (let i = 0; i < rows.length; i++) {
-        let v = div(Math.sqrt((mul(elem(elem(rows, i), 4), Law.boost(elem(elem(rows, i), 3), a0)))), Sparc.KMS);
-        if (eq(i, 0)) {
-          s.move_to(X(elem(elem(rows, i), 0)), Y(v));
-        } else {
-          s.line_to(X(elem(elem(rows, i), 0)), Y(v));
-        }
-      };
-      s.stroke;
-      s.stroke_style(Galaxies.POINTS);
-      s.fill_style(Galaxies.POINTS);
-      s.line_width(1);
-      for (const r of [...rows]) {
-        let px = X(elem(r, 0));
-        s.begin_path;
-        s.move_to(px, Y(sub(elem(r, 1), elem(r, 2))));
-        s.line_to(px, Y(add(elem(r, 1), elem(r, 2))));
-        s.stroke;
-        s.fill_rect(sub(px, 1.4), sub(Y(elem(r, 1)), 1.4), 2.8, 2.8);
-      };
-      let off = [];
-      for (const r of [...rows]) {
-        let want = div(Math.sqrt((mul(elem(r, 4), Law.boost(elem(r, 3), a0)))), Sparc.KMS);
-        if ((gt(want, 0) && gt(elem(r, 1), 0))) {
-          push(off, Fmt.log10(div(want, elem(r, 1))));
-        }
-      };
-      let rms = 0;
-      for (const v of [...off]) {
-        rms = add(rms, mul(v, v));
-      };
-      rms = ((off.length === 0) ? NaN : Math.sqrt((div(rms, off.length))));
-      s.font(`10px ui-monospace, monospace`);
-      s.fill_style(Galaxies.SEEN);
-      s.fill_text(`${elem(names, g)}`, add(bx0, 4), add(by0, 12));
-      s.fill_style(Galaxies.FAINT);
-      s.text_align(`right`);
-      s.fill_text(`${Fmt.fixed(mul(100, (sub(Math.pow(10, rms), 1))), 0)}% off`, sub(bx1, 4), add(by0, 12));
-      s.text_align(`left`);
-      s.fill_text(`${Fmt.fixed(top, 0)}`, add(ox, 2), add(by0, 8));
-      s.fill_text(`0`, add(ox, 2), by1);
-      s.fill_text(`${Fmt.fixed(reach, 0)} kpc`, sub(bx1, 46), add(by1, 14));
+      Galaxies.curve_box(s, elem(picked, k), add(ox, 34), add(oy, 16), sub(add(ox, W), 10), sub(add(oy, H), 26));
     };
-    s.font(`11px ui-monospace, monospace`);
-    s.fill_style(Galaxies.POINTS);
-    s.fill_text(`■ measured (SPARC, borrowed)`, 22, sub(s.height, 16));
-    s.fill_style(Galaxies.MODEL);
-    s.fill_text(`— the law on its own baryons`, 260, sub(s.height, 16));
-    s.fill_style(Galaxies.NEWT);
-    return s.fill_text(`-- the baryons alone (Newton)`, 520, sub(s.height, 16));
+    return Galaxies.curve_key(s, sub(s.height, 16));
   }
   static get curves(): Picture {
-    return Picture.still(`galaxy.curves`, `the rotation curves themselves: for twelve galaxies across the sample, what the law makes of each one's own gas, disc and bulge, against what was measured - one panel a galaxy, nothing fitted`, 960, 720, ((s: Surface) => {
+    return Picture.still(`galaxy.curves`, `the rotation curves themselves: twelve galaxies across the sample, each laid from its own gas, disc and bulge and run - the speed a circle needs on its field, what its tracers moved at, and the same with the data's own freedoms fitted, against what was measured`, 960, 720, ((s: Surface) => {
       return Galaxies.curves_panel(s);
     }));
+  }
+  static get simulation(): Picture {
+    let stars = Measured.of(`galaxy.stars`);
+    if (eq(stars, null)) {
+      fail(`galaxy.stars is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
+    }
+    return new Picture({ id: `galaxy.simulation`, what: `galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured`, width: 960, height: 720, frames: stars.header[`frames`], paint: ((played: (Played | null)) => {
+      return new Orbiting({ stars: stars });
+    }) });
+  }
+  static orbit_panel(s: Surface, stars: Measured, frame_at: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let film = stars.header[`film`];
+    let NS = stars.header[`stars`];
+    let FR = stars.header[`frames`];
+    let X_ = stars.columns[`x`];
+    let Y_ = stars.columns[`y`];
+    let sim = Galaxies.simulated;
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_style(Galaxies.SEEN);
+    s.text_align(`left`);
+    s.fill_text(`GALAXIES, RUN`, 22, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let a0_text = Fmt.exponential(sim.header[`a0`], 3);
+    let deg_text = Fmt.fixed(sim.header[`deg`], 1);
+    s.fill_text(`laid from the gas, disc and bulge SPARC measured; every tracer pulled at what is felt where it is (a₀ ${a0_text} m/s², DEG ${deg_text})`, 22, 44);
+    let rows = add(Math.floor((div(film.length, 2))), mod(film.length, 2));
+    let H = div((sub(s.height, 96)), Fmt.max(rows, 1));
+    let W = div((sub(s.width, 44)), 2);
+    for (let k = 0; k < film.length; k++) {
+      let g = elem(film, k);
+      let col = mod(k, 2);
+      let row = Math.round((div((sub(k, col)), 2)));
+      let ox = add(22, mul(col, W));
+      let oy = add(58, mul(row, H));
+      let side = Fmt.min(sub(H, 20), mul(W, 0.48));
+      let cx = add(add(ox, div(side, 2)), 4);
+      let cy = add(add(oy, div(side, 2)), 6);
+      let reach = elem(stars.header[`reach`], k);
+      let scale = div(div(side, 2), reach);
+      s.stroke_style(Galaxies.GRID);
+      s.line_width(1);
+      s.stroke_rect(sub(cx, div(side, 2)), sub(cy, div(side, 2)), side, side);
+      for (let q = 0; q < NS; q++) {
+        let at = add(mul((add(mul(k, NS), q)), FR), Fmt.min(frame_at, sub(FR, 1)));
+        let x = elem(X_, at);
+        let y = elem(Y_, at);
+        let r = div(Fmt.hypot(x, y), reach);
+        if ((Fmt.finite(x) && lt(r, 1.4))) {
+          let warm = Fmt.min(1, r);
+          let red = Math.round((add(120, mul(120, (sub(1, warm))))));
+          let green = Math.round((add(170, mul(50, (sub(1, warm))))));
+          s.fill_style(`rgba(${red},${green},245,0.55)`);
+          let px = add(cx, mul(x, scale));
+          let py = sub(cy, mul(y, scale));
+          if ((((gt(px, sub(cx, div(side, 2))) && lt(px, add(cx, div(side, 2)))) && gt(py, sub(cy, div(side, 2)))) && lt(py, add(cy, div(side, 2))))) {
+            s.fill_rect(sub(px, 0.6), sub(py, 0.6), 1.2, 1.2);
+          }
+        }
+      };
+      s.fill_style(Galaxies.FAINT);
+      s.font(`10px ui-monospace, monospace`);
+      let across = Fmt.fixed(mul(2, reach), 0);
+      s.fill_text(`${across} kpc across`, add(sub(cx, div(side, 2)), 4), sub(add(cy, div(side, 2)), 6));
+      let span = stars.header[`span`];
+      let source = stars.header[`source`];
+      if (!eq(span, null)) {
+        let myr = Fmt.fixed(div(mul(elem(span, k), Fmt.min(frame_at, sub(FR, 1))), sub(FR, 1)), 0);
+        s.fill_text(`${elem(source, k)}, +${myr} Myr`, add(sub(cx, div(side, 2)), 4), add(sub(cy, div(side, 2)), 12));
+      }
+      Galaxies.curve_box(s, g, add(add(cx, div(side, 2)), 40), add(oy, 12), sub(add(ox, W), 12), add(oy, side));
+    };
+    return Galaxies.curve_key(s, sub(s.height, 16));
+  }
+  static get formed(): Picture {
+    let got = Measured.of(`galaxy.formed`);
+    if (eq(got, null)) {
+      fail(`galaxy.formed is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
+    }
+    return new Picture({ id: `galaxy.formed`, what: `discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms`, width: 960, height: 720, frames: got.header[`frames`], paint: ((played: (Played | null)) => {
+      return new Forming({ formed: got });
+    }) });
+  }
+  static formed_panel(s: Surface, formed: Measured, frame_at: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let H = formed.header;
+    let G = H[`grid`];
+    let FR = H[`frames`];
+    let f = Fmt.min(frame_at, sub(FR, 1));
+    let D = formed.columns[`density`];
+    let names = H[`names`];
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_style(Galaxies.SEEN);
+    s.text_align(`left`);
+    s.fill_text(`GALAXIES LEFT TO THEMSELVES`, 22, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let gyr = Fmt.fixed(div(mul(H[`gyr`], f), sub(FR, 1)), 2);
+    let stars_n = H[`stars`];
+    let q_text = Fmt.fixed(H[`Q`], 1);
+    let a0_text = Fmt.exponential(H[`a0`], 3);
+    s.fill_text(`${stars_n} stars each, every one pulled by every other through the law (a₀ ${a0_text} m/s²), no halo; launched smooth at Q ${q_text} — t = ${gyr} Gyr`, 22, 44);
+    let side = Fmt.min(div((sub(s.width, 66)), 2), sub(s.height, 110));
+    for (let g = 0; g < names.length; g++) {
+      let ox = add(22, mul(g, (add(side, 22))));
+      let oy = 60;
+      let base = mul(mul((add(mul(g, FR), f)), G), G);
+      let top = 0;
+      for (let c = 0; c < mul(G, G); c++) {
+        top = Fmt.max(top, elem(D, add(base, c)));
+      };
+      let cell = div(side, G);
+      for (let cy = 0; cy < G; cy++) {
+        for (let cx = 0; cx < G; cx++) {
+          let v = elem(D, add(add(base, mul(cy, G)), cx));
+          if (gt(v, 0)) {
+            let t = Fmt.min(1, div(Math.log((add(1, v))), Math.log((add(1, top)))));
+            let r = Math.round((add(40, mul(mul(215, t), t))));
+            let gr = Math.round((add(60, mul(190, t))));
+            let b = Math.round((add(110, mul(145, Fmt.min(1, mul(1.6, t))))));
+            s.fill_style(`rgb(${r},${gr},${b})`);
+            s.fill_rect(add(ox, mul(cx, cell)), add(oy, mul((sub(sub(G, 1), cy)), cell)), add(cell, 0.5), add(cell, 0.5));
+          }
+        };
+      };
+      s.stroke_style(Galaxies.GRID);
+      s.stroke_rect(ox, oy, side, side);
+      let mass = Fmt.exponential(elem(H[`mass`], g), 1);
+      let rd = Fmt.fixed(elem(H[`scale`], g), 1);
+      let across = Fmt.fixed(mul(2, elem(H[`span`], g)), 0);
+      s.fill_style(Galaxies.SEEN);
+      s.fill_text(`${elem(names, g)}: ${mass} suns, R_d ${rd} kpc`, ox, add(add(oy, side), 18));
+      s.fill_style(Galaxies.FAINT);
+      let mids = H[`middles`];
+      let moved = ``;
+      if (!eq(mids, null)) {
+        let m = elem(elem(mids, f), g);
+        let gone = Fmt.fixed(Fmt.hypot(elem(m, 0), elem(m, 1)), 1);
+        let speed = Fmt.fixed(Fmt.hypot(elem(m, 2), elem(m, 3)), 1);
+        moved = `; followed - moved ${gone} kpc, going ${speed} km/s`;
+      }
+      s.fill_text(`${across} kpc across${moved}`, ox, add(add(oy, side), 34));
+      let series = Galaxies.arms_of(formed, g);
+      let sx0 = ox;
+      let sx1 = add(ox, side);
+      let sy0 = add(add(oy, side), 58);
+      let sy1 = add(add(oy, side), 148);
+      let topA = 0.6;
+      s.stroke_style(Galaxies.GRID);
+      s.stroke_rect(sx0, sy0, sub(sx1, sx0), sub(sy1, sy0));
+      let inks = [`#4aa8eb`, `#f2e05a`, `#eb964a`];
+      for (let k = 0; k < 3; k++) {
+        s.stroke_style(elem(inks, k));
+        s.line_width(1.5);
+        s.begin_path;
+        for (let j = 0; j < add(f, 1); j++) {
+          let px = add(sx0, div(mul((sub(sx1, sx0)), j), sub(FR, 1)));
+          let py = sub(sy1, mul((sub(sy1, sy0)), Fmt.min(div(elem(elem(series, j), add(k, 2)), topA), 1)));
+          if (eq(j, 0)) {
+            s.move_to(px, py);
+          } else {
+            s.line_to(px, py);
+          }
+        };
+        s.stroke;
+      };
+      s.line_width(1);
+      s.font(`10px ui-monospace, monospace`);
+      let now = elem(series, f);
+      let a2 = Fmt.fixed(elem(now, 2), 3);
+      let a3 = Fmt.fixed(elem(now, 3), 3);
+      let a4 = Fmt.fixed(elem(now, 4), 3);
+      s.fill_style(elem(inks, 0));
+      s.fill_text(`m=2 ${a2}`, sx0, sub(sy0, 4));
+      s.fill_style(elem(inks, 1));
+      s.fill_text(`m=3 ${a3}`, add(sx0, 90), sub(sy0, 4));
+      s.fill_style(elem(inks, 2));
+      s.fill_text(`m=4 ${a4}`, add(sx0, 176), sub(sy0, 4));
+      s.fill_style(Galaxies.FAINT);
+      s.text_align(`left`);
+      s.fill_text(`arm strength, 1-3 R_d, 0 to 0.6 (smooth ≈ 0.01)`, sx0, add(sy1, 14));
+      s.text_align(`left`);
+      s.font(`11px ui-monospace, monospace`);
+    };
+  }
+  static arms_of(formed: Measured, g: number): number[][] {
+    let key = `${g}`;
+    if (!eq(elem(Galaxies.ARMS, key), null)) {
+      return elem(Galaxies.ARMS, key);
+    }
+    let H = formed.header;
+    let G = H[`grid`];
+    let FR = H[`frames`];
+    let D = formed.columns[`density`];
+    let per_scale = div(G, (div(mul(2, elem(H[`span`], g)), elem(H[`scale`], g))));
+    let out = range(FR).map(((f: any) => {
+      let base = mul(mul((add(mul(g, FR), f)), G), G);
+      let w = 0;
+      let mx = 0;
+      let my = 0;
+      for (let cy = 0; cy < G; cy++) {
+        for (let cx = 0; cx < G; cx++) {
+          let v = elem(D, add(add(base, mul(cy, G)), cx));
+          w = add(w, mul(v, v));
+          mx = add(mx, mul(mul(v, v), cx));
+          my = add(my, mul(mul(v, v), cy));
+        };
+      };
+      mx = (gt(w, 0) ? div(mx, w) : div(G, 2));
+      my = (gt(w, 0) ? div(my, w) : div(G, 2));
+      let re = [0, 0, 0, 0, 0];
+      let im = [0, 0, 0, 0, 0];
+      let total = 0;
+      for (let cy = 0; cy < G; cy++) {
+        for (let cx = 0; cx < G; cx++) {
+          let v = elem(D, add(add(base, mul(cy, G)), cx));
+          let dx = sub(add(cx, 0.5), mx);
+          let dy = sub(add(cy, 0.5), my);
+          let r = div(Fmt.hypot(dx, dy), per_scale);
+          if (((gt(v, 0) && ge(r, 1)) && le(r, 3))) {
+            let th = Math.atan2(dy, dx);
+            total = add(total, v);
+            for (let m = 0; m < 5; m++) {
+              re[m] = add(elem(re, m), mul(v, Math.cos((mul(m, th)))));
+              im[m] = add(elem(im, m), mul(v, Math.sin((mul(m, th)))));
+            };
+          }
+        };
+      };
+      return range(5).map(((m: any) => {
+        return (gt(total, 0) ? div(Fmt.hypot(elem(re, m), elem(im, m)), total) : 0);
+      })).slice(0);
+    }));
+    Galaxies.ARMS[key] = out;
+    return out;
+  }
+  static get rar(): Picture {
+    let pic = Picture.still(`galaxy.rar`, `the radial acceleration relation, simulated: every galaxy run at every measured radius, against the data at SPARC's own freedoms and with them fitted`, 960, 720, ((s: Surface) => {
+      return Galaxies.rar_panel(s);
+    }));
+    pic.on_request = true;
+    return pic;
+  }
+  static rar_panel(s: Surface) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let sim = Galaxies.simulated;
+    let S = sim.columns;
+    let unit = sim.header[`unit`];
+    let ids = sim.header[`ids`];
+    let bx0 = 92;
+    let bx1 = sub(s.width, 26);
+    let by0 = 70;
+    let by1 = sub(s.height, 80);
+    let XMIN = (-4);
+    let XMAX = 2;
+    let YMIN = (-3);
+    let YMAX = 2;
+    let X = ((l: number) => {
+      return add(bx0, mul(div((sub(l, XMIN)), (sub(XMAX, XMIN))), (sub(bx1, bx0))));
+    });
+    let Y = ((l: number) => {
+      return sub(by1, mul(div((sub(l, YMIN)), (sub(YMAX, YMIN))), (sub(by1, by0))));
+    });
+    s.stroke_style(Galaxies.GRID);
+    s.line_width(1);
+    s.fill_style(Galaxies.FAINT);
+    s.font(`11px ui-monospace, monospace`);
+    s.text_align(`center`);
+    let l = XMIN;
+    while (le(l, XMAX)) {
+      s.begin_path;
+      s.move_to(X(l), by0);
+      s.line_to(X(l), by1);
+      s.stroke;
+      s.fill_text(`10^${l}`, X(l), add(by1, 16));
+      l = add(l, 1);
+    }
+    s.text_align(`right`);
+    l = YMIN;
+    while (le(l, YMAX)) {
+      s.begin_path;
+      s.move_to(bx0, Y(l));
+      s.line_to(bx1, Y(l));
+      s.stroke;
+      s.fill_text(`10^${l}`, sub(bx0, 8), add(Y(l), 4));
+      l = add(l, 1);
+    }
+    let lg = ((v: number) => {
+      return Fmt.log10(div(v, Galaxies.A0_DATA));
+    });
+    let spread0 = [];
+    let spread1 = [];
+    for (let i = 0; i < sim.rows; i++) {
+      if (gt(elem(S[`kept`], i), 0)) {
+        let g = elem(S[`galaxy`], i);
+        let j = index_of(ids, g);
+        let R = elem(S[`R`], i);
+        let V = elem(S[`Vobs`], i);
+        let gbar0 = mul((add(add(mul(Sparc.YD, elem(S[`gd`], i)), mul(Sparc.YB, elem(S[`gb`], i))), elem(S[`gg`], i))), unit);
+        let gbar1 = mul((add(add(mul(elem(sim.header[`Y_disk`], j), elem(S[`gd`], i)), mul(elem(sim.header[`Y_bulge`], j), elem(S[`gb`], i))), elem(S[`gg`], i))), unit);
+        let f = div(elem(sim.header[`D`], j), elem(Sparc.sample.columns[`D`], g));
+        let sn = div(Math.sin((div(mul(elem(Sparc.sample.columns[`Inc`], g), Math.PI), 180))), Math.sin((div(mul(elem(sim.header[`Inc`], j), Math.PI), 180))));
+        let gobs0 = mul(div(mul(V, V), R), unit);
+        let gobs1 = mul(div(mul((mul(V, sn)), (mul(V, sn))), (mul(R, f))), unit);
+        if ((gt(gbar0, 0) && gt(gbar1, 0))) {
+          s.fill_style(`rgba(238,240,245,0.35)`);
+          s.fill_rect(sub(X(lg(gbar0)), 0.7), sub(Y(lg(gobs0)), 0.7), 1.4, 1.4);
+          s.fill_style(`rgba(159,211,245,0.8)`);
+          s.fill_rect(sub(X(lg(gbar1)), 0.8), sub(Y(lg(gobs1)), 0.8), 1.6, 1.6);
+          let m0 = elem(S[`v0`], i);
+          let m1 = elem(S[`v1`], i);
+          if (gt(m0, 0)) {
+            push(spread0, Fmt.log10(div(m0, V)));
+          }
+          if (gt(m1, 0)) {
+            push(spread1, Fmt.log10(div(m1, V)));
+          }
+        }
+      }
+    };
+    let a0 = sim.header[`a0`];
+    s.stroke_style(Galaxies.MODEL);
+    s.line_width(2);
+    s.begin_path;
+    l = XMIN;
+    while (le(l, add(XMAX, 0.000001))) {
+      let gN = mul(Math.pow(10, l), Galaxies.A0_DATA);
+      let y = lg(Law.boost(gN, a0));
+      if (eq(l, XMIN)) {
+        s.move_to(X(l), Y(y));
+      } else {
+        s.line_to(X(l), Y(y));
+      }
+      l = add(l, 0.02);
+    }
+    s.stroke;
+    s.stroke_style(Galaxies.NEWT);
+    s.dash([6, 5]);
+    s.begin_path;
+    s.move_to(X(Fmt.max(XMIN, YMIN)), Y(Fmt.max(XMIN, YMIN)));
+    s.line_to(X(Fmt.min(XMAX, YMAX)), Y(Fmt.min(XMAX, YMAX)));
+    s.stroke;
+    s.dash([]);
+    s.stroke_style(`#1b2130`);
+    s.stroke_rect(bx0, by0, sub(bx1, bx0), sub(by1, by0));
+    s.text_align(`left`);
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_style(Galaxies.SEEN);
+    s.fill_text(`THE RADIAL ACCELERATION RELATION, EVERY GALAXY RUN`, bx0, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let off0 = Galaxies.percent(Simulation.rms(spread0));
+    let off1 = Galaxies.percent(Simulation.rms(spread1));
+    let a0_text = Fmt.exponential(a0, 3);
+    let deg_text = Fmt.fixed(sim.header[`deg`], 1);
+    let radii_n = spread0.length;
+    let seen = ({});
+    for (let i = 0; i < sim.rows; i++) {
+      let which = elem(S[`galaxy`], i);
+      if (gt(elem(S[`kept`], i), 0)) {
+        seen[`${which}`] = true;
+      }
+    };
+    let ids_n = ids.filter(((g: any) => {
+      return !eq(seen[`${g}`], null);
+    })).length;
+    s.fill_text(`${radii_n} radii, ${ids_n} galaxies: ${off0} off in speed at the published Υ, D, i, ${off1} fitted (a₀ ${a0_text} m/s², DEG ${deg_text})`, bx0, 44);
+    s.fill_style(`rgba(238,240,245,0.7)`);
+    s.fill_text(`■ SPARC at its own freedoms`, bx0, sub(s.height, 22));
+    s.fill_style(Galaxies.FITTED);
+    s.fill_text(`■ the same radii with Υ, D, i fitted`, add(bx0, 240), sub(s.height, 22));
+    s.fill_style(Galaxies.MODEL);
+    s.fill_text(`— where the run puts them: the law, at the run's a₀`, add(bx0, 520), sub(s.height, 22));
+    s.fill_style(Galaxies.FAINT);
+    s.text_align(`center`);
+    return s.fill_text(`g_baryons / 1.2e-10 m/s²`, div((add(bx0, bx1)), 2), add(by1, 34));
   }
   static get point(): Picture {
     return Galaxies.of(`galaxy.point`, `a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement`, `A GALAXY AS ONE SOURCE`);
@@ -11323,8 +11837,1438 @@ export class Sweeping extends Painter {
   set shown_frames(v: number) { this.write("shown_frames", v); }
   frame(s: Surface, dt: number) {
     let k = elem(this.ks, (lt(this.shown_frames, this.ks.length) ? this.shown_frames : sub(this.ks.length, 1)));
-    Galaxies.panel(s, Galaxies.frame_of(this.solved, k), this.title, elem(this.solved.header[`degs`], k), Galaxies.support_at(this.solved, k), elem(this.solved.header[`typical`], k));
+    let deg = elem(this.solved.header[`degs`], k);
+    Galaxies.panel(s, Galaxies.frame_of(this.solved, k), this.title, deg, Galaxies.support_at(this.solved, k), Galaxies.possible_at(deg));
     this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Orbiting extends Painter {
+  get stars(): Measured { return this.read("stars"); }
+  set stars(v: Measured) { this.write("stars", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    Galaxies.orbit_panel(s, this.stars, this.shown_frames);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Forming extends Painter {
+  get formed(): Measured { return this.read("formed"); }
+  set formed(v: Measured) { this.write("formed", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    Galaxies.formed_panel(s, this.formed, this.shown_frames);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Annulus extends Node {
+  get inner(): number { return this.read("inner"); }
+  set inner(v: number) { this.write("inner", v); }
+  get outer(): number { return this.read("outer"); }
+  set outer(v: number) { this.write("outer", v); }
+  get thick(): number { return this.read("thick"); }
+  set thick(v: number) { this.write("thick", v); }
+  pull(r: number, nsub: number, nphi: number): number {
+    let total = 0;
+    let weight = 0;
+    for (let s = 0; s < nsub; s++) {
+      let rs = add(this.inner, div(mul((sub(this.outer, this.inner)), (add(s, 0.5))), nsub));
+      let ring = 0;
+      for (let p = 0; p < nphi; p++) {
+        let half = Math.sin((div(div(mul(Math.PI, (add(p, 0.5))), nphi), 2)));
+        let bend = mul(mul(2, half), half);
+        let d2 = add(add(mul((sub(r, rs)), (sub(r, rs))), mul(mul(mul(2, r), rs), bend)), mul(this.thick, this.thick));
+        ring = add(ring, div((add((sub(r, rs)), mul(rs, bend))), (mul(d2, Math.sqrt(d2)))));
+      };
+      total = add(total, div(mul(rs, ring), nphi));
+      weight = add(weight, rs);
+    };
+    return (gt(weight, 0) ? div(total, weight) : 0);
+  }
+}
+
+export class Simulation extends Node {
+  get deg(): number { return this.read("deg"); }
+  set deg(v: number) { this.write("deg", v); }
+  static UNIT_G = div(mul(Sparc.KMS, Sparc.KMS), Sparc.KPC);
+  static G_KPC = div(mul(Sparc.G_NEWTON, Sparc.MSUN), (mul(mul(Sparc.KPC, Sparc.KMS), Sparc.KMS)));
+  static NSUB = 16;
+  static NPHI = 512;
+  static TABLE = 128;
+  static REACH = 1.3;
+  static STARS = 1024;
+  static ORBITS = 3;
+  static PER_ORBIT = 100;
+  static CAP = 40000;
+  static CHUNK = 250;
+  static SIGMA = 10;
+  static FRAMES = 120;
+  static FILM = 4;
+  static GRID = 17;
+  static FINE = 9;
+  static PRIOR_Y = 0.1;
+  static STEP_Y = 0.05;
+  static STEP_D = 0.5;
+  static STEP_I = 0.5;
+  static THREAD = `  let i: u32 = P[7] + gid.y * 65536u + gid.x;`;
+  static ENTRY = `@compute @workgroup_size(64) fn`;
+  static ID = `(@builtin(global_invocation_id) gid: vec3<u32>) {`;
+  static FILM_STARS = 4096;
+  static FILM_TURNS = 0.5;
+  static SKY_EDGE = 4;
+  static BRIGHTEST = 0.995;
+  static SURVEY_NAMES = [`S4G 3.6um`, `Spitzer IRAC1 3.6um`, `unWISE W1 3.4um`];
+  static MYR = div(div(Sparc.KPC, Sparc.KMS), (mul(3.15576, Math.pow(10, 13))));
+  static SHAPE_H = 0.13;
+  static SHAPE_N = 200;
+  static SHAPE_EDGES = 120;
+  static MASSES = [6, 12, 25];
+  static SCALES = [(-0.6), 1.2, 10];
+  static GAS = [0, 0.3, 0.6, 0.9];
+  static GAS_WIDE = [1, 2, 3];
+  static BULGE = [0, 0.3];
+  static BULGE_A = 0.1;
+  static RADII = 24;
+  static BIN = 0.05;
+  static thickness_of(g: number): number {
+    let rd = elem(Sparc.sample.columns[`Rdisk`], g);
+    return (gt(rd, 0) ? Fmt.max(mul(0.196, Math.exp((mul(0.633, Math.log(rd))))), 0.02) : 0.2);
+  }
+  static kept(g: number, v: number, ev: number): boolean {
+    return (((Sparc.usable(g) && gt(v, 0)) && gt(ev, 0)) && le(ev, mul(0.1, v)));
+  }
+  static get law_wgsl(): string {
+    return [`fn boost(gN: f32, a0: f32) -> f32 {`, `  let n: u32 = arrayLength(&L) / 2u;`, `  let want: f32 = log(gN / a0);`, `  if (want <= L[0]) { return exp(L[n]) * a0; }`, `  if (want >= L[n - 1u]) { return exp(L[2u * n - 1u]) * a0; }`, `  var lo: u32 = 0u;`, `  var hi: u32 = n - 1u;`, `  loop {`, `    if (hi - lo <= 1u) { break; }`, `    let mid: u32 = (lo + hi) / 2u;`, `    if (L[mid] <= want) { lo = mid; } else { hi = mid; }`, `  }`, `  let t: f32 = (want - L[lo]) / (L[hi] - L[lo]);`, `  return exp(L[n + lo] + t * (L[n + hi] - L[n + lo])) * a0;`, `}`, `fn felt(gN: f32, a0: f32) -> f32 {`, `  if (gN > 0.0) { return boost(gN, a0); }`, `  if (gN < 0.0) { return -boost(-gN, a0); }`, `  return 0.0;`, `}`].join(`\n`);
+  }
+  static get pull_kernel(): string {
+    let pi = Shaded.literal(Math.PI);
+    return [`// GENERATED from Simulation.ray: PULL - an annulus summed element by element at a radius in its plane, per unit of G M`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> T: array<f32>;`, `@group(0) @binding(2) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} PULL${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let r: f32 = T[4u * i];`, `  let e0: f32 = T[4u * i + 1u];`, `  let e1: f32 = T[4u * i + 2u];`, `  let h: f32 = T[4u * i + 3u];`, `  var total: f32 = 0.0;`, `  var weight: f32 = 0.0;`, `  for (var s: u32 = 0u; s < P[1]; s = s + 1u) {`, `    let rs: f32 = e0 + (e1 - e0) * (f32(s) + 0.5) / f32(P[1]);`, `    var ring: f32 = 0.0;`, `    for (var p: u32 = 0u; p < P[2]; p = p + 1u) {`, `      let sh: f32 = sin(${pi} * (f32(p) + 0.5) / f32(P[2]) / 2.0);`, `      let bend: f32 = 2.0 * sh * sh;`, `      let d2: f32 = (r - rs) * (r - rs) + 2.0 * r * rs * bend + h * h;`, `      ring = ring + ((r - rs) + rs * bend) / (d2 * sqrt(d2));`, `    }`, `    total = total + rs * ring / f32(P[2]);`, `    weight = weight + rs;`, `  }`, `  if (weight > 0.0) { O[i] = total / weight; } else { O[i] = 0.0; }`, `}`].join(`\n`);
+  }
+  static get law_kernel(): string {
+    return [`// GENERATED from Simulation.ray: LAW - what is felt at every place of every galaxy`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> Q: array<f32>;`, `@group(0) @binding(3) var<storage, read> N: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> O: array<f32>;`, Simulation.law_wgsl, `${Simulation.ENTRY} LAW${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let slot: u32 = u32(Q[6u * i]);`, `  let gN: f32 = N[4u * slot] * Q[6u * i + 2u] + N[4u * slot + 1u] * Q[6u * i + 4u] + Q[6u * i + 3u];`, `  O[i] = felt(gN, N[4u * slot + 2u]);`, `}`].join(`\n`);
+  }
+  static get fit_kernel(): string {
+    let pi = Shaded.literal(Math.PI);
+    let ln10 = Shaded.literal(Math.log(10));
+    let lyd = Shaded.literal(Fmt.log10(Sparc.YD));
+    let lyb = Shaded.literal(Fmt.log10(Sparc.YB));
+    let py = Shaded.literal(Simulation.PRIOR_Y);
+    return [`// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> Q: array<f32>;`, `@group(0) @binding(3) var<storage, read> G: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> O: array<f32>;`, Simulation.law_wgsl, `${Simulation.ENTRY} FIT${Simulation.ID}`, Simulation.THREAD, `  let n: u32 = P[1];`, `  let C: u32 = n * n * n * n;`, `  if (i >= P[0] * C) { return; }`, `  let j: u32 = i / C;`, `  let c: u32 = i % C;`, `  let h: f32 = f32((n - 1u) / 2u);`, `  let b: u32 = 16u * j;`, `  let D: f32 = G[b + 2u];`, `  let eD: f32 = G[b + 3u];`, `  let inc: f32 = G[b + 4u];`, `  let einc: f32 = G[b + 5u];`, `  let a0: f32 = G[b + 6u];`, `  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];`, `  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];`, `  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;`, `  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;`, `  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }`, `  let YD: f32 = exp(ly * ${ln10});`, `  let YB: f32 = exp(lb * ${ln10});`, `  let f: f32 = Dp / D;`, `  let s: f32 = sin(inc * ${pi} / 180.0) / sin(ip * ${pi} / 180.0);`, `  var chi: f32 = 0.0;`, `  let start: u32 = u32(G[b]);`, `  let stop: u32 = start + u32(G[b + 1u]);`, `  for (var p: u32 = start; p < stop; p = p + 1u) {`, `    let q: u32 = 8u * p;`, `    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);`, `    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));`, `    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);`, `    chi = chi + d * d;`, `  }`, `  let py: f32 = (ly - ${lyd}) / ${py};`, `  let pb: f32 = G[b + 7u] * (lb - ${lyb}) / ${py};`, `  var pd: f32 = 0.0;`, `  if (eD > 0.0) { pd = (Dp - D) / eD; }`, `  var pi_: f32 = 0.0;`, `  if (einc > 0.0) { pi_ = (ip - inc) / einc; }`, `  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);`, `}`].join(`\n`);
+  }
+  static get best_kernel(): string {
+    return [`// GENERATED from Simulation.ray: BEST - each galaxy's best point of its grid`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> V: array<f32>;`, `@group(0) @binding(2) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} BEST${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  var best: f32 = -3e38;`, `  var pos: u32 = 0u;`, `  for (var c: u32 = 0u; c < P[1]; c = c + 1u) {`, `    let v: f32 = V[i * P[1] + c];`, `    if (v > best) { best = v; pos = c; }`, `  }`, `  O[2u * i] = f32(pos);`, `  O[2u * i + 1u] = best;`, `}`].join(`\n`);
+  }
+  static get stars_kernel(): string {
+    return [`// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> GT: array<f32>;`, `@group(0) @binding(3) var<storage, read> GI: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> S: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> F: array<f32>;`, Simulation.law_wgsl, `fn g_at(j: u32, r: f32) -> f32 {`, `  let rmax: f32 = GI[12u * j];`, `  let T: u32 = P[2];`, `  let base: u32 = j * T;`, `  let u: f32 = r / rmax * f32(T);`, `  if (u <= 1.0) { return GT[base] * u; }`, `  if (u >= f32(T)) {`, `    let q: f32 = rmax / r;`, `    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);`, `  }`, `  let t0: u32 = u32(floor(u)) - 1u;`, `  let fr: f32 = u - floor(u);`, `  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;`, `}`, `${Simulation.ENTRY} START${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let k: u32 = 10u * i;`, `  let r0: f32 = S[k];`, `  let phi: f32 = S[k + 1u];`, `  let sig: f32 = GI[12u * j + 9u];`, `  let g: f32 = g_at(j, r0);`, `  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];`, `  let vr: f32 = sig * S[k + 3u];`, `  let c: f32 = cos(phi);`, `  let s: f32 = sin(phi);`, `  S[k] = r0 * c;`, `  S[k + 1u] = r0 * s;`, `  S[k + 2u] = vr * c - vp * s;`, `  S[k + 3u] = vr * s + vp * c;`, `  S[k + 4u] = 0.0 - g * c;`, `  S[k + 5u] = 0.0 - g * s;`, `  S[k + 6u] = 0.0;`, `  S[k + 7u] = 0.0;`, `  S[k + 8u] = 0.0;`, `}`, `${Simulation.ENTRY} STEP${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let b: u32 = 12u * j;`, `  let dt: f32 = GI[b + 1u];`, `  let n: u32 = u32(GI[b + 2u]);`, `  let avg_from: u32 = u32(GI[b + 3u]);`, `  let film: f32 = GI[b + 4u];`, `  let every: u32 = max(u32(GI[b + 7u]), 1u);`, `  let ffrom: u32 = u32(GI[b + 8u]);`, `  let k: u32 = 10u * i;`, `  var x: f32 = S[k];`, `  var y: f32 = S[k + 1u];`, `  var vx: f32 = S[k + 2u];`, `  var vy: f32 = S[k + 3u];`, `  var ax: f32 = S[k + 4u];`, `  var ay: f32 = S[k + 5u];`, `  var sr: f32 = S[k + 6u];`, `  var sv: f32 = S[k + 7u];`, `  var sn: f32 = S[k + 8u];`, `  let stop: u32 = min(P[4], n);`, `  for (var t: u32 = P[3]; t < stop; t = t + 1u) {`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    x = x + vx * dt;`, `    y = y + vy * dt;`, `    let r: f32 = max(sqrt(x * x + y * y), 1e-6);`, `    let g: f32 = g_at(j, r);`, `    ax = 0.0 - g * x / r;`, `    ay = 0.0 - g * y / r;`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    if (t >= avg_from) {`, `      sr = sr + r;`, `      sv = sv + (x * vy - y * vx) / r;`, `      sn = sn + 1.0;`, `    }`, `    let kk: u32 = t + 1u;`, `    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {`, `      let fr: u32 = (kk - ffrom) / every - 1u;`, `      if (fr < P[5]) {`, `        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;`, `        F[o] = x;`, `        F[o + 1u] = y;`, `      }`, `    }`, `  }`, `  S[k] = x;`, `  S[k + 1u] = y;`, `  S[k + 2u] = vx;`, `  S[k + 3u] = vy;`, `  S[k + 4u] = ax;`, `  S[k + 5u] = ay;`, `  S[k + 6u] = sr;`, `  S[k + 7u] = sv;`, `  S[k + 8u] = sn;`, `}`].join(`\n`);
+  }
+  static get runnable(): number[] {
+    let C = Sparc.curves.columns;
+    let counts = ({});
+    for (let i = 0; i < Sparc.curves.rows; i++) {
+      let g = elem(C[`galaxy`], i);
+      if ((gt(elem(C[`R`], i), 0) && gt(elem(C[`Vobs`], i), 0))) {
+        counts[`${g}`] = add(((counts[`${g}`] ?? 0)), 1);
+      }
+    };
+    let out = [];
+    for (let g = 0; g < Sparc.names.length; g++) {
+      if (ge(((counts[`${g}`] ?? 0)), 3)) {
+        push(out, g);
+      }
+    };
+    return out;
+  }
+  static rows_of(g: number): any[] {
+    let C = Sparc.curves.columns;
+    let out = [];
+    for (let i = 0; i < Sparc.curves.rows; i++) {
+      if (((eq(elem(C[`galaxy`], i), g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0))) {
+        push(out, [elem(C[`R`], i), elem(C[`Vobs`], i), elem(C[`e_Vobs`], i), elem(C[`Vgas`], i), elem(C[`Vdisk`], i), elem(C[`Vbul`], i), (Simulation.kept(g, elem(C[`Vobs`], i), elem(C[`e_Vobs`], i)) ? 1 : 0)]);
+      }
+    };
+    return sorted_by(out, ((r: any) => {
+      return elem(r, 0);
+    }));
+  }
+  static edges_of(rs: any[]): number[] {
+    let n = rs.length;
+    let out = [0, div(elem(elem(rs, 0), 0), 2)];
+    for (let i = 0; i < sub(n, 1); i++) {
+      push(out, div((add(elem(elem(rs, i), 0), elem(elem(rs, add(i, 1)), 0))), 2));
+    };
+    push(out, add(elem(elem(rs, sub(n, 1)), 0), div((sub(elem(elem(rs, sub(n, 1)), 0), elem(elem(rs, sub(n, 2)), 0))), 2)));
+    return out;
+  }
+  static bulge_at(rs: any[], r: number): number {
+    let n = rs.length;
+    let inside = [];
+    let most = 0;
+    for (const row of [...rs]) {
+      most = Fmt.max(most, mul(mul(elem(row, 5), Math.abs(elem(row, 5))), elem(row, 0)));
+      push(inside, most);
+    };
+    if ((le(most, 0) || le(r, 0))) {
+      return 0;
+    }
+    if (le(r, elem(elem(rs, 0), 0))) {
+      return div(mul(elem(inside, 0), Math.pow((div(r, elem(elem(rs, 0), 0))), 3)), (mul(r, r)));
+    }
+    if (ge(r, elem(elem(rs, sub(n, 1)), 0))) {
+      return div(elem(inside, sub(n, 1)), (mul(r, r)));
+    }
+    let k = 0;
+    while (lt(elem(elem(rs, add(k, 1)), 0), r)) {
+      k = add(k, 1);
+    }
+    let f = div((sub(r, elem(elem(rs, k), 0))), (sub(elem(elem(rs, add(k, 1)), 0), elem(elem(rs, k), 0))));
+    return div((add(mul(elem(inside, k), (sub(1, f))), mul(elem(inside, add(k, 1)), f))), (mul(r, r)));
+  }
+  static linear(A: any[], bv: number[]): number[] {
+    let n = bv.length;
+    let M = range(n).map(((i: any) => {
+      return range(n).map(((j: any) => {
+        return elem(elem(A, i), j);
+      })).concat([elem(bv, i)]);
+    }));
+    for (let c = 0; c < n; c++) {
+      let p = c;
+      for (let k = 0; k < sub(n, c); k++) {
+        if (gt(Math.abs(elem(elem(M, add(c, k)), c)), Math.abs(elem(elem(M, p), c)))) {
+          p = add(c, k);
+        }
+      };
+      let swap = elem(M, c);
+      M[c] = elem(M, p);
+      M[p] = swap;
+      if (!eq(elem(elem(M, c), c), 0)) {
+        for (let k = 0; k < sub(sub(n, c), 1); k++) {
+          let r = add(add(c, 1), k);
+          let f = div(elem(elem(M, r), c), elem(elem(M, c), c));
+          for (let m = 0; m < sub(add(n, 1), c); m++) {
+            elem(M, r)[add(c, m)] = sub(elem(elem(M, r), add(c, m)), mul(f, elem(elem(M, c), add(c, m))));
+          };
+        };
+      }
+    };
+    let x = filled(n, 0);
+    for (let k = 0; k < n; k++) {
+      let r = sub(sub(n, 1), k);
+      let s = elem(elem(M, r), n);
+      for (let m = 0; m < sub(sub(n, r), 1); m++) {
+        s = sub(s, mul(elem(elem(M, r), add(add(r, 1), m)), elem(x, add(add(r, 1), m))));
+      };
+      x[r] = (!eq(elem(elem(M, r), r), 0) ? div(s, elem(elem(M, r), r)) : 0);
+    };
+    return x;
+  }
+  static nnls(K: any[], want: number[]): number[] {
+    let m = want.length;
+    let n = elem(K, 0).length;
+    let top = 0;
+    for (const t of [...want]) {
+      top = Fmt.max(top, Math.abs(t));
+    };
+    if (le(top, 0)) {
+      return filled(n, 0);
+    }
+    let wt = want.map(((t: any) => {
+      return div(1, Fmt.max(Math.abs(t), mul(0.02, top)));
+    }));
+    let A = range(n).map(((a: any) => {
+      return range(n).map(((b: any) => {
+        let s = 0;
+        for (let i = 0; i < m; i++) {
+          s = add(s, mul(mul(mul(elem(wt, i), elem(wt, i)), elem(elem(K, i), a)), elem(elem(K, i), b)));
+        };
+        return s;
+      }));
+    }));
+    let bv = range(n).map(((a: any) => {
+      let s = 0;
+      for (let i = 0; i < m; i++) {
+        s = add(s, mul(mul(mul(elem(wt, i), elem(wt, i)), elem(elem(K, i), a)), elem(want, i)));
+      };
+      return s;
+    }));
+    let w = filled(n, 0);
+    let held = filled(n, false);
+    let most = 0;
+    for (const v of [...bv]) {
+      most = Fmt.max(most, Math.abs(v));
+    };
+    let tol = mul(most, Math.pow(10, (sub(0, 12))));
+    let solved = ((hold: any[]) => {
+      let on = range(n).filter(((a: any) => {
+        return elem(hold, a);
+      }));
+      let got = Simulation.linear(on.map(((a: any) => {
+        return on.map(((b: any) => {
+          return elem(elem(A, a), b);
+        }));
+      })), on.map(((a: any) => {
+        return elem(bv, a);
+      })));
+      let z = filled(n, 0);
+      for (let k = 0; k < on.length; k++) {
+        z[elem(on, k)] = elem(got, k);
+      };
+      return z;
+    });
+    let rounds = 0;
+    let going = true;
+    while ((going && lt(rounds, mul(3, n)))) {
+      rounds = add(rounds, 1);
+      let grad = range(n).map(((a: any) => {
+        let s = elem(bv, a);
+        for (let b = 0; b < n; b++) {
+          s = sub(s, mul(elem(elem(A, a), b), elem(w, b)));
+        };
+        return s;
+      }));
+      let pick = (-1);
+      for (let a = 0; a < n; a++) {
+        if (((!(elem(held, a)) && gt(elem(grad, a), tol)) && ((lt(pick, 0) || gt(elem(grad, a), elem(grad, pick)))))) {
+          pick = a;
+        }
+      };
+      if (lt(pick, 0)) {
+        going = false;
+      } else {
+        held[pick] = true;
+        let inner = true;
+        while (inner) {
+          let z = solved(held);
+          if (range(n).every(((a: any) => {
+            return (!(elem(held, a)) || gt(elem(z, a), 0));
+          }))) {
+            w = z;
+            inner = false;
+          } else {
+            let step = 1;
+            for (let a = 0; a < n; a++) {
+              if ((elem(held, a) && le(elem(z, a), 0))) {
+                step = Fmt.min(step, div(elem(w, a), (sub(elem(w, a), elem(z, a)))));
+              }
+            };
+            for (let a = 0; a < n; a++) {
+              if (elem(held, a)) {
+                w[a] = add(elem(w, a), mul(step, (sub(elem(z, a), elem(w, a)))));
+              }
+            };
+            let wtop = 0;
+            for (const v of [...w]) {
+              wtop = Fmt.max(wtop, v);
+            };
+            for (let a = 0; a < n; a++) {
+              if ((elem(held, a) && le(elem(w, a), mul(wtop, Math.pow(10, (sub(0, 12))))))) {
+                held[a] = false;
+                w[a] = 0;
+              }
+            };
+            inner = range(n).some(((a: any) => {
+              return elem(held, a);
+            }));
+          }
+        }
+      }
+    }
+    return w;
+  }
+  get a0_si(): number { return this.read("a0_si", () => Galaxies.a0_at(this.deg)); }
+  set a0_si(v: number) { this.write("a0_si", v); }
+  get a0(): number { return this.read("a0", () => div(this.a0_si, Simulation.UNIT_G)); }
+  set a0(v: number) { this.write("a0", v); }
+  get ids(): number[] { return this.read("ids", () => Simulation.runnable); }
+  set ids(v: number[]) { this.write("ids", v); }
+  get rows(): any[] { return this.read("rows", () => this.ids.map(((g: any) => {
+    return Simulation.rows_of(g);
+  }))); }
+  set rows(v: any[]) { this.write("rows", v); }
+  get edges(): any[] { return this.read("edges", () => this.rows.map(((rs: any) => {
+    return Simulation.edges_of(rs);
+  }))); }
+  set edges(v: any[]) { this.write("edges", v); }
+  get thick(): number[] { return this.read("thick", () => this.ids.map(((g: any) => {
+    return Simulation.thickness_of(g);
+  }))); }
+  set thick(v: number[]) { this.write("thick", v); }
+  get reach(): number[] { return this.read("reach", () => this.rows.map(((rs: any) => {
+    return mul(Simulation.REACH, elem(elem(rs, sub(rs.length, 1)), 0));
+  }))); }
+  set reach(v: number[]) { this.write("reach", v); }
+  table_r(j: number, t: number): number {
+    return div(mul(elem(this.reach, j), add(t, 1)), Simulation.TABLE);
+  }
+  get measured_at(): number[] { return this.read("measured_at", () => []); }
+  set measured_at(v: number[]) { this.write("measured_at", v); }
+  get tabled_at(): number[] { return this.read("tabled_at", () => []); }
+  set tabled_at(v: number[]) { this.write("tabled_at", v); }
+  get tasks(): number[] {
+    let out = [];
+    this.measured_at = [];
+    this.tabled_at = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let rs = elem(this.rows, j);
+      let es = elem(this.edges, j);
+      let n = sub(es.length, 1);
+      push(this.measured_at, Math.floor((div(out.length, 4))));
+      for (const row of [...rs]) {
+        for (let a = 0; a < n; a++) {
+          push(out, elem(row, 0));
+          push(out, elem(es, a));
+          push(out, elem(es, add(a, 1)));
+          push(out, elem(this.thick, j));
+        };
+      };
+    };
+    for (let j = 0; j < this.ids.length; j++) {
+      let es = elem(this.edges, j);
+      let n = sub(es.length, 1);
+      push(this.tabled_at, Math.floor((div(out.length, 4))));
+      for (let t = 0; t < Simulation.TABLE; t++) {
+        for (let a = 0; a < n; a++) {
+          push(out, this.table_r(j, t));
+          push(out, elem(es, a));
+          push(out, elem(es, add(a, 1)));
+          push(out, elem(this.thick, j));
+        };
+      };
+    };
+    return out;
+  }
+  pull_cpu(tasks: number[], i: number): number {
+    return new Annulus({ inner: elem(tasks, add(mul(4, i), 1)), outer: elem(tasks, add(mul(4, i), 2)), thick: elem(tasks, add(mul(4, i), 3)) }).pull(elem(tasks, mul(4, i)), Simulation.NSUB, Simulation.NPHI);
+  }
+  get at_rows(): any[] { return this.read("at_rows", () => []); }
+  set at_rows(v: any[]) { this.write("at_rows", v); }
+  get tables(): any[] { return this.read("tables", () => []); }
+  set tables(v: any[]) { this.write("tables", v); }
+  get repro(): number[] { return this.read("repro", () => []); }
+  set repro(v: number[]) { this.write("repro", v); }
+  get w_discs(): any[] { return this.read("w_discs", () => []); }
+  set w_discs(v: any[]) { this.write("w_discs", v); }
+  get w_gases(): any[] { return this.read("w_gases", () => []); }
+  set w_gases(v: any[]) { this.write("w_gases", v); }
+  solve(pulls: number[]) {
+    this.w_discs = [];
+    this.w_gases = [];
+    this.at_rows = [];
+    this.tables = [];
+    this.repro = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let rs = elem(this.rows, j);
+      let m = rs.length;
+      let n = sub(elem(this.edges, j).length, 1);
+      let K = range(m).map(((i: any) => {
+        return range(n).map(((a: any) => {
+          return elem(pulls, add(add(elem(this.measured_at, j), mul(i, n)), a));
+        }));
+      }));
+      let want_gas = rs.map(((row: any) => {
+        return div(mul(elem(row, 3), Math.abs(elem(row, 3))), elem(row, 0));
+      }));
+      let want_disc = rs.map(((row: any) => {
+        return div(mul(elem(row, 4), Math.abs(elem(row, 4))), elem(row, 0));
+      }));
+      let w_gas = Simulation.nnls(K, want_gas);
+      let w_disc = Simulation.nnls(K, want_disc);
+      let sum_at = ((row_of: Program, w: number[]) => {
+        let s = 0;
+        for (let a = 0; a < n; a++) {
+          s = add(s, mul(row_of(a), elem(w, a)));
+        };
+        return s;
+      });
+      let here = [];
+      let worst = 0;
+      let top = 0;
+      for (let i = 0; i < m; i++) {
+        let gd = sum_at(((a: number) => {
+          return elem(elem(K, i), a);
+        }), w_disc);
+        let gg = sum_at(((a: number) => {
+          return elem(elem(K, i), a);
+        }), w_gas);
+        let gb = Simulation.bulge_at(rs, elem(elem(rs, i), 0));
+        push(here, [gd, gg, gb]);
+        let R = elem(elem(rs, i), 0);
+        let sp = ((v: number) => {
+          return mul(Math.sqrt(Math.abs(v)), ((lt(v, 0) ? (-1) : 1)));
+        });
+        worst = Fmt.max(worst, Fmt.max(Math.abs((sub(sp(mul(gd, R)), elem(elem(rs, i), 4)))), Math.abs((sub(sp(mul(gg, R)), elem(elem(rs, i), 3))))));
+        top = Fmt.max(top, Fmt.max(Math.abs(elem(elem(rs, i), 4)), Math.abs(elem(elem(rs, i), 3))));
+      };
+      push(this.at_rows, here);
+      push(this.w_discs, w_disc);
+      push(this.w_gases, w_gas);
+      push(this.repro, (gt(top, 0) ? div(worst, top) : 0));
+      let tab = [];
+      for (let t = 0; t < Simulation.TABLE; t++) {
+        let base = add(elem(this.tabled_at, j), mul(t, n));
+        let gd = sum_at(((a: number) => {
+          return elem(pulls, add(base, a));
+        }), w_disc);
+        let gg = sum_at(((a: number) => {
+          return elem(pulls, add(base, a));
+        }), w_gas);
+        push(tab, [this.table_r(j, t), gd, gg, Simulation.bulge_at(rs, this.table_r(j, t))]);
+      };
+      push(this.tables, tab);
+    };
+  }
+  get law_table(): number[] {
+    let A0 = Law.a0;
+    let xs_ = Law.law.columns[`gN`];
+    let ys_ = Law.law.columns[`g`];
+    let n = Law.law.rows;
+    return range(n).map(((i: any) => {
+      return Math.log((div(elem(xs_, i), A0)));
+    })).concat(range(n).map(((i: any) => {
+      return Math.log((div(elem(ys_, i), A0)));
+    })));
+  }
+  felt(gN: number): number {
+    return (gt(gN, 0) ? Law.boost(gN, this.a0) : ((lt(gN, 0) ? sub(0, Law.boost(sub(0, gN), this.a0)) : 0)));
+  }
+  get points(): number[] {
+    let out = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      for (let i = 0; i < elem(this.rows, j).length; i++) {
+        let p = elem(elem(this.at_rows, j), i);
+        for (const v of [...[j, elem(elem(elem(this.rows, j), i), 0), elem(p, 0), elem(p, 1), elem(p, 2), 0]]) {
+          push(out, v);
+        };
+      };
+    };
+    for (let j = 0; j < this.ids.length; j++) {
+      for (const t of [...elem(this.tables, j)]) {
+        for (const v of [...[j, elem(t, 0), elem(t, 1), elem(t, 2), elem(t, 3), 0]]) {
+          push(out, v);
+        };
+      };
+    };
+    return out;
+  }
+  nuisances(fitted: boolean): number[] {
+    let out = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      push(out, (fitted ? elem(this.best_y, j) : Sparc.YD));
+      push(out, (fitted ? elem(this.best_b, j) : Sparc.YB));
+      push(out, this.a0);
+      push(out, 0);
+    };
+    return out;
+  }
+  get best_y(): number[] { return this.read("best_y", () => []); }
+  set best_y(v: number[]) { this.write("best_y", v); }
+  get best_b(): number[] { return this.read("best_b", () => []); }
+  set best_b(v: number[]) { this.write("best_b", v); }
+  get best_d(): number[] { return this.read("best_d", () => []); }
+  set best_d(v: number[]) { this.write("best_d", v); }
+  get best_i(): number[] { return this.read("best_i", () => []); }
+  set best_i(v: number[]) { this.write("best_i", v); }
+  get fit_at(): number[] { return this.read("fit_at", () => []); }
+  set fit_at(v: number[]) { this.write("fit_at", v); }
+  get fit_points(): number[] {
+    let out = [];
+    this.fit_at = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      push(this.fit_at, Math.floor((div(out.length, 8))));
+      for (let i = 0; i < elem(this.rows, j).length; i++) {
+        let row = elem(elem(this.rows, j), i);
+        let p = elem(elem(this.at_rows, j), i);
+        if (gt(elem(row, 6), 0)) {
+          for (const v of [...[elem(row, 0), elem(row, 1), elem(row, 2), elem(p, 0), elem(p, 1), elem(p, 2), 0, 0]]) {
+            push(out, v);
+          };
+        }
+      };
+    };
+    return out;
+  }
+  has_bulge(j: number): boolean {
+    return elem(this.rows, j).some(((row: any) => {
+      return gt(Math.abs(elem(row, 5)), 0);
+    }));
+  }
+  get centre_y(): number[] { return this.read("centre_y", () => []); }
+  set centre_y(v: number[]) { this.write("centre_y", v); }
+  get centre_b(): number[] { return this.read("centre_b", () => []); }
+  set centre_b(v: number[]) { this.write("centre_b", v); }
+  get centre_d(): number[] { return this.read("centre_d", () => []); }
+  set centre_d(v: number[]) { this.write("centre_d", v); }
+  get centre_i(): number[] { return this.read("centre_i", () => []); }
+  set centre_i(v: number[]) { this.write("centre_i", v); }
+  get spacing(): number { return this.read("spacing", () => 1); }
+  set spacing(v: number) { this.write("spacing", v); }
+  get begin_fit() {
+    let S = Sparc.sample.columns;
+    this.centre_y = this.ids.map(((g: any) => {
+      return Fmt.log10(Sparc.YD);
+    }));
+    this.centre_b = this.ids.map(((g: any) => {
+      return Fmt.log10(Sparc.YB);
+    }));
+    this.centre_d = this.ids.map(((g: any) => {
+      return elem(S[`D`], g);
+    }));
+    this.centre_i = this.ids.map(((g: any) => {
+      return elem(S[`Inc`], g);
+    }));
+    this.spacing = 1;
+  }
+  get searches(): number[] {
+    let S = Sparc.sample.columns;
+    let pts = this.fit_points;
+    let out = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let g = elem(this.ids, j);
+      let stop = (lt(add(j, 1), this.ids.length) ? elem(this.fit_at, add(j, 1)) : Math.floor((div(pts.length, 8))));
+      for (const v of [...[elem(this.fit_at, j), sub(stop, elem(this.fit_at, j)), elem(S[`D`], g), elem(S[`e_D`], g), elem(S[`Inc`], g), elem(S[`e_Inc`], g), this.a0, (this.has_bulge(j) ? 1 : 0), elem(this.centre_y, j), elem(this.centre_b, j), elem(this.centre_d, j), elem(this.centre_i, j), mul(Simulation.STEP_Y, this.spacing), mul(Simulation.STEP_D, this.spacing), mul(Simulation.STEP_I, this.spacing), 0]]) {
+        push(out, v);
+      };
+    };
+    return out;
+  }
+  combo(j: number, c: number, n: number): number[] {
+    let S = Sparc.sample.columns;
+    let g = elem(this.ids, j);
+    let h = div((sub(n, 1)), 2);
+    let iy = mod(c, n);
+    let ib = mod(Math.floor((div(c, n))), n);
+    let id = mod(Math.floor((div(c, (mul(n, n))))), n);
+    let ii = Math.floor((div(c, (mul(mul(n, n), n)))));
+    return [add(elem(this.centre_y, j), mul(mul((sub(iy, h)), Simulation.STEP_Y), this.spacing)), add(elem(this.centre_b, j), mul(mul((sub(ib, h)), Simulation.STEP_Y), this.spacing)), add(elem(this.centre_d, j), mul(mul(mul((sub(id, h)), Simulation.STEP_D), this.spacing), elem(S[`e_D`], g))), add(elem(this.centre_i, j), mul(mul(mul((sub(ii, h)), Simulation.STEP_I), this.spacing), elem(S[`e_Inc`], g)))];
+  }
+  logpost(j: number, at: number[]): number {
+    let S = Sparc.sample.columns;
+    let g = elem(this.ids, j);
+    let D = elem(S[`D`], g);
+    let eD = elem(S[`e_D`], g);
+    let inc = elem(S[`Inc`], g);
+    let einc = elem(S[`e_Inc`], g);
+    if (((le(elem(at, 2), 0) || le(elem(at, 3), 0.5)) || gt(elem(at, 3), 90))) {
+      return mul((-1), Math.pow(10, 30));
+    }
+    let YD = Math.pow(10, elem(at, 0));
+    let YB = Math.pow(10, elem(at, 1));
+    let f = div(elem(at, 2), D);
+    let s = div(Math.sin((div(mul(inc, Math.PI), 180))), Math.sin((div(mul(elem(at, 3), Math.PI), 180))));
+    let chi = 0;
+    for (let i = 0; i < elem(this.rows, j).length; i++) {
+      let row = elem(elem(this.rows, j), i);
+      if (gt(elem(row, 6), 0)) {
+        let p = elem(elem(this.at_rows, j), i);
+        let vm = Math.sqrt(Fmt.max(mul(mul(f, elem(row, 0)), this.felt(add(add(mul(YD, elem(p, 0)), mul(YB, elem(p, 2))), elem(p, 1)))), 0));
+        let d = div((sub(mul(elem(row, 1), s), vm)), (mul(elem(row, 2), s)));
+        chi = add(chi, mul(d, d));
+      }
+    };
+    let py = div((sub(elem(at, 0), Fmt.log10(Sparc.YD))), Simulation.PRIOR_Y);
+    let pb = (this.has_bulge(j) ? div((sub(elem(at, 1), Fmt.log10(Sparc.YB))), Simulation.PRIOR_Y) : 0);
+    let pd = (gt(eD, 0) ? div((sub(elem(at, 2), D)), eD) : 0);
+    let pi = (gt(einc, 0) ? div((sub(elem(at, 3), inc)), einc) : 0);
+    return mul((-0.5), (add(add(add(add(chi, mul(py, py)), mul(pb, pb)), mul(pd, pd)), mul(pi, pi))));
+  }
+  settle_fit(best: number[], n: number, last: boolean) {
+    for (let j = 0; j < this.ids.length; j++) {
+      let at = this.combo(j, Math.round(elem(best, mul(2, j))), n);
+      this.centre_y[j] = elem(at, 0);
+      this.centre_b[j] = elem(at, 1);
+      this.centre_d[j] = elem(at, 2);
+      this.centre_i[j] = elem(at, 3);
+    };
+    this.spacing = div(this.spacing, 4);
+    if (last) {
+      this.best_y = this.centre_y.map(((v: any) => {
+        return Math.pow(10, v);
+      }));
+      this.best_b = this.centre_b.map(((v: any) => {
+        return Math.pow(10, v);
+      }));
+      this.best_d = this.centre_d.map(((v: any) => {
+        return v;
+      }));
+      this.best_i = this.centre_i.map(((v: any) => {
+        return v;
+      }));
+    }
+  }
+  get film_ids(): number[] { return this.read("film_ids", () => []); }
+  set film_ids(v: number[]) { this.write("film_ids", v); }
+  film(names: string[]) {
+    let all = Sparc.names;
+    let picked = ((names.length === 0) ? Galaxies.pick(Simulation.FILM) : names.map(((nm_: any) => {
+      return index_of(all, nm_);
+    })).filter(((g: any) => {
+      return !eq(g, null);
+    })));
+    this.film_ids = picked.filter(((g: any) => {
+      return contains(this.ids, g);
+    }));
+  }
+  get seeds(): number[] {
+    let rng = new Random({ seed: 7 });
+    let out = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let rs = elem(this.rows, j);
+      let r0 = elem(elem(rs, 0), 0);
+      let r1 = elem(elem(rs, sub(rs.length, 1)), 0);
+      for (let k = 0; k < Simulation.STARS; k++) {
+        let u = rng.next;
+        let phi = mul((2 * Math.PI), rng.next);
+        let mag = Math.sqrt((mul((-2), Math.log(Fmt.max(rng.next, 0.000001)))));
+        let th = mul((2 * Math.PI), rng.next);
+        for (const v of [...[add(r0, mul((sub(r1, r0)), u)), phi, mul(mag, Math.cos(th)), mul(mag, Math.sin(th)), 0, 0, 0, 0, 0, 0]]) {
+          push(out, v);
+        };
+      };
+    };
+    return out;
+  }
+  turn(felt_table: number[], j: number, r: number): number {
+    let t = Fmt.max(0, Fmt.min(sub(Simulation.TABLE, 1), sub(Math.round((mul(div(r, elem(this.reach, j)), Simulation.TABLE))), 1)));
+    let rt = this.table_r(j, t);
+    let v = Math.sqrt(Fmt.max(mul(rt, elem(felt_table, add(mul(j, Simulation.TABLE), t))), 0));
+    return (gt(v, 0) ? div(mul((2 * Math.PI), rt), v) : NaN);
+  }
+  get steps(): number[] { return this.read("steps", () => []); }
+  set steps(v: number[]) { this.write("steps", v); }
+  runs(felt_table: number[]): number[] {
+    let out = [];
+    this.steps = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let rs = elem(this.rows, j);
+      let inner = this.turn(felt_table, j, elem(elem(rs, 0), 0));
+      let outer = this.turn(felt_table, j, elem(elem(rs, sub(rs.length, 1)), 0));
+      let ok = ((Fmt.finite(inner) && Fmt.finite(outer)) && gt(inner, 0));
+      let total = (ok ? mul(Simulation.ORBITS, outer) : 0);
+      let n = (ok ? Fmt.min(Simulation.CAP, add(Math.floor((div(total, (div(inner, Simulation.PER_ORBIT))))), 1)) : 0);
+      let dt = (gt(n, 0) ? div(total, n) : 0);
+      let last = elem(elem(this.tables, j), sub(Simulation.TABLE, 1));
+      let edge = add(add(mul(Sparc.YD, elem(last, 1)), mul(Sparc.YB, elem(last, 3))), elem(last, 2));
+      push(this.steps, n);
+      for (const v of [...[elem(this.reach, j), dt, n, Math.floor((div(n, 2))), (-1), edge, this.a0, 1, 0, Simulation.SIGMA, 0, 0]]) {
+        push(out, v);
+      };
+    };
+    return out;
+  }
+  get most_steps(): number {
+    let m = 0;
+    for (const n of [...this.steps]) {
+      m = Fmt.max(m, n);
+    };
+    return m;
+  }
+  get film_sources(): string[] { return this.read("film_sources", () => []); }
+  set film_sources(v: string[]) { this.write("film_sources", v); }
+  get film_angles(): number[] { return this.read("film_angles", () => []); }
+  set film_angles(v: number[]) { this.write("film_angles", v); }
+  get film_steps(): number[] { return this.read("film_steps", () => []); }
+  set film_steps(v: number[]) { this.write("film_steps", v); }
+  get film_times(): number[] { return this.read("film_times", () => []); }
+  set film_times(v: number[]) { this.write("film_times", v); }
+  static get orientation(): (Measured | null) {
+    return Measured.of(`sparc-orientation`);
+  }
+  static get pixels(): (Measured | null) {
+    return Measured.of(`sparc-images`);
+  }
+  static get image_side(): number {
+    let I = Simulation.pixels;
+    return (eq(I, null) ? 0 : Math.round(Math.sqrt((div(I.rows, Sparc.names.length)))));
+  }
+  face_on(g: number, j: number): any[] {
+    let O = Simulation.orientation;
+    let I = Simulation.pixels;
+    if ((eq(O, null) || eq(I, null))) {
+      return [[], NaN, (-1)];
+    }
+    let which = elem(O.columns[`survey`], g);
+    if (lt(which, 0)) {
+      return [[], NaN, (-1)];
+    }
+    let P = Simulation.image_side;
+    let fov = elem(O.columns[`fov`], g);
+    let D = elem(Sparc.sample.columns[`D`], g);
+    let inc = div(mul(elem(Sparc.sample.columns[`Inc`], g), Math.PI), 180);
+    let per_pixel = mul(mul(div(mul(div(fov, P), Math.PI), 180), D), 1000);
+    let light = I.columns[`light`];
+    let base = mul(mul(g, P), P);
+    let edge = [];
+    for (let r = 0; r < P; r++) {
+      for (let c = 0; c < P; c++) {
+        if ((((lt(r, Simulation.SKY_EDGE) || lt(c, Simulation.SKY_EDGE)) || ge(r, sub(P, Simulation.SKY_EDGE))) || ge(c, sub(P, Simulation.SKY_EDGE)))) {
+          push(edge, elem(light, add(add(base, mul(r, P)), c)));
+        }
+      };
+    };
+    let sky = Fmt.median(edge);
+    let reach = elem(this.reach, j);
+    let east = ((c: number) => {
+      return sub(0, mul((sub(add(c, 0.5), div(P, 2))), per_pixel));
+    });
+    let north = ((r: number) => {
+      return mul((sub(add(r, 0.5), div(P, 2))), per_pixel);
+    });
+    let pa = elem(O.columns[`pa`], g);
+    if (!(Fmt.finite(pa))) {
+      let xx = 0;
+      let yy = 0;
+      let xy = 0;
+      for (let r = 0; r < P; r++) {
+        for (let c = 0; c < P; c++) {
+          let f = Fmt.max(sub(elem(light, add(add(base, mul(r, P)), c)), sky), 0);
+          let e = east(c);
+          let n = north(r);
+          if (le(Fmt.hypot(e, n), reach)) {
+            xx = add(xx, mul(mul(f, e), e));
+            yy = add(yy, mul(mul(f, n), n));
+            xy = add(xy, mul(mul(f, e), n));
+          }
+        };
+      };
+      pa = sub(90, div(mul(mul(0.5, Math.atan2((mul(2, xy)), sub(xx, yy))), 180), Math.PI));
+    }
+    let s = Math.sin((div(mul(pa, Math.PI), 180)));
+    let co = Math.cos((div(mul(pa, Math.PI), 180)));
+    let squash = Fmt.max(Math.cos(inc), 0.2);
+    let out = [];
+    for (let r = 0; r < P; r++) {
+      for (let c = 0; c < P; c++) {
+        let f = sub(elem(light, add(add(base, mul(r, P)), c)), sky);
+        let e = east(c);
+        let n = north(r);
+        let x = add(mul(e, s), mul(n, co));
+        let y = div((add(sub(0, mul(e, co)), mul(n, s))), squash);
+        if ((gt(f, 0) && le(Fmt.hypot(x, y), reach))) {
+          push(out, [x, y, f]);
+        }
+      };
+    };
+    return [out, pa, which];
+  }
+  get film_seeds(): number[] {
+    let rng = new Random({ seed: 11 });
+    let out = [];
+    this.film_sources = [];
+    this.film_angles = [];
+    let stir = ((unused: number) => {
+      let mag = Math.sqrt((mul((-2), Math.log(Fmt.max(rng.next, 0.000001)))));
+      let th = mul((2 * Math.PI), rng.next);
+      return [mul(mag, Math.cos(th)), mul(mag, Math.sin(th))];
+    });
+    for (const g of [...this.film_ids]) {
+      let j = index_of(this.ids, g);
+      let laid = this.face_on(g, j);
+      let pixels = elem(laid, 0);
+      if (gt(pixels.length, 0)) {
+        push(this.film_sources, elem(Simulation.SURVEY_NAMES, elem(laid, 2)));
+        push(this.film_angles, elem(laid, 1));
+        let fs = Expr.sorted(pixels.map(((p: any) => {
+          return elem(p, 2);
+        })));
+        let cap = elem(fs, Math.floor((mul((sub(fs.length, 1)), Simulation.BRIGHTEST))));
+        let run = [];
+        let total = 0;
+        for (const p of [...pixels]) {
+          total = add(total, Fmt.min(elem(p, 2), cap));
+          push(run, total);
+        };
+        let O = Simulation.orientation;
+        let width = mul(mul(div(mul(div(elem(O.columns[`fov`], g), Simulation.image_side), Math.PI), 180), elem(Sparc.sample.columns[`D`], g)), 1000);
+        for (let k = 0; k < Simulation.FILM_STARS; k++) {
+          let want = mul(rng.next, total);
+          let lo = 0;
+          let hi = sub(run.length, 1);
+          while (lt(lo, hi)) {
+            let mid = Math.floor((div((add(lo, hi)), 2)));
+            if (lt(elem(run, mid), want)) {
+              lo = add(mid, 1);
+            } else {
+              hi = mid;
+            }
+          }
+          let x = add(elem(elem(pixels, lo), 0), mul((sub(rng.next, 0.5)), width));
+          let y = add(elem(elem(pixels, lo), 1), mul((sub(rng.next, 0.5)), width));
+          let kick = stir(0);
+          for (const v of [...[Fmt.hypot(x, y), Math.atan2(y, x), elem(kick, 0), elem(kick, 1), 0, 0, 0, 0, 0, 0]]) {
+            push(out, v);
+          };
+        };
+      } else {
+        push(this.film_sources, `the run's own annuli`);
+        push(this.film_angles, NaN);
+        let es = elem(this.edges, j);
+        let rs = elem(this.rows, j);
+        let masses = [];
+        for (let a = 0; a < sub(es.length, 1); a++) {
+          push(masses, [elem(es, a), elem(es, add(a, 1)), add(mul(Sparc.YD, elem(elem(this.w_discs, j), a)), elem(elem(this.w_gases, j), a))]);
+        };
+        let last = 0;
+        for (let i = 0; i < rs.length; i++) {
+          let inside = mul(mul(mul(Sparc.YB, elem(elem(rs, i), 5)), Math.abs(elem(elem(rs, i), 5))), elem(elem(rs, i), 0));
+          if (gt(inside, last)) {
+            push(masses, [(eq(i, 0) ? 0 : elem(elem(rs, sub(i, 1)), 0)), elem(elem(rs, i), 0), sub(inside, last)]);
+            last = inside;
+          }
+        };
+        let run = [];
+        let total = 0;
+        for (const m of [...masses]) {
+          total = add(total, Fmt.max(elem(m, 2), 0));
+          push(run, total);
+        };
+        for (let k = 0; k < Simulation.FILM_STARS; k++) {
+          let want = mul(rng.next, total);
+          let a = 0;
+          while ((lt(a, sub(run.length, 1)) && lt(elem(run, a), want))) {
+            a = add(a, 1);
+          }
+          let e0 = elem(elem(masses, a), 0);
+          let e1 = elem(elem(masses, a), 1);
+          let r = Math.sqrt((add(mul(e0, e0), mul(rng.next, (sub(mul(e1, e1), mul(e0, e0)))))));
+          let kick = stir(0);
+          for (const v of [...[r, mul((2 * Math.PI), rng.next), elem(kick, 0), elem(kick, 1), 0, 0, 0, 0, 0, 0]]) {
+            push(out, v);
+          };
+        };
+      }
+    };
+    return out;
+  }
+  film_table(felt_table: number[]): number[] {
+    let out = [];
+    for (const g of [...this.film_ids]) {
+      let j = index_of(this.ids, g);
+      for (let t = 0; t < Simulation.TABLE; t++) {
+        push(out, elem(felt_table, add(mul(j, Simulation.TABLE), t)));
+      };
+    };
+    return out;
+  }
+  film_runs(felt_table: number[]): number[] {
+    let out = [];
+    this.film_steps = [];
+    this.film_times = [];
+    for (let k = 0; k < this.film_ids.length; k++) {
+      let j = index_of(this.ids, elem(this.film_ids, k));
+      let rs = elem(this.rows, j);
+      let inner = this.turn(felt_table, j, elem(elem(rs, 0), 0));
+      let outer = this.turn(felt_table, j, elem(elem(rs, sub(rs.length, 1)), 0));
+      let ok = ((Fmt.finite(inner) && Fmt.finite(outer)) && gt(inner, 0));
+      let total = (ok ? mul(Simulation.FILM_TURNS, outer) : 0);
+      let n = (ok ? Fmt.min(Simulation.CAP, add(Math.floor((div(total, (div(inner, Simulation.PER_ORBIT))))), 1)) : 0);
+      let dt = (gt(n, 0) ? div(total, n) : 0);
+      let every = Fmt.max(1, Math.floor((div(n, Simulation.FRAMES))));
+      let last = elem(elem(this.tables, j), sub(Simulation.TABLE, 1));
+      let edge = add(add(mul(Sparc.YD, elem(last, 1)), mul(Sparc.YB, elem(last, 3))), elem(last, 2));
+      push(this.film_steps, mul(every, Simulation.FRAMES));
+      push(this.film_times, mul(mul(mul(dt, every), Simulation.FRAMES), Simulation.MYR));
+      for (const v of [...[elem(this.reach, j), dt, mul(every, Simulation.FRAMES), mul(every, Simulation.FRAMES), k, edge, this.a0, every, 0, Simulation.SIGMA, 0, 0]]) {
+        push(out, v);
+      };
+    };
+    return out;
+  }
+  get most_film_steps(): number {
+    let m = 0;
+    for (const n of [...this.film_steps]) {
+      m = Fmt.max(m, n);
+    };
+    return m;
+  }
+  save(felt0: number[], felt1: number[], stars: number[], frames: number[]) {
+    let S = Sparc.sample.columns;
+    let T = Simulation.TABLE;
+    let nrows = 0;
+    for (const rs of [...this.rows]) {
+      nrows = add(nrows, rs.length);
+    };
+    let cols = ({});
+    let names = [`galaxy`, `R`, `Vobs`, `e_Vobs`, `gd`, `gg`, `gb`, `v0`, `v1`, `vs`, `kept`];
+    for (const nm_ of [...names]) {
+      cols[nm_] = [];
+    };
+    let rms0 = [];
+    let rms1 = [];
+    let k = 0;
+    for (let j = 0; j < this.ids.length; j++) {
+      let g = elem(this.ids, j);
+      let rs = elem(this.rows, j);
+      let es = elem(this.edges, j);
+      let f = div(elem(this.best_d, j), elem(S[`D`], g));
+      let s = div(Math.sin((div(mul(elem(S[`Inc`], g), Math.PI), 180))), Math.sin((div(mul(elem(this.best_i, j), Math.PI), 180))));
+      let heap = range(rs.length).map(((i: any) => {
+        return [];
+      }));
+      for (let q = 0; q < Simulation.STARS; q++) {
+        let at = mul((add(mul(j, Simulation.STARS), q)), 10);
+        if (gt(elem(stars, add(at, 8)), 0)) {
+          let r = div(elem(stars, add(at, 6)), elem(stars, add(at, 8)));
+          let v = div(elem(stars, add(at, 7)), elem(stars, add(at, 8)));
+          let b = 0;
+          while ((lt(b, rs.length) && lt(elem(es, add(b, 2)), r))) {
+            b = add(b, 1);
+          }
+          if (lt(b, rs.length)) {
+            push(elem(heap, b), v);
+          }
+        }
+      };
+      let o0 = [];
+      let o1 = [];
+      for (let i = 0; i < rs.length; i++) {
+        let row = elem(rs, i);
+        let p = elem(elem(this.at_rows, j), i);
+        let v0 = Math.sqrt(Fmt.max(mul(elem(row, 0), elem(felt0, k)), 0));
+        let v1 = div(Math.sqrt(Fmt.max(mul(mul(f, elem(row, 0)), elem(felt1, k)), 0)), s);
+        let vs = ((elem(heap, i).length === 0) ? NaN : Fmt.median(elem(heap, i)));
+        let vals = [g, elem(row, 0), elem(row, 1), elem(row, 2), elem(p, 0), elem(p, 1), elem(p, 2), v0, v1, vs, elem(row, 6)];
+        for (let c = 0; c < names.length; c++) {
+          push(elem(cols, elem(names, c)), elem(vals, c));
+        };
+        if (((gt(elem(row, 6), 0) && gt(v0, 0)) && gt(v1, 0))) {
+          push(o0, Fmt.log10(div(v0, elem(row, 1))));
+          push(o1, Fmt.log10(div(v1, elem(row, 1))));
+        }
+        k = add(k, 1);
+      };
+      push(rms0, Simulation.rms(o0));
+      push(rms1, Simulation.rms(o1));
+    };
+    let extra = ({});
+    extra[`deg`] = this.deg;
+    extra[`a0`] = this.a0_si;
+    extra[`unit`] = Simulation.UNIT_G;
+    extra[`ids`] = this.ids;
+    extra[`names`] = this.ids.map(((g: any) => {
+      return elem(Sparc.names, g);
+    }));
+    extra[`Y_disk`] = this.best_y;
+    extra[`Y_bulge`] = this.best_b;
+    extra[`D`] = this.best_d;
+    extra[`Inc`] = this.best_i;
+    extra[`rms0`] = rms0;
+    extra[`rms1`] = rms1;
+    extra[`repro`] = this.repro;
+    extra[`stir`] = Simulation.SIGMA;
+    extra[`about`] = `every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex`;
+    Measure.save(`galaxy.simulated`, names, cols, extra);
+    let fields = ({});
+    let fnames = [`galaxy`, `r`, `gd`, `gg`, `gb`, `v0`, `v1`, `vN`];
+    for (const nm_ of [...fnames]) {
+      fields[nm_] = [];
+    };
+    for (let j = 0; j < this.ids.length; j++) {
+      let g = elem(this.ids, j);
+      let f = div(elem(this.best_d, j), elem(S[`D`], g));
+      let s = div(Math.sin((div(mul(elem(S[`Inc`], g), Math.PI), 180))), Math.sin((div(mul(elem(this.best_i, j), Math.PI), 180))));
+      for (let t = 0; t < T; t++) {
+        let row = elem(elem(this.tables, j), t);
+        let gN = add(add(mul(Sparc.YD, elem(row, 1)), mul(Sparc.YB, elem(row, 3))), elem(row, 2));
+        let v0 = Math.sqrt(Fmt.max(mul(elem(row, 0), elem(felt0, add(k, t))), 0));
+        let v1 = div(Math.sqrt(Fmt.max(mul(mul(f, elem(row, 0)), elem(felt1, add(k, t))), 0)), s);
+        let vals = [g, elem(row, 0), elem(row, 1), elem(row, 2), elem(row, 3), v0, v1, Math.sqrt(Fmt.max(mul(elem(row, 0), gN), 0))];
+        for (let c = 0; c < fnames.length; c++) {
+          push(elem(fields, elem(fnames, c)), elem(vals, c));
+        };
+      };
+      k = add(k, T);
+    };
+    let fextra = ({});
+    fextra[`ids`] = this.ids;
+    fextra[`table`] = T;
+    fextra[`about`] = `the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)`;
+    Measure.save(`galaxy.fields`, fnames, fields, fextra);
+    if (!((this.film_ids.length === 0))) {
+      let film = ({});
+      film[`x`] = [];
+      film[`y`] = [];
+      for (let i = 0; i < Math.floor((div(frames.length, 2))); i++) {
+        push(film[`x`], elem(frames, mul(2, i)));
+        push(film[`y`], elem(frames, add(mul(2, i), 1)));
+      };
+      let sextra = ({});
+      sextra[`film`] = this.film_ids;
+      sextra[`names`] = this.film_ids.map(((g: any) => {
+        return elem(Sparc.names, g);
+      }));
+      sextra[`stars`] = Simulation.FILM_STARS;
+      sextra[`frames`] = Simulation.FRAMES;
+      sextra[`reach`] = this.film_ids.map(((g: any) => {
+        return elem(this.reach, index_of(this.ids, g));
+      }));
+      sextra[`source`] = this.film_sources;
+      sextra[`pa`] = this.film_angles;
+      sextra[`span`] = this.film_times;
+      sextra[`about`] = `the filmed galaxies face on, their stars laid where the light is (or the laid mass, where there is no image): x and y in kpc, star after star, frame after frame, from the moment the picture was taken, over FILM_TURNS of the outermost radius; span in Myr`;
+      return Measure.save(`galaxy.stars`, [`x`, `y`], film, sextra);
+    }
+  }
+  static rms(xs_: number[]): number {
+    if ((xs_.length === 0)) {
+      return NaN;
+    }
+    let s = 0;
+    for (const v of [...xs_]) {
+      s = add(s, mul(v, v));
+    };
+    return Math.sqrt((div(s, xs_.length)));
+  }
+  static shape_x(i: number): number {
+    return Math.pow(10, (add((-2), div(mul(3.6, i), sub(Simulation.SHAPE_N, 1)))));
+  }
+  static shape_edge(a: number): number {
+    return div(mul(15, a), Simulation.SHAPE_EDGES);
+  }
+  static shape_mass(a: number): number {
+    let e0 = Simulation.shape_edge(a);
+    let e1 = Simulation.shape_edge(add(a, 1));
+    return sub(mul((add(1, e0)), Math.exp((sub(0, e0)))), mul((add(1, e1)), Math.exp((sub(0, e1)))));
+  }
+  static get shape_tasks(): number[] {
+    let out = [];
+    for (let i = 0; i < Simulation.SHAPE_N; i++) {
+      for (let a = 0; a < Simulation.SHAPE_EDGES; a++) {
+        for (const v of [...[Simulation.shape_x(i), Simulation.shape_edge(a), Simulation.shape_edge(add(a, 1)), Simulation.SHAPE_H]]) {
+          push(out, v);
+        };
+      };
+    };
+    return out;
+  }
+  static shape_of(pulls: number[]): number[] {
+    return range(Simulation.SHAPE_N).map(((i: any) => {
+      let s = 0;
+      for (let a = 0; a < Simulation.SHAPE_EDGES; a++) {
+        s = add(s, mul(Simulation.shape_mass(a), elem(pulls, add(mul(i, Simulation.SHAPE_EDGES), a))));
+      };
+      return s;
+    }));
+  }
+  static shape_at(shape: number[], x: number): number {
+    let lx = Fmt.log10(x);
+    let u = mul(div((add(lx, 2)), 3.6), sub(Simulation.SHAPE_N, 1));
+    if (le(u, 0)) {
+      return div(mul(elem(shape, 0), x), Simulation.shape_x(0));
+    }
+    if (ge(u, sub(Simulation.SHAPE_N, 1))) {
+      return mul(elem(shape, sub(Simulation.SHAPE_N, 1)), Math.pow((div(Simulation.shape_x(sub(Simulation.SHAPE_N, 1)), x)), 2));
+    }
+    let i = Math.floor(u);
+    let f = sub(u, i);
+    return add(mul(elem(shape, i), (sub(1, f))), mul(elem(shape, add(i, 1)), f));
+  }
+  static axis(a: number[], i: number): number {
+    return add(elem(a, 0), div(mul((sub(elem(a, 1), elem(a, 0))), i), sub(elem(a, 2), 1)));
+  }
+  static possible_points(shape: number[]): number[] {
+    let out = [];
+    for (let which_m = 0; which_m < elem(Simulation.MASSES, 2); which_m++) {
+      let M = Math.pow(10, Simulation.axis(Simulation.MASSES, which_m));
+      for (let which_s = 0; which_s < elem(Simulation.SCALES, 2); which_s++) {
+        let rd = Math.pow(10, Simulation.axis(Simulation.SCALES, which_s));
+        for (const fg of [...Simulation.GAS]) {
+          for (const wide of [...Simulation.GAS_WIDE]) {
+            for (const fb of [...Simulation.BULGE]) {
+              let GM = mul(Simulation.G_KPC, M);
+              let disc = mul(mul(GM, (sub(1, fg))), (sub(1, fb)));
+              let gas = mul(GM, fg);
+              let bul = mul(mul(GM, (sub(1, fg))), fb);
+              let rg = mul(rd, wide);
+              for (let k = 0; k < Simulation.RADII; k++) {
+                let r = mul(rd, Math.pow(10, (add((-0.7), div(mul(1.6, k), sub(Simulation.RADII, 1))))));
+                let gN = add(add(mul(div(disc, (mul(rd, rd))), Simulation.shape_at(shape, div(r, rd))), mul(div(gas, (mul(rg, rg))), Simulation.shape_at(shape, div(r, rg)))), div(bul, (Math.pow((add(r, mul(Simulation.BULGE_A, rd))), 2))));
+                for (const v of [...[0, r, gN, 0, 0, 0]]) {
+                  push(out, v);
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+    return out;
+  }
+  static binned(points: number[], felt: number[]): number[][] {
+    let n = add(Math.round((div((sub(Galaxies.XMAX, Galaxies.XMIN)), Simulation.BIN))), 1);
+    let landed = filled(n, 0);
+    let heights = filled(n, 0);
+    let lo = filled(n, NaN);
+    let hi = filled(n, NaN);
+    for (let i = 0; i < felt.length; i++) {
+      let gN = elem(points, add(mul(6, i), 2));
+      let g = elem(felt, i);
+      if ((gt(gN, 0) && gt(g, 0))) {
+        let x = Fmt.log10(div(mul(gN, Simulation.UNIT_G), Galaxies.A0_DATA));
+        let y = Fmt.log10(div(mul(g, Simulation.UNIT_G), Galaxies.A0_DATA));
+        let b = Math.round((div((sub(x, Galaxies.XMIN)), Simulation.BIN)));
+        if ((ge(b, 0) && lt(b, n))) {
+          landed[b] = add(elem(landed, b), 1);
+          heights[b] = add(elem(heights, b), y);
+          lo[b] = (Fmt.finite(elem(lo, b)) ? Fmt.min(elem(lo, b), y) : y);
+          hi[b] = (Fmt.finite(elem(hi, b)) ? Fmt.max(elem(hi, b), y) : y);
+        }
+      }
+    };
+    return [landed, range(n).map(((b: any) => {
+      return (gt(elem(landed, b), 0) ? div(elem(heights, b), elem(landed, b)) : NaN);
+    })), lo, hi];
+  }
+  static save_possible(degs: number[], a0s: number[], bins: any[]) {
+    let cols = ({});
+    cols[`deg`] = degs;
+    cols[`a0`] = a0s;
+    let extra = ({});
+    extra[`bins`] = bins;
+    extra[`from`] = Galaxies.XMIN;
+    extra[`step`] = Simulation.BIN;
+    extra[`axes`] = [`log M (Msun)`, Simulation.MASSES, `log R_d (kpc)`, Simulation.SCALES, `gas share`, Simulation.GAS, `gas scale / R_d`, Simulation.GAS_WIDE, `bulge share of the stars`, Simulation.BULGE];
+    extra[`about`] = `every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest`;
+    return Measure.save(`galaxy.possible`, [`deg`, `a0`], cols, extra);
+  }
+}
+
+export class Formed extends Node {
+  get deg(): number { return this.read("deg"); }
+  set deg(v: number) { this.write("deg", v); }
+  static N = 16384;
+  static TILE = 256;
+  static Q = 1.2;
+  static STEPS = 3000;
+  static DT = 0.001;
+  static FRAMES = 120;
+  static GRID = 128;
+  static TRUNC = 5;
+  static SPAN = 6;
+  static RINGS = 48;
+  static DISCS = [[10.7, 3], [9.3, 2]];
+  static WHAT = [`a bright disc`, `a dwarf`];
+  get a0(): number { return this.read("a0", () => div(Galaxies.a0_at(this.deg), Simulation.UNIT_G)); }
+  set a0(v: number) { this.write("a0", v); }
+  get newton(): boolean { return this.read("newton", () => false); }
+  set newton(v: boolean) { this.write("newton", v); }
+  get scale_a0(): number {
+    return (this.newton ? 0 : this.a0);
+  }
+  get discs_n(): number {
+    return Formed.DISCS.length;
+  }
+  GM(g: number): number {
+    return mul(Simulation.G_KPC, Math.pow(10, elem(elem(Formed.DISCS, g), 0)));
+  }
+  scale(g: number): number {
+    return elem(elem(Formed.DISCS, g), 1);
+  }
+  soft(g: number): number {
+    return mul(Simulation.SHAPE_H, this.scale(g));
+  }
+  static inside(x: number): number {
+    return sub(1, mul((add(1, x)), Math.exp((sub(0, x)))));
+  }
+  get seeds(): number[] {
+    let rng = new Random({ seed: 23 });
+    let out = [];
+    for (let g = 0; g < this.discs_n; g++) {
+      let rd = this.scale(g);
+      let top = Formed.inside(Formed.TRUNC);
+      for (let k = 0; k < Formed.N; k++) {
+        let want = mul(rng.next, top);
+        let lo = 0;
+        let hi = Formed.TRUNC;
+        for (let it = 0; it < 40; it++) {
+          let mid = div((add(lo, hi)), 2);
+          if (lt(Formed.inside(mid), want)) {
+            lo = mid;
+          } else {
+            hi = mid;
+          }
+        };
+        let r = mul(div((add(lo, hi)), 2), rd);
+        let th = mul((2 * Math.PI), rng.next);
+        for (const v of [...[mul(r, Math.cos(th)), mul(r, Math.sin(th)), 0, 0]]) {
+          push(out, v);
+        };
+      };
+    };
+    return out;
+  }
+  get constants(): number[] {
+    let out = [];
+    for (let g = 0; g < this.discs_n; g++) {
+      for (const v of [...[div(this.GM(g), Formed.N), this.soft(g), this.scale_a0, Formed.DT]]) {
+        push(out, v);
+      };
+    };
+    return out;
+  }
+  accel_cpu(state: number[], i: number): number[] {
+    let g = Math.floor((div(i, Formed.N)));
+    let e2 = mul(this.soft(g), this.soft(g));
+    let px = elem(state, mul(4, i));
+    let py = elem(state, add(mul(4, i), 1));
+    let sx = 0;
+    let sy = 0;
+    for (let k = 0; k < Formed.N; k++) {
+      let j = add(mul(g, Formed.N), k);
+      let dx = sub(elem(state, mul(4, j)), px);
+      let dy = sub(elem(state, add(mul(4, j), 1)), py);
+      let r2 = add(add(mul(dx, dx), mul(dy, dy)), e2);
+      let w = div(1, (mul(r2, Math.sqrt(r2))));
+      sx = add(sx, mul(dx, w));
+      sy = add(sy, mul(dy, w));
+    };
+    let m = div(this.GM(g), Formed.N);
+    let gx = mul(m, sx);
+    let gy = mul(m, sy);
+    let mag = Fmt.hypot(gx, gy);
+    let f = (gt(mag, 0) ? ((this.newton ? mag : Law.boost(mag, this.a0))) : 0);
+    return (gt(mag, 0) ? [mul(div(gx, mag), f), mul(div(gy, mag), f), mag, f] : [0, 0, 0, 0]);
+  }
+  launch(state: number[], acc: number[]): number[] {
+    let rng = new Random({ seed: 29 });
+    let out = state.map(((v: any) => {
+      return v;
+    }));
+    for (let g = 0; g < this.discs_n; g++) {
+      let rd = this.scale(g);
+      let width = div(mul(Formed.TRUNC, rd), Formed.RINGS);
+      let pull = filled(Formed.RINGS, 0);
+      let lift = filled(Formed.RINGS, 0);
+      let many = filled(Formed.RINGS, 0);
+      for (let k = 0; k < Formed.N; k++) {
+        let i = add(mul(g, Formed.N), k);
+        let x = elem(state, mul(4, i));
+        let y = elem(state, add(mul(4, i), 1));
+        let r = Fmt.hypot(x, y);
+        let b = Math.floor((div(r, width)));
+        if ((lt(b, Formed.RINGS) && gt(r, 0))) {
+          pull[b] = add(elem(pull, b), div((sub(sub(0, mul(elem(acc, mul(4, i)), x)), mul(elem(acc, add(mul(4, i), 1)), y))), r));
+          lift[b] = add(elem(lift, b), ((gt(elem(acc, add(mul(4, i), 2)), 0) ? div(elem(acc, add(mul(4, i), 3)), elem(acc, add(mul(4, i), 2))) : 1)));
+          many[b] = add(elem(many, b), 1);
+        }
+      };
+      let ring_r = ((b: number) => {
+        return mul((add(b, 0.5)), width);
+      });
+      let omega2 = range(Formed.RINGS).map(((b: any) => {
+        return (gt(elem(many, b), 0) ? div(Fmt.max(div(elem(pull, b), elem(many, b)), 0), ring_r(b)) : 0);
+      }));
+      let nu = range(Formed.RINGS).map(((b: any) => {
+        return (gt(elem(many, b), 0) ? div(elem(lift, b), elem(many, b)) : 1);
+      }));
+      let kappa2 = range(Formed.RINGS).map(((b: any) => {
+        let lo = Fmt.max(sub(b, 1), 0);
+        let hi = Fmt.min(add(b, 1), sub(Formed.RINGS, 1));
+        let slope = div((sub(elem(omega2, hi), elem(omega2, lo))), (sub(ring_r(hi), ring_r(lo))));
+        return Fmt.max(add(mul(ring_r(b), slope), mul(4, elem(omega2, b))), mul(0.25, elem(omega2, b)));
+      }));
+      let sigma_gm = div(this.GM(g), (mul(mul(mul(mul(2, Math.PI), rd), rd), Formed.inside(Formed.TRUNC))));
+      for (let k = 0; k < Formed.N; k++) {
+        let i = add(mul(g, Formed.N), k);
+        let x = elem(state, mul(4, i));
+        let y = elem(state, add(mul(4, i), 1));
+        let r = Fmt.hypot(x, y);
+        let b = Fmt.min(Math.floor((div(r, width))), sub(Formed.RINGS, 1));
+        let o2 = elem(omega2, b);
+        let k2 = elem(kappa2, b);
+        let surface = mul(sigma_gm, Math.exp((sub(0, div(r, rd)))));
+        let sr = (gt(k2, 0) ? div(mul(mul(mul(Formed.Q, 3.36), elem(nu, b)), surface), Math.sqrt(k2)) : 0);
+        let sp = (gt(o2, 0) ? div(mul(sr, Math.sqrt(k2)), (mul(2, Math.sqrt(o2)))) : 0);
+        let vc2 = mul(mul(o2, r), r);
+        let vphi = Math.sqrt(Fmt.max(add(vc2, mul(mul(sr, sr), (sub(sub(1, ((gt(o2, 0) ? div(k2, (mul(4, o2))) : 1))), div(mul(2, r), rd))))), 0));
+        let mag = Math.sqrt((mul((-2), Math.log(Fmt.max(rng.next, 0.000001)))));
+        let th = mul((2 * Math.PI), rng.next);
+        let vr = mul(mul(sr, mag), Math.cos(th));
+        let vt = add(vphi, mul(mul(sp, mag), Math.sin(th)));
+        let ux = (gt(r, 0) ? div(x, r) : 1);
+        let uy = (gt(r, 0) ? div(y, r) : 0);
+        out[add(mul(4, i), 2)] = sub(mul(vr, ux), mul(vt, uy));
+        out[add(mul(4, i), 3)] = add(mul(vr, uy), mul(vt, ux));
+      };
+      for (let slot = 0; slot < 4; slot++) {
+        let mean = 0;
+        for (let k = 0; k < Formed.N; k++) {
+          mean = add(mean, elem(out, add(mul(4, (add(mul(g, Formed.N), k))), slot)));
+        };
+        mean = div(mean, Formed.N);
+        for (let k = 0; k < Formed.N; k++) {
+          out[add(mul(4, (add(mul(g, Formed.N), k))), slot)] = sub(elem(out, add(mul(4, (add(mul(g, Formed.N), k))), slot)), mean);
+        };
+      };
+    };
+    return out;
+  }
+  get middles(): any[] { return this.read("middles", () => []); }
+  set middles(v: any[]) { this.write("middles", v); }
+  binned(state: number[]): number[] {
+    let G = Formed.GRID;
+    let out = filled(mul(mul(this.discs_n, G), G), 0);
+    let here = [];
+    for (let g = 0; g < this.discs_n; g++) {
+      let half = mul(Formed.SPAN, this.scale(g));
+      let mid = [0, 0, 0, 0];
+      for (let k = 0; k < Formed.N; k++) {
+        for (let slot = 0; slot < 4; slot++) {
+          mid[slot] = add(elem(mid, slot), div(elem(state, add(mul(4, (add(mul(g, Formed.N), k))), slot)), Formed.N));
+        };
+      };
+      push(here, mid);
+      for (let k = 0; k < Formed.N; k++) {
+        let i = add(mul(g, Formed.N), k);
+        let cx = Math.floor((mul(div((add(sub(elem(state, mul(4, i)), elem(mid, 0)), half)), (mul(2, half))), G)));
+        let cy = Math.floor((mul(div((add(sub(elem(state, add(mul(4, i), 1)), elem(mid, 1)), half)), (mul(2, half))), G)));
+        if ((((ge(cx, 0) && ge(cy, 0)) && lt(cx, G)) && lt(cy, G))) {
+          let at = add(add(mul(mul(g, G), G), mul(cy, G)), cx);
+          out[at] = add(elem(out, at), 1);
+        }
+      };
+    };
+    push(this.middles, here);
+    return out;
+  }
+  save(frames: any[]) {
+    let G = Formed.GRID;
+    let density = [];
+    for (let g = 0; g < this.discs_n; g++) {
+      for (const f of [...frames]) {
+        for (let c = 0; c < mul(G, G); c++) {
+          push(density, elem(f, add(mul(mul(g, G), G), c)));
+        };
+      };
+    };
+    let cols = ({});
+    cols[`density`] = density;
+    let extra = ({});
+    extra[`names`] = Formed.WHAT;
+    extra[`mass`] = Formed.DISCS.map(((d: any) => {
+      return Math.pow(10, elem(d, 0));
+    }));
+    extra[`scale`] = Formed.DISCS.map(((d: any) => {
+      return elem(d, 1);
+    }));
+    extra[`span`] = Formed.DISCS.map(((d: any) => {
+      return mul(Formed.SPAN, elem(d, 1));
+    }));
+    extra[`stars`] = Formed.N;
+    extra[`Q`] = Formed.Q;
+    extra[`frames`] = frames.length;
+    extra[`grid`] = G;
+    extra[`gyr`] = div(mul(mul(Formed.STEPS, Formed.DT), Simulation.MYR), 1000);
+    extra[`middles`] = this.middles;
+    extra[`deg`] = this.deg;
+    extra[`a0`] = mul(this.a0, Simulation.UNIT_G);
+    extra[`about`] = `discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy`;
+    return Measure.save(`galaxy.formed`, [`density`], cols, extra);
+  }
+  static get kernel(): string {
+    return [`// GENERATED from Formed.ray: stars that pull each other through the law`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> C: array<f32>;`, `@group(0) @binding(3) var<storage, read_write> X: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> A: array<f32>;`, `var<workgroup> tile: array<vec2<f32>, ${Formed.TILE}>;`, Simulation.law_wgsl, `@compute @workgroup_size(${Formed.TILE}) fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {`, `  let i: u32 = P[7] + gid.x;`, `  let per: u32 = P[1];`, `  let g: u32 = i / per;`, `  let base: u32 = g * per;`, `  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);`, `  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];`, `  var s: vec2<f32> = vec2<f32>(0.0, 0.0);`, `  for (var t: u32 = 0u; t < per; t = t + ${Formed.TILE}u) {`, `    let j: u32 = base + t + lid.x;`, `    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);`, `    workgroupBarrier();`, `    for (var k: u32 = 0u; k < ${Formed.TILE}u; k = k + 1u) {`, `      let d: vec2<f32> = tile[k] - me;`, `      let inv: f32 = inverseSqrt(dot(d, d) + e2);`, `      s = s + d * (inv * inv * inv);`, `    }`, `    workgroupBarrier();`, `  }`, `  let gN: vec2<f32> = C[4u * g] * s;`, `  let mag: f32 = length(gN);`, `  var a: vec2<f32> = vec2<f32>(0.0, 0.0);`, `  var f: f32 = 0.0;`, `  if (mag > 0.0) {`, `    f = mag;`, `    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }`, `    a = gN / mag * f;`, `  }`, `  A[4u * i] = a.x;`, `  A[4u * i + 1u] = a.y;`, `  A[4u * i + 2u] = mag;`, `  A[4u * i + 3u] = f;`, `}`, `${Simulation.ENTRY} KICKDRIFT${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;`, `  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;`, `}`, `${Simulation.ENTRY} KICK${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `}`].join(`\n`);
   }
 }
 

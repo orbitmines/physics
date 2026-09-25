@@ -1,0 +1,277 @@
+/*
+ * A GALAXY LEFT TO ITSELF - the stars pulling each other, run long enough for whatever forms to form.
+ *
+ * `Simulation` moves tracers on a galaxy's field; nothing they do changes it, so no arm can grow there. Here every star
+ * is a body: what ARRIVES at a star is every other star's pull added (the far field's sum over bodies, softened to the
+ * disc's thickness), and what it FEELS is the law read at that arrival, along it (as `Simulation.felt`) - at the
+ * vacuum's a_0 of the lattice. Nothing else holds the disc: no halo, nothing added. A disc starts smooth, an exponential
+ * of scale R_d cut at TRUNC of them, each star going the speed a circle needs where it is (read off the stars' own
+ * first pull, averaged in rings), stirred just enough that the disc is marginally stable - Toomre's Q at Q, with the
+ * law's own boost g / g_N standing in for G, since that is what a small clump of the disc pulls its neighbours with.
+ * Then it is left: STEPS of DT, kick-drift-kick, every star's pull summed on the device every step (ACCEL, the stars in
+ * tiles of TILE).
+ */
+Formed := class < deg: Real {
+  static N = 16384
+  static TILE = 256
+  static Q = 1.2
+  static STEPS = 3000
+  static DT = 0.001
+  static FRAMES = 120
+  static GRID = 128
+  static TRUNC = 5
+  static SPAN = 6
+  static RINGS = 48
+  /* the discs run: [log10 mass in suns, R_d in kpc], and what each is */
+  static DISCS = [[10.7, 3], [9.3, 2]]
+  static WHAT = ["a bright disc", "a dwarf"]
+
+  a0: Real = Galaxies.a0_at(this.deg) / Simulation.UNIT_G
+  /* the control: the same discs with the law off, every pull as it arrives (Newton) - a_0 handed to the device as nought */
+  newton: boolean = false
+  scale_a0 (): Real => this.newton ? 0 : this.a0
+  discs_n (): N => Formed.DISCS.length
+  GM (g: N): Real => Simulation.G_KPC * 10 ^ Formed.DISCS[g][0]
+  scale (g: N): Real => Formed.DISCS[g][1]
+  soft (g: N): Real => Simulation.SHAPE_H * this.scale(g)
+  /* how much of an exponential lies inside x of its scales */
+  static inside (x: Real): Real => 1 - (1 + x) * (0 - x).exp
+
+  /* the smooth disc: [x, y, 0, 0] a star, galaxy after galaxy - the radius drawn off the exponential by halving */
+  seeds (): Real[] => {
+    rng := Random(seed: 23)
+    out := []
+    Array.range(this.discs_n).for(g => {
+      rd := this.scale(g)
+      top := Formed.inside(Formed.TRUNC)
+      Array.range(Formed.N).for(k => {
+        want := rng.next * top
+        lo := 0
+        hi := Formed.TRUNC
+        Array.range(40).for(it => {
+          mid := (lo + hi) / 2
+          if Formed.inside(mid) < want { lo = mid } else { hi = mid }
+        })
+        r := (lo + hi) / 2 * rd
+        th := Real.TAU * rng.next
+        [r * th.cos, r * th.sin, 0, 0].for(v => { out.push(v) })
+      })
+    })
+    out
+  }
+  /* per galaxy [G M a star, softening, a_0, dt] */
+  constants (): Real[] => {
+    out := []
+    Array.range(this.discs_n).for(g => { [this.GM(g) / Formed.N, this.soft(g), this.scale_a0, Formed.DT].for(v => { out.push(v) }) })
+    out
+  }
+  /* what one star feels, summed on the CPU - the device's ACCEL, checked: [a_x, a_y, |g_N|, |g|] */
+  accel_cpu (state: Real[], i: N): Real[] => {
+    g := (i / Formed.N).floor
+    e2 := this.soft(g) * this.soft(g)
+    px := state[4 * i]
+    py := state[4 * i + 1]
+    sx := 0
+    sy := 0
+    Array.range(Formed.N).for(k => {
+      j := g * Formed.N + k
+      dx := state[4 * j] - px
+      dy := state[4 * j + 1] - py
+      r2 := dx * dx + dy * dy + e2
+      w := 1 / (r2 * r2.sqrt)
+      sx = sx + dx * w
+      sy = sy + dy * w
+    })
+    m := this.GM(g) / Formed.N
+    gx := m * sx
+    gy := m * sy
+    mag := Fmt.hypot(gx, gy)
+    f := mag > 0 ? (this.newton ? mag : Law.boost(mag, this.a0)) : 0
+    mag > 0 ? [gx / mag * f, gy / mag * f, mag, f] : [0, 0, 0, 0]
+  }
+
+  /*
+   * THE LAUNCH, off the stars' own first pull: in RINGS rings, how hard the middle pulls (so the speed a circle needs),
+   * how much the law lifts it (g / g_N), and from those the epicycle's rate kappa; the stir is then Toomre's at Q, and
+   * the stars lag the circle by what the stir costs (the asymmetric drift of an exponential disc)
+   */
+  launch (state: Real[], acc: Real[]): Real[] => {
+    rng := Random(seed: 29)
+    out := state.map(v => v)
+    Array.range(this.discs_n).for(g => {
+      rd := this.scale(g)
+      width := Formed.TRUNC * rd / Formed.RINGS
+      pull := Array.filled(Formed.RINGS, 0)
+      lift := Array.filled(Formed.RINGS, 0)
+      many := Array.filled(Formed.RINGS, 0)
+      Array.range(Formed.N).for(k => {
+        i := g * Formed.N + k
+        x := state[4 * i]
+        y := state[4 * i + 1]
+        r := Fmt.hypot(x, y)
+        b := (r / width).floor
+        if b < Formed.RINGS & r > 0 {
+          pull[b] = pull[b] + (0 - acc[4 * i] * x - acc[4 * i + 1] * y) / r
+          lift[b] = lift[b] + (acc[4 * i + 2] > 0 ? acc[4 * i + 3] / acc[4 * i + 2] : 1)
+          many[b] = many[b] + 1
+        }
+      })
+      ring_r := (b: N): Real => (Real.of(b) + 0.5) * width
+      omega2 := Array.range(Formed.RINGS).map(b => many[b] > 0 ? Fmt.max(pull[b] / many[b], 0) / ring_r(b) : 0)
+      nu := Array.range(Formed.RINGS).map(b => many[b] > 0 ? lift[b] / many[b] : 1)
+      kappa2 := Array.range(Formed.RINGS).map(b => {
+        lo := Fmt.max(b - 1, 0)
+        hi := Fmt.min(b + 1, Formed.RINGS - 1)
+        slope := (omega2[hi] - omega2[lo]) / (ring_r(hi) - ring_r(lo))
+        Fmt.max(ring_r(b) * slope + 4 * omega2[b], 0.25 * omega2[b])
+      })
+      sigma_gm := this.GM(g) / (2 * Real.PI * rd * rd * Formed.inside(Formed.TRUNC))
+      Array.range(Formed.N).for(k => {
+        i := g * Formed.N + k
+        x := state[4 * i]
+        y := state[4 * i + 1]
+        r := Fmt.hypot(x, y)
+        b := Fmt.min((r / width).floor, Formed.RINGS - 1)
+        o2 := omega2[b]
+        k2 := kappa2[b]
+        surface := sigma_gm * (0 - r / rd).exp
+        sr := k2 > 0 ? Formed.Q * 3.36 * nu[b] * surface / k2.sqrt : 0
+        sp := o2 > 0 ? sr * k2.sqrt / (2 * o2.sqrt) : 0
+        vc2 := o2 * r * r
+        vphi := Fmt.max(vc2 + sr * sr * (1 - (o2 > 0 ? k2 / (4 * o2) : 1) - 2 * r / rd), 0).sqrt
+        mag := (-2 * Fmt.max(rng.next, 0.000001).ln).sqrt
+        th := Real.TAU * rng.next
+        vr := sr * mag * th.cos
+        vt := vphi + sp * mag * th.sin
+        ux := r > 0 ? x / r : 1
+        uy := r > 0 ? y / r : 0
+        out[4 * i + 2] = vr * ux - vt * uy
+        out[4 * i + 3] = vr * uy + vt * ux
+      })
+      /* the disc as a whole starts where it is and at rest: what its draw left of a middle and a drift is taken off every star */
+      Array.range(4).for(slot => {
+        mean := 0
+        Array.range(Formed.N).for(k => { mean = mean + out[4 * (g * Formed.N + k) + slot] })
+        mean = mean / Formed.N
+        Array.range(Formed.N).for(k => { out[4 * (g * Formed.N + k) + slot] = out[4 * (g * Formed.N + k) + slot] - mean })
+      })
+    })
+    out
+  }
+
+  /* how the stars lie at a frame: counts on GRID x GRID cells, SPAN scales either side of the middle, galaxy after galaxy */
+  /*
+   * THE DISC GOES SOMEWHERE. Read at each star, the law does not hand every pull back in an equal and opposite pair, so
+   * a disc's own pulls do not cancel and it sets itself moving (the law off, the same disc stays put to the last digit).
+   * The picture follows each disc's middle so what forms in it stays in view, and `middles` keeps, frame by frame, where
+   * that middle has got to and how fast it goes: [x, y, v_x, v_y] a disc, kpc and km/s
+   */
+  middles: Array = []
+  binned (state: Real[]): Real[] => {
+    G := Formed.GRID
+    out := Array.filled(this.discs_n * G * G, 0)
+    here := []
+    Array.range(this.discs_n).for(g => {
+      half := Formed.SPAN * this.scale(g)
+      mid := [0, 0, 0, 0]
+      Array.range(Formed.N).for(k => { Array.range(4).for(slot => { mid[slot] = mid[slot] + state[4 * (g * Formed.N + k) + slot] / Formed.N }) })
+      here.push(mid)
+      Array.range(Formed.N).for(k => {
+        i := g * Formed.N + k
+        cx := ((state[4 * i] - mid[0] + half) / (2 * half) * G).floor
+        cy := ((state[4 * i + 1] - mid[1] + half) / (2 * half) * G).floor
+        if cx >= 0 & cy >= 0 & cx < G & cy < G {
+          at := g * G * G + cy * G + cx
+          out[at] = out[at] + 1
+        }
+      })
+    })
+    this.middles.push(here)
+    out
+  }
+  save (frames: Array) => {
+    G := Formed.GRID
+    density := []
+    Array.range(this.discs_n).for(g => {
+      frames.for(f => { Array.range(G * G).for(c => { density.push(f[g * G * G + c]) }) })
+    })
+    cols := { }
+    cols["density"] = density
+    extra := { }
+    extra["names"] = Formed.WHAT
+    extra["mass"] = Formed.DISCS.map(d => 10 ^ d[0])
+    extra["scale"] = Formed.DISCS.map(d => d[1])
+    extra["span"] = Formed.DISCS.map(d => Formed.SPAN * d[1])
+    extra["stars"] = Formed.N
+    extra["Q"] = Formed.Q
+    extra["frames"] = frames.length
+    extra["grid"] = G
+    extra["gyr"] = Formed.STEPS * Formed.DT * Simulation.MYR / 1000
+    extra["middles"] = this.middles
+    extra["deg"] = this.deg
+    extra["a0"] = this.a0 * Simulation.UNIT_G
+    extra["about"] = "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"
+    Measure.save("galaxy.formed", ["density"], cols, extra)
+  }
+
+  /* ACCEL: one thread a star, every other star of its galaxy summed a tile at a time; KICKDRIFT and KICK: the leapfrog */
+  static kernel (): String => [
+    "// GENERATED from Formed.ray: stars that pull each other through the law",
+    "@group(0) @binding(0) var<storage, read> P: array<u32>;",
+    "@group(0) @binding(1) var<storage, read> L: array<f32>;",
+    "@group(0) @binding(2) var<storage, read> C: array<f32>;",
+    "@group(0) @binding(3) var<storage, read_write> X: array<f32>;",
+    "@group(0) @binding(4) var<storage, read_write> A: array<f32>;",
+    "var<workgroup> tile: array<vec2<f32>, {Formed.TILE}>;",
+    Simulation.law_wgsl,
+    "@compute @workgroup_size({Formed.TILE}) fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {{",
+    "  let i: u32 = P[7] + gid.x;",
+    "  let per: u32 = P[1];",
+    "  let g: u32 = i / per;",
+    "  let base: u32 = g * per;",
+    "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);",
+    "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];",
+    "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);",
+    "  for (var t: u32 = 0u; t < per; t = t + {Formed.TILE}u) {{",
+    "    let j: u32 = base + t + lid.x;",
+    "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);",
+    "    workgroupBarrier();",
+    "    for (var k: u32 = 0u; k < {Formed.TILE}u; k = k + 1u) {{",
+    "      let d: vec2<f32> = tile[k] - me;",
+    "      let inv: f32 = inverseSqrt(dot(d, d) + e2);",
+    "      s = s + d * (inv * inv * inv);",
+    "    }}",
+    "    workgroupBarrier();",
+    "  }}",
+    "  let gN: vec2<f32> = C[4u * g] * s;",
+    "  let mag: f32 = length(gN);",
+    "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);",
+    "  var f: f32 = 0.0;",
+    "  if (mag > 0.0) {{",
+    "    f = mag;",
+    "    if (C[4u * g + 2u] > 0.0) {{ f = felt(mag, C[4u * g + 2u]); }}",
+    "    a = gN / mag * f;",
+    "  }}",
+    "  A[4u * i] = a.x;",
+    "  A[4u * i + 1u] = a.y;",
+    "  A[4u * i + 2u] = mag;",
+    "  A[4u * i + 3u] = f;",
+    "}}",
+    "{Simulation.ENTRY} KICKDRIFT{Simulation.ID}",
+    Simulation.THREAD,
+    "  if (i >= P[0]) {{ return; }}",
+    "  let dt: f32 = C[4u * (i / P[1]) + 3u];",
+    "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;",
+    "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;",
+    "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;",
+    "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;",
+    "}}",
+    "{Simulation.ENTRY} KICK{Simulation.ID}",
+    Simulation.THREAD,
+    "  if (i >= P[0]) {{ return; }}",
+    "  let dt: f32 = C[4u * (i / P[1]) + 3u];",
+    "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;",
+    "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;",
+    "}}"
+  ].join("\n")
+}

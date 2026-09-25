@@ -130,6 +130,10 @@ G: Theory = class {
   visual "galaxy.point" () => Galaxies.point
   visual "galaxy.many" () => Galaxies.many
   visual "galaxy.curves" () => Galaxies.curves
+  /* the galaxies themselves, run (Simulation.ray): tracers on each one's field, beside its curve; and, asked for by name, the relation every run galaxy makes */
+  visual "galaxy.simulation" () => Galaxies.simulation
+  visual "galaxy.formed" () => Galaxies.formed
+  visual "galaxy.rar" () => Galaxies.rar
 
   /*
    * THE RULES OF THE VACUUM ON A LINE (Strip.ray): each on the smallest world it acts on, before and

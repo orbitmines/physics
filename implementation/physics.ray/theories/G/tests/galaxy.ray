@@ -1,0 +1,15 @@
+/*
+ * A RING OF THE DISC, SUMMED (Simulation.ray): every element one body at its own distance, the pulls added. Far away the
+ * annulus pulls as its whole mass at the middle, G M / r^2; at the middle every element's pull is cancelled by the one
+ * across from it. The device's PULL is checked against this same sum on every run (galaxy.gpu.ts).
+ */
+
+ring := Annulus(inner: 4, outer: 6, thick: 0.2)
+
+Annulus{outer == 6} += {
+  dynamically assert (pull(200, 4, 64) * 200 * 200 - 1).abs < 0.002
+  dynamically assert pull(0.01, 4, 64).abs < 0.001
+  /* just outside it pulls harder than its whole mass at the middle would, just inside it pulls outward */
+  dynamically assert pull(7, 4, 64) * 49 > 1
+  dynamically assert pull(3, 4, 64) < 0
+}

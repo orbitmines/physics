@@ -665,6 +665,43 @@ method body after loading.
   forces the CPU). The laws must be resolved against a FULLY bound probe env (`Sweep.probe`) before
   rendering - resolved without g_N and a_0 bound, F_g expanded them from the store and the device
   disagreed by a dex.
+- **The galaxies, run (Simulation.ray, 2026-09-24).** A galaxy is 1.5e-4 of a c-bar, so it is laid in its own units
+  (kpc, km/s), not in the medium's box: what ARRIVES at a place is every piece of its mass added (the far field's sum
+  over bodies), what is FELT is `Law.boost` at that arrival, keeping the pull's direction (`Model.as_stars_parts`'s
+  reading), at the vacuum's a_0 of the lattice (`Galaxies.a0_at`). `Annulus` (a ring, uniform across its width, puffed
+  to SPARC's own disc thickness z0 = 0.196 R_d^0.633) is summed element by element; `Simulation(deg)` lays the disc and
+  the gas as annuli (edges 0, R_1/2, midway between measured radii, half a spacing past the last) whose masses are SOLVED
+  (active-set NNLS, `Simulation.nnls`) so the laid galaxy pulls as SPARC's Vdisk/Vgas do at every measured radius
+  (median 0.00%, 90th 0.6%), and the bulge as spherical shells off Vbul. The device (`implementation/ray/bootstrap/galaxy.gpu.ts`,
+  run by `npx ray measure galaxy.simulated`, never by a bare measure) runs the WGSL `Simulation` writes: PULL (a thread
+  a radius x annulus), LAW (the law's own table read as `Law.boost` reads it), FIT (the data's four freedoms - Y_disk,
+  Y_bulge, D, i - on a 17^4 then 9^4 grid, priors as Li et al. 2018: lognormal 0.1 dex on Y, Gaussian at the published
+  e_D and e_Inc; D moves every radius and leaves each arrival as it was, i scales the measured speed by sin i/sin i'),
+  BEST, and STARS (START/STEP: 1024 tracers a galaxy, 10 km/s HI stir, kick-drift-kick for three turns of the outermost
+  radius; past the table the whole galaxy's arrival falls as 1/r^2). The driver checks every kernel against the CPU
+  (`Annulus.pull`, `felt`, `logpost`) and prints the sample's miss. It writes `visuals/galaxy.simulated` (every measured
+  radius: disc/gas/bulge pulls at Y = 1, v0 at SPARC's freedoms, v1 fitted as the data would see it, vs the tracers,
+  kept; per galaxy the fitted freedoms and rms in the header), `galaxy.fields` (the field on a 128-radius table),
+  `galaxy.stars` (the filmed galaxies' tracers, `RAY_GALAXIES=a,b` names them), and `galaxy.possible` (every galaxy
+  there could be - exponential stellar and gas discs and a Hernquist bulge, scaled from ONE unit disc summed by PULL -
+  read by LAW on every lattice of the solved space, binned in the panels' 0.05 dex). `RAY_DEG` picks the lattice.
+  Drawn by: `galaxy.curves` (`Galaxies.curve_box`), `galaxy.simulation` (the film, `Orbiting`), the bold "every galaxy,
+  run" layer of `galaxy.point`/`galaxy.many` (`Galaxies.possible_at`, in place of the old `typical` line), and
+  `galaxy.rar` - a `Picture` with `on_request = true`, rendered only when named (`npx ray visuals galaxy.rar`).
+  A FILMED galaxy is its own: `npx ray data sparc-orientation sparc-images` borrows each galaxy's 3.6 um light
+  (hips2fits cut-outs: S4G, else Spitzer IRAC1, else unWISE W1; `Catalogue.fits`, a host static like `fetch`, reads the
+  FITS) and SIMBAD's position angle; `Simulation.face_on` turns the image face on (SPARC's inclination; the light's own
+  long axis where SIMBAD has no angle) and `film_seeds` lays FILM_STARS where the light is (the laid annuli and shells
+  where there is no image), filmed for FILM_TURNS of the outermost radius from the moment of the picture.
+  **Formed.ray** leaves discs to themselves: every star pulls every other (direct sum in tiles, `ACCEL`), the law read at
+  each star on its summed pull, launched smooth at Toomre Q with the law's g/g_N standing in for G. Read at each star
+  the law breaks action = reaction, so a disc sets itself moving (~5 km/s a star in 244 Myr; the law-off control,
+  `RAY_FORMED_NEWTON=1`, stays put to the last digit) - the user's decision (2026-09-24): run what the model says and
+  show it, so the film follows each disc's middle and prints how far and how fast it has gone (`Formed.middles`).
+  `RAY_ONLY=formed` runs only the discs, `RAY_FORMED_FRAMES=n` a short look (nothing saved).
+  **THE DEVICE IS THE DISPLAY'S TOO**: every dispatch in galaxy.gpu.ts is cut into pieces (kernels start at `P[7]`), one
+  submission each, the host rests as long as the device worked after each, and a submission over 250 ms stops the run -
+  25 N-body steps in one submission once took the card off the bus and rebooted the machine.
 - `Sweep.base_env` binds the vacuum's own body defaults (m-bar_x 1, A 1, R-bar 0, beta 0) before
   solving n_f per radius; without them n_f is NaN at every radius and the sweep lands nothing - which
   is why the OLD galaxy fields on disk had `most: 0` and a blank region.

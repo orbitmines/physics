@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as physics from "../../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Annulus, Simulation, Formed, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 test("tests/coincidence.ray:11 on coincidence", (t) => {
   const it = new Model({ theory: G });
@@ -165,6 +165,34 @@ test("tests/field.ray:19 on vacuum", (t) => {
   let guard = 0;
   while (!(eq(it.nu, 1))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
   assert.ok(lt(Solve.settles(it), 1), "lt(Solve.settles(it), 1)");
+});
+
+test("tests/galaxy.ray:10 on ring", (t) => {
+  const it = new Annulus({ inner: 4, outer: 6, thick: 0.2 });
+  let guard = 0;
+  while (!(eq(it.outer, 6))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(Math.abs((sub(mul(mul(it.pull(200, 4, 64), 200), 200), 1))), 0.002), "lt(Math.abs((sub(mul(mul(it.pull(200, 4, 64), 200), 200), 1))), 0.002)");
+});
+
+test("tests/galaxy.ray:11 on ring", (t) => {
+  const it = new Annulus({ inner: 4, outer: 6, thick: 0.2 });
+  let guard = 0;
+  while (!(eq(it.outer, 6))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(Math.abs(it.pull(0.01, 4, 64)), 0.001), "lt(Math.abs(it.pull(0.01, 4, 64)), 0.001)");
+});
+
+test("tests/galaxy.ray:13 on ring", (t) => {
+  const it = new Annulus({ inner: 4, outer: 6, thick: 0.2 });
+  let guard = 0;
+  while (!(eq(it.outer, 6))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(gt(mul(it.pull(7, 4, 64), 49), 1), "gt(mul(it.pull(7, 4, 64), 49), 1)");
+});
+
+test("tests/galaxy.ray:14 on ring", (t) => {
+  const it = new Annulus({ inner: 4, outer: 6, thick: 0.2 });
+  let guard = 0;
+  while (!(eq(it.outer, 6))) { if (++guard > 8 || !("tick" in it)) return t.skip("the refinement never held"); it.tick; }
+  assert.ok(lt(it.pull(3, 4, 64), 0), "lt(it.pull(3, 4, 64), 0)");
 });
 
 test("tests/medium.ray:10 on law", (t) => {

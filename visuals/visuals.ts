@@ -7,7 +7,7 @@
  * `globalThis.__measured_save`, which only node installs.
  */
 import * as physics from "../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Annulus, Simulation, Formed, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 /** bytes and a header, read back as named columns */
 export const read = (bytes: Uint8Array, header: any): any => {
@@ -52,6 +52,15 @@ export const VISUALS: Record<string, () => any> = {
   },
   "galaxy.curves": () => {
   return Galaxies.curves;
+  },
+  "galaxy.simulation": () => {
+  return Galaxies.simulation;
+  },
+  "galaxy.formed": () => {
+  return Galaxies.formed;
+  },
+  "galaxy.rar": () => {
+  return Galaxies.rar;
   },
   "rule.annihilation": () => {
   return G.strip(`rule.annihilation`);

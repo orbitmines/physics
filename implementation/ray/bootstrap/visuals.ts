@@ -385,6 +385,11 @@ export async function measure(names: string[]) {
     cpu.push(id);
   }
   if (cpu.length || want("law")) physics.Measure.run(physics.G, [...cpu, ...(want("law") ? ["law"] : [])]);
+  /* the galaxies, run (Simulation.ray): only on the device, and only when named - `npx ray measure galaxy.simulated` */
+  if (names.some(o => "galaxy.simulated".includes(o) && o.startsWith("galaxy.sim"))) {
+    const r = spawnSync("deno", ["run", "--unstable-webgpu", "--allow-all", join(here, "galaxy.gpu.ts"), repo], { stdio: "inherit" });
+    if (r.status !== 0) throw new Error(`galaxy.simulated: running the galaxies on the device failed (${r.error?.message ?? `deno exited ${r.status}`}) - fix the device path`);
+  }
   console.log(`\n  measured in ${((Date.now() - t0) / 1000).toFixed(1)}s\n`);
 }
 
@@ -395,7 +400,9 @@ export async function renderVisuals(args: string[]) {
   const all = installMeasured();
   const { VISUALS } = await loadVisuals();
   const every = Object.keys(VISUALS);
-  const wanted = ids.length ? every.filter(i => ids.some(w => i.includes(w))) : every;
+  /* a picture asked for by name only (Picture.on_request) is left out of every other selection */
+  const onRequest = (i: string) => { try { return !!VISUALS[i]().on_request; } catch { return false; } };
+  const wanted = ids.length ? every.filter(i => ids.some(w => i === w || (i.includes(w) && !onRequest(i)))) : every.filter(i => !onRequest(i));
   if (!wanted.length) throw new Error(`no visual matches ${ids.join(", ")}; have ${every.join(", ")}`);
   mkdirSync(OUT, { recursive: true });
   const work = `${tmpdir()}/ray-visuals-work-${process.pid}`;
