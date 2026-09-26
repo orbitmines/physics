@@ -5118,6 +5118,9 @@ export class TermInfo extends Node {
   get grew_count(): Expr {
     return Expr.of_source(this.term.doing.grew.source);
   }
+  get grew_apart_count(): Expr {
+    return (eq(this.term.doing.grew_apart, null) ? Expr.num(0) : Expr.of_source(this.term.doing.grew_apart.source));
+  }
   get held_count(): Expr {
     return Expr.simplify(Expr.sub(this.space_count, this.grew_count));
   }
@@ -5315,6 +5318,22 @@ export class Prover extends Node {
         }))));
       }
     };
+    let meetings = infos.filter(((t: any) => {
+      return ((!(t.outside) && !eq(t.term.rule, null)) && eq(t.term.rule.over, `Edge`));
+    }));
+    if (!((meetings.length === 0))) {
+      let named = first(first(meetings).rules);
+      let grown = Expr.simplify(Expr.add(meetings.map(((t: any) => {
+        return t.grew_apart_count;
+      }))));
+      push(out, Step.of(Fact.stands(`what bodies' rays grow where they meet`, grown), named, [], `${named} read on two bodies' rays: each still leaves the point behind it where the way behind is dark, and behind a body's ray - lit by a source, not by CREATE, and met in the vacuum's dark half - nothing stands, so both gates are open`, [`behind a vacuum ray: the ray CREATE lit with it, so nothing is grown`, `behind a body's ray in the dark half: nothing, so a point is grown`, `grown a meeting = ${Expr.show(grown)}`]));
+      let rho_ = Prover.rho;
+      push(out, Step.of(Fact.stands(`\\bar{n}`, Expr.num(0)), `the world`, [], `how much of a way carries some body's ray, on the world's mean - a fact about what the world holds, not about its rules, so it is put in; in the settled vacuum, with no body in it, it is nought`, [`\\bar{n} = 0 in the empty vacuum, an input where a world is asked about`]));
+      let eps = Expr.simplify(Expr.mul([Expr.num(2), Expr.field(`\\sigma`), Expr.field(`F`), Expr.sub(Expr.num(1), rho_), Expr.pown(rho_, 2)]));
+      push(out, Step.of(Fact.stands(`\\varepsilon`, eps), `the vacuum`, [], `what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before`, [`\\varepsilon = ${Expr.show(eps)}, a placeholder until derived`]));
+      let matter = Expr.simplify(Expr.mul([Expr.field(`\\sigma`), Expr.field(`F`), Expr.pown(Expr.field(`\\bar{n}`), 2), grown]));
+      push(out, Step.of(Fact.stands(`the world's matter grows`, matter), named, [Fact.key_of(`is`, `what bodies' rays grow where they meet`), Fact.key_of(`is`, `\\bar{n}`)], `two bodies' rays meet as any two rays do - at the rate, facing, each end carrying - and each such meeting grows what the rule read on bodies' rays says: per point per tick, that is how much the world grows`, [`\\sigma F \\bar{n}^{2}: two bodies' rays facing on a way`, `times ${Expr.show(grown)} grown a meeting`, `= ${Expr.show(matter)}`]));
+    }
     for (const t of [...acting]) {
       let body = Prover.body_of(t);
       let which = (lt(t.sign, 0) ? `taken` : `made`);
@@ -6894,11 +6913,16 @@ export class Inferences extends Node {
     return new Inference({ name: `the rate the whole of it expands at`, because: `the room between two things grows at a_{0} a point a tick and there are as many points as there is distance, so what that comes to per unit distance is a rate on its own`, fire: ((s: Store) => {
       let rec = s.fact(`is`, `the space line nets`);
       let a0 = s.fact(`is`, `the rate space is made`);
+      let mat = s.fact(`is`, `the world's matter grows`);
+      let eps = s.fact(`is`, `\\varepsilon`);
       if (((eq(rec, null) || eq(a0, null)) || s.has(`is`, `H`))) {
         return [];
       }
-      let H = Expr.simplify(Expr.mul([rec.to, Expr.pown(Inferences.D, (-1))]));
-      return [Inferences.step(`H`, H, `the rate the whole of it expands at`, [rec.key, a0.key], `every point makes a_{0} of room a tick, so what is inside a radius grows at that times how many points there are - which ehrhart counted as R^{D}. Turning a growth in ROOM into a growth in RADIUS goes through that count, and it leaves a_{0}/D rather than a_{0}. Reading recession/R instead gives the rate along a LINE, which is what receding is about and is not what a Hubble rate stands: the line has R points in it and the ball has R^{D}, and the difference is a count of the tiling`, [`every point makes a_{0} = ${Expr.show(a0.to)} a tick`, `inside R there are R^{D} of them, so \\dot{V} = a_{0}V with V \\propto R^{D}`, `DR^{D-1}\\dot{R} = a_{0}R^{D}`, `H = (what the space line nets)/D = ${Expr.show(H)}`, `and the frontier grows one cell a tick, so R = t and H_{0} = 1/t_{0}`])];
+      let grows = (eq(mat, null) ? rec.to : Expr.add([rec.to, mat.to]));
+      grows = (eq(eps, null) ? grows : Expr.add([grows, eps.to]));
+      let H = Expr.simplify(Expr.mul([grows, Expr.pown(Inferences.D, (-1))]));
+      let own = (eq(eps, null) ? [] : [Inferences.step(`H_{\\Lambda}`, Expr.simplify(Expr.mul([eps.to, Expr.pown(Inferences.D, (-1))])), `the rate the empty vacuum expands at`, [eps.key], `of what the world grows by, the part the empty vacuum grows on its own: it does not thin as the matter does, so it is the same rate at every epoch - a cosmological constant, and the one rate a scale can be set by`, [`H_{\\Lambda} = \\varepsilon/D`])]);
+      return own.concat([Inferences.step(`H`, H, `the rate the whole of it expands at`, (eq(mat, null) ? [rec.key, a0.key] : [rec.key, a0.key, mat.key]), `every point makes a_{0} of room a tick, so what is inside a radius grows at that times how many points there are - which ehrhart counted as R^{D}. Turning a growth in ROOM into a growth in RADIUS goes through that count, and it leaves a_{0}/D rather than a_{0}. Reading recession/R instead gives the rate along a LINE, which is what receding is about and is not what a Hubble rate stands: the line has R points in it and the ball has R^{D}, and the difference is a count of the tiling`, [`every point makes a_{0} = ${Expr.show(a0.to)} a tick`, `inside R there are R^{D} of them, so \\dot{V} = a_{0}V with V \\propto R^{D}`, `DR^{D-1}\\dot{R} = a_{0}R^{D}`, `H = (what the space line nets + what the world's matter grows + what the empty vacuum grows)/D = ${Expr.show(H)}`])]);
     }) });
   }
   static get expansion_scale(): Inference {
@@ -6961,17 +6985,19 @@ export class Inferences extends Node {
       let lam = s.fact(`is`, `\\lambda`);
       let spd = s.fact(`is`, `v`);
       let hub = s.fact(`is`, `H`);
+      let own = s.fact(`is`, `H_{\\Lambda}`);
       if (((((eq(gN, null) || eq(lam, null)) || eq(spd, null)) || eq(hub, null)) || s.has(`is`, `F_{g}`))) {
         return [];
       }
-      let scale = Expr.simplify(Expr.mul([spd.to, hub.to]));
+      let rate = (eq(own, null) ? hub : own);
+      let scale = Expr.simplify(Expr.mul([spd.to, rate.to]));
       let g = Expr.field(`g_{N}`);
       let a = Expr.field(`a_{0}`);
       let half = Expr.mul([g, Expr.num(0.5)]);
       let got = Expr.simplify(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
       let one = Expr.root(Expr.simplify(Expr.sub(Expr.mul([g, Expr.add([Expr.num(1), Expr.mul([a, Expr.pown(Expr.field(`g`), (-1))])])]), Expr.field(`g`))), `g`);
       let via = `the phase between the two pulses, which the body's own acceleration keeps from cancelling`;
-      return [Inferences.step(`a_{0}`, scale, via, [hub.key, spd.key], `WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (\`Medium\` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_{0} = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_{0}/cH comes out as v itself, a count of the tiling and nothing else`, [`a meeting ends a carrier; the beginning ends the counting`, `the age: t_{0} = 1/H, since the frontier grows one cell a tick`, `v = ${Expr.show(spd.to)}`, `H = ${Expr.show(hub.to)}`, `a_{0} = v/t_{0} = vH = ${Expr.show(scale)}`]), Inferences.step(`F_{g} as one equation`, one, via, [gN.key, lam.key], `what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold`, [`the mismatch, measured against the vacuum's own rate: a_{0}/g`, `g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `and solved: ${Expr.show(got)}`]), Inferences.step(`F_{g}`, got, via, [gN.key, lam.key], `CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_{0}/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_{N} exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_{N} carries whole`, [`CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`, `propel + EMISSION: a source moves or pulses, never both -> the second pulse`, `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`, `each move flips it, opposite ways fore and aft`, `constant speed: the flips cancel.  accelerating: they accumulate, at g`, `a flip counts only while the carrier lasts, which is one mean free path`, `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`, `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`, `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`, `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `F_{g} = ${Expr.show(got)}`])];
+      return [Inferences.step(`a_{0}`, scale, via, [rate.key, spd.key], `THE SCALE IS THE EMPTY VACUUM'S OWN GROWTH, v H_{\\Lambda}, and it is the same at every place and every epoch. Read at the place, as the growth the matter there makes, it would change gravity where it is best measured (a planet's orbit) by far more than it allows unless the world's matter is too thin to lift anything; read as the age, or as the whole world's growth rate, a_{0} was three to four times larger at z = 2 and Genzel's six discs would carry dark fractions of 0.3 where they carry at most 0.2 - so neither. What does not change with the matter or the age is the vacuum's own growth, the rate at which its beat, left to itself, grows points: that is H_{\\Lambda}, and a_{0} = v H_{\\Lambda}. Measured, a_{0}/cH_{0} = v \\sqrt{\\Omega_{\\Lambda}}, a coincidence of this epoch. It was read before as: WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (\`Medium\` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_{0} = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_{0}/cH comes out as v itself, a count of the tiling and nothing else`, [`the scale is set by what does not change: the empty vacuum's own growth`, `v = ${Expr.show(spd.to)}`, `H_{\\Lambda} = ${Expr.show(rate.to)}`, `a_{0} = v H_{\\Lambda} = ${Expr.show(scale)}`]), Inferences.step(`F_{g} as one equation`, one, via, [gN.key, lam.key], `what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{0}/g. So g = g_{N}(1 + a_{0}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold`, [`the mismatch, measured against the vacuum's own rate: a_{0}/g`, `g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `and solved: ${Expr.show(got)}`]), Inferences.step(`F_{g}`, got, via, [gN.key, lam.key], `CREATION fires only where nothing is going on and lights every exit, so a point fires, fills, drains and fires - the vacuum pulses every other tick. And a source moves or pulses and never both, which is what puts (1-\\beta) on the line. So there are two pulses and moving shifts the phase between them: an emission reaches a place r cells away after r ticks, and whether it arrives while the vacuum there is lit - and is doused by the meeting rule - is a parity. Each move flips it, and moving toward a place shortens the path where moving away lengthens it, so the flip goes opposite ways fore and aft. AT A CONSTANT SPEED THOSE CANCEL; under an acceleration they accumulate, because the rate of flipping keeps changing - and what a body accelerates at is g itself. That is what puts g on the right-hand side. Measured against the only rate the vacuum has it is a_{0}/g, and solving is the one place here where anything is solved rather than assembled: strong field gives back g_{N} exactly, weak field the GEOMETRIC MEAN of what arrives and the rate space is made - so g carries the ROOT of the mass g_{N} carries whole`, [`CREATION: fires at a free point, lights every exit -> the vacuum pulses, period two`, `propel + EMISSION: a source moves or pulses, never both -> the second pulse`, `an emission r cells out arrives r ticks later, so meeting the vacuum's rays is a parity`, `each move flips it, opposite ways fore and aft`, `constant speed: the flips cancel.  accelerating: they accumulate, at g`, `a flip counts only while the carrier lasts, which is one mean free path`, `\\lambda = 1/(\\sigma\\omega\\rho), and the time to cross it is \\lambda/v`, `an accelerating source displaces \\frac{1}{2}g\\lambda^{2} over it - that many flips`, `g\\lambda is the only dimensionless combination; g\\lambda diverges, 1/(g\\lambda) turns over`, `g = g_{N}(1 + 1/(g\\lambda)),  and a_{0} = 1/\\lambda`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `F_{g} = ${Expr.show(got)}`])];
     }) });
   }
   static get thick(): Expr {
@@ -7056,8 +7082,8 @@ export class Inferences extends Node {
       if (((eq(a0, null) || eq(at, null)) || s.has(`is`, `a_{0} along the path`))) {
         return [];
       }
-      let avg = Expr.simplify(Expr.replace(a0.to, `\\rho`, Expr.field(`\\langle\\rho\\rangle`)));
-      return [Inferences.step(`a_{0} along the path`, avg, `the scale a carrier crosses`, [a0.key, at.key], `the scale is one over a mean free path, and a mean free path is how far a carrier gets before meeting something ANYWHERE along its way - so the density in it is the one it crossed, \\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)ds, with \\rho(s) the profile \`crowding\` solves. Read at the far field it is the same for every body and nothing varies; read where the carrier lands it belongs to whatever is nearby; read along the path it depends on how much medium the body has crowded, which is a fact about that body`, [`a_{0} = \\sigma\\rho, and the \\rho in it is the one crossed`, `\\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)\\,ds`, `\\rho(s) = ${Expr.show(at.to).slice(0, 90)}...`, `a_{0} along the path = ${Expr.show(avg)}`])];
+      let avg = a0.to;
+      return [Inferences.step(`a_{0} along the path`, avg, `the scale a carrier crosses`, [a0.key, at.key], `THE SAME EVERYWHERE: a_{0} is v H_{\\Lambda}, the empty vacuum's own growth, and nothing a carrier crosses changes that. Read otherwise it was: the scale is one over a mean free path, and a mean free path is how far a carrier gets before meeting something ANYWHERE along its way - so the density in it is the one it crossed, \\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)ds, with \\rho(s) the profile \`crowding\` solves. Read at the far field it is the same for every body and nothing varies; read where the carrier lands it belongs to whatever is nearby; read along the path it depends on how much medium the body has crowded, which is a fact about that body`, [`a_{0} = \\sigma\\rho, and the \\rho in it is the one crossed`, `\\langle\\rho\\rangle = \\frac{1}{R}\\int_{0}^{R}\\rho(s)\\,ds`, `\\rho(s) = ${Expr.show(at.to).slice(0, 90)}...`, `a_{0} along the path = ${Expr.show(avg)}`])];
     }) });
   }
   static get crowding_of_arrivals(): Inference {
@@ -7258,10 +7284,14 @@ export class Inferences extends Node {
   static get receding(): Inference {
     return new Inference({ name: `space is made between them, and there is more of it the further apart they are`, because: `every neutral point between two bodies makes space, so the room between them grows at the net rate times how many points there are - which is how far apart they are`, fire: ((s: Store) => {
       let line = s.fact(`is`, `the space line nets`);
+      let eps = s.fact(`is`, `\\varepsilon`);
+      let mat = s.fact(`is`, `the world's matter grows`);
       if ((eq(line, null) || s.has(`is`, `recession`))) {
         return [];
       }
       let net = line.to;
+      net = (eq(mat, null) ? net : Expr.add([net, mat.to]));
+      net = (eq(eps, null) ? net : Expr.add([net, eps.to]));
       let rec = Expr.simplify(Expr.mul([net, Inferences.rbar]));
       return [Inferences.step(`recession`, rec, `space is made between them, and there is more of it the further apart they are`, [line.key], `the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are`, [`\\partial_{t}s = ${Expr.show(net)}, every term of the space line`, `points between two bodies R apart: R of them`, `recession = ${Expr.show(rec)}`])];
     }) });
@@ -7884,6 +7914,8 @@ export class Medium extends Node {
   get K(): number { return this.read("K"); }
   set K(v: number) { this.write("K", v); }
   static GATHER = 96;
+  static SLOTS = 4;
+  static NEAR_CELLS = 5;
   get DEG(): number { return this.read("DEG", () => this.theory.lattice.DEG); }
   set DEG(v: number) { this.write("DEG", v); }
   get D(): number { return this.read("D", () => this.theory.lattice.D); }
@@ -7898,7 +7930,7 @@ export class Medium extends Node {
   get apart(): boolean { return this.read("apart", () => false); }
   set apart(v: boolean) { this.write("apart", v); }
   get planes(): number {
-    return (this.apart ? add(this.holes.length, 1) : ((lt(this.tags, 1) ? 1 : this.tags)));
+    return ((this.apart || this.local_rays) ? add(this.holes.length, 1) : ((lt(this.tags, 1) ? 1 : this.tags)));
   }
   get ticks(): number { return this.read("ticks", () => 0); }
   set ticks(v: number) { this.write("ticks", v); }
@@ -8203,7 +8235,7 @@ export class Medium extends Node {
     return div((sub(c, mod(c, this.N))), this.N);
   }
   plane_of(h: Hole): number {
-    return (this.apart ? add(index_of(this.holes, h), 1) : ((((eq(h.tag, null) || lt(h.tag, 1))) ? 0 : ((lt(h.tag, this.planes) ? h.tag : sub(this.planes, 1))))));
+    return ((this.apart || this.local_rays) ? add(index_of(this.holes, h), 1) : ((((eq(h.tag, null) || lt(h.tag, 1))) ? 0 : ((lt(h.tag, this.planes) ? h.tag : sub(this.planes, 1))))));
   }
   add(h: Hole): Hole {
     h.momentum = new Vector({ components: [h.px, h.py] });
@@ -8211,6 +8243,9 @@ export class Medium extends Node {
     push(this.holes, h);
     if (this.apart) {
       push(this.beam, filled(this.rungs, 0));
+      push(this.swept, filled(this.cells, 0));
+    }
+    if ((this.local_rays && lt(this.swept.length, 2))) {
       push(this.swept, filled(this.cells, 0));
     }
     this.block;
@@ -8322,9 +8357,14 @@ export class Medium extends Node {
       let x = this.column_of(c);
       let y = this.row_of(c);
       let got = 0;
-      for (let i = 0; i < sub(this.planes, 1); i++) {
-        got = add(got, elem(this.sent_to(add(i, 1), x, y), 0));
-      };
+      if (!(this.local_rays)) {
+        for (let i = 0; i < sub(this.planes, 1); i++) {
+          got = add(got, elem(this.sent_to(add(i, 1), x, y), 0));
+        };
+      }
+      if (this.local_rays) {
+        got = this.held_at(c);
+      }
       return this.activity((this.vacuum ? add(got, elem(this.vac, c)) : got));
     }));
     this.nf_was = range(cells).map(((c: any) => {
@@ -8342,6 +8382,508 @@ export class Medium extends Node {
     let angle = Math.atan2(dy, dx);
     let turned = (lt(angle, 0) ? add(angle, (2 * Math.PI)) : angle);
     return mod(Math.round((mul(div(turned, (2 * Math.PI)), this.gather))), this.gather);
+  }
+  tent(v: number): number {
+    return Fmt.max(0, sub(1, Math.abs(v)));
+  }
+  inside_at(x: number, y: number): number {
+    let x0 = Math.floor(x);
+    let y0 = Math.floor(y);
+    let got = 0;
+    for (let j = 0; j < 2; j++) {
+      for (let i = 0; i < 2; i++) {
+        if (ge(this.at(add(x0, i), add(y0, j)), 0)) {
+          got = add(got, mul(this.tent(sub(x, add(x0, i))), this.tent(sub(y, add(y0, j)))));
+        }
+      };
+    };
+    return got;
+  }
+  get local_rays(): boolean { return this.read("local_rays", () => false); }
+  set local_rays(v: boolean) { this.write("local_rays", v); }
+  get keeps(): number {
+    return Medium.SLOTS;
+  }
+  get zone(): number {
+    return add(mul(2, this.K), 2);
+  }
+  get edge(): number {
+    return add(this.zone, 0.5005);
+  }
+  get window(): number {
+    let s = div(Math.sqrt(2), sub(this.zone, this.K));
+    return add(Math.floor((div(mul(this.gather, Math.atan2(s, Math.sqrt((sub(1, mul(s, s)))))), (2 * Math.PI)))), 2);
+  }
+  get bq(): number[] { return this.read("bq", () => []); }
+  set bq(v: number[]) { this.write("bq", v); }
+  get bsx(): number[] { return this.read("bsx", () => []); }
+  set bsx(v: number[]) { this.write("bsx", v); }
+  get bsy(): number[] { return this.read("bsy", () => []); }
+  set bsy(v: number[]) { this.write("bsy", v); }
+  get bvx(): number[] { return this.read("bvx", () => []); }
+  set bvx(v: number[]) { this.write("bvx", v); }
+  get bvy(): number[] { return this.read("bvy", () => []); }
+  set bvy(v: number[]) { this.write("bvy", v); }
+  get bface(): number[] { return this.read("bface", () => []); }
+  set bface(v: number[]) { this.write("bface", v); }
+  get bwho(): number[] { return this.read("bwho", () => []); }
+  set bwho(v: number[]) { this.write("bwho", v); }
+  get bspread(): number[] { return this.read("bspread", () => []); }
+  set bspread(v: number[]) { this.write("bspread", v); }
+  get middle(): number[] { return this.read("middle", () => []); }
+  set middle(v: number[]) { this.write("middle", v); }
+  get middle_who(): number[] { return this.read("middle_who", () => []); }
+  set middle_who(v: number[]) { this.write("middle_who", v); }
+  get shone(): any[] { return this.read("shone", () => []); }
+  set shone(v: any[]) { this.write("shone", v); }
+  get bundles(): number {
+    return mul(mul(this.cells, this.gather), this.keeps);
+  }
+  first_slot(c: number, b: number): number {
+    return mul((add(mul(c, this.gather), b)), this.keeps);
+  }
+  get bundles_ready() {
+    let n = this.bundles;
+    if (!eq(this.middle.length, this.cells)) {
+      this.middle = filled(this.cells, 0);
+    }
+    if (!eq(this.middle_who.length, this.cells)) {
+      this.middle_who = filled(this.cells, (-1));
+    }
+    if (eq(this.bq.length, n)) {
+      return;
+    }
+    this.bq = filled(n, 0);
+    this.bsx = filled(n, 0);
+    this.bsy = filled(n, 0);
+    this.bvx = filled(n, 0);
+    this.bvy = filled(n, 0);
+    this.bface = filled(n, 0);
+    this.bwho = filled(n, (-1));
+    this.bspread = filled(n, 0);
+  }
+  way_x(b: number): number {
+    return Math.cos((div(mul((2 * Math.PI), b), this.gather)));
+  }
+  way_y(b: number): number {
+    return Math.sin((div(mul((2 * Math.PI), b), this.gather)));
+  }
+  now_from(m: number[], x: number, y: number): number[] {
+    let sx = div(elem(m, 1), elem(m, 0));
+    let sy = div(elem(m, 2), elem(m, 0));
+    let age = div(Fmt.hypot(sub(x, sx), sub(y, sy)), this.K);
+    return [add(sx, mul(div(elem(m, 3), elem(m, 0)), age)), add(sy, mul(div(elem(m, 4), elem(m, 0)), age))];
+  }
+  reads(m: number[], x: number, y: number): number[] {
+    if (!((gt(elem(m, 0), 0)))) {
+      return [0, 0, 0];
+    }
+    let s = this.now_from(m, x, y);
+    let dx = sub(x, elem(s, 0));
+    let dy = sub(y, elem(s, 1));
+    let d = Fmt.hypot(dx, dy);
+    let r = Fmt.max(div(elem(m, 5), elem(m, 0)), div(d, this.K));
+    let got = Fmt.min(1, mul(div(elem(m, 0), (Math.pow(r, sub(this.D, 1)))), ((gt(r, div(elem(m, 5), elem(m, 0))) ? this.spread_of(m, d) : 1))));
+    if (le(d, 0)) {
+      return [got, 0, 0];
+    }
+    return [got, div(dx, d), div(dy, d)];
+  }
+  moments(k: number): number[] {
+    return [elem(this.bq, k), elem(this.bsx, k), elem(this.bsy, k), elem(this.bvx, k), elem(this.bvy, k), elem(this.bface, k), elem(this.bwho, k), elem(this.bspread, k)];
+  }
+  held_to(k: number, x: number, y: number): number[] {
+    return this.reads(this.moments(k), x, y);
+  }
+  gathered(a: number[], b: number[], x: number, y: number): number[] {
+    return [add(elem(a, 0), elem(b, 0)), add(elem(a, 1), elem(b, 1)), add(elem(a, 2), elem(b, 2)), add(elem(a, 3), elem(b, 3)), add(elem(a, 4), elem(b, 4)), add(elem(a, 5), elem(b, 5)), (eq(elem(a, 6), elem(b, 6)) ? elem(a, 6) : (-1)), this.spread_with(a, b, x, y)];
+  }
+  spread_with(a: number[], b: number[], x: number, y: number): number {
+    if (!(((gt(elem(a, 0), 0) && gt(elem(b, 0), 0))))) {
+      return add(elem(a, 7), elem(b, 7));
+    }
+    let q = add(elem(a, 0), elem(b, 0));
+    let ex = sub(x, div((add(elem(a, 1), elem(b, 1))), q));
+    let ey = sub(y, div((add(elem(a, 2), elem(b, 2))), q));
+    let e = Fmt.hypot(ex, ey);
+    let along = (gt(e, 0) ? div((add(mul((sub(div(elem(a, 1), elem(a, 0)), div(elem(b, 1), elem(b, 0)))), ex), mul((sub(div(elem(a, 2), elem(a, 0)), div(elem(b, 2), elem(b, 0)))), ey))), e) : 0);
+    return add(add(elem(a, 7), elem(b, 7)), mul(mul(div(mul(elem(a, 0), elem(b, 0)), q), along), along));
+  }
+  spread_of(m: number[], d: number): number {
+    let n = sub(this.D, 1);
+    if (!(((gt(d, 0) && gt(elem(m, 0), 0))))) {
+      return 1;
+    }
+    return add(1, div(mul(div(mul(n, (add(n, 1))), 2), elem(m, 7)), (mul(mul(elem(m, 0), d), d))));
+  }
+  apart_seen(a: number[], b: number[], x: number, y: number): number {
+    let ax = div(elem(a, 1), elem(a, 0));
+    let ay = div(elem(a, 2), elem(a, 0));
+    let bx = div(elem(b, 1), elem(b, 0));
+    let by = div(elem(b, 2), elem(b, 0));
+    let near = Fmt.min(Fmt.hypot(sub(x, ax), sub(y, ay)), Fmt.hypot(sub(x, bx), sub(y, by)));
+    return div(Fmt.hypot(sub(ax, bx), sub(ay, by)), Fmt.max(near, 1));
+  }
+  fresh(m: number[], x: number, y: number): boolean {
+    let s = this.now_from(m, x, y);
+    return le(Fmt.hypot(sub(x, elem(s, 0)), sub(y, elem(s, 1))), this.edge);
+  }
+  lay(c: number, b: number, got: number[][]) {
+    let x = this.column_of(c);
+    let y = this.row_of(c);
+    let list = got.filter(((m: any) => {
+      return gt(elem(m, 0), 0);
+    }));
+    while (gt(list.length, this.keeps)) {
+      let fr = list.map(((m: any) => {
+        return this.fresh(m, x, y);
+      }));
+      let best = 0;
+      let bi = (-1);
+      let bj = (-1);
+      for (let pass = 0; pass < 2; pass++) {
+        if (lt(bi, 0)) {
+          for (let i = 0; i < list.length; i++) {
+            for (let j = 0; j < list.length; j++) {
+              if ((gt(j, i) && ((eq(pass, 1) || eq(elem(fr, i), elem(fr, j)))))) {
+                let seen = this.apart_seen(elem(list, i), elem(list, j), x, y);
+                if ((lt(bi, 0) || lt(seen, best))) {
+                  best = seen;
+                  bi = i;
+                  bj = j;
+                }
+              }
+            };
+          };
+        }
+      };
+      let merged = this.gathered(elem(list, bi), elem(list, bj), x, y);
+      list = range(list.length).filter(((i: any) => {
+        return (!eq(i, bi) && !eq(i, bj));
+      })).map(((i: any) => {
+        return elem(list, i);
+      })).concat([merged]);
+    }
+    let base = this.first_slot(c, b);
+    for (let j = 0; j < this.keeps; j++) {
+      let m = (lt(j, list.length) ? elem(list, j) : [0, 0, 0, 0, 0, 0, (-1), 0]);
+      this.bq[add(base, j)] = elem(m, 0);
+      this.bsx[add(base, j)] = elem(m, 1);
+      this.bsy[add(base, j)] = elem(m, 2);
+      this.bvx[add(base, j)] = elem(m, 3);
+      this.bvy[add(base, j)] = elem(m, 4);
+      this.bface[add(base, j)] = elem(m, 5);
+      this.bwho[add(base, j)] = elem(m, 6);
+      this.bspread[add(base, j)] = elem(m, 7);
+    };
+  }
+  drop_whose(c: number, who: number) {
+    for (let b = 0; b < this.gather; b++) {
+      let held = this.held_on(c, b);
+      if (held.some(((m: any) => {
+        return eq(elem(m, 6), who);
+      }))) {
+        this.lay(c, b, held.filter(((m: any) => {
+          return !eq(elem(m, 6), who);
+        })));
+      }
+    };
+  }
+  held_on(c: number, b: number): number[][] {
+    let base = this.first_slot(c, b);
+    return range(this.keeps).map(((j: any) => {
+      return this.moments(add(base, j));
+    })).filter(((m: any) => {
+      return gt(elem(m, 0), 0);
+    }));
+  }
+  emitted(h: Hole): number[] {
+    let near = this.face_of(h);
+    let q = mul(this.per_way(h), (Math.pow(near, sub(this.D, 1))));
+    return [q, mul(q, h.x), mul(q, h.y), mul(div(mul(q, elem(h.momentum.components, 0)), h.mass), this.K), mul(div(mul(q, elem(h.momentum.components, 1)), h.mass), this.K), mul(q, near), index_of(this.holes, h), 0];
+  }
+  left_for(e: number[], d: number): number[] {
+    let back = div(d, this.K);
+    return [elem(e, 0), sub(elem(e, 1), mul(elem(e, 3), back)), sub(elem(e, 2), mul(elem(e, 4), back)), elem(e, 3), elem(e, 4), elem(e, 5), elem(e, 6), elem(e, 7)];
+  }
+  put_middle(c: number, e: number[]) {
+    let got = Fmt.min(1, div(elem(e, 0), (Math.pow((div(elem(e, 5), elem(e, 0))), sub(this.D, 1)))));
+    this.middle_who[c] = ((gt(elem(this.middle, c), 0) && !eq(elem(this.middle_who, c), elem(e, 6))) ? (-1) : elem(e, 6));
+    this.middle[c] = add(elem(this.middle, c), got);
+  }
+  get shine_local() {
+    this.bundles_ready;
+    for (let c = 0; c < this.cells; c++) {
+      this.middle[c] = 0;
+      this.middle_who[c] = (-1);
+    };
+    let src = this.cell_sources;
+    this.shone = src;
+    for (let c = 0; c < this.cells; c++) {
+      let x = this.column_of(c);
+      let y = this.row_of(c);
+      for (let b = 0; b < this.gather; b++) {
+        let held = this.held_on(c, b);
+        if (held.some(((m: any) => {
+          return (lt(elem(m, 6), 0) && this.fresh(m, x, y));
+        }))) {
+          this.lay(c, b, held.filter(((m: any) => {
+            return !(((lt(elem(m, 6), 0) && this.fresh(m, x, y))));
+          })));
+        }
+      };
+    };
+    for (let sc = 0; sc < this.cells; sc++) {
+      let e = elem(src, sc);
+      if ((!eq(e, null) && gt(elem(e, 0), 0))) {
+        let sx = div(elem(e, 1), elem(e, 0));
+        let sy = div(elem(e, 2), elem(e, 0));
+        let reach = add(this.zone, 1);
+        for (let j = 0; j < add(mul(2, reach), 1); j++) {
+          for (let i = 0; i < add(mul(2, reach), 1); i++) {
+            let c = this.at(add(sub(Math.round(sx), reach), i), add(sub(Math.round(sy), reach), j));
+            if (ge(c, 0)) {
+              let dx = sub(this.column_of(c), sx);
+              let dy = sub(this.row_of(c), sy);
+              let d = Fmt.hypot(dx, dy);
+              if (le(d, 0.001)) {
+                this.put_middle(c, e);
+              }
+              if ((gt(d, 0.001) && le(d, this.edge))) {
+                this.drop_whose(c, elem(e, 6));
+                let b = this.bin_of(dx, dy);
+                this.lay(c, b, this.held_on(c, b).concat([this.left_for(e, d)]));
+              }
+            }
+          };
+        };
+      }
+    };
+  }
+  get cell_sources(): any[] {
+    let src = filled(this.cells, null);
+    for (const h of [...this.holes]) {
+      let c = this.at(Math.round(h.x), Math.round(h.y));
+      if (ge(c, 0)) {
+        let e = this.emitted(h);
+        let had = elem(src, c);
+        src[c] = (eq(had, null) ? e : [add(elem(had, 0), elem(e, 0)), add(elem(had, 1), elem(e, 1)), add(elem(had, 2), elem(e, 2)), add(elem(had, 3), elem(e, 3)), add(elem(had, 4), elem(e, 4)), add(elem(had, 5), elem(e, 5)), sub((-2), c), 0]);
+      }
+    };
+    return src;
+  }
+  get stream_local() {
+    this.bundles_ready;
+    let B = this.gather;
+    let S = this.keeps;
+    let n = this.bundles;
+    let was = [this.bq, this.bsx, this.bsy, this.bvx, this.bvy, this.bface, this.bwho, this.bspread];
+    this.bq = filled(n, 0);
+    this.bsx = filled(n, 0);
+    this.bsy = filled(n, 0);
+    this.bvx = filled(n, 0);
+    this.bvy = filled(n, 0);
+    this.bface = filled(n, 0);
+    this.bwho = filled(n, (-1));
+    this.bspread = filled(n, 0);
+    for (let c = 0; c < this.cells; c++) {
+      let x = this.column_of(c);
+      let y = this.row_of(c);
+      for (let t = 0; t < B; t++) {
+        let groups = [];
+        let a0 = div(mul((2 * Math.PI), (sub(t, 0.5))), B);
+        let a1 = div(mul((2 * Math.PI), (add(t, 0.5))), B);
+        let p0x = sub(x, mul(this.K, Math.cos(a0)));
+        let p0y = sub(y, mul(this.K, Math.sin(a0)));
+        let p1x = sub(x, mul(this.K, Math.cos(a1)));
+        let p1y = sub(y, mul(this.K, Math.sin(a1)));
+        let lx = Math.floor(Fmt.min(p0x, p1x));
+        let ly = Math.floor(Fmt.min(p0y, p1y));
+        let nx = sub(add(Math.floor(Fmt.max(p0x, p1x)), 2), lx);
+        let ny = sub(add(Math.floor(Fmt.max(p0y, p1y)), 2), ly);
+        for (let j = 0; j < ny; j++) {
+          for (let i = 0; i < nx; i++) {
+            let u = this.at(add(lx, i), add(ly, j));
+            if (ge(u, 0)) {
+              let ux = add(lx, i);
+              let uy = add(ly, j);
+              for (let o = 0; o < add(mul(2, this.window), 1); o++) {
+                let base = mul((add(mul(u, B), mod((sub(add(add(t, B), o), this.window)), B))), S);
+                for (let sl = 0; sl < S; sl++) {
+                  let k = add(base, sl);
+                  let q = elem(elem(was, 0), k);
+                  if (gt(q, 0)) {
+                    let m = [q, elem(elem(was, 1), k), elem(elem(was, 2), k), elem(elem(was, 3), k), elem(elem(was, 4), k), elem(elem(was, 5), k), elem(elem(was, 6), k), elem(elem(was, 7), k)];
+                    let dx = sub(x, div(elem(m, 1), q));
+                    let dy = sub(y, div(elem(m, 2), q));
+                    let d = Fmt.hypot(dx, dy);
+                    let now = this.now_from(m, x, y);
+                    if (((gt(d, 0) && eq(this.bin_of(dx, dy), t)) && gt(Fmt.hypot(sub(x, elem(now, 0)), sub(y, elem(now, 1))), this.zone))) {
+                      let cx = sub(x, div(mul(this.K, dx), d));
+                      let cy = sub(y, div(mul(this.K, dy), d));
+                      let w = div(mul(this.tent(sub(ux, cx)), this.tent(sub(uy, cy))), this.inside_at(cx, cy));
+                      if (gt(w, 0)) {
+                        let g = (-1);
+                        for (let gi = 0; gi < groups.length; gi++) {
+                          let h = elem(groups, gi);
+                          let same = (((!eq(elem(m, 6), (-1)) && eq(elem(h, 6), elem(m, 6)))) || (((eq(elem(m, 6), (-1)) && eq(elem(h, 6), (-1))) && lt(Fmt.hypot(sub(div(elem(h, 1), elem(h, 0)), div(elem(m, 1), q)), sub(div(elem(h, 2), elem(h, 0)), div(elem(m, 2), q))), add(0.5, mul(0.05, d))))));
+                          if ((lt(g, 0) && same)) {
+                            g = gi;
+                          }
+                        };
+                        let part = [mul(w, elem(m, 0)), mul(w, elem(m, 1)), mul(w, elem(m, 2)), mul(w, elem(m, 3)), mul(w, elem(m, 4)), mul(w, elem(m, 5)), elem(m, 6), mul(w, elem(m, 7))];
+                        if (lt(g, 0)) {
+                          push(groups, part);
+                        } else {
+                          let h = elem(groups, g);
+                          groups[g] = [add(elem(h, 0), elem(part, 0)), add(elem(h, 1), elem(part, 1)), add(elem(h, 2), elem(part, 2)), add(elem(h, 3), elem(part, 3)), add(elem(h, 4), elem(part, 4)), add(elem(h, 5), elem(part, 5)), elem(h, 6), this.spread_with(h, part, x, y)];
+                        }
+                      }
+                    }
+                  }
+                };
+              };
+            }
+          };
+        };
+        if (!((groups.length === 0))) {
+          this.lay(c, t, groups);
+        }
+      };
+    };
+  }
+  get seed_local() {
+    let n = this.bundles;
+    this.bq = filled(n, 0);
+    this.bsx = filled(n, 0);
+    this.bsy = filled(n, 0);
+    this.bvx = filled(n, 0);
+    this.bvy = filled(n, 0);
+    this.bface = filled(n, 0);
+    this.bwho = filled(n, (-1));
+    this.bspread = filled(n, 0);
+    this.middle = filled(this.cells, 0);
+    this.middle_who = filled(this.cells, (-1));
+    return this.shine_local;
+  }
+  held_at(c: number): number {
+    let x = this.column_of(c);
+    let y = this.row_of(c);
+    let got = (eq(this.middle.length, this.cells) ? elem(this.middle, c) : 0);
+    for (let j = 0; j < mul(this.gather, this.keeps); j++) {
+      got = add(got, elem(this.held_to(add(mul(mul(c, this.gather), this.keeps), j), x, y), 0));
+    };
+    return got;
+  }
+  arriving_at(x: number, y: number, zown: number): number[] {
+    let B = this.gather;
+    let S = this.keeps;
+    let u = this.at(Math.round(x), Math.round(y));
+    if (lt(u, 0)) {
+      return [0, 0, 0];
+    }
+    let own = (((this.local_rays && ge(zown, 1)) && le(zown, this.holes.length)) ? elem(this.holes, sub(zown, 1)) : null);
+    let mine = (eq(own, null) ? [0, 0, 0, 0, 0, 0, (-1), 0] : this.emitted(own));
+    let me = sub(zown, 1);
+    let srcid = (eq(own, null) ? 0.5 : sub((-2), this.at(Math.round(own.x), Math.round(own.y))));
+    let sum = 0;
+    let gx = 0;
+    let gy = 0;
+    let ux = this.column_of(u);
+    let uy = this.row_of(u);
+    let owns = (eq(own, null) ? (-1) : this.bin_of(sub(ux, own.x), sub(uy, own.y)));
+    let alone = (!eq(own, null) && range(S).some(((sl: any) => {
+      return eq(elem(this.bwho, add(mul((add(mul(u, B), owns)), S), sl)), me);
+    })));
+    for (let b = 0; b < B; b++) {
+      for (let sl = 0; sl < S; sl++) {
+        let k = add(mul((add(mul(u, B), b)), S), sl);
+        if ((gt(elem(this.bq, k), 0) && !(((!eq(own, null) && eq(elem(this.bwho, k), me)))))) {
+          let m = this.moments(k);
+          if (this.far_of(m, ux, uy)) {
+            let f = this.expanded(m, ux, uy, sub(x, ux), sub(y, uy));
+            gx = add(gx, elem(f, 0));
+            gy = add(gy, elem(f, 1));
+          } else {
+            if (((((eq(b, owns) && !(alone)) && eq(elem(m, 6), (-1))) && eq(this.nearest_gathering(add(mul(u, B), b), own), sl)) && gt(sub(elem(m, 0), elem(mine, 0)), 0))) {
+              let rest = [sub(elem(m, 0), elem(mine, 0)), sub(elem(m, 1), elem(mine, 1)), sub(elem(m, 2), elem(mine, 2)), sub(elem(m, 3), elem(mine, 3)), sub(elem(m, 4), elem(mine, 4)), sub(elem(m, 5), elem(mine, 5)), (-1), 0];
+              let rx = sub(ux, div(elem(m, 1), elem(m, 0)));
+              let ry = sub(uy, div(elem(m, 2), elem(m, 0)));
+              let rd = Fmt.hypot(rx, ry);
+              let along = (gt(rd, 0) ? div((add(mul((sub(div(elem(rest, 1), elem(rest, 0)), div(elem(mine, 1), elem(mine, 0)))), rx), mul((sub(div(elem(rest, 2), elem(rest, 0)), div(elem(mine, 2), elem(mine, 0)))), ry))), rd) : 0);
+              rest[7] = Fmt.max(0, sub(elem(m, 7), mul(mul(div(mul(elem(rest, 0), elem(mine, 0)), elem(m, 0)), along), along)));
+              m = rest;
+            }
+            if ((!eq(own, null) && eq(elem(m, 6), srcid))) {
+              let lf = this.left_for(mine, Fmt.hypot(sub(ux, div(elem(m, 1), elem(m, 0))), sub(uy, div(elem(m, 2), elem(m, 0)))));
+              m = [sub(elem(m, 0), elem(lf, 0)), sub(elem(m, 1), elem(lf, 1)), sub(elem(m, 2), elem(lf, 2)), sub(elem(m, 3), elem(lf, 3)), sub(elem(m, 4), elem(lf, 4)), sub(elem(m, 5), elem(lf, 5)), elem(m, 6), elem(m, 7)];
+            }
+            let got = this.reads(m, x, y);
+            sum = add(sum, elem(got, 0));
+            gx = add(gx, mul(elem(got, 0), elem(got, 1)));
+            gy = add(gy, mul(elem(got, 0), elem(got, 2)));
+          }
+        }
+      };
+    };
+    let e = (eq(this.shone.length, this.cells) ? elem(this.shone, u) : null);
+    if ((((!eq(e, null) && gt(elem(e, 0), 0)) && le(Fmt.hypot(sub(ux, div(elem(e, 1), elem(e, 0))), sub(uy, div(elem(e, 2), elem(e, 0)))), 0.001)) && !(((!eq(own, null) && eq(elem(e, 6), me)))))) {
+      let m = e;
+      if ((!eq(own, null) && eq(elem(e, 6), srcid))) {
+        m = [sub(elem(e, 0), elem(mine, 0)), sub(elem(e, 1), elem(mine, 1)), sub(elem(e, 2), elem(mine, 2)), sub(elem(e, 3), elem(mine, 3)), sub(elem(e, 4), elem(mine, 4)), sub(elem(e, 5), elem(mine, 5)), elem(e, 6), elem(e, 7)];
+      }
+      if (gt(elem(m, 0), 0)) {
+        let got = this.reads(m, x, y);
+        sum = add(sum, elem(got, 0));
+        gx = add(gx, mul(elem(got, 0), elem(got, 1)));
+        gy = add(gy, mul(elem(got, 0), elem(got, 2)));
+      }
+    }
+    return [sum, gx, gy];
+  }
+  far_of(m: number[], ux: number, uy: number): boolean {
+    let s = this.now_from(m, ux, uy);
+    let d = Fmt.hypot(sub(ux, elem(s, 0)), sub(uy, elem(s, 1)));
+    let r = div(d, this.K);
+    return ((gt(d, Medium.NEAR_CELLS) && gt(r, div(elem(m, 5), elem(m, 0)))) && lt(div(elem(m, 0), (Math.pow(r, sub(this.D, 1)))), 1));
+  }
+  expanded(m: number[], ux: number, uy: number, dx: number, dy: number): number[] {
+    let s = this.now_from(m, ux, uy);
+    let ex = sub(ux, elem(s, 0));
+    let ey = sub(uy, elem(s, 1));
+    let r2 = add(mul(ex, ex), mul(ey, ey));
+    let Dd = this.D;
+    let C = mul(mul(elem(m, 0), (Math.pow(this.K, (sub(Dd, 1))))), this.spread_of(m, Math.sqrt(r2)));
+    let rD = Math.pow(r2, (div(Dd, 2)));
+    let a = div(C, rD);
+    let b = div(mul(Dd, C), (mul(rD, r2)));
+    let c = div(mul(mul(Dd, (add(Dd, 2))), C), (mul(mul(rD, r2), r2)));
+    let jxx = sub(a, mul(mul(b, ex), ex));
+    let jxy = sub(0, mul(mul(b, ex), ey));
+    let jyy = sub(a, mul(mul(b, ey), ey));
+    let hxxx = add(sub(0, mul(mul(3, b), ex)), mul(mul(mul(c, ex), ex), ex));
+    let hxxy = add(sub(0, mul(b, ey)), mul(mul(mul(c, ex), ex), ey));
+    let hxyy = add(sub(0, mul(b, ex)), mul(mul(mul(c, ex), ey), ey));
+    let hyyy = add(sub(0, mul(mul(3, b), ey)), mul(mul(mul(c, ey), ey), ey));
+    let fx = add(add(add(mul(a, ex), mul(jxx, dx)), mul(jxy, dy)), div((add(add(mul(mul(hxxx, dx), dx), mul(mul(mul(2, hxxy), dx), dy)), mul(mul(hxyy, dy), dy))), 2));
+    let fy = add(add(add(mul(a, ey), mul(jxy, dx)), mul(jyy, dy)), div((add(add(mul(mul(hxxy, dx), dx), mul(mul(mul(2, hxyy), dx), dy)), mul(mul(hyyy, dy), dy))), 2));
+    return [fx, fy];
+  }
+  nearest_gathering(way: number, h: Hole): number {
+    let S = this.keeps;
+    let best = (-1);
+    let far = 0;
+    for (let sl = 0; sl < S; sl++) {
+      let k = add(mul(way, S), sl);
+      if ((gt(elem(this.bq, k), 0) && eq(elem(this.bwho, k), (-1)))) {
+        let d = Fmt.hypot(sub(div(elem(this.bsx, k), elem(this.bq, k)), h.x), sub(div(elem(this.bsy, k), elem(this.bq, k)), h.y));
+        if ((lt(best, 0) || lt(d, far))) {
+          best = sl;
+          far = d;
+        }
+      }
+    };
+    return best;
   }
   get meet_gathered() {
     let B = this.gather;
@@ -8361,38 +8903,66 @@ export class Medium extends Node {
           wy[b] = add(elem(wy, b), mul(elem(got, 0), elem(got, 2)));
         }
       };
-      for (let a = 0; a < B; a++) {
-        if (gt(elem(sums, a), 0)) {
-          let na = Fmt.hypot(elem(wx, a), elem(wy, a));
-          let ax = (gt(na, 0) ? div(elem(wx, a), na) : 0);
-          let ay = (gt(na, 0) ? div(elem(wy, a), na) : 0);
-          for (let b = 0; b < B; b++) {
-            if ((!eq(b, a) && gt(elem(sums, b), 0))) {
-              let nb = Fmt.hypot(elem(wx, b), elem(wy, b));
-              let over = (gt(nb, 0) ? this.facing_share(ax, ay, div(elem(wx, b), nb), div(elem(wy, b), nb)) : 0);
-              if (gt(over, 0)) {
-                for (const t of [...this.meets]) {
-                  let w = mul(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(elem(sums, b))), over);
-                  this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
-                  this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
-                  this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
-                };
-              }
-            }
-          };
-          if (this.vacuum) {
-            for (const t of [...this.meets]) {
-              let w = div(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(this.rho_inf)), this.DEG);
-              this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
-              this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
-              this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
-            };
-          }
-        }
+      this.meet_bins(c, s, sums, wx, wy);
+    };
+  }
+  get meet_local() {
+    let B = this.gather;
+    for (let c = 0; c < this.cells; c++) {
+      let x = this.column_of(c);
+      let y = this.row_of(c);
+      let s = this.symbols(elem(this.rho_was, c), elem(this.nf_was, c));
+      let sums = filled(B, 0);
+      let wx = filled(B, 0);
+      let wy = filled(B, 0);
+      for (let b = 0; b < B; b++) {
+        for (let sl = 0; sl < this.keeps; sl++) {
+          let got = this.held_to(add(mul((add(mul(c, B), b)), this.keeps), sl), x, y);
+          sums[b] = add(elem(sums, b), elem(got, 0));
+          wx[b] = add(elem(wx, b), mul(elem(got, 0), elem(got, 1)));
+          wy[b] = add(elem(wy, b), mul(elem(got, 0), elem(got, 2)));
+        };
       };
+      sums[0] = add(elem(sums, 0), elem(this.middle, c));
+      this.meet_bins(c, s, sums, wx, wy);
+    };
+  }
+  meet_bins(c: number, s: object, sums: number[], wx: number[], wy: number[]) {
+    let B = this.gather;
+    for (let a = 0; a < B; a++) {
+      if (gt(elem(sums, a), 0)) {
+        let na = Fmt.hypot(elem(wx, a), elem(wy, a));
+        let ax = (gt(na, 0) ? div(elem(wx, a), na) : 0);
+        let ay = (gt(na, 0) ? div(elem(wy, a), na) : 0);
+        for (let b = 0; b < B; b++) {
+          if ((!eq(b, a) && gt(elem(sums, b), 0))) {
+            let nb = Fmt.hypot(elem(wx, b), elem(wy, b));
+            let over = (gt(nb, 0) ? this.facing_share(ax, ay, div(elem(wx, b), nb), div(elem(wy, b), nb)) : 0);
+            if (gt(over, 0)) {
+              for (const t of [...this.meets]) {
+                let w = mul(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(elem(sums, b))), over);
+                this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
+                this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
+                this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
+              };
+            }
+          }
+        };
+        if (this.vacuum) {
+          for (const t of [...this.meets]) {
+            let w = div(mul(mul(this.share(t, s), this.activity(elem(sums, a))), this.activity(this.rho_inf)), this.DEG);
+            this.fold[c] = Fmt.max(0, add(elem(this.fold, c), div(mul(w, t.doing.folds.at(s)), 2)));
+            this.growth[c] = add(elem(this.growth, c), div(mul(w, t.doing.space.at(s)), 2));
+            this.gone[c] = add(elem(this.gone, c), div(mul(w, Math.abs(t.doing.folds.at(s))), 2));
+          };
+        }
+      }
     };
   }
   get meet() {
+    if (this.local_rays) {
+      return this.meet_local;
+    }
     if (this.apart) {
       return this.meet_gathered;
     }
@@ -8565,9 +9135,15 @@ export class Medium extends Node {
           rate = add(rate, div(mul(this.share(t, s), t.doing.folds.at(s)), 2));
         };
         let stood = this.tap(this.stand, 0, px, py, 0);
+        if (this.local_rays) {
+          let came = this.arriving_at(px, py, zown);
+          let per = div(rate, ((this.crowd ? add(1, stood) : 1)));
+          gx = sub(gx, mul(per, elem(came, 1)));
+          gy = sub(gy, mul(per, elem(came, 2)));
+        }
         for (let i = 0; i < sub(this.planes, 1); i++) {
           let z = add(i, 1);
-          if (!(eq(z, zown))) {
+          if (!((eq(z, zown) || this.local_rays))) {
             let came = this.sent_to(z, px, py);
             let share = div(mul(rate, this.activity(elem(came, 0))), ((this.crowd ? add(1, stood) : 1)));
             gx = sub(gx, mul(share, elem(came, 1)));
@@ -8593,6 +9169,14 @@ export class Medium extends Node {
   }))); }
   set swept(v: number[][]) { this.write("swept", v); }
   get sweep() {
+    if (this.local_rays) {
+      for (let c = 0; c < this.cells; c++) {
+        elem(this.swept, 1)[c] = this.held_at(c);
+      };
+    }
+    if (this.local_rays) {
+      return;
+    }
     for (let i = 0; i < sub(this.planes, 1); i++) {
       let z = add(i, 1);
       for (let c = 0; c < this.cells; c++) {
@@ -8601,8 +9185,13 @@ export class Medium extends Node {
     };
   }
   get tick() {
-    this.stream;
-    this.shine;
+    if (this.local_rays) {
+      this.stream_local;
+      this.shine_local;
+    } else {
+      this.stream;
+      this.shine;
+    }
     this.open;
     this.meet;
     this.unfold;
@@ -8639,7 +9228,7 @@ export class Medium extends Node {
     return this.block;
   }
   arrived(z: number, c: number): number {
-    return elem(elem(this.swept, (lt(z, this.planes) ? z : sub(this.planes, 1))), c);
+    return (this.local_rays ? elem(elem(this.swept, (ge(z, 1) ? 1 : 0)), c) : elem(elem(this.swept, (lt(z, this.planes) ? z : sub(this.planes, 1))), c));
   }
   record_at(c: number): number {
     return elem(this.fold, c);
@@ -8650,6 +9239,9 @@ export class Medium extends Node {
     }));
   }
   get seed() {
+    if (this.local_rays) {
+      return this.seed_local;
+    }
     for (let z = 0; z < this.planes; z++) {
       for (let r = 0; r < this.rungs; r++) {
         elem(this.beam, z)[r] = 0;
@@ -11522,6 +12114,103 @@ export class Galaxies extends Node {
       return new Forming({ formed: got });
     }) });
   }
+  static get medium(): Picture {
+    let got = Measured.of(`galaxy.medium`);
+    if (eq(got, null)) {
+      fail(`galaxy.medium is not on disk - run it (deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts . with RAY_ONLY=medium-galaxy) and try again`);
+    }
+    return new Picture({ id: `galaxy.medium`, what: `a disc of stars in the medium itself, every star its own body and every step local: launched circling at what the medium pulls it with, then left to the medium - whatever forms`, width: 960, height: 900, frames: got.header[`frames`], paint: ((played: (Played | null)) => {
+      return new HeldDisc({ formed: got });
+    }) });
+  }
+  static medium_panel(s: Surface, formed: Measured, frame_at: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let H = formed.header;
+    let G = H[`grid`];
+    let FR = H[`frames`];
+    let f = Fmt.min(frame_at, sub(FR, 1));
+    let D = formed.columns[`density`];
+    s.font(`13px ui-monospace, monospace`);
+    s.fill_style(Galaxies.SEEN);
+    s.text_align(`left`);
+    s.fill_text(`A GALAXY IN THE MEDIUM, EVERY STAR ITS OWN`, 22, 26);
+    s.font(`11px ui-monospace, monospace`);
+    s.fill_style(Galaxies.FAINT);
+    let stars_n = H[`stars`];
+    let tick = elem(H[`ticks`], f);
+    let deg = H[`deg`];
+    let side_n = H[`side`];
+    s.fill_text(`${stars_n} stars, each its own body, held where the rays are - every step local, nothing but the medium (DEG ${deg}, a ${side_n}-cell box) - tick ${tick}`, 22, 44);
+    let side = Fmt.min(sub(s.width, 44), sub(s.height, 230));
+    let ox = div((sub(s.width, side)), 2);
+    let oy = 60;
+    let base = mul(mul(f, G), G);
+    let top = 0;
+    for (let c = 0; c < mul(G, G); c++) {
+      top = Fmt.max(top, elem(D, add(base, c)));
+    };
+    let cell = div(side, G);
+    for (let cy = 0; cy < G; cy++) {
+      for (let cx = 0; cx < G; cx++) {
+        let v = elem(D, add(add(base, mul(cy, G)), cx));
+        if (gt(v, 0)) {
+          let t = Fmt.min(1, div(Math.log((add(1, v))), Math.log((add(1, top)))));
+          let r = Math.round((add(40, mul(mul(215, t), t))));
+          let gr = Math.round((add(60, mul(190, t))));
+          let b = Math.round((add(110, mul(145, Fmt.min(1, mul(1.6, t))))));
+          s.fill_style(`rgb(${r},${gr},${b})`);
+          s.fill_rect(add(ox, mul(cx, cell)), add(oy, mul((sub(sub(G, 1), cy)), cell)), add(cell, 0.5), add(cell, 0.5));
+        }
+      };
+    };
+    s.stroke_style(Galaxies.GRID);
+    s.stroke_rect(ox, oy, side, side);
+    let rd = Fmt.fixed(elem(H[`scale`], 0), 1);
+    let across = Fmt.fixed(mul(2, elem(H[`span`], 0)), 0);
+    let speed = Fmt.fixed(H[`speed`], 4);
+    s.fill_style(Galaxies.SEEN);
+    s.fill_text(`R_d ${rd} c-bar, ${across} c-bar across; circling at R_d ${speed} c-bar a tick`, ox, add(add(oy, side), 18));
+    let series = Galaxies.arms_of(formed, 0);
+    let sx0 = ox;
+    let sx1 = add(ox, side);
+    let sy0 = add(add(oy, side), 46);
+    let sy1 = add(add(oy, side), 136);
+    let topA = 0.6;
+    s.stroke_style(Galaxies.GRID);
+    s.stroke_rect(sx0, sy0, sub(sx1, sx0), sub(sy1, sy0));
+    let inks = [`#4aa8eb`, `#f2e05a`, `#eb964a`];
+    for (let k = 0; k < 3; k++) {
+      s.stroke_style(elem(inks, k));
+      s.line_width(1.5);
+      s.begin_path;
+      for (let j = 0; j < add(f, 1); j++) {
+        let px = add(sx0, div(mul((sub(sx1, sx0)), j), sub(FR, 1)));
+        let py = sub(sy1, mul((sub(sy1, sy0)), Fmt.min(div(elem(elem(series, j), add(k, 2)), topA), 1)));
+        if (eq(j, 0)) {
+          s.move_to(px, py);
+        } else {
+          s.line_to(px, py);
+        }
+      };
+      s.stroke;
+    };
+    s.line_width(1);
+    s.font(`10px ui-monospace, monospace`);
+    let now = elem(series, f);
+    let a2 = Fmt.fixed(elem(now, 2), 3);
+    let a3 = Fmt.fixed(elem(now, 3), 3);
+    let a4 = Fmt.fixed(elem(now, 4), 3);
+    s.fill_style(elem(inks, 0));
+    s.fill_text(`m=2 ${a2}`, sx0, sub(sy0, 4));
+    s.fill_style(elem(inks, 1));
+    s.fill_text(`m=3 ${a3}`, add(sx0, 90), sub(sy0, 4));
+    s.fill_style(elem(inks, 2));
+    s.fill_text(`m=4 ${a4}`, add(sx0, 176), sub(sy0, 4));
+    s.fill_style(Galaxies.FAINT);
+    s.fill_text(`arm strength, 1-3 R_d, 0 to 0.6 (smooth ≈ 1/sqrt of the stars)`, sx0, add(sy1, 14));
+    return s.font(`11px ui-monospace, monospace`);
+  }
   static formed_panel(s: Surface, formed: Measured, frame_at: number) {
     s.fill_style(Galaxies.BACK);
     s.fill_rect(0, 0, s.width, s.height);
@@ -11626,11 +12315,12 @@ export class Galaxies extends Node {
     };
   }
   static arms_of(formed: Measured, g: number): number[][] {
-    let key = `${g}`;
+    let H = formed.header;
+    let about = H[`about`];
+    let key = `${g}:${about}`;
     if (!eq(elem(Galaxies.ARMS, key), null)) {
       return elem(Galaxies.ARMS, key);
     }
-    let H = formed.header;
     let G = H[`grid`];
     let FR = H[`frames`];
     let D = formed.columns[`density`];
@@ -11865,6 +12555,17 @@ export class Forming extends Painter {
   }
 }
 
+export class HeldDisc extends Painter {
+  get formed(): Measured { return this.read("formed"); }
+  set formed(v: Measured) { this.write("formed", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    Galaxies.medium_panel(s, this.formed, this.shown_frames);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
 export class Annulus extends Node {
   get inner(): number { return this.read("inner"); }
   set inner(v: number) { this.write("inner", v); }
@@ -11883,6 +12584,22 @@ export class Annulus extends Node {
         let bend = mul(mul(2, half), half);
         let d2 = add(add(mul((sub(r, rs)), (sub(r, rs))), mul(mul(mul(2, r), rs), bend)), mul(this.thick, this.thick));
         ring = add(ring, div((add((sub(r, rs)), mul(rs, bend))), (mul(d2, Math.sqrt(d2)))));
+      };
+      total = add(total, div(mul(rs, ring), nphi));
+      weight = add(weight, rs);
+    };
+    return (gt(weight, 0) ? div(total, weight) : 0);
+  }
+  arrives(r: number, nsub: number, nphi: number): number {
+    let total = 0;
+    let weight = 0;
+    for (let s = 0; s < nsub; s++) {
+      let rs = add(this.inner, div(mul((sub(this.outer, this.inner)), (add(s, 0.5))), nsub));
+      let ring = 0;
+      for (let p = 0; p < nphi; p++) {
+        let half = Math.sin((div(div(mul(Math.PI, (add(p, 0.5))), nphi), 2)));
+        let d2 = add(add(mul((sub(r, rs)), (sub(r, rs))), mul(mul(mul(mul(4, r), rs), half), half)), mul(this.thick, this.thick));
+        ring = add(ring, div(1, d2));
       };
       total = add(total, div(mul(rs, ring), nphi));
       weight = add(weight, rs);
@@ -11917,6 +12634,7 @@ export class Simulation extends Node {
   static THREAD = `  let i: u32 = P[7] + gid.y * 65536u + gid.x;`;
   static ENTRY = `@compute @workgroup_size(64) fn`;
   static ID = `(@builtin(global_invocation_id) gid: vec3<u32>) {`;
+  static OMEGA_M = 0.315;
   static FILM_STARS = 4096;
   static FILM_TURNS = 0.5;
   static SKY_EDGE = 4;
@@ -11946,7 +12664,7 @@ export class Simulation extends Node {
   }
   static get pull_kernel(): string {
     let pi = Shaded.literal(Math.PI);
-    return [`// GENERATED from Simulation.ray: PULL - an annulus summed element by element at a radius in its plane, per unit of G M`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> T: array<f32>;`, `@group(0) @binding(2) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} PULL${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let r: f32 = T[4u * i];`, `  let e0: f32 = T[4u * i + 1u];`, `  let e1: f32 = T[4u * i + 2u];`, `  let h: f32 = T[4u * i + 3u];`, `  var total: f32 = 0.0;`, `  var weight: f32 = 0.0;`, `  for (var s: u32 = 0u; s < P[1]; s = s + 1u) {`, `    let rs: f32 = e0 + (e1 - e0) * (f32(s) + 0.5) / f32(P[1]);`, `    var ring: f32 = 0.0;`, `    for (var p: u32 = 0u; p < P[2]; p = p + 1u) {`, `      let sh: f32 = sin(${pi} * (f32(p) + 0.5) / f32(P[2]) / 2.0);`, `      let bend: f32 = 2.0 * sh * sh;`, `      let d2: f32 = (r - rs) * (r - rs) + 2.0 * r * rs * bend + h * h;`, `      ring = ring + ((r - rs) + rs * bend) / (d2 * sqrt(d2));`, `    }`, `    total = total + rs * ring / f32(P[2]);`, `    weight = weight + rs;`, `  }`, `  if (weight > 0.0) { O[i] = total / weight; } else { O[i] = 0.0; }`, `}`].join(`\n`);
+    return [`// GENERATED from Simulation.ray: PULL - an annulus summed element by element at a radius in its plane, per unit of G M`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> T: array<f32>;`, `@group(0) @binding(2) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} PULL${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let r: f32 = T[4u * i];`, `  let e0: f32 = T[4u * i + 1u];`, `  let e1: f32 = T[4u * i + 2u];`, `  let h: f32 = T[4u * i + 3u];`, `  var total: f32 = 0.0;`, `  var weight: f32 = 0.0;`, `  for (var s: u32 = 0u; s < P[1]; s = s + 1u) {`, `    let rs: f32 = e0 + (e1 - e0) * (f32(s) + 0.5) / f32(P[1]);`, `    var ring: f32 = 0.0;`, `    for (var p: u32 = 0u; p < P[2]; p = p + 1u) {`, `      let sh: f32 = sin(${pi} * (f32(p) + 0.5) / f32(P[2]) / 2.0);`, `      let bend: f32 = 2.0 * sh * sh;`, `      let d2: f32 = (r - rs) * (r - rs) + 2.0 * r * rs * bend + h * h;`, `      if (P[3] == 1u) { ring = ring + 1.0 / d2; } else { ring = ring + ((r - rs) + rs * bend) / (d2 * sqrt(d2)); }`, `    }`, `    total = total + rs * ring / f32(P[2]);`, `    weight = weight + rs;`, `  }`, `  if (weight > 0.0) { O[i] = total / weight; } else { O[i] = 0.0; }`, `}`].join(`\n`);
   }
   static get law_kernel(): string {
     return [`// GENERATED from Simulation.ray: LAW - what is felt at every place of every galaxy`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> Q: array<f32>;`, `@group(0) @binding(3) var<storage, read> N: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> O: array<f32>;`, Simulation.law_wgsl, `${Simulation.ENTRY} LAW${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let slot: u32 = u32(Q[6u * i]);`, `  let gN: f32 = N[4u * slot] * Q[6u * i + 2u] + N[4u * slot + 1u] * Q[6u * i + 4u] + Q[6u * i + 3u];`, `  O[i] = felt(gN, N[4u * slot + 2u]);`, `}`].join(`\n`);
@@ -12002,6 +12720,20 @@ export class Simulation extends Node {
     };
     push(out, add(elem(elem(rs, sub(n, 1)), 0), div((sub(elem(elem(rs, sub(n, 1)), 0), elem(elem(rs, sub(n, 2)), 0))), 2)));
     return out;
+  }
+  static bulge_arrives(rs: any[], r: number, h: number): number {
+    let got = 0;
+    let was = 0;
+    for (const row of [...rs]) {
+      let inside = Fmt.max(was, mul(mul(elem(row, 5), Math.abs(elem(row, 5))), elem(row, 0)));
+      let m = sub(inside, was);
+      let a = elem(row, 0);
+      if ((gt(m, 0) && gt(r, 0))) {
+        got = add(got, div(mul(m, Math.log((div((add(r, a)), Fmt.max(Math.abs((sub(r, a))), h))))), (mul(mul(2, a), r))));
+      }
+      was = inside;
+    };
+    return got;
   }
   static bulge_at(rs: any[], r: number): number {
     let n = rs.length;
@@ -12319,6 +13051,95 @@ export class Simulation extends Node {
       };
       push(this.tables, tab);
     };
+  }
+  get seen_rows(): any[] { return this.read("seen_rows", () => []); }
+  set seen_rows(v: any[]) { this.write("seen_rows", v); }
+  arrive(spulls: number[]) {
+    this.seen_rows = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let rs = elem(this.rows, j);
+      let n = sub(elem(this.edges, j).length, 1);
+      let here = [];
+      for (let i = 0; i < rs.length; i++) {
+        let sd = 0;
+        let sg = 0;
+        for (let a = 0; a < n; a++) {
+          let k = elem(spulls, add(add(elem(this.measured_at, j), mul(i, n)), a));
+          sd = add(sd, mul(k, elem(elem(this.w_discs, j), a)));
+          sg = add(sg, mul(k, elem(elem(this.w_gases, j), a)));
+        };
+        push(here, [sd, sg, Simulation.bulge_arrives(rs, elem(elem(rs, i), 0), elem(this.thick, j))]);
+      };
+      push(this.seen_rows, here);
+    };
+  }
+  static lift_coefficients(theory: Theory, deg: number): number[] {
+    let model = new Model({ theory: theory });
+    let e = model.settled(deg);
+    let line = model.fact(`the space line nets`);
+    let slope = (eq(line, null) ? NaN : model.at(Expr.d(line.to, `\\rho`), e));
+    let v = model.value_of(`\\frac{a_{0}}{cH}`, e);
+    let m = theory.medium(11, 96, 3, deg, 2);
+    m.vacuum = true;
+    m.facing = true;
+    let s = m.symbols(m.rho_inf, 0);
+    let rate = 0;
+    for (const t of [...m.meets]) {
+      rate = add(rate, div(mul(m.share(t, s), t.doing.folds.at(s)), 2));
+    };
+    let sf = mul(e[`\\sigma`], e[`F`]);
+    let D = theory.lattice.D;
+    return [div(mul(Math.abs(slope), v), (mul(rate, D))), div(mul(mul(4, sf), v), (mul(rate, D))), Math.abs(slope), v, rate, sf];
+  }
+  static get hubble0(): number {
+    return div(mul(Galaxies.H0, 1000), (mul(Sparc.KPC, 1000)));
+  }
+  static hubble_at(z: number): number {
+    return mul(Simulation.hubble0, Math.sqrt((sub(add(mul(Simulation.OMEGA_M, Math.pow((add(1, z)), 3)), 1), Simulation.OMEGA_M))));
+  }
+  static age_at(z: number): number {
+    let L = sub(1, Simulation.OMEGA_M);
+    let x = mul(Math.sqrt((div(L, Simulation.OMEGA_M))), Math.pow((add(1, z)), (sub(0, 1.5))));
+    return mul(div(2, (mul(mul(3, Simulation.hubble0), Math.sqrt(L)))), Math.log((add(x, Math.sqrt((add(mul(x, x), 1)))))));
+  }
+  static a0_then(a0: number, z: number, how: string): number {
+    if (eq(how, `age`)) {
+      return div(mul(a0, Simulation.age_at(0)), Simulation.age_at(z));
+    }
+    if (eq(how, `hubble`)) {
+      return div(mul(a0, Simulation.hubble_at(z)), Simulation.hubble0);
+    }
+    return a0;
+  }
+  static epochs(shape: number[], a0: number, how: string): number[][] {
+    return Sparc.discs.map(((d: any) => {
+      let rd = div(d.Re, 1.678);
+      let gbar = mul(div(mul(mul(mul(Sparc.G_NEWTON, d.Mb), Math.pow(10, 11)), Sparc.MSUN), (Math.pow((mul(rd, Sparc.KPC)), 2))), Simulation.shape_at(shape, 1.678));
+      let a = Simulation.a0_then(a0, d.redshift, how);
+      let g = add(div(gbar, 2), Math.sqrt((add(div(mul(gbar, gbar), 4), mul(gbar, a)))));
+      return [d.redshift, gbar, d.fraction, d.err, (d.limit ? 1 : 0), sub(1, div(gbar, g))];
+    }));
+  }
+  lift_test(kappa: number, a0: number): number[] {
+    let off = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      for (let i = 0; i < elem(this.rows, j).length; i++) {
+        let row = elem(elem(this.rows, j), i);
+        if (gt(elem(row, 6), 0)) {
+          let p = elem(elem(this.at_rows, j), i);
+          let q = elem(elem(this.seen_rows, j), i);
+          let gN = add(add(mul(Sparc.YD, elem(p, 0)), mul(Sparc.YB, elem(p, 2))), elem(p, 1));
+          let gs = add(add(mul(Sparc.YD, elem(q, 0)), mul(Sparc.YB, elem(q, 2))), elem(q, 1));
+          let a = add(a0, mul(kappa, Fmt.max(gs, 0)));
+          let g = (gt(gN, 0) ? Law.boost(gN, a) : ((lt(gN, 0) ? sub(0, Law.boost(sub(0, gN), a)) : 0)));
+          let v = Math.sqrt(Fmt.max(mul(elem(row, 0), g), 0));
+          if (gt(v, 0)) {
+            push(off, Fmt.log10(div(v, elem(row, 1))));
+          }
+        }
+      };
+    };
+    return [Simulation.rms(off), Fmt.median(off)];
   }
   get law_table(): number[] {
     let A0 = Law.a0;
@@ -14156,7 +14977,7 @@ export class Measure extends Node {
 export const G = new (class G extends Theory {
   name = `G`;
   get lattice(): Geometry {
-    return CUBIC18;
+    return BCC8;
   }
   static "rule 1" = new Rule({ id: "/1", name: "Annihilation", rate: "σ", over: "Edge", single: true, where: ((it: any) => {
     return it.active;
@@ -14665,18 +15486,18 @@ export const G = new (class G extends Theory {
 })()
 
 Object.defineProperty(G, "equation", { value: { latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega", terms: [
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "s.F", at: (s: any) => s.F }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "(1 - s.ρ) * s.F", at: (s: any) => mul((sub(1, s.ρ)), s.F) }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "(1 - s.ρ) * s.F", at: (s: any) => mul((sub(1, s.ρ)), s.F) }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f / s.DEG * (1 - s.ρ)", at: (s: any) => mul(div(s.n_f, s.DEG), (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f / s.DEG", at: (s: any) => div(s.n_f, s.DEG) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f * (1 - s.ρ)", at: (s: any) => mul(s.n_f, (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f", at: (s: any) => s.n_f }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: true, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/4", rate: null, name: "Arrival", over: "Ray", where: null, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE" }, rate: null, degree: 0, outside: false, settles: true, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: true, share: { source: "1", at: (s: any) => 1 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 0, outside: true, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: true, settles: false, share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, asked: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "2", at: (s: any) => 2 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "s.F", at: (s: any) => s.F }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f / s.DEG * (1 - s.ρ)", at: (s: any) => mul(div(s.n_f, s.DEG), (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f / s.DEG", at: (s: any) => div(s.n_f, s.DEG) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f * (1 - s.ρ)", at: (s: any) => mul(s.n_f, (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f", at: (s: any) => s.n_f }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: true, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/4", rate: null, name: "Arrival", over: "Ray", where: null, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE" }, rate: null, degree: 0, outside: false, settles: true, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: true, share: { source: "1", at: (s: any) => 1 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 0, outside: true, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: true, settles: false, share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, asked: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
 ] } });
 
 export const LINE2 = Geometry.shells(1, [1]);
@@ -14686,6 +15507,7 @@ export const CUBIC6 = Geometry.shells(3, [1]);
 export const FCC12 = Geometry.shells(3, [2]);
 export const CUBIC18 = Geometry.shells(3, [1, 2]);
 export const CUBIC26 = Geometry.shells(3, [1, 2, 3]);
+export const BCC8 = Geometry.shells(3, [3]);
 export const sep2 = `, `;
 export const plus = ` + `;
 export const ind2 = `  `;

@@ -32,26 +32,26 @@ term: - \sigmaFn\tilde{n}
 
 ANNIHILATION contributes it: its body comes to -2 rays and -1 points of space, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
 
-**\sigma\paren{1 - \rho}·Fn\tilde{n} = carried**  
+**\sigma0n\tilde{n} = carried**  
 <sub>rule · ANNIHILATION</sub>  
 
 ```
 rays: 0
 space: 1
 degree: 2, across an edge
-term: + \sigma\paren{1 - \rho}·Fn\tilde{n}
+term: + \sigma0n\tilde{n}
 ```
 
 ANNIHILATION contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
 
-**\sigma\paren{1 - \rho}·Fn\tilde{n} = carried**  
+**\sigma0n\tilde{n} = carried**  
 <sub>rule · ANNIHILATION</sub>  
 
 ```
 rays: 0
 space: 1
 degree: 2, across an edge
-term: + \sigma\paren{1 - \rho}·Fn\tilde{n}
+term: + \sigma0n\tilde{n}
 ```
 
 ANNIHILATION contributes it: its body moves the population without making or taking any, its quantifier makes it of degree 2 in the density across an edge, which is the facing factor, and its gates let through what they let through
@@ -164,13 +164,13 @@ term: + \omegal.m̄
 
 no rewrite of the model puts it there - it is what is put into the box from outside, and the only place anything about a particular problem can be written
 
-**\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}} + \partial_{t}n = 2·\sigma\paren{1 - \rho}·Fn\tilde{n} + \nu\paren{1 - \rho} + \nu\frac{n_{f}·\paren{1 - \rho}}{DEG} + \nun_{f}·\paren{1 - \rho} + \sigma\paren{1 - \omega}n + \sigma\omegan + \omegal.m̄ - \sigmaFn\tilde{n}**  
+**\hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}} + \partial_{t}n = 2·\sigma0n\tilde{n} + \nu\paren{1 - \rho} + \nu\frac{n_{f}·\paren{1 - \rho}}{DEG} + \nun_{f}·\paren{1 - \rho} + \sigma\paren{1 - \omega}n + \sigma\omegan + \omegal.m̄ - \sigmaFn\tilde{n}**  
 <sub>theorem · and the terms add</sub>  
 
 ```
 - \sigmaFn\tilde{n}   (ANNIHILATION)
-+ \sigma\paren{1 - \rho}·Fn\tilde{n}   (ANNIHILATION)
-+ \sigma\paren{1 - \rho}·Fn\tilde{n}   (ANNIHILATION)
++ \sigma0n\tilde{n}   (ANNIHILATION)
++ \sigma0n\tilde{n}   (ANNIHILATION)
 + \nu\paren{1 - \rho}   (CREATION)
 + \nu\frac{n_f·\paren{1 - \rho}}{DEG}   (CREATION)
 + \nun_f·\paren{1 - \rho}   (CREATION)
@@ -181,7 +181,7 @@ no rewrite of the model puts it there - it is what is put into the box from outs
 + \partial_tn   (ARRIVAL)
 + \omegal.m̄   (not a rule)
 (\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}} + \hat{d}·\nabla_{l} + \paren{\nabla n_{f}}·\nabla_{\hat{d}})n = -\sigmaFn\tilde{n} + \nu\paren{1 - \rho} + \omegal.m̄
-\partial_ts = -\sigmaFn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \sigma\paren{1 - \rho}·Fn\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
+\partial_ts = -\sigmaFn\tilde{n} + \sigma0n\tilde{n} + \sigma0n\tilde{n} + \nun_f·\paren{1 - \rho} + \sigma\paren{1 - \omega}n
 ```
 
 the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing

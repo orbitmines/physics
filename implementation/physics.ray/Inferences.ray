@@ -620,11 +620,20 @@ Inferences := class {
     fire: (s: Store) => {
       rec := s.fact("is", "the space line nets")
       a0 := s.fact("is", "the rate space is made")
+      /* and what the world's matter grows: the vacuum's own meetings grow nothing, so this is where the growth is */
+      mat := s.fact("is", "the world's matter grows")
+      /* and what the empty vacuum grows on its own, its beat left to itself */
+      eps := s.fact("is", "\\varepsilon")
       return [] if rec == None | a0 == None | s.has("is", "H")
-      H := Expr.simplify(Expr.mul([rec.to, Expr.pown(Inferences.D, -1)]))
-      [Inferences.step("H", H, "the rate the whole of it expands at", [rec.key, a0.key],
+      grows := mat == None ? rec.to : Expr.add([rec.to, mat.to])
+      grows = eps == None ? grows : Expr.add([grows, eps.to])
+      H := Expr.simplify(Expr.mul([grows, Expr.pown(Inferences.D, -1)]))
+      own := eps == None ? [] : [Inferences.step("H_{{\\Lambda}}", Expr.simplify(Expr.mul([eps.to, Expr.pown(Inferences.D, -1)])), "the rate the empty vacuum expands at", [eps.key],
+        "of what the world grows by, the part the empty vacuum grows on its own: it does not thin as the matter does, so it is the same rate at every epoch - a cosmological constant, and the one rate a scale can be set by",
+        ["H_{{\\Lambda}} = \\varepsilon/D"])]
+      own.concat([Inferences.step("H", H, "the rate the whole of it expands at", mat == None ? [rec.key, a0.key] : [rec.key, a0.key, mat.key],
         "every point makes a_{{0}} of room a tick, so what is inside a radius grows at that times how many points there are - which ehrhart counted as R^{{D}}. Turning a growth in ROOM into a growth in RADIUS goes through that count, and it leaves a_{{0}}/D rather than a_{{0}}. Reading recession/R instead gives the rate along a LINE, which is what receding is about and is not what a Hubble rate stands: the line has R points in it and the ball has R^{{D}}, and the difference is a count of the tiling",
-        ["every point makes a_{{0}} = {Expr.show(a0.to)} a tick", "inside R there are R^{{D}} of them, so \\dot{{V}} = a_{{0}}V with V \\propto R^{{D}}", "DR^{{D-1}}\\dot{{R}} = a_{{0}}R^{{D}}", "H = (what the space line nets)/D = {Expr.show(H)}", "and the frontier grows one cell a tick, so R = t and H_{{0}} = 1/t_{{0}}"])]
+        ["every point makes a_{{0}} = {Expr.show(a0.to)} a tick", "inside R there are R^{{D}} of them, so \\dot{{V}} = a_{{0}}V with V \\propto R^{{D}}", "DR^{{D-1}}\\dot{{R}} = a_{{0}}R^{{D}}", "H = (what the space line nets + what the world's matter grows + what the empty vacuum grows)/D = {Expr.show(H)}"])])
     })
 
   static expansion_scale (): Inference => Inference(name: "the acceleration the expansion builds",
@@ -701,8 +710,11 @@ Inferences := class {
       lam := s.fact("is", "\\lambda")
       spd := s.fact("is", "v")
       hub := s.fact("is", "H")
+      /* the empty vacuum's own growth, where the chain has it: the rate that does not change with the world's matter or its age */
+      own := s.fact("is", "H_{{\\Lambda}}")
       return [] if gN == None | lam == None | spd == None | hub == None | s.has("is", "F_{{g}}")
-      scale := Expr.simplify(Expr.mul([spd.to, hub.to]))
+      rate := own == None ? hub : own
+      scale := Expr.simplify(Expr.mul([spd.to, rate.to]))
       g := Expr.field("g_{{N}}")
       a := Expr.field("a_{{0}}")
       half := Expr.mul([g, Expr.num(0.5)])
@@ -710,9 +722,9 @@ Inferences := class {
       one := Expr.root(Expr.simplify(Expr.sub(Expr.mul([g, Expr.add([Expr.num(1), Expr.mul([a, Expr.pown(Expr.field("g"), -1)])])]), Expr.field("g"))), "g")
       via := "the phase between the two pulses, which the body's own acceleration keeps from cancelling"
       [
-        Inferences.step("a_{{0}}", scale, via, [hub.key, spd.key],
-          "WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (`Medium` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_{{0}} = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_{{0}}/cH comes out as v itself, a count of the tiling and nothing else",
-          ["a meeting ends a carrier; the beginning ends the counting", "the age: t_{{0}} = 1/H, since the frontier grows one cell a tick", "v = {Expr.show(spd.to)}", "H = {Expr.show(hub.to)}", "a_{{0}} = v/t_{{0}} = vH = {Expr.show(scale)}"]),
+        Inferences.step("a_{{0}}", scale, via, [rate.key, spd.key],
+          "THE SCALE IS THE EMPTY VACUUM'S OWN GROWTH, v H_{{\\Lambda}}, and it is the same at every place and every epoch. Read at the place, as the growth the matter there makes, it would change gravity where it is best measured (a planet's orbit) by far more than it allows unless the world's matter is too thin to lift anything; read as the age, or as the whole world's growth rate, a_{{0}} was three to four times larger at z = 2 and Genzel's six discs would carry dark fractions of 0.3 where they carry at most 0.2 - so neither. What does not change with the matter or the age is the vacuum's own growth, the rate at which its beat, left to itself, grows points: that is H_{{\\Lambda}}, and a_{{0}} = v H_{{\\Lambda}}. Measured, a_{{0}}/cH_{{0}} = v \\sqrt{{\\Omega_{{\\Lambda}}}}, a coincidence of this epoch. It was read before as: WHAT ENDS THE ACCUMULATION IS THE BEGINNING, not a meeting. A meeting ends a CARRIER, and the mean free path is how far one gets - but nothing of a body's rays is ended by the vacuum it rides through: what is sent at a distance is what was sent, spread, and the medium carries it as far as there is medium (`Medium` streams a body's rays with no absorption at all, and the pull it gives falls as the shell does and no faster). The phase, though, is counted in TICKS against the vacuum's own beat, and there have only ever been so many of them: the frontier grows one cell a tick, so the age is t_{{0}} = 1/H and the longest a mismatch can have been piling up is that. So the scale is v over the age, which is vH - and a_{{0}}/cH comes out as v itself, a count of the tiling and nothing else",
+          ["the scale is set by what does not change: the empty vacuum's own growth", "v = {Expr.show(spd.to)}", "H_{{\\Lambda}} = {Expr.show(rate.to)}", "a_{{0}} = v H_{{\\Lambda}} = {Expr.show(scale)}"]),
         Inferences.step("F_{{g}} as one equation", one, via, [gN.key, lam.key],
           "what is felt is what arrives, enhanced by the mismatch that accumulated over one mean free path - and that mismatch is measured against the only rate the vacuum has, which is a_{{0}}/g. So g = g_{{N}}(1 + a_{{0}}/g), with the arrival written ONCE. Solving it is a quadratic and the answer is the line below; this is the line the rules give, and it is the one a reader can hold",
           ["the mismatch, measured against the vacuum's own rate: a_{{0}}/g", "g = g_{{N}}\\paren{{1 + \\frac{{a_{{0}}}}{{g}}}}", "and solved: {Expr.show(got)}"]),
@@ -818,9 +830,10 @@ Inferences := class {
       a0 := s.fact("is", "a_{{0}}")
       at := s.fact("is", "\\rho at R")
       return [] if a0 == None | at == None | s.has("is", "a_{{0}} along the path")
-      avg := Expr.simplify(Expr.replace(a0.to, "\\rho", Expr.field("\\langle\\rho\\rangle")))
+      /* the scale is the empty vacuum's own growth, which is the same everywhere: what a carrier crossed does not move it (tested: read as the growth where the carrier went, it breaks a planet's orbit) */
+      avg := a0.to
       [Inferences.step("a_{{0}} along the path", avg, "the scale a carrier crosses", [a0.key, at.key],
-        "the scale is one over a mean free path, and a mean free path is how far a carrier gets before meeting something ANYWHERE along its way - so the density in it is the one it crossed, \\langle\\rho\\rangle = \\frac{{1}}{{R}}\\int_{{0}}^{{R}}\\rho(s)ds, with \\rho(s) the profile `crowding` solves. Read at the far field it is the same for every body and nothing varies; read where the carrier lands it belongs to whatever is nearby; read along the path it depends on how much medium the body has crowded, which is a fact about that body",
+        "THE SAME EVERYWHERE: a_{{0}} is v H_{{\\Lambda}}, the empty vacuum's own growth, and nothing a carrier crosses changes that. Read otherwise it was: the scale is one over a mean free path, and a mean free path is how far a carrier gets before meeting something ANYWHERE along its way - so the density in it is the one it crossed, \\langle\\rho\\rangle = \\frac{{1}}{{R}}\\int_{{0}}^{{R}}\\rho(s)ds, with \\rho(s) the profile `crowding` solves. Read at the far field it is the same for every body and nothing varies; read where the carrier lands it belongs to whatever is nearby; read along the path it depends on how much medium the body has crowded, which is a fact about that body",
         ["a_{{0}} = \\sigma\\rho, and the \\rho in it is the one crossed", "\\langle\\rho\\rangle = \\frac{{1}}{{R}}\\int_{{0}}^{{R}}\\rho(s)\\,ds", "\\rho(s) = {Expr.show(at.to).take(90)}...", "a_{{0}} along the path = {Expr.show(avg)}"])]
     })
 
@@ -1028,8 +1041,13 @@ Inferences := class {
     because: "every neutral point between two bodies makes space, so the room between them grows at the net rate times how many points there are - which is how far apart they are",
     fire: (s: Store) => {
       line := s.fact("is", "the space line nets")
+      /* what the world grows by is more than the space line: the empty vacuum's own growth and the matter's meetings too */
+      eps := s.fact("is", "\\varepsilon")
+      mat := s.fact("is", "the world's matter grows")
       return [] if line == None | s.has("is", "recession")
       net := line.to
+      net = mat == None ? net : Expr.add([net, mat.to])
+      net = eps == None ? net : Expr.add([net, eps.to])
       rec := Expr.simplify(Expr.mul([net, Inferences.rbar]))
       [Inferences.step("recession", rec, "space is made between them, and there is more of it the further apart they are", [line.key],
         "the space line says every neutral point makes space at the net of what the splitting makes and the meetings take. Between two bodies there are as many such points as there is distance, so the room between them grows at that rate times that distance - nothing is pushing them and they are carried apart anyway, faster the further apart they already are",

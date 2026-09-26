@@ -187,6 +187,8 @@ TermInfo := class < term: EquationTerm {
   grown (): boolean => this.term.doing.grown
   /* the space a firing moves, split: the points the world grows, and the points this local holds */
   grew_count (): Expr => Expr.of_source(this.term.doing.grew.source)
+  /* the points it grows where its rays are bodies' rays (Doing.grew_apart) */
+  grew_apart_count (): Expr => this.term.doing.grew_apart == None ? Expr.num(0) : Expr.of_source(this.term.doing.grew_apart.source)
   held_count (): Expr => Expr.simplify(Expr.sub(this.space_count, this.grew_count))
   held (): String => Expr.show(Expr.simplify(this.held_count))
   grows (): String => Expr.show(Expr.simplify(this.grew_count))
@@ -342,6 +344,41 @@ Prover := class < theory: Theory {
           })))
       }
     })
+    /*
+     * WHAT THE WORLD GROWS BY. The vacuum's own meetings grow nothing: behind a vacuum ray stands the ray CREATE lit with
+     * it, so the rule's `unless ... .active { grow }` is shut (Reading `lit_with`), and the space line nets nought once
+     * the record has settled. What grows the world is two BODIES' rays meeting: lit by a source, not by CREATE, and out
+     * of the vacuum's phase, so they meet in its dark half with nothing behind them - the meeting rule read so
+     * (Reading `emitted`) says how many points that grows. How often it happens is the world's own matter - how much of
+     * a way carries some body's ray, \bar{n}, on the world's mean - which the rules cannot say: it is an input
+     */
+    meetings := infos.filter(t => !t.outside & t.term.rule != None & t.term.rule.over == "Edge")
+    unless meetings.empty {
+      named := meetings.first.rules.first
+      grown := Expr.simplify(Expr.add(meetings.map(t => t.grew_apart_count)))
+      out.push(Step.of(Fact.stands("what bodies' rays grow where they meet", grown), named, [],
+        "{named} read on two bodies' rays: each still leaves the point behind it where the way behind is dark, and behind a body's ray - lit by a source, not by CREATE, and met in the vacuum's dark half - nothing stands, so both gates are open",
+        ["behind a vacuum ray: the ray CREATE lit with it, so nothing is grown", "behind a body's ray in the dark half: nothing, so a point is grown", "grown a meeting = {Expr.show(grown)}"]))
+      rho_ := Prover.rho
+      out.push(Step.of(Fact.stands("\\bar{{n}}", Expr.num(0)), "the world", [],
+        "how much of a way carries some body's ray, on the world's mean - a fact about what the world holds, not about its rules, so it is put in; in the settled vacuum, with no body in it, it is nought",
+        ["\\bar{{n}} = 0 in the empty vacuum, an input where a world is asked about"]))
+      /*
+       * AND WHAT THE EMPTY VACUUM GROWS ON ITS OWN, \varepsilon: the rate at which its beat, left to itself, still grows
+       * points - where a vacuum ray comes to a meeting with the way behind it not lit together with it. Read with every way
+       * of a point lit as one event it is nought; the rules' own mixing (a step swaps points, a fold merges them) is what
+       * could break that, and that rate is not derived yet. Until it is, it stands at what the vacuum's meetings were read
+       * to grow before, 2 sigma F (1 - rho) rho^2 - a placeholder, so nothing downstream moves while it is found
+       */
+      eps := Expr.simplify(Expr.mul([Expr.num(2), Expr.field("\\sigma"), Expr.field("F"), Expr.sub(Expr.num(1), rho_), Expr.pown(rho_, 2)]))
+      out.push(Step.of(Fact.stands("\\varepsilon", eps), "the vacuum", [],
+        "what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before",
+        ["\\varepsilon = {Expr.show(eps)}, a placeholder until derived"]))
+      matter := Expr.simplify(Expr.mul([Expr.field("\\sigma"), Expr.field("F"), Expr.pown(Expr.field("\\bar{{n}}"), 2), grown]))
+      out.push(Step.of(Fact.stands("the world's matter grows", matter), named, [Fact.key_of("is", "what bodies' rays grow where they meet"), Fact.key_of("is", "\\bar{{n}}")],
+        "two bodies' rays meet as any two rays do - at the rate, facing, each end carrying - and each such meeting grows what the rule read on bodies' rays says: per point per tick, that is how much the world grows",
+        ["\\sigma F \\bar{{n}}^{{2}}: two bodies' rays facing on a way", "times {Expr.show(grown)} grown a meeting", "= {Expr.show(matter)}"]))
+    }
     /* what is made and what is taken, and the counts one firing puts in each ledger */
     acting.for(t => {
       body := Prover.body_of(t)

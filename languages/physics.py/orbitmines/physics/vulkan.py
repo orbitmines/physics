@@ -32,7 +32,7 @@ KERNELS = r"""//! tick SNAP CLEAR SWEEP TOTAL MEET0 TAKE CREATE1 CREATE2 LOCATE 
 #define rnd(x) round(x)
 #define select(a, b, c) ((c) ? (b) : (a))
 
-layout(std140, set = 0, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint outs; uint bod; uint beam; uint whom; uint track; uint rungs; uint span; uint pad2; } P;
+layout(std140, set = 0, binding = 0) uniform ParBlock { uint cells; uint A; uint N; uint K; float DEG; uint holes; uint tick; uint tags; uint z; uint entries; uint outs; uint bod; uint beam; uint whom; uint track; uint rungs; uint span; uint part; } P;
 layout(std430, set = 0, binding = 1) buffer StBlock { float st[]; };
 layout(std430, set = 0, binding = 2) buffer CelBlock { float cel[]; };
 layout(std430, set = 0, binding = 3) readonly buffer DirBlock { vec4 dir[]; };
@@ -214,7 +214,7 @@ f32 meet1_gate(f32 rho, f32 nf) {
   f32 omega = 1.0;
   f32 beta = 0.0;
   f32 DEG = P.DEG;
-  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+  return clampf(0.0, 0.0, 1.0);
 }
 
 f32 meet1_rays(f32 rho, f32 nf) {
@@ -246,7 +246,7 @@ f32 meet2_gate(f32 rho, f32 nf) {
   f32 omega = 1.0;
   f32 beta = 0.0;
   f32 DEG = P.DEG;
-  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+  return clampf(0.0, 0.0, 1.0);
 }
 
 f32 meet2_rays(f32 rho, f32 nf) {

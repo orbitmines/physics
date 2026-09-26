@@ -46,6 +46,23 @@ Annulus := class < inner: Real, outer: Real, thick: Real {
     })
     weight > 0 ? total / weight : 0
   }
+  /* and how much of it ARRIVES at that radius whichever way it comes from - every element's 1/d^2, not set against the others: the rays standing there, per unit of G M */
+  arrives (r: Real, nsub: N, nphi: N): Real => {
+    total := 0
+    weight := 0
+    Array.range(nsub).for(s => {
+      rs := this.inner + (this.outer - this.inner) * (Real.of(s) + 0.5) / Real.of(nsub)
+      ring := 0
+      Array.range(nphi).for(p => {
+        half := (Real.PI * (Real.of(p) + 0.5) / Real.of(nphi) / 2).sin
+        d2 := (r - rs) * (r - rs) + 4 * r * rs * half * half + this.thick * this.thick
+        ring = ring + 1 / d2
+      })
+      total = total + rs * ring / Real.of(nphi)
+      weight = weight + rs
+    })
+    weight > 0 ? total / weight : 0
+  }
 }
 
 Simulation := class < deg: Real {
@@ -139,7 +156,7 @@ Simulation := class < deg: Real {
       "      let sh: f32 = sin({pi} * (f32(p) + 0.5) / f32(P[2]) / 2.0);",
       "      let bend: f32 = 2.0 * sh * sh;",
       "      let d2: f32 = (r - rs) * (r - rs) + 2.0 * r * rs * bend + h * h;",
-      "      ring = ring + ((r - rs) + rs * bend) / (d2 * sqrt(d2));",
+      "      if (P[3] == 1u) {{ ring = ring + 1.0 / d2; }} else {{ ring = ring + ((r - rs) + rs * bend) / (d2 * sqrt(d2)); }}",
       "    }}",
       "    total = total + rs * ring / f32(P[2]);",
       "    weight = weight + rs;",
@@ -385,6 +402,21 @@ Simulation := class < deg: Real {
     out
   }
   /* the bulge as shells: the mass inside each measured radius off its own speed (G M = V^2 R), never shrinking outward */
+  /* the bulge's shells, what ARRIVES at r from them whichever way: a shell of radius a and mass m at r gives m ln((r + a)/|r - a|) / (2 a r) */
+  static bulge_arrives (rs: Array, r: Real, h: Real): Real => {
+    got := 0
+    was := 0
+    rs.for(row => {
+      inside := Fmt.max(was, row[5] * row[5].abs * row[0])
+      m := inside - was
+      a := row[0]
+      if m > 0 & r > 0 {
+        got = got + m * ((r + a) / Fmt.max((r - a).abs, h)).ln / (2 * a * r)
+      }
+      was = inside
+    })
+    got
+  }
   static bulge_at (rs: Array, r: Real): Real => {
     n := rs.length
     inside := []
@@ -593,6 +625,109 @@ Simulation := class < deg: Real {
       })
       this.tables.push(tab)
     })
+  }
+
+  /*
+   * WHAT ARRIVES AT A PLACE, WHICHEVER WAY IT COMES: the rays standing there, the sum of every piece's 1/d^2 rather than
+   * its pull set against the others' (PULL with P[3] = 1). Per galaxy and measured radius, [disc, gas, bulge] at a
+   * mass-to-light of one, off the same annuli and shells the pull was solved with
+   */
+  seen_rows: Array = []
+  arrive (spulls: Real[]) => {
+    this.seen_rows = []
+    Array.range(this.ids.length).for(j => {
+      rs := this.rows[j]
+      n := this.edges[j].length - 1
+      here := []
+      Array.range(rs.length).for(i => {
+        sd := 0
+        sg := 0
+        Array.range(n).for(a => {
+          k := spulls[this.measured_at[j] + i * n + a]
+          sd = sd + k * this.w_discs[j][a]
+          sg = sg + k * this.w_gases[j][a]
+        })
+        here.push([sd, sg, Simulation.bulge_arrives(rs, rs[i][0], this.thick[j])])
+      })
+      this.seen_rows.push(here)
+    })
+  }
+
+  /*
+   * THE LIFT, TWO WAYS, off the chain and the medium - nothing fitted. Near a body the vacuum makes room for what the
+   * body sends (Medium.settle_rho: vacuum and body together stand at rho_inf), so the density crossed is rho_inf - n_s,
+   * n_s the source's rays on a way; what arrives is the medium's meeting rate times those rays (Medium.pull_at); and
+   * a_0 = v 2 sigma F \bar{n}^2 / D. Then a_0 at a place is a_0 + kappa g_s, g_s what arrives there whichever way:
+   *   (1) the record held at the far field's: a_0 rises by the thinned vacuum's space line, kappa = |S'| v / (rate D) -
+   *       \bar{n} drops out, nothing is left to choose;
+   *   (2) the record settled where it stands: that line is nought, and what is left is the source's rays meeting the
+   *       world's, 2 sigma F (\bar{n}^2 + 2 \bar{n} n_s), so kappa = 4 sigma F v \bar{n} / (rate D) - the world's matter
+   * [kappa one, kappa two per \bar{n}, |S'|, v, the rate, sigma F]
+   */
+  static lift_coefficients (theory: Theory, deg: N): Real[] => {
+    model := Model(theory: theory)
+    e := model.settled(deg)
+    line := model.fact("the space line nets")
+    slope := line == None ? Real.NAN : model.at(Expr.d(line.to, "\\rho"), e)
+    v := model.value_of("\\frac{{a_{{0}}}}{{cH}}", e)
+    m := theory.medium(11, 96, 3, deg, 2)
+    m.vacuum = true
+    m.facing = true
+    s := m.symbols(m.rho_inf, 0)
+    rate := 0
+    m.meets.for(t => { rate = rate + m.share(t, s) * t.doing.folds.at(s) / 2 })
+    sf := e["\\sigma"] * e["F"]
+    D := Real.of(theory.lattice.D)
+    [slope.abs * v / (rate * D), 4 * sf * v / (rate * D), slope.abs, v, rate, sf]
+  }
+  /*
+   * a_0 THROUGH TIME, tested on Genzel's six discs at z 0.9 to 2.4. a_0 counts the phase in ticks from the beginning,
+   * so read literally it falls with the age: a_0(z) = a_0 t_0 / t(z) ("age"); read as the growth rate it goes as
+   * H(z) ("hubble"); or it is one number ("constant"). The history t(z), H(z) is the measured one, borrowed: flat, H_0
+   * 70 (Galaxies.H0), Omega_m OMEGA_M - the model does not yet derive its own. Each disc's g_bar at R_1/2 is the unit
+   * exponential disc's pull (PULL, `shape_of`) at R_1/2 = 1.678 R_d for its baryonic mass, what is felt is F_g at that
+   * epoch's a_0, and the dark share within R_1/2 follows: 1 - g_bar / g. [z, g_bar, measured, error, limit, predicted] a disc
+   */
+  static OMEGA_M = 0.315
+  static hubble0 (): Real => Galaxies.H0 * 1000 / (Sparc.KPC * 1000)
+  static hubble_at (z: Real): Real => Simulation.hubble0 * (Simulation.OMEGA_M * (1 + z) ^ 3 + 1 - Simulation.OMEGA_M).sqrt
+  static age_at (z: Real): Real => {
+    L := 1 - Simulation.OMEGA_M
+    x := (L / Simulation.OMEGA_M).sqrt * (1 + z) ^ (0 - 1.5)
+    2 / (3 * Simulation.hubble0 * L.sqrt) * (x + (x * x + 1).sqrt).ln
+  }
+  static a0_then (a0: Real, z: Real, how: String): Real => {
+    return a0 * Simulation.age_at(0) / Simulation.age_at(z) if how == "age"
+    return a0 * Simulation.hubble_at(z) / Simulation.hubble0 if how == "hubble"
+    a0
+  }
+  static epochs (shape: Real[], a0: Real, how: String): Real[][] => Sparc.discs.map(d => {
+    rd := d.Re / 1.678
+    gbar := Sparc.G_NEWTON * d.Mb * 10 ^ 11 * Sparc.MSUN / ((rd * Sparc.KPC) ^ 2) * Simulation.shape_at(shape, 1.678)
+    a := Simulation.a0_then(a0, d.redshift, how)
+    g := gbar / 2 + (gbar * gbar / 4 + gbar * a).sqrt
+    [d.redshift, gbar, d.fraction, d.err, d.limit ? 1 : 0, 1 - gbar / g]
+  })
+
+  /* the curves with a_0 at a place a_0 + kappa g_s, at SPARC's own freedoms: [rms in dex, middle in dex] over the kept radii */
+  lift_test (kappa: Real, a0: Real): Real[] => {
+    off := []
+    Array.range(this.ids.length).for(j => {
+      Array.range(this.rows[j].length).for(i => {
+        row := this.rows[j][i]
+        if row[6] > 0 {
+          p := this.at_rows[j][i]
+          q := this.seen_rows[j][i]
+          gN := Sparc.YD * p[0] + Sparc.YB * p[2] + p[1]
+          gs := Sparc.YD * q[0] + Sparc.YB * q[2] + q[1]
+          a := a0 + kappa * Fmt.max(gs, 0)
+          g := gN > 0 ? Law.boost(gN, a) : (gN < 0 ? 0 - Law.boost(0 - gN, a) : 0)
+          v := Fmt.max(row[0] * g, 0).sqrt
+          off.push(Fmt.log10(v / row[1])) if v > 0
+        }
+      })
+    })
+    [Simulation.rms(off), Fmt.median(off)]
   }
 
   /* THE LAW AS THE DEVICE READS IT: the measured law's own table in the logarithm, in units of its own a_0 - first the arrivals, then what is felt */

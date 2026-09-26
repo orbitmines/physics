@@ -1,0 +1,21 @@
+{
+  "what": "solar.inner, frame by frame",
+  "columns": [
+    "frames"
+  ],
+  "rows": 135215200,
+  "frames": 400,
+  "channels": {
+    "one": 97969,
+    "two": 97969,
+    "gone": 97969,
+    "by0": 11025,
+    "by1": 11025,
+    "by2": 11025,
+    "by3": 11025,
+    "marks": 31
+  },
+  "stamp": "shells-3-3/D3/slice/415/52/400/16/4096/0.00006/8/Mercury:0.3871:8:0.000000166012,Venus:0.7233:8:0.000002447838,Earth:1.0004:8:0.000003003490,Mars:1.5237:8:0.000000322716/solved/72/shares",
+  "recorded": "2026-09-25T13:58:45.783Z",
+  "about": "JPL's inner solar system laid on the derivation's own scale: the Sun held, each planet at its semi-major axis and launched at the circling speed the record's slope there gives (the recorder prints v times the root of R for each, one number under an inverse-square pull) - and left to the medium, so where the planets go is what the derivation says, against Kepler"
+}

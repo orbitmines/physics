@@ -28,11 +28,14 @@ fn maxf(a: f32, b: f32) -> f32 { return max(a, b); }
 fn clampf(x: f32, lo: f32, hi: f32) -> f32 { return clamp(x, lo, hi); }
 fn rnd(x: f32) -> f32 { return round(x); }
 
-struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, entries: u32, outs: u32, bod: u32, beam: u32, whom: u32, track: u32, rungs: u32, span: u32, pad2: u32 }
+struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32, tags: u32, z: u32, entries: u32, outs: u32, bod: u32, beam: u32, whom: u32, track: u32, rungs: u32, span: u32, part: u32, first: u32, fill: u32 }
 @group(0) @binding(0) var<uniform> P: Par;
 @group(0) @binding(1) var<storage, read_write> st: array<f32>;
 @group(0) @binding(2) var<storage, read_write> cel: array<f32>;
 @group(0) @binding(3) var<storage, read> dir: array<vec4<f32>>;
+@group(0) @binding(4) var<storage, read_write> ho: array<f32>;
+@group(0) @binding(5) var<storage, read_write> hn: array<f32>;
+@group(0) @binding(6) var<storage, read_write> link: array<atomic<i32>>;
 
 fn nA(a: u32, c: u32) -> u32 {
   return a * P.cells + c;
@@ -211,7 +214,7 @@ fn meet1_gate(rho: f32, nf: f32) -> f32 {
   let omega: f32 = 1.0;
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
-  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+  return clampf(0.0, 0.0, 1.0);
 }
 
 fn meet1_rays(rho: f32, nf: f32) -> f32 {
@@ -243,7 +246,7 @@ fn meet2_gate(rho: f32, nf: f32) -> f32 {
   let omega: f32 = 1.0;
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
-  return clampf((((1.0 - rho)) * F), 0.0, 1.0);
+  return clampf(0.0, 0.0, 1.0);
 }
 
 fn meet2_rays(rho: f32, nf: f32) -> f32 {
@@ -310,7 +313,7 @@ fn point4_gate(rho: f32, nf: f32) -> f32 {
   return clampf(omega, 0.0, 1.0);
 }
 
-//! medium MKEEP MCARRY MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MMOVEH MSTEP MSTEPH MBLOCK
+//! medium MKEEP MCARRY MHWANT MHSTREAM MHJOIN MHSHINE MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLH MMOVEH MSTEP MSTEPH MHCLEAR MHLINK MHSRC MBLOCK
 
 fn powi(b: f32, n: i32) -> f32 {
   var r: f32 = 1.0;
@@ -329,9 +332,13 @@ fn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }
 
 const MAXH: u32 = 64u;
 
-const MAXM: u32 = 4096u;
+const MAXM: u32 = 1048576u;
 
 const TRACKB: u32 = 64u;
+
+const MPCHUNK: u32 = 64u;
+
+fn mchunks() -> u32 { return select((mplanes() + MPCHUNK - 1u) / MPCHUNK, 1u, mlocal()); }
 
 const MGATHER: u32 = 96u;
 
@@ -341,6 +348,375 @@ fn mbin(dx: f32, dy: f32) -> u32 {
   let ang: f32 = atan2(dy, dx);
   let turned: f32 = select(ang, ang + 6.283185307179586, ang < 0.0);
   return u32(floor(turned / 6.283185307179586 * f32(MGATHER) + 0.5)) % MGATHER;
+}
+
+fn minside(x: f32, y: f32) -> f32 {
+  let x0: f32 = floor(x);
+  let y0: f32 = floor(y);
+  var got: f32 = 0.0;
+  for (var j: i32 = 0; j < 2; j = j + 1) {
+    for (var i: i32 = 0; i < 2; i = i + 1) {
+      if (mcell(i32(x0) + i, i32(y0) + j) >= 0) { got = got + max(0.0, 1.0 - abs(x - x0 - f32(i))) * max(0.0, 1.0 - abs(y - y0 - f32(j))); }
+    }
+  }
+  return got;
+}
+
+fn mlocal() -> bool { return xc(23u) > 0.5; }
+
+fn mslots() -> u32 { return u32(xc(23u)); }
+
+const MLIST: u32 = 8u;
+
+const MGROUPS: u32 = 64u;
+
+fn mzone() -> f32 { return f32(2u * P.K + 2u); }
+
+fn medge() -> f32 { return mzone() + 0.5005; }
+
+fn mwindow() -> u32 { let s: f32 = 1.4142135623730951 / (mzone() - f32(P.K)); return u32(floor(f32(MGATHER) * atan2(s, sqrt(1.0 - s * s)) / 6.283185307179586)) + 2u; }
+
+fn mslot(c: u32, b: u32, s: u32) -> u32 { return ((c * MGATHER + b) * mslots() + s) * 8u; }
+
+fn mmid(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + c; }
+
+fn mway(b: u32) -> vec2<f32> { let a: f32 = 6.283185307179586 * f32(b) / f32(MGATHER); return vec2<f32>(cos(a), sin(a)); }
+
+fn mocc(c: u32, b: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + c * MGATHER + b; }
+
+fn msrc(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + c * 8u; }
+
+fn msource(c: u32) -> array<f32, 8> {
+  var m: array<f32, 8>;
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { m[j] = hn[msrc(c) + j]; }
+  return m;
+}
+
+fn msourcewas(c: u32) -> array<f32, 8> {
+  var m: array<f32, 8>;
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { m[j] = ho[msrc(c) + j]; }
+  return m;
+}
+
+fn mhas(c: u32, b: u32) -> bool { return hn[mocc(c, b)] > 0.5; }
+
+fn mbits(c: u32, w: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 8u + P.cells * 2u + c * 4u + w; }
+
+fn mwant(c: u32, w: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 8u + P.cells * 2u + P.cells * 4u + c * 4u + w; }
+
+fn mmark(c: u32, b: u32, on: bool) {
+  hn[mocc(c, b)] = select(0.0, 1.0, on);
+  let k: u32 = mbits(c, b / 24u);
+  var v: u32 = u32(hn[k]);
+  let bit: u32 = 1u << (b % 24u);
+  if (on) { v = v | bit; } else { v = v & ~bit; }
+  hn[k] = f32(v);
+}
+
+fn mheld(k: u32) -> array<f32, 8> {
+  var m: array<f32, 8>;
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { m[j] = hn[k + j]; }
+  return m;
+}
+
+fn mwas(k: u32) -> array<f32, 8> {
+  var m: array<f32, 8>;
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { m[j] = ho[k + j]; }
+  return m;
+}
+
+fn mput(k: u32, m: array<f32, 8>) {
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { hn[k + j] = m[j]; }
+}
+
+fn mnow(m: array<f32, 8>, x: f32, y: f32) -> vec2<f32> {
+  let sx: f32 = m[1] / m[0];
+  let sy: f32 = m[2] / m[0];
+  let age: f32 = sqrt((x - sx) * (x - sx) + (y - sy) * (y - sy)) / f32(P.K);
+  return vec2<f32>(sx + m[3] / m[0] * age, sy + m[4] / m[0] * age);
+}
+
+fn mreads(m: array<f32, 8>, x: f32, y: f32) -> vec3<f32> {
+  if (!(m[0] > 0.0)) { return vec3<f32>(0.0, 0.0, 0.0); }
+  let s: vec2<f32> = mnow(m, x, y);
+  let dx: f32 = x - s.x;
+  let dy: f32 = y - s.y;
+  let d: f32 = sqrt(dx * dx + dy * dy);
+  let r: f32 = max(m[5] / m[0], d / f32(P.K));
+  let got: f32 = min(1.0, m[0] / pow(r, xc(6u) - 1.0) * select(1.0, mspread_of(m, d), r > m[5] / m[0]));
+  if (d <= 0.0) { return vec3<f32>(got, 0.0, 0.0); }
+  return vec3<f32>(got, dx / d, dy / d);
+}
+
+fn mspread_with(a: array<f32, 8>, b: array<f32, 8>, x: f32, y: f32) -> f32 {
+  if (!(a[0] > 0.0 && b[0] > 0.0)) { return a[7] + b[7]; }
+  let q: f32 = a[0] + b[0];
+  let ex: f32 = x - (a[1] + b[1]) / q;
+  let ey: f32 = y - (a[2] + b[2]) / q;
+  let e: f32 = sqrt(ex * ex + ey * ey);
+  var along: f32 = 0.0;
+  if (e > 0.0) { along = ((a[1] / a[0] - b[1] / b[0]) * ex + (a[2] / a[0] - b[2] / b[0]) * ey) / e; }
+  return a[7] + b[7] + a[0] * b[0] / q * along * along;
+}
+
+fn mspread_of(m: array<f32, 8>, d: f32) -> f32 {
+  let n: f32 = xc(6u) - 1.0;
+  if (!(d > 0.0 && m[0] > 0.0)) { return 1.0; }
+  return 1.0 + n * (n + 1.0) / 2.0 * m[7] / (m[0] * d * d);
+}
+
+fn mjoin(a: array<f32, 8>, b: array<f32, 8>, x: f32, y: f32) -> array<f32, 8> {
+  var m: array<f32, 8>;
+  for (var j: u32 = 0u; j < 6u; j = j + 1u) { m[j] = a[j] + b[j]; }
+  m[6] = select(-1.0, a[6], a[6] == b[6]);
+  m[7] = mspread_with(a, b, x, y);
+  return m;
+}
+
+fn mseen(a: array<f32, 8>, b: array<f32, 8>, x: f32, y: f32) -> f32 {
+  let ax: f32 = a[1] / a[0];
+  let ay: f32 = a[2] / a[0];
+  let bx: f32 = b[1] / b[0];
+  let by: f32 = b[2] / b[0];
+  let near: f32 = min(sqrt((x - ax) * (x - ax) + (y - ay) * (y - ay)), sqrt((x - bx) * (x - bx) + (y - by) * (y - by)));
+  return sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by)) / max(near, 1.0);
+}
+
+fn mfresh(m: array<f32, 8>, x: f32, y: f32) -> bool {
+  let s: vec2<f32> = mnow(m, x, y);
+  return sqrt((x - s.x) * (x - s.x) + (y - s.y) * (y - s.y)) <= medge();
+}
+
+fn mfill(c: u32, b: u32, l0: array<array<f32, 8>, MLIST>, n0: u32) -> u32 {
+  var l: array<array<f32, 8>, MLIST> = l0;
+  var n: u32 = n0;
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  loop {
+    if (n <= mslots()) { break; }
+    /* two the shine lays anew, or two the stream brought, never one of each (Medium.lay); any pair only where no two are of one kind */
+    var best: f32 = 0.0;
+    var bi: i32 = -1;
+    var bj: i32 = -1;
+    for (var tries: u32 = 0u; tries < 2u; tries = tries + 1u) {
+      if (bi >= 0) { break; }
+      for (var i: u32 = 0u; i < n; i = i + 1u) {
+        for (var j: u32 = i + 1u; j < n; j = j + 1u) {
+          if (tries == 0u && mfresh(l[i], x, y) != mfresh(l[j], x, y)) { continue; }
+          let seen: f32 = mseen(l[i], l[j], x, y);
+          if (bi < 0 || seen < best) { best = seen; bi = i32(i); bj = i32(j); }
+        }
+      }
+    }
+    l[bi] = mjoin(l[bi], l[bj], x, y);
+    l[bj] = l[n - 1u];
+    n = n - 1u;
+  }
+  for (var j: u32 = 0u; j < mslots(); j = j + 1u) {
+    if (j < n) { mput(mslot(c, b, j), l[j]); } else { hn[mslot(c, b, j)] = 0.0; }
+  }
+  return n;
+}
+
+fn mlay(c: u32, b: u32, l: array<array<f32, 8>, MLIST>, n: u32) { mmark(c, b, mfill(c, b, l, n) > 0u); }
+
+fn mhaswas(c: u32, b: u32) -> bool { return ho[mocc(c, b)] > 0.5; }
+
+fn mdrop(c: u32, who: f32, b0: u32) {
+  /* a body's own bundle at a point stands on its way out from where its rays left, which is within a way or two of its way out from where it is */
+  for (var o: u32 = 0u; o < 5u; o = o + 1u) {
+    let b: u32 = (b0 + MGATHER + o - 2u) % MGATHER;
+    if (!mhas(c, b)) { continue; }
+    /* told by the names alone first: mostly it is not there, and nothing more is read */
+    var had: bool = false;
+    for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+      let k: u32 = mslot(c, b, s);
+      if (hn[k] > 0.0 && hn[k + 6u] == who) { had = true; }
+    }
+    if (!had) { continue; }
+    var l: array<array<f32, 8>, MLIST>;
+    var n: u32 = 0u;
+    for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+      let m: array<f32, 8> = mheld(mslot(c, b, s));
+      if (m[0] > 0.0 && m[6] != who && n < MLIST) { l[n] = m; n = n + 1u; }
+    }
+    mlay(c, b, l, n);
+  }
+}
+
+fn madd(c: u32, b: u32, e: array<f32, 8>) {
+  var l: array<array<f32, 8>, MLIST>;
+  var n: u32 = 0u;
+  for (var s: u32 = 0u; s < select(0u, mslots(), mhas(c, b)); s = s + 1u) {
+    let m: array<f32, 8> = mheld(mslot(c, b, s));
+    if (m[0] > 0.0 && n < MLIST) { l[n] = m; n = n + 1u; }
+  }
+  if (n < MLIST) { l[n] = e; n = n + 1u; }
+  mlay(c, b, l, n);
+}
+
+fn memit(h: u32) -> array<f32, 8> {
+  let o: vec4<f32> = bodat(h);
+  let g: vec4<f32> = bodgo(h);
+  let beta: f32 = min(1.0, sqrt(g.x * g.x + g.y * g.y) / o.z);
+  let face: f32 = max((0.5), bodface(h));
+  let q: f32 = mper_way(o.z, beta) * bodskin(h) * mdrift(h) * pow(face, xc(6u) - 1.0);
+  let vx: f32 = g.x / o.z * f32(P.K);
+  let vy: f32 = g.y / o.z * f32(P.K);
+  var m: array<f32, 8>;
+  m[0] = q;
+  m[1] = q * o.x;
+  m[2] = q * o.y;
+  m[3] = q * vx;
+  m[4] = q * vy;
+  m[5] = q * face;
+  m[6] = f32(h);
+  return m;
+}
+
+fn mleft(e: array<f32, 8>, d: f32) -> array<f32, 8> {
+  var m: array<f32, 8> = e;
+  let back: f32 = d / f32(P.K);
+  m[7] = 0.0;
+  m[1] = e[1] - e[3] * back;
+  m[2] = e[2] - e[4] * back;
+  return m;
+}
+
+fn mheldat(c: u32) -> f32 {
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  var got: f32 = hn[mmid(c)];
+  for (var b: u32 = 0u; b < MGATHER; b = b + 1u) {
+    if (!mhas(c, b)) { continue; }
+    for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+      let k: u32 = mslot(c, b, s);
+      if (hn[k] > 0.0) { got = got + mreads(mheld(k), x, y).x; }
+    }
+  }
+  return got;
+}
+
+const MNEARF: f32 = 5.0;
+
+const MNEAR: u32 = 96u;
+
+fn mtay(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 8u + P.cells * 2u + P.cells * 8u + c * 9u; }
+
+fn mnear(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 8u + P.cells * 2u + P.cells * 8u + P.cells * 9u + c * (MNEAR + 1u); }
+
+fn mfar(m: array<f32, 8>, ux: f32, uy: f32) -> bool {
+  let s: vec2<f32> = mnow(m, ux, uy);
+  let d: f32 = sqrt((ux - s.x) * (ux - s.x) + (uy - s.y) * (uy - s.y));
+  let r: f32 = d / f32(P.K);
+  return d > MNEARF && r > m[5] / m[0] && m[0] / pow(r, xc(6u) - 1.0) < 1.0;
+}
+
+fn mtaylor(m: array<f32, 8>, ux: f32, uy: f32) -> array<f32, 9> {
+  let s: vec2<f32> = mnow(m, ux, uy);
+  let ex: f32 = ux - s.x;
+  let ey: f32 = uy - s.y;
+  let r2: f32 = ex * ex + ey * ey;
+  let Dd: f32 = xc(6u);
+  let C: f32 = m[0] * pow(f32(P.K), Dd - 1.0) * mspread_of(m, sqrt(r2));
+  let rD: f32 = pow(r2, Dd / 2.0);
+  let a: f32 = C / rD;
+  let b: f32 = Dd * C / (rD * r2);
+  let c3: f32 = Dd * (Dd + 2.0) * C / (rD * r2 * r2);
+  var t: array<f32, 9>;
+  t[0] = a * ex;
+  t[1] = a * ey;
+  t[2] = a - b * ex * ex;
+  t[3] = 0.0 - b * ex * ey;
+  t[4] = a - b * ey * ey;
+  t[5] = 0.0 - 3.0 * b * ex + c3 * ex * ex * ex;
+  t[6] = 0.0 - b * ey + c3 * ex * ex * ey;
+  t[7] = 0.0 - b * ex + c3 * ex * ey * ey;
+  t[8] = 0.0 - 3.0 * b * ey + c3 * ey * ey * ey;
+  return t;
+}
+
+fn marrive(px: f32, py: f32, zown: u32) -> vec3<f32> {
+  let u: i32 = mcell(i32(floor(px + 0.5)), i32(floor(py + 0.5)));
+  if (u < 0) { return vec3<f32>(0.0, 0.0, 0.0); }
+  let uu: u32 = u32(u);
+  let ux: f32 = f32(uu % P.N);
+  let uy: f32 = f32(uu / P.N);
+  /* the far ones, off the cell's nine numbers */
+  let dx: f32 = px - ux;
+  let dy: f32 = py - uy;
+  let T: u32 = mtay(uu);
+  var gx: f32 = hn[T] + hn[T + 2u] * dx + hn[T + 3u] * dy + (hn[T + 5u] * dx * dx + 2.0 * hn[T + 6u] * dx * dy + hn[T + 7u] * dy * dy) / 2.0;
+  var gy: f32 = hn[T + 1u] + hn[T + 3u] * dx + hn[T + 4u] * dy + (hn[T + 6u] * dx * dx + 2.0 * hn[T + 7u] * dx * dy + hn[T + 8u] * dy * dy) / 2.0;
+  var sum: f32 = 0.0;
+  /* the near ones, each read at the point itself, the body at plane zown's own passed over or taken out of the gathering nearest it */
+  var own: i32 = -1;
+  if (zown >= 1u && zown <= P.holes) { own = i32(zown) - 1; }
+  var mine: array<f32, 8>;
+  var owns: u32 = 0u;
+  var alone: bool = false;
+  var nearest: i32 = -1;
+  /* the name its own cell's gathering goes by (Medium.cell_sources) */
+  var srcid: f32 = 0.5;
+  let L: u32 = mnear(uu);
+  let n: u32 = u32(hn[L]);
+  if (own >= 0) {
+    mine = memit(u32(own));
+    let o: vec4<f32> = bodat(u32(own));
+    owns = mbin(ux - o.x, uy - o.y);
+    srcid = -2.0 - f32(mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5))));
+    var far: f32 = 0.0;
+    for (var e: u32 = 0u; e < n; e = e + 1u) {
+      let rel: u32 = u32(hn[L + 1u + e]);
+      if (rel / mslots() != owns) { continue; }
+      let m: array<f32, 8> = mheld(mslot(uu, owns, rel % mslots()));
+      if (m[6] == f32(own)) { alone = true; } else if (m[6] == -1.0) {
+        let d: f32 = sqrt((m[1] / m[0] - o.x) * (m[1] / m[0] - o.x) + (m[2] / m[0] - o.y) * (m[2] / m[0] - o.y));
+        if (nearest < 0 || d < far) { nearest = i32(rel); far = d; }
+      }
+    }
+  }
+  for (var e: u32 = 0u; e < n; e = e + 1u) {
+    let rel: u32 = u32(hn[L + 1u + e]);
+    var m: array<f32, 8> = mheld(mslot(uu, rel / mslots(), rel % mslots()));
+    if (own >= 0 && m[6] == f32(own)) { continue; }
+    if (own >= 0 && rel / mslots() == owns && !alone && m[6] == -1.0 && i32(rel) == nearest && m[0] - mine[0] > 0.0) {
+      let all: array<f32, 8> = m;
+      for (var q: u32 = 0u; q < 6u; q = q + 1u) { m[q] = m[q] - mine[q]; }
+      m[6] = -1.0;
+      /* and how far apart the rest stand: the gathering's, less what its own stood off the rest's middle */
+      let ex: f32 = ux - all[1] / all[0];
+      let ey: f32 = uy - all[2] / all[0];
+      let e: f32 = sqrt(ex * ex + ey * ey);
+      var along: f32 = 0.0;
+      if (e > 0.0) { along = ((m[1] / m[0] - mine[1] / mine[0]) * ex + (m[2] / m[0] - mine[2] / mine[0]) * ey) / e; }
+      m[7] = max(0.0, all[7] - m[0] * mine[0] / all[0] * along * along);
+    }
+    /* sent out within its own cell's gathering: its share taken out of that, laid as that was (Medium.left_for) */
+    if (own >= 0 && m[6] == srcid) {
+      let lf: array<f32, 8> = mleft(mine, sqrt((ux - m[1] / m[0]) * (ux - m[1] / m[0]) + (uy - m[2] / m[0]) * (uy - m[2] / m[0])));
+      for (var q: u32 = 0u; q < 6u; q = q + 1u) { m[q] = m[q] - lf[q]; }
+    }
+    let got: vec3<f32> = mreads(m, px, py);
+    sum = sum + got.x;
+    gx = gx + got.x * got.y;
+    gy = gy + got.x * got.z;
+  }
+  /* what stands at the cell's very middle is on no way: its source as the shine laid it, read at the point (Medium.arriving_at) */
+  var e: array<f32, 8> = msourcewas(uu);
+  e[7] = 0.0;
+  if (e[0] > 0.0 && sqrt((ux - e[1] / e[0]) * (ux - e[1] / e[0]) + (uy - e[2] / e[0]) * (uy - e[2] / e[0])) <= 0.001 && !(own >= 0 && e[6] == f32(own))) {
+    if (own >= 0 && e[6] == srcid) {
+      for (var q: u32 = 0u; q < 6u; q = q + 1u) { e[q] = e[q] - mine[q]; }
+    }
+    if (e[0] > 0.0) {
+      let got: vec3<f32> = mreads(e, px, py);
+      sum = sum + got.x;
+      gx = gx + got.x * got.y;
+      gy = gy + got.x * got.z;
+    }
+  }
+  return vec3<f32>(sum, gx, gy);
 }
 
 const CN: u32 = 6u;
@@ -394,7 +770,7 @@ fn mmeet1_share(rho: f32, nf: f32) -> f32 {
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
-  return clamp((((1.0 - rho)) * F), 0.0, 1.0);
+  return clamp(0.0, 0.0, 1.0);
 }
 
 fn mmeet1_rays(rho: f32, nf: f32) -> f32 {
@@ -436,7 +812,7 @@ fn mmeet2_share(rho: f32, nf: f32) -> f32 {
   let omega: f32 = xc(8u);
   let beta: f32 = 0.0;
   let DEG: f32 = P.DEG;
-  return clamp((((1.0 - rho)) * F), 0.0, 1.0);
+  return clamp(0.0, 0.0, 1.0);
 }
 
 fn mmeet2_rays(rho: f32, nf: f32) -> f32 {
@@ -683,7 +1059,7 @@ fn mscale(avg: f32) -> f32 {
   var e: array<f32, 2>;
   e[0] = avg;
   e[1] = xc(0u);
-  return ((0.3333333333333333) * powi((e[1] + (1.0)), -1) * (((-0.5) * powi(e[0], 2)) + ((((-1.0) * e[0]) + (1.0)) * powi(e[0], 2)) + (e[1] * (((-1.0) * e[0]) + (1.0)))));
+  return ((0.02721371823050147) * powi((e[1] + (1.0)), -1));
 }
 
 fn mcell(x: i32, y: i32) -> i32 { if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) { return -1; } return y * i32(P.N) + x; }
@@ -853,7 +1229,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel SNAP over cells*A
 @compute @workgroup_size(64) fn SNAP(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   st[P.cells * P.A + i] = st[i];
   st[8u * P.cells * P.A + i] = st[3u * P.cells * P.A + i];
@@ -869,7 +1245,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel CLEAR over cells
 @compute @workgroup_size(64) fn CLEAR(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells) { return; }
   cel[3u * P.cells + i] = 0.0;
   cel[6u * P.cells + i] = 0.0;
@@ -877,7 +1253,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel SWEEP over cells
 @compute @workgroup_size(64) fn SWEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   var s: f32 = 0.0;
@@ -889,7 +1265,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel GATHER over holes*A
 @compute @workgroup_size(64) fn GATHER(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.holes * P.A) { return; }
   let h: u32 = i / P.A;
   let a: u32 = i % P.A;
@@ -916,7 +1292,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel APPLY over one
 @compute @workgroup_size(64) fn APPLY(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= 1u) { return; }
   for (var e: u32 = 0u; e < P.entries; e = e + 1u) {
     let k: u32 = u32_of_i(i32_of_f(dir[P.A + 2u * 64u + 6u + e].x));
@@ -935,7 +1311,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MEET0 over cells
 @compute @workgroup_size(64) fn MEET0(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[0u * P.cells + c];
@@ -1058,7 +1434,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel CREATE1 over cells
 @compute @workgroup_size(64) fn CREATE1(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[0u * P.cells + c];
@@ -1106,7 +1482,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel CREATE2 over cells
 @compute @workgroup_size(64) fn CREATE2(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[0u * P.cells + c];
@@ -1143,7 +1519,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel TAKE over cells*A
 @compute @workgroup_size(64) fn TAKE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   st[4u * P.cells * P.A + i] = st[4u * P.cells * P.A + i] + st[7u * P.cells * P.A + i];
   st[7u * P.cells * P.A + i] = 0.0;
@@ -1151,7 +1527,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel TOTAL over cells
 @compute @workgroup_size(64) fn TOTAL(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   var nf: f32 = 0.0;
@@ -1165,7 +1541,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel LOCATE over cells
 @compute @workgroup_size(64) fn LOCATE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   var total: f32 = 0.0;
@@ -1191,7 +1567,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel CARRY over cells*A
 @compute @workgroup_size(64) fn CARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   let a: u32 = i / P.cells;
   let c: u32 = i % P.cells;
@@ -1221,7 +1597,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel FUNNEL over cells*A
 @compute @workgroup_size(64) fn FUNNEL(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   let a: u32 = i / P.cells;
   let c: u32 = i % P.cells;
@@ -1248,7 +1624,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel TAGCARRY over cells*A
 @compute @workgroup_size(64) fn TAGCARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   let a: u32 = i / P.cells;
   let c: u32 = i % P.cells;
@@ -1278,7 +1654,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel TAGFUNNEL over cells*A
 @compute @workgroup_size(64) fn TAGFUNNEL(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   let a: u32 = i / P.cells;
   let c: u32 = i % P.cells;
@@ -1305,7 +1681,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel SETTLE over cells*A
 @compute @workgroup_size(64) fn SETTLE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells * P.A) { return; }
   st[i] = st[i] + st[2u * P.cells * P.A + i];
   for (var z: u32 = 0u; z < P.tags - 1u; z = z + 1u) {
@@ -1315,7 +1691,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel ARRIVED over cells
 @compute @workgroup_size(64) fn ARRIVED(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   var total: f32 = 0.0;
@@ -1335,9 +1711,301 @@ fn munder(h: u32, k: u32) -> i32 {
   cel[7u * P.cells + c] = maxf(0.0, total - others) * (P.DEG / f32_of_u(P.A));
 }
 
+//! kernel MHWANT over cells
+@compute @workgroup_size(64) fn MHWANT(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (c >= P.cells || !mlocal()) { return; }
+  let W: u32 = mwindow();
+  /* the ways anything can come on here: within the window of a way some cell within reach holds */
+  var want: array<u32, 4>;
+  /* every way any cell within reach holds, gathered first, then widened by the window once */
+  var held: array<u32, 4>;
+  let R: i32 = i32(P.K) + 1;
+  for (var ddy: i32 = -R; ddy <= R; ddy = ddy + 1) {
+    for (var ddx: i32 = -R; ddx <= R; ddx = ddx + 1) {
+      let nc: i32 = mcell(i32(c % P.N) + ddx, i32(c / P.N) + ddy);
+      if (nc < 0) { continue; }
+      for (var wd: u32 = 0u; wd < 4u; wd = wd + 1u) {
+        held[wd] = held[wd] | u32(ho[mbits(u32(nc), wd)]);
+      }
+    }
+  }
+  for (var bb: u32 = 0u; bb < MGATHER; bb = bb + 1u) {
+    if (((held[bb / 24u] >> (bb % 24u)) & 1u) == 0u) { continue; }
+    for (var o: u32 = 0u; o < 2u * W + 1u; o = o + 1u) {
+      let t: u32 = (bb + MGATHER + o - W) % MGATHER;
+      want[t / 24u] = want[t / 24u] | (1u << (t % 24u));
+    }
+  }
+  /* what this point held two ticks ago is cleared, and only the ways something reaches are laid again */
+  for (var wd: u32 = 0u; wd < 4u; wd = wd + 1u) {
+    let had: u32 = u32(hn[mbits(c, wd)]);
+    for (var bo: u32 = 0u; bo < 24u; bo = bo + 1u) {
+      if (((had >> bo) & 1u) == 1u) { hn[mocc(c, wd * 24u + bo)] = 0.0; }
+    }
+    hn[mbits(c, wd)] = 0.0;
+  }
+  for (var wd: u32 = 0u; wd < 4u; wd = wd + 1u) { hn[mwant(c, wd)] = f32(want[wd]); }
+}
+
+//! kernel MHSTREAM over cells*G
+@compute @workgroup_size(64) fn MHSTREAM(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i / MGATHER;
+  let t: u32 = i % MGATHER;
+  if (c >= P.cells || !mlocal()) { return; }
+  if (((u32(hn[mwant(c, t / 24u)]) >> (t % 24u)) & 1u) == 0u) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  let W: u32 = mwindow();
+  var l: array<array<f32, 8>, MLIST>;
+  let way: vec2<f32> = mway(t);
+  let tw: f32 = tan(3.141592653589793 / f32(MGATHER)) * 1.001;
+  /* each bundle that goes way t here, read one c-bar back along its own heading off the cells round that place (Medium.stream_local): those places lie between the ones half a way either side of t */
+  let a0: f32 = 6.283185307179586 * (f32(t) - 0.5) / f32(MGATHER);
+  let a1: f32 = 6.283185307179586 * (f32(t) + 0.5) / f32(MGATHER);
+  let p0x: f32 = x - f32(P.K) * cos(a0);
+  let p0y: f32 = y - f32(P.K) * sin(a0);
+  let p1x: f32 = x - f32(P.K) * cos(a1);
+  let p1y: f32 = y - f32(P.K) * sin(a1);
+  let lx0: i32 = i32(floor(min(p0x, p1x)));
+  let ly0: i32 = i32(floor(min(p0y, p1y)));
+  let nx: i32 = i32(floor(max(p0x, p1x))) + 2 - lx0;
+  let ny: i32 = i32(floor(max(p0y, p1y))) + 2 - ly0;
+  var n: u32 = 0u;
+  for (var j: i32 = 0; j < ny; j = j + 1) {
+    for (var i2: i32 = 0; i2 < nx; i2 = i2 + 1) {
+      let u: i32 = mcell(lx0 + i2, ly0 + j);
+      if (u < 0) { continue; }
+      let ux: f32 = f32(lx0 + i2);
+      let uy: f32 = f32(ly0 + j);
+      for (var o: u32 = 0u; o < 2u * W + 1u; o = o + 1u) {
+        let bb: u32 = (t + MGATHER + o - W) % MGATHER;
+        if (!mhaswas(u32(u), bb)) { continue; }
+        for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+          let k: u32 = mslot(u32(u), bb, s);
+          let q: f32 = ho[k];
+          if (!(q > 0.0)) { continue; }
+          let lx: f32 = ho[k + 1u] / q;
+          let ly: f32 = ho[k + 2u] / q;
+          let dx: f32 = x - lx;
+          let dy: f32 = y - ly;
+          if (dx == 0.0 && dy == 0.0) { continue; }
+          /* what heads more than half a way off this one is not on it: told off its place alone, before the rest is read */
+          let along: f32 = dx * way.x + dy * way.y;
+          if (!(along > 0.0) || abs(dx * way.y - dy * way.x) > along * tw) { continue; }
+          if (mbin(dx, dy) != t) { continue; }
+          /* where its ray came through, a c-bar back, and this cell's share of that place */
+          let dd: f32 = sqrt(dx * dx + dy * dy);
+          let cx: f32 = x - f32(P.K) * dx / dd;
+          let cy: f32 = y - f32(P.K) * dy / dd;
+          let ws: f32 = max(0.0, 1.0 - abs(ux - cx)) * max(0.0, 1.0 - abs(uy - cy)) / minside(cx, cy);
+          if (!(ws > 0.0)) { continue; }
+          let m: array<f32, 8> = mwas(k);
+          let now: vec2<f32> = mnow(m, x, y);
+          if (sqrt((x - now.x) * (x - now.x) + (y - now.y) * (y - now.y)) <= mzone()) { continue; }
+          var g: i32 = -1;
+          for (var gi: u32 = 0u; gi < n; gi = gi + 1u) {
+            let h: array<f32, 8> = l[gi];
+            let same: bool = (m[6] != -1.0 && h[6] == m[6]) || (m[6] == -1.0 && h[6] == -1.0 && sqrt((h[1] / h[0] - lx) * (h[1] / h[0] - lx) + (h[2] / h[0] - ly) * (h[2] / h[0] - ly)) < 0.5 + 0.05 * sqrt(dx * dx + dy * dy));
+            if (g < 0 && same) { g = i32(gi); }
+          }
+          var part: array<f32, 8>;
+          for (var q2: u32 = 0u; q2 < 6u; q2 = q2 + 1u) { part[q2] = ws * m[q2]; }
+          part[6] = m[6];
+          part[7] = ws * m[7];
+          if (g < 0 && n < MLIST) {
+            l[n] = part;
+            n = n + 1u;
+          } else {
+            if (g < 0) {
+              var best: f32 = 0.0;
+              for (var gi: u32 = 0u; gi < n; gi = gi + 1u) {
+                let seen: f32 = mseen(l[gi], m, x, y);
+                if (g < 0 || seen < best) { g = i32(gi); best = seen; }
+              }
+              l[g][6] = -1.0;
+            }
+            l[g][7] = mspread_with(l[g], part, x, y);
+            for (var q2: u32 = 0u; q2 < 6u; q2 = q2 + 1u) { l[g][q2] = l[g][q2] + part[q2]; }
+          }
+        }
+      }
+    }
+  }
+  if (n == 0u) { return; }
+  /* read by area: the shares of the cells it came through are already in it, and together they are the whole (Medium.stream_local) */
+  hn[mocc(c, t)] = select(0.0, 1.0, mfill(c, t, l, n) > 0u);
+}
+
+//! kernel MHJOIN over cells
+@compute @workgroup_size(64) fn MHJOIN(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (c >= P.cells || !mlocal()) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  /* which ways the stream laid, as the cell's own bits: the stream's threads each had one way, and only this one has the cell */
+  for (var wd: u32 = 0u; wd < 4u; wd = wd + 1u) {
+    var bits: u32 = 0u;
+    for (var bo: u32 = 0u; bo < 24u; bo = bo + 1u) { if (hn[mocc(c, wd * 24u + bo)] > 0.5) { bits = bits | (1u << bo); } }
+    hn[mbits(c, wd)] = f32(bits);
+  }
+}
+
+//! kernel MHSHINE over cells
+@compute @workgroup_size(64) fn MHSHINE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells || !mlocal()) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  hn[mmid(c)] = 0.0;
+  /* what the shine gathered here last tick, and a cell's gathering, within the edge, are its own to lay again (Medium.shine_local) */
+  for (var b: u32 = 0u; b < MGATHER; b = b + 1u) {
+    if (!mhas(c, b)) { continue; }
+    var had: bool = false;
+    for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+      let k: u32 = mslot(c, b, s);
+      if (hn[k] > 0.0 && hn[k + 6u] < 0.0 && mfresh(mheld(k), x, y)) { had = true; }
+    }
+    if (!had) { continue; }
+    var l: array<array<f32, 8>, MLIST>;
+    var n: u32 = 0u;
+    for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+      let m: array<f32, 8> = mheld(mslot(c, b, s));
+      if (m[0] > 0.0 && !(m[6] < 0.0 && mfresh(m, x, y)) && n < MLIST) { l[n] = m; n = n + 1u; }
+    }
+    mlay(c, b, l, n);
+  }
+  let R: i32 = i32(ceil(medge())) + 1;
+  let cx: i32 = i32(c % P.N);
+  let cy: i32 = i32(c / P.N);
+  for (var ddy: i32 = -R; ddy <= R; ddy = ddy + 1) {
+    for (var ddx: i32 = -R; ddx <= R; ddx = ddx + 1) {
+      let nc: i32 = mcell(cx + ddx, cy + ddy);
+      if (nc < 0) { continue; }
+      let e: array<f32, 8> = msourcewas(u32(nc));
+      if (!(e[0] > 0.0)) { continue; }
+      let dx: f32 = x - e[1] / e[0];
+      let dy: f32 = y - e[2] / e[0];
+      let d: f32 = sqrt(dx * dx + dy * dy);
+      if (d > medge()) { continue; }
+      if (d <= 0.001) { hn[mmid(c)] = hn[mmid(c)] + min(1.0, e[0] / pow(e[5] / e[0], xc(6u) - 1.0)); continue; }
+      mdrop(c, e[6], mbin(dx, dy));
+      madd(c, mbin(dx, dy), mleft(e, d));
+    }
+  }
+}
+
+//! kernel MHSEED over cells
+@compute @workgroup_size(64) fn MHSEED(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells || !mlocal()) { return; }
+  let x: f32 = f32(c % P.N);
+  let y: f32 = f32(c / P.N);
+  for (var b: u32 = 0u; b < MGATHER; b = b + 1u) { hn[mocc(c, b)] = 0.0; }
+  for (var w: u32 = 0u; w < 4u; w = w + 1u) { hn[mbits(c, w)] = 0.0; }
+  hn[mmid(c)] = 0.0;
+  let R: i32 = i32(ceil(medge())) + 1;
+  let cx: i32 = i32(c % P.N);
+  let cy: i32 = i32(c / P.N);
+  for (var ddy: i32 = -R; ddy <= R; ddy = ddy + 1) {
+    for (var ddx: i32 = -R; ddx <= R; ddx = ddx + 1) {
+      let nc: i32 = mcell(cx + ddx, cy + ddy);
+      if (nc < 0) { continue; }
+      let e: array<f32, 8> = msource(u32(nc));
+      if (!(e[0] > 0.0)) { continue; }
+      let dx: f32 = x - e[1] / e[0];
+      let dy: f32 = y - e[2] / e[0];
+      let d: f32 = sqrt(dx * dx + dy * dy);
+      if (d > medge()) { continue; }
+      if (d <= 0.001) { hn[mmid(c)] = hn[mmid(c)] + min(1.0, e[0] / pow(e[5] / e[0], xc(6u) - 1.0)); continue; }
+      mdrop(c, e[6], mbin(dx, dy));
+      madd(c, mbin(dx, dy), mleft(e, d));
+    }
+  }
+}
+
+//! kernel MHCLEAR over cells
+@compute @workgroup_size(64) fn MHCLEAR(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.cells || !mlocal()) { return; }
+  atomicStore(&link[i], -1);
+}
+
+//! kernel MHSRC over cells
+@compute @workgroup_size(64) fn MHSRC(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (i >= P.cells || !mlocal()) { return; }
+  var s: array<f32, 8>;
+  var n: u32 = 0u;
+  var hh: i32 = atomicLoad(&link[c]);
+  loop {
+    if (hh < 0 || n > P.holes) { break; }
+    let h: u32 = u32(hh);
+    hh = atomicLoad(&link[P.cells + h]);
+    let e: array<f32, 8> = memit(h);
+    for (var j: u32 = 0u; j < 6u; j = j + 1u) { s[j] = s[j] + e[j]; }
+    s[6] = select(-2.0 - f32(c), e[6], n == 0u);
+    /* and the last of them by number, one more than it (nought, none) - the body a cell's c-bar is blocked by (MBLOCK) */
+    s[7] = max(s[7], f32(h + 1u));
+    n = n + 1u;
+  }
+  for (var j: u32 = 0u; j < 8u; j = j + 1u) { hn[msrc(c) + j] = s[j]; }
+}
+
+//! kernel MHFIELD over cells
+@compute @workgroup_size(64) fn MHFIELD(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (c >= P.cells || !mlocal()) { return; }
+  let ux: f32 = f32(c % P.N);
+  let uy: f32 = f32(c / P.N);
+  var t: array<f32, 9>;
+  var n: u32 = 0u;
+  let L: u32 = mnear(c);
+  for (var wd: u32 = 0u; wd < 4u; wd = wd + 1u) {
+    let bits: u32 = u32(hn[mbits(c, wd)]);
+    if (bits == 0u) { continue; }
+    for (var bo: u32 = 0u; bo < 24u; bo = bo + 1u) {
+      if (((bits >> bo) & 1u) == 0u) { continue; }
+      let b: u32 = wd * 24u + bo;
+      for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+        let k: u32 = mslot(c, b, s);
+        if (!(hn[k] > 0.0)) { continue; }
+        let m: array<f32, 8> = mheld(k);
+        if (!mfar(m, ux, uy) && n < MNEAR) {
+          hn[L + 1u + n] = f32(b * mslots() + s);
+          n = n + 1u;
+          continue;
+        }
+        let e: array<f32, 9> = mtaylor(m, ux, uy);
+        for (var q: u32 = 0u; q < 9u; q = q + 1u) { t[q] = t[q] + e[q]; }
+      }
+    }
+  }
+  for (var q: u32 = 0u; q < 9u; q = q + 1u) { hn[mtay(c) + q] = t[q]; }
+  hn[L] = f32(n);
+}
+
+//! kernel MHLINK over holes
+@compute @workgroup_size(64) fn MHLINK(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !mlocal()) { return; }
+  let o: vec4<f32> = bodat(i);
+  let c: i32 = mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5)));
+  if (c < 0) { atomicStore(&link[P.cells + i], -1); return; }
+  let was: i32 = atomicExchange(&link[u32(c)], i32(i));
+  atomicStore(&link[P.cells + i], was);
+}
+
 //! kernel MSTEPH over holes
 @compute @workgroup_size(64) fn MSTEPH(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.holes || !mapart()) { return; }
   let out: u32 = P.outs;
   let h: u32 = i;
@@ -1364,19 +2032,23 @@ fn munder(h: u32, k: u32) -> i32 {
     }
 }
 
-//! kernel MMOVEH over holes
-@compute @workgroup_size(64) fn MMOVEH(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mapart()) { return; }
-  let out: u32 = P.outs;
+//! kernel MPULLH over pulls
+@compute @workgroup_size(64) fn MPULLH(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let per: u32 = P.K * P.K * mchunks();
+  if (i >= P.holes * per || !mapart()) { return; }
   let half: f32 = f32(P.K - 1u) / 2.0;
-  let h: u32 = i;
+  let h: u32 = i / per;
+  let k: u32 = (i % per) / mchunks();
+  let ch: u32 = i % mchunks();
   let o: vec4<f32> = bodat(h);
-    let zown: u32 = u32(o.w);
-    var gx: f32 = 0.0;
-    var gy: f32 = 0.0;
-    for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
-      let px: f32 = o.x - half + f32(k % P.K);
+  let zown: u32 = u32(o.w);
+  var gx: f32 = 0.0;
+  var gy: f32 = 0.0;
+  let z0: u32 = select(ch * MPCHUNK, 1u, ch == 0u);
+  let z1: u32 = select((ch + 1u) * MPCHUNK, mplanes(), (ch + 1u) * MPCHUNK > mplanes());
+  if (mlocal()) {
+    let px: f32 = o.x - half + f32(k % P.K);
       let py: f32 = o.y - half + f32(k / P.K);
       let rho: f32 = mtapc(0u, px, py, 0.0);
       let nf: f32 = mtapc(1u, px, py, 0.0);
@@ -1385,7 +2057,21 @@ fn munder(h: u32, k: u32) -> i32 {
   rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
   rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
       let stood: f32 = mtap(STAND(), px, py, 0.0);
-      for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+      let came: vec3<f32> = marrive(px, py, zown);
+      let per: f32 = rate / select(1.0, 1.0 + stood, xc(20u) > 0.5);
+      gx = gx - per * came.y;
+      gy = gy - per * came.z;
+  } else {
+    let px: f32 = o.x - half + f32(k % P.K);
+      let py: f32 = o.y - half + f32(k / P.K);
+      let rho: f32 = mtapc(0u, px, py, 0.0);
+      let nf: f32 = mtapc(1u, px, py, 0.0);
+      var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+      let stood: f32 = mtap(STAND(), px, py, 0.0);
+      for (var z: u32 = z0; z < z1; z = z + 1u) {
         if (z == zown) { continue; }
         let way: vec3<f32> = mout(z, px, py);
         if (way.z <= 0.0) { continue; }
@@ -1395,6 +2081,24 @@ fn munder(h: u32, k: u32) -> i32 {
         gx = gx + share * tx;
         gy = gy + share * ty;
       }
+  }
+  cel[P.part + 2u * i] = gx;
+  cel[P.part + 2u * i + 1u] = gy;
+}
+
+//! kernel MMOVEH over holes
+@compute @workgroup_size(64) fn MMOVEH(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !mapart()) { return; }
+  let out: u32 = P.outs;
+  let h: u32 = i;
+  let o: vec4<f32> = bodat(h);
+    let per: u32 = P.K * P.K * mchunks();
+    var gx: f32 = 0.0;
+    var gy: f32 = 0.0;
+    for (var j: u32 = 0u; j < per; j = j + 1u) {
+      gx = gx + cel[P.part + 2u * (h * per + j)];
+      gy = gy + cel[P.part + 2u * (h * per + j) + 1u];
     }
     let n: f32 = f32(P.K * P.K);
     let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy) / n);
@@ -1404,7 +2108,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MSTEP over one
 @compute @workgroup_size(64) fn MSTEP(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= 1u || mapart()) { return; }
   let out: u32 = P.outs;
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
@@ -1434,7 +2138,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MBLOCK over cells
 @compute @workgroup_size(64) fn MBLOCK(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let x: i32 = i32(c % P.N);
@@ -1442,9 +2146,20 @@ fn munder(h: u32, k: u32) -> i32 {
   let half: i32 = i32((P.K - 1u) / 2u);
   var b: f32 = 0.0;
   var pl: f32 = 0.0;
+  if (mlocal()) {
+    /* held where they are, the last body standing on any cell of the footprint, off each cell's own source (gathered again once they moved): every body apart is on the plane one past its number */
+    for (var ddy: i32 = -half; ddy <= half; ddy = ddy + 1) {
+      for (var ddx: i32 = -half; ddx <= half; ddx = ddx + 1) {
+        let nc: i32 = mcell(x + ddx, y + ddy);
+        if (nc >= 0) { b = max(b, hn[msrc(u32(nc)) + 7u]); }
+      }
+    }
+    pl = b;
+  } else {
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
     let o: vec4<f32> = bodat(h);
     if (abs(x - i32(floor(o.x + 0.5))) <= half && abs(y - i32(floor(o.y + 0.5))) <= half) { b = f32(h + 1u); pl = o.w; }
+  }
   }
   cel[5u * P.cells + c] = b;
   cel[(8u + mledger()) * P.cells + c] = pl;
@@ -1452,7 +2167,8 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MKEEP over rungs
 @compute @workgroup_size(64) fn MKEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (mlocal()) { return; }
   let n: u32 = RUNGS();
   if (i >= mplanes() * n) { return; }
   let z: u32 = i / n;
@@ -1462,7 +2178,8 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MCARRY over rungs
 @compute @workgroup_size(64) fn MCARRY(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (mlocal()) { return; }
   let n: u32 = RUNGS();
   if (i >= mplanes() * n) { return; }
   let z: u32 = i / n;
@@ -1496,13 +2213,15 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MOPEN over cells
 @compute @workgroup_size(64) fn MOPEN(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let x: f32 = f32(c % P.N);
   let y: f32 = f32(c / P.N);
   var got: f32 = 0.0;
-  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+  /* held where they are, what stands at a point is what its ways hold (Medium.held_at) */
+  if (mlocal()) { got = mheldat(c); }
+  for (var z: u32 = 1u; z < select(mplanes(), 1u, mlocal()); z = z + 1u) {
     let way: vec3<f32> = mout(z, x, y);
     if (way.z <= 0.0) { continue; }
     got = got + msent(z, way.z);
@@ -1515,7 +2234,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MMEET over cells
 @compute @workgroup_size(64) fn MMEET(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let x: f32 = f32(c % P.N);
@@ -1531,7 +2250,22 @@ fn munder(h: u32, k: u32) -> i32 {
     var wxs: array<f32, 96>;
     var wys: array<f32, 96>;
     for (var b: u32 = 0u; b < MGATHER; b = b + 1u) { sums[b] = 0.0; wxs[b] = 0.0; wys[b] = 0.0; }
-    for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    /* held where they are, the bins are what the point's own ways hold, and what goes no way out on the way whose angle is nought (Medium.meet_local) */
+    if (mlocal()) {
+      for (var b: u32 = 0u; b < MGATHER; b = b + 1u) {
+        if (!mhas(c, b)) { continue; }
+        for (var s: u32 = 0u; s < mslots(); s = s + 1u) {
+          let k: u32 = mslot(c, b, s);
+          if (!(hn[k] > 0.0)) { continue; }
+          let got: vec3<f32> = mreads(mheld(k), x, y);
+          sums[b] = sums[b] + got.x;
+          wxs[b] = wxs[b] + got.x * got.y;
+          wys[b] = wys[b] + got.x * got.z;
+        }
+      }
+      sums[0] = sums[0] + hn[mmid(c)];
+    }
+    for (var z: u32 = 1u; z < select(mplanes(), 1u, mlocal()); z = z + 1u) {
       let way: vec3<f32> = mout(z, x, y);
       if (way.z <= 0.0) { continue; }
       let got: f32 = msent(z, way.z);
@@ -1548,7 +2282,12 @@ fn munder(h: u32, k: u32) -> i32 {
       let ax: f32 = select(0.0, wxs[a] / na, na > 0.0);
       let ay: f32 = select(0.0, wys[a] / na, na > 0.0);
       let mine: f32 = sums[a];
-      for (var b: u32 = 0u; b < MGATHER; b = b + 1u) {
+      /* a bundle meets only what comes within a turn of the lattice's own of head on, and each bundle's way lies inside its own bin: so only the bins that near the opposite one are looked at - the rest would each be skipped below */
+      let span: u32 = u32(ceil(f32(MGATHER) / P.DEG)) + 1u;
+      let many: u32 = min(MGATHER, 2u * span + 1u);
+      let first: u32 = (a + MGATHER / 2u + MGATHER - min(span, MGATHER / 2u)) % MGATHER;
+      for (var s: u32 = 0u; s < many; s = s + 1u) {
+        let b: u32 = (first + s) % MGATHER;
         if (b == a || sums[b] <= 0.0 || na <= 0.0) { continue; }
         let nb: f32 = sqrt(wxs[b] * wxs[b] + wys[b] * wys[b]);
         if (nb <= 0.0) { continue; }
@@ -1666,7 +2405,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MUNFOLD over cells
 @compute @workgroup_size(64) fn MUNFOLD(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[c];
@@ -1693,7 +2432,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MSETTLE over cells
 @compute @workgroup_size(64) fn MSETTLE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   if (xc(4u) < 0.5) { return; }
@@ -1710,7 +2449,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MMAKE over cells
 @compute @workgroup_size(64) fn MMAKE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let rho: f32 = cel[c];
@@ -1725,7 +2464,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MLEAN over cells
 @compute @workgroup_size(64) fn MLEAN(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let x: f32 = f32(c % P.N);
@@ -1740,7 +2479,13 @@ fn munder(h: u32, k: u32) -> i32 {
   let stood: f32 = st[at_plane(STAND(), c)];
   var gx: f32 = 0.0;
   var gy: f32 = 0.0;
-  for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+  if (mlocal()) {
+    let came: vec3<f32> = marrive(x, y, zown);
+    let per: f32 = rate / select(1.0, 1.0 + stood, xc(20u) > 0.5);
+    gx = gx - per * came.y;
+    gy = gy - per * came.z;
+  }
+  for (var z: u32 = 1u; z < select(mplanes(), 1u, mlocal()); z = z + 1u) {
     if (z == zown) { continue; }
     let way: vec3<f32> = mout(z, x, y);
     if (way.z <= 0.0) { continue; }
@@ -1756,7 +2501,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MMOVE over one
 @compute @workgroup_size(64) fn MMOVE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= 1u || mapart()) { return; }
   let out: u32 = P.outs;
   let half: f32 = f32(P.K - 1u) / 2.0;
@@ -1766,6 +2511,8 @@ fn munder(h: u32, k: u32) -> i32 {
     var gx: f32 = 0.0;
     var gy: f32 = 0.0;
     for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
+      let z0: u32 = 1u;
+      let z1: u32 = mplanes();
       let px: f32 = o.x - half + f32(k % P.K);
       let py: f32 = o.y - half + f32(k / P.K);
       let rho: f32 = mtapc(0u, px, py, 0.0);
@@ -1775,7 +2522,7 @@ fn munder(h: u32, k: u32) -> i32 {
   rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
   rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
       let stood: f32 = mtap(STAND(), px, py, 0.0);
-      for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+      for (var z: u32 = z0; z < z1; z = z + 1u) {
         if (z == zown) { continue; }
         let way: vec3<f32> = mout(z, px, py);
         if (way.z <= 0.0) { continue; }
@@ -1795,7 +2542,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MPROBE over entries
 @compute @workgroup_size(64) fn MPROBE(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.entries) { return; }
   let ask: vec4<f32> = dir[P.A + 2u * MAXH + CN + i];
   let zown: u32 = u32(ask.z);
@@ -1812,7 +2559,13 @@ fn munder(h: u32, k: u32) -> i32 {
   rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
   rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
     let stood: f32 = mtap(STAND(), px, py, 0.0);
-    for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    if (mlocal()) {
+      let came: vec3<f32> = marrive(px, py, zown);
+      let per: f32 = rate / select(1.0, 1.0 + stood, xc(20u) > 0.5);
+      gx = gx - per * came.y;
+      gy = gy - per * came.z;
+    }
+    for (var z: u32 = 1u; z < select(mplanes(), 1u, mlocal()); z = z + 1u) {
       if (z == zown) { continue; }
       let way: vec3<f32> = mout(z, px, py);
       if (way.z <= 0.0) { continue; }
@@ -1830,7 +2583,7 @@ fn munder(h: u32, k: u32) -> i32 {
 
 //! kernel MSWEEP over cells
 @compute @workgroup_size(64) fn MSWEEP(@builtin(global_invocation_id) gid: vec3<u32>) {
-  let i: u32 = gid.y * 1024u * 64u + gid.x;
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells) { return; }
   let x: f32 = f32(c % P.N);
@@ -1838,8 +2591,8 @@ fn munder(h: u32, k: u32) -> i32 {
   cel[7u * P.cells + c] = 0.0;
   /* every body apart: all the bodies' rays together on one ledger (Medium.apart) */
   if (mapart()) {
-    var summed: f32 = 0.0;
-    for (var z: u32 = 1u; z < mplanes(); z = z + 1u) {
+    var summed: f32 = select(0.0, mheldat(c), mlocal());
+    for (var z: u32 = 1u; z < select(mplanes(), 1u, mlocal()); z = z + 1u) {
       let way: vec3<f32> = mout(z, x, y);
       summed = summed + select(0.0, msent(z, way.z), way.z > 0.0);
     }

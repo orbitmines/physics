@@ -6,7 +6,8 @@
 /* the derivation, read: the settled vacuum comes to numbers, and a unit mass pulls toward itself at every radius the film reaches */
 law := Aggregate.of(G)
 
-Aggregate{DEG == 18} += {
+/* read on the theory's own lattice (BCC8 since 2026-09-25): a refinement on another DEG never holds of `law` and is silently skipped */
+Aggregate{DEG == 8} += {
   dynamically assert rho_inf > 0
   dynamically assert rho_inf < 1
   dynamically assert Fmt.finite(nf_inf)

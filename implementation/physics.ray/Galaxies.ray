@@ -1130,6 +1130,100 @@ Galaxies := class {
     fail("galaxy.formed is not on disk - run the galaxies (`{Galaxies.SIMULATED}`) and try again") if got == None
     Picture(id: "galaxy.formed", what: "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms", width: 960, height: 720, frames: got.header["frames"], paint: (played: Played?) => Forming(formed: got))
   }
+  /*
+   * A GALAXY IN THE MEDIUM ITSELF, FILMED: every star its own body, held where the rays are (Medium.local_rays) - each
+   * star's rays laid, streamed and met point by point, each star moved by what arrives where it stands, and nothing
+   * else: no law, no halo. Launched from the medium's own pull (the circling speed of what each star feels, once the
+   * field stood), and left to it. Star counts face on, the darkest cells empty, the brightest the densest of the frame;
+   * under it how much arm there is, frame by frame. Run by galaxy.gpu.ts (RAY_ONLY=medium-galaxy)
+   */
+  static medium (): Picture => {
+    got := Measured.of("galaxy.medium")
+    fail("galaxy.medium is not on disk - run it (deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts . with RAY_ONLY=medium-galaxy) and try again") if got == None
+    Picture(id: "galaxy.medium", what: "a disc of stars in the medium itself, every star its own body and every step local: launched circling at what the medium pulls it with, then left to the medium - whatever forms", width: 960, height: 900, frames: got.header["frames"], paint: (played: Played?) => HeldDisc(formed: got))
+  }
+  static medium_panel (s: Surface, formed: Measured, frame_at: N) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    H := formed.header
+    G := H["grid"]
+    FR := H["frames"]
+    f := Fmt.min(frame_at, FR - 1)
+    D := formed.columns["density"]
+    s.font("13px ui-monospace, monospace")
+    s.fill_style(Galaxies.SEEN)
+    s.text_align("left")
+    s.fill_text("A GALAXY IN THE MEDIUM, EVERY STAR ITS OWN", 22, 26)
+    s.font("11px ui-monospace, monospace")
+    s.fill_style(Galaxies.FAINT)
+    stars_n := H["stars"]
+    tick := H["ticks"][f]
+    deg := H["deg"]
+    side_n := H["side"]
+    s.fill_text("{stars_n} stars, each its own body, held where the rays are - every step local, nothing but the medium (DEG {deg}, a {side_n}-cell box) - tick {tick}", 22, 44)
+    side := Fmt.min(s.width - 44, s.height - 230)
+    ox := (s.width - side) / 2
+    oy := 60
+    base := f * G * G
+    top := 0
+    Array.range(G * G).for(c => { top = Fmt.max(top, D[base + c]) })
+    cell := side / G
+    Array.range(G).for(cy => {
+      Array.range(G).for(cx => {
+        v := D[base + cy * G + cx]
+        if v > 0 {
+          t := Fmt.min(1, (1 + v).ln / (1 + top).ln)
+          r := (40 + 215 * t * t).round
+          gr := (60 + 190 * t).round
+          b := (110 + 145 * Fmt.min(1, 1.6 * t)).round
+          s.fill_style("rgb({r},{gr},{b})")
+          s.fill_rect(ox + cx * cell, oy + (G - 1 - cy) * cell, cell + 0.5, cell + 0.5)
+        }
+      })
+    })
+    s.stroke_style(Galaxies.GRID)
+    s.stroke_rect(ox, oy, side, side)
+    rd := Fmt.fixed(H["scale"][0], 1)
+    across := Fmt.fixed(2 * H["span"][0], 0)
+    speed := Fmt.fixed(H["speed"], 4)
+    s.fill_style(Galaxies.SEEN)
+    s.fill_text("R_d {rd} c-bar, {across} c-bar across; circling at R_d {speed} c-bar a tick", ox, oy + side + 18)
+    series := Galaxies.arms_of(formed, 0)
+    sx0 := ox
+    sx1 := ox + side
+    sy0 := oy + side + 46
+    sy1 := oy + side + 136
+    topA := 0.6
+    s.stroke_style(Galaxies.GRID)
+    s.stroke_rect(sx0, sy0, sx1 - sx0, sy1 - sy0)
+    inks := ["#4aa8eb", "#f2e05a", "#eb964a"]
+    Array.range(3).for(k => {
+      s.stroke_style(inks[k])
+      s.line_width(1.5)
+      s.begin_path
+      Array.range(f + 1).for(j => {
+        px := sx0 + (sx1 - sx0) * j / Real.of(FR - 1)
+        py := sy1 - (sy1 - sy0) * Fmt.min(series[j][k + 2] / topA, 1)
+        if j == 0 { s.move_to(px, py) } else { s.line_to(px, py) }
+      })
+      s.stroke
+    })
+    s.line_width(1)
+    s.font("10px ui-monospace, monospace")
+    now := series[f]
+    a2 := Fmt.fixed(now[2], 3)
+    a3 := Fmt.fixed(now[3], 3)
+    a4 := Fmt.fixed(now[4], 3)
+    s.fill_style(inks[0])
+    s.fill_text("m=2 {a2}", sx0, sy0 - 4)
+    s.fill_style(inks[1])
+    s.fill_text("m=3 {a3}", sx0 + 90, sy0 - 4)
+    s.fill_style(inks[2])
+    s.fill_text("m=4 {a4}", sx0 + 176, sy0 - 4)
+    s.fill_style(Galaxies.FAINT)
+    s.fill_text("arm strength, 1-3 R_d, 0 to 0.6 (smooth ≈ 1/sqrt of the stars)", sx0, sy1 + 14)
+    s.font("11px ui-monospace, monospace")
+  }
   static formed_panel (s: Surface, formed: Measured, frame_at: N) => {
     s.fill_style(Galaxies.BACK)
     s.fill_rect(0, 0, s.width, s.height)
@@ -1237,9 +1331,11 @@ Galaxies := class {
    */
   static ARMS = { }
   static arms_of (formed: Measured, g: N): Real[][] => {
-    key := "{g}"
-    return Galaxies.ARMS[key] if Galaxies.ARMS[key] != None
     H := formed.header
+    /* kept by the picture's own words and the disc, so two pictures' discs are never read as one */
+    about := H["about"]
+    key := "{g}:{about}"
+    return Galaxies.ARMS[key] if Galaxies.ARMS[key] != None
     G := H["grid"]
     FR := H["frames"]
     D := formed.columns["density"]
@@ -1424,6 +1520,15 @@ Sweeping := class < Painter, solved: Measured, title: String, ks: N[] {
     k := this.ks[this.shown_frames < this.ks.length ? this.shown_frames : this.ks.length - 1]
     deg := this.solved.header["degs"][k]
     Galaxies.panel(s, Galaxies.frame_of(this.solved, k), this.title, deg, Galaxies.support_at(this.solved, k), Galaxies.possible_at(deg))
+    this.shown_frames = this.shown_frames + 1
+  }
+}
+
+/* a disc in the medium itself, frame by frame */
+HeldDisc := class < Painter, formed: Measured {
+  shown_frames: N = 0
+  frame (s: Surface, dt: Real) => {
+    Galaxies.medium_panel(s, this.formed, this.shown_frames)
     this.shown_frames = this.shown_frames + 1
   }
 }

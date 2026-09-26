@@ -11,6 +11,7 @@
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { paced } from "./paced.ts";
 
 const [repo, id] = Deno.args;
 const OUT = join(repo, "visuals");
@@ -69,6 +70,12 @@ const how = {
   crowd: Deno.env.get("RAY_CROWD") !== "0",
   /* RAY_A0FROM=1: a_0 read off the matter a carrier crossed rather than the settled vacuum (Medium.a0_from) */
   a0_from: Number(Deno.env.get("RAY_A0FROM") ?? 0),
+  /*
+   * RAY_LOCAL=1: every body's rays held where they are (Medium.local_rays) - the model read point by point, every body
+   * apart, RAY_SLOTS bundles kept apart on a way (3 by default: a 415 box at 4 is past what the device binds), and paced,
+   * since a held tick asks more of the device than a beam's
+   */
+  ...(Deno.env.get("RAY_LOCAL") === "1" ? { local: true, apart: p.tags, slots: Number(Deno.env.get("RAY_SLOTS") ?? 3), paced: true } : {}),
 };
 const set_how = (w2: any) => { if (!w2) return w2; w2.vacuum = how.vacuum; w2.facing = how.facing; w2.enhance = how.enhance; w2.a0_share = how.a0_share; w2.own = how.own; w2.crowd = how.crowd; w2.a0_from = how.a0_from; return w2; };
 /* THE WORLD: the medium on the device where the runtime has it, on the CPU classes otherwise */
@@ -133,7 +140,8 @@ const lay = async () => {
    */
   if (orbiting) {
     if (typeof w.push === "function") w.push();
-    const again = typeof w.seed === "function" ? w.seed() : w.seed;
+    /* held where the rays are, the field is let stand again (a crossing of ticks, the bodies held); otherwise re-seeded */
+    const again = typeof w.stand === "function" ? w.stand() : (typeof w.seed === "function" ? w.seed() : w.seed);
     if (again && typeof again.then === "function") await again;
     for (const [k, b] of placed.entries()) {
       const h = w.holes[k]; if (!h || b.launch !== "orbit") continue;
@@ -414,8 +422,190 @@ if (Deno.env.get("RAY_SOLVE")) {
     scattered: { deg: [], cell: [], p: [], by: [], needs: [], size: [], starts: [] },
   };
   const a0s: number[] = [], ratios: number[] = [], typicals: number[][] = [];
+  /*
+   * ON THE DEVICE, paced (paced.ts): every track is one thread (TRACK), and every stretch of every track is one thread
+   * laying itself on both grids at once (RASTER) - how much lands on a cell, the least mass and the least spread-out
+   * mass that reaches it, and which sets of freedoms reach it, one bit a set, so one pass stands for every held run
+   */
+  const gpu = await paced();
+  const D1 = p.D - 1;
+  const TRACKS = spreads.length * faces.length * betas.length * rates.length;
+  const index_of = (si: number, fi: number, bi: number, mi: number) => ((si * faces.length + fi) * betas.length + bi) * rates.length + mi;
+  /* the radii each arrangement is read at, per face (it is read from its own edge out), as the host steps them */
+  const radii: number[][] = [];
+  for (const spread of spreads) for (const face of faces) {
+    const near = Math.max(law.NEAR, face), out = spread.at.reduce((m, b) => Math.max(m, Math.hypot(b[0], b[1])), 0) + near;
+    const rs: number[] = [];
+    for (let r = out; r <= FAR; r *= step) rs.push(r);
+    radii.push(rs);
+  }
+  const W = Math.max(...radii.map(rs => rs.length)) + 1;
+  const RS = new Float32Array(radii.length * W);
+  radii.forEach((rs, k) => RS.set(rs, k * W));
+  /* each arrangement's sources: [first, count] per arrangement, then x, y and share a source */
+  const SP: number[] = [];
+  const SRC: number[] = [];
+  for (const spread of spreads) { SP.push(SRC.length / 3, spread.at.length, 0, 0); for (const b of spread.at) SRC.push(b[0], b[1], b[2]); }
+  const SRC_AT = SP.length;
+  const SPB = gpu.upload(new Float32Array([...SP, ...SRC]));
+  const RSB = gpu.upload(RS);
+  const n_law = physics.Law.law.rows, law_of = (col: string) => Array.from({ length: n_law }, (_, i) => Math.log(physics.Law.law.columns[col][i] / physics.Law.a0));
+  const LB = gpu.upload(new Float32Array([...law_of("gN"), ...law_of("g")]));
+  /* what each track is, for the grids: its mass (by index, so the least is the host's own number), whether it is gathered, spread wide, and which held sets keep it */
+  const WIDE = 9;
+  const held: Record<string, (face: number, beta: number, mi: number, si: number) => boolean> = {
+    mass: (_f, _b, mi) => Math.abs(Math.log10(rates[mi] / REF)) < 1e-9,
+    face: (face) => face === faces[0],
+    moving: (_f, beta) => beta === 0,
+    spread: (_f, _b, _m, si) => si === 0,
+  };
+  const subsets = Array.from({ length: 1 << freedoms.length }, (_, k) => freedoms.filter((_, j) => (k >> j) & 1)).sort((a, b) => a.length - b.length);
+  const TI = new Uint32Array(4 * TRACKS);
+  for (const [si, spread] of spreads.entries()) for (const [fi, face] of faces.entries()) for (const [bi, beta] of betas.entries()) for (const mi of rates.keys()) {
+    let mask = 0;
+    subsets.forEach((set, s) => { if (freedoms.every(f => set.includes(f) || held[f](face, beta, mi, si))) mask |= 1 << s; });
+    TI.set([mi, si === 0 ? 1 : 0, spread.size >= WIDE ? 1 : 0, mask], 4 * index_of(si, fi, bi, mi));
+  }
+  const TIB = gpu.upload(TI);
+  const CELLS = XS * YS;
+  /* the grids, per arrangement kept (gathered, scattered): the landed amount (low and high words), least mass, least wide mass, sets reached */
+  const EMPTY = new Uint32Array(10 * CELLS);
+  for (const a of [0, 1]) EMPTY.fill(0xFFFFFFFF, (a * 5 + 2) * CELLS, (a * 5 + 4) * CELLS);
+  const K_AT = 16, SC_AT = 16 + 481;
+  const log10 = "0.30102999566398120 * log2";
+  const TRACK = (await gpu.compile([
+    "@group(0) @binding(0) var<storage, read> P: array<u32>;",
+    "@group(0) @binding(1) var<storage, read> L: array<f32>;",
+    "@group(0) @binding(2) var<storage, read> K: array<f32>;",
+    "@group(0) @binding(3) var<storage, read> SP: array<f32>;",
+    "@group(0) @binding(4) var<storage, read> RS: array<f32>;",
+    "@group(0) @binding(5) var<storage, read> TR: array<f32>;",
+    "@group(0) @binding(6) var<storage, read_write> X: array<f32>;",
+    "@group(0) @binding(7) var<storage, read_write> Y: array<f32>;",
+    physics.Simulation.law_wgsl,
+    /* the vacuum's own share beside what was sent (Medium.settle_rho), off the host's table */
+    "fn vac_at(sent: f32) -> f32 {",
+    "  if (!(sent > 1e-16)) { return K[4]; }",
+    `  let u: f32 = (${log10}(min(1.0, sent)) + 16.0) / 16.0 * 480.0;`,
+    "  let k: u32 = min(479u, u32(floor(u)));",
+    "  let f: f32 = u - f32(k);",
+    `  return K[${K_AT}u + k] * (1.0 - f) + K[${K_AT}u + k + 1u] * f;`,
+    "}",
+    /* the chain's scale at the density crossed (Medium.scale_at, a0_from 2) */
+    "fn a0_crossed(avg: f32) -> f32 {",
+    "  if (K[5] < 0.5 || !(K[1] > 0.0)) { return K[0]; }",
+    "  let u: f32 = clamp(avg, 0.0, 1.0) * 2000.0;",
+    "  let k: u32 = min(1999u, u32(floor(u)));",
+    "  let f: f32 = u - f32(k);",
+    `  return K[0] * (K[${SC_AT}u + k] * (1.0 - f) + K[${SC_AT}u + k + 1u] * f) / K[1];`,
+    "}",
+    /* what the whole arrangement has at a place, every source its own share (Medium.seed, Medium.sent_to): the sum and the size of what faces it */
+    "fn at_place(px: f32, py: f32, sp: u32, near: f32, all: f32) -> vec2<f32> {",
+    "  let first: u32 = u32(SP[4u * sp]);",
+    "  let count: u32 = u32(SP[4u * sp + 1u]);",
+    "  var sum: f32 = 0.0;",
+    "  var g: vec2<f32> = vec2<f32>(0.0, 0.0);",
+    "  for (var s: u32 = 0u; s < count; s = s + 1u) {",
+    `    let b: u32 = ${SRC_AT}u + 3u * (first + s);`,
+    "    let e: vec2<f32> = vec2<f32>(px - SP[b], py - SP[b + 1u]);",
+    "    let d: f32 = max(near, length(e));",
+    "    let v: f32 = min(1.0, all * SP[b + 2u] * pow(near / max(near, d), K[3]));",
+    "    sum = sum + v;",
+    "    g = g + v * (e / d);",
+    "  }",
+    "  return vec2<f32>(min(1.0, sum), length(g));",
+    "}",
+    "@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {",
+    "  let t: u32 = P[7] + gid.y * 65536u + gid.x;",
+    "  if (t >= P[0]) { return; }",
+    "  let W: u32 = P[1];",
+    "  let near: f32 = TR[4u * t];",
+    "  let all: f32 = TR[4u * t + 1u];",
+    "  let row: u32 = u32(TR[4u * t + 2u]);",
+    "  let sp: u32 = u32(TR[4u * t + 3u]);",
+    "  var at: f32 = near;",
+    "  var cum: f32 = near * vac_at(at_place(near, 0.0, sp, near, all).x);",
+    "  for (var j: u32 = 0u; j < W; j = j + 1u) {",
+    "    let r: f32 = RS[row * W + j];",
+    "    if (!(r > 0.0)) { X[t * W + j] = -1e30; Y[t * W + j] = -1e30; continue; }",
+    "    if (r > at) {",
+    `      let k: u32 = max(1u, u32(ceil(32.0 * ${log10}(r / at))));`,
+    "      var r0: f32 = at;",
+    "      for (var i: u32 = 1u; i <= k; i = i + 1u) {",
+    "        let r1: f32 = at * pow(r / at, f32(i) / f32(k));",
+    "        cum = cum + 0.5 * (vac_at(at_place(r0, 0.0, sp, near, all).x) + vac_at(at_place(r1, 0.0, sp, near, all).x)) * (r1 - r0);",
+    "        r0 = r1;",
+    "      }",
+    "      at = r;",
+    "    }",
+    /* what ARRIVES is the meeting's rate times what faces the place (Medium.pull_at); what is FELT, the chain's law at the a_0 crossed */
+    "    let gN: f32 = K[2] * at_place(r, 0.0, sp, near, all).y;",
+    "    var x: f32 = -1e30;",
+    "    var y: f32 = -1e30;",
+    "    if (gN > 0.0) {",
+    `      x = ${log10}(gN / K[0]);`,
+    "      let felt: f32 = boost(gN, a0_crossed(cum / r));",
+    `      if (felt > 0.0) { y = ${log10}(felt / K[0]); }`,
+    "    }",
+    "    X[t * W + j] = x;",
+    "    Y[t * W + j] = y;",
+    "  }",
+    "}",
+  ].join("\n"), ["TRACK"])).TRACK;
+  const RASTER = (await gpu.compile([
+    "@group(0) @binding(0) var<storage, read> P: array<u32>;",
+    "@group(0) @binding(1) var<storage, read> X: array<f32>;",
+    "@group(0) @binding(2) var<storage, read> Y: array<f32>;",
+    "@group(0) @binding(3) var<storage, read> TI: array<u32>;",
+    "@group(0) @binding(4) var<storage, read_write> G: array<atomic<u32>>;",
+    "@compute @workgroup_size(64) fn RASTER(@builtin(global_invocation_id) gid: vec3<u32>) {",
+    "  let i: u32 = P[7] + gid.y * 65536u + gid.x;",
+    "  let W: u32 = P[1];",
+    "  if (i >= P[0] * (W - 1u)) { return; }",
+    "  let t: u32 = i / (W - 1u);",
+    "  let j: u32 = i % (W - 1u);",
+    "  let xa: f32 = X[t * W + j];",
+    "  let ya: f32 = Y[t * W + j];",
+    "  let xb: f32 = X[t * W + j + 1u];",
+    "  let yb: f32 = Y[t * W + j + 1u];",
+    "  if (xa < -1e29 || ya < -1e29 || xb < -1e29 || yb < -1e29) { return; }",
+    `  let x0: f32 = ${X0.toFixed(1)};`,
+    `  let y0: f32 = ${Y0.toFixed(1)};`,
+    `  if (max(xa, xb) < x0 || min(xa, xb) > ${X1.toFixed(1)}) { return; }`,
+    `  let dx: f32 = ${dx};`,
+    `  let dy: f32 = ${dy};`,
+    "  let st: u32 = max(1u, u32(ceil(max(abs(xb - xa) / dx, abs(yb - ya) / dy))));",
+    /* the share a stretch lays on each cell it crosses, 1/st, in 2^-24 on a pair of words so nothing is lost to the sum */
+    "  let w: u32 = u32(round(16777216.0 / f32(st)));",
+    `  let C: u32 = ${CELLS}u;`,
+    "  let mass: u32 = TI[4u * t];",
+    "  let gathered: bool = TI[4u * t + 1u] == 1u;",
+    "  let wide: bool = TI[4u * t + 2u] == 1u;",
+    "  let mask: u32 = TI[4u * t + 3u];",
+    "  for (var k: u32 = 0u; k < st; k = k + 1u) {",
+    "    let f: f32 = (f32(k) + 0.5) / f32(st);",
+    "    let gx: i32 = i32(floor((xa + f * (xb - xa) - x0) / dx + 0.5));",
+    "    let gy: i32 = i32(floor((ya + f * (yb - ya) - y0) / dy + 0.5));",
+    `    if (gx < 0 || gx >= ${XS} || gy < 0 || gy >= ${YS}) { continue; }`,
+    `    let cell: u32 = u32(gy) * ${XS}u + u32(gx);`,
+    "    for (var a: u32 = 0u; a < 2u; a = a + 1u) {",
+    "      if (a == 0u && !gathered) { continue; }",
+    "      let base: u32 = a * 5u * C + cell;",
+    "      let old: u32 = atomicAdd(&G[base], w);",
+    "      if (old > 0xFFFFFFFFu - w) { atomicAdd(&G[base + C], 1u); }",
+    "      atomicMin(&G[base + 2u * C], mass);",
+    "      if (wide) { atomicMin(&G[base + 3u * C], mass); }",
+    "      atomicOr(&G[base + 4u * C], mask);",
+    "    }",
+    "  }",
+    "}",
+  ].join("\n"), ["RASTER"])).RASTER;
+  const Xb = gpu.blank(TRACKS * W), Yb = gpu.blank(TRACKS * W);
+  const dex_of = rates.map(mx => Math.log10(mx / REF));
+  console.log(`  ${id.padEnd(26)} on the device: ${TRACKS} tracks of up to ${W - 1} radii, ${XS}×${YS} cells`);
   const t0 = Date.now();
   for (const DEG of DEGS) {
+    const tHost = Date.now();
     const cpu = physics.G.medium(31, p.A, p.K, DEG, 2, p.D);
     cpu.vacuum = how.vacuum; cpu.facing = how.facing; cpu.own = how.own; cpu.a0_from = how.a0_from; cpu.crowd = how.crowd;
     const a0v = cpu.a0_vacuum;
@@ -449,96 +639,56 @@ if (Deno.env.get("RAY_SOLVE")) {
       hh.momentum = new physics.Vector({ components: [beta * hh.mass, 0] });
       per_ref[`${face}|${beta}`] = cpu.per_way(hh);
     }
+    /*
+     * every track on the device (TRACK): what ONE of the arrangement's sources, holding its own share, has put on a way
+     * at a distance (Medium.seed), what the whole arrangement has at a place (Medium.sent_to over the planes), read from
+     * outside the arrangement - nothing of it is read from inside one of its sources - but with what a carrier CROSSED
+     * integrated from the middle out, so a galaxy's own emptied core stands on the way in
+     */
+    const K = new Float32Array(SC_AT + SC.length);
+    K.set([a0v, inf, rate, D1, empty, how.a0_from === 2 ? 1 : 0]);
+    K.set(VACS, K_AT);
+    K.set(SC, SC_AT);
+    const TR = new Float32Array(4 * TRACKS);
+    for (const si of spreads.keys()) for (const [fi, face] of faces.entries()) for (const [bi, beta] of betas.entries()) for (const [mi, mx] of rates.entries())
+      TR.set([Math.max(law.NEAR, face), per_ref[`${face}|${beta}`] * (mx / REF), si * faces.length + fi, si], 4 * index_of(si, fi, bi, mi));
+    const KB = gpu.upload(K), TRB = gpu.upload(TR);
+    const tDev = Date.now();
+    const ranT = await gpu.run(TRACK, [TRACKS, W], [LB, KB, SPB, RSB, TRB, Xb, Yb], TRACKS);
+    KB.destroy(); TRB.destroy();
+    /* a track's own readings, when the host wants one back */
     type Track = { face: number; beta: number; mx: number; spread: number; xs: number[]; ys: number[] };
-    const tracks: Track[] = [];
-    const D1 = p.D - 1;
-    for (const [si, spread] of spreads.entries()) for (const face of faces) for (const beta of betas) for (const mx of rates) {
-      const near = Math.max(law.NEAR, face), all = per_ref[`${face}|${beta}`] * (mx / REF);
-      /* what ONE of the arrangement's sources, holding its own share, has put on a way at a distance (Medium.seed) */
-      const one_sent = (r: number, share: number) => Math.min(1, all * share * Math.pow(near / Math.max(near, r), D1));
-      /* and what the whole arrangement has, at a place: every source's own, from where it stands (Medium.sent_to over the planes) */
-      const at_place = (px: number, py: number) => {
-        let sum = 0, gx = 0, gy = 0;
-        for (const b of spread.at) {
-          const ex = px - b[0], ey = py - b[1], d = Math.max(near, Math.hypot(ex, ey));
-          const v = one_sent(d, b[2]);
-          sum += v;
-          if (d > 0) { gx += v * (ex / d); gy += v * (ey / d); }
-        }
-        return [Math.min(1, sum), Math.hypot(gx, gy)];
-      };
-      const sent = (r: number) => at_place(r, 0)[0];
-      /*
-       * the readings start outside the arrangement - nothing of it is read from inside one of its sources - but what a
-       * carrier CROSSED is integrated from the middle out, so a galaxy's own emptied core stands on the way in
-       */
-      const out = spread.at.reduce((m, b) => Math.max(m, Math.hypot(b[0], b[1])), 0) + near;
-      let cum = near * vac_at(sent(near)), at = near;
-      const xs: number[] = [], ys: number[] = [];
-      for (let r = out; r <= FAR; r *= step) {
-        if (r > at) { const k = Math.max(1, Math.ceil(32 * Math.log10(r / at))); let r0 = at; for (let i = 1; i <= k; i++) { const r1 = at * Math.pow(r / at, i / k); cum += 0.5 * (vac_at(sent(r0)) + vac_at(sent(r1))) * (r1 - r0); r0 = r1; } at = r; }
-        /* what ARRIVES is the meeting's rate times what faces the place, each source's own added as the medium adds them (Medium.pull_at) */
-        const gN = rate * at_place(r, 0)[1];
-        const felt = physics.Law.boost(gN, a0_crossed(cum / r));
-        xs.push(gN > 0 ? Math.log10(gN / a0v) : NaN);
-        ys.push(felt > 0 ? Math.log10(felt / a0v) : NaN);
-      }
-      tracks.push({ face, beta, mx, spread: si, xs, ys });
-    }
+    const track_at = async (si: number, fi: number, bi: number, mi: number): Promise<Track> => {
+      const t = index_of(si, fi, bi, mi), n = radii[si * faces.length + fi].length;
+      const nan = (v: number) => v < -1e29 ? NaN : v;
+      const xs = [...await gpu.read(Xb, n, t * W)].map(nan), ys = [...await gpu.read(Yb, n, t * W)].map(nan);
+      return { face: faces[fi], beta: betas[bi], mx: rates[mi], spread: si, xs, ys };
+    };
     /* laid as a density, exactly as the chain's sweep lays its own (Sweep.rasterise), and classed by the fewest freedoms that reach a cell */
     /* HOW MUCH IT TAKES: the least mass, in dex of the rate a source starts at, of any source that reaches a cell */
-    const least = new Float32Array(XS * YS).fill(NaN);
     /*
      * AND WHAT BEING SPREAD OUT COSTS: the least mass that reaches a cell when the source is LAID OVER `WIDE` c-bar
      * rather than gathered. Being spread is no boundary - a wide source reaches anywhere a gathered one does - but it
      * pays for it in mass, and the gap between the two is that price
      */
-    const WIDE = 9;
-    const widest = new Float32Array(XS * YS).fill(NaN);
-    const fill = (keep: (t: Track) => boolean, mark = false) => {
-      const grid = new Float32Array(XS * YS);
-      for (const t of tracks) {
-        if (!keep(t)) continue;
-        const dex = Math.log10(t.mx / REF), across = spreads[t.spread].size;
-        for (let i = 0; i + 1 < t.xs.length; i++) {
-          const xa = t.xs[i], ya = t.ys[i], xb = t.xs[i + 1], yb = t.ys[i + 1];
-          if (!Number.isFinite(xa) || !Number.isFinite(ya) || !Number.isFinite(xb) || !Number.isFinite(yb)) continue;
-          if (Math.max(xa, xb) < X0 || Math.min(xa, xb) > X1) continue;
-          const st = Math.max(1, Math.ceil(Math.max(Math.abs(xb - xa) / dx, Math.abs(yb - ya) / dy)));
-          for (let k = 0; k < st; k++) {
-            const f = (k + 0.5) / st;
-            const gx = Math.round((xa + f * (xb - xa) - X0) / dx), gy = Math.round((ya + f * (yb - ya) - Y0) / dy);
-            if (gx >= 0 && gx < XS && gy >= 0 && gy < YS) {
-              grid[gy * XS + gx] += 1 / st;
-              if (mark && !(least[gy * XS + gx] <= dex)) least[gy * XS + gx] = dex;
-              if (mark && across >= WIDE && !(widest[gy * XS + gx] <= dex)) widest[gy * XS + gx] = dex;
-            }
-          }
-        }
-      }
-      return grid;
-    };
-    const held: Record<string, (t: Track) => boolean> = {
-      mass: (t: Track) => Math.abs(Math.log10(t.mx / REF)) < 1e-9,
-      face: (t: Track) => t.face === faces[0],
-      moving: (t: Track) => t.beta === 0,
-      spread: (t: Track) => t.spread === 0,
-    };
-    const subsets = Array.from({ length: 1 << freedoms.length }, (_, k) => freedoms.filter((_, j) => (k >> j) & 1)).sort((a, b) => a.length - b.length);
-    for (const [want, keep] of [["gathered", (t: Track) => t.spread === 0], ["scattered", (_: Track) => true]] as [string, (t: Track) => boolean][]) {
-      least.fill(NaN);
-      widest.fill(NaN);
-      const grid = fill(keep, true);
-      const reached = subsets.map(set => fill(t => keep(t) && freedoms.every(f => set.includes(f) || held[f](t))));
+    const GB = gpu.upload(EMPTY);
+    const ranR = await gpu.run(RASTER, [TRACKS, W], [Xb, Yb, TIB, GB], TRACKS * (W - 1));
+    const G = await gpu.read_u32(GB, 10 * CELLS);
+    GB.destroy();
+    const tBack = Date.now();
+    for (const [a, want] of ["gathered", "scattered"].entries()) {
+      const base = a * 5 * CELLS;
       const out = kept[want];
       out.starts.push(out.cell.length);
-      for (let i = 0; i < grid.length; i++) {
-        if (!(grid[i] > 0)) continue;
-        const k = reached.findIndex(g2 => g2[i] > 0);
-        out.deg.push(DEG); out.cell.push(i); out.p.push(grid[i]);
+      for (let i = 0; i < CELLS; i++) {
+        const got = (G[base + CELLS + i] * 4294967296 + G[base + i]) / 16777216;
+        if (!(got > 0)) continue;
+        const mask = G[base + 4 * CELLS + i], k = mask ? 31 - Math.clz32(mask & -mask) : -1;
+        const lm = G[base + 2 * CELLS + i], wm = G[base + 3 * CELLS + i];
+        out.deg.push(DEG); out.cell.push(i); out.p.push(got);
         out.by.push(k < 0 ? 0 : subsets[k].reduce((m, f) => m | bit(f), 0));
-        out.needs.push(Number.isFinite(least[i]) ? least[i] : 99);
-        out.size.push(Number.isFinite(widest[i]) ? widest[i] : 99);
+        out.needs.push(lm < rates.length ? dex_of[lm] : 99);
+        out.size.push(wm < rates.length ? dex_of[wm] : 99);
       }
     }
     /*
@@ -549,9 +699,9 @@ if (Deno.env.get("RAY_SOLVE")) {
      */
     /* what each mass of that arrangement covers and where it lands, so a reader can see which galaxy is being drawn */
     if (Deno.env.get("RAY_SAY")) {
-      for (const t of tracks) {
-        if (t.face !== faces[0] || t.beta !== betas[1]) continue;
-        if (!(t.mx / REF >= 9 && t.mx / REF <= 1100)) continue;
+      for (const si of spreads.keys()) for (const [mi, mx] of rates.entries()) {
+        if (!(mx / REF >= 9 && mx / REF <= 1100)) continue;
+        const t = await track_at(si, 0, 1, mi);
         const ok = t.xs.map((x, i) => [x, t.ys[i]]).filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));
         if (!ok.length) continue;
         const at = (x: number) => { const q = ok.reduce((b, c) => Math.abs(c[0] - x) < Math.abs(b[0] - x) ? c : b); return Math.abs(q[0] - x) < 0.3 ? (q[1] - physics.Galaxies.law_at(q[0])).toFixed(2) : "-"; };
@@ -566,11 +716,12 @@ if (Deno.env.get("RAY_SOLVE")) {
      * the law. The mass is a galaxy's own, and it is the only thing about the drawn one that the data chose
      */
     const GALAXY = 100;
-    const one = tracks.find(t => t.spread === 3 && t.face === faces[0] && t.beta === betas[1] && Math.abs(Math.log10(t.mx / (REF * GALAXY))) < 0.02);
+    const gm = rates.findIndex(mx => Math.abs(Math.log10(mx / (REF * GALAXY))) < 0.02);
+    const one = gm < 0 ? undefined : await track_at(3, 0, 1, gm);
     const line: number[] = [];
     if (one) for (let i = 0; i < one.xs.length; i++) if (Number.isFinite(one.xs[i]) && Number.isFinite(one.ys[i])) line.push(one.xs[i], one.ys[i]);
     typicals.push(line);
-    console.log(`  ${id.padEnd(26)} solved DEG ${DEG.toFixed(1)}: a_0 ${a0v.toExponential(3)}, a_0/cH ${ratios[ratios.length - 1].toFixed(4)}, rho_inf ${cpu.rho_inf.toFixed(4)}  (${((Date.now() - t0) / 1000).toFixed(0)}s)`);
+    console.log(`  ${id.padEnd(26)} solved DEG ${DEG.toFixed(1)}: a_0 ${a0v.toExponential(3)}, a_0/cH ${ratios[ratios.length - 1].toFixed(4)}, rho_inf ${cpu.rho_inf.toFixed(4)}  (host ${((tDev - tHost) / 1000).toFixed(1)}s, device ${((tBack - tDev) / 1000).toFixed(1)}s, laid ${((Date.now() - tBack) / 1000).toFixed(1)}s; TRACK busy ${(ranT.busy / 1000).toFixed(1)}s in ${ranT.pieces}, RASTER ${(ranR.busy / 1000).toFixed(1)}s in ${ranR.pieces}; ${((Date.now() - t0) / 1000).toFixed(0)}s, longest piece ${gpu.longest.toFixed(0)} ms)`);
   }
   for (const [want, dir_id] of [["gathered", "galaxy.point.solved"], ["scattered", "galaxy.many.solved"]]) {
     const out = kept[want], rows = out.cell.length;
@@ -588,7 +739,8 @@ if (Deno.env.get("RAY_SOLVE")) {
       about: "per DEG: every reached cell (index gy*n+gx of the grid, in the vacuum's own a_0 of that lattice), how much of the space lands there, and which freedoms it needs. Closed form in the medium's functions (record.gpu RAY_SOLVE); checked against the device's own runs (RAY_SPACE)",
       how,
     };
-    const dir = join(repo, "visuals", dir_id);
+    /* RAY_SOLVE_TO writes elsewhere (a check against an earlier solve), the visuals otherwise */
+    const dir = join(Deno.env.get("RAY_SOLVE_TO") ?? join(repo, "visuals"), dir_id);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "field.f32"), new Uint8Array(flat.buffer));
     writeFileSync(join(dir, "meta.json"), JSON.stringify(header, null, 2) + "\n");

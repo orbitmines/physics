@@ -101,3 +101,5 @@ CUBIC6 := Geometry.shells(3, [1])
 FCC12 := Geometry.shells(3, [2])
 CUBIC18 := Geometry.shells(3, [1, 2])
 CUBIC26 := Geometry.shells(3, [1, 2, 3])
+/* the cube's corners alone: every (±1, ±1, ±1), the body-centred cubic lattice's eight nearest neighbours - three dimensions on eight ways */
+BCC8 := Geometry.shells(3, [3])

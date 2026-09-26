@@ -50,7 +50,7 @@ WGSL: Language = class {
   loop (v: String, bound: String, body: String): String => "for (var {v}: u32 = 0u; {v} < {bound}; {v} = {v} + 1u) {{\n{body.indent(this.ind)}\n}}"
   arg (nm: String, ty: String): String => "{nm}: {ty}"
   func (nm: String, params: String, ret: String, body: String): String => "fn {nm}({params}) -> {ret} {{\n{body.indent(this.ind)}\n}}"
-  entry (nm: String, body: String): String => "@compute @workgroup_size(64) fn {nm}(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n{body.indent(this.ind)}\n}}"
+  entry (nm: String, body: String): String => "@compute @workgroup_size(64) fn {nm}(@builtin(global_invocation_id) gid: vec3<u32>) {{\n  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;\n{body.indent(this.ind)}\n}}"
 }
 
 /* GLSL says the same, for OpenGL (4.3+) and Vulkan compute; one `main` per kernel, so a runtime

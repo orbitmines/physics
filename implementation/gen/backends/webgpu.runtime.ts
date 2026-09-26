@@ -305,7 +305,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean }): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean; local?: boolean; slots?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -317,7 +317,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const adapter = await nav.gpu.requestAdapter();
   if (!adapter) throw new Error("WebGPU: no adapter");
   const lim = adapter.limits ?? {};
-  const device = await adapter.requestDevice({ requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
+  /* paced, the device times its own work (timestamp queries), so a submission is sized by what the device did and not by the host's round trip */
+  const timed = !!how?.paced && !!adapter.features?.has?.("timestamp-query");
+  const device = await adapter.requestDevice({ requiredFeatures: timed ? ["timestamp-query"] : [], requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
   A = Math.max(8, A & ~1);
   const { order, common, kernels } = medium_manifest(KERNELS);
   if (!order.length) throw new Error("the kernels carry no `//! medium` manifest - regenerate");
@@ -335,7 +337,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   /* the ledgers: rho, the record read out, its gradient, the record, blocks, the pair's destroyed space, what arrived per plane, the growth */
   const slots = 9 + ledger;
   const EXTRAS = 24, CN = Math.floor((EXTRAS + 3) / 4);
-  const ENTRIES = MAXM * K * K * 4;
+  /* where the host asks what a point is going by: a room of its own, not one a body (a million bodies are not asked about at once) */
+  const ENTRIES = Math.min(MAXM * K * K * 4, 1 << 16);
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
   const BEAM = planes * rungs;
@@ -359,26 +362,56 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const BOD = OUT + 4 * MAXM + 2 * ENTRIES, BEAMC = BOD + 12 * MAXM, WHOM = BEAMC + 2 * BEAM;
   /* where each of the first TRACKB bodies stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
   const TRACKED = 4096, TRACK = WHOM + planes + 1;
-  const celBytes = (TRACK + TRACKED * TRACKB * 4) * 4;
+  /* where every body is apart, the parts of each body's pull: a point of it against a run of PCHUNK planes, two numbers each (Kernels MPULLH) */
+  const PCHUNK = Number(/const MPCHUNK: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
+  const chunks = (n: number) => how?.local ? 1 : Math.ceil((n + 1) / PCHUNK);
+  const PART = TRACK + TRACKED * TRACKB * 4;
+  const celBytes = (PART + (apart ? 2 * apart * K * K * chunks(apart) : 0)) * 4;
   fits("ledgers", celBytes);
   const cel = buffer(celBytes, usage.storage);
   fits("ways and asks", (A + 2 * MAXH + CN + ENTRIES) * 16);
   const dirb = buffer((A + 2 * MAXH + CN + ENTRIES) * 16, usage.storage);
   /* a uniform per plane for the passes run once a plane; with every body apart none is, so one serves */
-  const pars = Array.from({ length: apart ? 1 : planes }, () => buffer(80, usage.uniform));
+  /* and, paced, a set of them for each tick one submission carries: only the tick's own number differs between them */
+  const SLOTS = how?.paced ? 64 : 1;
+  /* and room in each for every pass of a tick, a piece of a pass apiece, each its own 256 bytes with where its threads start (Par.first) */
+  const REGIONS = 256, REGION = 256;
+  const ring = Array.from({ length: SLOTS }, () => Array.from({ length: apart ? 1 : planes }, () => buffer(REGION * REGIONS, usage.uniform)));
+  const regions_used = new Array(SLOTS).fill(0);
+  const pars = ring[0];
+  /*
+   * EVERY BODY'S RAYS HELD WHERE THEY ARE (Medium.local_rays, `how.local`): each of a point's GATHER ways keeps
+   * `how.slots` bundles of eight numbers, and after them each cell what goes no way out. Two boxes of them, the one the
+   * tick opened on (binding 4) and the one it leaves (binding 5), which change places every tick
+   */
+  const local = !!how?.local;
+  if (local && !apart) throw new Error("the medium holds every body's rays where they are only with every body apart (how.apart, how many)");
+  const GATHER = Number(/const MGATHER: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
+  const HSLOTS = Math.max(1, Math.floor(how?.slots ?? 4));
+  /* the slots, then a cell's middle, then whether each of its ways holds anything, then the bodies on it gathered into one source, then what arrives there times its way (x, y), then which ways it holds and which it can be reached on, each as four words of 24 bits, then its far bodies' field (nine numbers) and its near ones listed (a count and 96) */
+  const heldFloats = local ? cells * GATHER * HSLOTS * 8 + cells + cells * GATHER + cells * 8 + cells * 2 + cells * 4 + cells * 4 + cells * 9 + cells * 97 : 4;
+  fits("held rays", heldFloats * 4);
+  const held = [buffer(heldFloats * 4, usage.storage), buffer(heldFloats * 4, usage.storage)];
+  /* every body on its cell's list: a head a cell, then the next body after each (Kernels MHCLEAR, MHLINK) */
+  const links = buffer(Math.max(16, (local ? cells + MAXM : 4) * 4), usage.storage);
   const layout = device.createBindGroupLayout({ entries: [
-    { binding: 0, visibility: 4, buffer: { type: "uniform" } },
+    { binding: 0, visibility: 4, buffer: { type: "uniform", hasDynamicOffset: true } },
     { binding: 1, visibility: 4, buffer: { type: "storage" } },
     { binding: 2, visibility: 4, buffer: { type: "storage" } },
     { binding: 3, visibility: 4, buffer: { type: "read-only-storage" } },
+    { binding: 4, visibility: 4, buffer: { type: "storage" } },
+    { binding: 5, visibility: 4, buffer: { type: "storage" } },
+    { binding: 6, visibility: 4, buffer: { type: "storage" } },
   ] });
-  const binds = pars.map(par => device.createBindGroup({ layout, entries: [
-    { binding: 0, resource: { buffer: par } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
-  ] }));
+  /* per tick parity: tick t leaves its rays in held[t % 2] and opens on the other */
+  const bind_ring = [0, 1].map(p => ring.map(set => set.map(par => device.createBindGroup({ layout, entries: [
+    { binding: 0, resource: { buffer: par, size: 80 } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
+    { binding: 4, resource: { buffer: held[1 - p] } }, { binding: 5, resource: { buffer: held[p] } }, { binding: 6, resource: { buffer: links } },
+  ] }))));
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
   /* the lean at every cell and each body's rays at every cell are what a panel draws: they are run where a panel reads, not on every tick (Medium.lean, Medium.sweep) */
   const drawn = ["MLEAN", "MSWEEP"], stepped = order.filter(n => !drawn.includes(n));
-  const every = [...stepped, ...drawn, "MPROBE"];
+  const every = [...stepped, ...drawn, "MPROBE", "MHSEED"].filter((n, k, all) => all.indexOf(n) === k);
   const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
   for (const name of every.map(n => n.replace(/@z$/, ""))) {
     const k = kernels[name];
@@ -422,7 +455,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const chain_a0 = a0_fact ? model.at(a0_fact.to, model.settled(DEG)) : 0;
   if (!(chain_a0 > 0)) throw new Error("the chain gives no a_0 to run the medium on");
   const a0_vacuum = chain_a0 * a0_share;
-  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share, own, crowd, a0_from, apart ? 1 : 0, 0];
+  const extras = [law.nf_inf, law.rho_inf, DEG, law.NEAR, vacuum, facing, D, 1, omega, OUT, rungs, BOD, BEAMC, BEAM, WHOM, TRACK, enhance, a0_vacuum, sigma * a0_share, own, crowd, a0_from, apart ? 1 : 0, local ? HSLOTS : 0];
   for (let k = 0; k < EXTRAS; k++) DIR[(A + 2 * MAXH) * 4 + k] = extras[k];
   /* the ways and the constants stand for the whole run; what is asked of the medium is written where it is asked */
   device.queue.writeBuffer(dirb, 0, DIR);
@@ -440,21 +473,50 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
   const at_one = 1 - law.reach_at(law.NEAR);
   const skin_of = (h: any) => at_one > 0 ? (1 - law.reach_at(face_of(h))) / at_one : 1;
+  /* bodies added since the device last had them: given to it once, before it next reads them, not once a body (a million adds were a million writes of all of them) */
+  let stale = false;
+  /* kernels run straight off, in pieces of this many threads, each piece its own submission (the host's own steps between ticks) */
+  const HOST_PIECE = 16384;
+  const in_pieces = (names: string[], parity: number) => {
+    for (const k of names) {
+      const all = size(over[k]);
+      for (let f0 = 0; f0 < all; f0 += HOST_PIECE) {
+        uniforms();
+        const e = device.createCommandEncoder();
+        run(e, k, 0, 0, -1, parity, f0, Math.min(HOST_PIECE, all - f0));
+        device.queue.submit([e.finish()]);
+      }
+    }
+  };
+  const relist = (parity: number) => in_pieces(["MHCLEAR", "MHLINK", "MHSRC"], parity);
   const push = () => {
-    holes.slice(0, MAXM).forEach((h, k) => {
-      BODS[12 * k] = h.x; BODS[12 * k + 1] = h.y; BODS[12 * k + 2] = h.mass; BODS[12 * k + 3] = plane_of(h);
+    /* what is gathered goes first: a write lands on the queue after it, as it would have unpaced */
+    send();
+    stale = false;
+    const n = Math.min(holes.length, MAXM);
+    for (let k = 0; k < n; k++) {
+      const h = holes[k];
+      /* every body apart is on its own plane, the one after its place in the list */
+      BODS[12 * k] = h.x; BODS[12 * k + 1] = h.y; BODS[12 * k + 2] = h.mass; BODS[12 * k + 3] = apart ? k + 1 : plane_of(h);
       BODS[12 * k + 4] = h.momentum?.components?.[0] ?? h.px ?? 0; BODS[12 * k + 5] = h.momentum?.components?.[1] ?? h.py ?? 0;
       BODS[12 * k + 6] = h.moves ? 1 : 0; BODS[12 * k + 7] = 0;
       BODS[12 * k + 8] = face_of(h); BODS[12 * k + 9] = skin_of(h);
-    });
-    device.queue.writeBuffer(cel, BOD * 4, BODS);
+    }
+    if (n) device.queue.writeBuffer(cel, BOD * 4, BODS, 0, 12 * n);
     /* whose rays each plane holds, so a step looks it up rather than searching the bodies for it */
-    const whose = new Float32Array(planes + 1).fill(-1);
-    holes.slice(0, MAXM).forEach((h, k) => { const z = plane_of(h); if (whose[z] < 0) whose[z] = k; });
+    const whose = new Float32Array(Math.min(planes, n + 1) + 1).fill(-1);
+    for (let k = 0; k < n; k++) { const z = apart ? k + 1 : plane_of(holes[k]); if (z < whose.length && whose[z] < 0) whose[z] = k; }
     device.queue.writeBuffer(cel, WHOM * 4, whose);
+    /*
+     * held where the rays are, each body on its cell's list and each cell's bodies gathered into its source - which a
+     * tick itself does once its bodies have moved (MHCLEAR MHLINK MHSRC at its end), and so the host does after it
+     * moved them: on the box the next tick opens on (it lays off the sources there), in pieces each its own submission
+     */
+    if (local) relist((t + 1) % 2);
   };
   /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
   const sync = async () => {
+    if (stale) push();
     const n = Math.min(holes.length, MAXM);
     if (!n) return;
     const got = await read(cel, 12 * n, BOD * 4);
@@ -476,19 +538,30 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     return got;
   };
   const entries: number[] = [];
-  const size = (o: string) => ({ "cells": cells, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, MAXM), "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
-  const run = (enc: any, name: string, z: number) => {
-    const n = size(over[name]);
-    if (!n) return;
-    const pass = enc.beginComputePass();
-    pass.setPipeline(pipes[name]); pass.setBindGroup(0, binds[z]);
+  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, MAXM), "pulls": apart ? Math.min(holes.length, MAXM) * K * K * chunks(Math.min(holes.length, MAXM)) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
+  /* one pass; paced, with the device's own clock on either side of it (the pass's pair of `stamps`) */
+  /* the parity a pass runs on: a tick's own leaves its rays in held[t % 2]; a reading after it reads the last left, held[(t + 1) % 2] */
+  /* and a piece of one: `count` threads from `first`, read off its own region of the tick's uniforms (Par.first) */
+  const run = (enc: any, name: string, z: number, slot = 0, stamp = -1, parity = (t + 1) % 2, first = 0, count = -1): boolean => {
+    const all = size(over[name]);
+    const n = count < 0 ? all : Math.min(count, all - first);
+    if (!(n > 0)) return false;
+    const region = regions_used[slot]++;
+    if (region >= REGIONS) throw new Error(`the medium ran out of room for a tick's passes (${REGIONS} a tick): fewer pieces`);
+    P[18] = first;
+    ring[slot].forEach((par, zz) => { P[8] = zz; device.queue.writeBuffer(par, region * REGION, P); });
+    P[18] = 0;
+    const pass = enc.beginComputePass(stamp >= 0 ? { timestampWrites: { querySet: stamps, beginningOfPassWriteIndex: 2 * stamp, endOfPassWriteIndex: 2 * stamp + 1 } } : undefined);
+    pass.setPipeline(pipes[name]); pass.setBindGroup(0, bind_ring[parity][slot][z], [region * REGION]);
     const groups = Math.ceil(n / 64);
     pass.dispatchWorkgroups(Math.min(groups, WIDE), Math.ceil(groups / WIDE));
     pass.end();
+    return true;
   };
   /* a reading back off the device, on a buffer kept for that size: making one a tick was most of a tick */
   const staging: Record<number, any> = {};
   const read = async (buf: any, floats: number, offset = 0): Promise<Float32Array> => {
+    await flush();
     const back = staging[floats] ?? (staging[floats] = device.createBuffer({ size: floats * 4, usage: 0x1 | 0x8 }));
     const enc = device.createCommandEncoder();
     enc.copyBufferToBuffer(buf, offset, back, 0, floats * 4);
@@ -499,43 +572,190 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     return out;
   };
   const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
-  const uniforms = () => {
+  const uniforms = (slot = 0) => {
     P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXM); P[6] = t; P[7] = (apart ? holes.length + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
     /* where the ledgers stand, as whole numbers: past sixteen million a float is no longer one (Kernels.medium_helpers) */
-    P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM;
-    pars.forEach((par, z) => { P[8] = z; device.queue.writeBuffer(par, 0, P); });
+    P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM; P[17] = PART; P[18] = 0;
+    /* a set of uniforms taken afresh: its regions are free again (each pass writes its own, `run`) */
+    regions_used[slot] = 0;
   };
   /*
-   * THE DEVICE ALSO DRIVES THE DISPLAY. Paced (`how.paced`), every kernel of a tick is its own submission, the host
-   * rests at least as long as the device worked after each, and one that holds the device past LONGEST_MS stops the
-   * run - a long submission once took the whole card off the bus. `longest` is what the run has asked of it so far
+   * THE DEVICE ALSO DRIVES THE DISPLAY. Paced (`how.paced`), no submission holds the device past what it can give and
+   * still draw the screen: a long one once took the whole card off the bus. Waiting on a submission costs the host some
+   * eleven milliseconds whatever it held (this device's round trip), so a kernel a submission spent most of a tick
+   * waiting. Instead passes - of one tick or of many, each tick on its own set of uniforms - are gathered into one
+   * submission until what the device's own clock says they take reaches AIM_MS; a kernel not yet timed goes alone
+   * (its first run is its probe). After each, the host rests at least as long as the device worked, and one that
+   * held the device past LONGEST_MS stops the run. Anything the host reads or writes sends what is gathered first,
+   * so every step sees the device exactly as it would have unpaced
    */
-  const LONGEST_MS = 250;
-  let longest = 0;
-  const submit = async (names: string[]) => {
-    uniforms();
+  const LONGEST_MS = 250, AIM_MS = 15, MAXPASS = 1024;
+  let longest = 0, longest_was = "";
+  /* what each kernel has held the device for, paced, in ms over the run - where a tick's time goes */
+  const spent: Record<string, number> = {};
+  /* what each kernel took the last times it ran, by the device's clock */
+  const took: Record<string, number> = {};
+  const stamps = timed ? device.createQuerySet({ type: "timestamp", count: 2 * MAXPASS }) : null;
+  const resolved = timed ? buffer(16 * MAXPASS, 0x200 | 0x4) : null;
+  /*
+   * WHAT ONE STEP OF THE DEVICE'S CLOCK IS, measured and never assumed: a runtime may hand back the device's own
+   * counts rather than nanoseconds (this card counts at 19.2 MHz, 52 ns a count, and read as nanoseconds a submission
+   * that held it half a second looked like ten milliseconds). Two marks with the device idle between them, the host's
+   * clock beside each: the counts between them over the milliseconds between them
+   */
+  let ns_per_count = 1;
+  /* and the host's own round trip on an empty submission, so a wait can be told from the work it waited on */
+  let round_trip = 0;
+  if (timed) {
+    const back = device.createBuffer({ size: 16, usage: 0x1 | 0x8 });
+    const mark = async (i: number) => {
+      const e = device.createCommandEncoder();
+      e.beginComputePass({ timestampWrites: { querySet: stamps, beginningOfPassWriteIndex: i } }).end();
+      const h = performance.now();
+      device.queue.submit([e.finish()]);
+      await device.queue.onSubmittedWorkDone();
+      round_trip = Math.max(round_trip, performance.now() - h);
+      return h;
+    };
+    const h0 = await mark(0);
+    await new Promise(r => setTimeout(r, 400));
+    const h1 = await mark(1);
+    const e = device.createCommandEncoder();
+    e.resolveQuerySet(stamps, 0, 2, resolved, 0);
+    e.copyBufferToBuffer(resolved, 0, back, 0, 16);
+    device.queue.submit([e.finish()]);
+    await back.mapAsync(1);
+    const c = new BigUint64Array(back.getMappedRange());
+    const counts = Number(c[1] - c[0]);
+    back.unmap(); back.destroy();
+    if (!(counts > 0)) throw new Error("the device's clock did not move between two marks 400 ms apart - it cannot be paced by it");
+    ns_per_count = (h1 - h0) * 1e6 / counts;
+  }
+  let enc: any = null, passes = 0, guess = 0, ticks_in = 0, slot = -1;
+  /* each pass gathered, with how many threads it ran: what it took is judged a thread at a time, so a pass can be cut */
+  const names_in: { name: string; n: number }[] = [];
+  const inflight: { back: any; names: { name: string; n: number }[]; t0: number }[] = [];
+  /* how many threads each kernel ran the last time it ran whole, so what it took whole can be told */
+  const last_n: Record<string, number> = {};
+  /* send what is gathered, without waiting on it */
+  const send = () => {
+    if (!enc) return;
+    let back: any = null;
+    if (timed && passes) {
+      back = device.createBuffer({ size: 16 * passes, usage: 0x1 | 0x8 });
+      enc.resolveQuerySet(stamps, 0, 2 * passes, resolved, 0);
+      enc.copyBufferToBuffer(resolved, 0, back, 0, 16 * passes);
+    }
+    device.queue.submit([enc.finish()]);
+    inflight.push({ back, names: names_in.splice(0), t0: performance.now() });
+    enc = null; passes = 0; guess = 0; ticks_in = 0; slot = -1;
+  };
+  /* wait on what was sent, learn what each pass took, and rest as long as the device worked */
+  const settle = async () => {
+    while (inflight.length) {
+      const f = inflight.shift()!;
+      const w0 = performance.now();
+      await device.queue.onSubmittedWorkDone();
+      let busy = performance.now() - f.t0;
+      clock.waited += busy; clock.batches++;
+      /*
+       * whatever the device's clock says, a wait this long is the device held this long, less the host's own round trip -
+       * where the host began waiting as it sent. Where it did other work first (a CPU world ticked beside it), the wait
+       * holds that work too, and the device's own clock, measured against the host's, is what says how long it worked
+       */
+      const held = busy - round_trip;
+      if (w0 - f.t0 < 5 && held > LONGEST_MS) throw new Error(`the medium held the device ${held.toFixed(0)} ms in one submission by the host's clock (limit ${LONGEST_MS}) over ${f.names.length} passes - fewer passes a submission`);
+      if (f.back) {
+        await f.back.mapAsync(1);
+        const ns = new BigUint64Array(f.back.getMappedRange());
+        busy = 0;
+        f.names.forEach(({ name, n }, k) => {
+          const ms = Number(ns[2 * k + 1] - ns[2 * k]) * ns_per_count / 1e6;
+          if (!(ms >= 0 && ms < 1e5)) return;
+          busy += ms;
+          spent[name] = (spent[name] ?? 0) + ms;
+          /*
+           * a kernel's cost a thread, judged on the high side: it grows as bodies gather, and a guess short is the one
+           * that matters. Threads over a disc's middle cost many times those over empty cells, so it is the dearest
+           * piece's that is kept - let go slowly over the tick's cheaper ones (half in about 25 pieces) - not the mean:
+           * by the mean a piece over the middle held the device 45-50 ms
+           */
+          const rate = ms / Math.max(1, n);
+          took[name] = Math.max(rate, 0.973 * (took[name] ?? rate));
+        });
+        f.back.unmap(); f.back.destroy();
+      } else f.names.forEach(({ name }) => { spent[name] = (spent[name] ?? 0) + busy / Math.max(1, f.names.length); });
+      if (busy > longest) longest_was = f.names.map(p => `${p.name}x${p.n}`).join(" ");
+      longest = Math.max(longest, busy);
+      if (busy > LONGEST_MS) throw new Error(`the medium held the device ${busy.toFixed(0)} ms in one submission (limit ${LONGEST_MS}) over ${f.names.map(p => p.name).join(", ")} - a smaller box or fewer bodies`);
+      /*
+       * the device has stood idle since its work ended while the host waited to hear so: that is rest already, and only
+       * what is left of as long as it worked is rested now - it is still busy at most half the time
+       */
+      const r0 = performance.now();
+      const idle = Math.max(0, r0 - f.t0 - busy);
+      await new Promise(r => setTimeout(r, Math.max(2, busy - idle)));
+      clock.rested += performance.now() - r0; clock.busy += busy;
+    }
+  };
+  const flush = async () => { send(); await settle(); };
+  /* where a paced run's time goes on the host: gathering passes, waiting on the device (its round trip included), resting, and the device's own clock */
+  const clock = { gathered: 0, waited: 0, rested: 0, busy: 0, batches: 0 };
+  /* one piece into what is gathered - `count` threads from `first` - sending what is gathered first when it would take the submission past AIM_MS */
+  const one = async (name: string, z: number, parity: number, first: number, count: number, cost: number) => {
+    if (passes > 0 && (guess + cost > AIM_MS || passes >= MAXPASS || (slot < 0 && ticks_in >= SLOTS) || (slot >= 0 && regions_used[slot] >= REGIONS))) await flush();
+    const g0 = performance.now();
+    if (!enc) enc = device.createCommandEncoder();
+    if (slot < 0) { slot = ticks_in++; uniforms(slot); }
+    const ran = run(enc, name, z, slot, timed ? passes : -1, parity, first, count);
+    clock.gathered += performance.now() - g0;
+    if (!ran) return;
+    names_in.push({ name, n: count }); passes++; guess += Math.min(cost, AIM_MS);
+    /* a piece not yet costed, or not costed at all, goes alone */
+    if (!Number.isFinite(cost)) await flush();
+  };
+  /*
+   * one pass, cut into as many pieces as keep each under AIM_MS by what it took a thread - so no submission holds the
+   * device long however many cells or bodies there are. A pass never yet timed is timed first on a small piece of it
+   * alone (its first PROBE threads), and the rest is cut by what that piece took
+   */
+  const PROBE = 65536;
+  const gather = async (name: string, z: number, parity: number) => {
+    const all = size(over[name]);
+    if (!all) { took[name] = took[name] ?? 0; return; }
+    last_n[name] = all;
+    let first = 0;
+    if (timed && took[name] === undefined) {
+      const probe = Math.min(all, PROBE);
+      await one(name, z, parity, 0, probe, Infinity);
+      first = probe;
+    }
+    const rate = timed ? (took[name] ?? Infinity) : Infinity;
+    const left = all - first;
+    if (left <= 0) return;
+    const pieces = Number.isFinite(rate) ? Math.max(1, Math.ceil(rate * left / AIM_MS)) : 1;
+    const chunk = Math.ceil(left / pieces);
+    for (let f0 = first; f0 < all; f0 += chunk) await one(name, z, parity, f0, Math.min(chunk, all - f0), rate * Math.min(chunk, all - f0));
+  };
+  /* a tick's own passes run on its parity; a reading after it on the last one left (`run`) */
+  const submit = async (names: string[], parity = (t + 1) % 2) => {
+    if (stale) push();
     if (how?.paced) {
+      slot = -1;
       for (const name of names) {
         const zs = name.endsWith("@z") ? planes : 1;
-        for (let z = 0; z < zs; z++) {
-          const enc = device.createCommandEncoder();
-          run(enc, name.replace(/@z$/, ""), z);
-          const t0 = performance.now();
-          device.queue.submit([enc.finish()]);
-          await device.queue.onSubmittedWorkDone();
-          const ms = performance.now() - t0;
-          longest = Math.max(longest, ms);
-          if (ms > LONGEST_MS) throw new Error(`the medium's ${name} held the device ${ms.toFixed(0)} ms (limit ${LONGEST_MS}) - a smaller box or fewer bodies`);
-          await new Promise(r => setTimeout(r, Math.max(2, ms)));
-        }
+        for (let z = 0; z < zs; z++) await gather(name.replace(/@z$/, ""), z, parity);
       }
+      /* the tick is gathered; the next one takes its own set of uniforms */
+      slot = -1;
       return;
     }
+    uniforms();
     const enc = device.createCommandEncoder();
     for (let i = 0; i < names.length; i++) {
-      if (!names[i].endsWith("@z")) { run(enc, names[i], 0); continue; }
+      if (!names[i].endsWith("@z")) { run(enc, names[i], 0, 0, -1, parity); continue; }
       let j = i; while (j < names.length && names[j].endsWith("@z")) j++;
-      for (let z = 0; z < planes; z++) for (let k = i; k < j; k++) run(enc, names[k].slice(0, -2), z);
+      for (let z = 0; z < planes; z++) for (let k = i; k < j; k++) run(enc, names[k].slice(0, -2), z, 0, -1, parity);
       i = j - 1;
     }
     device.queue.submit([enc.finish()]);
@@ -557,13 +777,33 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       h.momentum = new physics.Vector({ components: [h.px, h.py] });
       h.advance = new physics.Vector({ components: [0, 0] });
       holes.push(h);
-      push();
+      /* given to the device before it next reads the bodies, all at once (`stale`) */
+      stale = true;
       return h;
     },
     /* the bodies as the host has them, given to the device: after a launch, or any other word of the host's */
     push,
     /* the bodies as the device has them, back on the host */
     sync,
+    /* paced, what is gathered sent and waited on */
+    flush,
+    /* held where they are: what one cell's ways hold, as the last tick left them - [way, slot, moments] (Medium.held_on) */
+    async holdings(c: number) {
+      if (!local) return [];
+      const got = await read(held[(t + 1) % 2], GATHER * HSLOTS * 8, c * GATHER * HSLOTS * 8 * 4);
+      const occ = await read(held[(t + 1) % 2], GATHER, (cells * GATHER * HSLOTS * 8 + cells + GATHER * c) * 4);
+      const has = (b: number) => occ[b] > 0.5;
+      const out: number[][] = [];
+      for (let b = 0; b < GATHER; b++) for (let s = 0; s < HSLOTS; s++) { const k = (b * HSLOTS + s) * 8; if (has(b) && got[k] > 0) out.push([b, s, ...got.subarray(k, k + 8)]); }
+      return out;
+    },
+    /* what each kernel took the last time it ran, by the device's clock, in ms */
+    /* what each kernel took, whole, the last time it ran: its cost a thread times the threads it ran */
+    get took() { return Object.fromEntries(Object.entries(took).map(([k, r]) => [k, r * (last_n[k] ?? 1)])); },
+    get clock() { return clock; },
+    /* the device's clock as measured against the host's, and the host's round trip */
+    get ns_per_count() { return ns_per_count; },
+    get round_trip() { return round_trip; },
     /* what a body has sent, rung by rung, as it stands on the device (Medium.beam) */
     async profile(z: number) { const all = await read(cel, BEAM, BEAMC * 4); return all.subarray(z * rungs, (z + 1) * rungs); },
     rungs,
@@ -586,10 +826,14 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     TRACKED,
     /* the longest one paced submission has held the device, in ms */
     get longest() { return longest; },
+    /* and what that submission held: its passes, each with its thread count */
+    get longest_was() { return longest_was; },
+    get spent() { return spent; },
     mass: (h: any) => h.mass,
     at,
     async tick() {
-      await submit(stepped);
+      if (stale) push();
+      await submit(stepped, t % 2);
       t++;
     },
     /* the field as if it had always been there (Medium.settle) */
@@ -597,6 +841,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     /* the field as if it had always been there: what a body sends at every distance at once, on the shell's own falloff (Medium.seed) */
     seed() {
       push();
+      /* held where they are, every point is laid with what every body sends it, on the box the next tick opens on (Medium.seed_local) */
+      if (local) {
+        send();
+        /* in pieces, each its own submission, so none holds the device long however many cells and bodies there are */
+        in_pieces(["MHCLEAR", "MHLINK", "MHSRC", "MHSEED", "MHFIELD"], (t + 1) % 2);
+        return;
+      }
       const beam = new Float32Array(2 * BEAM);
       for (const h of holes) {
         const z = plane_of(h), per = per_way(h), near = face_of(h);
@@ -606,6 +857,22 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
         }
       }
       device.queue.writeBuffer(cel, BEAMC * 4, beam);
+    },
+    /*
+     * THE FIELD STANDING EVERYWHERE, HELD WHERE THE RAYS ARE: the local seed lays each source's own zone only, and the
+     * stream carries the rest a c-bar a tick - so the bodies are held where they are (each still sending as fast as it
+     * goes) for a crossing of the box, and then let go as they were. Without the rays held, it is the seed
+     */
+    async stand() {
+      this.seed();
+      if (!local) return;
+      const moving = holes.map((h: any) => h.moves);
+      holes.forEach((h: any) => { h.moves = false; });
+      push();
+      const crossing = Math.ceil(N / K) + 2;
+      for (let i = 0; i < crossing; i++) await this.tick();
+      holes.forEach((h: any, k: number) => { h.moves = moving[k]; });
+      push();
     },
     async settle() {
       this.seed();
@@ -636,6 +903,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     async probe_now(asks: number[][]) {
       const n = Math.min(asks.length, ENTRIES);
       if (!n) return [];
+      if (stale) push();
+      send();
       entries.length = 0;
       for (let i = 0; i < n; i++) entries.push(asks[i][0], asks[i][1], asks[i][2], 0);
       DIR.set(new Float32Array(entries.slice(0, ENTRIES * 4)), (A + 2 * MAXH + CN) * 4);

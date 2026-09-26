@@ -48,7 +48,17 @@ Equation := class < theory: Theory {
   terms (): EquationTerm[] => {
     r := this.reading
     ds := r.read
-    ds.map(d => { t := EquationTerm(rule: d.rule, doing: d, leans: r.leans); t.turned = r.turned; t })
+    /* the same rules read once more on bodies' rays (Reading.emitted): branch for branch, what each grows there */
+    apart := this.reading
+    apart.emitted = true
+    eds := apart.read
+    Array.range(ds.length).map(i => {
+      d := ds[i]
+      d.grew_apart = eds[i].grew * eds[i].around if i < eds.length
+      t := EquationTerm(rule: d.rule, doing: d, leans: r.leans)
+      t.turned = r.turned
+      t
+    })
   }
 
   /* the time derivative first, then transport */

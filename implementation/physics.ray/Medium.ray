@@ -35,7 +35,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   apart: boolean = false
   /* the front's plane and one per tagged kind of body - or one per body, where every body is apart */
-  planes (): N => this.apart ? this.holes.length + 1 : (this.tags < 1 ? 1 : this.tags)
+  planes (): N => this.apart | this.local_rays ? this.holes.length + 1 : (this.tags < 1 ? 1 : this.tags)
   /* how many ticks have run; `t` is the name a panel's marks read it by */
   ticks: N = 0
   t (): N => this.ticks
@@ -332,7 +332,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   column_of (c: N): N => c % this.N
   row_of (c: N): N => (c - c % this.N) / this.N
   /* which plane a body's rays are on: its tag, or the vacuum's where nothing is tagged */
-  plane_of (h: Hole): N => this.apart ? this.holes.index_of(h) + 1 : ((h.tag == None | h.tag < 1) ? 0 : (h.tag < this.planes ? h.tag : this.planes - 1))
+  plane_of (h: Hole): N => this.apart | this.local_rays ? this.holes.index_of(h) + 1 : ((h.tag == None | h.tag < 1) ? 0 : (h.tag < this.planes ? h.tag : this.planes - 1))
 
   /* a body put in: where it stands, in cells, and the momentum it was thrown with */
   add (h: Hole): Hole => {
@@ -344,6 +344,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
       this.beam.push(Array.filled(this.rungs, 0))
       this.swept.push(Array.filled(this.cells, 0))
     }
+    /* held where they are, every body's rays together on one row of what a panel reads */
+    this.swept.push(Array.filled(this.cells, 0)) if this.local_rays & this.swept.length < 2
     this.block
     h
   }
@@ -446,7 +448,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
       x := Real.of(this.column_of(c))
       y := Real.of(this.row_of(c))
       got := 0
-      Array.range(this.planes - 1).for(i => { got = got + this.sent_to(i + 1, x, y)[0] })
+      Array.range(this.planes - 1).for(i => { got = got + this.sent_to(i + 1, x, y)[0] }) if !this.local_rays
+      got = this.held_at(c) if this.local_rays
       /* what stands at a point is the vacuum's own population and what the bodies have sent there */
       this.activity(this.vacuum ? got + this.vac[c] : got)
     })
@@ -475,6 +478,592 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     turned := angle < 0 ? angle + Real.TAU : angle
     (turned / Real.TAU * Real.of(this.gather)).round % this.gather
   }
+  /* a cell's share of a place by area, along one axis: how much of a cell-wide square at the place overlaps the cell's */
+  tent (v: Real): Real => Fmt.max(0, 1 - v.abs)
+  /* how much of a place's area the cells round it that are in the box hold: at the edge what came is read by those */
+  inside_at (x: Real, y: Real): Real => {
+    x0 := x.floor
+    y0 := y.floor
+    got := Real.of(0)
+    Array.range(2).for(j => {
+      Array.range(2).for(i => {
+        got = got + this.tent(x - Real.of(x0 + i)) * this.tent(y - Real.of(y0 + j)) if this.at(x0 + i, y0 + j) >= 0
+      })
+    })
+    got
+  }
+
+  /*
+   * EVERY BODY'S RAYS HELD WHERE THEY ARE (`local_rays`). The model is local: a ray goes one c-bar a tick, and what
+   * happens at a point is read at that point. So what arrives is kept at the place it arrived, one bundle for each of
+   * the GATHER ways round a point, and every tick it goes one c-bar on. Nothing is read off a body from afar.
+   * A bundle carries what crosses the shell there - the one thing a ray keeps however far it goes, since
+   * `transport.thinning` only spreads it - with the place it left from, how fast its body was going then, and how big
+   * its body is. Where one body alone has sent a bundle it is that body's beam exactly: the same 1/R^(D-1), the same
+   * way out, the same one ray a way at most. Where several have, it is the medium's own gathering (`meet_gathered`:
+   * a way holds at most one ray, so what arrives on one way is one bundle however many bodies sent it)
+   */
+  local_rays: boolean = false
+  /*
+   * how many bodies' bundles one way of a point keeps apart. The beams keep every body's rays apart however many there
+   * are; held where they are, a way keeps SLOTS of them, and only where more than that arrive on one way is the pair
+   * whose places are nearest as seen from the point gathered into one - which is what a crowd of bodies far off along
+   * one way is, seen from there
+   */
+  static SLOTS = 4
+  keeps (): N => Medium.SLOTS
+  /*
+   * AND HOW NEAR A BODY ITS OWN RAYS ARE ITS OWN TO LAY. A c-bar back along a way, the rays that reach a point came
+   * through cells whose own way out from that body can differ from the point's by as much as a cell subtends from
+   * the body - many ways, close in. So each body lays its first `zone` cells itself, as the tick finds it (its first
+   * two rungs and a little more), and past that a point looks `window` ways either side of its own, which covers what
+   * a cell subtends from zone - K out. Laying costs the zone's area a source; reading costs the window a point and way:
+   * two rungs keeps the window to 6 ways (one rung, 14 - three quarters of a tick went on reading them)
+   */
+  zone (): N => 2 * this.K + 2
+  /*
+   * where the zone ends: a source lays what is at most this far, and the stream keeps only what is past it. It sits a
+   * little past the half-cell (no two cell centres, nor a cell and a body at a half cell, are that far apart), so the
+   * rounding of a place read back off a bundle never puts one cell on both sides or on neither
+   */
+  edge (): Real => Real.of(this.zone) + 0.5005
+  /*
+   * how many ways either side a bundle can be held on at a cell a way back: the point a way back is at least the zone less
+   * a way from where it left (the stream reads past the zone), and the four cells round it are within a diagonal of it,
+   * so the way it was held on can turn by as much as a diagonal is seen from there (asin), and a way more for rounding at
+   * both ends
+   */
+  window (): N => {
+    s := Real.of(2).sqrt / Real.of(this.zone - this.K)
+    (Real.of(this.gather) * s.atan2((1 - s * s).sqrt) / Real.TAU).floor + 2
+  }
+  /* a bundle, as moments: what crosses the shell, and that times where it left from, how fast its body went then, and its body's face */
+  bq: Real[] = []
+  bsx: Real[] = []
+  bsy: Real[] = []
+  bvx: Real[] = []
+  bvy: Real[] = []
+  bface: Real[] = []
+  /* whose rays a bundle is while they are one body's alone, and -1 once two bodies' have been gathered into it */
+  bwho: Real[] = []
+  /*
+   * and how far apart the bodies gathered into it stand: q times the square of each one's distance from their middle,
+   * summed (nought for one body's). Read from their middle alone a gathering along a way comes short - nearer ones send
+   * more than farther ones take back - by as much as this says (`spread_of`)
+   */
+  bspread: Real[] = []
+  /*
+   * and at the very place a body stands its rays go no way out of it (`out_from`), so they are on no way: what stands
+   * there is kept beside the ways, a cell at a time, with whose it is
+   */
+  middle: Real[] = []
+  middle_who: Real[] = []
+  /* each cell's source as the shine laid it (`cell_sources`), for what stands at a middle - on no way - to be read at a point near it */
+  shone: Array = []
+  bundles (): N => this.cells * this.gather * this.keeps
+  /* the first slot of way b of cell c */
+  first_slot (c: N, b: N): N => (c * this.gather + b) * this.keeps
+  bundles_ready () => {
+    n := this.bundles
+    this.middle = Array.filled(this.cells, 0) if this.middle.length != this.cells
+    this.middle_who = Array.filled(this.cells, -1) if this.middle_who.length != this.cells
+    return if this.bq.length == n
+    this.bq = Array.filled(n, 0)
+    this.bsx = Array.filled(n, 0)
+    this.bsy = Array.filled(n, 0)
+    this.bvx = Array.filled(n, 0)
+    this.bvy = Array.filled(n, 0)
+    this.bface = Array.filled(n, 0)
+    this.bwho = Array.filled(n, -1)
+    this.bspread = Array.filled(n, 0)
+  }
+  /* the way a bundle on way b of a point is going, as the way stands round the point */
+  way_x (b: N): Real => (Real.TAU * Real.of(b) / Real.of(this.gather)).cos
+  way_y (b: N): Real => (Real.TAU * Real.of(b) / Real.of(this.gather)).sin
+  /*
+   * where the body a bundle came from stands now: where it was when the rays left, gone on at the pace it went then
+   * for as long as they have been out - a c-bar a tick, so as many ticks as c-bar they have come
+   */
+  now_from (m: Real[], x: Real, y: Real): Real[] => {
+    sx := m[1] / m[0]
+    sy := m[2] / m[0]
+    age := Fmt.hypot(x - sx, y - sy) / Real.of(this.K)
+    [sx + m[3] / m[0] * age, sy + m[4] / m[0] * age]
+  }
+  /* what a bundle, as moments, has put at a place (x, y) in cells, and the way out from its body there - `sent_to`, read where the rays are */
+  reads (m: Real[], x: Real, y: Real): Real[] => {
+    return [0, 0, 0] if !(m[0] > 0)
+    s := this.now_from(m, x, y)
+    dx := x - s[0]
+    dy := y - s[1]
+    d := Fmt.hypot(dx, dy)
+    r := Fmt.max(m[5] / m[0], d / Real.of(this.K))
+    got := Fmt.min(1, m[0] / (r ^ Real.of(this.D - 1)) * (r > m[5] / m[0] ? this.spread_of(m, d) : 1))
+    /* at the very place its body stands its rays are all there, going no way out (`out_from`) */
+    return [got, 0, 0] if d <= 0
+    [got, dx / d, dy / d]
+  }
+  /* slot k's bundle, as moments */
+  moments (k: N): Real[] => [this.bq[k], this.bsx[k], this.bsy[k], this.bvx[k], this.bvy[k], this.bface[k], this.bwho[k], this.bspread[k]]
+  held_to (k: N, x: Real, y: Real): Real[] => this.reads(this.moments(k), x, y)
+  /* two bundles gathered into one: every moment sums, and two bodies' become no one's */
+  gathered (a: Real[], b: Real[], x: Real, y: Real): Real[] => [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3], a[4] + b[4], a[5] + b[5], a[6] == b[6] ? a[6] : -1, this.spread_with(a, b, x, y)]
+  /*
+   * how far apart what two bundles gathered stand along the way they go, seen from (x, y): each one's own, and theirs
+   * from each other's middle along the line to (x, y). Across it they stand within the way's width, and there being
+   * apart takes a little off what they send rather than adding (so it is not counted: counted as along, a disc of
+   * 300 stars read 2% high)
+   */
+  spread_with (a: Real[], b: Real[], x: Real, y: Real): Real => {
+    return a[7] + b[7] if !(a[0] > 0 & b[0] > 0)
+    q := a[0] + b[0]
+    ex := x - (a[1] + b[1]) / q
+    ey := y - (a[2] + b[2]) / q
+    e := Fmt.hypot(ex, ey)
+    along := e > 0 ? ((a[1] / a[0] - b[1] / b[0]) * ex + (a[2] / a[0] - b[2] / b[0]) * ey) / e : 0
+    a[7] + b[7] + a[0] * b[0] / q * along * along
+  }
+  /*
+   * what a gathering sends d cells off, against what it would from its middle alone: its bodies stand apart along the
+   * way it goes (across a way they are within its width), and q over the distance to the D - 1 bends up, so the nearer
+   * send more than the farther take back - by half its bend times how far apart they stand
+   */
+  spread_of (m: Real[], d: Real): Real => {
+    n := Real.of(this.D - 1)
+    return 1 if !(d > 0 & m[0] > 0)
+    1 + n * (n + 1) / 2 * m[7] / (m[0] * d * d)
+  }
+  /* how far apart two bundles' places are, against the nearer of them, as seen from (x, y): the pair a way gathers first is the least */
+  apart_seen (a: Real[], b: Real[], x: Real, y: Real): Real => {
+    ax := a[1] / a[0]
+    ay := a[2] / a[0]
+    bx := b[1] / b[0]
+    by := b[2] / b[0]
+    near := Fmt.min(Fmt.hypot(x - ax, y - ay), Fmt.hypot(x - bx, y - by))
+    Fmt.hypot(ax - bx, ay - by) / Fmt.max(near, 1)
+  }
+  /*
+   * whether a bundle is its body's own to lay at (x, y) - its body stands within the edge, so the shine lays it anew
+   * each tick - rather than one the stream brought from further off
+   */
+  fresh (m: Real[], x: Real, y: Real): boolean => {
+    s := this.now_from(m, x, y)
+    Fmt.hypot(x - s[0], y - s[1]) <= this.edge
+  }
+  /*
+   * WHAT ONE WAY OF A POINT HOLDS, laid into its slots: each bundle its own, and while there are more than the slots,
+   * the pair nearest each other as seen from the point gathered into one - two the shine lays anew each tick, or two
+   * the stream brought, never one of each: gathered with what streams past, a body's own would come back into its zone
+   * nameless, the shine would lay it again, and it would be counted twice (a body between two others on a line, one
+   * slot a way, read 11% high)
+   */
+  lay (c: N, b: N, got: Real[][]) => {
+    x := Real.of(this.column_of(c))
+    y := Real.of(this.row_of(c))
+    list := got.filter(m => m[0] > 0)
+    while list.length > this.keeps {
+      fr := list.map(m => this.fresh(m, x, y))
+      best := 0
+      bi := -1
+      bj := -1
+      /* of one kind first; only where no two are of one kind (a slot or two a way) any pair */
+      Array.range(2).for(pass => {
+        if bi < 0 {
+          Array.range(list.length).for(i => {
+            Array.range(list.length).for(j => {
+              if j > i & (pass == 1 | fr[i] == fr[j]) {
+                seen := this.apart_seen(list[i], list[j], x, y)
+                if bi < 0 | seen < best {
+                  best = seen
+                  bi = i
+                  bj = j
+                }
+              }
+            })
+          })
+        }
+      })
+      merged := this.gathered(list[bi], list[bj], x, y)
+      list = Array.range(list.length).filter(i => i != bi & i != bj).map(i => list[i]).concat([merged])
+    }
+    base := this.first_slot(c, b)
+    Array.range(this.keeps).for(j => {
+      m := j < list.length ? list[j] : [0, 0, 0, 0, 0, 0, -1, 0]
+      this.bq[base + j] = m[0]
+      this.bsx[base + j] = m[1]
+      this.bsy[base + j] = m[2]
+      this.bvx[base + j] = m[3]
+      this.bvy[base + j] = m[4]
+      this.bface[base + j] = m[5]
+      this.bwho[base + j] = m[6]
+      this.bspread[base + j] = m[7]
+    })
+  }
+  /* a body's own bundle taken off every way of a point */
+  drop_whose (c: N, who: Real) => {
+    Array.range(this.gather).for(b => {
+      held := this.held_on(c, b)
+      this.lay(c, b, held.filter(m => m[6] != who)) if held.some(m => m[6] == who)
+    })
+  }
+  /* what one way of a point holds now, as moments */
+  held_on (c: N, b: N): Real[][] => {
+    base := this.first_slot(c, b)
+    Array.range(this.keeps).map(j => this.moments(base + j)).filter(m => m[0] > 0)
+  }
+  /* what a body puts on its rays, as moments: what crosses its own face, and that times where it is, how fast it goes (cells a tick) and its face */
+  emitted (h: Hole): Real[] => {
+    near := this.face_of(h)
+    q := this.per_way(h) * (near ^ Real.of(this.D - 1))
+    [q, q * h.x, q * h.y, q * h.momentum.components[0] / h.mass * Real.of(this.K), q * h.momentum.components[1] / h.mass * Real.of(this.K), q * near, Real.of(this.holes.index_of(h)), 0]
+  }
+  /*
+   * what a body lays at a place d cells off, as it stands now: rays that far out left d/K ticks ago, from where it was
+   * then at the pace it goes - so that where a bundle says its body is now (`now_from`) is where it truly is
+   */
+  left_for (e: Real[], d: Real): Real[] => {
+    back := d / Real.of(this.K)
+    [e[0], e[1] - e[3] * back, e[2] - e[4] * back, e[3], e[4], e[5], e[6], e[7]]
+  }
+  /* what a body has at the very place it stands, all of its rays going no way out */
+  put_middle (c: N, e: Real[]) => {
+    got := Fmt.min(1, e[0] / ((e[5] / e[0]) ^ Real.of(this.D - 1)))
+    this.middle_who[c] = this.middle[c] > 0 & this.middle_who[c] != e[6] ? -1 : e[6]
+    this.middle[c] = this.middle[c] + got
+  }
+  /*
+   * SHINE, HELD: what a body announces stands on the c-bar round it - its first rung - on the way out from it at each
+   * cell, as its own now; at the very place it stands it goes no way out, and is kept beside the ways
+   */
+  shine_local () => {
+    this.bundles_ready
+    Array.range(this.cells).for(c => {
+      this.middle[c] = 0
+      this.middle_who[c] = -1
+    })
+    src := this.cell_sources
+    this.shone = src
+    /*
+     * what the shine gathered at a point last tick is its own to lay again: a gathering within the edge - of bodies laid
+     * together, or a cell's (-2 - cell), whose bodies may since have come or gone - goes. A body's own it finds by name
+     */
+    Array.range(this.cells).for(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      Array.range(this.gather).for(b => {
+        held := this.held_on(c, b)
+        this.lay(c, b, held.filter(m => !(m[6] < 0 & this.fresh(m, x, y)))) if held.some(m => m[6] < 0 & this.fresh(m, x, y))
+      })
+    })
+    Array.range(this.cells).for(sc => {
+      e := src[sc]
+      if e != None & e[0] > 0 {
+        sx := e[1] / e[0]
+        sy := e[2] / e[0]
+        reach := this.zone + 1
+        Array.range(2 * reach + 1).for(j => {
+          Array.range(2 * reach + 1).for(i => {
+            c := this.at(sx.round - reach + i, sy.round - reach + j)
+            if c >= 0 {
+              dx := Real.of(this.column_of(c)) - sx
+              dy := Real.of(this.row_of(c)) - sy
+              d := Fmt.hypot(dx, dy)
+              /* at the very place it stands - a place read back off its moments is that place to a thousandth of a cell */
+              this.put_middle(c, e) if d <= 0.001
+              if d > 0.001 & d <= this.edge {
+                /* a source has one bundle at a point: what it lays now replaces what of it the stream brought, on whatever way */
+                this.drop_whose(c, e[6])
+                b := this.bin_of(dx, dy)
+                this.lay(c, b, this.held_on(c, b).concat([this.left_for(e, d)]))
+              }
+            }
+          })
+        })
+      }
+    })
+  }
+  /*
+   * THE BODIES STANDING ON ONE CELL, GATHERED, as the medium gathers what arrives on one way however many sent it: their
+   * moments summed. A lone body keeps its own name; two or more are the cell's own gathering (-2 - the cell), so that a
+   * point lays one zone a source cell, however many stars stand on it
+   */
+  cell_sources (): Array => {
+    src := Array.filled(this.cells, None)
+    this.holes.for(h => {
+      c := this.at(h.x.round, h.y.round)
+      if c >= 0 {
+        e := this.emitted(h)
+        had := src[c]
+        src[c] = had == None ? e : [had[0] + e[0], had[1] + e[1], had[2] + e[2], had[3] + e[3], had[4] + e[4], had[5] + e[5], Real.of(-2 - c), 0]
+      }
+    })
+    src
+  }
+  /*
+   * STREAM, HELD: every point takes, on each of its ways, what stood one c-bar back along that way - read by area off
+   * the four cells round that place, as every other step of the medium reads - on that way and the two beside it, and
+   * keeps what truly goes its way: whose way out from where it left falls on this way. What came from one body (or one
+   * gathering) through several of the four cells is one bundle, read by area among them. A body's own first c-bar is
+   * its own to shine (`shine`), so nothing streams into it; and the box is a window, so nothing comes in across its edge
+   */
+  stream_local () => {
+    this.bundles_ready
+    B := this.gather
+    S := this.keeps
+    n := this.bundles
+    was := [this.bq, this.bsx, this.bsy, this.bvx, this.bvy, this.bface, this.bwho, this.bspread]
+    this.bq = Array.filled(n, 0)
+    this.bsx = Array.filled(n, 0)
+    this.bsy = Array.filled(n, 0)
+    this.bvx = Array.filled(n, 0)
+    this.bvy = Array.filled(n, 0)
+    this.bface = Array.filled(n, 0)
+    this.bwho = Array.filled(n, -1)
+    this.bspread = Array.filled(n, 0)
+    Array.range(this.cells).for(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      /*
+       * each bundle that reaches this point on a way, with the share of the cells it came through. A body has one ray at
+       * a point - the one that left it a light-time back - so what came of one body on a way is one bundle
+       */
+      Array.range(B).for(t => {
+        groups := []
+        /*
+         * what goes way t here, each bundle read one c-bar back along its own heading - where its ray came through -
+         * off the cells round that place, by area. Those places lie between the ones half a way either side of t, so
+         * the cells round both hold all of it. So a body's arrivals are one bundle on one way, however its rays'
+         * leaving places sit against the ways
+         */
+        a0 := Real.TAU * (Real.of(t) - 0.5) / Real.of(B)
+        a1 := Real.TAU * (Real.of(t) + 0.5) / Real.of(B)
+        p0x := x - Real.of(this.K) * a0.cos
+        p0y := y - Real.of(this.K) * a0.sin
+        p1x := x - Real.of(this.K) * a1.cos
+        p1y := y - Real.of(this.K) * a1.sin
+        lx := Fmt.min(p0x, p1x).floor
+        ly := Fmt.min(p0y, p1y).floor
+        nx := Fmt.max(p0x, p1x).floor + 2 - lx
+        ny := Fmt.max(p0y, p1y).floor + 2 - ly
+        Array.range(ny).for(j => {
+          Array.range(nx).for(i => {
+            u := this.at(lx + i, ly + j)
+            if u >= 0 {
+              ux := Real.of(lx + i)
+              uy := Real.of(ly + j)
+              Array.range(2 * this.window + 1).for(o => {
+                base := (u * B + (t + B + o - this.window) % B) * S
+                Array.range(S).for(sl => {
+                  k := base + sl
+                  q := was[0][k]
+                  if q > 0 {
+                    m := [q, was[1][k], was[2][k], was[3][k], was[4][k], was[5][k], was[6][k], was[7][k]]
+                    dx := x - m[1] / q
+                    dy := y - m[2] / q
+                    d := Fmt.hypot(dx, dy)
+                    now := this.now_from(m, x, y)
+                    /*
+                     * past the zone, not the edge: where its body now is is read off each cell's own moments, a little
+                     * apart, so at the edge some of one bundle's cells would pass and some not. Between the zone and
+                     * the edge the source lays it again, and what it lays replaces this (drop_whose)
+                     */
+                    if d > 0 & this.bin_of(dx, dy) == t & Fmt.hypot(x - now[0], y - now[1]) > Real.of(this.zone) {
+                      /* where its ray came through, a c-bar back, and this cell's share of that place */
+                      cx := x - Real.of(this.K) * dx / d
+                      cy := y - Real.of(this.K) * dy / d
+                      w := this.tent(ux - cx) * this.tent(uy - cy) / this.inside_at(cx, cy)
+                      if w > 0 {
+                        /* the same body's (or the same gathering's) through another of the cells is the same bundle */
+                        g := -1
+                        Array.range(groups.length).for(gi => {
+                          h := groups[gi]
+                          /* one body's, or one cell's gathering of bodies, by its name; a gathering made on the way (-1) by where it left from, as near as half a cell and a twentieth of how far it is seen from here */
+                          same := (m[6] != -1 & h[6] == m[6]) | (m[6] == -1 & h[6] == -1 & Fmt.hypot(h[1] / h[0] - m[1] / q, h[2] / h[0] - m[2] / q) < 0.5 + 0.05 * d)
+                          g = gi if g < 0 & same
+                        })
+                        part := [w * m[0], w * m[1], w * m[2], w * m[3], w * m[4], w * m[5], m[6], w * m[7]]
+                        if g < 0 {
+                          groups.push(part)
+                        } else {
+                          h := groups[g]
+                          groups[g] = [h[0] + part[0], h[1] + part[1], h[2] + part[2], h[3] + part[3], h[4] + part[4], h[5] + part[5], h[6], this.spread_with(h, part, x, y)]
+                        }
+                      }
+                    }
+                  }
+                })
+              })
+            }
+          })
+        })
+        /*
+         * each read by area - the shares of the cells it came through, which together are the whole - and laid on the
+         * way. Not each by its own shares: where a body came through some cells alone and through others gathered with
+         * its neighbours, that counted it twice, and more with every c-bar out
+         */
+        this.lay(c, t, groups) if !groups.empty
+      })
+    })
+  }
+  /* THE FIELD AS IF IT HAD ALWAYS BEEN THERE, HELD: every point holds what every body sends it, on the way it comes (`seed`) */
+  seed_local () => {
+    n := this.bundles
+    this.bq = Array.filled(n, 0)
+    this.bsx = Array.filled(n, 0)
+    this.bsy = Array.filled(n, 0)
+    this.bvx = Array.filled(n, 0)
+    this.bvy = Array.filled(n, 0)
+    this.bface = Array.filled(n, 0)
+    this.bwho = Array.filled(n, -1)
+    this.bspread = Array.filled(n, 0)
+    this.middle = Array.filled(this.cells, 0)
+    this.middle_who = Array.filled(this.cells, -1)
+    /*
+     * each body's own zone laid, and no more: what lies further out the stream carries there a c-bar a tick, as a
+     * setup's settling ticks run - so nothing reads every body at every cell, and the field is the medium's own
+     */
+    this.shine_local
+  }
+  /* what all the bodies have put at a cell (`meet_gathered`'s bins, held) */
+  held_at (c: N): Real => {
+    x := Real.of(this.column_of(c))
+    y := Real.of(this.row_of(c))
+    got := this.middle.length == this.cells ? this.middle[c] : 0
+    Array.range(this.gather * this.keeps).for(j => { got = got + this.held_to(c * this.gather * this.keeps + j, x, y)[0] })
+    got
+  }
+  /*
+   * WHERE A POINT AT (x, y) IS GOING, HELD (`pull_at`): what faces it is what the ways of the cell it stands in hold,
+   * each bundle read at the point itself, from where its body stands - a bundle carries its body's place, so it says
+   * what that body sends anywhere near, and the cell a point is in holds every body's that reaches it. The rays of the
+   * body at `zown` face it never: its own bundle is passed over, and where it was gathered with others it is taken out
+   */
+  arriving_at (x: Real, y: Real, zown: N): Real[] => {
+    B := this.gather
+    S := this.keeps
+    u := this.at(x.round, y.round)
+    return [0, 0, 0] if u < 0
+    own := this.local_rays & zown >= 1 & zown <= this.holes.length ? this.holes[zown - 1] : None
+    mine := own == None ? [0, 0, 0, 0, 0, 0, -1, 0] : this.emitted(own)
+    me := Real.of(zown - 1)
+    /* the name its own cell's gathering goes by, where it stands with others (`cell_sources`) */
+    srcid := own == None ? 0.5 : Real.of(-2 - this.at(own.x.round, own.y.round))
+    sum := 0
+    gx := 0
+    gy := 0
+    ux := Real.of(this.column_of(u))
+    uy := Real.of(this.row_of(u))
+    /* the way of this cell the body at zown's own rays stand on, and whether a bundle there is its own alone */
+    owns := own == None ? -1 : this.bin_of(ux - own.x, uy - own.y)
+    alone := own != None & Array.range(S).some(sl => this.bwho[(u * B + owns) * S + sl] == me)
+    Array.range(B).for(b => {
+      Array.range(S).for(sl => {
+        k := (u * B + b) * S + sl
+        if this.bq[k] > 0 & !(own != None & this.bwho[k] == me) {
+          m := this.moments(k)
+          if this.far_of(m, ux, uy) {
+            /* from afar, what it sends read off its field about the cell's middle (`expanded`) */
+            f := this.expanded(m, ux, uy, x - ux, y - uy)
+            gx = gx + f[0]
+            gy = gy + f[1]
+          } else {
+            /* gathered with others where it was not kept apart: taken out of the gathering nearest it */
+            if b == owns & !alone & m[6] == -1 & this.nearest_gathering(u * B + b, own) == sl & m[0] - mine[0] > 0 {
+              rest := [m[0] - mine[0], m[1] - mine[1], m[2] - mine[2], m[3] - mine[3], m[4] - mine[4], m[5] - mine[5], -1, 0]
+              /* and how far apart the rest stand: the gathering's, less what its own stood off the rest's middle */
+              rx := ux - m[1] / m[0]
+              ry := uy - m[2] / m[0]
+              rd := Fmt.hypot(rx, ry)
+              along := rd > 0 ? ((rest[1] / rest[0] - mine[1] / mine[0]) * rx + (rest[2] / rest[0] - mine[2] / mine[0]) * ry) / rd : 0
+              rest[7] = Fmt.max(0, m[7] - rest[0] * mine[0] / m[0] * along * along)
+              m = rest
+            }
+            /* sent out within its own cell's gathering: its share taken out of that, laid as that was (`left_for`) */
+            if own != None & m[6] == srcid {
+              lf := this.left_for(mine, Fmt.hypot(ux - m[1] / m[0], uy - m[2] / m[0]))
+              m = [m[0] - lf[0], m[1] - lf[1], m[2] - lf[2], m[3] - lf[3], m[4] - lf[4], m[5] - lf[5], m[6], m[7]]
+            }
+            got := this.reads(m, x, y)
+            sum = sum + got[0]
+            gx = gx + got[0] * got[1]
+            gy = gy + got[0] * got[2]
+          }
+        }
+      })
+    })
+    /*
+     * what stands at the cell's very middle is on no way: its source, read at the point as any bundle is - a point
+     * off the middle stands that far from it. The body at zown's own passed over, or taken out where it stands with others
+     */
+    e := this.shone.length == this.cells ? this.shone[u] : None
+    if e != None & e[0] > 0 & Fmt.hypot(ux - e[1] / e[0], uy - e[2] / e[0]) <= 0.001 & !(own != None & e[6] == me) {
+      m := e
+      if own != None & e[6] == srcid {
+        m = [e[0] - mine[0], e[1] - mine[1], e[2] - mine[2], e[3] - mine[3], e[4] - mine[4], e[5] - mine[5], e[6], e[7]]
+      }
+      if m[0] > 0 {
+        got := this.reads(m, x, y)
+        sum = sum + got[0]
+        gx = gx + got[0] * got[1]
+        gy = gy + got[0] * got[2]
+      }
+    }
+    [sum, gx, gy]
+  }
+  /*
+   * WHAT A BODY FAR OFF SENDS, READ NEAR A CELL'S MIDDLE. Past NEAR cells, and where its rays are not a whole ray a way,
+   * a bundle's field - q times the way out over the distance to the D - 1 - is smooth across a cell, so it is read off
+   * its value, slope and bend at the cell's middle: off by the cube of how far the point stands from the middle over
+   * how far the body is (a millionth, for a planet forty cells from the sun). So a cell's far bodies are summed once a
+   * tick into nine numbers, whoever reads them (Kernels MHFIELD), and only the near ones are read at each point
+   */
+  static NEAR_CELLS = 5
+  far_of (m: Real[], ux: Real, uy: Real): boolean => {
+    s := this.now_from(m, ux, uy)
+    d := Fmt.hypot(ux - s[0], uy - s[1])
+    r := d / Real.of(this.K)
+    d > Real.of(Medium.NEAR_CELLS) & r > m[5] / m[0] & m[0] / (r ^ Real.of(this.D - 1)) < 1
+  }
+  /* its field at (ux + dx, uy + dy), off its value, slope and bend at (ux, uy): the way out times q K^(D-1) / distance^D, in cells */
+  expanded (m: Real[], ux: Real, uy: Real, dx: Real, dy: Real): Real[] => {
+    s := this.now_from(m, ux, uy)
+    ex := ux - s[0]
+    ey := uy - s[1]
+    r2 := ex * ex + ey * ey
+    Dd := Real.of(this.D)
+    C := m[0] * (Real.of(this.K) ^ (Dd - 1)) * this.spread_of(m, r2.sqrt)
+    rD := r2 ^ (Dd / 2)
+    a := C / rD
+    b := Dd * C / (rD * r2)
+    c := Dd * (Dd + 2) * C / (rD * r2 * r2)
+    jxx := a - b * ex * ex
+    jxy := 0 - b * ex * ey
+    jyy := a - b * ey * ey
+    hxxx := 0 - 3 * b * ex + c * ex * ex * ex
+    hxxy := 0 - b * ey + c * ex * ex * ey
+    hxyy := 0 - b * ex + c * ex * ey * ey
+    hyyy := 0 - 3 * b * ey + c * ey * ey * ey
+    fx := a * ex + jxx * dx + jxy * dy + (hxxx * dx * dx + 2 * hxxy * dx * dy + hxyy * dy * dy) / 2
+    fy := a * ey + jxy * dx + jyy * dy + (hxxy * dx * dx + 2 * hxyy * dx * dy + hyyy * dy * dy) / 2
+    [fx, fy]
+  }
+  /* of the gatherings on one way (slots of `way`), the one whose place is nearest a body's */
+  nearest_gathering (way: N, h: Hole): N => {
+    S := this.keeps
+    best := -1
+    far := 0
+    Array.range(S).for(sl => {
+      k := way * S + sl
+      if this.bq[k] > 0 & this.bwho[k] == -1 {
+        d := Fmt.hypot(this.bsx[k] / this.bq[k] - h.x, this.bsy[k] / this.bq[k] - h.y)
+        if best < 0 | d < far {
+          best = sl
+          far = d
+        }
+      }
+    })
+    best
+  }
   meet_gathered () => {
     B := this.gather
     Array.range(this.cells).for(c => {
@@ -493,39 +1082,71 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
           wy[b] = wy[b] + got[0] * got[2]
         }
       })
-      Array.range(B).for(a => {
-        if sums[a] > 0 {
-          na := Fmt.hypot(wx[a], wy[a])
-          ax := na > 0 ? wx[a] / na : 0
-          ay := na > 0 ? wy[a] / na : 0
-          Array.range(B).for(b => {
-            if b != a & sums[b] > 0 {
-              nb := Fmt.hypot(wx[b], wy[b])
-              over := nb > 0 ? this.facing_share(ax, ay, wx[b] / nb, wy[b] / nb) : 0
-              if over > 0 {
-                this.meets.for(t => {
-                  w := this.share(t, s) * this.activity(sums[a]) * this.activity(sums[b]) * over
-                  this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
-                  this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
-                  this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
-                })
-              }
-            }
-          })
-          /* and against the vacuum's own, one way of the lattice's facing the bundle head on */
-          if this.vacuum {
-            this.meets.for(t => {
-              w := this.share(t, s) * this.activity(sums[a]) * this.activity(this.rho_inf) / Real.of(this.DEG)
-              this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
-              this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
-              this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
-            })
-          }
-        }
+      this.meet_bins(c, s, sums, wx, wy)
+    })
+  }
+  /*
+   * MEET, HELD (`local_rays`): the same meeting, on what the point's own ways hold - each bundle read at the point,
+   * from where its body stands - which is what `meet_gathered` gathers from the bodies' beams
+   */
+  meet_local () => {
+    B := this.gather
+    Array.range(this.cells).for(c => {
+      x := Real.of(this.column_of(c))
+      y := Real.of(this.row_of(c))
+      s := this.symbols(this.rho_was[c], this.nf_was[c])
+      sums := Array.filled(B, 0)
+      wx := Array.filled(B, 0)
+      wy := Array.filled(B, 0)
+      Array.range(B).for(b => {
+        Array.range(this.keeps).for(sl => {
+          got := this.held_to((c * B + b) * this.keeps + sl, x, y)
+          sums[b] = sums[b] + got[0]
+          wx[b] = wx[b] + got[0] * got[1]
+          wy[b] = wy[b] + got[0] * got[2]
+        })
       })
+      /* what goes no way out is gathered where the medium gathers it, on the way whose angle is nought, facing nothing */
+      sums[0] = sums[0] + this.middle[c]
+      this.meet_bins(c, s, sums, wx, wy)
+    })
+  }
+  /* bundle meeting facing bundle at cell c, and each against the vacuum's own (`meet_gathered`) */
+  meet_bins (c: N, s: {}, sums: Real[], wx: Real[], wy: Real[]) => {
+    B := this.gather
+    Array.range(B).for(a => {
+      if sums[a] > 0 {
+        na := Fmt.hypot(wx[a], wy[a])
+        ax := na > 0 ? wx[a] / na : 0
+        ay := na > 0 ? wy[a] / na : 0
+        Array.range(B).for(b => {
+          if b != a & sums[b] > 0 {
+            nb := Fmt.hypot(wx[b], wy[b])
+            over := nb > 0 ? this.facing_share(ax, ay, wx[b] / nb, wy[b] / nb) : 0
+            if over > 0 {
+              this.meets.for(t => {
+                w := this.share(t, s) * this.activity(sums[a]) * this.activity(sums[b]) * over
+                this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+                this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+                this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+              })
+            }
+          }
+        })
+        /* and against the vacuum's own, one way of the lattice's facing the bundle head on */
+        if this.vacuum {
+          this.meets.for(t => {
+            w := this.share(t, s) * this.activity(sums[a]) * this.activity(this.rho_inf) / Real.of(this.DEG)
+            this.fold[c] = Fmt.max(0, this.fold[c] + w * t.doing.folds.at(s) / 2)
+            this.growth[c] = this.growth[c] + w * t.doing.space.at(s) / 2
+            this.gone[c] = this.gone[c] + w * t.doing.folds.at(s).abs / 2
+          })
+        }
+      }
     })
   }
   meet () => {
+    return this.meet_local if this.local_rays
     return this.meet_gathered if this.apart
     cells := this.cells
     P := this.planes
@@ -748,9 +1369,16 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
         rate := 0
         this.meets.for(t => { rate = rate + this.share(t, s) * t.doing.folds.at(s) / 2 })
         stood := this.tap(this.stand, 0, px, py, 0)
+        /* held where they are, what faces this point is what its ways hold (`arriving_at`) */
+        if this.local_rays {
+          came := this.arriving_at(px, py, zown)
+          per := rate / (this.crowd ? 1 + stood : 1)
+          gx = gx - per * came[1]
+          gy = gy - per * came[2]
+        }
         Array.range(this.planes - 1).for(i => {
           z := i + 1
-          unless z == zown {
+          unless z == zown | this.local_rays {
             came := this.sent_to(z, px, py)
             /* what comes at this point comes the way out from that body, so the point is folded toward it */
             share := rate * this.activity(came[0]) / (this.crowd ? 1 + stood : 1)
@@ -782,6 +1410,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   swept: Real[][] = Array.range(this.planes).map(z => Array.filled(this.cells, 0))
   sweep () => {
+    Array.range(this.cells).for(c => { this.swept[1][c] = this.held_at(c) }) if this.local_rays
+    return if this.local_rays
     Array.range(this.planes - 1).for(i => {
       z := i + 1
       Array.range(this.cells).for(c => {
@@ -792,8 +1422,13 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
 
   tick () => {
     /* what was sent goes on and the bodies announce first, so the whole tick reads one and the same field */
-    this.stream
-    this.shine
+    if this.local_rays {
+      this.stream_local
+      this.shine_local
+    } else {
+      this.stream
+      this.shine
+    }
     this.open
     this.meet
     this.unfold
@@ -833,7 +1468,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   }
 
   /* WHAT A PANEL READS: what arrived at a cell on plane z (0 the vacuum's, 1.. a body's), in rays' worth over the point's ways */
-  arrived (z: N, c: N): Real => this.swept[z < this.planes ? z : this.planes - 1][c]
+  arrived (z: N, c: N): Real => this.local_rays ? this.swept[z >= 1 ? 1 : 0][c] : this.swept[z < this.planes ? z : this.planes - 1][c]
   record_at (c: N): Real => this.fold[c]
 
   record (): Real[] => Array.range(this.cells).map(c => this.record_at(c))
@@ -847,6 +1482,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    * falloff - which is where streaming leaves it, a rung a tick, once it has run for ever (`transport.thinning`)
    */
   seed () => {
+    return this.seed_local if this.local_rays
     /* what stands is what the bodies send as they are now: a body that has been given its throw sends less for it */
     Array.range(this.planes).for(z => {
       Array.range(this.rungs).for(r => { this.beam[z][r] = 0 })

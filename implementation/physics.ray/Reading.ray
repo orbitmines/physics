@@ -126,6 +126,8 @@ Doing := class {
   /* of that space, how much is points the world GROWS - new locals, not ones this local holds - and whether there is any */
   grew: Term = Term.number(0)
   grown: boolean = false
+  /* and the points it grows where its rays are BODIES' rays, met in the vacuum's dark half (Reading.emitted): what the world's matter grows it by */
+  grew_apart: Term = Term.number(0)
   /* the point goes on with the ray that stepped it, and takes its record along: nothing made or taken, the record moved */
   trades: boolean = false
 
@@ -185,11 +187,24 @@ Symbolic := class < kind: String, share: Term, needs: N, of: String {
   matched: boolean = false
   /* an element that may not be there: the room ahead, whose share is omega */
   room: boolean = false
+  /*
+   * an element of the point the rule's own lit ray stands on: CREATE lights every exit of a point as ONE event, so
+   * where the rule's ray is lit the point's other ways were lit with it - one of them being lit is not a second
+   * chance of the density, it is the same event (as `xs.some` reads a point's exits: its share, not a product)
+   */
+  lit_with: boolean = false
 }
 
 Reading := class < theory: Theory {
   /* reading a rule about a source: `source != None` holds by construction */
   sourced: boolean = false
+  /*
+   * READING A MEETING OF BODIES' RAYS (`emitted`): the rule's own rays were lit by a source (Emission lights a
+   * neighbour's way on its own), not by CREATE, so the point's other ways were not lit with them; and they are out of
+   * the vacuum's phase, so they meet in its dark half, when the vacuum's own rays are gone. What stands on another
+   * way of that point is then only a body's field, which to first order in it is nothing
+   */
+  emitted: boolean = false
   /* the way a turn leans: the per-way weight of the draw found in `turns`, by its symbol */
   leans: String? = None
   /* and where a turned ray goes: across the way with its heading "kept" (`rays[this.exit]`), or onto that "way"'s own heading (`rays[d]`) */
@@ -446,7 +461,11 @@ Reading := class < theory: Theory {
     if c == "index" {
       xs := this.value(e.target, scope, self)
       return None if xs == None
-      return Symbolic(kind: "element", share: xs.share, needs: 0, of: xs.of, room: xs.room) if xs.kind == "list"
+      if xs.kind == "list" {
+        one := Symbolic(kind: "element", share: xs.share, needs: 0, of: xs.of, room: xs.room)
+        one.lit_with = xs.lit_with
+        return one
+      }
       return Symbolic(kind: "unknown", share: Term.number(1), needs: 0, of: "?")
     }
     return this.value(e.expression, scope, self) if c == "expression"
@@ -466,7 +485,12 @@ Reading := class < theory: Theory {
   member (receiver: Symbolic, name: String): Symbolic? => {
     kind := receiver.of
     /* the structure */
-    return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Vertex") if name == "vertex"
+    /* the point under the rule's own lit ray: its other ways were lit in the same CREATE (Symbolic.lit_with) */
+    if name == "vertex" {
+      under := Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Vertex")
+      under.lit_with = !this.emitted & receiver.matched & (receiver.of == "Ray" | receiver.of == "Boundary")
+      return under
+    }
     return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Ray", matched: receiver.matched) if name == "ray"
     return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Ray") if name == "facing"
     /* the way on: there when there is room ahead, omega; `turns` draws, and what it draws against is what a heading leans on */
@@ -474,7 +498,11 @@ Reading := class < theory: Theory {
     return Symbolic(kind: "element", share: Term.symbol("ω"), needs: 0, of: "Ray", room: true) if name == "steps" | name == "turns"
     return Symbolic(kind: "element", share: Term.number(1), needs: 0, of: "Boundary", matched: receiver.matched) if name == "initial" | name == "terminal" | name == "leaving"
     return Symbolic(kind: "element", share: Term.symbol("ω"), needs: 0, of: "Vertex", room: true) if name == "ahead" | name == "outward"
-    return Symbolic(kind: "list", share: Term.number(1), needs: 0, of: "Ray") if name == "rays" | name == "exits"
+    if name == "rays" | name == "exits" {
+      ways := Symbolic(kind: "list", share: Term.number(1), needs: 0, of: "Ray")
+      ways.lit_with = receiver.lit_with
+      return ways
+    }
     /* `xs.each.method`: the method on every element */
     return Symbolic(kind: "each", share: Term.number(1), needs: 0, of: receiver.of) if name == "each" & receiver.kind == "list"
     /* the points a hub holds: one per fold it wrote, so whether it holds any is the record's own activity, n_f */
@@ -495,6 +523,10 @@ Reading := class < theory: Theory {
     if name == "active" & kind == "Ray" {
       /* the rule's own ray being there is a factor of the population; any other ray's is the density */
       return Symbolic(kind: "boolean", share: Term.number(1), needs: 1, of: "n") if receiver.matched
+      /* a way of the same point as the rule's own lit ray: lit in the same event, so there whenever the rule is */
+      return Symbolic(kind: "boolean", share: Term.number(1), needs: 0, of: "lit with it") if receiver.lit_with
+      /* a meeting of bodies' rays is in the vacuum's dark half: another way there holds none of the vacuum's */
+      return Symbolic(kind: "boolean", share: Term.number(0), needs: 0, of: "dark half") if this.emitted
       return Symbolic(kind: "boolean", share: Term.symbol("ρ"), needs: 0, of: "ρ")
     }
     /* a predicate with a body: its program, read as a boolean */

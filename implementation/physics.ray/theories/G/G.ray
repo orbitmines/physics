@@ -70,8 +70,12 @@ Ray += {
 
 G: Theory = class {
   name = "G"
-  /* three dimensions, faces and edges of the cube: the lattice whose a_0/cH is the measured one (gravity.coincidence) */
-  lattice (): Geometry => CUBIC18
+  /*
+   * three dimensions on the cube's corners, eight ways (BCC8): with a_0 the empty vacuum's own growth, v H_Lambda, the
+   * measured a_0/cH_0 is v sqrt(Omega_Lambda), and v = 2/(DEG+2) puts it in the measured band at eight ways and nowhere
+   * else a lattice of Z^3 offers (gravity.coincidence). It was the faces and edges, eighteen, while a_0 was read as vH
+   */
+  lattice (): Geometry => BCC8
 
   rule /1 "Annihilation" | σ (x: 1 Edge{active}) => x.ANNIHILATE
   /* a POINT that nothing stands on unfolds: a point any ray stands on stays folded, and the space around matter warps */
@@ -133,6 +137,8 @@ G: Theory = class {
   /* the galaxies themselves, run (Simulation.ray): tracers on each one's field, beside its curve; and, asked for by name, the relation every run galaxy makes */
   visual "galaxy.simulation" () => Galaxies.simulation
   visual "galaxy.formed" () => Galaxies.formed
+  /* a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy) */
+  visual "galaxy.medium" () => Galaxies.medium
   visual "galaxy.rar" () => Galaxies.rar
 
   /*

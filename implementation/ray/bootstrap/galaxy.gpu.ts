@@ -184,13 +184,231 @@ if (Deno.env.get("RAY_ONLY") === "rules") {
   Deno.exit(0);
 }
 
+/* RAY_ONLY=crossed: with a_0 the same everywhere, reading it at the density crossed (a0_from 2) must change nothing - on the CPU and on the device */
+if (Deno.env.get("RAY_ONLY") === "crossed") {
+  const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
+  const at = [18, 21, 24, 27];
+  for (const from of [0, 2]) {
+    const how = { vacuum: true, facing: true, own: 2, crowd: false, a0_from: from };
+    const mdeg = Number(Deno.env.get("RAY_MDEG") ?? physics.G.lattice.DEG);
+    const dev = await webgpu.medium(31, 8, 3, 2, physics.G, mdeg, undefined, how);
+    const cpu = physics.G.medium(31, 8, 3, mdeg, 2); Object.assign(cpu, how);
+    for (const w of [dev, cpu]) w.add(new physics.Hole({ x: 15, y: 15, mx: 5, ways: 1, tag: 1 }));
+    for (let t = 0; t < 6; t++) { await dev.tick(); cpu.tick; }
+    const got = await dev.probe_now(at.map(x => [x, 15, 0])), want = at.map(x => cpu.pull_at(x, 15, 0, 0, 0));
+    console.log(`  a0_from ${from}: device ${got.map((g: number[]) => g[0].toExponential(4)).join(" ")} | CPU ${want.map((g: number[]) => g[0].toExponential(4)).join(" ")} | CPU a_0 at 18 ${cpu.a0_at_place(18, 15).toExponential(4)} vs the vacuum's ${cpu.a0_vacuum.toExponential(4)}`);
+  }
+  Deno.exit(0);
+}
+
+/*
+ * RAY_ONLY=medium-bench: WHERE THE MEDIUM'S TICK GOES as bodies and cells grow - every body apart, as a galaxy's stars
+ * would be, moving, on the device and paced. It grows a size only while the slowest kernel of the last one leaves room
+ * under the guard for four times the work, so it never asks the card for more than it has shown it can take
+ */
+if (Deno.env.get("RAY_ONLY") === "medium-bench") {
+  const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
+  /* the medium as it runs by default - as solar.inner records it: nothing added to what arrives */
+  const how: any = Deno.env.get("RAY_LOCAL") === "1" ? { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 3) } : {};
+  const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D, TICKS = Number(Deno.env.get("RAY_TICKS") ?? 32);
+  const sides = (Deno.env.get("RAY_SIDES") ?? "91,181").split(",").map(Number);
+  const counts = (Deno.env.get("RAY_BODIES") ?? "16,64,256,1024,4096").split(",").map(Number);
+  console.log(`\n  the medium's tick, every body apart, DEG ${DEG}, K ${K}, ${TICKS} ticks a size (ms of device time a tick, paced):`);
+  for (const N of sides) {
+    let room = true;
+    for (const n of counts) {
+      if (!room) { console.log(`    ${N}x${N}, ${n} bodies: not run - the last size left no room under the guard`); continue; }
+      const w = await webgpu.medium(N, A, K, 1, physics.G, DEG, D, { ...how, apart: n, paced: true });
+      /* a disc of bodies over the middle half of the box, each light and moving round the middle */
+      for (let k = 0; k < n; k++) {
+        const r = (N / 4) * Math.sqrt((k + 0.5) / n), t = k * 2.399963229728653;
+        const h = new physics.Hole({ x: (N - 1) / 2 + r * Math.cos(t), y: (N - 1) / 2 + r * Math.sin(t), mx: 1e-3, ways: 1 });
+        h.tag = 0; h.moves = true; h.px = -1e-6 * Math.sin(t); h.py = 1e-6 * Math.cos(t);
+        w.add(h);
+      }
+      w.seed();
+      if (n === counts[0]) console.log(`    the device's clock: ${w.ns_per_count.toFixed(2)} ns a count, measured against the host's; the host's round trip ${w.round_trip.toFixed(1)} ms`);
+      await w.tick();
+      await w.flush();
+      for (const k of Object.keys(w.spent)) w.spent[k] = 0;
+      for (const k of Object.keys(w.clock)) w.clock[k] = 0;
+      const t0 = performance.now();
+      for (let t = 0; t < TICKS; t++) await w.tick();
+      await w.flush();
+      const wall = (performance.now() - t0) / TICKS;
+      const parts = Object.entries(w.spent as Record<string, number>).sort((a, b) => b[1] - a[1]);
+      const busy = parts.reduce((s, [, ms]) => s + ms, 0) / TICKS;
+      console.log(`    ${N}x${N} (${N * N} cells), ${String(n).padStart(5)} bodies: busy ${busy.toFixed(2)} ms, wall ${wall.toFixed(1)} ms a tick; ${parts.slice(0, 6).map(([k, ms]) => `${k} ${(ms / TICKS).toFixed(2)}`).join(", ")}; longest ${w.longest.toFixed(1)} ms (${w.longest_was}); a tick on the host: gathering ${(w.clock.gathered / TICKS).toFixed(2)}, waiting ${(w.clock.waited / TICKS).toFixed(2)}, resting ${(w.clock.rested / TICKS).toFixed(2)} ms, ${w.clock.batches} submissions`);
+      /* the slowest single kernel, by the device's clock: four times it must still sit under the guard */
+      /* passes are cut into pieces by what they take, so what bounds the next size is the longest submission: twice it must sit under the guard */
+      room = w.longest * 2 < 200;
+    }
+  }
+  Deno.exit(0);
+}
+
+/*
+ * RAY_ONLY=held-disc: A DISC OF STARS IN THE MEDIUM ITSELF, held where the rays are - its own radial acceleration
+ * relation. RAY_STARS stars (exponential surface density, scale RAY_RD c-bar, total mass RAY_MASS) laid at rest in the
+ * middle of a RAY_SIDE box, the field let stand (a crossing of ticks), and the medium's own pull on every star read.
+ * Against it: what the same stars pull by plain superposition - one lone body's pull by distance, measured in the same
+ * medium, summed over the others. Their ratio against that summed pull over a_0 is the medium's own relation: one if the
+ * medium only adds what each body sends, above it where it makes more of a weak field
+ */
+if (Deno.env.get("RAY_ONLY") === "held-disc") {
+  const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
+  const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D;
+  const SIDE = Number(Deno.env.get("RAY_SIDE") ?? 181), STARS = Number(Deno.env.get("RAY_STARS") ?? 2048);
+  const RD = Number(Deno.env.get("RAY_RD") ?? 6), MASS = Number(Deno.env.get("RAY_MASS") ?? 20);
+  /* the medium as it is: nothing added to what arrives */
+  const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true, vacuum: Deno.env.get("RAY_VACUUM") === "1" };
+  const mid = (SIDE - 1) / 2, crossing = Math.ceil(SIDE / K) + 2;
+  /* one lone body's pull by distance, in the same medium: the superposition every other reading is set against */
+  const lone = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: 1 });
+  const one = new physics.Hole({ x: mid, y: mid, mx: MASS / STARS, ways: 1 }); one.tag = 0; one.moves = false; one.px = 0; one.py = 0;
+  lone.add(one);
+  lone.seed();
+  for (let t = 0; t < crossing; t++) await lone.tick();
+  const RS: number[] = []; for (let r = 0.34; r < mid / K - 1; r *= 1.08) RS.push(r);
+  const lonePull = (await lone.probe(RS.map(r => [mid + r * K, mid, 0]))).map((g: number[]) => -g[0]);
+  const p1 = (d: number) => { if (d <= RS[0]) return lonePull[0]; let k = RS.findIndex(r => r >= d); if (k < 0) return lonePull[lonePull.length - 1] * Math.pow(RS[RS.length - 1] / d, D - 1); const f = (d - RS[k - 1]) / (RS[k] - RS[k - 1]); return lonePull[k - 1] * (1 - f) + lonePull[k] * f; };
+  /* the disc: radius drawn off R e^(-R/RD) (two uniform draws), angle uniform - seeded, so a run is the run again */
+  let seed = 12345; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return (seed + 0.5) / 2147483648; };
+  const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
+  const at: number[][] = [];
+  for (let s = 0; s < STARS; s++) {
+    let r = -RD * Math.log(rnd() * rnd());
+    r = Math.min(r, mid / K - 2);
+    const th = 2 * Math.PI * rnd();
+    const h = new physics.Hole({ x: mid + r * K * Math.cos(th), y: mid + r * K * Math.sin(th), mx: MASS / STARS, ways: 1 });
+    h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
+    w.add(h); at.push([h.x, h.y]);
+  }
+  w.seed();
+  for (let t = 0; t < crossing; t++) await w.tick();
+  const pulls = await w.leans();
+  const a0 = w.how.a0_vacuum;
+  /* the radial pull on each star, the medium's and superposition's, binned by radius */
+  const BINS = 12, edge = (mid / K - 2);
+  const dirs = [[0, 0, 0], [0, 0, 0]];
+  const acc = Array.from({ length: BINS }, () => [0, 0, 0, 0]);
+  for (let s = 0; s < STARS; s++) {
+    const dx = (at[s][0] - mid) / K, dy = (at[s][1] - mid) / K, R = Math.hypot(dx, dy);
+    if (R < 0.5) continue;
+    const ux = -dx / R, uy = -dy / R;
+    const g = pulls[s][0] * ux + pulls[s][1] * uy;
+    let gn = 0;
+    for (let o = 0; o < STARS; o++) {
+      if (o === s) continue;
+      const ex = (at[o][0] - at[s][0]) / K, ey = (at[o][1] - at[s][1]) / K, d = Math.hypot(ex, ey);
+      if (d <= 0) continue;
+      gn += p1(d) * (ex * ux + ey * uy) / d;
+    }
+    const b = Math.min(BINS - 1, Math.floor(R / edge * BINS));
+    acc[b][0] += R; acc[b][1] += g; acc[b][2] += gn; acc[b][3] += 1;
+    /* and by direction: along the box's axes against along its diagonals, where a way of the lattice's own lies */
+    const diag = Math.abs(Math.abs(dx) - Math.abs(dy)) < 0.25 * R, axis = Math.min(Math.abs(dx), Math.abs(dy)) < 0.15 * R;
+    if (diag) { dirs[0][0] += g; dirs[0][1] += gn; dirs[0][2] += 1; }
+    if (axis) { dirs[1][0] += g; dirs[1][1] += gn; dirs[1][2] += 1; }
+  }
+  console.log(`\n  a disc in the medium, held where the rays are: ${STARS} stars, scale ${RD} c-bar, mass ${MASS}, box ${SIDE} (K ${K}, DEG ${DEG}); a_0 ${a0.toExponential(3)} c-bar a tick a tick`);
+  console.log(`  R (c-bar)   stars   g medium     g summed     g/g_summed   g_summed/a_0`);
+  for (const [R, g, gn, n] of acc) if (n > 0) console.log(`  ${(R / n).toFixed(2).padStart(8)}  ${String(n).padStart(6)}   ${(g / n).toExponential(3)}   ${(gn / n).toExponential(3)}   ${(g / gn).toFixed(4).padStart(9)}    ${(gn / n / a0).toExponential(2)}`);
+  console.log(`  by direction: along the diagonals g/g_summed ${(dirs[0][0] / dirs[0][1]).toFixed(4)} (${dirs[0][2]} stars), along the axes ${(dirs[1][0] / dirs[1][1]).toFixed(4)} (${dirs[1][2]} stars)`);
+  console.log(`  longest submission ${w.longest.toFixed(1)} ms`);
+  Deno.exit(0);
+}
+
+/*
+ * RAY_ONLY=medium-galaxy: A GALAXY IN THE MEDIUM ITSELF, FILMED (Galaxies.medium, visual galaxy.medium). RAY_STARS stars
+ * (exponential surface density, scale RAY_RD c-bar) laid at rest in a RAY_SIDE box, every star its own body and every
+ * step local (how.local); the field let stand with them held (Medium.stand), and each star launched circling at the
+ * pull the medium itself gives it there - sqrt(g R), with a spread of RAY_SIGMA of it - then left to the medium for
+ * RAY_FRAMES frames of RAY_TPF ticks. The total mass is set, off one lone body's pull measured in the same medium, so
+ * the disc circles at about RAY_SPEED c-bar a tick at one scale length: well below the light a tick carries
+ */
+if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
+  const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
+  const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D;
+  const SIDE = Number(Deno.env.get("RAY_SIDE") ?? 361), STARS = Number(Deno.env.get("RAY_STARS") ?? 100000);
+  const RD = Number(Deno.env.get("RAY_RD") ?? 8), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.03), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
+  const FRAMES = Number(Deno.env.get("RAY_FRAMES") ?? 120), TPF = Number(Deno.env.get("RAY_TPF") ?? 40), GRID = 128;
+  const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true };
+  const mid = (SIDE - 1) / 2, span = mid / K - 2;
+  const t0 = performance.now();
+  /* what one body of unit mass pulls with, a little out, in a small box of the same medium: the scale the mass is set by */
+  const CAL = 121, cmid = (CAL - 1) / 2, rcal = 8;
+  const lone = await webgpu.medium(CAL, A, K, 1, physics.G, DEG, D, { ...how, apart: 1 });
+  const unit = new physics.Hole({ x: cmid, y: cmid, mx: 1, ways: 1 }); unit.tag = 0; unit.moves = false; unit.px = 0; unit.py = 0;
+  lone.add(unit);
+  await lone.stand();
+  const p1 = -(await lone.probe([[cmid + rcal * K, cmid, 0]]))[0][0];
+  /* an exponential disc holds 0.264 of itself within one scale length; that much pulls about as one body there */
+  const pRD = p1 * (rcal / RD) ** (D - 1);
+  const MASS = SPEED * SPEED / RD / (0.264 * pRD), m = MASS / STARS;
+  console.log(`\n  a galaxy in the medium: ${STARS} stars, R_d ${RD} c-bar, box ${SIDE} (K ${K}, DEG ${DEG}); a unit mass pulls ${p1.toExponential(3)} at ${rcal} c-bar, so the disc weighs ${MASS.toExponential(3)} (${m.toExponential(3)} a star) to circle near ${SPEED} c-bar a tick`);
+  /* the disc, seeded so a run is the run again: radius off R e^(-R/RD), angle uniform */
+  let seed = 2026; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return (seed + 0.5) / 2147483648; };
+  const gauss = () => Math.sqrt(-2 * Math.log(rnd())) * Math.cos(2 * Math.PI * rnd());
+  const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
+  for (let s = 0; s < STARS; s++) {
+    const r = Math.min(-RD * Math.log(rnd() * rnd()), span - 1), th = 2 * Math.PI * rnd();
+    const h = new physics.Hole({ x: mid + r * K * Math.cos(th), y: mid + r * K * Math.sin(th), mx: m, ways: 1 });
+    h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
+    w.add(h);
+  }
+  await w.stand();
+  const pulls = await w.leans();
+  /* each star launched circling at what the medium pulls it with where it stands */
+  let vsum = 0, vn = 0;
+  w.holes.forEach((h: any, s: number) => {
+    const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
+    if (R <= 0) return;
+    const g = -(pulls[s][0] * dx + pulls[s][1] * dy) / R;
+    const v = Math.sqrt(Math.max(0, g * R));
+    if (Math.abs(R - RD) < 1) { vsum += v; vn++; }
+    const vx = -v * dy / R + SIGMA * v * gauss(), vy = v * dx / R + SIGMA * v * gauss();
+    h.px = h.mass * vx; h.py = h.mass * vy;
+    h.momentum = new physics.Vector({ components: [h.px, h.py] });
+    h.moves = true;
+  });
+  w.push();
+  const speedRD = vn ? vsum / vn : 0;
+  console.log(`  launched: at R_d they circle at ${speedRD.toFixed(4)} c-bar a tick (the field stood in ${((performance.now() - t0) / 1000).toFixed(0)}s)`);
+  /* star counts on a GRID x GRID face-on picture, span c-bar either side of the box's middle */
+  const density: number[] = [], ticks: number[] = [];
+  const shoot = async () => {
+    await w.sync();
+    const grid = new Float32Array(GRID * GRID);
+    for (const h of w.holes) {
+      const gx = Math.floor(((h.x - mid) / K / span + 1) / 2 * GRID), gy = Math.floor(((h.y - mid) / K / span + 1) / 2 * GRID);
+      if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) grid[gy * GRID + gx] += 1;
+    }
+    for (const v of grid) density.push(v);
+    ticks.push(w.t);
+  };
+  await shoot();
+  for (let f = 1; f < FRAMES; f++) {
+    for (let t = 0; t < TPF; t++) await w.tick();
+    await shoot();
+    if (f % 10 === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms`);
+  }
+  physics.Measure.save("galaxy.medium", ["density"], { density }, {
+    names: ["a disc in the medium"], mass: [MASS], scale: [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
+    deg: DEG, side: SIDE, speed: speedRD, sigma: SIGMA, tpf: TPF,
+    about: "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame",
+  });
+  console.log(`  written to visuals/galaxy.medium (${((performance.now() - t0) / 1000).toFixed(0)}s); draw it: npx ray visuals galaxy.medium`);
+  Deno.exit(0);
+}
+
 /* RAY_ONLY=probe: what the chain says a body does at a distance - its own shell, reach, record and pull - printed, nothing run on the device */
 if (Deno.env.get("RAY_ONLY") === "probe") {
   const agg = physics.Aggregate.of(physics.G, Math.round(deg));
   console.log(`\n  the chain at DEG ${Math.round(deg)}: rho_inf ${agg.rho_inf}, n_f ${agg.nf_inf}`);
   for (const role of ["record", "felt", "line"]) console.log(`  ${role.padEnd(8)} ${agg.says(role)}`);
   const model = new physics.Model({ theory: physics.G });
-  for (const name of ["what arrives with the mass gathered", "what arrives with the mass scattered", "F_{g}", "a_{0}", "a_{0} along the path", "g_{N}"]) {
+  for (const name of ["what bodies' rays grow where they meet", "\\bar{n}", "the world's matter grows", "the space line nets", "H", "cH", "a_{0}", "a_{0} along the path", "\\frac{a_{0}}{cH}", "F_{g}"]) {
     const f = model.fact(name);
     console.log(`  ${name.padEnd(38)} ${f ? physics.Expr.show(f.to) : "-"}`);
   }
@@ -318,6 +536,104 @@ const nt = tasks.length / 4;
 worst("PULL", [0, nt >> 3, nt >> 1, nt - 1].map(i => [plan.pull_cpu(tasks, i), pulls[i]]), 2e-3);
 console.log(`  PULL               ${nt} (radius, annulus) pairs summed (${secs()})`);
 plan.solve(Array.from(pulls));
+
+/*
+ * RAY_ONLY=lift: THE TWO READINGS OF a_0 NEAR MATTER, TESTED (Simulation.lift_coefficients, lift_test): what arrives
+ * at every measured radius whichever way (PULL, scalar), the two kappas off the chain and the medium, the curves at
+ * each, and what each does where gravity is strongest and best measured - a planet's orbit
+ */
+/*
+ * RAY_ONLY=perms: EVERY WAY a_0 MIGHT BE SET, ON EVERY LATTICE, AGAINST EVERY MEASUREMENT AT HAND. a_0 = v c / tau, v =
+ * 2/(DEG+2) off the chain, tau one of: the age (falls in time), the growth rate (goes as H(z)), the vacuum's own
+ * constant growth (H_0 sqrt(Omega_Lambda), constant in time), or H_0 itself held constant. Each scored on SPARC's
+ * curves (Simulation.lift_test, no lift), Genzel's six discs at their own epochs (Simulation.epochs), and a_0/cH_0
+ * against the measured 0.155-0.183
+ */
+if (Deno.env.get("RAY_ONLY") === "perms") {
+  const shape = S.shape_of(Array.from(await pullOf(S.shape_tasks)));
+  const c = physics.Sparc.C_LIGHT, H0 = S.hubble0, t0 = S.age_at(0), OL = 1 - S.OMEGA_M;
+  const hyps: [string, (v: number) => number, string][] = [
+    ["age: v c / t", v => v * c / t0, "age"],
+    ["growth: v c H(z)", v => v * c * H0, "hubble"],
+    ["vacuum: v c H0 sqrt(OL)", v => v * c * H0 * Math.sqrt(OL), "constant"],
+    ["held: v c H0", v => v * c * H0, "constant"],
+  ];
+  const pct = (dex: number) => `${(100 * (10 ** dex - 1)).toFixed(1)}%`;
+  const genzel = (a0: number, how: string) => {
+    let chi = 0;
+    for (const [, , f, err, limit, pred] of S.epochs(shape, a0, how)) { const d = (pred - f) / Math.max(err, 0.02); chi += limit > 0 && pred <= f ? 0 : d * d; }
+    return chi;
+  };
+  console.log(`\n  ${"a_0 from".padEnd(26)} DEG    v      a_0 (m/s^2)  a_0/cH_0  band   SPARC rms  middle   Genzel chi^2 (6)`);
+  for (const [label, a0of, how] of hyps) {
+    for (const DEG of [6, 8, 10, 12, 18, 26]) {
+      const v = 2 / (DEG + 2), a0 = a0of(v), ratio = a0 / (c * H0);
+      const [rms, mid] = plan.lift_test(0, a0 / S.UNIT_G);
+      const inBand = ratio >= 0.155 && ratio <= 0.183 ? " in " : (ratio < 0.155 ? "low " : "high");
+      console.log(`  ${label.padEnd(26)} ${String(DEG).padStart(3)}  ${v.toFixed(3)}  ${a0.toExponential(2)}    ${ratio.toFixed(3)}    ${inBand}  ${pct(rms).padStart(7)}   ${((mid >= 0 ? "+" : "") + pct(mid)).padStart(7)}   ${genzel(a0, how).toFixed(1).padStart(6)}`);
+    }
+    console.log("");
+  }
+  /* and the one number each hypothesis would need: the v that puts a_0/cH_0 in the middle of the band, as a DEG */
+  for (const [label, a0of] of hyps) { const per = a0of(1) / (c * H0); const vWant = 0.169 / per; console.log(`  ${label.padEnd(26)} wants v = ${vWant.toFixed(3)}, DEG = ${(2 / vWant - 2).toFixed(1)}`); }
+  Deno.exit(0);
+}
+
+/* RAY_ONLY=epochs: a_0 through time on Genzel's six discs (Simulation.epochs) - constant, falling with the age, or with H(z) */
+if (Deno.env.get("RAY_ONLY") === "epochs") {
+  const shape = S.shape_of(Array.from(await pullOf(S.shape_tasks)));
+  const names = physics.Sparc.discs.map((d: any) => d.name);
+  for (const [label, a0si] of [["a_0 today the chain's (DEG 18)", plan.a0_si], ["a_0 today the data's 1.2e-10", 1.2e-10]] as [string, number][]) {
+    console.log(`\n  Genzel's discs, ${label}: the dark share within R_1/2, measured against predicted`);
+    for (const how of ["constant", "age", "hubble"]) {
+      const rows = S.epochs(shape, a0si, how);
+      let chi = 0;
+      const parts = rows.map((r: number[], i: number) => {
+        const [z, gbar, f, err, limit, pred] = r;
+        const d = (pred - f) / Math.max(err, 0.02);
+        /* an upper limit is only missed from above */
+        const c = limit > 0 && pred <= f ? 0 : d * d;
+        chi += c;
+        return `${names[i]} z${z.toFixed(2)} ${f.toFixed(2)}${limit > 0 ? "<" : "±" + err.toFixed(2)}→${pred.toFixed(2)}`;
+      });
+      console.log(`    ${how.padEnd(9)} chi² ${chi.toFixed(1).padStart(6)} over ${rows.length}:  ${parts.join("  ")}`);
+    }
+  }
+  const t0 = S.age_at(0) / 3.15576e16, z2 = S.age_at(2) / 3.15576e16;
+  console.log(`\n  the ages: now ${t0.toFixed(2)} Gyr, at z = 2 ${z2.toFixed(2)} Gyr - a_0 by the age ${(t0 / z2).toFixed(2)}x today's there, by H(z) ${(S.hubble_at(2) / S.hubble0).toFixed(2)}x`);
+  Deno.exit(0);
+}
+
+if (Deno.env.get("RAY_ONLY") === "lift") {
+  const upto = plan.tabled_at[0];
+  const measuredTasks = tasks.slice(0, 4 * upto);
+  const sOut = blank(upto);
+  await run(PULL, [u32(upto, S.NSUB, S.NPHI, 1), upload(new Float32Array(measuredTasks)), sOut], upto, 1 << 13);
+  const spulls = await read(sOut, upto);
+  const ann = new physics.Annulus({ inner: measuredTasks[1], outer: measuredTasks[2], thick: measuredTasks[3] });
+  worst("PULL, what arrives", [[ann.arrives(measuredTasks[0], S.NSUB, S.NPHI), spulls[0]]], 2e-3);
+  plan.arrive(Array.from(spulls));
+  const [k1, k2per, slope, v, rate, sf] = S.lift_coefficients(physics.G, Math.round(deg));
+  console.log(`\n  off the chain and the medium at DEG ${Math.round(deg)}: |S'| = ${slope.toFixed(4)}, v = ${v.toFixed(4)}, the meeting rate ${rate.toFixed(4)}, sigma F = ${sf}`);
+  console.log(`    (1) record held at the far field's:  a_0 -> a_0 + ${k1.toFixed(4)} g_s   (nothing to choose)`);
+  console.log(`    (2) record settled where it stands:  a_0 -> a_0 + ${k2per.toFixed(4)} n-bar g_s   (n-bar, the world's matter, at most 1)`);
+  const pct = (dex: number) => `${(100 * (10 ** dex - 1)).toFixed(1)}%`;
+  for (const [label, a0si] of [["a_0 the chain's (DEG 18)", plan.a0_si], ["a_0 the data's 1.2e-10", 1.2e-10]] as [string, number][]) {
+    const a0 = a0si / S.UNIT_G;
+    const show = (name: string, k: number) => { const [rms, mid] = plan.lift_test(k, a0); console.log(`    ${name.padEnd(40)} rms ${pct(rms).padStart(7)}   middle ${(mid >= 0 ? "+" : "") + pct(mid)}`); };
+    console.log(`\n  SPARC, ${label}, at SPARC's own freedoms:`);
+    show("no lift (a_0 the same everywhere)", 0);
+    show(`(1) kappa ${k1.toFixed(3)}`, k1);
+    for (const nbar of [1, 0.21, 1e-2, 1e-4, 1e-8]) show(`(2) n-bar ${nbar}, kappa ${(k2per * nbar).toExponential(2)}`, k2per * nbar);
+  }
+  /* Earth's orbit: what arrives is the Sun's own pull, and planetary ephemerides hold gravity there to ~1e-10 */
+  const gN = physics.Sparc.G_NEWTON * physics.Sparc.MSUN / (1.495978707e11) ** 2;
+  /* the chain's own F_g in closed form: the measured law's table stops at 1e4 a_0, and an orbit sits at ~1e8 */
+  const Fg = (a: number) => gN / 2 + Math.sqrt(gN * gN / 4 + gN * a);
+  const at = (k: number) => Fg(plan.a0_si + k * gN) / Fg(plan.a0_si) - 1;
+  console.log(`\n  Earth's orbit (g_N = ${gN.toExponential(3)} m/s^2): gravity off by (1) ${at(k1).toExponential(2)}; (2) at n-bar 1: ${at(k2per).toExponential(2)}, 0.21: ${at(k2per * 0.21).toExponential(2)}, 1e-4: ${at(k2per * 1e-4).toExponential(2)}, 1e-8: ${at(k2per * 1e-8).toExponential(2)}; the ephemerides allow ~1e-10`);
+  Deno.exit(0);
+}
 const repro: number[] = plan.repro;
 const sortedRepro = [...repro].sort((a, b) => a - b);
 for (const j of repro.map((r, j) => [r, j]).sort((a, b) => b[0] - a[0]).slice(0, 5).map(p => p[1])) {

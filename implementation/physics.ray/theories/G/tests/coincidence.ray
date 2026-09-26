@@ -1,19 +1,21 @@
 /*
  * THE SCALE AGAINST THE EXPANSION, AS NUMBERS: a_0/cH closed off the rules and read on the settled vacuum of each
- * lattice. Measured it is 0.155 to 0.183 (a_0 1.1-1.3e-10 m/s^2, H_0 67.4-73.0 km/s/Mpc). Nothing measured goes in;
- * this pins what the derivation gives, so a change to the rules that moves or loses it is seen.
+ * lattice. a_0 is v H_Lambda, the empty vacuum's own growth, and today's H_0 carries the world's matter as well, so what
+ * is measured is a_0/cH_0 = (a_0/cH_Lambda) sqrt(Omega_Lambda), Omega_Lambda = 1 - 0.315 borrowed (Planck 2018).
+ * Measured it is 0.155 to 0.183 (a_0 1.1-1.3e-10 m/s^2, H_0 67.4-73.0 km/s/Mpc). This pins what the derivation gives,
+ * so a change to the rules that moves or loses it is seen.
  */
 
 coincidence := Model(theory: G)
 
 Model{theory.name == "G"} += {
-  /* the ratio exists: the vacuum expands and the scale is finite */
-  dynamically assert Fmt.finite(value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18)))
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18)) > 0
+  /* the ratio exists: the vacuum grows on its own and the scale is finite */
+  dynamically assert Fmt.finite(value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)))
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) > 0
   /* it falls with the lattice's ways */
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(12)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18))
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(26))
-  /* and eighteen ways put it inside what is measured */
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18)) > 0.15
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18)) < 0.19
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(6)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8))
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18))
+  /* and on the theory's eight ways, with today's matter share, it is inside what is measured */
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) * (1 - 0.315).sqrt > 0.155
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) * (1 - 0.315).sqrt < 0.183
 }

@@ -702,6 +702,110 @@ method body after loading.
   **THE DEVICE IS THE DISPLAY'S TOO**: every dispatch in galaxy.gpu.ts is cut into pieces (kernels start at `P[7]`), one
   submission each, the host rests as long as the device worked after each, and a submission over 250 ms stops the run -
   25 N-body steps in one submission once took the card off the bus and rebooted the machine.
+- **The expansion and a_0, re-read (2026-09-25, the user's decisions after tests).**
+  (1) `Reading`: a way of the same point as a rule's own lit ray is `lit_with` it (CREATE lights a point's exits as one
+  event, the principle `xs.some` already reads), so ANNIHILATE's `unless ... .active { grow }` is shut for vacuum rays and
+  the space line nets nought on the settled vacuum. `Reading.emitted` reads the same rules on BODIES' rays (lit by a
+  source, met in the vacuum's dark half: another way there holds nothing), and `Equation.terms` ships each branch's
+  grown count there as `Doing.grew_apart` (through `Gen.emit_equation` and both `term_literal`s). Chain steps: `what
+  bodies' rays grow where they meet` (2, read off the rule), `\bar{n}` (the world's body-ray density, an input, 0 in the
+  empty vacuum), `the world's matter grows` = 2 sigma F \bar{n}^2, `\varepsilon` (the empty vacuum's own growth, a
+  PLACEHOLDER 2 sigma F (1 - rho) rho^2 until derived), `H_{\Lambda}` = epsilon/D, H = (space line + matter + epsilon)/D.
+  (2) `a_{0}` = v H_Lambda (Inferences.closing) and `a_{0} along the path` = a_0 unchanged (reading 3: the same
+  everywhere). Tested in galaxy.gpu.ts: a_0 read as local growth (RAY_ONLY=lift) breaks a planet's orbit (76% with the
+  record held, and needs \bar{n} < 4e-10 with it settled); a_0 falling with the age or with H(z) (RAY_ONLY=epochs,
+  perms) fails Genzel's discs (chi^2 27-53 against 3-7 constant). Measured a_0/cH_0 = v sqrt(Omega_Lambda).
+  (3) the theory's lattice is `BCC8 := Geometry.shells(3, [3])` (the cube's corners, eight ways): v = 0.2, a_0/cH_0 =
+  0.165 in the measured band; `tests/coincidence.ray` pins that. Theorems moved: gravity.coincidence (same number,
+  unsimplified form), space.recession (now reads epsilon and the matter's growth).
+  **The medium, every body apart**: `Medium.apart` (runtime `how.apart = capacity`, `how.paced`): each body keeps its own
+  beam, a point meets what arrives gathered into `Medium.GATHER` (96) direction bins (exact where no two bodies share a
+  bin - checked 1e-16 CPU, 1e-7 device); device kernels MMOVEH/MSTEPH (a thread a body), MAXM 4096 bodies, tracks for the
+  first TRACKB 64. The field's rule kernels share the medium's helper text: never change `MAXH` there, never declare a name
+  the field uses (`GATHER` is a field pass - the bin count is `MGATHER`). KNOWN GAP: one c-bar from a body the device and
+  CPU pulls differ by ~4% on every lattice (same tick); the crossed-density test reads from 1.67 c-bar out.
+- **The medium held where the rays are (`Medium.local_rays`, runtime `how.local` + `how.apart` + `how.slots`,
+  record.gpu `RAY_LOCAL=1 RAY_SLOTS=n`; 2026-09-25, the user: "the medium is the model ... it is the thing we need to
+  parallelize", "local, and I expect everything to hold").** Instead of each body's beam read at every cell (cells x
+  bodies a tick), each of a point's GATHER ways keeps `keeps` (Medium.SLOTS, 4) bundles apart, each as moments: what
+  crosses the shell (constant along a ray), and that times where it left, its body's velocity then (cells a tick) and
+  its face, plus whose it is (-1 once two are gathered). A bundle's body is read where it stands now (`now_from`:
+  leaving place + velocity x distance/K ticks) and its amount is q/max(face, R)^(D-1) from there - exactly the beam
+  for one body. Steps: `stream_local` (each point takes, per way t, every bundle whose own heading rounds to t, each read
+  one c-bar back ALONG ITS OWN HEADING - where its ray came through - by area off the cells round that place (`tent`,
+  `inside_at`; the cells round the places half a way either side of t hold all of them), held on that way and `window`
+  either side; so a body's arrivals are one bundle on one way however its rays' leaving places sit against the ways
+  (tried first: a share of each bundle on the two ways nearest its heading - as exact, but every bundle then came in two
+  parts that MHJOIN had to gather again, 50-80 ms a tick); keeps what is past its body's `zone` - the
+  shell from the zone to the edge the source lays again, and what it lays replaces the stream's (`drop_whose`), so no
+  knife-edge where a moving body's cells read its place a little apart; one body's arrivals through several cells on a
+  way are one bundle, grouped by name, and -1 gatherings by leaving place within 0.5 + 0.05 x distance - a way at a time,
+  so MHJOIN now only rebuilds the cell's way bits; NOT normalised
+  a group at a time - where a body came through some cells alone and others gathered that counted it twice - only by
+  the share of the four cells that are in the box; `window` = floor(G asin(sqrt2/(zone - K))/tau) + 2: the point a way
+  back is at least zone - K from its source and its cells within a diagonal of it, so the held way turns that much -
+  the old G/(tau zone) + 1 missed a quarter of what came through the cells nearest a source), `shine_local` (each body lays its own `zone` = K+2 cells as
+  it stands, with the leaving place its distance implies - `left_for` - replacing what of it streamed in; at d = 0 a
+  per-cell `middle`, on no way), `seed_local`, `held_at`, `meet_local` (-> `meet_bins`, shared with `meet_gathered`),
+  `arriving_at` (pull: see THE PULL below).
+  More than `keeps` bundles on one way: the pair nearest as seen from the point is gathered (a crowd far off along a
+  way). CPU held vs CPU beams (2026-09-26): density and record 1e-15 static (incl. half-cell bodies, five with two
+  sharing a way), pulls 1e-16 with the exact reading everywhere and 2e-3 with the far field's Taylor; moving 24 ticks:
+  record 1.5e-3, density 5e-4, pulls 4e-3, places 6e-4 cells (retardation: held rays aim where the body would be at its
+  emission velocity). Device (Kernels MHSTREAM/MHSHINE/MHSEED, `marrive`, `mheldat`; buffers binding 4/5 swap by tick parity;
+  `holdings(c)` reads a cell back) vs CPU held: 1e-7..1e-6. Cost is cells x ways x slots a tick, not bodies. Every
+  step is local: each tick opens with MHCLEAR/MHLINK (every body pushed onto its cell's list by an atomic exchange,
+  binding 6 `link`: a head a cell, then the next body after each), and laying (MHSHINE), seeding (MHSEED) and blocking
+  (MBLOCK) walk only the lists of the cells within reach. Streaming is one thread a (point, way) (MHSTREAM, over
+  `cells*G`, the share of the cells a bundle came through kept in its 8th number) and then one a point (MHJOIN: one
+  body's bundle on two neighbouring ways gathered into one, weighted by those shares); each way has one occupancy
+  number, written by the thread that owns it, so readers pass empty ways by. SEEDING IS LOCAL: `seed_local` / MHSEED
+  empty the ways and lay each body's zone only - what lies further out the stream carries there, a c-bar a tick, as a
+  setup's settling ticks run (record.gpu's `settle`). CELL SOURCES (`cell_sources`, MHSRC): the bodies standing on
+  one cell are gathered into one source (moments summed; a lone body keeps its number, two or more are -2 - cell), and
+  each source cell lays one zone - so laying costs cells x zone whatever the star count; MHSRC also keeps the last body
+  on a cell (8th number), which is all MBLOCK reads. Within 0.001 cell of a source is its middle (a place read back
+  off moments is that far off). THE PULL (`arriving_at`, `marrive`) reads the bundles of the ONE cell a sample point
+  stands in, each at the point itself from where its body stands (a bundle carries its body's place, so it says what
+  that body sends anywhere near; for an isolated source this is exactly the beams' reading), the pulled body's own
+  passed over, taken out of its own cell's source (-2 - cell, by `left_for`), or else out of the -1 gathering nearest
+  it. Bundles further than NEAR_CELLS (5) that are not saturated come from nine numbers a cell (MHFIELD: value,
+  gradient and Hessian of the sum of C d/|d|^D at the cell's centre); the rest exactly, off a near list of up to MNEAR
+  (96) a cell. The Taylor's error is (offset/r)^3 of the far part: 2e-3 of the largest pull with a body at a half
+  cell. A source standing at its cell's very middle is on no way (`middle`), so the pull also reads the cell's source
+  as the shine laid it (`shone`, device `msourcewas`) at the point - without that a pull sample falling in a
+  neighbour's cell missed the neighbour (20% off for two stars on a diagonal). A GATHERING'S SPREAD (`bspread`, a held
+  slot's 8th number on the device): q times each gathered body's squared distance from their middle, summed -
+  `spread_with` adds two (parallel axes), a body alone is 0, taking the pulled body out of a gathering takes its part
+  off. Read from its middle alone a gathering comes short (1/r^n bends up: Jensen), so `reads` and the far field's C
+  are times `spread_of` = 1 + n(n+1)/2 spread/(q d^2), n = D - 1, the spread taken along the way (across a way it is
+  within its width). 80 stars, held over beams by radius, 2 slots: 0.94-0.96 outside before, 0.995-1.02 after; 4
+  slots within 1% either way; 1 slot is hopeless (0.56-1.47). The spread counts only the part along the line to the
+  point where two are gathered (across it, being apart takes a little off; counted as along, 300 stars read 2% high).
+  FRESH AND STREAMED KEPT APART (`fresh`, `lay`, device `mfresh`/`mfill`): a bundle whose body stands within the edge is
+  the shine's, laid anew each tick; `lay` gathers two fresh or two streamed, never one of each (any pair only where
+  no two are of one kind). Gathered with what streamed past, a body's own went on nameless, the stream carried it back
+  into its zone (the zone test reads the gathering's middle), the shine laid the body again: counted twice - three
+  bodies in a line, one slot, read 11% HIGH where a merge must read low. And the shine first clears the gatherings
+  within the edge (name < 0: its own gathered last tick, or a cell's) and lays them again. 300-star disc against the
+  beams, 4 slots: 1.02-1.04 before, 1.01-1.02 after; 2 slots 0.93-0.98; device against CPU on it 0.998-1.000.
+  ZONE = 2K + 2 (two rungs): the stream then reads targets whose upstream cells are at least K + 2 from a source, so
+  `window` is 6 ways a side instead of 14; laying costs 2.4x more cells a source. 181 box, 65k stars: busy 164 ->
+  76 ms a tick together with dropping MHJOIN's gathering (the heading reading makes it unneeded) and `mdrop` reading
+  names before bundles (MHSHINE 65 -> 7 ms at one rung). solar.inner, local, after the window/share fixes: Mercury e
+  0.20566, +0.2997 +- 0.002 deg a turn (beams +0.2988), 244 ms a tick (before these speedups). Held disc, 1000 stars on a 121 box, medium over the sum of one lone body's pull: 0.84-0.92 before the window,
+  zone and way-share fixes, 0.91-1.05 after, the same along diagonals and axes. Tried and dropped: reading each cell's summed arrivals by area
+  between cell centres - 4x cheaper again, but it skews a 1/r^2 profile enough to add +0.08 deg a turn to Mercury's
+  nearest point and 7% to Venus's e. STREAM, TWO PASSES: MHWANT (a cell: OR of the way bitmasks of the cells within
+  K + 1, widened by `window`; clears what the cell held two ticks ago) then MHSTREAM (a thread a cell and way, which
+  leaves at once unless its way is wanted); MHJOIN rebuilds each cell's bitmask (`mbits`, four words of 24) from the
+  per-way occupancy, so only whole-cell threads touch it. 415 box with 5 bodies: 10 ms of GPU a tick. PACED PIECES: every pass is costed a thread at a time off the device clock; a pass is
+  cut into pieces (Par.first, each its own 256-byte region of the tick's uniforms via a dynamic offset) that each
+  stay under AIM_MS, in submissions of their own; a pass never timed runs its first 65536 threads alone first. Scale
+  on a 181 box, GPU time a tick: 4k stars 34 ms, 1M 162 (the exact pull 114, sources 15). GOTCHAS: a WGSL `var` declared in
+  a loop is not re-zeroed each iteration on this device - initialise it; the medium's EXTRAS count (24) and MAXH are
+  shared with the Field's kernels - never change them (index 23 carries the slot count, 0 = not held); a `.ray`
+  member named `slots` overrides the TS Node's field store (named `keeps` here).
 - `Sweep.base_env` binds the vacuum's own body defaults (m-bar_x 1, A 1, R-bar 0, beta 0) before
   solving n_f per radius; without them n_f is NaN at every radius and the sweep lands nothing - which
   is why the OLD galaxy fields on disk had `most: 0` and a blank region.
