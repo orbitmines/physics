@@ -699,7 +699,8 @@ export class Emitter {
       const out: any[] = [];
       for (const x of node) {
         const y = this.applyRules(x, rules, language, byCost);
-        if (y && y.kind === "expr" && y.expr?.kind === "block" && x?.kind !== "expr") out.push(...y.expr.body.statements);
+        // a block a rewrite made of one statement splices too: nested, a method whose only statement it was returned its FIRST line (`Vertex.put` never relocated)
+        if (y && y.kind === "expr" && y.expr?.kind === "block" && (x?.kind !== "expr" || (this.produced.has(y) && !this.produced.has(x)))) out.push(...y.expr.body.statements);
         else if (y && y.kind === "program" && x?.kind !== "program") out.push(...y.statements);
         else out.push(y);
       }

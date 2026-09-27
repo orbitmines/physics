@@ -74,6 +74,12 @@ export const VISUALS: Record<string, () => any> = {
   "rule.movement": () => {
   return G.strip(`rule.movement`);
   },
+  "rule.emission": () => {
+  return G.emission_film;
+  },
+  "rule.transport": () => {
+  return G.transport_film;
+  },
   "space.expansion": () => {
   return G.expansion;
   },

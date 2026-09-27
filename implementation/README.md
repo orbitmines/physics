@@ -605,6 +605,20 @@ method body after loading.
   (indianred) and `Ink.BLUE` (the panels' blue) for a theory that has one, and the alphas `behind
   front head dot line`. G declares `rule.annihilation` (/1 on a meeting), `rule.creation` (/2 on what
   /1 left of the meeting) and `rule.movement` (/c then /4 on a lone ray, each way).
+  **Source films** (`Strip.tell(id, what, lanes, ink)`): lanes held 40 frames a tick by `Unrolling`. A lane carries
+  the nodes its sources own (`Lane.sources`, a square in `Ink.SOURCE`) and what they are doing (`Lane.says`, written
+  over the source on a short line up from it, in the same colour; `Ink.top` is the room for it). `Scripted` is a
+  Source whose `plan[t]` says what it emits on tick t + 1 (`"+"`, `"-"`, both, `""`) and whose `weight` is its mass;
+  `Strip.begin(w)` is `World.tick`'s prelude (tick counted, sources' action handed back) so a film can run some rules
+  as a tick; `Strip.lit(was, now)` are the rays lit between two readings and `Strip.emitting(was, now)` says them in
+  words - read off the lanes, not the script. G declares `rule.emission` (/c /4 /S.1 on a held source) and
+  `rule.transport` (/c /4 /S.1 /S.v on a source carrying a quarter step a tick: labelled only when it steps or emits).
+  Two rays side by side on one heading do not advance under /c (the second swap trades the points back), so the
+  emission script never lights a way two ticks running.
+  CENTRING: a strip's scale is its widest row (rays, their targets, and every point it draws); each lane of each row
+  is then centred on what it draws (a ray a quarter cell either side of its node), so before and after both sit in the
+  middle of their pane. A film is centred once, the whole film long (`Ink.centre`, `Strip.centre_of`: the middle of
+  where its sources go, or of the seed's points), so the line never moves under the reader.
 - **Galaxies.ray** is the old ALL.ts panel (`galaxy.point`, `galaxy.many`: SPARC cloud and sample,
   Tully-Fisher lines, Genzel discs, Newton, the deep limit, the law, the region by rank and by which
   freedom a cell needs) drawn from `Measured.of("galaxy.point"|"galaxy.many")`; **Sparc.ray** reads the
@@ -792,7 +806,44 @@ method body after loading.
   ZONE = 2K + 2 (two rungs): the stream then reads targets whose upstream cells are at least K + 2 from a source, so
   `window` is 6 ways a side instead of 14; laying costs 2.4x more cells a source. 181 box, 65k stars: busy 164 ->
   76 ms a tick together with dropping MHJOIN's gathering (the heading reading makes it unneeded) and `mdrop` reading
-  names before bundles (MHSHINE 65 -> 7 ms at one rung). solar.inner, local, after the window/share fixes: Mercury e
+  names before bundles (MHSHINE 65 -> 7 ms at one rung). THE SHINE A THREAD A POINT AND WAY (MHSHINE and MHSEED over
+  `cells*G`; `Medium.shine_local` likewise a point and way at a time): what the way keeps that the shine does not lay
+  again (`relaid`: a body's own where the body truly stands within the edge - so it goes too when the body now shines
+  with others on its cell - and a gathering whose middle is within it), and every source within the edge whose way out
+  to the point is this one, found in the strip of cells back along the way, laid once; MHJOIN (the bits) runs after it.
+  A thread a point walking the 441 source cells of a two-rung zone took milliseconds over a disc's middle: 312 ms a
+  tick. PACING (webgpu.runtime): a piece is its `fill` threads from `first` and the WGSL entry stops past it - a
+  dispatch comes in whole workgroups and rows, and a body pushed onto its cell's list twice made MHSRC walk a list that
+  never ends (546 ms, caught by the guard); the host's own passes (seed, relist) are owed to the paced gatherer, not
+  sent straight off; the probe is the pass's MIDDLE 1024 threads; each pass's cost is kept per run of threads
+  (`profile`) and a piece cut by its own threads' cost x 1.5, less the cheapest dispatch (`floor_ms`); AIM_MS 15.
+  PIPELINED (`next`): hearing a submission is done costs the host ~11 ms whatever it held (the runtime polls; measured
+  on empty submissions, idle or not), so a full submission is sent once twice the last one's work has passed since it
+  went - at most two on the queue, the device busy at most half the time - and what each truly took is read back a
+  submission or two behind (`debt`: over its guess waits the more, under refunds, never more than 2 AIM_MS on
+  credit); a pass's own cost over its threads is learned (`pass_ms`, 0.2 ms: 150 tiny passes guessed at nothing held
+  35 ms). MHWANT marks the cells with a source within the edge and a cell (`mhot`); MHSHINE elsewhere clears its middle
+  and stops (5 bodies on a 181 box: shine 10 -> 0.7 ms). Bodies are sized by the count carried (`CAP`), not the kernels'
+  MAXM: a star is 48 bytes of numbers, 72 of pull parts and 4 of list, so some 16M fit the 2 GB binding. 181 box, 1M
+  stars: 65 ms of device a tick, 167 wall (was 391); 5 bodies 5.7 / 22. PAST A MILLION: held where they are no body
+  keeps a beam (BEAM = rungs: 500 bytes a star saved) and a body's pull over its c-bar is summed by its own thread (one
+  part a body, not K x K), so a star is 72 bytes on the device and some 28M fit the 2 GB binding. THE BODIES SORTED BY
+  CELL each tick (MHCLEAR count, MHLINK, MHSCAN/2/3 the sums, MHPLACE; bodies off the box on one cell past the last):
+  a cell's bodies are one run of the order - a list walked a body at a time, each step waiting on the last, took MHSRC
+  931 ms a tick at 16M; MHSRC1 then sums every 32nd of a run (32 threads a cell) and MHSRC the 32 parts (713 -> 10 ms
+  at 16M); MPULLH takes the bodies in cell order, so threads side by side read the same cells (1M: 42 -> 19 ms). 181
+  box, device / wall a tick: 1M 66 / 185 ms, 4M 119 / 324, 16M 376 / 895, 24M 572 / 1328; the pull is 80% of it
+  (19 ns a star). solar.inner, local, after all of it: Mercury e 0.20563, +0.2985 +- 0.0012 deg a turn (beams
+  +0.2988), 67.6 ms a tick (was 244). A DISC PULLING ITSELF: a million-star disc at rest pulled itself 4.3% of its
+  summed pull toward +x +y (the film drifted 12 c-bar in 2400 ticks): a stream thread holding MLIST (8) groups merged
+  every later candidate into the one nearest it, and candidates come in scan order, the cells of greater y last - now
+  the list gathers its nearest pair of all, of one kind first (`mshrink`, as the shine does): 0.17% (24 groups read no
+  better and took three times as long). Checked by mirroring the disc: a bias of the code stays put, the disc's own
+  flips. CELL SOURCES' SPREAD (`spread_toward`, device `mtensor`/`mspread_toward`, 12 numbers a source): a cell's
+  bodies keep how they stand about its middle, and the shine lays toward each point the spread along the line less
+  across over n + 1; a body reading its own cell's gathering takes its own part out of that too (`spread_without`).
+  Small: stars sharing cells still leave 3e-3 of the pull unbalanced on the CPU (the beams 4e-6), a sideways error of
+  reading a gathering off its middle that a spread (a number along the way) cannot carry. solar.inner, local, after the window/share fixes: Mercury e
   0.20566, +0.2997 +- 0.002 deg a turn (beams +0.2988), 244 ms a tick (before these speedups). Held disc, 1000 stars on a 121 box, medium over the sum of one lone body's pull: 0.84-0.92 before the window,
   zone and way-share fixes, 0.91-1.05 after, the same along diagonals and axes. Tried and dropped: reading each cell's summed arrivals by area
   between cell centres - 4x cheaper again, but it skews a 1/r^2 profile enough to add +0.08 deg a turn to Mercury's
@@ -831,6 +882,11 @@ Gotchas met writing these (all confirmed the hard way):
   local first. `Line` is the prover's (a step on a page); the hole's world is `Around`.
 - Inside a theory's own methods the theory is `this`, not its name (`G` in the emitted TypeScript is
   the class, not the instance): `Setup(theory: this, ...)`.
+- `.nonempty` is an Array method only: on a String it is emitted as a plain property read, undefined in TypeScript (a filter on it dropped every string). Write `!s.empty` or branch on `s.empty` - `.empty` on a String is emitted as `length === 0`.
+- A `force` rewrite that turns a method's ONLY statement into several is spliced flat (emit.ts `applyRules`); it
+  used to stay a nested block with `return` on its first line, so `Vertex.put` never relocated and no ray moved
+  under /c in the generated packages (fixed 2026-09-27). The bootstrap's own run of `put` still fails
+  (`no member key on None`, Optimizations.ray:28) - the CPU packages are right, the bootstrap's rewrite is not.
 - `Array.range(n).for((i) => { ... })` is emitted as a counted `for` loop (no index array); every other
   `xs.for` spreads its list first. `elem` and `Node.read` in the TypeScript runtime take the common
   case first - that alone halved a field tick.

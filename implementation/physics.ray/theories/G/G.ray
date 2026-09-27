@@ -149,6 +149,9 @@ G: Theory = class {
   visual "rule.annihilation" () => G.strip("rule.annihilation")
   visual "rule.creation" () => G.strip("rule.creation")
   visual "rule.movement" () => G.strip("rule.movement")
+  /* WHAT A SOURCE CHOOSES, A TICK AT A TIME (Strip.tell): /S.1 on a held source, and /S.v on one that carries a quarter of a step a tick */
+  visual "rule.emission" () => G.emission_film
+  visual "rule.transport" () => G.transport_film
 
   /* THE VACUUM ON ITS OWN, FROM ONE POINT (Strip.ray): a single point on a line and nothing else, and every rule run on it a tick at a time - what space does when nothing is in it */
   visual "space.expansion" () => G.expansion
@@ -162,6 +165,65 @@ G: Theory = class {
     return Strip.of(id, "two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)", this, ["/1"], [Strip.meeting], ink) if id == "rule.annihilation"
     return Strip.of(id, "a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards", this, ["/2"], [(t: Theory): World => Strip.left(t, Strip.meeting, ["/1"])], ink) if id == "rule.creation"
     Strip.of(id, "every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)", this, ["/c", "/4"], [(t: Theory): World => Strip.heading(t, 1), (t: Theory): World => Strip.heading(t, 0 - 1)], ink)
+  }
+
+  /*
+   * EMISSION, CHOSEN A TICK AT A TIME: a source held on a line, whose script says each tick whether to light a way and
+   * which - nothing, left, right, both - and the rays it lit before move on at c-bar (/c, settled by /4). Only those rules
+   * run, as `rule.movement` runs only its own: the vacuum's beat would light every point and hide the choice. What the
+   * source is said to do is read off the lanes - the rays /S.1 lit between the reading before it and after it - not the
+   * script. No way is lit on two ticks running: two rays side by side on one heading trade places back within one pass of /c
+   */
+  emission_film (): Picture => {
+    ink := Ink()
+    ink.every = true
+    ink.top = 36
+    w := Strip.line(this, 17)
+    w.add(Scripted(at: Vector(components: [Real.of(8)]), plan: ["", "+", "-", "", "+-", "", "+", "-"], weight: 1))
+    lanes := [Strip.lane(w, ink)]
+    Array.range(8).for(t => {
+      Strip.begin(w)
+      Strip.run(w, ["/c", "/4"])
+      moved := Strip.lane(w, ink)
+      Strip.run(w, ["/S.1"])
+      now := Strip.lane(w, ink)
+      now.says = Strip.emitting(moved, now)
+      lanes.push(now)
+    })
+    Strip.tell("rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes, ink)
+  }
+
+  /*
+   * TRANSPORT, A TICK AT A TIME: a source put down carrying a quarter of its mass in momentum, so /S.v earns it a quarter of
+   * a step a tick - it stands still for three ticks while the rays it lit on its first tick run off at c-bar, then steps.
+   * The line has no folds, so nothing turns it (`sinks` is nought): the momentum it has is the momentum it keeps. It lights
+   * both ways on its first tick and on the tick after its first step. Rules in the theory's order, /c /4 /S.1 /S.v, the
+   * vacuum's left out as in `rule.emission`; what it is said to do - a step, an emission - is read off the tick
+   */
+  transport_film (): Picture => {
+    ink := Ink()
+    ink.every = true
+    ink.top = 36
+    w := Strip.line(this, 21)
+    s := w.add(Scripted(at: Vector(components: [Real.of(9)]), plan: ["+-", "", "", "", "+-"], weight: 4))
+    s.moves = true
+    s.momentum = Vector(components: [Real.of(1)])
+    lanes := [Strip.lane(w, ink)]
+    Array.range(9).for(t => {
+      Strip.begin(w)
+      Strip.run(w, ["/c", "/4"])
+      moved := Strip.lane(w, ink)
+      Strip.run(w, ["/S.1"])
+      emitted := Strip.emitting(moved, Strip.lane(w, ink))
+      Strip.run(w, ["/S.v"])
+      now := Strip.lane(w, ink)
+      /* only what it does is said: standing still and emitting nothing leave the source unlabelled */
+      went := ""
+      if s.stepped { went = w.geometry.V(s.moved_along).components[0] > 0 ? "steps right" : "steps left" }
+      now.says = went.empty ? emitted : (emitted.empty ? went : "{went}, {emitted}")
+      lanes.push(now)
+    })
+    Strip.tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes, ink)
   }
 
   /*

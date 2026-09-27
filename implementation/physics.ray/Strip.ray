@@ -35,13 +35,35 @@ Ink := class {
   line: Real = 0.16
   /* every point of a lane drawn, not only the ones a ray is on or heading into - for a world that is ABOUT its points, as an expanding one is */
   every: boolean = false
+  /* room above the lanes, for what a source is said to be doing */
+  top: Real = 0
+  /* where a film looks, the whole film long: None centres every lane of a strip on what it shows */
+  centre: Real? = None
+  /* a source's cell: the panels' body colour (Panel.ONE), a square round the node it owns, and what it is doing written over it in the same */
+  static SOURCE = "74,168,235"
 }
 
 /* a ray as drawn: the node it is on, which way it points (+1 / -1 along the line), and its ink */
 Side := class < at: Real, sign: Real, ink: String { }
 
-/* one lane of a strip: the live points and the active rays of a world, read off it */
-Lane := class < points: Real[], sides: Side[] { }
+/* one lane of a strip: the live points and the active rays of a world, read off it - and the nodes its sources own, and what they are doing */
+Lane := class < points: Real[], sides: Side[] {
+  sources: Real[] = []
+  says: String = ""
+}
+
+/*
+ * A SOURCE THAT FOLLOWS A SCRIPT: the choices G leaves to a source, made tick by tick so a film can show each of them.
+ * `plan[t]` is what it emits on tick t + 1: "+" the way up the line, "-" the way down, both, or "" for nothing;
+ * `weight` is its mass. Nothing else about it is chosen here - what it DOES with the choice is G's own rules
+ */
+Scripted := class < Source, plan: String[], weight: Real {
+  choose "emit?" (exit: N): boolean => {
+    ways := this.plan[this.world.ticks - 1] ?? ""
+    this.world.geometry.V(exit).components[0] > 0 ? ways.contains("+") : ways.contains("-")
+  }
+  choose "mass" (): Real => this.weight
+}
 
 Strip := class {
   /* a line of N points with room to grow either side - a rule that makes space needs the margin */
@@ -85,7 +107,27 @@ Strip := class {
     })
   }
 
-  /* the world as a lane: every live point, every active ray */
+  /* what `World.tick` does before its rules: the tick counted, every source's one action a tick handed back - so a film can run some of the rules as a tick would */
+  static begin (w: World) => {
+    w.ticks = w.ticks + 1
+    w.sources.for(s => { s.stepped = false; s.moved_along = None })
+  }
+
+  /* the rays one lane has on a node and heading that the other did not: what a rule lit between the two readings */
+  static lit (was: Lane, now: Lane): Side[] => now.sides.filter(sd => was.sides.every(o => o.at != sd.at | o.sign != sd.sign))
+
+  /* what a source did between two readings, in words: the ways its rule lit - nothing said where it lit none */
+  static emitting (was: Lane, now: Lane): String => {
+    new_rays := Strip.lit(was, now)
+    left := new_rays.some(sd => sd.sign < 0)
+    right := new_rays.some(sd => sd.sign > 0)
+    return "emits both ways" if left & right
+    return "emits left" if left
+    return "emits right" if right
+    ""
+  }
+
+  /* the world as a lane: every live point, every active ray, every node a source owns */
   static lane (w: World, ink: Ink): Lane => {
     pts := w.live.map(v => v.at.components[0])
     sides := []
@@ -94,7 +136,9 @@ Strip := class {
         sides.push(Side(at: v.at.components[0], sign: r.along.components[0], ink: ink.ink_of(r))) if r.active
       })
     })
-    Lane(points: pts, sides: sides)
+    l := Lane(points: pts, sides: sides)
+    w.sources.for(s => { s.cells.for(c => { l.sources.push(c.at.components[0]) }) })
+    l
   }
 
   /* a strip: each seed laid, read, run through the rules, and read again - then drawn as a still */
@@ -133,9 +177,41 @@ Strip := class {
    */
   static film (id: String, what: String, theory: Theory, laying: Program, ticks: N, ink: Ink): Picture => {
     lanes := Strip.history(theory, laying, ticks, ink)
+    ink.centre = Strip.centre_of(lanes)
     PER := 14
     HOLD := 3
     Picture(id: id, what: what, width: 900, height: 90, frames: (ticks + 1 + HOLD) * PER, paint: (played: Played?) => Unrolling(lanes: lanes, ink: ink, per: PER))
+  }
+
+  /* A FILM OF WHAT A SOURCE DOES, A TICK AT A TIME: lanes that each say it (`Lane.says`), each held long enough to read */
+  static tell (id: String, what: String, lanes: Lane[], ink: Ink): Picture => {
+    ink.centre = Strip.centre_of(lanes)
+    PER := 40
+    HOLD := 1
+    Picture(id: id, what: what, width: 900, height: 110, frames: (lanes.length + HOLD) * PER, paint: (played: Played?) => Unrolling(lanes: lanes, ink: ink, per: PER))
+  }
+
+  /* the points a row is about: the node each ray is on, the node it is going into, each source's, and what one lane has that the other has not */
+  static relevant (pair: Lane[]): {} => {
+    rel := { }
+    pair.for(l => { l.sides.for(sd => { rel["{sd.at}"] = true; rel["{sd.at + sd.sign}"] = true }) })
+    pair.for(l => { l.sources.for(p => { rel["{p}"] = true }) })
+    has0 := { }
+    has1 := { }
+    pair[0].points.for(p => { has0["{p}"] = true })
+    pair[1].points.for(p => { has1["{p}"] = true })
+    pair[0].points.for(p => { rel["{p}"] = true if has1["{p}"] == None })
+    pair[1].points.for(p => { rel["{p}"] = true if has0["{p}"] == None })
+    rel
+  }
+
+  /* where a film is centred: the middle of where its sources go, or of the seed's points where it has none - so the line does not move under the reader */
+  static centre_of (lanes: Lane[]): Real => {
+    xs := []
+    lanes.for(l => { l.sources.for(p => { xs.push(p) }) })
+    xs = lanes.first.points if xs.empty
+    return 0 if xs.empty
+    (xs.reduce(xs.first, (a_, b_) => Fmt.min(a_, b_)) + xs.reduce(xs.first, (a_, b_) => Fmt.max(a_, b_))) / 2
   }
 
   /* the layout: the margin at the sides, the gap between lanes, and the width of one lane drawn alone */
@@ -172,35 +248,62 @@ Strip := class {
         })
       })
     })
+    /* and every node a source owns, with a node either side of it: what it might light */
+    rows.for(pair => {
+      pair.for(l => {
+        l.sources.for(p => {
+          unless seen { lo = p; hi = p; seen = true }
+          lo = Fmt.min(lo, p - 1)
+          hi = Fmt.max(hi, p + 1)
+        })
+      })
+    })
+    /* and, on a strip, every point it draws - a fold or an unfold can leave one past the rays */
+    unless ink.every {
+      rows.for(pair => {
+        rel := Strip.relevant(pair)
+        pair.for(l => {
+          l.points.for(p => {
+            if rel["{p}"] != None {
+              unless seen { lo = p; hi = p; seen = true }
+              lo = Fmt.min(lo, p)
+              hi = Fmt.max(hi, p)
+            }
+          })
+        })
+      })
+    }
     unless seen { lo = 0 - 1; hi = 0 }
-    MID_AT := (lo + hi) / 2
+    /* a film looks where it is told to, with room for everything either side; a strip is as wide as its widest row, and each lane is centred below */
     EXT := (hi - lo) / 2 + 0.4
-    HEAD := 0
+    EXT = Fmt.max(ink.centre - lo, hi - ink.centre) + 0.4 if ink.centre != None
+    HEAD := ink.top
     PAD := Strip.PAD
     MID := Strip.MID
     lanew := (width - 2 * PAD - MID * (lanes.length - 1)) / lanes.length
     origin := (k_: N): Real => PAD + k_ * (lanew + MID)
     rowH := (H - HEAD) / rows.length
     CELL := lanew / (2 * EXT + 1)
+    MID_AT := 0
     X := (k_: N, x: Real): Real => origin(k_) + lanew / 2 + (x - MID_AT) * CELL
 
     Array.range(rows.length).for(r => {
       pair := rows[r]
       y := HEAD + rowH * (r + 0.5)
-      /* the points this row is about: the node each ray is on, the node it is going into, and what one lane has that the other has not */
-      rel := { }
-      pair.for(l => { l.sides.for(sd => { rel["{sd.at}"] = true; rel["{sd.at + sd.sign}"] = true }) })
-      has0 := { }
-      has1 := { }
-      pair[0].points.for(p => { has0["{p}"] = true })
-      pair[1].points.for(p => { has1["{p}"] = true })
-      pair[0].points.for(p => { rel["{p}"] = true if has1["{p}"] == None })
-      pair[1].points.for(p => { rel["{p}"] = true if has0["{p}"] == None })
+      rel := Strip.relevant(pair)
 
       Array.range(lanes.length).for(k_ => {
         fi := lanes[k_]
         l := pair[fi]
         ox := origin(k_)
+        /* CENTRED ON WHAT IT SHOWS: the middle of what is drawn in this lane - each ray a quarter of a cell either side of its node, each source's square, each point drawn - so before and after both sit in the middle of their own lane */
+        if ink.centre != None { MID_AT = ink.centre } else {
+          xs := []
+          l.sides.for(sd => { xs.push(sd.at - 0.25); xs.push(sd.at + 0.25) })
+          l.sources.for(p => { xs.push(p - 0.3); xs.push(p + 0.3) })
+          l.points.for(p => { xs.push(p) if ink.every | rel["{p}"] != None })
+          MID_AT = xs.empty ? (lo + hi) / 2 : (xs.reduce(xs.first, (a_, b_) => Fmt.min(a_, b_)) + xs.reduce(xs.first, (a_, b_) => Fmt.max(a_, b_))) / 2
+        }
         s.stroke_style("rgba({Ink.NEUTRAL},{ink.line})")
         s.line_width(1)
         s.begin_path
@@ -215,6 +318,31 @@ Strip := class {
             s.begin_path
             s.arc(X(k_, p), y, 2.6, 0, 2 * Real.PI)
             s.fill
+          }
+        })
+
+        /* a source: a square round the node it owns, under the rays - a ray it lights stands on the node beside it */
+        l.sources.for(p => {
+          half := Fmt.max(9, Fmt.min(18, CELL * 0.3))
+          sx := X(k_, p)
+          s.fill_style("rgba({Ink.SOURCE},0.14)")
+          s.fill_rect(sx - half, y - half, 2 * half, 2 * half)
+          s.stroke_style("rgba({Ink.SOURCE},0.9)")
+          s.line_width(1.5)
+          s.stroke_rect(sx - half, y - half, 2 * half, 2 * half)
+          /* and what it is doing, on a line up from it */
+          unless l.says.empty {
+            s.stroke_style("rgba({Ink.SOURCE},0.9)")
+            s.line_width(1)
+            s.begin_path
+            s.move_to(sx, y - half)
+            s.line_to(sx, y - half - 16)
+            s.stroke
+            s.fill_style("rgba({Ink.SOURCE},1)")
+            s.font("13px ui-monospace, monospace")
+            s.text_align("center")
+            s.text_baseline("bottom")
+            s.fill_text(l.says, sx, y - half - 20)
           }
         })
 

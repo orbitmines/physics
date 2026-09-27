@@ -328,7 +328,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const TRACKB = Number(/const TRACKB: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
   /* every body apart (Medium.apart): room for this many bodies, each with its own beam */
   const apart = Math.max(0, Math.floor(how?.apart ?? 0));
-  if (apart > MAXM) throw new Error(`the medium carries at most ${MAXM} bodies apart, not ${apart}`);
+  /*
+   * how many bodies there is room for: held where they are (how.local) as many as asked for - a body is its numbers,
+   * its place on its cell's list and the parts of its pull, whatever the box, so it is the binding limit that bounds
+   * them and not the kernels (MAXM, which sized every medium for a million) - else the kernels' own MAXM
+   */
+  const CAP = how?.local && apart ? apart : MAXM;
+  if (apart > CAP) throw new Error(`the medium carries at most ${CAP} bodies apart, not ${apart}`);
   /* the planes: the vacuum's own rays, and one per tagged kind of body - or one per body, where every body is apart (Medium.planes) */
   const planes = apart ? apart + 1 : Math.max(1, tags);
   const cells = N * N;
@@ -338,10 +344,11 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const slots = 9 + ledger;
   const EXTRAS = 24, CN = Math.floor((EXTRAS + 3) / 4);
   /* where the host asks what a point is going by: a room of its own, not one a body (a million bodies are not asked about at once) */
-  const ENTRIES = Math.min(MAXM * K * K * 4, 1 << 16);
+  const ENTRIES = Math.min(CAP * K * K * 4, 1 << 16);
   /* what a body has sent, a number a c-bar out from it: it is a body's own, not a cell's, and it moves with the body (Medium.rungs, Medium.beam) */
   const rungs = Math.floor(N / K) + 3;
-  const BEAM = planes * rungs;
+  /* held where they are (how.local) no body keeps a beam - its rays are the held bundles - so none is made room for: at a rung a c-bar out that was 500 bytes a star */
+  const BEAM = how?.local ? rungs : planes * rungs;
   const OUT = slots * cells;
   const usage = { storage: 0x80 | 0x4 | 0x8, uniform: 0x40 | 0x8 };
   const buffer = (bytes: number, u: number) => device.createBuffer({ size: bytes, usage: u });
@@ -359,14 +366,16 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
   };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * MAXM + 2 * ENTRIES, BEAMC = BOD + 12 * MAXM, WHOM = BEAMC + 2 * BEAM;
+  const BOD = OUT + 4 * CAP + 2 * ENTRIES, BEAMC = BOD + 12 * CAP, WHOM = BEAMC + 2 * BEAM;
   /* where each of the first TRACKB bodies stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
   const TRACKED = 4096, TRACK = WHOM + planes + 1;
   /* where every body is apart, the parts of each body's pull: a point of it against a run of PCHUNK planes, two numbers each (Kernels MPULLH) */
   const PCHUNK = Number(/const MPCHUNK: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
   const chunks = (n: number) => how?.local ? 1 : Math.ceil((n + 1) / PCHUNK);
-  const PART = TRACK + TRACKED * TRACKB * 4;
-  const celBytes = (PART + (apart ? 2 * apart * K * K * chunks(apart) : 0)) * 4;
+  /* held where they are, each cell's bodies gathered in 32 parts first (Kernels MHSRC1), just before the pulls' parts */
+  const PART = TRACK + TRACKED * TRACKB * 4 + (how?.local ? cells * 384 : 0);
+  /* held where they are (how.local) a body's pull is summed over its c-bar by its own thread: one part a body */
+  const celBytes = (PART + (apart ? 2 * apart * (how?.local ? 1 : K * K * chunks(apart)) : 0)) * 4;
   fits("ledgers", celBytes);
   const cel = buffer(celBytes, usage.storage);
   fits("ways and asks", (A + 2 * MAXH + CN + ENTRIES) * 16);
@@ -388,12 +397,15 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   if (local && !apart) throw new Error("the medium holds every body's rays where they are only with every body apart (how.apart, how many)");
   const GATHER = Number(/const MGATHER: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
   const HSLOTS = Math.max(1, Math.floor(how?.slots ?? 4));
-  /* the slots, then a cell's middle, then whether each of its ways holds anything, then the bodies on it gathered into one source, then what arrives there times its way (x, y), then which ways it holds and which it can be reached on, each as four words of 24 bits, then its far bodies' field (nine numbers) and its near ones listed (a count and 96) */
-  const heldFloats = local ? cells * GATHER * HSLOTS * 8 + cells + cells * GATHER + cells * 8 + cells * 2 + cells * 4 + cells * 4 + cells * 9 + cells * 97 : 4;
+  /* how many near bundles a cell lists to be read exactly (Kernels MNEAR) */
+  const MNEAR = Number(/const MNEAR: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
+  /* the slots, then a cell's middle, then whether each of its ways holds anything, then the bodies on it gathered into one source (and how they stand about the cell's middle: twelve numbers), then what arrives there times its way (x, y), then which ways it holds and which it can be reached on, each as four words of 24 bits, then its far bodies' field (nine numbers) and its near ones listed (a count and 96), then whether a source is near (MHWANT, for MHSHINE) */
+  const heldFloats = local ? cells * GATHER * HSLOTS * 8 + cells + cells * GATHER + cells * 12 + cells * 2 + cells * 4 + cells * 4 + cells * 9 + cells * (MNEAR + 1) + cells : 4;
   fits("held rays", heldFloats * 4);
   const held = [buffer(heldFloats * 4, usage.storage), buffer(heldFloats * 4, usage.storage)];
   /* every body on its cell's list: a head a cell, then the next body after each (Kernels MHCLEAR, MHLINK) */
-  const links = buffer(Math.max(16, (local ? cells + MAXM : 4) * 4), usage.storage);
+  /* each cell's count, where its run starts (and one past), the sums of 256 cells, then every body in cell order (Kernels MHCLEAR .. MHPLACE) */
+  const links = buffer(Math.max(16, (local ? 2 * cells + 3 + Math.ceil((cells + 1) / 256) + CAP : 4) * 4), usage.storage);
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform", hasDynamicOffset: true } },
     { binding: 1, visibility: 4, buffer: { type: "storage" } },
@@ -468,7 +480,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
   /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
-  const BODS = new Float32Array(12 * MAXM);
+  const BODS = new Float32Array(12 * CAP);
   /* how big a source is, and what that size lets out of it - the store's own skin law (Medium.face_of, Medium.skin_of) */
   const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
   const at_one = 1 - law.reach_at(law.NEAR);
@@ -477,7 +489,15 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   let stale = false;
   /* kernels run straight off, in pieces of this many threads, each piece its own submission (the host's own steps between ticks) */
   const HOST_PIECE = 16384;
+  /*
+   * paced, they are owed instead, and run by the paced gatherer - timed, cut to AIM_MS, rested after - at the next
+   * flush or tick: sent straight off, a million-star seed kept the device busy half a second with no rest, and the
+   * first paced submission after it was held behind all of it (481 ms by the host's clock)
+   */
+  let owed: { names: string[], parity: number }[] = [];
+  let owing = false;
   const in_pieces = (names: string[], parity: number) => {
+    if (how?.paced) { owed.push({ names, parity }); return; }
     for (const k of names) {
       const all = size(over[k]);
       for (let f0 = 0; f0 < all; f0 += HOST_PIECE) {
@@ -488,12 +508,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       }
     }
   };
-  const relist = (parity: number) => in_pieces(["MHCLEAR", "MHLINK", "MHSRC"], parity);
+  const SORT = ["MHCLEAR", "MHLINK", "MHSCAN", "MHSCAN2", "MHSCAN3", "MHPLACE"];
+  const relist = (parity: number) => in_pieces([...SORT, "MHSRC1", "MHSRC"], parity);
   const push = () => {
     /* what is gathered goes first: a write lands on the queue after it, as it would have unpaced */
     send();
     stale = false;
-    const n = Math.min(holes.length, MAXM);
+    const n = Math.min(holes.length, CAP);
     for (let k = 0; k < n; k++) {
       const h = holes[k];
       /* every body apart is on its own plane, the one after its place in the list */
@@ -517,7 +538,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
   const sync = async () => {
     if (stale) push();
-    const n = Math.min(holes.length, MAXM);
+    const n = Math.min(holes.length, CAP);
     if (!n) return;
     const got = await read(cel, 12 * n, BOD * 4);
     holes.slice(0, n).forEach((h: any, k: number) => {
@@ -538,7 +559,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     return got;
   };
   const entries: number[] = [];
-  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, MAXM), "pulls": apart ? Math.min(holes.length, MAXM) * K * K * chunks(Math.min(holes.length, MAXM)) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0 } as Record<string, number>)[o];
+  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, CAP), "pulls": apart ? Math.min(holes.length, CAP) * (how?.local ? 1 : K * K * chunks(Math.min(holes.length, CAP))) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0, "cells1": local ? cells + 1 : 0, "cells32": local ? cells * 32 : 0, "blocks": local ? Math.ceil((cells + 1) / 256) : 0 } as Record<string, number>)[o];
   /* one pass; paced, with the device's own clock on either side of it (the pass's pair of `stamps`) */
   /* the parity a pass runs on: a tick's own leaves its rays in held[t % 2]; a reading after it reads the last left, held[(t + 1) % 2] */
   /* and a piece of one: `count` threads from `first`, read off its own region of the tick's uniforms (Par.first) */
@@ -548,9 +569,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (!(n > 0)) return false;
     const region = regions_used[slot]++;
     if (region >= REGIONS) throw new Error(`the medium ran out of room for a tick's passes (${REGIONS} a tick): fewer pieces`);
-    P[18] = first;
+    P[18] = first; P[19] = n;
     ring[slot].forEach((par, zz) => { P[8] = zz; device.queue.writeBuffer(par, region * REGION, P); });
-    P[18] = 0;
+    P[18] = 0; P[19] = 0;
     const pass = enc.beginComputePass(stamp >= 0 ? { timestampWrites: { querySet: stamps, beginningOfPassWriteIndex: 2 * stamp, endOfPassWriteIndex: 2 * stamp + 1 } } : undefined);
     pass.setPipeline(pipes[name]); pass.setBindGroup(0, bind_ring[parity][slot][z], [region * REGION]);
     const groups = Math.ceil(n / 64);
@@ -573,7 +594,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
   const uniforms = (slot = 0) => {
-    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, MAXM); P[6] = t; P[7] = (apart ? holes.length + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, CAP); P[6] = t; P[7] = (apart ? holes.length + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
     /* where the ledgers stand, as whole numbers: past sixteen million a float is no longer one (Kernels.medium_helpers) */
     P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM; P[17] = PART; P[18] = 0;
     /* a set of uniforms taken afresh: its regions are free again (each pass writes its own, `run`) */
@@ -587,10 +608,16 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
    * submission until what the device's own clock says they take reaches AIM_MS; a kernel not yet timed goes alone
    * (its first run is its probe). After each, the host rests at least as long as the device worked, and one that
    * held the device past LONGEST_MS stops the run. Anything the host reads or writes sends what is gathered first,
-   * so every step sees the device exactly as it would have unpaced
+   * so every step sees the device exactly as it would have unpaced. AIM_MS is 15: a pass's cost is learned a tick
+   * before it runs, and while a field is still spreading out it grows by up to some 70% from one tick to the next -
+   * at 20 a submission reached 34 ms; the display's own line is 30
    */
   const LONGEST_MS = 250, AIM_MS = 15, MAXPASS = 1024;
   let longest = 0, longest_was = "";
+  /* the cheapest one pass has taken, in ms: what a dispatch costs however few its threads */
+  let floor_ms = Infinity;
+  /* and what one pass costs the device over and above that, in a submission of many (learned in `settle_one`) */
+  let pass_ms = 0.2;
   /* what each kernel has held the device for, paced, in ms over the run - where a tick's time goes */
   const spent: Record<string, number> = {};
   /* what each kernel took the last times it ran, by the device's clock */
@@ -633,8 +660,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   }
   let enc: any = null, passes = 0, guess = 0, ticks_in = 0, slot = -1;
   /* each pass gathered, with how many threads it ran: what it took is judged a thread at a time, so a pass can be cut */
-  const names_in: { name: string; n: number }[] = [];
-  const inflight: { back: any; names: { name: string; n: number }[]; t0: number }[] = [];
+  const names_in: { name: string; n: number; first: number }[] = [];
+  const inflight: { back: any; names: { name: string; n: number; first: number }[]; t0: number; guess: number }[] = [];
   /* how many threads each kernel ran the last time it ran whole, so what it took whole can be told */
   const last_n: Record<string, number> = {};
   /* send what is gathered, without waiting on it */
@@ -647,15 +674,17 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       enc.copyBufferToBuffer(resolved, 0, back, 0, 16 * passes);
     }
     device.queue.submit([enc.finish()]);
-    inflight.push({ back, names: names_in.splice(0), t0: performance.now() });
+    inflight.push({ back, names: names_in.splice(0), t0: performance.now(), guess });
     enc = null; passes = 0; guess = 0; ticks_in = 0; slot = -1;
   };
-  /* wait on what was sent, learn what each pass took, and rest as long as the device worked */
-  const settle = async () => {
-    while (inflight.length) {
+  /*
+   * wait on the oldest submission sent, learn what each of its passes took, and - `rest` - rest as long as the device
+   * worked. Waiting on it is waiting on its own stamps read back, not on all the device has (a later one may be sent)
+   */
+  const settle_one = async (rest: boolean) => {
       const f = inflight.shift()!;
       const w0 = performance.now();
-      await device.queue.onSubmittedWorkDone();
+      if (f.back) await f.back.mapAsync(1); else await device.queue.onSubmittedWorkDone();
       let busy = performance.now() - f.t0;
       clock.waited += busy; clock.batches++;
       /*
@@ -664,24 +693,31 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
        * holds that work too, and the device's own clock, measured against the host's, is what says how long it worked
        */
       const held = busy - round_trip;
-      if (w0 - f.t0 < 5 && held > LONGEST_MS) throw new Error(`the medium held the device ${held.toFixed(0)} ms in one submission by the host's clock (limit ${LONGEST_MS}) over ${f.names.length} passes - fewer passes a submission`);
+      if (w0 - f.t0 < 5 && held > LONGEST_MS && f.back) {
+        const ns = new BigUint64Array(f.back.getMappedRange());
+        const dev = f.names.map((p, k) => `${p.name} ${(Number(ns[2 * k + 1] - ns[2 * k]) * ns_per_count / 1e6).toFixed(1)} ms`).join(", ");
+        f.back.unmap();
+        throw new Error(`the medium held the device ${held.toFixed(0)} ms in one submission by the host's clock (limit ${LONGEST_MS}); by the device's own: ${dev}`);
+      }
+      if (w0 - f.t0 < 5 && held > LONGEST_MS) throw new Error(`the medium held the device ${held.toFixed(0)} ms in one submission by the host's clock (limit ${LONGEST_MS}) over ${f.names.length} passes (${f.names.slice(0, 8).map(p => `${p.name}x${p.n}`).join(" ")}) - fewer passes a submission`);
       if (f.back) {
-        await f.back.mapAsync(1);
         const ns = new BigUint64Array(f.back.getMappedRange());
         busy = 0;
-        f.names.forEach(({ name, n }, k) => {
+        f.names.forEach(({ name, n, first }, k) => {
           const ms = Number(ns[2 * k + 1] - ns[2 * k]) * ns_per_count / 1e6;
           if (!(ms >= 0 && ms < 1e5)) return;
           busy += ms;
           spent[name] = (spent[name] ?? 0) + ms;
           /*
-           * a kernel's cost a thread, judged on the high side: it grows as bodies gather, and a guess short is the one
-           * that matters. Threads over a disc's middle cost many times those over empty cells, so it is the dearest
-           * piece's that is kept - let go slowly over the tick's cheaper ones (half in about 25 pieces) - not the mean:
-           * by the mean a piece over the middle held the device 45-50 ms
+           * what a pass costs whatever its size - the cheapest dispatch yet - taken off first (a piece of a thousand
+           * threads is mostly that); then its cost a thread over the threads it ran, kept where they are (`profile`):
+           * threads over a disc's middle cost many times those over empty cells, and one rate for the whole pass - the
+           * mean put the middle into pieces that held the device 45-50 ms, the dearest cut everything else tiny
            */
-          const rate = ms / Math.max(1, n);
+          floor_ms = Math.min(floor_ms, ms);
+          const rate = Math.max(0, ms - floor_ms) / Math.max(1, n);
           took[name] = Math.max(rate, 0.973 * (took[name] ?? rate));
+          profile(name, first, first + n, rate);
         });
         f.back.unmap(); f.back.destroy();
       } else f.names.forEach(({ name }) => { spent[name] = (spent[name] ?? 0) + busy / Math.max(1, f.names.length); });
@@ -692,25 +728,69 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
        * the device has stood idle since its work ended while the host waited to hear so: that is rest already, and only
        * what is left of as long as it worked is rested now - it is still busy at most half the time
        */
+      clock.busy += busy;
+      /*
+       * what a pass costs the device beyond what its threads do, learned off what submissions truly took past their
+       * guess: a submission of many ticks of small passes, each guessed at next to nothing, held the device 35 ms
+       */
+      if (f.names.length > 4) pass_ms = Math.max(0.02, 0.8 * pass_ms + 0.2 * Math.max(0, (busy - f.guess) / f.names.length + pass_ms));
+      /*
+       * sent without waiting (`next`), the next one sent waits twice what it truly took rather than twice its guess: the
+       * guess is on the high side (cut with a margin), and resting on it rested every piece twice as long as it worked.
+       * Never more than two AIM_MS on credit, so no more than two are ever back to back
+       */
+      if (!rest) { debt = Math.max(-2 * AIM_MS, debt + 2 * (busy - f.guess)); return; }
       const r0 = performance.now();
       const idle = Math.max(0, r0 - f.t0 - busy);
       await new Promise(r => setTimeout(r, Math.max(2, busy - idle)));
-      clock.rested += performance.now() - r0; clock.busy += busy;
-    }
+      clock.rested += performance.now() - r0;
   };
-  const flush = async () => { send(); await settle(); };
+  const settle = async () => { while (inflight.length) await settle_one(true); };
+  /*
+   * SENT WITHOUT WAITING ON THE LAST: hearing that a submission is done costs the host some eleven milliseconds however
+   * little it held (this runtime polls), and waiting on each before sending the next spent most of a tick on that. So a
+   * full submission goes once twice what the one before it was taken to take has passed since that one went - it had
+   * that long to work and as long again to rest, and the device is still busy at most half the time - and what each
+   * truly took is read back a submission or two behind: past its guess, the next waits the more (`debt`). At most two
+   * are ever on the device's queue, each under AIM_MS
+   */
+  let last_sent = 0, last_work = 0, debt = 0;
+  const next = async () => {
+    if (!enc) return;
+    const wait = last_sent + 2 * last_work + debt - performance.now();
+    debt = Math.min(0, Math.max(debt, wait));
+    if (wait > 0) { const r0 = performance.now(); await new Promise(r => setTimeout(r, wait)); clock.rested += performance.now() - r0; }
+    last_work = guess;
+    send();
+    last_sent = performance.now();
+    while (inflight.length > 2) await settle_one(false);
+  };
+  const owe = async () => {
+    if (owing) return;
+    owing = true;
+    while (owed.length) {
+      const { names, parity } = owed.shift()!;
+      slot = -1;
+      for (const k of names) await gather(k, 0, parity);
+    }
+    slot = -1;
+    owing = false;
+  };
+  const flush = async () => { await owe(); send(); await settle(); };
   /* where a paced run's time goes on the host: gathering passes, waiting on the device (its round trip included), resting, and the device's own clock */
   const clock = { gathered: 0, waited: 0, rested: 0, busy: 0, batches: 0 };
+  /* how many pieces each pass has been cut into, all told */
+  const cut: Record<string, number> = {};
   /* one piece into what is gathered - `count` threads from `first` - sending what is gathered first when it would take the submission past AIM_MS */
   const one = async (name: string, z: number, parity: number, first: number, count: number, cost: number) => {
-    if (passes > 0 && (guess + cost > AIM_MS || passes >= MAXPASS || (slot < 0 && ticks_in >= SLOTS) || (slot >= 0 && regions_used[slot] >= REGIONS))) await flush();
+    if (passes > 0 && (guess + cost > AIM_MS || passes >= MAXPASS || (slot < 0 && ticks_in >= SLOTS) || (slot >= 0 && regions_used[slot] >= REGIONS))) await next();
     const g0 = performance.now();
     if (!enc) enc = device.createCommandEncoder();
     if (slot < 0) { slot = ticks_in++; uniforms(slot); }
     const ran = run(enc, name, z, slot, timed ? passes : -1, parity, first, count);
     clock.gathered += performance.now() - g0;
     if (!ran) return;
-    names_in.push({ name, n: count }); passes++; guess += Math.min(cost, AIM_MS);
+    names_in.push({ name, n: count, first }); passes++; guess += Math.min(cost, AIM_MS) + pass_ms; cut[name] = (cut[name] ?? 0) + 1;
     /* a piece not yet costed, or not costed at all, goes alone */
     if (!Number.isFinite(cost)) await flush();
   };
@@ -719,28 +799,96 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
    * device long however many cells or bodies there are. A pass never yet timed is timed first on a small piece of it
    * alone (its first PROBE threads), and the rest is cut by what that piece took
    */
-  const PROBE = 65536;
+  /* small: over a million-star disc's middle 65536 threads of the shine held the device 733 ms */
+  const PROBE = 1024;
+  /*
+   * EACH PASS'S COST WHERE ITS THREADS ARE: runs of threads, each with what it last took a thread. A pass costs much the
+   * same where it costs it from one tick to the next, so a piece is cut to AIM_MS by what its own threads took - with
+   * a margin for a field still growing - and threads never yet timed are taken at the dearest rate seen
+   */
+  const runs: Record<string, number[][]> = {};
+  const profile = (name: string, a: number, b: number, rate: number) => {
+    const old = runs[name] ?? [];
+    const kept: number[][] = [];
+    for (const [s0, s1, r] of old) {
+      if (s1 <= a || s0 >= b) { kept.push([s0, s1, r]); continue; }
+      if (s0 < a) kept.push([s0, a, r]);
+      if (s1 > b) kept.push([b, s1, r]);
+    }
+    kept.push([a, b, rate]);
+    kept.sort((u, v) => u[0] - v[0]);
+    runs[name] = kept;
+  };
+  const MARGIN = 1.5;
+  /* how many threads from f0 (up to `end`) fit in what is left of AIM_MS */
+  const piece_fits = (name: string, f0: number, end: number, room: number) => {
+    const dear = took[name] ?? Infinity;
+    if (!Number.isFinite(dear)) return end - f0;
+    let at = f0, spent = 0;
+    for (const [s0, s1, r] of runs[name] ?? []) {
+      if (s1 <= at) continue;
+      if (s0 > at) {
+        /* a gap never timed: the dearest rate */
+        const g1 = Math.min(s0, end), cost = (g1 - at) * dear * MARGIN;
+        if (spent + cost > room) return Math.max(1, at - f0 + Math.floor((room - spent) / (dear * MARGIN)));
+        spent += cost; at = g1;
+        if (at >= end) return end - f0;
+      }
+      const e1 = Math.min(s1, end), rr = Math.max(r, 1e-9) * MARGIN, cost = (e1 - at) * rr;
+      if (spent + cost > room) return Math.max(1, at - f0 + Math.floor((room - spent) / rr));
+      spent += cost; at = e1;
+      if (at >= end) return end - f0;
+    }
+    const cost = (end - at) * dear * MARGIN;
+    if (spent + cost > room) return Math.max(1, at - f0 + Math.floor((room - spent) / (dear * MARGIN)));
+    return end - f0;
+  };
+  /* what threads a to b are expected to take, by their runs (for gathering passes into one submission) */
+  const estimate = (name: string, a: number, b: number, over: number) => {
+    const dear = took[name] ?? Infinity;
+    if (!Number.isFinite(dear)) return Infinity;
+    let at = a, spent = 0;
+    for (const [s0, s1, r] of runs[name] ?? []) {
+      if (s1 <= at) continue;
+      if (s0 > at) { const g1 = Math.min(s0, b); spent += (g1 - at) * dear; at = g1; }
+      if (at >= b) break;
+      const e1 = Math.min(s1, b); spent += (e1 - at) * r; at = e1;
+      if (at >= b) break;
+    }
+    if (at < b) spent += (b - at) * dear;
+    return over + spent * MARGIN;
+  };
   const gather = async (name: string, z: number, parity: number) => {
     const all = size(over[name]);
     if (!all) { took[name] = took[name] ?? 0; return; }
     last_n[name] = all;
-    let first = 0;
+    /*
+     * the probe is the MIDDLE of the pass: its first threads are the box's first rows, empty and cheap, and the rest
+     * cut by what they took put the disc's middle into pieces that held the device 45 ms. And each piece is cut by the
+     * rate as it stands when it is gathered - the dearest yet - not once for the whole pass
+     */
+    const ranges: number[][] = [[0, all]];
     if (timed && took[name] === undefined) {
-      const probe = Math.min(all, PROBE);
-      await one(name, z, parity, 0, probe, Infinity);
-      first = probe;
+      const probe = Math.min(all, PROBE), p0 = Math.floor((all - probe) / 2);
+      await one(name, z, parity, p0, probe, Infinity);
+      ranges.splice(0, 1, [0, p0], [p0 + probe, all]);
     }
-    const rate = timed ? (took[name] ?? Infinity) : Infinity;
-    const left = all - first;
-    if (left <= 0) return;
-    const pieces = Number.isFinite(rate) ? Math.max(1, Math.ceil(rate * left / AIM_MS)) : 1;
-    const chunk = Math.ceil(left / pieces);
-    for (let f0 = first; f0 < all; f0 += chunk) await one(name, z, parity, f0, Math.min(chunk, all - f0), rate * Math.min(chunk, all - f0));
+    for (const [a, b] of ranges) {
+      let f0 = a;
+      while (f0 < b) {
+        const over = Number.isFinite(floor_ms) ? floor_ms : 0;
+        const n = timed && took[name] !== undefined ? piece_fits(name, f0, b, AIM_MS - over) : b - f0;
+        /* what these threads are expected to take, as they were cut */
+        await one(name, z, parity, f0, n, n < b - f0 ? AIM_MS : estimate(name, f0, f0 + n, over));
+        f0 += n;
+      }
+    }
   };
   /* a tick's own passes run on its parity; a reading after it on the last one left (`run`) */
   const submit = async (names: string[], parity = (t + 1) % 2) => {
     if (stale) push();
     if (how?.paced) {
+      await owe();
       slot = -1;
       for (const name of names) {
         const zs = name.endsWith("@z") ? planes : 1;
@@ -768,7 +916,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
     async leans() {
-      const n = Math.min(holes.length, MAXM);
+      const n = Math.min(holes.length, CAP);
       if (!n) return [];
       const got = await read(cel, 4 * n, OUT * 4);
       return holes.slice(0, n).map((_: any, k: number) => [got[4 * k], got[4 * k + 1]]);
@@ -828,6 +976,10 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     get longest() { return longest; },
     /* and what that submission held: its passes, each with its thread count */
     get longest_was() { return longest_was; },
+    /* how many pieces each pass has been cut into, all told */
+    cut,
+    /* what each pass is taken to cost a thread, in ms */
+    took,
     get spent() { return spent; },
     mass: (h: any) => h.mass,
     at,
@@ -845,7 +997,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       if (local) {
         send();
         /* in pieces, each its own submission, so none holds the device long however many cells and bodies there are */
-        in_pieces(["MHCLEAR", "MHLINK", "MHSRC", "MHSEED", "MHFIELD"], (t + 1) % 2);
+        in_pieces([...SORT, "MHSRC1", "MHSRC", "MHSEED", "MHJOIN", "MHFIELD"], (t + 1) % 2);
         return;
       }
       const beam = new Float32Array(2 * BEAM);
@@ -914,7 +1066,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       run(enc, "MPROBE", 0);
       device.queue.submit([enc.finish()]);
       /* the reading is submitted behind it on the same queue, so waiting for the work here is a round trip for nothing */
-      const got = await read(cel, 2 * n, (OUT + 4 * MAXM) * 4);
+      /* the answers stand past the bodies' own, as many as there are (Kernels MPROBE: P.outs + 4 holes) */
+      const got = await read(cel, 2 * n, (OUT + 4 * Math.min(holes.length, CAP)) * 4);
       return Array.from({ length: n }, (_, i) => [got[2 * i], got[2 * i + 1]]);
     },
     async rho() { return read(cel, cells, 0); },

@@ -273,7 +273,8 @@ if (Deno.env.get("RAY_ONLY") === "held-disc") {
   const lonePull = (await lone.probe(RS.map(r => [mid + r * K, mid, 0]))).map((g: number[]) => -g[0]);
   const p1 = (d: number) => { if (d <= RS[0]) return lonePull[0]; let k = RS.findIndex(r => r >= d); if (k < 0) return lonePull[lonePull.length - 1] * Math.pow(RS[RS.length - 1] / d, D - 1); const f = (d - RS[k - 1]) / (RS[k] - RS[k - 1]); return lonePull[k - 1] * (1 - f) + lonePull[k] * f; };
   /* the disc: radius drawn off R e^(-R/RD) (two uniform draws), angle uniform - seeded, so a run is the run again */
-  let seed = 12345; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return (seed + 0.5) / 2147483648; };
+  /* mulberry32, in whole 32-bit steps: the float LCG it replaces lost bits past 2^53 and gave 10917 distinct draws in two million - a million stars stood on some five thousand places */
+  let seed = 12345 >>> 0; const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let z = seed; z = Math.imul(z ^ (z >>> 15), z | 1); z ^= z + Math.imul(z ^ (z >>> 7), z | 61); return (((z ^ (z >>> 14)) >>> 0) + 0.5) / 4294967296; };
   const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
   const at: number[][] = [];
   for (let s = 0; s < STARS; s++) {
@@ -315,7 +316,7 @@ if (Deno.env.get("RAY_ONLY") === "held-disc") {
   console.log(`  R (c-bar)   stars   g medium     g summed     g/g_summed   g_summed/a_0`);
   for (const [R, g, gn, n] of acc) if (n > 0) console.log(`  ${(R / n).toFixed(2).padStart(8)}  ${String(n).padStart(6)}   ${(g / n).toExponential(3)}   ${(gn / n).toExponential(3)}   ${(g / gn).toFixed(4).padStart(9)}    ${(gn / n / a0).toExponential(2)}`);
   console.log(`  by direction: along the diagonals g/g_summed ${(dirs[0][0] / dirs[0][1]).toFixed(4)} (${dirs[0][2]} stars), along the axes ${(dirs[1][0] / dirs[1][1]).toFixed(4)} (${dirs[1][2]} stars)`);
-  console.log(`  longest submission ${w.longest.toFixed(1)} ms`);
+  console.log(`  longest submission ${w.longest.toFixed(1)} ms (${w.longest_was.slice(0, 120)})`);
   Deno.exit(0);
 }
 
@@ -348,7 +349,8 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const MASS = SPEED * SPEED / RD / (0.264 * pRD), m = MASS / STARS;
   console.log(`\n  a galaxy in the medium: ${STARS} stars, R_d ${RD} c-bar, box ${SIDE} (K ${K}, DEG ${DEG}); a unit mass pulls ${p1.toExponential(3)} at ${rcal} c-bar, so the disc weighs ${MASS.toExponential(3)} (${m.toExponential(3)} a star) to circle near ${SPEED} c-bar a tick`);
   /* the disc, seeded so a run is the run again: radius off R e^(-R/RD), angle uniform */
-  let seed = 2026; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return (seed + 0.5) / 2147483648; };
+  /* mulberry32, in whole 32-bit steps: the float LCG it replaces lost bits past 2^53 and gave 10917 distinct draws in two million - a million stars stood on some five thousand places */
+  let seed = 2026 >>> 0; const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let z = seed; z = Math.imul(z ^ (z >>> 15), z | 1); z ^= z + Math.imul(z ^ (z >>> 7), z | 61); return (((z ^ (z >>> 14)) >>> 0) + 0.5) / 4294967296; };
   const gauss = () => Math.sqrt(-2 * Math.log(rnd())) * Math.cos(2 * Math.PI * rnd());
   const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
   for (let s = 0; s < STARS; s++) {
@@ -391,7 +393,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   for (let f = 1; f < FRAMES; f++) {
     for (let t = 0; t < TPF; t++) await w.tick();
     await shoot();
-    if (f % 10 === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms`);
+    if (f % 10 === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms (${w.longest_was.slice(0, 120)})`);
   }
   physics.Measure.save("galaxy.medium", ["density"], { density }, {
     names: ["a disc in the medium"], mass: [MASS], scale: [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
