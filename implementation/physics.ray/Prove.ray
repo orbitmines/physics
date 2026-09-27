@@ -1299,7 +1299,8 @@ Prover := class < theory: Theory {
           if q.chain != None {
             walk := Prover.behind(s, q.chain)
             at := walk.last
-            chained = (at != None & at.fact.kind == "is" & at.fact.of == q.chain) ? " = {Expr.show(at.fact.to)}" : ""
+            /* filled as the headline it follows is: the constants the closure settled, in */
+            chained = (at != None & at.fact.kind == "is" & at.fact.of == q.chain) ? " = {Expr.show(Expr.deep_factored(Expr.evaluate(at.fact.to, fill)))}" : ""
           }
           p.concluded = hit != None ? Prover.headline(end.fact, None) : "{Prover.headline(end.fact, fill)}{chained}"
           p.standing = true

@@ -347,14 +347,14 @@ no l.reach here - that is the rays alone, and is the mass law's own near field
 
 the near field is the rays alone, and they are gone in a free path - into the record. But rays and record together the vacuum never loses: a meeting turns 2 rays into a fold, a creation turns a fold back into rays, and the conserved line says so. So what a body puts out is all still there, spread over the space it went into - and from a steady body xt only spreads: what crosses the shell at any distance in a tick is what the body put out, so per site it is the body's mass over that shell, and it dwells one over c̄ there. From every body xt is the sum, each from its own distance - its own walk, on whatever lattice, folded as it may be. That is the force felt at a local: the record it holds above the settled one is what bends every heading through it, and this is where that record came from
 
-**m̄\paren{R̄} = \frac{2·l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - l.reach\paren{R̄}}}{\rho·l.shell\paren{R̄}}**  
+**m̄\paren{R̄} = \frac{2·l.choose\paren{m̄_{x·l.DEG·\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - l.reach\paren{R̄}}}{\rho·l.shell\paren{R̄}}**  
 <sub>theorem · the mass law is the near field of a body's own cells</sub>  
 
 ```
 R̄ in the mass law: the body's depth; x.R̄ in the field: the distance to it
 the skin: l.reach summed over the depth, a geometric series
 so x.m̄ in the field is this, what leaves the face - and the walk outside it is the near field's own l.reach, or, on rays plus record, none
-m̄\paren{R̄} = \frac{2·l.choose\paren{m̄_x·l.DEG·\paren{1 - \beta}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - l.reach\paren{R̄}}}{\rho·l.shell\paren{R̄}}
+m̄\paren{R̄} = \frac{2·l.choose\paren{m̄_{x·l.DEG·\paren{1 - \beta}}}·\paren{1 - \rho}·R̄^(D - 1)·\paren{1 - l.reach\paren{R̄}}}{\rho·l.shell\paren{R̄}}
 ```
 
 TWO RADII, NOT ONE. In the mass law R̄ is the body's own DEPTH - how many cells thick it is behind its face - and l.reach summed over that depth is the skin: a cell deeper in sends its rays out through the cells in front of it and loses a share at each, so what leaves the face is the near-field sum run over the body's own cells. In the field, x.R̄ is the DISTANCE from the body's face to the local, the walk outside it. Same count per step, since inside a body and outside it the vacuum is the same; a different stretch of it. Putting l.reach in with the depth and again with the distance for the same R would count once what happens twice - so the mass law carries the depth and the near field the distance, and x.m̄ in the sums is what leaves body x's face

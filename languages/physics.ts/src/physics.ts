@@ -3409,6 +3409,23 @@ export class Expr extends Node {
     if (eq(k, `gammaInc`)) {
       return `\\Gamma\\paren{${Expr.show(e.first_)}, ${Expr.show(e.second_)}}`;
     }
+    if ((eq(k, `call`) && eq(e.label, `l.choose`))) {
+      let own = ((x: Expr) => {
+        return (x.named && eq(x.label, `\\bar{m}_{x}`));
+      });
+      let xs = (eq(e.base.kind, `mul`) ? e.base.of : [e.base]);
+      if (xs.some(((x: any) => {
+        return own(x);
+      }))) {
+        let rest = xs.filter(((x: any) => {
+          return !(own(x));
+        }));
+        if ((rest.length === 0)) {
+          return `l.choose\\paren{\\bar{m}_{x}}`;
+        }
+        return `l.choose\\paren{\\bar{m}_{x·${Expr.show((eq(rest.length, 1) ? elem(rest, 0) : Expr.mul(rest)))}}}`;
+      }
+    }
     if (eq(k, `call`)) {
       return `${e.label}\\paren{${Expr.show(e.base)}}`;
     }
@@ -6292,7 +6309,7 @@ export class Prover extends Node {
           if (!eq(q.chain, null)) {
             let walk = Prover.behind(s, q.chain);
             let at = last(walk);
-            chained = ((((!eq(at, null) && eq(at.fact.kind, `is`)) && eq(at.fact.of, q.chain))) ? ` = ${Expr.show(at.fact.to)}` : ``);
+            chained = ((((!eq(at, null) && eq(at.fact.kind, `is`)) && eq(at.fact.of, q.chain))) ? ` = ${Expr.show(Expr.deep_factored(Expr.evaluate(at.fact.to, fill)))}` : ``);
           }
           p.concluded = (!eq(hit, null) ? Prover.headline(end.fact, null) : `${Prover.headline(end.fact, fill)}${chained}`);
           p.standing = true;
@@ -7195,7 +7212,7 @@ export class Inferences extends Node {
         return [];
       }
       return [``, `'`].map(((b: any) => {
-        return Inferences.step(`\\mathcal{D}${b}`, Inferences.doppler_is(b), `what motion does to what a body sends`, [took.key], `ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. \`EMISSION\` is gated on \`spare = not(moving)\`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, inside the source's own choice, \`l.choose\\paren{\\bar{m}_{x} l.DEG \\paren{1 - \\beta}}\`. WHAT IS DIRECTIONAL IS THE OTHER HALF: \`MOVEMENT\` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else`, [`EMISSION is gated on not(moving), so it shines on 1 - \\beta${b} of its ticks`, `that is the same every way, so it is in \\bar{m}${b} and not here`, `one cell a tick, so \\bar{r} cells is \\bar{r} ticks`, `two rays a tick apart land 1 - \\beta${b}\\cdot\\hat{d} ticks apart`, `\\mathcal{D}${b} = ${Expr.show(Inferences.doppler_is(b))}`]);
+        return Inferences.step(`\\mathcal{D}${b}`, Inferences.doppler_is(b), `what motion does to what a body sends`, [took.key], `ONE MOTION, TWO EFFECTS, AND ONLY ONE OF THEM IS HERE. \`EMISSION\` is gated on \`spare = not(moving)\`, so a tick spent crossing a cell is a tick not spent shining and a body emits on 1 - \\beta of its ticks - THE SAME IN EVERY DIRECTION, so that is how much the body sends and it is already in the mass, inside the source's own choice, \`l.choose\\paren{\\bar{m}_{x·l.DEG·\\paren{1 - \\beta}}}\`. WHAT IS DIRECTIONAL IS THE OTHER HALF: \`MOVEMENT\` gives one cell a tick, so a distance IS a time, and between two emissions a tick apart the body has closed \\beta\\cdot\\hat{d} of the way to wherever the ray is going - they land that much closer together and what arrives per tick is the reciprocal. IT IS THE CLASSICAL DOPPLER FACTOR and nothing about waves or observers went into it. A body blocks the vacuum's making whether it moves or not, so this is on the meeting term and nowhere else`, [`EMISSION is gated on not(moving), so it shines on 1 - \\beta${b} of its ticks`, `that is the same every way, so it is in \\bar{m}${b} and not here`, `one cell a tick, so \\bar{r} cells is \\bar{r} ticks`, `two rays a tick apart land 1 - \\beta${b}\\cdot\\hat{d} ticks apart`, `\\mathcal{D}${b} = ${Expr.show(Inferences.doppler_is(b))}`]);
       }));
     }) });
   }
@@ -8536,29 +8553,6 @@ export class Medium extends Node {
     let n = sub(this.D, 1);
     return mul(q, (sub(along, div((sub(add(sxx, syy), along)), (add(n, 1))))));
   }
-  seen_aside(e: number[], cx: number, cy: number, tx: number, ty: number): number[] {
-    if ((lt(e.length, 11) || !((gt(elem(e, 0), 0))))) {
-      return [0, 0];
-    }
-    let q = elem(e, 0);
-    let mx = sub(div(elem(e, 1), q), cx);
-    let my = sub(div(elem(e, 2), q), cy);
-    let sxx = sub(div(elem(e, 8), q), mul(mx, mx));
-    let sxy = sub(div(elem(e, 9), q), mul(mx, my));
-    let syy = sub(div(elem(e, 10), q), mul(my, my));
-    let ux = sub(tx, div(elem(e, 1), q));
-    let uy = sub(ty, div(elem(e, 2), q));
-    let d = Fmt.hypot(ux, uy);
-    if (!((gt(d, 0)))) {
-      return [0, 0];
-    }
-    let ax = div(ux, d);
-    let ay = div(uy, d);
-    let cross = add(add(mul(mul(sxx, ax), (sub(0, ay))), mul(sxy, (sub(mul(ax, ax), mul(ay, ay))))), mul(mul(syy, ay), ax));
-    let n = sub(this.D, 1);
-    let s = div(mul((add(n, 1)), cross), d);
-    return [mul(s, (sub(0, ay))), mul(s, ax)];
-  }
   apart_seen(a: number[], b: number[], x: number, y: number): number {
     let ax = div(elem(a, 1), elem(a, 0));
     let ay = div(elem(a, 2), elem(a, 0));
@@ -8671,9 +8665,6 @@ export class Medium extends Node {
             if ((gt(d, 0.001) && le(d, this.edge))) {
               let lf = this.left_for(e, d);
               lf[7] = this.spread_toward(e, this.column_of(sc), this.row_of(sc), x, y);
-              let aside = this.seen_aside(e, this.column_of(sc), this.row_of(sc), x, y);
-              lf[1] = add(elem(lf, 1), mul(elem(lf, 0), elem(aside, 0)));
-              lf[2] = add(elem(lf, 2), mul(elem(lf, 0), elem(aside, 1)));
               push(elem(laid, this.bin_of(dx, dy)), lf);
             }
           }
@@ -8699,14 +8690,9 @@ export class Medium extends Node {
   }
   get cell_sources(): any[] {
     let src = filled(this.cells, null);
-    this.members = range(this.cells).map(((c: any) => {
-      return [];
-    }));
-    for (let k = 0; k < this.holes.length; k++) {
-      let h = elem(this.holes, k);
+    for (const h of [...this.holes]) {
       let c = this.at(Math.round(h.x), Math.round(h.y));
       if (ge(c, 0)) {
-        push(elem(this.members, c), k);
         let e0 = this.emitted(h);
         let dx = sub(h.x, this.column_of(c));
         let dy = sub(h.y, this.row_of(c));
@@ -8717,8 +8703,6 @@ export class Medium extends Node {
     };
     return src;
   }
-  get members(): any[] { return this.read("members", () => []); }
-  set members(v: any[]) { this.write("members", v); }
   get stream_local() {
     this.bundles_ready;
     let B = this.gather;
@@ -8822,17 +8806,7 @@ export class Medium extends Node {
     };
     return got;
   }
-  in_block(who: number, near: number): boolean {
-    if ((lt(near, 0) || eq(who, (-1)))) {
-      return false;
-    }
-    let c = (ge(who, 0) ? ((lt(who, this.holes.length) ? this.at(Math.round(elem(this.holes, Math.round(who)).x), Math.round(elem(this.holes, Math.round(who)).y)) : (-1))) : sub((sub(0, Math.round(who))), 2));
-    if (lt(c, 0)) {
-      return false;
-    }
-    return (le(Math.abs((sub(this.column_of(c), this.column_of(near)))), 1) && le(Math.abs((sub(this.row_of(c), this.row_of(near)))), 1));
-  }
-  arriving_at(x: number, y: number, zown: number, near: number): number[] {
+  arriving_at(x: number, y: number, zown: number): number[] {
     let B = this.gather;
     let S = this.keeps;
     let u = this.at(Math.round(x), Math.round(y));
@@ -8840,24 +8814,24 @@ export class Medium extends Node {
       return [0, 0, 0];
     }
     let own = (((this.local_rays && ge(zown, 1)) && le(zown, this.holes.length)) ? elem(this.holes, sub(zown, 1)) : null);
-    let oc = (eq(own, null) ? (-1) : this.at(Math.round(own.x), Math.round(own.y)));
-    let whole = ((ge(oc, 0) && eq(this.shone.length, this.cells)) ? elem(this.shone, oc) : null);
-    let gathered = (!eq(whole, null) && eq(elem(whole, 6), sub((-2), oc)));
-    let mine = (eq(own, null) ? [0, 0, 0, 0, 0, 0, (-1), 0] : ((gathered ? [elem(whole, 0), elem(whole, 1), elem(whole, 2), elem(whole, 3), elem(whole, 4), elem(whole, 5), elem(whole, 6), 0] : this.emitted(own))));
-    let me = (eq(own, null) ? 0.5 : ((gathered ? sub((-2), oc) : sub(zown, 1))));
+    let mine = (eq(own, null) ? [0, 0, 0, 0, 0, 0, (-1), 0] : this.emitted(own));
+    let me = sub(zown, 1);
+    let srcid = (eq(own, null) ? 0.5 : sub((-2), this.at(Math.round(own.x), Math.round(own.y))));
     let sum = 0;
     let gx = 0;
     let gy = 0;
     let ux = this.column_of(u);
     let uy = this.row_of(u);
     let owns = (eq(own, null) ? (-1) : this.bin_of(sub(ux, div(elem(mine, 1), elem(mine, 0))), sub(uy, div(elem(mine, 2), elem(mine, 0)))));
-    let alone = (!eq(own, null) && range(S).some(((sl: any) => {
-      return eq(elem(this.bwho, add(mul((add(mul(u, B), owns)), S), sl)), me);
+    let alone = (!eq(own, null) && range(5).some(((o: any) => {
+      return range(S).some(((sl: any) => {
+        return eq(elem(this.bwho, add(mul((add(mul(u, B), mod((sub(add(add(owns, B), o), 2)), B))), S), sl)), me);
+      }));
     })));
     for (let b = 0; b < B; b++) {
       for (let sl = 0; sl < S; sl++) {
         let k = add(mul((add(mul(u, B), b)), S), sl);
-        if (((gt(elem(this.bq, k), 0) && !(((!eq(own, null) && eq(elem(this.bwho, k), me))))) && !(this.in_block(elem(this.bwho, k), near)))) {
+        if ((gt(elem(this.bq, k), 0) && !(((!eq(own, null) && eq(elem(this.bwho, k), me)))))) {
           let m = this.moments(k);
           if (this.far_of(m, ux, uy)) {
             let f = this.expanded(m, ux, uy, sub(x, ux), sub(y, uy));
@@ -8873,6 +8847,10 @@ export class Medium extends Node {
               rest[7] = Fmt.max(0, sub(elem(m, 7), mul(mul(div(mul(elem(rest, 0), elem(mine, 0)), elem(m, 0)), along), along)));
               m = rest;
             }
+            if ((!eq(own, null) && eq(elem(m, 6), srcid))) {
+              let lf = this.left_for(mine, Fmt.hypot(sub(ux, div(elem(m, 1), elem(m, 0))), sub(uy, div(elem(m, 2), elem(m, 0)))));
+              m = [sub(elem(m, 0), elem(lf, 0)), sub(elem(m, 1), elem(lf, 1)), sub(elem(m, 2), elem(lf, 2)), sub(elem(m, 3), elem(lf, 3)), sub(elem(m, 4), elem(lf, 4)), sub(elem(m, 5), elem(lf, 5)), elem(m, 6), 0];
+            }
             let got = this.reads(m, x, y);
             sum = add(sum, elem(got, 0));
             gx = add(gx, mul(elem(got, 0), elem(got, 1)));
@@ -8882,8 +8860,11 @@ export class Medium extends Node {
       };
     };
     let e = (eq(this.shone.length, this.cells) ? elem(this.shone, u) : null);
-    if (((((!eq(e, null) && gt(elem(e, 0), 0)) && le(Fmt.hypot(sub(ux, div(elem(e, 1), elem(e, 0))), sub(uy, div(elem(e, 2), elem(e, 0)))), 0.001)) && !(((!eq(own, null) && eq(elem(e, 6), me))))) && !(this.in_block(elem(e, 6), near)))) {
+    if ((((!eq(e, null) && gt(elem(e, 0), 0)) && le(Fmt.hypot(sub(ux, div(elem(e, 1), elem(e, 0))), sub(uy, div(elem(e, 2), elem(e, 0)))), 0.001)) && !(((!eq(own, null) && eq(elem(e, 6), me)))))) {
       let m = e;
+      if ((!eq(own, null) && eq(elem(e, 6), srcid))) {
+        m = [sub(elem(e, 0), elem(mine, 0)), sub(elem(e, 1), elem(mine, 1)), sub(elem(e, 2), elem(mine, 2)), sub(elem(e, 3), elem(mine, 3)), sub(elem(e, 4), elem(mine, 4)), sub(elem(e, 5), elem(mine, 5)), elem(e, 6), 0];
+      }
       if (gt(elem(m, 0), 0)) {
         let got = this.reads(m, x, y);
         sum = add(sum, elem(got, 0));
@@ -9219,42 +9200,16 @@ export class Medium extends Node {
   }
   pull_local(x: number, y: number, zown: number): number[] {
     let half = div(sub(this.K, 1), 2);
-    let own = ((ge(zown, 1) && le(zown, this.holes.length)) ? elem(this.holes, sub(zown, 1)) : null);
-    let oc = (eq(own, null) ? (-1) : this.at(Math.round(own.x), Math.round(own.y)));
-    let whole = ((ge(oc, 0) && eq(this.shone.length, this.cells)) ? elem(this.shone, oc) : null);
-    let gathered = (!eq(whole, null) && eq(elem(whole, 6), sub((-2), oc)));
-    let cx = (gathered ? div(elem(whole, 1), elem(whole, 0)) : x);
-    let cy = (gathered ? div(elem(whole, 2), elem(whole, 0)) : y);
     let gx = 0;
     let gy = 0;
     for (let dy = 0; dy < this.K; dy++) {
       for (let dx = 0; dx < this.K; dx++) {
-        let px = add(sub(cx, half), dx);
-        let py = add(sub(cy, half), dy);
+        let px = add(sub(x, half), dx);
+        let py = add(sub(y, half), dy);
         let per = this.per_at(px, py);
-        let came = this.arriving_at(px, py, zown, (eq(this.members.length, this.cells) ? oc : (-1)));
+        let came = this.arriving_at(px, py, zown);
         gx = sub(gx, mul(per, elem(came, 1)));
         gy = sub(gy, mul(per, elem(came, 2)));
-        if ((ge(oc, 0) && eq(this.members.length, this.cells))) {
-          let qx = add(sub(x, half), dx);
-          let qy = add(sub(y, half), dy);
-          let pa = this.per_at(qx, qy);
-          for (let j = 0; j < 3; j++) {
-            for (let i = 0; i < 3; i++) {
-              let nc = this.at(add(sub(this.column_of(oc), 1), i), add(sub(this.row_of(oc), 1), j));
-              if (ge(nc, 0)) {
-                for (const k of [...elem(this.members, nc)]) {
-                  if (!eq(k, sub(zown, 1))) {
-                    let b = elem(this.holes, k);
-                    let got = this.reads(this.left_for(this.emitted(b), Fmt.hypot(sub(qx, b.x), sub(qy, b.y))), qx, qy);
-                    gx = sub(gx, mul(mul(pa, elem(got, 0)), elem(got, 1)));
-                    gy = sub(gy, mul(mul(pa, elem(got, 0)), elem(got, 2)));
-                  }
-                };
-              }
-            };
-          };
-        }
       };
     };
     return [gx, gy];
@@ -10507,23 +10462,6 @@ export class Panel extends Node {
         s.arc(add(cx, mul(bx, pz)), add(cy, mul(by, pz)), r, 0, mul(2, Math.PI));
         s.stroke;
       };
-    };
-    s.font(`11px ui-monospace, monospace`);
-    s.text_align(`left`);
-    s.text_baseline(`bottom`);
-    let at = 8;
-    for (let k = 0; k < p.bodies; k++) {
-      if ((gt(elem(trail, k).length, 4) && elem(goes, k))) {
-        let e = div((sub(elem(fars, k), elem(nears, k))), (add(elem(fars, k), elem(nears, k))));
-        let near_text = Fmt.fixed(elem(nears, k), 2);
-        let far_text = Fmt.fixed(elem(fars, k), 2);
-        let e_text = Fmt.fixed(e, 3);
-        let unit = (lt(at, 9) ? ` c-bar` : ``);
-        let line = `${near_text}-${far_text}${unit}, e ${e_text}`;
-        s.fill_style((eq(p.ring, null) ? Panel.SEEN : p.ring(k)));
-        s.fill_text(line, at, sub(H, 2));
-        at = add(add(at, s.measure(line)), 16);
-      }
     };
   }
   static of(p: Setup): Picture {
@@ -15293,16 +15231,22 @@ export const G = new (class G extends Theory {
     if (eq(id, `rule.annihilation`)) {
       return Strip.of(id, `two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)`, this, [`/1`], [Strip.meeting], ink);
     }
-    if (eq(id, `rule.creation`)) {
-      return Strip.of(id, `a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards`, this, [`/2`], [((t: Theory) => {
-        return Strip.left(t, Strip.meeting, [`/1`]);
-      })], ink);
-    }
-    return Strip.of(id, `every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)`, this, [`/c`, `/4`], [((t: Theory) => {
-      return Strip.heading(t, 1);
-    }), ((t: Theory) => {
-      return Strip.heading(t, sub(0, 1));
+    return Strip.of(id, `a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards`, this, [`/2`], [((t: Theory) => {
+      return Strip.left(t, Strip.meeting, [`/1`]);
     })], ink);
+  }
+  get movement_film(): Picture {
+    let ink = new Ink({  });
+    ink.every = true;
+    let w = Strip.line(this, 10);
+    Strip.light(w, 0, 1);
+    let lanes = [Strip.lane(w, ink)];
+    for (let t = 0; t < 8; t++) {
+      Strip.begin(w);
+      Strip.run(w, [`/c`, `/4`]);
+      push(lanes, Strip.lane(w, ink));
+    };
+    return Strip.tell(`rule.movement`, `every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)`, lanes, ink);
   }
   get emission_film(): Picture {
     let ink = new Ink({  });
@@ -15421,11 +15365,11 @@ export const G = new (class G extends Theory {
     let GAP = 20;
     let WAYS = 4096;
     let MX = 0.00006;
-    let V_PASS = 0.5;
-    let PASS_GAP = 8;
-    let TICKS = (eq(how, `thrown`) ? 64 : 2);
+    let V_PASS = 0.02;
+    let PASS_GAP = 16;
+    let TICKS = (eq(how, `thrown`) ? 64 : ((eq(how, `passing`) ? 16 : 2)));
     let V0 = 0.3;
-    let RUN = (eq(how, `rest`) ? 2 : ((eq(how, `passing`) ? 70 : 150)));
+    let RUN = (eq(how, `rest`) ? 2 : ((eq(how, `passing`) ? 120 : 150)));
     let K = 3;
     let N = add(mul(mul(2, (add(VIEW, MARGIN))), K), 1);
     let coarse = add(mul(2, (add(VIEW, MARGIN))), 1);

@@ -604,14 +604,15 @@ method body after loading.
   look: `ray_ink` (a program of the Ray, None = `Ink.NEUTRAL` - gravity has no polarity), `Ink.RED`
   (indianred) and `Ink.BLUE` (the panels' blue) for a theory that has one, and the alphas `behind
   front head dot line`. G declares `rule.annihilation` (/1 on a meeting), `rule.creation` (/2 on what
-  /1 left of the meeting) and `rule.movement` (/c then /4 on a lone ray, each way).
+  /1 left of the meeting); `rule.movement` is a film (below): /c then /4 on a lone ray, a tick at a time, from one end
+  of a line to the other.
   **Source films** (`Strip.tell(id, what, lanes, ink)`): lanes held 40 frames a tick by `Unrolling`. A lane carries
   the nodes its sources own (`Lane.sources`, a square in `Ink.SOURCE`) and what they are doing (`Lane.says`, written
   over the source on a short line up from it, in the same colour; `Ink.top` is the room for it). `Scripted` is a
   Source whose `plan[t]` says what it emits on tick t + 1 (`"+"`, `"-"`, both, `""`) and whose `weight` is its mass;
   `Strip.begin(w)` is `World.tick`'s prelude (tick counted, sources' action handed back) so a film can run some rules
   as a tick; `Strip.lit(was, now)` are the rays lit between two readings and `Strip.emitting(was, now)` says them in
-  words - read off the lanes, not the script. G declares `rule.emission` (/c /4 /S.1 on a held source) and
+  words - read off the lanes, not the script. G declares `rule.movement` (/c /4 on one ray, no source, nothing said), `rule.emission` (/c /4 /S.1 on a held source) and
   `rule.transport` (/c /4 /S.1 /S.v on a source carrying a quarter step a tick: labelled only when it steps or emits).
   Two rays side by side on one heading do not advance under /c (the second swap trades the points back), so the
   emission script never lights a way two ticks running.
@@ -834,16 +835,20 @@ method body after loading.
   at 16M); MPULLH takes the bodies in cell order, so threads side by side read the same cells (1M: 42 -> 19 ms). 181
   box, device / wall a tick: 1M 66 / 185 ms, 4M 119 / 324, 16M 376 / 895, 24M 572 / 1328; the pull is 80% of it
   (19 ns a star). solar.inner, local, after all of it: Mercury e 0.20563, +0.2985 +- 0.0012 deg a turn (beams
-  +0.2988), 67.6 ms a tick (was 244). A DISC PULLING ITSELF: a million-star disc at rest pulled itself 4.3% of its
-  summed pull toward +x +y (the film drifted 12 c-bar in 2400 ticks): a stream thread holding MLIST (8) groups merged
-  every later candidate into the one nearest it, and candidates come in scan order, the cells of greater y last - now
-  the list gathers its nearest pair of all, of one kind first (`mshrink`, as the shine does): 0.17% (24 groups read no
-  better and took three times as long). Checked by mirroring the disc: a bias of the code stays put, the disc's own
-  flips. CELL SOURCES' SPREAD (`spread_toward`, device `mtensor`/`mspread_toward`, 12 numbers a source): a cell's
-  bodies keep how they stand about its middle, and the shine lays toward each point the spread along the line less
-  across over n + 1; a body reading its own cell's gathering takes its own part out of that too (`spread_without`).
-  Small: stars sharing cells still leave 3e-3 of the pull unbalanced on the CPU (the beams 4e-6), a sideways error of
-  reading a gathering off its middle that a spread (a number along the way) cannot carry. solar.inner, local, after the window/share fixes: Mercury e
+  +0.2988), 67.6 ms a tick (was 244). A DISC PULLING ITSELF: a million-star disc at rest pulled itself 4-5% of its
+  summed pull toward +x +y, and its film drifted out of the box by tick 4000 (galaxy.gpu.ts's own drift test, scratch
+  drift.ts: the sum of every star's pull over the sum of their sizes, FLIP=x|y mirrors the disc - a bias of the code
+  stays put, the disc's own flips). A stream thread holds MLIST groups; with some 30 stars a cell it meets far more,
+  and merged them as they came - in scan order, low y first. Now: a full list gathers its nearest pair of all, of one
+  kind first (`mshrink`, as the shine), MLIST is 12 (8: 5%; 12, 16 or 24: 0.2%; 16 and up spill and take twice as
+  long), and the stream and the shine meet their cells in an order that turns with the cell and the tick: 0.05% at
+  rest, 0.1% spinning, in no one way. CELL SOURCES' SPREAD (`spread_toward`, device `mtensor`/`mspread_toward`,
+  twelve numbers a source): a cell's bodies keep how they stand about its middle; the shine lays toward each point
+  the spread along the line less across over n + 1, and a body reading its own cell's gathering takes its own part out
+  of that too (`spread_without`). Tried and dropped: laying a gathering's middle aside by its along-across moment
+  (right for three stars, worse for a disc), and reading the bodies of the 3 x 3 cells round a body one by one with
+  the rest at its cell's gathering's middle (symmetric, but its cost grows as the square of the stars a cell: some
+  0.9 s a tick at a million). solar.inner, local, after the window/share fixes: Mercury e
   0.20566, +0.2997 +- 0.002 deg a turn (beams +0.2988), 244 ms a tick (before these speedups). Held disc, 1000 stars on a 121 box, medium over the sum of one lone body's pull: 0.84-0.92 before the window,
   zone and way-share fixes, 0.91-1.05 after, the same along diagonals and axes. Tried and dropped: reading each cell's summed arrivals by area
   between cell centres - 4x cheaper again, but it skews a 1/r^2 profile enough to add +0.08 deg a turn to Mercury's

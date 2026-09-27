@@ -3,15 +3,15 @@
   "columns": [
     "frames"
   ],
-  "rows": 3075520,
-  "frames": 70,
+  "rows": 5272320,
+  "frames": 120,
   "channels": {
     "one": 14641,
     "two": 14641,
     "gone": 14641,
     "marks": 13
   },
-  "stamp": "shells-3-1+2/D3/slice/81/4096/20/0.00006/2/0.3/20/passing/0.5/8/241/2/70/shares",
-  "recorded": "2026-09-19T10:30:09.172Z",
-  "about": "two bodies flying past each other at half of c-bar, opposite ways: the record each leaves trails behind where it was, since its rays left it one light-time ago, and what the other is pulled toward is that trail - the field lags the body by its own speed"
+  "stamp": "shells-3-3/D3/slice/81/4096/20/0.00006/16/0.3/20/passing/0.02/16/241/16/120/shares",
+  "recorded": "2026-09-27T15:26:35.856Z",
+  "about": "two bodies flying past each other, opposite ways, at about the speed they would circle at: each is pulled toward the record the other leaves, and both are flung round each other and out on new headings"
 }

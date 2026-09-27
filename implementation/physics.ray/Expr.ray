@@ -370,6 +370,16 @@ Expr := class < kind: String {
     return "e^{{{Expr.show(e.base)}}}" if k == "exp"
     return "\\binom{{{Expr.show(e.first_)}}}{{{Expr.show(e.second_)}}}" if k == "choose"
     return "\\Gamma\\paren{{{Expr.show(e.first_)}, {Expr.show(e.second_)}}}" if k == "gammaInc"
+    /* a source's choice is written as ITS rate: what it chooses over - the ways, the ticks its rule leaves it - in the subscript after its x, as the article writes it */
+    if k == "call" & e.label == "l.choose" {
+      own := (x: Expr): boolean => x.named & x.label == "\\bar{{m}}_{{x}}"
+      xs := e.base.kind == "mul" ? e.base.of : [e.base]
+      if xs.some(x => own(x)) {
+        rest := xs.filter(x => !own(x))
+        return "l.choose\\paren{{\\bar{{m}}_{{x}}}}" if rest.empty
+        return "l.choose\\paren{{\\bar{{m}}_{{x·{Expr.show(rest.length == 1 ? rest[0] : Expr.mul(rest))}}}}}"
+      }
+    }
     return "{e.label}\\paren{{{Expr.show(e.base)}}}" if k == "call"
     if k == "limit" {
       inner := e.base.kind == "add" ? "\\paren{{{Expr.show(e.base)}}}" : Expr.show(e.base)

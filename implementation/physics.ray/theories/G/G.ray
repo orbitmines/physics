@@ -116,7 +116,7 @@ G: Theory = class {
   visual "gravity.rest" () => G.pair("gravity.rest", "rest", "the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number")
   /* the same two bodies thrown past each other and bent by `turns` - at V0 0.3 c-bar, missing by IMPACT 6 apiece */
   /* the same two bodies flying past each other at HALF OF C-BAR, opposite ways, missing by PASS_GAP: the record each leaves trails behind it, and the pull the other feels points at where it WAS when the rays left - the lag of the field, seen */
-  visual "gravity.pass" () => G.pair("gravity.pass", "passing", "two bodies flying past each other at half of c-bar, opposite ways: the record each leaves trails behind where it was, since its rays left it one light-time ago, and what the other is pulled toward is that trail - the field lags the body by its own speed")
+  visual "gravity.pass" () => G.pair("gravity.pass", "passing", "two bodies flying past each other, opposite ways, at about the speed they would circle at: each is pulled toward the record the other leaves, and both are flung round each other and out on new headings")
   visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does")
 
   /*
@@ -148,7 +148,8 @@ G: Theory = class {
    */
   visual "rule.annihilation" () => G.strip("rule.annihilation")
   visual "rule.creation" () => G.strip("rule.creation")
-  visual "rule.movement" () => G.strip("rule.movement")
+  /* A RAY MOVING, A TICK AT A TIME (Strip.tell): /c on a lone ray, from one end of a line to the other */
+  visual "rule.movement" () => G.movement_film
   /* WHAT A SOURCE CHOOSES, A TICK AT A TIME (Strip.tell): /S.1 on a held source, and /S.v on one that carries a quarter of a step a tick */
   visual "rule.emission" () => G.emission_film
   visual "rule.transport" () => G.transport_film
@@ -159,12 +160,30 @@ G: Theory = class {
   /* THE SHADOW, general relativity against this model across one seam, each half off its own critical impact parameter (`gravity.shadow`) */
   visual "gravity.shadow" () => G.shadow
 
-  /* one rule, run on its seeds: /1 on a meeting, /2 on what /1 left of it, /c (settled by /4) on a lone ray in the middle of three points, either way */
+  /* one rule, run on its seeds: /1 on a meeting, /2 on what /1 left of it */
   strip (id: String): Picture => {
     ink := Ink()
     return Strip.of(id, "two rays meet on the edge between two points and annihilate, leaving one neutral point - the other folded into it, and which way it was kept (G/1)", this, ["/1"], [Strip.meeting], ink) if id == "rule.annihilation"
-    return Strip.of(id, "a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards", this, ["/2"], [(t: Theory): World => Strip.left(t, Strip.meeting, ["/1"])], ink) if id == "rule.creation"
-    Strip.of(id, "every active ray goes one step along its own exit, c-bar, into its neighbour (G/c, settled by G/4)", this, ["/c", "/4"], [(t: Theory): World => Strip.heading(t, 1), (t: Theory): World => Strip.heading(t, 0 - 1)], ink)
+    Strip.of(id, "a point nothing stands on is handed back a point of space - the one it held - and every exit it has is lit (G/2): annihilation, run backwards", this, ["/2"], [(t: Theory): World => Strip.left(t, Strip.meeting, ["/1"])], ink)
+  }
+
+  /*
+   * MOVEMENT, A TICK AT A TIME: one ray on the first point of a line, heading up it, and only /c (settled by /4) run -
+   * it steps into its neighbour every tick, c-bar, from one end of the line to the other. Nothing is said and there is
+   * no source: the ray moving is all there is to see. Films the way `rule.transport` does, so the two read alike
+   */
+  movement_film (): Picture => {
+    ink := Ink()
+    ink.every = true
+    w := Strip.line(this, 10)
+    Strip.light(w, 0, 1)
+    lanes := [Strip.lane(w, ink)]
+    Array.range(8).for(t => {
+      Strip.begin(w)
+      Strip.run(w, ["/c", "/4"])
+      lanes.push(Strip.lane(w, ink))
+    })
+    Strip.tell("rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes, ink)
   }
 
   /*
@@ -331,15 +350,20 @@ G: Theory = class {
     /* realistic bodies, as in `solar`: the Sun's ways and the rate it announces at - so much vacuum between its pulses that what one lit is carried off and met before the next */
     WAYS := 4096
     MX := 0.00006
-    /* the passing pair: half of c-bar each, opposite ways, and how far apart their lines lie */
-    V_PASS := 0.5
-    PASS_GAP := 8
+    /*
+     * the passing pair: a fiftieth of c-bar each, opposite ways, on lines sixteen c-bar apart. About the speed the pull
+     * circles them at there (Aggregate.circling, 0.02 at 12 to 20), so each flings the other round by some sixty degrees;
+     * at half of c-bar the pull bent neither path visibly. Wide enough apart that they never come inside the eight c-bar
+     * where the record around a body pushes rather than pulls
+     */
+    V_PASS := 0.02
+    PASS_GAP := 16
     /* a frame spans the medium's period for the held pair; for the orbit, enough that the film's frames span about one turn at the solved speed */
-    /* a frame spans the medium's own period, two ticks, so the parity divides out; the passing pair crosses the view in about seventy ticks at half of c-bar, so the film is the crossing and what trails it */
-    TICKS := how == "thrown" ? 64 : 2
+    /* a frame spans the medium's own period, two ticks, so the parity divides out - sixteen for the passing pair, which takes some 1700 ticks to meet, swing round and leave the view */
+    TICKS := how == "thrown" ? 64 : (how == "passing" ? 16 : 2)
     V0 := 0.3
     /* the rest probe is the solve alone: a couple of frames of film, so it answers in about a minute */
-    RUN := how == "rest" ? 2 : (how == "passing" ? 70 : 150)
+    RUN := how == "rest" ? 2 : (how == "passing" ? 120 : 150)
     K := 3
     N := 2 * (VIEW + MARGIN) * K + 1
     coarse := 2 * (VIEW + MARGIN) + 1
@@ -414,7 +438,7 @@ G: Theory = class {
             }
           }
           if how == "passing" {
-            /* each starts at the view's edge on its own line, PASS_GAP apart, and flies along x at half of c-bar toward and past the other - momentum is in c-bar a tick, times the mass */
+            /* each starts at the view's edge on its own line, PASS_GAP apart, and flies along x at V_PASS toward and past the other - momentum is in c-bar a tick, times the mass */
             b_.x = 0 - sign * (VIEW - 2)
             b_.y = sign * PASS_GAP / 2
             b_.moves = true

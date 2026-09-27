@@ -687,25 +687,6 @@ Panel := class {
         s.stroke
       })
     })
-    /* and the same in numbers, along the bottom: how near and how far each body came of the heavy one, and what the two of them make of its eccentricity */
-    s.font("11px ui-monospace, monospace")
-    s.text_align("left")
-    s.text_baseline("bottom")
-    at := 8
-    Array.range(p.bodies).for(k => {
-      if trail[k].length > 4 & goes[k] {
-        e := (fars[k] - nears[k]) / (fars[k] + nears[k])
-        near_text := Fmt.fixed(nears[k], 2)
-        far_text := Fmt.fixed(fars[k], 2)
-        e_text := Fmt.fixed(e, 3)
-        unit := at < 9 ? " c-bar" : ""
-        /* how far its nearest point walks each turn is not a thing a frame can see - a turn is placed off the ticks themselves, and the recorder says it (record.gpu `watching`) */
-        line := "{near_text}-{far_text}{unit}, e {e_text}"
-        s.fill_style(p.ring == None ? Panel.SEEN : p.ring(k))
-        s.fill_text(line, at, H - 2)
-        at = at + s.measure(line) + 16
-      }
-    })
   }
 
   /* a panel as a visual: its recording and its painter */
