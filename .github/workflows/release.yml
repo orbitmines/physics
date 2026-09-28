@@ -48,14 +48,17 @@ jobs:
     env:
       PUBLISH: ${{ needs.version.outputs.publish }}
       TESTING: ${{ needs.version.outputs.testing }}
-      HAS_CREDENTIALS: ${{ secrets.NPM_TOKEN != '' }}
+      HAS_TOKEN: ${{ secrets.NPM_TOKEN != '' }}
+      TRUSTED: ${{ vars.NPM_TRUSTED_PUBLISHING == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: pack
+      - name: npm new enough to publish as a trusted publisher (11.5.1 or later)
+        run: npm install -g npm@latest
+      - name: pack (the visuals come along - scripts/visuals.mjs, the package's prepack)
         run: mkdir -p out && cd languages/physics.ts && npm pack --pack-destination ../../out
       - uses: actions/upload-artifact@v4
         with:
@@ -63,10 +66,10 @@ jobs:
           path: out/
           if-no-files-found: error
       - name: publish to npm (@orbitmines/physics)
-        if: env.PUBLISH == 'true' && env.HAS_CREDENTIALS == 'true'
+        if: env.PUBLISH == 'true' && (env.TRUSTED == 'true' || env.HAS_TOKEN == 'true')
         run: cd languages/physics.ts && npm publish --access public --provenance --tag ${{ env.TESTING == 'true' && 'test' || 'latest' }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env.TRUSTED != 'true' && secrets.NPM_TOKEN || '' }}
   python:
     needs: version
     runs-on: ubuntu-latest
@@ -104,10 +107,14 @@ jobs:
   ruby:
     needs: version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       PUBLISH: ${{ needs.version.outputs.publish }}
       TESTING: ${{ needs.version.outputs.testing }}
-      HAS_CREDENTIALS: ${{ secrets.RUBYGEMS_API_KEY != '' }}
+      HAS_KEY: ${{ secrets.RUBYGEMS_API_KEY != '' }}
+      TRUSTED: ${{ vars.RUBYGEMS_TRUSTED_PUBLISHING == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -120,11 +127,14 @@ jobs:
           name: ruby
           path: out/
           if-no-files-found: error
+      - name: sign in to RubyGems as a trusted publisher (no one-time code; a key for this run alone)
+        if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
+        uses: rubygems/configure-rubygems-credentials@v1.0.0
       - name: publish to RubyGems (orbitmines-physics)
-        if: env.PUBLISH == 'true' && env.HAS_CREDENTIALS == 'true'
+        if: env.PUBLISH == 'true' && (env.TRUSTED == 'true' || env.HAS_KEY == 'true')
         run: gem push out/*.gem
         env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+          GEM_HOST_API_KEY: ${{ env.TRUSTED != 'true' && secrets.RUBYGEMS_API_KEY || '' }}
   java:
     needs: version
     runs-on: ubuntu-latest
@@ -296,7 +306,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: build
-        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.1.tar.gz -C languages physics.swift --exclude .build
+        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.1.tar.gz --exclude .build -C languages physics.swift
       - uses: actions/upload-artifact@v4
         with:
           name: swift

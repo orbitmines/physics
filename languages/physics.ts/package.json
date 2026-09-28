@@ -6,8 +6,8 @@
   "repository": "https://github.com/orbitmines/physics",
   "type": "module",
   "main": "./index.ts",
-  "exports": { ".": "./index.ts", "./theorems": "./theorems.ts", "./notation": "./notation.ts" },
-  "files": ["index.ts", "theorems.ts", "notation.ts", "src"],
-  "scripts": { "typecheck": "tsc --noEmit" },
+  "exports": { ".": "./index.ts", "./theorems": "./theorems.ts", "./notation": "./notation.ts", "./visuals/*": "./visuals/*" },
+  "files": ["index.ts", "theorems.ts", "notation.ts", "src", "visuals"],
+  "scripts": { "typecheck": "tsc --noEmit", "prepack": "node scripts/visuals.mjs" },
   "devDependencies": { "typescript": "^6.0.3", "tsx": "^4.21.0", "@types/node": "^25.6.0" }
 }
