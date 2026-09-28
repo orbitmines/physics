@@ -134,7 +134,7 @@ jobs:
           if-no-files-found: error
       - name: sign in to RubyGems as a trusted publisher (no one-time code; a key for this run alone)
         if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
-        uses: rubygems/configure-rubygems-credentials@v2
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
       - name: publish to RubyGems (orbitmines-physics), as a trusted publisher - with the key the step above set
         if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
         run: if curl -fsS -o /dev/null "https://rubygems.org/api/v2/rubygems/orbitmines-physics/versions/0.0.1.test.2.json"; then echo "orbitmines-physics 0.0.1.test.2 is on RubyGems already"; else gem push out/*.gem; fi
