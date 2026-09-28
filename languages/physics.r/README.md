@@ -15,17 +15,20 @@ Or from this repository: `remotes::install_github("orbitmines/physics", subdir =
 
 ## Using it
 
-R copies a value when it is changed, so a Ray object is an environment and its members are reached by name: `get(x, "name")`, `call(x, "method", args...)`, `set(x, "name", value)`, `make(Class, field = value, ...)`. Numbers are doubles, a list is `lst(...)` (Ray counts from 0: `elem(xs, 0)` is the first), `NULL` is None. Attaching the package masks `base::get` and `base::call`; both still do what base R does when called the way base R calls them.
+A Ray object is an R reference object - an environment - and its members are reached with `$`: `Hole$new(x = 15, y = 15)` makes one, `medium$add(h)` calls a method, `medium$local_rays <- TRUE` sets a field. A member without parameters reads like a field and runs when it is read (`medium$seed`, `medium$tick`), as a getter does; statics hang off the class (`Medium$GATHER`, `Expr$simplify(e)`). Numbers are doubles, `NULL` is None, and a Ray list is shared by whoever holds it, so it is `lst(...)`, read with `elem(xs, 0)` (Ray counts from 0) and `items(xs)` (its R vector or list).
 
 ```r
 library(orbitmines)
 
 # a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it
-medium <- call(G, "medium", 31, 96, 3, 8, 1)
-set(medium, "local_rays", TRUE)
-call(medium, "add", make(Hole, x = 15, y = 15, mx = 0.3, ways = 1))
-get(medium, "seed")
-for (t in 1:5) get(medium, "tick")
+medium <- G$medium(31, 96, 3, 8, 1)
+medium$local_rays <- TRUE
+medium$add(Hole$new(x = 15, y = 15, mx = 0.3, ways = 1))
+medium$seed
+for (t in 1:5) medium$tick
+
+# a theory's rules are data
+G$rules
 ```
 
 ## A simulation of sources: the plan
@@ -33,9 +36,9 @@ for (t in 1:5) get(medium, "tick")
 A run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.
 
 ```r
-plan <- make(Plan, sources = 1e9, side = 241)
-set(get(plan, "budget"), "compact", TRUE)   # twelve bytes a source
-cat(call(plan, "report", 16 * 2^30, 2^31), "\n")
+plan <- Plan$new(sources = 1e9, side = 241)
+plan$budget$compact <- TRUE   # twelve bytes a source
+cat(plan$report(16 * 2^30, 2^31), "\n")
 ```
 
 ## Theorems

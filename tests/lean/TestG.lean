@@ -2,2007 +2,1979 @@
 -- lake build && .lake/build/bin/testg [filter]
 import OrbitMines.Physics
 set_option linter.unusedVariables false
+set_option autoImplicit false
 set_option maxHeartbeats 0
 set_option maxRecDepth 100000
-open Rt
+open OrbitMines.Physics
 
 initialize testsRef : IO.Ref (Array (String × IO String)) ← IO.mkRef #[]
 def addTest (name : String) (body : IO String) : IO Unit := testsRef.modify (·.push (name, body))
 
 initialize addTest "tests/coincidence.ray:13 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm (← K "Fmt") "finite" #[(← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])])]) then "pass" else "failed: " ++ "(← cm (← K \"Fmt\") \"finite\" #[(← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])])])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! (← cls% Fmt) "finite" ((← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))))) then "pass" else "failed: " ++ "(← call! (← cls% Fmt) \"finite\" ((← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float)))))))"))
 
 initialize addTest "tests/coincidence.ray:14 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])]) (Value.num 0))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/coincidence.ray:16 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 6)])]) (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 6)])]) (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])]))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((6 : Float))))) (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((6 : Float))))) (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))))"))
 
 initialize addTest "tests/coincidence.ray:17 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])]) (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 18)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])]) (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 18)])]))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((18 : Float))))))"))
 
 initialize addTest "tests/coincidence.ray:19 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← mulV (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])]) (← m_sqrt ((← subV (Value.num 1) 0.315)))) 0.155) then "pass" else "failed: " ++ "(← gtV (← mulV (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])]) (← m_sqrt ((← subV (Value.num 1) 0.315)))) 0.155)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155) then "pass" else "failed: " ++ "(← ωgt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155)"))
 
 initialize addTest "tests/coincidence.ray:20 on coincidence" (do
-  let it : Value := (← mk "Model" #[(Value.kw "theory" (← K "G"))])
+  let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm (← gm it "theory") "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← mulV (← cm it "value_of" #[(Value.str ("\\frac{a_{0}}{cH}")), (← cm it "settled" #[(Value.num 8)])]) (← m_sqrt ((← subV (Value.num 1) 0.315)))) 0.183) then "pass" else "failed: " ++ "(← ltV (← mulV (← cm it \"value_of\" #[(Value.str (\"\\\\frac{a_{0}}{cH}\")), (← cm it \"settled\" #[(Value.num 8)])]) (← m_sqrt ((← subV (Value.num 1) 0.315)))) 0.183)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183) then "pass" else "failed: " ++ "(← ωlt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183)"))
 
 initialize addTest "tests/field.ray:10 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "n") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"n\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "n") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"n\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:10 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "n") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"n\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "n") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"n\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:10 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "n") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"n\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "n") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"n\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:10 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "n") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"n\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "n") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"n\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:11 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "mean") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"mean\") (Value.num 0))"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "mean") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"mean\") (0 : Float))"))
 
 initialize addTest "tests/field.ray:11 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "mean") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"mean\") (Value.num 0))"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "mean") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"mean\") (0 : Float))"))
 
 initialize addTest "tests/field.ray:11 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "mean") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"mean\") (Value.num 0))"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "mean") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"mean\") (0 : Float))"))
 
 initialize addTest "tests/field.ray:11 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "mean") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"mean\") (Value.num 0))"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "mean") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"mean\") (0 : Float))"))
 
 initialize addTest "tests/field.ray:12 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:12 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:12 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:12 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 5)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (5 : Float)) do
     guard := guard + 1
-    if guard > 7 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (Value.num 0))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (Value.num 0))\n  return Value.null))])"))
+    if guard > 7 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/field.ray:17 on vacuum" (do
-  let it : Value := (← mk "Rates" #[(Value.kw "nu" (Value.num 1)), (Value.kw "sigma" (Value.num 1)), (Value.kw "F" 0.5), (Value.kw "DEG" (Value.num 8)), (Value.kw "D" (Value.num 2))])
+  let it := (← new! Rates («nu» := (1 : Float), «sigma» := (1 : Float), «F» := 0.5, «DEG» := (8 : Float), «D» := (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "nu") (Value.num 1)) do
+  while !truthy (← ωeqv (← ωget it "nu") (1 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs ((← subV (← cm (← K "Solve") "settles" #[it]) 0.7320508075688772))) 0.000001) then "pass" else "failed: " ++ "(← ltV (← m_abs ((← subV (← cm (← K \"Solve\") \"settles\" #[it]) 0.7320508075688772))) 0.000001)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! ((← ωsub (← call! (← cls% Solve) "settles" (it)) 0.7320508075688772)) rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! ((← ωsub (← call! (← cls% Solve) \"settles\" (it)) 0.7320508075688772)) rabs ()) 0.000001)"))
 
 initialize addTest "tests/field.ray:18 on vacuum" (do
-  let it : Value := (← mk "Rates" #[(Value.kw "nu" (Value.num 1)), (Value.kw "sigma" (Value.num 1)), (Value.kw "F" 0.5), (Value.kw "DEG" (Value.num 8)), (Value.kw "D" (Value.num 2))])
+  let it := (← new! Rates («nu» := (1 : Float), «sigma» := (1 : Float), «F» := 0.5, «DEG» := (8 : Float), «D» := (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "nu") (Value.num 1)) do
+  while !truthy (← ωeqv (← ωget it "nu") (1 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm (← K "Solve") "settles" #[it]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm (← K \"Solve\") \"settles\" #[it]) (Value.num 0))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! (← cls% Solve) "settles" (it)) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! (← cls% Solve) \"settles\" (it)) (0 : Float))"))
 
 initialize addTest "tests/field.ray:19 on vacuum" (do
-  let it : Value := (← mk "Rates" #[(Value.kw "nu" (Value.num 1)), (Value.kw "sigma" (Value.num 1)), (Value.kw "F" 0.5), (Value.kw "DEG" (Value.num 8)), (Value.kw "D" (Value.num 2))])
+  let it := (← new! Rates («nu» := (1 : Float), «sigma» := (1 : Float), «F» := 0.5, «DEG» := (8 : Float), «D» := (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "nu") (Value.num 1)) do
+  while !truthy (← ωeqv (← ωget it "nu") (1 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm (← K "Solve") "settles" #[it]) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← cm (← K \"Solve\") \"settles\" #[it]) (Value.num 1))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! (← cls% Solve) "settles" (it)) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← call! (← cls% Solve) \"settles\" (it)) (1 : Float))"))
 
 initialize addTest "tests/galaxy.ray:10 on ring" (do
-  let it : Value := (← mk "Annulus" #[(Value.kw "inner" (Value.num 4)), (Value.kw "outer" (Value.num 6)), (Value.kw "thick" 0.2)])
+  let it := (← new! Annulus («inner» := (4 : Float), «outer» := (6 : Float), «thick» := 0.2))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "outer") (Value.num 6)) do
+  while !truthy (← ωeqv (← ωget it "outer") (6 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs ((← subV (← mulV (← mulV (← cm it "pull" #[(Value.num 200), (Value.num 4), (Value.num 64)]) (Value.num 200)) (Value.num 200)) (Value.num 1)))) 0.002) then "pass" else "failed: " ++ "(← ltV (← m_abs ((← subV (← mulV (← mulV (← cm it \"pull\" #[(Value.num 200), (Value.num 4), (Value.num 64)]) (Value.num 200)) (Value.num 200)) (Value.num 1)))) 0.002)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! ((← ωsub (← ωmul (← ωmul (← call! it "pull" ((200 : Float), (4 : Float), (64 : Float))) (200 : Float)) (200 : Float)) (1 : Float))) rabs ()) 0.002) then "pass" else "failed: " ++ "(← ωlt (← dot! ((← ωsub (← ωmul (← ωmul (← call! it \"pull\" ((200 : Float), (4 : Float), (64 : Float))) (200 : Float)) (200 : Float)) (1 : Float))) rabs ()) 0.002)"))
 
 initialize addTest "tests/galaxy.ray:11 on ring" (do
-  let it : Value := (← mk "Annulus" #[(Value.kw "inner" (Value.num 4)), (Value.kw "outer" (Value.num 6)), (Value.kw "thick" 0.2)])
+  let it := (← new! Annulus («inner» := (4 : Float), «outer» := (6 : Float), «thick» := 0.2))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "outer") (Value.num 6)) do
+  while !truthy (← ωeqv (← ωget it "outer") (6 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← cm it "pull" #[0.01, (Value.num 4), (Value.num 64)])) 0.001) then "pass" else "failed: " ++ "(← ltV (← m_abs (← cm it \"pull\" #[0.01, (Value.num 4), (Value.num 64)])) 0.001)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← call! it "pull" (0.01, (4 : Float), (64 : Float))) rabs ()) 0.001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← call! it \"pull\" (0.01, (4 : Float), (64 : Float))) rabs ()) 0.001)"))
 
 initialize addTest "tests/galaxy.ray:13 on ring" (do
-  let it : Value := (← mk "Annulus" #[(Value.kw "inner" (Value.num 4)), (Value.kw "outer" (Value.num 6)), (Value.kw "thick" 0.2)])
+  let it := (← new! Annulus («inner» := (4 : Float), «outer» := (6 : Float), «thick» := 0.2))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "outer") (Value.num 6)) do
+  while !truthy (← ωeqv (← ωget it "outer") (6 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← mulV (← cm it "pull" #[(Value.num 7), (Value.num 4), (Value.num 64)]) (Value.num 49)) (Value.num 1)) then "pass" else "failed: " ++ "(← gtV (← mulV (← cm it \"pull\" #[(Value.num 7), (Value.num 4), (Value.num 64)]) (Value.num 49)) (Value.num 1))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωmul (← call! it "pull" ((7 : Float), (4 : Float), (64 : Float))) (49 : Float)) (1 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωmul (← call! it \"pull\" ((7 : Float), (4 : Float), (64 : Float))) (49 : Float)) (1 : Float))"))
 
 initialize addTest "tests/galaxy.ray:14 on ring" (do
-  let it : Value := (← mk "Annulus" #[(Value.kw "inner" (Value.num 4)), (Value.kw "outer" (Value.num 6)), (Value.kw "thick" 0.2)])
+  let it := (← new! Annulus («inner» := (4 : Float), «outer» := (6 : Float), «thick» := 0.2))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "outer") (Value.num 6)) do
+  while !truthy (← ωeqv (← ωget it "outer") (6 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm it "pull" #[(Value.num 3), (Value.num 4), (Value.num 64)]) (Value.num 0)) then "pass" else "failed: " ++ "(← ltV (← cm it \"pull\" #[(Value.num 3), (Value.num 4), (Value.num 64)]) (Value.num 0))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "pull" ((3 : Float), (4 : Float), (64 : Float))) (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← call! it \"pull\" ((3 : Float), (4 : Float), (64 : Float))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:11 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "rho_inf") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"rho_inf\") (Value.num 0))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "rho_inf") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"rho_inf\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:12 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm it "rho_inf") (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← gm it \"rho_inf\") (Value.num 1))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget it "rho_inf") (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget it \"rho_inf\") (1 : Float))"))
 
 initialize addTest "tests/medium.ray:13 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm (← K "Fmt") "finite" #[(← gm it "nf_inf")]) then "pass" else "failed: " ++ "(← cm (← K \"Fmt\") \"finite\" #[(← gm it \"nf_inf\")])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! (← cls% Fmt) "finite" ((← ωget it "nf_inf"))) then "pass" else "failed: " ++ "(← call! (← cls% Fmt) \"finite\" ((← ωget it \"nf_inf\")))"))
 
 initialize addTest "tests/medium.ray:14 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← neV (← cm it "step" #[(Value.str ("record"))]) Value.null) then "pass" else "failed: " ++ "(← neV (← cm it \"step\" #[(Value.str (\"record\"))]) Value.null)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (!ωisNull (← call! it "step" (("record" : String)))) then "pass" else "failed: " ++ "(!ωisNull (← call! it \"step\" ((\"record\" : String))))"))
 
 initialize addTest "tests/medium.ray:15 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← neV (← cm it "step" #[(Value.str ("line"))]) Value.null) then "pass" else "failed: " ++ "(← neV (← cm it \"step\" #[(Value.str (\"line\"))]) Value.null)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (!ωisNull (← call! it "step" (("line" : String)))) then "pass" else "failed: " ++ "(!ωisNull (← call! it \"step\" ((\"line\" : String))))"))
 
 initialize addTest "tests/medium.ray:16 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← lst #[(Value.num 1), (Value.num 2), (Value.num 4), (Value.num 8), (Value.num 16), (Value.num 32)]) #[(mkFn (fun a2 => do
-  let R_1 ← IO.mkRef (arg a2 0)
-  if true then return (← cm (← K "Fmt") "finite" #[(← cm it "pull" #[(Value.num 1), (← R_1.get)])])
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← lst #[(Value.num 1), (Value.num 2), (Value.num 4), (Value.num 8), (Value.num 16), (Value.num 32)]) #[(mkFn (fun a2 => do\n  let R_1 ← IO.mkRef (arg a2 0)\n  if true then return (← cm (← K \"Fmt\") \"finite\" #[(← cm it \"pull\" #[(Value.num 1), (← R_1.get)])])\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωlst #[(1 : Float), (2 : Float), (4 : Float), (8 : Float), (16 : Float), (32 : Float)]) revery ((fn! [R_1] do
+  if true then return (← call! (← cls% Fmt) "finite" ((← call! it "pull" ((1 : Float), (← R_1.get)))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωlst #[(1 : Float), (2 : Float), (4 : Float), (8 : Float), (16 : Float), (32 : Float)]) revery ((fn! [R_1] do\n  if true then return (← call! (← cls% Fmt) \"finite\" ((← call! it \"pull\" ((1 : Float), (← R_1.get)))))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:18 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm (← K "Fmt") "finite" #[(← cm it "circling" #[(Value.num 1), (Value.num 12), (Value.num 6)])]) then "pass" else "failed: " ++ "(← cm (← K \"Fmt\") \"finite\" #[(← cm it \"circling\" #[(Value.num 1), (Value.num 12), (Value.num 6)])])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! (← cls% Fmt) "finite" ((← call! it "circling" ((1 : Float), (12 : Float), (6 : Float))))) then "pass" else "failed: " ++ "(← call! (← cls% Fmt) \"finite\" ((← call! it \"circling\" ((1 : Float), (12 : Float), (6 : Float)))))"))
 
 initialize addTest "tests/medium.ray:19 on law" (do
-  let it : Value := (← cm (← K "Aggregate") "of" #[(← K "G")])
+  let it := (← call! (← cls% Aggregate) "of" ((← cls% G)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "DEG") (Value.num 8)) do
+  while !truthy (← ωeqv (← ωget it "DEG") (8 : Float)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm it "circling" #[(Value.num 1), (Value.num 12), (Value.num 6)]) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← cm it \"circling\" #[(Value.num 1), (Value.num 12), (Value.num 6)]) (Value.num 1))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "circling" ((1 : Float), (12 : Float), (6 : Float))) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← call! it \"circling\" ((1 : Float), (12 : Float), (6 : Float))) (1 : Float))"))
 
 initialize addTest "tests/medium.ray:27 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:27 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:27 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:28 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:28 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:28 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 7)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 7))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (7 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (7 : Float))"))
 
 initialize addTest "tests/medium.ray:29 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:29 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:29 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:31 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "arrived" #[(Value.num 1), (← cm it "at" #[(Value.num 10), (Value.num 7)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"arrived\" #[(Value.num 1), (← cm it \"at\" #[(Value.num 10), (Value.num 7)])]) (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "arrived" ((1 : Float), (← call! it "at" ((10 : Float), (7 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"arrived\" ((1 : Float), (← call! it \"at\" ((10 : Float), (7 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:31 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "arrived" #[(Value.num 1), (← cm it "at" #[(Value.num 10), (Value.num 7)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"arrived\" #[(Value.num 1), (← cm it \"at\" #[(Value.num 10), (Value.num 7)])]) (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "arrived" ((1 : Float), (← call! it "at" ((10 : Float), (7 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"arrived\" ((1 : Float), (← call! it \"at\" ((10 : Float), (7 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:31 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "arrived" #[(Value.num 1), (← cm it "at" #[(Value.num 10), (Value.num 7)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"arrived\" #[(Value.num 1), (← cm it \"at\" #[(Value.num 10), (Value.num 7)])]) (Value.num 0))"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "arrived" ((1 : Float), (← call! it "at" ((10 : Float), (7 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"arrived\" ((1 : Float), (← call! it \"at\" ((10 : Float), (7 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:32 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (← gm it "rho_inf"))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (← gm it \"rho_inf\"))\n  return Value.null))])"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:32 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (← gm it "rho_inf"))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (← gm it \"rho_inf\"))\n  return Value.null))])"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:32 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "N") (Value.num 16)))) (do pure (← eqV (← gm it "ticks") (Value.num 12)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 14 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "rho") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← v_1.get) (← gm it "rho_inf"))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"rho\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← v_1.get) (← gm it \"rho_inf\"))\n  return Value.null))])"))
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
+  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:40 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:40 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:40 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:41 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:41 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:41 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "px_now") (Value.num 0)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"px_now\") (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:42 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) 0.000001) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) 0.000001)"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:42 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) 0.000001) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) 0.000001)"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:42 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) 0.000001) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) 0.000001)"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:43 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 6)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 6))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
 initialize addTest "tests/medium.ray:43 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 6)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 6))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
 initialize addTest "tests/medium.ray:43 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 6)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 6))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
 initialize addTest "tests/medium.ray:44 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 42)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 42))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
 initialize addTest "tests/medium.ray:44 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 42)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 42))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
 initialize addTest "tests/medium.ray:44 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 42)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 42))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
 initialize addTest "tests/medium.ray:46 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 6), (Value.num 24)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 6), (Value.num 24)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
 initialize addTest "tests/medium.ray:46 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 6), (Value.num 24)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 6), (Value.num 24)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
 initialize addTest "tests/medium.ray:46 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 6), (Value.num 24)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 6), (Value.num 24)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
 initialize addTest "tests/medium.ray:47 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "crossed" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"crossed\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]) (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:47 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "crossed" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"crossed\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]) (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:47 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "crossed" #[(← cm it "at" #[(Value.num 24), (Value.num 24)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"crossed\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 24)])]) (Value.num 0))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:61 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:61 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:61 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])]) (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]) (Value.num 0))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:64 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it "nf_inf") (Value.num 100))) then "pass" else "failed: " ++ "(← ltV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it \"nf_inf\") (Value.num 100)))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
 
 initialize addTest "tests/medium.ray:64 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it "nf_inf") (Value.num 100))) then "pass" else "failed: " ++ "(← ltV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it \"nf_inf\") (Value.num 100)))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
 
 initialize addTest "tests/medium.ray:64 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it "nf_inf") (Value.num 100))) then "pass" else "failed: " ++ "(← ltV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← divV (← gm it \"nf_inf\") (Value.num 100)))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
 
 initialize addTest "tests/medium.ray:65 on alone_medium" (do
-  let it : Value := (← cm (← cm (← K "G") "medium" #[(Value.num 16), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "thrown" #[(Value.num 7), (Value.num 7), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
 
 initialize addTest "tests/medium.ray:65 on pair_medium" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "medium" #[(Value.num 49), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 3)]) "thrown" #[(Value.num 6), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 42), (Value.num 24), (Value.num 1), (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
 
 initialize addTest "tests/medium.ray:65 on standing" (do
-  let it : Value := (← cm (← gm (← cm (← K "G") "medium" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 18), (Value.num 2)]) "under_vacuum") "thrown" #[(Value.num 18), (Value.num 18), 0.01, (Value.num 100), (Value.num 0), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← gm it "vacuum"))) (do pure (← eqV (← gm it "ticks") (Value.num 40)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← cm it "record_above" #[(← cm it "at" #[(Value.num 24), (Value.num 18)])]) (← cm it "record_above" #[(← cm it "at" #[(Value.num 30), (Value.num 18)])])) then "pass" else "failed: " ++ "(← gtV (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 24), (Value.num 18)])]) (← cm it \"record_above\" #[(← cm it \"at\" #[(Value.num 30), (Value.num 18)])]))"))
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
 
 initialize addTest "tests/motion.ray:13 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 400)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 400))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (400 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (400 : Float))"))
 
 initialize addTest "tests/motion.ray:13 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 400)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 400))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (400 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (400 : Float))"))
 
 initialize addTest "tests/motion.ray:13 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 400)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 400))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (400 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (400 : Float))"))
 
 initialize addTest "tests/motion.ray:13 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 400)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 400))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (400 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (400 : Float))"))
 
 initialize addTest "tests/motion.ray:14 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 440)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 440))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (440 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (440 : Float))"))
 
 initialize addTest "tests/motion.ray:14 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 440)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 440))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (440 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (440 : Float))"))
 
 initialize addTest "tests/motion.ray:14 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 440)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 440))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (440 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (440 : Float))"))
 
 initialize addTest "tests/motion.ray:14 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 440)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 440))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (440 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (440 : Float))"))
 
 initialize addTest "tests/motion.ray:15 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) (Value.num 1))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) (1 : Float))"))
 
 initialize addTest "tests/motion.ray:15 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) (Value.num 1))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) (1 : Float))"))
 
 initialize addTest "tests/motion.ray:15 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) (Value.num 1))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) (1 : Float))"))
 
 initialize addTest "tests/motion.ray:15 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← m_abs (← gm (← elemv (← gm it "holes") (Value.num 0)) "py_now")) (Value.num 1)) then "pass" else "failed: " ++ "(← ltV (← m_abs (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"py_now\")) (Value.num 1))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) (1 : Float)) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) (1 : Float))"))
 
 initialize addTest "tests/motion.ray:16 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 12)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 12))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (12 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (12 : Float))"))
 
 initialize addTest "tests/motion.ray:16 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 12)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 12))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (12 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (12 : Float))"))
 
 initialize addTest "tests/motion.ray:16 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 12)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 12))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (12 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (12 : Float))"))
 
 initialize addTest "tests/motion.ray:16 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 12)) then "pass" else "failed: " ++ "(← eqV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 12))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (12 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (12 : Float))"))
 
 initialize addTest "tests/motion.ray:17 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 15)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 15))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (15 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (15 : Float))"))
 
 initialize addTest "tests/motion.ray:17 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 15)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 15))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (15 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (15 : Float))"))
 
 initialize addTest "tests/motion.ray:17 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 15)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 15))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (15 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (15 : Float))"))
 
 initialize addTest "tests/motion.ray:17 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 1)) (do pure (← eqV (← gm it "ticks") (Value.num 20)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "ticks") (20 : Float)))) do
     guard := guard + 1
-    if guard > 22 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "x") (Value.num 15)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\") (Value.num 15))"))
+    if guard > 22 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (15 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (15 : Float))"))
 
 initialize addTest "tests/motion.ray:25 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 18)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 18))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (18 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (18 : Float))"))
 
 initialize addTest "tests/motion.ray:25 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 18)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 18))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (18 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (18 : Float))"))
 
 initialize addTest "tests/motion.ray:25 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 18)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 18))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (18 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (18 : Float))"))
 
 initialize addTest "tests/motion.ray:25 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm (← elemv (← gm it "holes") (Value.num 0)) "y") (Value.num 18)) then "pass" else "failed: " ++ "(← gtV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\") (Value.num 18))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y") (18 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\") (18 : Float))"))
 
 initialize addTest "tests/motion.ray:26 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 24)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 24))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (24 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (24 : Float))"))
 
 initialize addTest "tests/motion.ray:26 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 24)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 24))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (24 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (24 : Float))"))
 
 initialize addTest "tests/motion.ray:26 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 24)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 24))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (24 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (24 : Float))"))
 
 initialize addTest "tests/motion.ray:26 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 24)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 24))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (24 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (24 : Float))"))
 
 initialize addTest "tests/motion.ray:27 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 600)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 600))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (600 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (600 : Float))"))
 
 initialize addTest "tests/motion.ray:27 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 600)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 600))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (600 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (600 : Float))"))
 
 initialize addTest "tests/motion.ray:27 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 600)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 600))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (600 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (600 : Float))"))
 
 initialize addTest "tests/motion.ray:27 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 600)) then "pass" else "failed: " ++ "(← geV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 600))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (600 : Float)) then "pass" else "failed: " ++ "(← ωge (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (600 : Float))"))
 
 initialize addTest "tests/motion.ray:28 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 660)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 660))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (660 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (660 : Float))"))
 
 initialize addTest "tests/motion.ray:28 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 660)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 660))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (660 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (660 : Float))"))
 
 initialize addTest "tests/motion.ray:28 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 660)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 660))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (660 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (660 : Float))"))
 
 initialize addTest "tests/motion.ray:28 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") (Value.num 1)))) (do pure (← eqV (← gm it "ticks") (Value.num 24)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") (1 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← ltV (← gm (← elemv (← gm it "holes") (Value.num 0)) "px_now") (Value.num 660)) then "pass" else "failed: " ++ "(← ltV (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"px_now\") (Value.num 660))"))
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (660 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (660 : Float))"))
 
 initialize addTest "tests/motion.ray:36 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (← gm (← elemv (← gm it "holes") (Value.num 0)) "x"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (← gm (← elemv (← gm it "holes") (Value.num 0)) "y"))) (Value.num 2))))) (Value.num 18)) then "pass" else "failed: " ++ "(← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\"))) (Value.num 2))))) (Value.num 18))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y"))) (2 : Float)))) rsqrt ()) (18 : Float)) then "pass" else "failed: " ++ "(← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\"))) (2 : Float)))) rsqrt ()) (18 : Float))"))
 
 initialize addTest "tests/motion.ray:36 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (← gm (← elemv (← gm it "holes") (Value.num 0)) "x"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (← gm (← elemv (← gm it "holes") (Value.num 0)) "y"))) (Value.num 2))))) (Value.num 18)) then "pass" else "failed: " ++ "(← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\"))) (Value.num 2))))) (Value.num 18))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y"))) (2 : Float)))) rsqrt ()) (18 : Float)) then "pass" else "failed: " ++ "(← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\"))) (2 : Float)))) rsqrt ()) (18 : Float))"))
 
 initialize addTest "tests/motion.ray:36 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (← gm (← elemv (← gm it "holes") (Value.num 0)) "x"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (← gm (← elemv (← gm it "holes") (Value.num 0)) "y"))) (Value.num 2))))) (Value.num 18)) then "pass" else "failed: " ++ "(← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\"))) (Value.num 2))))) (Value.num 18))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y"))) (2 : Float)))) rsqrt ()) (18 : Float)) then "pass" else "failed: " ++ "(← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\"))) (2 : Float)))) rsqrt ()) (18 : Float))"))
 
 initialize addTest "tests/motion.ray:36 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (← gm (← elemv (← gm it "holes") (Value.num 0)) "x"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (← gm (← elemv (← gm it "holes") (Value.num 0)) "y"))) (Value.num 2))))) (Value.num 18)) then "pass" else "failed: " ++ "(← leV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"x\"))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (← gm (← elemv (← gm it \"holes\") (Value.num 0)) \"y\"))) (Value.num 2))))) (Value.num 18))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "y"))) (2 : Float)))) rsqrt ()) (18 : Float)) then "pass" else "failed: " ++ "(← ωle (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\"))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"y\"))) (2 : Float)))) rsqrt ()) (18 : Float))"))
 
 initialize addTest "tests/motion.ray:37 on line" (do
-  let it : Value := (← cm (← K "G") "field" #[(Value.num 6), (Value.num 8), (Value.num 1), (Value.num 1)])
+  let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 18))) (Value.num 2))))) (Value.num 6)) then "pass" else "failed: " ++ "(← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 18))) (Value.num 2))))) (Value.num 6))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float)) then "pass" else "failed: " ++ "(← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float))"))
 
 initialize addTest "tests/motion.ray:37 on alone" (do
-  let it : Value := (← cm (← cm (← K "G") "field" #[(Value.num 25), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 2)]) "thrown" #[(Value.num 6), (Value.num 12), (Value.num 1), (Value.num 2000), (Value.num 400), (Value.num 0), (Value.num 1)])
+  let it := (← call! (← call! (← cls% G) "field" ((25 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (2 : Float))) "thrown" ((6 : Float), (12 : Float), (1 : Float), (2000 : Float), (400 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 18))) (Value.num 2))))) (Value.num 6)) then "pass" else "failed: " ++ "(← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 18))) (Value.num 2))))) (Value.num 6))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float)) then "pass" else "failed: " ++ "(← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float))"))
 
 initialize addTest "tests/motion.ray:37 on pair" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 43), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 9), (Value.num 18), (Value.num 1), (Value.num 2000), (Value.num 600), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 33), (Value.num 24), (Value.num 1), (Value.num 2000), (← negV (Value.num 600)), (Value.num 0), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((43 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((9 : Float), (18 : Float), (1 : Float), (2000 : Float), (600 : Float), (0 : Float), (1 : Float))) "thrown" ((33 : Float), (24 : Float), (1 : Float), (2000 : Float), (← ωneg (600 : Float)), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 18))) (Value.num 2))))) (Value.num 6)) then "pass" else "failed: " ++ "(← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 18))) (Value.num 2))))) (Value.num 6))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float)) then "pass" else "failed: " ++ "(← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float))"))
 
 initialize addTest "tests/motion.ray:37 on orbit" (do
-  let it : Value := (← cm (← cm (← cm (← K "G") "field" #[(Value.num 37), (Value.num 8), (Value.num 3), (Value.num 1), (Value.num 8), (Value.num 3)]) "thrown" #[(Value.num 18), (Value.num 18), 0.25, (Value.num 4096), (Value.num 0), (Value.num 0), (Value.num 1)]) "thrown" #[(Value.num 27), (Value.num 18), (Value.num 1), (Value.num 64), (Value.num 0), (← negV 19.2), (Value.num 2)])
+  let it := (← call! (← call! (← call! (← cls% G) "field" ((37 : Float), (8 : Float), (3 : Float), (1 : Float), (8 : Float), (3 : Float))) "thrown" ((18 : Float), (18 : Float), 0.25, (4096 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((27 : Float), (18 : Float), (1 : Float), (64 : Float), (0 : Float), (← ωneg 19.2), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← lenOf (← gm it "holes")) (Value.num 2)) (do pure (← eqV (← gm (← elemv (← gm it "holes") (Value.num 0)) "mx") 0.25))) (do pure (← eqV (← gm it "ticks") (Value.num 60)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "mx") 0.25))) (do pure (← ωeqv (← ωget it "ticks") (60 : Float)))) do
     guard := guard + 1
-    if guard > 62 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "x") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it "holes") (Value.num 1)) "y") (Value.num 18))) (Value.num 2))))) (Value.num 6)) then "pass" else "failed: " ++ "(← geV (← m_sqrt ((← addV (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"x\") (Value.num 27))) (Value.num 2)) (← powV ((← subV (← gm (← elemv (← gm it \"holes\") (Value.num 1)) \"y\") (Value.num 18))) (Value.num 2))))) (Value.num 6))"))
+    if guard > 62 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "y") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float)) then "pass" else "failed: " ++ "(← ωge (← dot! ((← ωadd (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (27 : Float))) (2 : Float)) (← ωpow ((← ωsub (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"y\") (18 : Float))) (2 : Float)))) rsqrt ()) (6 : Float))"))
 
 initialize addTest "tests/notation.ray:8 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("\\bar{r}^{D-1}"))]) (Value.str ("<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"\\\\bar{r}^{D-1}\"))]) (Value.str (\"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("\\bar{r}^{D-1}" : String))) ("<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"\\\\bar{r}^{D-1}\" : String))) (\"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\" : String))"))
 
 initialize addTest "tests/notation.ray:9 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← lenOf (← cm (← K "Notation") "parse" #[(Value.str ("\\frac{1}{2}"))])) (Value.num 1)) then "pass" else "failed: " ++ "(← eqV (← lenOf (← cm (← K \"Notation\") \"parse\" #[(Value.str (\"\\\\frac{1}{2}\"))])) (Value.num 1))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← dot! (← call! (← cls% Notation) "parse" (("\\frac{1}{2}" : String))) rlength ()) (1 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← dot! (← call! (← cls% Notation) \"parse\" ((\"\\\\frac{1}{2}\" : String))) rlength ()) (1 : Float))"))
 
 initialize addTest "tests/notation.ray:10 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\frac{1}{2}"))])) "kind") (Value.str ("frac"))) then "pass" else "failed: " ++ "(← eqV (← gm (← m_first (← cm (← K \"Notation\") \"parse\" #[(Value.str (\"\\\\frac{1}{2}\"))])) \"kind\") (Value.str (\"frac\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← dot! (← call! (← cls% Notation) "parse" (("\\frac{1}{2}" : String))) rfirst ()) "kind") ("frac" : String)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← dot! (← call! (← cls% Notation) \"parse\" ((\"\\\\frac{1}{2}\" : String))) rfirst ()) \"kind\") (\"frac\" : String))"))
 
 initialize addTest "tests/notation.ray:11 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("\\rho_{\\infty}"))]) (Value.str ("<i>ρ</i><sub>∞</sub>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"\\\\rho_{\\\\infty}\"))]) (Value.str (\"<i>ρ</i><sub>∞</sub>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("\\rho_{\\infty}" : String))) ("<i>ρ</i><sub>∞</sub>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"\\\\rho_{\\\\infty}\" : String))) (\"<i>ρ</i><sub>∞</sub>\" : String))"))
 
 initialize addTest "tests/notation.ray:12 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("\\text{the } \\rho"))]) (Value.str ("<span class=\"tx\">the </span> <i>ρ</i>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"\\\\text{the } \\\\rho\"))]) (Value.str (\"<span class=\\\"tx\\\">the </span> <i>ρ</i>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("\\text{the } \\rho" : String))) ("<span class=\"tx\">the </span> <i>ρ</i>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"\\\\text{the } \\\\rho\" : String))) (\"<span class=\\\"tx\\\">the </span> <i>ρ</i>\" : String))"))
 
 initialize addTest "tests/notation.ray:13 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("DEG"))]) (Value.str ("<span class=\"bar\"><b class=\"k\">DEG</b></span>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"DEG\"))]) (Value.str (\"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("DEG" : String))) ("<span class=\"bar\"><b class=\"k\">DEG</b></span>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"DEG\" : String))) (\"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\" : String))"))
 
 initialize addTest "tests/notation.ray:14 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("l.shell(R)"))]) (Value.str ("<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"l.shell(R)\"))]) (Value.str (\"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("l.shell(R)" : String))) ("<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"l.shell(R)\" : String))) (\"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\" : String))"))
 
 initialize addTest "tests/notation.ray:16 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("\\sum_{r}^{R} x"))]) (Value.str ("<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"\\\\sum_{r}^{R} x\"))]) (Value.str (\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("\\sum_{r}^{R} x" : String))) ("<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"\\\\sum_{r}^{R} x\" : String))) (\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\" : String))"))
 
 initialize addTest "tests/notation.ray:17 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "html" #[(Value.str ("\\sum_{r}^{R} y"))]) (Value.str ("<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"))) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"html\" #[(Value.str (\"\\\\sum_{r}^{R} y\"))]) (Value.str (\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! (← cls% Notation) "html" (("\\sum_{r}^{R} y" : String))) ("<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! (← cls% Notation) \"html\" ((\"\\\\sum_{r}^{R} y\" : String))) (\"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\" : String))"))
 
 initialize addTest "tests/notation.ray:18 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_starts_with (← cm (← K "Notation") "html" #[(Value.str ("[[ehrhart]]"))]) #[(Value.str ("<a class=\"ref\""))]) then "pass" else "failed: " ++ "(← m_starts_with (← cm (← K \"Notation\") \"html\" #[(Value.str (\"[[ehrhart]]\"))]) #[(Value.str (\"<a class=\\\"ref\\\"\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← call! (← cls% Notation) "html" (("[[ehrhart]]" : String))) rstarts_with (("<a class=\"ref\"" : String))) then "pass" else "failed: " ++ "(← dot! (← call! (← cls% Notation) \"html\" ((\"[[ehrhart]]\" : String))) rstarts_with ((\"<a class=\\\"ref\\\"\" : String)))"))
 
 initialize addTest "tests/notation.ray:19 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← neV (← cm (← K "Notation") "banned" #[(Value.str ("a − b"))]) Value.null) then "pass" else "failed: " ++ "(← neV (← cm (← K \"Notation\") \"banned\" #[(Value.str (\"a − b\"))]) Value.null)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (!ωisNull (← call! (← cls% Notation) "banned" (("a − b" : String)))) then "pass" else "failed: " ++ "(!ωisNull (← call! (← cls% Notation) \"banned\" ((\"a − b\" : String))))"))
 
 initialize addTest "tests/notation.ray:20 on rbar" (do
-  let it : Value := (← m_first (← cm (← K "Notation") "parse" #[(Value.str ("\\bar{r}^{D-1}"))]))
+  let it := (← dot! (← call! (← cls% Notation) "parse" (("\\bar{r}^{D-1}" : String))) rfirst ())
   let mut guard := 0
-  while !truthy (← eqV (← gm it "kind") (Value.str ("scripted"))) do
+  while !truthy (← ωeqv (← ωget it "kind") ("scripted" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm (← K "Notation") "banned" #[(Value.str ("a - b"))]) Value.null) then "pass" else "failed: " ++ "(← eqV (← cm (← K \"Notation\") \"banned\" #[(Value.str (\"a - b\"))]) Value.null)"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (ωisNull (← call! (← cls% Notation) "banned" (("a - b" : String)))) then "pass" else "failed: " ++ "(ωisNull (← call! (← cls% Notation) \"banned\" ((\"a - b\" : String))))"))
 
 initialize addTest "tests/reading.ray:9 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm (← gm it "equation") "latex") (Value.str ("\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"))) then "pass" else "failed: " ++ "(← eqV (← gm (← gm it \"equation\") \"latex\") (Value.str (\"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget (← ωget it "equation") "latex") ("\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega" : String)) then "pass" else "failed: " ++ "(← ωeqv (← ωget (← ωget it \"equation\") \"latex\") (\"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\" : String))"))
 
 initialize addTest "tests/reading.ray:11 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_some (← gm (← gm it "equation") "terms") #[(mkFn (fun a2 => do
-  let t_1 ← IO.mkRef (arg a2 0)
-  if true then return (← andV (← andV (← andV (← andV (← neV (← gm (← t_1.get) "rule") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) "rule") "id") (Value.str ("/1"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "rays") "source") (Value.str ("-2"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "space") "source") (Value.str ("-1"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "folds") "source") (Value.str ("1")))))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_some (← gm (← gm it \"equation\") \"terms\") #[(mkFn (fun a2 => do\n  let t_1 ← IO.mkRef (arg a2 0)\n  if true then return (← andV (← andV (← andV (← andV (← neV (← gm (← t_1.get) \"rule\") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) \"rule\") \"id\") (Value.str (\"/1\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"rays\") \"source\") (Value.str (\"-2\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"space\") \"source\") (Value.str (\"-1\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"folds\") \"source\") (Value.str (\"1\")))))\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget (← ωget it "equation") "terms") rsome ((fn! [t_1] do
+  if true then return (← ωandV (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) "rule")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) "rule") "id") ("/1" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "rays") "source") ("-2" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "space") "source") ("-1" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "folds") "source") ("1" : String))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget (← ωget it \"equation\") \"terms\") rsome ((fn! [t_1] do\n  if true then return (← ωandV (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) \"rule\")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) \"rule\") \"id\") (\"/1\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"rays\") \"source\") (\"-2\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"space\") \"source\") (\"-1\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"folds\") \"source\") (\"1\" : String))))\n  return ωnull)))"))
 
 initialize addTest "tests/reading.ray:13 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_some (← gm (← gm it "equation") "terms") #[(mkFn (fun a2 => do
-  let t_1 ← IO.mkRef (arg a2 0)
-  if true then return (← andV (← andV (← andV (← andV (← neV (← gm (← t_1.get) "rule") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) "rule") "id") (Value.str ("/1"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "share") "source") (Value.str ("(1 - s.ρ) * s.F"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "space") "source") (Value.str ("1"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "grew") "source") (Value.str ("1")))))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_some (← gm (← gm it \"equation\") \"terms\") #[(mkFn (fun a2 => do\n  let t_1 ← IO.mkRef (arg a2 0)\n  if true then return (← andV (← andV (← andV (← andV (← neV (← gm (← t_1.get) \"rule\") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) \"rule\") \"id\") (Value.str (\"/1\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"share\") \"source\") (Value.str (\"(1 - s.ρ) * s.F\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"space\") \"source\") (Value.str (\"1\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"grew\") \"source\") (Value.str (\"1\")))))\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget (← ωget it "equation") "terms") rsome ((fn! [t_1] do
+  if true then return (← ωandV (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) "rule")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) "rule") "id") ("/1" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "share") "source") ("(1 - s.ρ) * s.F" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "space") "source") ("1" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "grew") "source") ("1" : String))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget (← ωget it \"equation\") \"terms\") rsome ((fn! [t_1] do\n  if true then return (← ωandV (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) \"rule\")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) \"rule\") \"id\") (\"/1\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"share\") \"source\") (\"(1 - s.ρ) * s.F\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"space\") \"source\") (\"1\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"grew\") \"source\") (\"1\" : String))))\n  return ωnull)))"))
 
 initialize addTest "tests/reading.ray:15 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_some (← gm (← gm it "equation") "terms") #[(mkFn (fun a2 => do
-  let t_1 ← IO.mkRef (arg a2 0)
-  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) "rule") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) "rule") "id") (Value.str ("/2"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "rays") "source") (Value.str ("s.DEG"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "share") "source") (Value.str ("1 - s.ρ")))))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_some (← gm (← gm it \"equation\") \"terms\") #[(mkFn (fun a2 => do\n  let t_1 ← IO.mkRef (arg a2 0)\n  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) \"rule\") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) \"rule\") \"id\") (Value.str (\"/2\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"rays\") \"source\") (Value.str (\"s.DEG\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"share\") \"source\") (Value.str (\"1 - s.ρ\")))))\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget (← ωget it "equation") "terms") rsome ((fn! [t_1] do
+  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) "rule")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) "rule") "id") ("/2" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "rays") "source") ("s.DEG" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "share") "source") ("1 - s.ρ" : String))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget (← ωget it \"equation\") \"terms\") rsome ((fn! [t_1] do\n  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) \"rule\")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) \"rule\") \"id\") (\"/2\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"rays\") \"source\") (\"s.DEG\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"share\") \"source\") (\"1 - s.ρ\" : String))))\n  return ωnull)))"))
 
 initialize addTest "tests/reading.ray:17 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_some (← gm (← gm it "equation") "terms") #[(mkFn (fun a2 => do
-  let t_1 ← IO.mkRef (arg a2 0)
-  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) "rule") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) "rule") "id") (Value.str ("/2"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "folds") "source") (Value.str ("-s.DEG"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "share") "source") (Value.str ("s.n_f / s.DEG * (1 - s.ρ)")))))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_some (← gm (← gm it \"equation\") \"terms\") #[(mkFn (fun a2 => do\n  let t_1 ← IO.mkRef (arg a2 0)\n  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) \"rule\") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) \"rule\") \"id\") (Value.str (\"/2\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"folds\") \"source\") (Value.str (\"-s.DEG\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"share\") \"source\") (Value.str (\"s.n_f / s.DEG * (1 - s.ρ)\")))))\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget (← ωget it "equation") "terms") rsome ((fn! [t_1] do
+  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) "rule")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) "rule") "id") ("/2" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "folds") "source") ("-s.DEG" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "share") "source") ("s.n_f / s.DEG * (1 - s.ρ)" : String))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget (← ωget it \"equation\") \"terms\") rsome ((fn! [t_1] do\n  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) \"rule\")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) \"rule\") \"id\") (\"/2\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"folds\") \"source\") (\"-s.DEG\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"share\") \"source\") (\"s.n_f / s.DEG * (1 - s.ρ)\" : String))))\n  return ωnull)))"))
 
 initialize addTest "tests/reading.ray:18 on read" (do
-  let it : Value := (← K "G")
+  let it := (← cls% G)
   let mut guard := 0
-  while !truthy (← eqV (← gm it "name") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "name") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_some (← gm (← gm it "equation") "terms") #[(mkFn (fun a2 => do
-  let t_1 ← IO.mkRef (arg a2 0)
-  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) "rule") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) "rule") "id") (Value.str ("/2"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "space") "source") (Value.str ("1"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) "doing") "share") "source") (Value.str ("s.n_f * (1 - s.ρ)")))))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_some (← gm (← gm it \"equation\") \"terms\") #[(mkFn (fun a2 => do\n  let t_1 ← IO.mkRef (arg a2 0)\n  if true then return (← andV (← andV (← andV (← neV (← gm (← t_1.get) \"rule\") Value.null) (do pure (← eqV (← gm (← gm (← t_1.get) \"rule\") \"id\") (Value.str (\"/2\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"space\") \"source\") (Value.str (\"1\"))))) (do pure (← eqV (← gm (← gm (← gm (← t_1.get) \"doing\") \"share\") \"source\") (Value.str (\"s.n_f * (1 - s.ρ)\")))))\n  return Value.null))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget (← ωget it "equation") "terms") rsome ((fn! [t_1] do
+  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) "rule")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) "rule") "id") ("/2" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "space") "source") ("1" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) "doing") "share") "source") ("s.n_f * (1 - s.ρ)" : String))))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget (← ωget it \"equation\") \"terms\") rsome ((fn! [t_1] do\n  if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← t_1.get) \"rule\")) (do pure (← ωeqv (← ωget (← ωget (← t_1.get) \"rule\") \"id\") (\"/2\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"space\") \"source\") (\"1\" : String)))) (do pure (← ωeqv (← ωget (← ωget (← ωget (← t_1.get) \"doing\") \"share\") \"source\") (\"s.n_f * (1 - s.ρ)\" : String))))\n  return ωnull)))"))
 
 initialize addTest "tests/theorems.ray:8 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "has" #[(Value.str ("vacuum.equation"))]) then "pass" else "failed: " ++ "(← cm it \"has\" #[(Value.str (\"vacuum.equation\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "has" (("vacuum.equation" : String))) then "pass" else "failed: " ++ "(← call! it \"has\" ((\"vacuum.equation\" : String)))"))
 
 initialize addTest "tests/theorems.ray:9 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("vacuum.occupancy"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"vacuum.occupancy\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("vacuum.occupancy" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"vacuum.occupancy\" : String)))"))
 
 initialize addTest "tests/theorems.ray:10 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("force.range"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"force.range\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("force.range" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"force.range\" : String)))"))
 
 initialize addTest "tests/theorems.ray:11 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm it "concluded" #[(Value.str ("vacuum.facing"))]) (Value.str ("F = \\frac{1}{2}"))) then "pass" else "failed: " ++ "(← eqV (← cm it \"concluded\" #[(Value.str (\"vacuum.facing\"))]) (Value.str (\"F = \\\\frac{1}{2}\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! it "concluded" (("vacuum.facing" : String))) ("F = \\frac{1}{2}" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! it \"concluded\" ((\"vacuum.facing\" : String))) (\"F = \\\\frac{1}{2}\" : String))"))
 
 initialize addTest "tests/theorems.ray:12 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← cm it "concluded" #[(Value.str ("force.range"))]) (Value.str ("\\lambda = \\frac{2}{\\rho}"))) then "pass" else "failed: " ++ "(← eqV (← cm it \"concluded\" #[(Value.str (\"force.range\"))]) (Value.str (\"\\\\lambda = \\\\frac{2}{\\\\rho}\")))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← call! it "concluded" (("force.range" : String))) ("\\lambda = \\frac{2}{\\rho}" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! it \"concluded\" ((\"force.range\" : String))) (\"\\\\lambda = \\\\frac{2}{\\\\rho}\" : String))"))
 
 initialize addTest "tests/theorems.ray:13 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.falloff"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.falloff\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.falloff" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.falloff\" : String)))"))
 
 initialize addTest "tests/theorems.ray:14 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.horizon"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.horizon\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.horizon" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.horizon\" : String)))"))
 
 initialize addTest "tests/theorems.ray:15 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← lenOf (← gm it "ids")) (Value.num 51)) then "pass" else "failed: " ++ "(← eqV (← lenOf (← gm it \"ids\")) (Value.num 51))"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← dot! (← ωget it "ids") rlength ()) (51 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← dot! (← ωget it \"ids\") rlength ()) (51 : Float))"))
 
 initialize addTest "tests/theorems.ray:16 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.coincidence"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.coincidence\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.coincidence" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.coincidence\" : String)))"))
 
 initialize addTest "tests/theorems.ray:17 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.bent"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.bent\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.bent" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.bent\" : String)))"))
 
 initialize addTest "tests/theorems.ray:18 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.standing"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.standing\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.standing" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.standing\" : String)))"))
 
 initialize addTest "tests/theorems.ray:19 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.mass"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.mass\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.mass" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.mass\" : String)))"))
 
 initialize addTest "tests/theorems.ray:20 on closure" (do
-  let it : Value := (← gm (← K "G") "proved")
+  let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
-  while !truthy (← eqV (← gm it "theory") (Value.str ("G"))) do
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
     guard := guard + 1
-    if guard > 8 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← cm it "standing" #[(Value.str ("gravity.newton"))]) then "pass" else "failed: " ++ "(← cm it \"standing\" #[(Value.str (\"gravity.newton\"))])"))
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.newton" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.newton\" : String)))"))
 
 initialize addTest "tests/vacuum.ray:16 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:16 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:16 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:16 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:17 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:17 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:17 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:17 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:18 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:18 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:18 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:18 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← eqV (← gm it "ticks") (Value.num 0)) do
+  while !truthy (← ωeqv (← ωget it "ticks") (0 : Float)) do
     guard := guard + 1
-    if guard > 2 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← eqV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 2 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:23 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "created") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"created\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "created") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"created\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:23 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "created") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"created\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "created") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"created\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:23 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "created") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"created\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "created") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"created\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:23 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "created") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"created\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "created") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"created\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:24 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:24 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:24 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:24 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "rays") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"rays\") (Value.num 0))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "rays") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"rays\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:25 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:25 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:25 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:25 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 1)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (1 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 3 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← eqV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← eqV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 3 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωeqv (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωeqv (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:31 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← gtV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:31 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← gtV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:31 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← gtV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:31 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "points") (← m_pow (← gm it "N") #[(← gm (← gm it "geometry") "D")])) then "pass" else "failed: " ++ "(← gtV (← gm it \"points\") (← m_pow (← gm it \"N\") #[(← gm (← gm it \"geometry\") \"D\")]))"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "points") (← dot! (← ωget it "N") rpow ((← ωget (← ωget it "geometry") "D")))) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"points\") (← dot! (← ωget it \"N\") rpow ((← ωget (← ωget it \"geometry\") \"D\"))))"))
 
 initialize addTest "tests/vacuum.ray:32 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← m_every (← gm (← gm (← v_1.get) "at") "components") #[(mkFn (fun a4 => do
-    let c_3 ← IO.mkRef (arg a4 0)
-    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it "margin"))) (do pure (← ltV (← c_3.get) (← addV (← gm it "N") (← gm it "margin")))))
-    return Value.null))])
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← m_every (← gm (← gm (← v_1.get) \"at\") \"components\") #[(mkFn (fun a4 => do\n    let c_3 ← IO.mkRef (arg a4 0)\n    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it \"margin\"))) (do pure (← ltV (← c_3.get) (← addV (← gm it \"N\") (← gm it \"margin\")))))\n    return Value.null))])\n  return Value.null))])"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← dot! (← ωget (← ωget (← v_1.get) "at") "components") revery ((fn! [c_3] do
+    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it "margin"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it "N") (← ωget it "margin")))))
+    return ωnull)))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← dot! (← ωget (← ωget (← v_1.get) \"at\") \"components\") revery ((fn! [c_3] do\n    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it \"margin\"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it \"N\") (← ωget it \"margin\")))))\n    return ωnull)))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:32 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← m_every (← gm (← gm (← v_1.get) "at") "components") #[(mkFn (fun a4 => do
-    let c_3 ← IO.mkRef (arg a4 0)
-    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it "margin"))) (do pure (← ltV (← c_3.get) (← addV (← gm it "N") (← gm it "margin")))))
-    return Value.null))])
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← m_every (← gm (← gm (← v_1.get) \"at\") \"components\") #[(mkFn (fun a4 => do\n    let c_3 ← IO.mkRef (arg a4 0)\n    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it \"margin\"))) (do pure (← ltV (← c_3.get) (← addV (← gm it \"N\") (← gm it \"margin\")))))\n    return Value.null))])\n  return Value.null))])"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← dot! (← ωget (← ωget (← v_1.get) "at") "components") revery ((fn! [c_3] do
+    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it "margin"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it "N") (← ωget it "margin")))))
+    return ωnull)))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← dot! (← ωget (← ωget (← v_1.get) \"at\") \"components\") revery ((fn! [c_3] do\n    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it \"margin\"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it \"N\") (← ωget it \"margin\")))))\n    return ωnull)))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:32 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← m_every (← gm (← gm (← v_1.get) "at") "components") #[(mkFn (fun a4 => do
-    let c_3 ← IO.mkRef (arg a4 0)
-    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it "margin"))) (do pure (← ltV (← c_3.get) (← addV (← gm it "N") (← gm it "margin")))))
-    return Value.null))])
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← m_every (← gm (← gm (← v_1.get) \"at\") \"components\") #[(mkFn (fun a4 => do\n    let c_3 ← IO.mkRef (arg a4 0)\n    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it \"margin\"))) (do pure (← ltV (← c_3.get) (← addV (← gm it \"N\") (← gm it \"margin\")))))\n    return Value.null))])\n  return Value.null))])"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← dot! (← ωget (← ωget (← v_1.get) "at") "components") revery ((fn! [c_3] do
+    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it "margin"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it "N") (← ωget it "margin")))))
+    return ωnull)))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← dot! (← ωget (← ωget (← v_1.get) \"at\") \"components\") revery ((fn! [c_3] do\n    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it \"margin\"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it \"N\") (← ωget it \"margin\")))))\n    return ωnull)))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:32 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← eqV (← gm it "ticks") (Value.num 3)) (do pure (← gtV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωeqv (← ωget it "ticks") (3 : Float)) (do pure (← ωgt (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 5 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← m_every (← gm (← gm (← v_1.get) "at") "components") #[(mkFn (fun a4 => do
-    let c_3 ← IO.mkRef (arg a4 0)
-    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it "margin"))) (do pure (← ltV (← c_3.get) (← addV (← gm it "N") (← gm it "margin")))))
-    return Value.null))])
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← m_every (← gm (← gm (← v_1.get) \"at\") \"components\") #[(mkFn (fun a4 => do\n    let c_3 ← IO.mkRef (arg a4 0)\n    if true then return (← andV (← geV (← c_3.get) (← subV (Value.num 0) (← gm it \"margin\"))) (do pure (← ltV (← c_3.get) (← addV (← gm it \"N\") (← gm it \"margin\")))))\n    return Value.null))])\n  return Value.null))])"))
+    if guard > 5 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← dot! (← ωget (← ωget (← v_1.get) "at") "components") revery ((fn! [c_3] do
+    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it "margin"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it "N") (← ωget it "margin")))))
+    return ωnull)))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← dot! (← ωget (← ωget (← v_1.get) \"at\") \"components\") revery ((fn! [c_3] do\n    if true then return (← ωandV (← ωge (← c_3.get) (← ωsub (0 : Float) (← ωget it \"margin\"))) (do pure (← ωlt (← c_3.get) (← ωadd (← ωget it \"N\") (← ωget it \"margin\")))))\n    return ωnull)))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:37 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "created") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"created\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "created") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"created\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:37 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "created") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"created\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "created") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"created\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:37 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "created") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"created\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "created") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"created\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:37 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "created") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"created\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "created") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"created\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:38 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:38 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:38 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:38 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "annihilations") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"annihilations\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "annihilations") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"annihilations\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:39 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "folded") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"folded\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "folded") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"folded\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:39 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "folded") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"folded\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "folded") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"folded\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:39 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "folded") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"folded\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "folded") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"folded\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:39 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← gtV (← gm it "folded") (Value.num 0)) then "pass" else "failed: " ++ "(← gtV (← gm it \"folded\") (Value.num 0))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← ωget it "folded") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget it \"folded\") (0 : Float))"))
 
 initialize addTest "tests/vacuum.ray:40 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "folded") (← gm it "annihilations")) then "pass" else "failed: " ++ "(← leV (← gm it \"folded\") (← gm it \"annihilations\"))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "folded") (← ωget it "annihilations")) then "pass" else "failed: " ++ "(← ωle (← ωget it \"folded\") (← ωget it \"annihilations\"))"))
 
 initialize addTest "tests/vacuum.ray:40 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "folded") (← gm it "annihilations")) then "pass" else "failed: " ++ "(← leV (← gm it \"folded\") (← gm it \"annihilations\"))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "folded") (← ωget it "annihilations")) then "pass" else "failed: " ++ "(← ωle (← ωget it \"folded\") (← ωget it \"annihilations\"))"))
 
 initialize addTest "tests/vacuum.ray:40 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "folded") (← gm it "annihilations")) then "pass" else "failed: " ++ "(← leV (← gm it \"folded\") (← gm it \"annihilations\"))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "folded") (← ωget it "annihilations")) then "pass" else "failed: " ++ "(← ωle (← ωget it \"folded\") (← ωget it \"annihilations\"))"))
 
 initialize addTest "tests/vacuum.ray:40 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "folded") (← gm it "annihilations")) then "pass" else "failed: " ++ "(← leV (← gm it \"folded\") (← gm it \"annihilations\"))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "folded") (← ωget it "annihilations")) then "pass" else "failed: " ++ "(← ωle (← ωget it \"folded\") (← ωget it \"annihilations\"))"))
 
 initialize addTest "tests/vacuum.ray:42 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← gm (← v_1.get) "density") (Value.num 1))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← gm (← v_1.get) \"density\") (Value.num 1))\n  return Value.null))])"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← ωge (← ωget (← v_1.get) "density") (1 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← ωge (← ωget (← v_1.get) \"density\") (1 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:42 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← gm (← v_1.get) "density") (Value.num 1))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← gm (← v_1.get) \"density\") (Value.num 1))\n  return Value.null))])"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← ωge (← ωget (← v_1.get) "density") (1 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← ωge (← ωget (← v_1.get) \"density\") (1 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:42 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← gm (← v_1.get) "density") (Value.num 1))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← gm (← v_1.get) \"density\") (Value.num 1))\n  return Value.null))])"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← ωge (← ωget (← v_1.get) "density") (1 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← ωge (← ωget (← v_1.get) \"density\") (1 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:42 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← m_every (← gm it "vertices") #[(mkFn (fun a2 => do
-  let v_1 ← IO.mkRef (arg a2 0)
-  if true then return (← geV (← gm (← v_1.get) "density") (Value.num 1))
-  return Value.null))]) then "pass" else "failed: " ++ "(← m_every (← gm it \"vertices\") #[(mkFn (fun a2 => do\n  let v_1 ← IO.mkRef (arg a2 0)\n  if true then return (← geV (← gm (← v_1.get) \"density\") (Value.num 1))\n  return Value.null))])"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωget it "vertices") revery ((fn! [v_1] do
+  if true then return (← ωge (← ωget (← v_1.get) "density") (1 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"vertices\") revery ((fn! [v_1] do\n  if true then return (← ωge (← ωget (← v_1.get) \"density\") (1 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/vacuum.ray:44 on square" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 4), (Value.num 1)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (4 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← leV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωle (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:44 on diagonal" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE8"), (Value.num 5), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE8), (5 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← leV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωle (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:44 on cubic" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "CUBIC6"), (Value.num 4), (Value.num 3)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_CUBIC6), (4 : Float), (3 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← leV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωle (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 initialize addTest "tests/vacuum.ray:44 on frontier" (do
-  let it : Value := (← cm (← K "G") "seed" #[(← glob "SQUARE4"), (Value.num 3), (Value.num 5), (Value.num 250000), (Value.num 2)])
+  let it := (← call! (← cls% G) "seed" ((← ωglobal_SQUARE4), (3 : Float), (5 : Float), (250000 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← andV (← andV (← eqV (← gm it "ticks") (Value.num 4)) (do pure (← m_empty (← gm it "sources")))) (do pure (← eqV (← gm it "margin") (Value.num 0)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← ωget it "ticks") (4 : Float)) (do pure (← dot! (← ωget it "sources") rempty ()))) (do pure (← ωeqv (← ωget it "margin") (0 : Float)))) do
     guard := guard + 1
-    if guard > 6 || !(← has it "tick") then return "skip"
-    sink (← gm it "tick")
-  return (if truthy (← leV (← gm it "points") (← lenOf (← gm it "vertices"))) then "pass" else "failed: " ++ "(← leV (← gm it \"points\") (← lenOf (← gm it \"vertices\")))"))
+    if guard > 6 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωle (← ωget it "points") (← dot! (← ωget it "vertices") rlength ())) then "pass" else "failed: " ++ "(← ωle (← ωget it \"points\") (← dot! (← ωget it \"vertices\") rlength ()))"))
 
 def main (args : List String) : IO UInt32 := do
   let only := args.head?

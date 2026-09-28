@@ -1,16 +1,24 @@
 /*
- * LEAN 4, as a mapping from the constructs of Ray to text. Lean has no dynamic members, so it follows Java: a Ray
- * class is a table filled when the package loads, an object a table of slots, and every member is reached by name
- * through the runtime - `gm x "cells"`, `cm x "add" #[...]`, `sm x "tag" v`, `mk "Hole" #[...]` - see
- * implementation/gen/backends/cpu.rt.lean. Everything runs in `IO`: an expression is a term whose effects are
- * written `(← ...)` (Lean lifts them in order to the statement they stand in), a statement a line of a `do`
- * block, a local an `IO.Ref` (`(← x_1.get)`, spelled by the depth of the scope that binds it, `{local_name}`), so
- * that a lambda can take it and write it. What must not run unless it is reached (`a & b`, `a ?? b`, `c ? a : b`)
- * is handed over as an action of its own (`(do pure ...)`). A loop is a statement that ends on a value (`Value.null`),
- * since every statement written as an expression is ended ` |> sink`. Every member of a class is one `initialize` of its
- * own, inside the class's namespace (`thisClass` is its name), so that no term is large; every class is a module
- * of its own (`write_package` splits the text at `/-@@PIECE@@-/`). A `return` is `if true then return x`, which
- * Lean reads as a return from the enclosing method or lambda, loops included, and never as dead code.
+ * LEAN 4, as a mapping from the constructs of Ray to text. A Ray class is Lean data: every class hierarchy is one
+ * Lean type (a `structure` over its object), a subclass an `abbrev` of its parent, a field a slot, a getter or a
+ * method a function in the class's namespace (`Medium.tick (m : Medium) : IO Value`, `m.tick`) - see
+ * implementation/gen/backends/cpu.rt.lean, where the declarations below (`ray_class`, `ray_field`, `ray_method`, ...)
+ * are macros. A class's module declares nothing of its own: every member is written twice, as a declaration of its
+ * type (a line `--@ ray_method ...`, gathered by `write_package` into OrbitMines/Physics/Types.lean, which every class
+ * module imports - so a class calls another without importing it) and as its program (`ray_impl_method ...`, filling
+ * the class's table when the package loads, in the class's own module). Lean itself works out what every member
+ * access is: `get x "cells"`, `call! x "add" (h)`, `set x "tag" v` are type classes keyed by the member's name, so a
+ * typed slot, a typed method, or - where Ray itself is dynamic (`*`, a `Program`, a member named by a computed text)
+ * - a `Value` asked by name when it runs. Numbers are `Float`; lists `RList` (an `IO.Ref (Array _)`, since Ray shares
+ * every list); `None` is each type's own absent value (`null`, `isNull`).
+ *
+ * Everything runs in `IO`: an expression is a term whose effects are written `(← ...)` (Lean lifts them in order to the
+ * statement they stand in), a statement a line of a `do` block, a local an `IO.Ref` (`(← x_1.get)`, spelled by the depth
+ * of the scope that binds it, `{local_name}`), so that a lambda can take it and write it. What must not run unless it
+ * is reached (`a & b`, `a ?? b`, `c ? a : b`) is handed over as an action of its own (`(do pure ...)`). A statement
+ * written as an expression is ended ` |> sink`, and a loop ends on a line `Value.null` of its own so that it can be.
+ * A `return` is `if true then return x`, which Lean reads as a return from the enclosing method or lambda, loops
+ * included, and never as dead code.
  */
 
 Lean: Language = class {
@@ -20,234 +28,314 @@ Lean: Language = class {
   {indent} => "  "
   {separator} => ", "
   {newline} => "\n"
-  {statement_end} => " |> sink"
+  {statement_end} => " |> ωsink"
   {empty_block} => ""
-  {interpolation} => "\" ++ (← strv {x}) ++ \""
-  {named_arg} => "(Value.kw \"{raw}\" {val})"
-  {parameter} => "let {nm} ← IO.mkRef (arg a{d} {i})"
-  {parameter_untyped} => "let {nm} ← IO.mkRef (arg a{d} {i})"
-  {parameter_default} => "let {nm} ← IO.mkRef (arg a{d} {i})"
-  {parameter_separator} => "\n  "
-  {dynamic_get} => "(← gm {tgt} (← strv {key}))"
-  {dynamic_set} => "(← smV {tgt} (← strv {key}) {val})"
-  {whole} => "(Value.num {val})"
-  {reserved_names} => "at by do else end fun if in let match then with from have show for return where open namespace section def theorem structure class instance import mut unless try catch finally break continue repeat while macro syntax deriving extends variable universe example abbrev axiom opaque private protected partial unsafe noncomputable inductive mutual export attribute local scoped set_option calc suffices obtain nomatch termination_by decreasing_by Type Prop Sort forall exists fun this self sink thisClass"
+  {interpolation} => "\" ++ (← ωtoStr {x}) ++ \""
+  {named_arg} => "«{raw}» := {val}"
+  {parameter} => "({nm} : {ty})"
+  {parameter_untyped} => "{nm}"
+  {parameter_default} => "({nm} : {ty} := {val})"
+  {parameter_separator} => " "
+  {dynamic_get} => "(← ωelem {tgt} {key})"
+  {dynamic_set} => "(← (ωatSetter {tgt} {key}) {val})"
+  {whole} => "({val} : Float)"
+  {reserved_names} => "at by do else end fun if in let match then with from have show for return where open namespace section def theorem structure class instance import mut unless try catch finally break continue repeat while macro syntax deriving extends variable universe example abbrev axiom opaque private protected partial unsafe noncomputable inductive mutual export attribute local scoped set_option calc suffices obtain nomatch termination_by decreasing_by Type Prop Sort forall exists fun this self ωsink"
   {escaped_name} => "{nm}_"
-  {global_name} => "(← glob \"{nm}\")"
+  {global_name} => "(← ωglobal_{nm})"
   {local_name} => "{nm}_{k}"
   {local_read} => "(← {nm}.get)"
-  {local_write} => "(← wr {nm} {val})"
+  {local_write} => "(← ωwr {nm} {val})"
   {defaults_in_body} => "yes"
-  {class_ref} => "(← K \"{nm}\")"
-  {field_assign} => "initialize field thisClass \"{nm}\" (fun self => do\n  return {val})"
+  {class_ref} => "(← cls% {nm})"
+  {field_assign} => "ray_default \"{nm}\" := do\n  return {val}"
 
   /* control flow: a body is closed by `pure ()`, so that one ending on a definition is still a block */
-  {if cond { yesbody } else { nobody }} => "if truthy {cond} then\n{yesbody.indent}\n  pure ()\nelse\n{nobody.indent}\n  pure ()"
-  {if cond { yesbody }} => "if truthy {cond} then\n{yesbody.indent}\n  pure ()"
-  {unless cond { yesbody }} => "if !truthy {cond} then\n{yesbody.indent}\n  pure ()"
-  {while cond { loopbody }} => "while truthy {cond} do\n{loopbody.indent}\n  pure ()"
-  /* `if true`: a body always ends `return Value.null`, which Lean would otherwise call dead code */
+  {if cond { yesbody } else { nobody }} => "if ωtruthy {cond} then\n{yesbody.indent}\n  pure ()\nelse\n{nobody.indent}\n  pure ()"
+  {if cond { yesbody }} => "if ωtruthy {cond} then\n{yesbody.indent}\n  pure ()"
+  {unless cond { yesbody }} => "if !ωtruthy {cond} then\n{yesbody.indent}\n  pure ()"
+  {while cond { loopbody }} => "while ωtruthy {cond} do\n{loopbody.indent}\n  pure ()"
+  /* `if true`: a body always ends `return null`, which Lean would otherwise call dead code */
   {return val} => "if true then return {val}"
-  {return} => "if true then return Value.null"
-  {dynamically assert cond} => "if !truthy {cond} then throw (IO.userError {cond.quoted})"
+  {return} => "if true then return ωnull"
+  {dynamically assert cond} => "if !ωtruthy {cond} then throw (IO.userError {cond.quoted})"
 
-  /* definitions and assignment */
-  /* made before it is set, so that a lambda may call itself by it */
-  {nm := val} => "let {nm} ← IO.mkRef Value.null\n{nm}.set ({val} : Value)"
-  {tgt.nm = rhs} => "sm {tgt} \"{nm.raw}\" {rhs}"
-  {lhs = rhs} => "(← wr {lhs} {rhs}) |> sink"
-  {tgt[k] = rhs} => "setAt {tgt} {k} {rhs}"
+  /* definitions and assignment: a local takes the type of what it is made of - and a lambda is made before it is set, so that it may call itself by it */
+  {nm := val} => "let {nm} ← IO.mkRef {val}"
+  {nm := (paramlist) => { stmts }} => "let {nm} ← IO.mkRef ωnull\n{nm}.set (fn! [{paramlist}] do\n{stmts.returned.indent.indent}\n    return ωnull)"
+  {nm := (paramlist) => e} => "let {nm} ← IO.mkRef ωnull\n{nm}.set (fn! [{paramlist}] do\n    return {e})"
+  {tgt.nm = rhs} => "(ωsetter {tgt} \"{nm.raw}\") {rhs}"
+  {lhs = rhs} => "(← ωwr {lhs} {rhs}) |> ωsink"
+  {tgt[k] = rhs} => "(ωatSetter {tgt} {k}) {rhs}"
 
   /* expressions: every one is a term, parenthesised or a single word */
-  {a & b} => "(← andV {a} (do pure {b}))"
-  {a | b} => "(← orV {a} (do pure {b}))"
-  {!a} => "(← notV {a})"
-  {-a} => "(← negV {a})"
-  {a == b} => "(← eqV {a} {b})"
-  {a != b} => "(← neV {a} {b})"
-  {a < b} => "(← ltV {a} {b})"
-  {a <= b} => "(← leV {a} {b})"
-  {a > b} => "(← gtV {a} {b})"
-  {a >= b} => "(← geV {a} {b})"
-  {a + b} => "(← addV {a} {b})"
-  {a - b} => "(← subV {a} {b})"
-  {a * b} => "(← mulV {a} {b})"
-  {a / b} => "(← divV {a} {b})"
-  {a % b} => "(← modV {a} {b})"
-  {a ^ b} => "(← powV {a} {b})"
-  {a ?? b} => "(← orElse {a} (do pure {b}))"
-  {cond ? a : b} => "(← tern {cond} (do pure {a}) (do pure {b}))"
-  {a ==.instance_of Array} => "(isList {a})"
-  {a ==.instance_of ty} => "(← instanceOf {a} \"{ty}\")"
-  {a as ty} => "{a}"
-  {tgt.nm} => "(← gm {tgt} \"{nm.raw.method}\")"
-  {tgt?.nm} => "(← gmo {tgt} \"{nm.raw.method}\")"
-  {tgt.nm()} => "(← gm {tgt} \"{nm.raw.method}\")"
-  {tgt.nm(arglist)} => "(← cm {tgt} \"{nm.raw.method}\" #[{arglist}])"
-  {tgt?.nm(arglist)} => "(← cmo {tgt} \"{nm.raw.method}\" #[{arglist}])"
-  {tgt.choose("nm")} => "(← choose {tgt} {nm.quoted})"
-  {tgt[k]} => "(← elemv {tgt} {k})"
-  {fn(arglist)} => "(← inv {fn} #[{arglist}])"
-  {Class(arglist)} => "(← mk \"{Class}\" #[{arglist}])"
-  {[elems]} => "(← lst #[{elems}])"
-  { {} } => "(← mk \"Node\" #[])"
+  {a & b} => "(← ωandV {a} (do pure {b}))"
+  {a | b} => "(← ωorV {a} (do pure {b}))"
+  {!a} => "(ωnotV {a})"
+  {-a} => "(← ωneg {a})"
+  {a == None} => "(ωisNull {a})"
+  {a != None} => "(!ωisNull {a})"
+  {a == b} => "(← ωeqv {a} {b})"
+  {a != b} => "(← ωnev {a} {b})"
+  {a < b} => "(← ωlt {a} {b})"
+  {a <= b} => "(← ωle {a} {b})"
+  {a > b} => "(← ωgt {a} {b})"
+  {a >= b} => "(← ωge {a} {b})"
+  {a + b} => "(← ωadd {a} {b})"
+  {a - b} => "(← ωsub {a} {b})"
+  {a * b} => "(← ωmul {a} {b})"
+  {a / b} => "(← ωdiv {a} {b})"
+  {a % b} => "(← ωmodv {a} {b})"
+  {a ^ b} => "(← ωpow {a} {b})"
+  {a ?? b} => "(← ωorElse {a} (do pure {b}))"
+  {cond ? a : b} => "(← ωtern (ωtruthy {cond}) (do pure {a}) (do pure {b}))"
+  {a ==.instance_of Array} => "(← ωinstOf (ωtoValue {a}) \"Array\")"
+  {a ==.instance_of ty} => "(← ωinstOf (ωtoValue {a}) \"{ty}\")"
+  {a as ty} => "({a} : {ty})"
+  {tgt.nm} => "(← ωget {tgt} \"{nm.raw.method}\")"
+  {tgt?.nm} => "(← ωgetOpt {tgt} \"{nm.raw.method}\")"
+  {tgt.nm()} => "(← ωget {tgt} \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "(← call! {tgt} \"{nm.raw.method}\" ({arglist}))"
+  {tgt?.nm(arglist)} => "(← callOpt! {tgt} \"{nm.raw.method}\" ({arglist}))"
+  {tgt.choose("nm")} => "(← ωget {tgt} \"choose {nm}\")"
+  {tgt[k]} => "(← ωelem {tgt} {k})"
+  {fn(arglist)} => "(← app! {fn} ({arglist}))"
+  {Class(arglist)} => "(← new! {Class} ({arglist}))"
+  {[elems]} => "(← ωlst #[{elems}])"
+  { {} } => "(← RMap.new)"
   {this} => "self"
-  {None} => "Value.null"
-  {true} => "(Value.bool true)"
-  {false} => "(Value.bool false)"
-  {"txt"} => "(Value.str (\"{txt}\"))"
-  {(paramlist) => { stmts }} => "(mkFn (fun a{d} => do\n  {paramlist}\n{stmts.returned.indent}\n  return Value.null))"
-  {(paramlist) => e} => "(mkFn (fun a{d} => do\n  {paramlist}\n  return {e}))"
-  {xs#} => "(← manyv {xs})"
-  {draw([ws], [os])} => "(← cm (← gm (← gm self \"vertex\") \"world\") \"draw\" #[(← lst #[{ws}]), (← lst #[{os}])])"
+  {None} => "ωnull"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "(\"{txt}\" : String)"
+  {(paramlist) => { stmts }} => "(fn! [{paramlist}] do\n{stmts.returned.indent}\n  return ωnull)"
+  {(paramlist) => e} => "(fn! [{paramlist}] do\n  return {e})"
+  {xs#} => "(← ωmany {xs})"
+  {draw([ws], [os])} => "(← call! (← ωget (← ωget self \"vertex\") \"world\") \"draw\" ((← ωlst #[{ws}]), (← ωlst #[{os}])))"
 
-  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
-  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} in [0:rangeN {cnt}] do\n  let {x_.bare} ← IO.mkRef (Value.num (natF i{d}))\n{stmts.indent}\n  pure ()\nValue.null"
-  {xs.for((x_) => { stmts })} => "for e{d} in (← itemsv {xs}) do\n  let {x_.bare} ← IO.mkRef e{d}\n{stmts.indent}\n  pure ()\nValue.null"
-  {fail(x_)} => "(← failV {x_})"
-  {Catalogue.number(x_)} => "(← number {x_})"
-  {String(chars: xs)} => "(← fromCodepoints {xs})"
-  {x_.blank} => "(blank {x_})"
-  {xs.push(x_)} => "(← m_push {xs} #[{x_}])"
-  {xs.chars} => "(← m_chars {xs})"
-  {xs.pop} => "(← m_pop {xs})"
-  {xs.length} => "(← lenOf {xs})"
-  {xs.map(f)} => "(← m_map {xs} #[{f}])"
-  {xs.filter(f)} => "(← m_filter {xs} #[{f}])"
-  {xs.for(f)} => "(← m_for {xs} #[{f}])"
-  {xs.some(f)} => "(← m_some {xs} #[{f}])"
-  {xs.every(f)} => "(← m_every {xs} #[{f}])"
-  {xs.reduce(z, f)} => "(← m_reduce {xs} #[{z}, {f}])"
-  {xs.starts_with(x_)} => "(← m_starts_with {xs} #[{x_}])"
-  {xs.ends_with(x_)} => "(← m_ends_with {xs} #[{x_}])"
-  {xs.replace(x_, y_)} => "(← m_replace {xs} #[{x_}, {y_}])"
-  {xs.split(x_)} => "(← m_split {xs} #[{x_}])"
-  {xs.trim} => "(← m_trim {xs})"
-  {xs.upper} => "(← m_upper {xs})"
-  {xs.lower} => "(← m_lower {xs})"
-  {xs.lines} => "(← m_lines {xs})"
-  {xs.quoted} => "(← m_quoted {xs})"
-  {xs.contains(x_)} => "(← m_contains {xs} #[{x_}])"
-  {xs.index_of(x_)} => "(← m_index_of {xs} #[{x_}])"
-  {xs.join(sep)} => "(← m_join {xs} #[{sep}])"
-  {xs.first} => "(← m_first {xs})"
-  {xs.last} => "(← m_last {xs})"
-  {xs.empty} => "(← m_empty {xs})"
-  {xs.take(cnt)} => "(← m_take {xs} #[{cnt}])"
-  {xs.drop(cnt)} => "(← m_drop {xs} #[{cnt}])"
-  {xs.rest} => "(← m_rest {xs})"
-  {xs.concat(ys)} => "(← m_concat {xs} #[{ys}])"
-  {xs.reverse} => "(← m_reverse {xs})"
-  {xs.sum} => "(← m_sum {xs})"
-  {xs.most(f)} => "(← m_most {xs} #[{f}])"
-  {xs.sorted_by(f)} => "(← m_sorted_by {xs} #[{f}])"
-  {xs.each} => "(← m_each {xs})"
-  {Array.range(cnt)} => "(← rng {cnt})"
-  {Array.filled(cnt, x_)} => "(← filled {cnt} {x_})"
-  {x_.sqrt} => "(← m_sqrt {x_})"
-  {x_.floor} => "(← m_floor {x_})"
-  {x_.abs} => "(← m_abs {x_})"
-  {x_.negated} => "(← negV {x_})"
-  {x_.magnitude} => "(← m_magnitude {x_})"
-  {x_.cos} => "(← m_cos {x_})"
-  {x_.sin} => "(← m_sin {x_})"
-  {x_.round} => "(← m_round {x_})"
-  {x_.ln} => "(← m_ln {x_})"
-  {x_.exp} => "(← m_exp {x_})"
-  {x_.atan2(y_)} => "(← m_atan2 {x_} #[{y_}])"
-  {x_.pow(y_)} => "(← m_pow {x_} #[{y_}])"
+  /* the recognised classes: a list, a text or a number's own member (`rmap`) - and a class's own member of that name, which its declaration also names so */
+  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} in [0:ωrangeN {cnt}] do\n  let {x_.bare} ← IO.mkRef (ωnatF i{d})\n{stmts.indent}\n  pure ()\nValue.null"
+  {xs.for((x_) => { stmts })} => "for e{d} in (← ωitems {xs}) do\n  let {x_.bare} ← IO.mkRef e{d}\n{stmts.indent}\n  pure ()\nValue.null"
+  {fail(x_)} => "(← ωfailV {x_})"
+  {Catalogue.number(x_)} => "(ωparseNumber (← ωtoStr {x_}))"
+  {String(chars: xs)} => "(← ωfromCodepoints {xs})"
+  {x_.blank} => "(← dot! {x_} rblank ())"
+  {xs.push(x_)} => "(← dot! {xs} rpush ({x_}))"
+  {xs.chars} => "(← dot! {xs} rchars ())"
+  {xs.pop} => "(← dot! {xs} rpop ())"
+  {xs.length} => "(← dot! {xs} rlength ())"
+  {xs.map(f)} => "(← dot! {xs} rmap ({f}))"
+  {xs.filter(f)} => "(← dot! {xs} rfilter ({f}))"
+  {xs.for(f)} => "(← dot! {xs} rfor ({f}))"
+  {xs.some(f)} => "(← dot! {xs} rsome ({f}))"
+  {xs.every(f)} => "(← dot! {xs} revery ({f}))"
+  {xs.reduce(z, f)} => "(← dot! {xs} rreduce ({z}, {f}))"
+  {xs.starts_with(x_)} => "(← dot! {xs} rstarts_with ({x_}))"
+  {xs.ends_with(x_)} => "(← dot! {xs} rends_with ({x_}))"
+  {xs.replace(x_, y_)} => "(← dot! {xs} rreplace ({x_}, {y_}))"
+  {xs.split(x_)} => "(← dot! {xs} rsplit ({x_}))"
+  {xs.trim} => "(← dot! {xs} rtrim ())"
+  {xs.upper} => "(← dot! {xs} rupper ())"
+  {xs.lower} => "(← dot! {xs} rlower ())"
+  {xs.lines} => "(← dot! {xs} rlines ())"
+  {xs.quoted} => "(← dot! {xs} rquoted ())"
+  {xs.contains(x_)} => "(← dot! {xs} rcontains ({x_}))"
+  {xs.index_of(x_)} => "(← dot! {xs} rindex_of ({x_}))"
+  {xs.join(sep)} => "(← dot! {xs} rjoin ({sep}))"
+  {xs.first} => "(← dot! {xs} rfirst ())"
+  {xs.last} => "(← dot! {xs} rlast ())"
+  {xs.empty} => "(← dot! {xs} rempty ())"
+  {xs.take(cnt)} => "(← dot! {xs} rtake ({cnt}))"
+  {xs.drop(cnt)} => "(← dot! {xs} rdrop ({cnt}))"
+  {xs.rest} => "(← dot! {xs} rrest ())"
+  {xs.concat(ys)} => "(← dot! {xs} rconcat ({ys}))"
+  {xs.reverse} => "(← dot! {xs} rreverse ())"
+  {xs.sum} => "(← dot! {xs} rsum ())"
+  {xs.most(f)} => "(← dot! {xs} rmost ({f}))"
+  {xs.sorted_by(f)} => "(← dot! {xs} rsorted_by ({f}))"
+  {xs.each} => "(← dot! {xs} reach ())"
+  {Array.range(cnt)} => "(← ωrrange {cnt})"
+  {Array.filled(cnt, x_)} => "(← ωrfilled {cnt} {x_})"
+  {x_.sqrt} => "(← dot! {x_} rsqrt ())"
+  {x_.floor} => "(← dot! {x_} rfloor ())"
+  {x_.abs} => "(← dot! {x_} rabs ())"
+  {x_.negated} => "(← ωneg {x_})"
+  {x_.magnitude} => "(← dot! {x_} rmagnitude ())"
+  {x_.cos} => "(← dot! {x_} rcos ())"
+  {x_.sin} => "(← dot! {x_} rsin ())"
+  {x_.round} => "(← dot! {x_} rround ())"
+  {x_.ln} => "(← dot! {x_} rln ())"
+  {x_.exp} => "(← dot! {x_} rexp ())"
+  {x_.atan2(y_)} => "(← dot! {x_} ratan2 ({y_}))"
+  {x_.pow(y_)} => "(← dot! {x_} rpow ({y_}))"
   {Real.of(x_)} => "{x_}"
-  {Real.ZERO} => "(Value.num 0)"
-  {Real.ONE} => "(Value.num 1)"
-  {Real.TWO} => "(Value.num 2)"
-  {Real.PI} => "(Value.num 3.141592653589793)"
-  {Real.NAN} => "(Value.num (0.0 / 0.0))"
-  {Real.INFINITY} => "(Value.num (1.0 / 0.0))"
-  {Real.TAU} => "(Value.num 6.283185307179586)"
-  {Random.MODULUS} => "(Value.num 4294967296)"
-  {Random.MULTIPLIER} => "(Value.num 1664525)"
-  {Random.INCREMENT} => "(Value.num 1013904223)"
+  {Real.ZERO} => "(0 : Float)"
+  {Real.ONE} => "(1 : Float)"
+  {Real.TWO} => "(2 : Float)"
+  {Real.PI} => "(3.141592653589793 : Float)"
+  {Real.NAN} => "(0.0 / 0.0 : Float)"
+  {Real.INFINITY} => "(1.0 / 0.0 : Float)"
+  {Real.TAU} => "(6.283185307179586 : Float)"
+  {Random.MODULUS} => "(4294967296 : Float)"
+  {Random.MULTIPLIER} => "(1664525 : Float)"
+  {Random.INCREMENT} => "(1013904223 : Float)"
 
-  /* classes: a namespace whose members are `initialize`s filling the class's table when the package loads */
-  {nm := class < sup { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"{sup.first}\"\n{membs}\nend C_{nm.raw}"
-  {nm := class { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"Node\"\n{membs}\nend C_{nm.raw}"
-  {nm: ty = class { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"{ty}\"\n{membs}\ninitialize defineTheory thisClass\nend C_{nm.raw}"
-  {theorem "nm" () => tbody} => "initialize staticField thisClass \"theorem {nm}\" (fun self => do\n  return (← mk \"Theorem\" #[(Value.kw \"id\" (Value.str {nm.quoted})), (Value.kw \"body\" (mkFn (fun a{d} => do\n{tbody.returned.indent}\n  return Value.null)))]))"
-  {x_.body()} => "(← inv (← gm {x_} \"body\") #[])"
-  {nm: ty = val} => "initialize field thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
-  {nm: ty} => "initialize fieldNone thisClass \"{nm.raw}\""
-  {nm = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
-  {static nm: ty = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
-  {static nm = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
-  {nm (): ret => mbody} => "initialize getter thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
-  {nm () => mbody} => "initialize getter thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
-  {static nm (): ret => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
-  {static nm () => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
-  {nm (paramlist): ret => mbody} => "initialize method thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
-  {nm (paramlist) => mbody} => "initialize method thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
-  {static nm (paramlist): ret => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
-  {static nm (paramlist) => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
-  {nm (paramlist): ret} => "initialize method thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {nm (paramlist)} => "initialize method thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {nm (): ret} => "initialize getter thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {nm ()} => "initialize getter thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {static nm (paramlist): ret} => "initialize statik thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {static nm (paramlist)} => "initialize statik thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
-  {rule /rid "nm" | rt () => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" (Value.str {rt.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n{rbody.returned.indent}\n  return Value.null)))]))"
-  {rule /rid "nm" () => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" Value.null), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n{rbody.returned.indent}\n  return Value.null)))]))"
-  {rule /rid "nm" | rt (paramlist) => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" (Value.str {rt.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n  {paramlist}\n{rbody.returned.indent}\n  return Value.null)))]))"
-  {rule /rid "nm" (paramlist) => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" Value.null), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n  {paramlist}\n{rbody.returned.indent}\n  return Value.null)))]))"
-  {choose "nm" (paramlist): ret} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => throwMsg \"the choice {nm} is not defined by anyone\")"
-  {choose "nm" (paramlist): ret => cbody} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => do\n  {paramlist}\n{cbody.returned.indent}\n  return Value.null)"
-  {choose "nm" (paramlist) => cbody} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => do\n  {paramlist}\n{cbody.returned.indent}\n  return Value.null)"
-  {as (=== ty) => cbody} => "initialize getter thisClass \"as_{ty}\" (fun self a{d} => do\n{cbody.returned.indent}\n  return Value.null)"
+  /* types: a number is a Float; a list an RList; `*`, a program and a list of anything a Value; a map an RMap */
+  {N} => "Float"
+  {Natural} => "Float"
+  {Z} => "Float"
+  {Integer} => "Float"
+  {Real} => "Float"
+  {Decimal} => "Float"
+  {boolean} => "Bool"
+  {String} => "String"
+  {Array} => "(RList Value)"
+  {*} => "Value"
+  {{}} => "RMap"
+  {Program} => "Value"
+  {ty[]} => "(RList {ty})"
+  {ty[]?} => "(RList {ty})"
+  {ty?} => "{ty}"
 
-  /* a nested class is a table of its own, then a static of the outer one */
-  nested (outer: String, inner_name: String, inner: String): String => "{inner}\ninitialize setStaticCls \"{outer}\" \"{inner_name}\""
+  /*
+   * classes: `ray_class` (a line of Types.lean) and a namespace of the class's own programs. Every member is a line
+   * `--@ ...` of Types.lean - its declaration - and its program; `write_package` parts the two
+   */
+  {nm := class < sup { membs }} => "/-@@PIECE@@-/\n--@ ray_class {nm.raw} < {sup.first}\n--@ namespace {nm.raw}\nnamespace {nm.raw}\n{membs}\nend {nm.raw}\n--@ end {nm.raw}"
+  {nm := class { membs }} => "/-@@PIECE@@-/\n--@ ray_class {nm.raw} < Node\n--@ namespace {nm.raw}\nnamespace {nm.raw}\n{membs}\nend {nm.raw}\n--@ end {nm.raw}"
+  {nm: ty = class { membs }} => "/-@@PIECE@@-/\n--@ ray_class {nm.raw} < {ty}\n--@ namespace {nm.raw}\nnamespace {nm.raw}\n{membs}\nend {nm.raw}\n--@ end {nm.raw}\n--@ ray_theory {nm.raw}"
+  {theorem "nm" () => tbody} => "--@ ray_sfield \"theorem {nm}\" : Theorem\nray_impl_sfield \"theorem {nm}\" : Theorem := do\n  return (← new! Theorem (id := {nm.quoted}, body := (fn! [] do\n{tbody.returned.indent.indent}\n    return ωnull)))"
+  {x_.body()} => "(← app! (← ωget {x_} \"body\") ())"
+  {nm: ty = val} => "--@ ray_field \"{nm.raw}\" : {ty}\nray_impl_field \"{nm.raw}\" : {ty} := do\n  return {val}"
+  {nm: ty} => "--@ ray_field \"{nm.raw}\" : {ty}\nray_impl_field \"{nm.raw}\" : {ty} := do\n  return ωnull"
+  {nm = val} => "--@ ray_sfield \"{nm.raw}\" : Value\nray_impl_sfield \"{nm.raw}\" : Value := do\n  return {val}"
+  {static nm: ty = val} => "--@ ray_sfield \"{nm.raw}\" : {ty}\nray_impl_sfield \"{nm.raw}\" : {ty} := do\n  return {val}"
+  {static nm = val} => "--@ ray_sfield \"{nm.raw}\" : Value\nray_impl_sfield \"{nm.raw}\" : Value := do\n  return {val}"
+  {nm (): ret => mbody} => "--@ ray_getter \"{nm.raw.method}\" : {ret}\nray_impl_getter \"{nm.raw.method}\" : {ret} := do\n{mbody.returned.indent}\n  return ωnull"
+  {nm () => mbody} => "--@ ray_getter \"{nm.raw.method}\" : Value\nray_impl_getter \"{nm.raw.method}\" : Value := do\n{mbody.returned.indent}\n  return ωnull"
+  {static nm (): ret => mbody} => "--@ ray_static \"{nm.raw.method}\" : {ret}\nray_impl_static \"{nm.raw.method}\" : {ret} := do\n{mbody.returned.indent}\n  return ωnull"
+  {static nm () => mbody} => "--@ ray_static \"{nm.raw.method}\" : Value\nray_impl_static \"{nm.raw.method}\" : Value := do\n{mbody.returned.indent}\n  return ωnull"
+  {nm (paramlist): ret => mbody} => "--@ ray_method \"{nm.raw.method}\" {paramlist} : {ret}\nray_impl_method \"{nm.raw.method}\" {paramlist} : {ret} := do\n{mbody.returned.indent}\n  return ωnull"
+  {nm (paramlist) => mbody} => "--@ ray_method \"{nm.raw.method}\" {paramlist} : Value\nray_impl_method \"{nm.raw.method}\" {paramlist} : Value := do\n{mbody.returned.indent}\n  return ωnull"
+  {static nm (paramlist): ret => mbody} => "--@ ray_static \"{nm.raw.method}\" {paramlist} : {ret}\nray_impl_static \"{nm.raw.method}\" {paramlist} : {ret} := do\n{mbody.returned.indent}\n  return ωnull"
+  {static nm (paramlist) => mbody} => "--@ ray_static \"{nm.raw.method}\" {paramlist} : Value\nray_impl_static \"{nm.raw.method}\" {paramlist} : Value := do\n{mbody.returned.indent}\n  return ωnull"
+  {nm (paramlist): ret} => "--@ ray_method \"{nm.raw.method}\" {paramlist} : {ret}"
+  {nm (paramlist)} => "--@ ray_method \"{nm.raw.method}\" {paramlist} : Value"
+  {nm (): ret} => "--@ ray_getter \"{nm.raw.method}\" : {ret}"
+  {nm ()} => "--@ ray_getter \"{nm.raw.method}\" : Value"
+  {static nm (paramlist): ret} => "--@ ray_static \"{nm.raw.method}\" {paramlist} : {ret}"
+  {static nm (paramlist)} => "--@ ray_static \"{nm.raw.method}\" {paramlist} : Value"
+  /* a rule of a theory: a `Rule` - its id, name and rate, what it is over, and its body, a program of what it matches - kept, in order, as the theory's `rules` */
+  {rule /rid "nm" | rt () => rbody} => "--@ ray_sfield \"rule {rid}\" : Rule\nray_impl_sfield \"rule {rid}\" : Rule := do\n  return (← new! Rule (id := \"/{rid}\", name := {nm.quoted}, rate := {rt.quoted}, over := {over.quoted}, single := {single}, «where» := {where}, source := {source}, body := (fn! [] do\n{rbody.returned.indent.indent}\n    return ωnull)))"
+  {rule /rid "nm" () => rbody} => "--@ ray_sfield \"rule {rid}\" : Rule\nray_impl_sfield \"rule {rid}\" : Rule := do\n  return (← new! Rule (id := \"/{rid}\", name := {nm.quoted}, rate := ωnull, over := {over.quoted}, single := {single}, «where» := {where}, source := {source}, body := (fn! [] do\n{rbody.returned.indent.indent}\n    return ωnull)))"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "--@ ray_sfield \"rule {rid}\" : Rule\nray_impl_sfield \"rule {rid}\" : Rule := do\n  return (← new! Rule (id := \"/{rid}\", name := {nm.quoted}, rate := {rt.quoted}, over := {over.quoted}, single := {single}, «where» := {where}, source := {source}, body := (fn! [{paramlist}] do\n{rbody.returned.indent.indent}\n    return ωnull)))"
+  {rule /rid "nm" (paramlist) => rbody} => "--@ ray_sfield \"rule {rid}\" : Rule\nray_impl_sfield \"rule {rid}\" : Rule := do\n  return (← new! Rule (id := \"/{rid}\", name := {nm.quoted}, rate := ωnull, over := {over.quoted}, single := {single}, «where» := {where}, source := {source}, body := (fn! [{paramlist}] do\n{rbody.returned.indent.indent}\n    return ωnull)))"
+  {choose "nm" (paramlist): ret} => "--@ ray_method \"choose {nm}\" {paramlist} : {ret}"
+  {choose "nm" (paramlist): ret => cbody} => "--@ ray_method \"choose {nm}\" {paramlist} : {ret}\nray_impl_method \"choose {nm}\" {paramlist} : {ret} := do\n{cbody.returned.indent}\n  return ωnull"
+  {choose "nm" (paramlist) => cbody} => "--@ ray_method \"choose {nm}\" {paramlist} : Value\nray_impl_method \"choose {nm}\" {paramlist} : Value := do\n{cbody.returned.indent}\n  return ωnull"
+  {as (=== ty) => cbody} => "--@ ray_getter \"as_{ty}\" : Value\nray_impl_getter \"as_{ty}\" : Value := do\n{cbody.returned.indent}\n  return ωnull"
 
-  /* a top-level definition is made on first read (`{global_name}`) */
-  constant (nm: String, text: String): String => "initialize defGlobal \"{nm}\" (do\n  return {text})"
+  /* a nested class is a class of its own (`Boundary.Initial(...)` makes an `Initial`) */
+  nested (outer: String, inner_name: String, inner: String): String => inner
 
+  /* a top-level definition: made on first read, its type Lean's own reading of it */
+  constant (nm: String, text: String): String => "ray_global {nm} := do\n  return {text}"
+
+  /* the equation of a theory, as data: every term a map of its parts, each share a program of the symbols */
   term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
     rate_ := rate.empty ? "Value.null" : "(Value.str {rate.quoted})"
-    where := where_source.empty ? "Value.null" : "(← mk \"Node\" #[(Value.kw \"source\" (Value.str {where_source.quoted}))])"
-    rule := id.empty ? "Value.null" : "(← mk \"Node\" #[(Value.kw \"id\" (Value.str {id.quoted})), (Value.kw \"rate\" {rate_}), (Value.kw \"name\" (Value.str {rule_name.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"where\" {where}), (Value.kw \"source\" (Value.str {rule_source.quoted}))])"
+    where := where_source.empty ? "Value.null" : "(← ωnode #[(\"source\", Value.str {where_source.quoted})])"
+    rule := id.empty ? "Value.null" : "(← ωnode #[(\"id\", Value.str {id.quoted}), (\"rate\", {rate_}), (\"name\", Value.str {rule_name.quoted}), (\"over\", Value.str {over.quoted}), (\"where\", {where}), (\"source\", Value.str {rule_source.quoted})])"
     leans_ := leans.empty ? "Value.null" : "(Value.str {leans.quoted})"
-    "    (← mk \"Node\" #[(Value.kw \"rule\" {rule}), (Value.kw \"rate\" {rate_}), (Value.kw \"degree\" (Value.num {degree})), (Value.kw \"outside\" (Value.bool {outside})), (Value.kw \"settles\" (Value.bool {settles})), (Value.kw \"transport\" (Value.bool {transport})), (Value.kw \"leans\" {leans_}), (Value.kw \"turned\" (Value.str {turned.quoted})), (Value.kw \"doing\" (← mk \"Node\" #[(Value.kw \"carries\" (Value.bool {carries})), (Value.kw \"sets\" (Value.bool {sets})), (Value.kw \"grown\" (Value.bool {grown})), (Value.kw \"trades\" (Value.bool {trades})), (Value.kw \"grew\" (← atv {grew_source.quoted} (fun s => do return {grew}))), (Value.kw \"grew_apart\" (← atv {grew_apart_source.quoted} (fun s => do return {grew_apart}))), (Value.kw \"draws\" Value.null), (Value.kw \"needs\" (Value.num {degree})), (Value.kw \"outside\" (Value.bool {outside})), (Value.kw \"settles\" (Value.bool {settles})), (Value.kw \"share\" (← atv {share_source.quoted} (fun s => do return {share}))), (Value.kw \"asked\" (← atv {asked_source.quoted} (fun s => do return {asked}))), (Value.kw \"around\" (← atv {around_source.quoted} (fun s => do return {around}))), (Value.kw \"rays\" (← atv {rays_source.quoted} (fun s => do return {rays}))), (Value.kw \"space\" (← atv {space_source.quoted} (fun s => do return {space}))), (Value.kw \"folds\" (← atv {folds_source.quoted} (fun s => do return {folds})))]))])"
+    "    (← ωnode #[(\"rule\", {rule}), (\"rate\", {rate_}), (\"degree\", Value.num {degree}), (\"outside\", Value.bool {outside}), (\"settles\", Value.bool {settles}), (\"transport\", Value.bool {transport}), (\"leans\", {leans_}), (\"turned\", Value.str {turned.quoted}), (\"doing\", (← ωnode #[(\"carries\", Value.bool {carries}), (\"sets\", Value.bool {sets}), (\"grown\", Value.bool {grown}), (\"trades\", Value.bool {trades}), (\"grew\", (← ωshare {grew_source.quoted} (fun (s : Value) => do return toValue {grew}))), (\"grew_apart\", (← ωshare {grew_apart_source.quoted} (fun (s : Value) => do return toValue {grew_apart}))), (\"draws\", Value.null), (\"needs\", Value.num {degree}), (\"outside\", Value.bool {outside}), (\"settles\", Value.bool {settles}), (\"share\", (← ωshare {share_source.quoted} (fun (s : Value) => do return toValue {share}))), (\"asked\", (← ωshare {asked_source.quoted} (fun (s : Value) => do return toValue {asked}))), (\"around\", (← ωshare {around_source.quoted} (fun (s : Value) => do return toValue {around}))), (\"rays\", (← ωshare {rays_source.quoted} (fun (s : Value) => do return toValue {rays}))), (\"space\", (← ωshare {space_source.quoted} (fun (s : Value) => do return toValue {space}))), (\"folds\", (← ωshare {folds_source.quoted} (fun (s : Value) => do return toValue {folds})))]))])"
   }
   equation_literal (theory: String, latex: String, terms: String[]): String => {
     lines := terms.join(",\n")
-    "initialize do\n  sm (← K \"{theory}\") \"equation\" (← mk \"Node\" #[(Value.kw \"latex\" (Value.str {latex.quoted})), (Value.kw \"terms\" (← lst #[\n{lines}\n  ]))])"
+    "namespace {theory}\ninitialize ωtheoryFill ωname (fun o => do\n  ωwriteSlot o (← ωmemberIndex o.cls \"equation\") \"equation\" (← ωnode #[(\"latex\", Value.str {latex.quoted}), (\"terms\", toValue (← lst #[\n{lines}\n  ]))]))\nend {theory}"
   }
 
-  /* what every module of the package opens with */
-  prologue (): String => "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport OrbitMines.Physics.Runtime\nset_option linter.unusedVariables false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nopen Rt\n"
+  /* what every class module opens with */
+  prologue (): String => "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport OrbitMines.Physics.Globals\nset_option linter.unusedVariables false\nset_option autoImplicit false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nnamespace OrbitMines.Physics\n"
 
-  /* the package: the runtime, one module a class (the text is split where a class begins), and the module that imports them all in order */
-  write_package (code: String) => {
-    parts := code.split("/-@@PIECE@@-/").filter(p => p.trim != "")
-    imports := Array.range(parts.length).map(i => "import OrbitMines.Physics.Part{i}").join("\n")
-    Array.range(parts.length).for(i => {
-      @./languages/physics.lean/OrbitMines/Physics/Part{i}.lean := "{Lean.prologue}\n{parts[i]}\n"
+  /* a class this package does not carry but a type or a program names (`Equation`): the types and makings of the class modules */
+  missing (types: String, parts: String, known: String[]): String[] => {
+    words := []
+    types.split("\n").for(l => {
+      /* past the member's name: what its parameters and its result are */
+      pieces := l.split("\"")
+      if pieces.length >= 3 { words = words.concat(pieces.drop(2).join(" ").replace("(", " ").replace(")", " ").replace(":", " ").replace("=", " ").split(" ")) }
     })
+    parts.split("new! ").drop(1).for(p => { words.push(p.split(" ").first) })
+    parts.split("cls% ").drop(1).for(p => { words.push(p.split(")").first.split(" ").first) })
+    builtin := ["Node", "Float", "Bool", "String", "Value", "RList", "RMap", "IO", "Unit", "Many", "Obj", "Nat", "Cls", "Array"]
+    out := []
+    words.for(w => {
+      c := w.chars
+      upper := c.length > 0 & c[0] >= 65 & c[0] <= 90
+      plain := c.every(k => (k >= 48 & k <= 57) | (k >= 65 & k <= 90) | (k >= 97 & k <= 122) | k == 95)
+      /* a parameter is a local, spelled with the depth of its scope (`D_0`): not a type */
+      local := w.contains("_") & c.length > 0 & c[c.length - 1] >= 48 & c[c.length - 1] <= 57
+      out.push(w) if upper & plain & !local & !known.contains(w) & !builtin.contains(w) & !out.contains(w)
+    })
+    out
+  }
+
+  /*
+   * THE PACKAGE: the runtime; Types.lean, every class's declarations (the lines `--@ ` of the emitted text, in order) -
+   * what every module stands on, so that a class calls another without importing it; Globals.lean, the top-level
+   * definitions; one module a class (the text is split where a class begins) holding the class's programs; and the
+   * module that imports them all
+   */
+  write_package (code: String) => {
+    pieces := code.split("/-@@PIECE@@-/").filter(p => p.trim != "")
+    globals := pieces.last
+    classes := pieces.take(pieces.length - 1)
+    heads := []
+    types := []
+    parts := []
+    known := ["Iterable", "Ordered"]
+    classes.for(p => {
+      lines := p.split("\n")
+      /* a program's type is a Value where Ray writes one no rule names (`(played: Played?) => Unrolling`) */
+      decl := lines.filter(l => l.starts_with("--@ ")).map(l => l.drop(4).replace("((...args: any[]) => any)", "Value"))
+      /* every class first, so that a member may name a class declared after its own */
+      heads.push(decl.filter(l => l.starts_with("ray_class ")).join("\n"))
+      decl.filter(l => l.starts_with("ray_class ")).for(l => { known.push(l.split(" ")[1]) })
+      body := decl.filter(l => !l.starts_with("ray_class "))
+      /* a member written twice (a part and a field of the same name): the later one stands */
+      keys := body.map(l => l.split(" : ").first)
+      kept := Array.range(body.length).filter(i => !keys.drop(i + 1).contains(keys[i])).map(i => body[i])
+      types.push(kept.join("\n"))
+      parts.push(lines.filter(l => !l.starts_with("--@ ")).join("\n").replace("((...args: any[]) => any)", "Value"))
+    })
+    missing := Lean.missing(types.join("\n"), parts.join("\n"), known)
+    stubs := missing.map(m => "ray_missing {m}").join("\n")
+    classes_ := heads.join("\n")
+    declared := types.join("\n\n")
+    @./languages/physics.lean/OrbitMines/Physics/Types.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n-- Every class of the package and every member of it, as Lean types: what every class module stands on.\nimport OrbitMines.Physics.Runtime\nset_option linter.unusedVariables false\nset_option autoImplicit false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nnamespace OrbitMines.Physics\n\nray_missing Node\n{stubs}\nray_class Iterable < Node\nray_class Ordered < Node\n{classes_}\n\n{declared}\n\nend OrbitMines.Physics\n"
+    @./languages/physics.lean/OrbitMines/Physics/Globals.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n-- The top-level definitions (the named lattices, ...): each made on first read.\nimport OrbitMines.Physics.Types\nset_option linter.unusedVariables false\nset_option autoImplicit false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nnamespace OrbitMines.Physics\n\n{globals}\n\nend OrbitMines.Physics\n"
+    Array.range(parts.length).for(i => {
+      @./languages/physics.lean/OrbitMines/Physics/Part{i}.lean := "{Lean.prologue}\n{parts[i]}\n\nend OrbitMines.Physics\n"
+    })
+    imports := Array.range(parts.length).map(i => "import OrbitMines.Physics.Part{i}").join("\n")
     @./languages/physics.lean/OrbitMines/Physics/Runtime.lean := @./implementation/gen/backends/cpu.rt.lean
-    @./languages/physics.lean/OrbitMines/Physics.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/-\n  OrbitMines.Physics - the physics core and the theories, emitted from implementation/physics.ray. Every Ray class\n  is a table filled when the package loads (`K \"Medium\"`), every theory an object (`K \"G\"`); their members are\n  reached through the runtime (`gm`, `cm`, `sm`, `mk` in `Rt`).\n-/\nimport OrbitMines.Physics.Runtime\n{imports}\nimport OrbitMines.Physics.Theorems\n"
+    @./languages/physics.lean/OrbitMines/Physics.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/-\n  OrbitMines.Physics - the physics core and the theories, emitted from implementation/physics.ray. Every Ray class is\n  a Lean type (`Medium`, `Hole`, ...) and every member a function of it (`m.tick`, `h.mass`); a theory is its one\n  object (`← cls% G`). See Runtime.lean for how, and Types.lean for every class and member.\n-/\nimport OrbitMines.Physics.Runtime\nimport OrbitMines.Physics.Types\nimport OrbitMines.Physics.Globals\n{imports}\nimport OrbitMines.Physics.Theorems\n"
     @./languages/physics.lean/README.md := this.readme
     @./languages/physics.lean/lakefile.toml := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nname = \"orbitmines-physics\"\nversion = \"{Release.semver}\"\ndefaultTargets = [\"OrbitMines\"]\n\n# the theorems (OrbitMines.Physics.Proofs) are checked with Mathlib; the runtime (OrbitMines.Physics) imports none of it\n[[require]]\nname = \"mathlib\"\ngit = \"https://github.com/leanprover-community/mathlib4\"\nrev = \"v4.34.1\"\n\n[[lean_lib]]\nname = \"OrbitMines\"\nroots = [\"OrbitMines.Physics\", \"OrbitMines.Physics.Proofs\"]\n"
     @./languages/physics.lean/lean-toolchain := "leanprover/lean4:v4.34.1\n"
     @./languages/physics.lean/.gitignore := "/.lake\n"
   }
 
+  /* a case: the fixture, ticked until its refinement holds (by name, as a fixture of a kind with no `tick` is not ticked), then the requirement */
   test_case (r: Requirement, f: Fixture): String => {
     definition := f.definition.as(Lean)
     requirement := r.requirement.as(Lean)
-    filter := r.filter == None ? "(Value.bool true)" : r.filter.as(Lean)
+    filter := r.filter == None ? "true" : r.filter.as(Lean)
     label := "{r.location} on {f.name}"
-    "initialize addTest {label.quoted} (do\n  let it : Value := {definition}\n  let mut guard := 0\n  while !truthy {filter} do\n    guard := guard + 1\n    if guard > {r.until} || !(← has it \"tick\") then return \"skip\"\n    sink (← gm it \"tick\")\n  return (if truthy {requirement} then \"pass\" else \"failed: \" ++ {requirement.quoted}))"
+    "initialize addTest {label.quoted} (do\n  let it := {definition}\n  let mut guard := 0\n  while !truthy {filter} do\n    guard := guard + 1\n    if guard > {r.until} || !(← ωhas (toValue it) \"tick\") then return \"skip\"\n    sink (← (toValue it).dynGet \"tick\")\n  return (if truthy {requirement} then \"pass\" else \"failed: \" ++ {requirement.quoted}))"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {
-    @./tests/lean/TestG.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n-- lake build && .lake/build/bin/testg [filter]\nimport OrbitMines.Physics\nset_option linter.unusedVariables false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nopen Rt\n\ninitialize testsRef : IO.Ref (Array (String × IO String)) ← IO.mkRef #[]\ndef addTest (name : String) (body : IO String) : IO Unit := testsRef.modify (·.push (name, body))\n\n{cases}\n\ndef main (args : List String) : IO UInt32 := do\n  let only := args.head?\n  let mut passed := 0\n  let mut failed := 0\n  let mut skipped := 0\n  for (name, body) in (← testsRef.get) do\n    if let some o := only then\n      if (strFind name o).isNone then continue\n    let t0 ← IO.monoNanosNow\n    let got ← try body catch e => pure (\"error: \" ++ toString e)\n    let t1 ← IO.monoNanosNow\n    let secs := fixed2 ((t1 - t0).toFloat / 1e9)\n    if got == \"pass\" then\n      passed := passed + 1\n      IO.println (\"ok   \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else if got == \"skip\" then\n      skipped := skipped + 1\n      IO.println (\"skip \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else\n      failed := failed + 1\n      IO.println (\"FAIL \" ++ name ++ \" (\" ++ secs ++ \" s) - \" ++ got)\n    (← IO.getStdout).flush\n  IO.println (toString passed ++ \" passed, \" ++ toString failed ++ \" failed, \" ++ toString skipped ++ \" skipped\")\n  return (if failed > 0 then 1 else 0)\n"
+    @./tests/lean/TestG.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n-- lake build && .lake/build/bin/testg [filter]\nimport OrbitMines.Physics\nset_option linter.unusedVariables false\nset_option autoImplicit false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nopen OrbitMines.Physics\n\ninitialize testsRef : IO.Ref (Array (String × IO String)) ← IO.mkRef #[]\ndef addTest (name : String) (body : IO String) : IO Unit := testsRef.modify (·.push (name, body))\n\n{cases}\n\ndef main (args : List String) : IO UInt32 := do\n  let only := args.head?\n  let mut passed := 0\n  let mut failed := 0\n  let mut skipped := 0\n  for (name, body) in (← testsRef.get) do\n    if let some o := only then\n      if (strFind name o).isNone then continue\n    let t0 ← IO.monoNanosNow\n    let got ← try body catch e => pure (\"error: \" ++ toString e)\n    let t1 ← IO.monoNanosNow\n    let secs := fixed2 ((t1 - t0).toFloat / 1e9)\n    if got == \"pass\" then\n      passed := passed + 1\n      IO.println (\"ok   \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else if got == \"skip\" then\n      skipped := skipped + 1\n      IO.println (\"skip \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else\n      failed := failed + 1\n      IO.println (\"FAIL \" ++ name ++ \" (\" ++ secs ++ \" s) - \" ++ got)\n    (← IO.getStdout).flush\n  IO.println (toString passed ++ \" passed, \" ++ toString failed ++ \" failed, \" ++ toString skipped ++ \" skipped\")\n  return (if failed > 0 then 1 else 0)\n"
     @./tests/lean/lakefile.toml := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nname = \"orbitmines-physics-tests\"\ndefaultTargets = [\"testg\"]\n\n[[require]]\nname = \"orbitmines-physics\"\npath = \"../../languages/physics.lean\"\n\n[[lean_exe]]\nname = \"testg\"\nroot = \"TestG\"\n"
     @./tests/lean/lean-toolchain := "leanprover/lean4:v4.34.1\n"
     @./tests/lean/.gitignore := "/.lake\n"

@@ -336,10 +336,14 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D;
   const VIEW = Number(Deno.env.get("RAY_SIDE") ?? 361), STARS = Number(Deno.env.get("RAY_STARS") ?? 100000);
   const MARGIN = Number(Deno.env.get("RAY_MARGIN") ?? 2), SIDE = VIEW + 2 * MARGIN * 3;
-  const RD = Number(Deno.env.get("RAY_RD") ?? 8), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.03), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
+  const RD = Number(Deno.env.get("RAY_RD") ?? 6), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.015), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
   const FRAMES = Number(Deno.env.get("RAY_FRAMES") ?? 120), TPF = Number(Deno.env.get("RAY_TPF") ?? 40), GRID = 128;
-  const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true };
+  /* RAY_DUTY: the share of the time the device may be busy (the rest is the screen's; pieces stay <= 30 ms either way) */
+  const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true, plan: { budget: { duty: Number(Deno.env.get("RAY_DUTY") ?? 0.5) } } };
   const mid = (SIDE - 1) / 2, span = (VIEW - 1) / 2 / K - 2;
+  const CUT = Math.min(Number(Deno.env.get("RAY_CUT") ?? 4) * RD, span - 1);
+  /* the mean circling less what the stir holds up (asymmetric drift): RAY_DRIFT=0 launches every star at the full circling speed */
+  const DRIFT = Number(Deno.env.get("RAY_DRIFT") ?? 1);
   const t0 = performance.now();
   /* what one body of unit mass pulls with, a little out, in a small box of the same medium: the scale the mass is set by */
   const CAL = 121, cmid = (CAL - 1) / 2, rcal = 8;
@@ -358,7 +362,10 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const gauss = () => Math.sqrt(-2 * Math.log(rnd())) * Math.cos(2 * Math.PI * rnd());
   const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
   for (let s = 0; s < STARS; s++) {
-    const r = Math.min(-RD * Math.log(rnd() * rnd()), span - 1), th = 2 * Math.PI * rnd();
+    /* drawn again where it falls past the cut (RAY_CUT scale lengths, and never past the view): a disc cut there, not a ring of every star beyond it at the view's edge */
+    let r = -RD * Math.log(rnd() * rnd());
+    while (r > CUT) r = -RD * Math.log(rnd() * rnd());
+    const th = 2 * Math.PI * rnd();
     const h = new physics.Hole({ x: mid + r * K * Math.cos(th), y: mid + r * K * Math.sin(th), mx: m, ways: 1 });
     h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
     w.add(h);
@@ -376,7 +383,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
    * (v_phi^2 = v^2 + sigma_R^2 (1 - kappa^2 / 4 Omega^2 - 2 R / R_d)). Then the whole disc is set at rest - its
    * momentum taken off every star alike - so a drift later is the medium's and not the draw's
    */
-  const Q = Number(Deno.env.get("RAY_Q") ?? 1.5), GEFF = p1 * rcal ** (D - 1), DR = 0.5, RINGS = Math.ceil(span / DR) + 1;
+  const Q = Number(Deno.env.get("RAY_Q") ?? 1.2), GEFF = p1 * rcal ** (D - 1), DR = 0.5, RINGS = Math.ceil(span / DR) + 1;
   const ringG = new Float64Array(RINGS), ringN = new Float64Array(RINGS), ringM = new Float64Array(RINGS);
   w.holes.forEach((h: any, s: number) => {
     const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
@@ -405,7 +412,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     /* and no stir past half the circling, where the disc thins out to a few stars a ring */
     const sR = Q > 0 ? Math.min(0.5 * Math.sqrt(v2[k]), Q * 3.36 * GEFF * sigmaSurf[k] / kap) : SIGMA * Math.sqrt(v2[k]);
     const sP = Q > 0 ? sR * kap / (2 * Math.sqrt(om2)) : sR;
-    const vphi = Q > 0 ? Math.sqrt(Math.max(0, v2[k] + sR * sR * (1 - kappa2[k] / (4 * om2) - 2 * R / RD))) : Math.sqrt(v2[k]);
+    const vphi = Q > 0 ? Math.sqrt(Math.max(0, v2[k] + DRIFT * sR * sR * (1 - kappa2[k] / (4 * om2) - 2 * R / RD))) : Math.sqrt(v2[k]);
     return { sR, sP, vphi, q: sR * kap / (3.36 * GEFF * sigmaSurf[k]), v: Math.sqrt(v2[k]) };
   };
   console.log(`  the launch, ${Q > 0 ? `stirred to Toomre's Q ${Q}` : `a flat spread of ${SIGMA} of the circling`}: ${[1, 2, 3].map(n => { const st = stir(n * RD); return `at ${n} R_d circling ${st.v.toFixed(4)}, radial stir ${st.sR.toFixed(4)} (Q ${st.q.toFixed(2)})`; }).join("; ")}`);
@@ -432,11 +439,28 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const density: number[] = [], ticks: number[] = [], departed: number[] = [];
   /* what a closed system keeps: its momentum (zero, launched about the middle) and its turn about the middle - and its motion's own energy, and how spread its stars are, frame by frame */
   const momentum: number[] = [], turn: number[] = [], motion: number[] = [], half: number[] = [], holding: number[] = [];
+  /*
+   * THE CAMERA: where the galaxy's middle is now - the centre of mass of the stars within 3 R_d of where it was, found
+   * again a few times (so a star flung out, or a clump passing, does not drag it) - and every frame drawn about it
+   * (RAY_CAMERA=fixed: about the box's middle, as the first films were). Its path is kept with the film
+   */
+  const FOLLOW = (Deno.env.get("RAY_CAMERA") ?? "follow") !== "fixed";
+  let camX = mid, camY = mid;
+  const camera: number[] = [];
   const shoot = async () => {
     await w.sync();
+    if (FOLLOW) {
+      const reach = 3 * RD * K;
+      for (let pass = 0; pass < 6; pass++) {
+        let sx = 0, sy = 0, sm = 0;
+        for (const h of w.holes) { if (Math.hypot(h.x - camX, h.y - camY) <= reach) { sx += h.mass * h.x; sy += h.mass * h.y; sm += h.mass; } }
+        if (sm > 0) { camX = sx / sm; camY = sy / sm; }
+      }
+    }
+    camera.push((camX - mid) / K, (camY - mid) / K);
     const grid = new Float32Array(GRID * GRID);
     for (const h of w.holes) {
-      const gx = Math.floor(((h.x - mid) / K / span + 1) / 2 * GRID), gy = Math.floor(((h.y - mid) / K / span + 1) / 2 * GRID);
+      const gx = Math.floor(((h.x - camX) / K / span + 1) / 2 * GRID), gy = Math.floor(((h.y - camY) / K / span + 1) / 2 * GRID);
       if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) grid[gy * GRID + gx] += 1;
     }
     for (const v of grid) density.push(v);
@@ -445,7 +469,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     const rs: number[] = [];
     for (const h of w.holes) {
       const p = h.momentum?.components ?? [h.px ?? 0, h.py ?? 0];
-      const dx = (h.x - mid) / K, dy = (h.y - mid) / K;
+      const dx = (h.x - camX) / K, dy = (h.y - camY) / K;
       px += p[0]; py += p[1]; pabs += Math.hypot(p[0], p[1]);
       lz += dx * p[1] - dy * p[0];
       ke += (p[0] * p[0] + p[1] * p[1]) / (2 * h.mass);
@@ -455,7 +479,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     /* how well the pull a star now feels holds its circling: g R / v_turn^2, the median over stars 2-3 R_d out (1 at the launch, where each was set going at the pull it stood in) */
     const felt = await w.leans(), ratios: number[] = [];
     w.holes.forEach((h: any, s: number) => {
-      const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
+      const dx = (h.x - camX) / K, dy = (h.y - camY) / K, R = Math.hypot(dx, dy);
       if (R < 2 * RD || R > 3 * RD) return;
       const p = h.momentum?.components ?? [h.px ?? 0, h.py ?? 0];
       const vt = (dx * p[1] - dy * p[0]) / R / h.mass, g = -(felt[s][0] * dx + felt[s][1] * dy) / R;
@@ -474,7 +498,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   }
   physics.Measure.save("galaxy.medium", ["density"], { density }, {
     names: ["a disc in the medium"], mass: [MASS], scale: [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
-    deg: DEG, side: SIDE, view: VIEW, margin: MARGIN, departed, momentum, turn, motion, half, holding, speed: speedRD, sigma: SIGMA, tpf: TPF,
+    deg: DEG, side: SIDE, view: VIEW, margin: MARGIN, departed, momentum, turn, motion, half, holding, camera, follow: FOLLOW, speed: speedRD, sigma: SIGMA, tpf: TPF,
     about: "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame",
   });
   console.log(`  written to visuals/galaxy.medium (${((performance.now() - t0) / 1000).toFixed(0)}s); draw it: npx ray visuals galaxy.medium`);

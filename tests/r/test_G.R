@@ -25,2422 +25,2422 @@ t_case <- function(name, body) {
 }
 
 t_case("tests/coincidence.ray:13 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(K("Fmt"), "finite", call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8))))) "pass" else paste0("failed: ", "call(K(\"Fmt\"), \"finite\", call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)))")
+  if (truthy(Fmt$finite(it$value_of("\\frac{a_{0}}{cH}", it$settled(8))))) "pass" else paste0("failed: ", "Fmt$finite(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)))")
 })
 
 t_case("tests/coincidence.ray:14 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)), 0)")
+  if (truthy(gt(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), 0))) "pass" else paste0("failed: ", "gt(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), 0)")
 })
 
 t_case("tests/coincidence.ray:16 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 6)), call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8))))) "pass" else paste0("failed: ", "gt(call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 6)), call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)))")
+  if (truthy(gt(it$value_of("\\frac{a_{0}}{cH}", it$settled(6)), it$value_of("\\frac{a_{0}}{cH}", it$settled(8))))) "pass" else paste0("failed: ", "gt(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(6)), it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)))")
 })
 
 t_case("tests/coincidence.ray:17 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8)), call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 18))))) "pass" else paste0("failed: ", "gt(call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)), call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 18)))")
+  if (truthy(gt(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), it$value_of("\\frac{a_{0}}{cH}", it$settled(18))))) "pass" else paste0("failed: ", "gt(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(18)))")
 })
 
 t_case("tests/coincidence.ray:19 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(r_mul(call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8)), m_sqrt((r_sub(1, 0.315)))), 0.155))) "pass" else paste0("failed: ", "gt(r_mul(call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)), m_sqrt((r_sub(1, 0.315)))), 0.155)")
+  if (truthy(gt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.155))) "pass" else paste0("failed: ", "gt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.155)")
 })
 
 t_case("tests/coincidence.ray:20 on coincidence", function() {
-  it <- make("Model", `theory` = K("G"))
+  it <- Model$new(theory = G)
   guard <- 0
-  while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+  while (!truthy(eq(it$theory$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(r_mul(call(it, "value_of", "\\frac{a_{0}}{cH}", call(it, "settled", 8)), m_sqrt((r_sub(1, 0.315)))), 0.183))) "pass" else paste0("failed: ", "lt(r_mul(call(it, \"value_of\", \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", 8)), m_sqrt((r_sub(1, 0.315)))), 0.183)")
+  if (truthy(lt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183))) "pass" else paste0("failed: ", "lt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183)")
 })
 
 t_case("tests/field.ray:10 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "n"), function(v = NULL, ...) {
+  if (truthy(m_every(it$n, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"n\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$n, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:10 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "n"), function(v = NULL, ...) {
+  if (truthy(m_every(it$n, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"n\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$n, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:10 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "n"), function(v = NULL, ...) {
+  if (truthy(m_every(it$n, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"n\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$n, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:10 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "n"), function(v = NULL, ...) {
+  if (truthy(m_every(it$n, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"n\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$n, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:11 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "mean"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"mean\"), 0)")
+  if (truthy(gt(it$mean, 0))) "pass" else paste0("failed: ", "gt(it$mean, 0)")
 })
 
 t_case("tests/field.ray:11 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "mean"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"mean\"), 0)")
+  if (truthy(gt(it$mean, 0))) "pass" else paste0("failed: ", "gt(it$mean, 0)")
 })
 
 t_case("tests/field.ray:11 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "mean"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"mean\"), 0)")
+  if (truthy(gt(it$mean, 0))) "pass" else paste0("failed: ", "gt(it$mean, 0)")
 })
 
 t_case("tests/field.ray:11 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "mean"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"mean\"), 0)")
+  if (truthy(gt(it$mean, 0))) "pass" else paste0("failed: ", "gt(it$mean, 0)")
 })
 
 t_case("tests/field.ray:12 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:12 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:12 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:12 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 5))) {
+  while (!truthy(eq(it$ticks, 5))) {
     guard <- guard + 1
     if (guard > 7 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
   return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/field.ray:17 on vacuum", function() {
-  it <- make("Rates", `nu` = 1, `sigma` = 1, `F` = 0.5, `DEG` = 8, `D` = 2)
+  it <- Rates$new(nu = 1, sigma = 1, F = 0.5, DEG = 8, D = 2)
   guard <- 0
-  while (!truthy(eq(get(it, "nu"), 1))) {
+  while (!truthy(eq(it$nu, 1))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs((r_sub(call(K("Solve"), "settles", it), 0.7320508075688772))), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs((r_sub(call(K(\"Solve\"), \"settles\", it), 0.7320508075688772))), 0.000001)")
+  if (truthy(lt(m_abs((r_sub(Solve$settles(it), 0.7320508075688772))), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs((r_sub(Solve$settles(it), 0.7320508075688772))), 0.000001)")
 })
 
 t_case("tests/field.ray:18 on vacuum", function() {
-  it <- make("Rates", `nu` = 1, `sigma` = 1, `F` = 0.5, `DEG` = 8, `D` = 2)
+  it <- Rates$new(nu = 1, sigma = 1, F = 0.5, DEG = 8, D = 2)
   guard <- 0
-  while (!truthy(eq(get(it, "nu"), 1))) {
+  while (!truthy(eq(it$nu, 1))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(K("Solve"), "settles", it), 0))) "pass" else paste0("failed: ", "gt(call(K(\"Solve\"), \"settles\", it), 0)")
+  if (truthy(gt(Solve$settles(it), 0))) "pass" else paste0("failed: ", "gt(Solve$settles(it), 0)")
 })
 
 t_case("tests/field.ray:19 on vacuum", function() {
-  it <- make("Rates", `nu` = 1, `sigma` = 1, `F` = 0.5, `DEG` = 8, `D` = 2)
+  it <- Rates$new(nu = 1, sigma = 1, F = 0.5, DEG = 8, D = 2)
   guard <- 0
-  while (!truthy(eq(get(it, "nu"), 1))) {
+  while (!truthy(eq(it$nu, 1))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(K("Solve"), "settles", it), 1))) "pass" else paste0("failed: ", "lt(call(K(\"Solve\"), \"settles\", it), 1)")
+  if (truthy(lt(Solve$settles(it), 1))) "pass" else paste0("failed: ", "lt(Solve$settles(it), 1)")
 })
 
 t_case("tests/galaxy.ray:10 on ring", function() {
-  it <- make("Annulus", `inner` = 4, `outer` = 6, `thick` = 0.2)
+  it <- Annulus$new(inner = 4, outer = 6, thick = 0.2)
   guard <- 0
-  while (!truthy(eq(get(it, "outer"), 6))) {
+  while (!truthy(eq(it$outer, 6))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs((r_sub(r_mul(r_mul(call(it, "pull", 200, 4, 64), 200), 200), 1))), 0.002))) "pass" else paste0("failed: ", "lt(m_abs((r_sub(r_mul(r_mul(call(it, \"pull\", 200, 4, 64), 200), 200), 1))), 0.002)")
+  if (truthy(lt(m_abs((r_sub(r_mul(r_mul(it$pull(200, 4, 64), 200), 200), 1))), 0.002))) "pass" else paste0("failed: ", "lt(m_abs((r_sub(r_mul(r_mul(it$pull(200, 4, 64), 200), 200), 1))), 0.002)")
 })
 
 t_case("tests/galaxy.ray:11 on ring", function() {
-  it <- make("Annulus", `inner` = 4, `outer` = 6, `thick` = 0.2)
+  it <- Annulus$new(inner = 4, outer = 6, thick = 0.2)
   guard <- 0
-  while (!truthy(eq(get(it, "outer"), 6))) {
+  while (!truthy(eq(it$outer, 6))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(call(it, "pull", 0.01, 4, 64)), 0.001))) "pass" else paste0("failed: ", "lt(m_abs(call(it, \"pull\", 0.01, 4, 64)), 0.001)")
+  if (truthy(lt(m_abs(it$pull(0.01, 4, 64)), 0.001))) "pass" else paste0("failed: ", "lt(m_abs(it$pull(0.01, 4, 64)), 0.001)")
 })
 
 t_case("tests/galaxy.ray:13 on ring", function() {
-  it <- make("Annulus", `inner` = 4, `outer` = 6, `thick` = 0.2)
+  it <- Annulus$new(inner = 4, outer = 6, thick = 0.2)
   guard <- 0
-  while (!truthy(eq(get(it, "outer"), 6))) {
+  while (!truthy(eq(it$outer, 6))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(r_mul(call(it, "pull", 7, 4, 64), 49), 1))) "pass" else paste0("failed: ", "gt(r_mul(call(it, \"pull\", 7, 4, 64), 49), 1)")
+  if (truthy(gt(r_mul(it$pull(7, 4, 64), 49), 1))) "pass" else paste0("failed: ", "gt(r_mul(it$pull(7, 4, 64), 49), 1)")
 })
 
 t_case("tests/galaxy.ray:14 on ring", function() {
-  it <- make("Annulus", `inner` = 4, `outer` = 6, `thick` = 0.2)
+  it <- Annulus$new(inner = 4, outer = 6, thick = 0.2)
   guard <- 0
-  while (!truthy(eq(get(it, "outer"), 6))) {
+  while (!truthy(eq(it$outer, 6))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(it, "pull", 3, 4, 64), 0))) "pass" else paste0("failed: ", "lt(call(it, \"pull\", 3, 4, 64), 0)")
+  if (truthy(lt(it$pull(3, 4, 64), 0))) "pass" else paste0("failed: ", "lt(it$pull(3, 4, 64), 0)")
 })
 
 t_case("tests/medium.ray:11 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "rho_inf"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"rho_inf\"), 0)")
+  if (truthy(gt(it$rho_inf, 0))) "pass" else paste0("failed: ", "gt(it$rho_inf, 0)")
 })
 
 t_case("tests/medium.ray:12 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(it, "rho_inf"), 1))) "pass" else paste0("failed: ", "lt(get(it, \"rho_inf\"), 1)")
+  if (truthy(lt(it$rho_inf, 1))) "pass" else paste0("failed: ", "lt(it$rho_inf, 1)")
 })
 
 t_case("tests/medium.ray:13 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(K("Fmt"), "finite", get(it, "nf_inf")))) "pass" else paste0("failed: ", "call(K(\"Fmt\"), \"finite\", get(it, \"nf_inf\"))")
+  if (truthy(Fmt$finite(it$nf_inf))) "pass" else paste0("failed: ", "Fmt$finite(it$nf_inf)")
 })
 
 t_case("tests/medium.ray:14 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy((!eq(call(it, "step", "record"), NULL)))) "pass" else paste0("failed: ", "(!eq(call(it, \"step\", \"record\"), NULL))")
+  if (truthy((!eq(it$step("record"), NULL)))) "pass" else paste0("failed: ", "(!eq(it$step(\"record\"), NULL))")
 })
 
 t_case("tests/medium.ray:15 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy((!eq(call(it, "step", "line"), NULL)))) "pass" else paste0("failed: ", "(!eq(call(it, \"step\", \"line\"), NULL))")
+  if (truthy((!eq(it$step("line"), NULL)))) "pass" else paste0("failed: ", "(!eq(it$step(\"line\"), NULL))")
 })
 
 t_case("tests/medium.ray:16 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
   if (truthy(m_every(lst(1, 2, 4, 8, 16, 32), function(R = NULL, ...) {
-  return(call(K("Fmt"), "finite", call(it, "pull", 1, R)))
+  return(Fmt$finite(it$pull(1, R)))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(lst(1, 2, 4, 8, 16, 32), function(R = NULL, ...) {\n  return(call(K(\"Fmt\"), \"finite\", call(it, \"pull\", 1, R)))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(lst(1, 2, 4, 8, 16, 32), function(R = NULL, ...) {\n  return(Fmt$finite(it$pull(1, R)))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:18 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(K("Fmt"), "finite", call(it, "circling", 1, 12, 6)))) "pass" else paste0("failed: ", "call(K(\"Fmt\"), \"finite\", call(it, \"circling\", 1, 12, 6))")
+  if (truthy(Fmt$finite(it$circling(1, 12, 6)))) "pass" else paste0("failed: ", "Fmt$finite(it$circling(1, 12, 6))")
 })
 
 t_case("tests/medium.ray:19 on law", function() {
-  it <- call(K("Aggregate"), "of", K("G"))
+  it <- Aggregate$of(G)
   guard <- 0
-  while (!truthy(eq(get(it, "DEG"), 8))) {
+  while (!truthy(eq(it$DEG, 8))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(it, "circling", 1, 12, 6), 1))) "pass" else paste0("failed: ", "lt(call(it, \"circling\", 1, 12, 6), 1)")
+  if (truthy(lt(it$circling(1, 12, 6), 1))) "pass" else paste0("failed: ", "lt(it$circling(1, 12, 6), 1)")
 })
 
 t_case("tests/medium.ray:27 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "x"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"x\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$x, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$x, 7)")
 })
 
 t_case("tests/medium.ray:27 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "x"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"x\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$x, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$x, 7)")
 })
 
 t_case("tests/medium.ray:27 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "x"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"x\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$x, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$x, 7)")
 })
 
 t_case("tests/medium.ray:28 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$y, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 7)")
 })
 
 t_case("tests/medium.ray:28 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$y, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 7)")
 })
 
 t_case("tests/medium.ray:28 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 7))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 7)")
+  if (truthy(eq(elem(it$holes, 0)$y, 7))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 7)")
 })
 
 t_case("tests/medium.ray:29 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(eq(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:29 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(eq(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:29 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(eq(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:31 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "arrived", 1, call(it, "at", 10, 7)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"arrived\", 1, call(it, \"at\", 10, 7)), 0)")
+  if (truthy(gt(it$arrived(1, it$at(10, 7)), 0))) "pass" else paste0("failed: ", "gt(it$arrived(1, it$at(10, 7)), 0)")
 })
 
 t_case("tests/medium.ray:31 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "arrived", 1, call(it, "at", 10, 7)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"arrived\", 1, call(it, \"at\", 10, 7)), 0)")
+  if (truthy(gt(it$arrived(1, it$at(10, 7)), 0))) "pass" else paste0("failed: ", "gt(it$arrived(1, it$at(10, 7)), 0)")
 })
 
 t_case("tests/medium.ray:31 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "arrived", 1, call(it, "at", 10, 7)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"arrived\", 1, call(it, \"at\", 10, 7)), 0)")
+  if (truthy(gt(it$arrived(1, it$at(10, 7)), 0))) "pass" else paste0("failed: ", "gt(it$arrived(1, it$at(10, 7)), 0)")
 })
 
 t_case("tests/medium.ray:32 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
-  return(ge(v, get(it, "rho_inf")))
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
+  return(ge(v, it$rho_inf))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, get(it, \"rho_inf\")))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:32 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
-  return(ge(v, get(it, "rho_inf")))
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
+  return(ge(v, it$rho_inf))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, get(it, \"rho_inf\")))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:32 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "N"), 16) else .x))) eq(get(it, "ticks"), 12) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
     if (guard > 14 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "rho"), function(v = NULL, ...) {
-  return(ge(v, get(it, "rho_inf")))
+  if (truthy(m_every(it$rho, function(v = NULL, ...) {
+  return(ge(v, it$rho_inf))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"rho\"), function(v = NULL, ...) {\n  return(ge(v, get(it, \"rho_inf\")))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:40 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:40 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:40 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "px_now"), 0))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:41 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "px_now"), 0))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"px_now\"), 0)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:41 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "px_now"), 0))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"px_now\"), 0)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:41 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "px_now"), 0))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"px_now\"), 0)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:42 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 0.000001)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:42 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 0.000001)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:42 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 0.000001)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:43 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "x"), 6))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"x\"), 6)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
 t_case("tests/medium.ray:43 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "x"), 6))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"x\"), 6)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
 t_case("tests/medium.ray:43 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "x"), 6))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"x\"), 6)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
 t_case("tests/medium.ray:44 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "x"), 42))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"x\"), 42)")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
 t_case("tests/medium.ray:44 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "x"), 42))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"x\"), 42)")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
 t_case("tests/medium.ray:44 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "x"), 42))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"x\"), 42)")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
 t_case("tests/medium.ray:46 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 6, 24)), call(it, "record_above", call(it, "at", 24, 24))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 6, 24)), call(it, \"record_above\", call(it, \"at\", 24, 24)))")
+  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
 })
 
 t_case("tests/medium.ray:46 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 6, 24)), call(it, "record_above", call(it, "at", 24, 24))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 6, 24)), call(it, \"record_above\", call(it, \"at\", 24, 24)))")
+  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
 })
 
 t_case("tests/medium.ray:46 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 6, 24)), call(it, "record_above", call(it, "at", 24, 24))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 6, 24)), call(it, \"record_above\", call(it, \"at\", 24, 24)))")
+  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
 })
 
 t_case("tests/medium.ray:47 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "crossed", call(it, "at", 24, 24)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"crossed\", call(it, \"at\", 24, 24)), 0)")
+  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
 t_case("tests/medium.ray:47 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "crossed", call(it, "at", 24, 24)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"crossed\", call(it, \"at\", 24, 24)), 0)")
+  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
 t_case("tests/medium.ray:47 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "crossed", call(it, "at", 24, 24)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"crossed\", call(it, \"at\", 24, 24)), 0)")
+  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
 t_case("tests/medium.ray:61 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
 t_case("tests/medium.ray:61 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
 t_case("tests/medium.ray:61 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
 t_case("tests/medium.ray:62 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 30, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
 t_case("tests/medium.ray:62 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 30, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
 t_case("tests/medium.ray:62 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 30, 18)), 0))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
 t_case("tests/medium.ray:64 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(it, "record_above", call(it, "at", 24, 18)), r_div(get(it, "nf_inf"), 100)))) "pass" else paste0("failed: ", "lt(call(it, \"record_above\", call(it, \"at\", 24, 18)), r_div(get(it, \"nf_inf\"), 100))")
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
 })
 
 t_case("tests/medium.ray:64 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(it, "record_above", call(it, "at", 24, 18)), r_div(get(it, "nf_inf"), 100)))) "pass" else paste0("failed: ", "lt(call(it, \"record_above\", call(it, \"at\", 24, 18)), r_div(get(it, \"nf_inf\"), 100))")
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
 })
 
 t_case("tests/medium.ray:64 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(call(it, "record_above", call(it, "at", 24, 18)), r_div(get(it, "nf_inf"), 100)))) "pass" else paste0("failed: ", "lt(call(it, \"record_above\", call(it, \"at\", 24, 18)), r_div(get(it, \"nf_inf\"), 100))")
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
 })
 
 t_case("tests/medium.ray:65 on alone_medium", function() {
-  it <- call(call(K("G"), "medium", 16, 8, 3, 18, 2), "thrown", 7, 7, 1, 100, 0, 0, 1)
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), call(it, "record_above", call(it, "at", 30, 18))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), call(it, \"record_above\", call(it, \"at\", 30, 18)))")
+  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
 })
 
 t_case("tests/medium.ray:65 on pair_medium", function() {
-  it <- call(call(call(K("G"), "medium", 49, 8, 3, 18, 3), "thrown", 6, 24, 1, 100, 0, 0, 1), "thrown", 42, 24, 1, 100, 0, 0, 2)
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), call(it, "record_above", call(it, "at", 30, 18))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), call(it, \"record_above\", call(it, \"at\", 30, 18)))")
+  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
 })
 
 t_case("tests/medium.ray:65 on standing", function() {
-  it <- call(get(call(K("G"), "medium", 37, 8, 3, 18, 2), "under_vacuum"), "thrown", 18, 18, 0.01, 100, 0, 0, 1)
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 1))) get(it, "vacuum") else .x))) eq(get(it, "ticks"), 40) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
     guard <- guard + 1
     if (guard > 42 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(call(it, "record_above", call(it, "at", 24, 18)), call(it, "record_above", call(it, "at", 30, 18))))) "pass" else paste0("failed: ", "gt(call(it, \"record_above\", call(it, \"at\", 24, 18)), call(it, \"record_above\", call(it, \"at\", 30, 18)))")
+  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
 })
 
 t_case("tests/motion.ray:13 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 400))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 400)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 400))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 400)")
 })
 
 t_case("tests/motion.ray:13 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 400))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 400)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 400))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 400)")
 })
 
 t_case("tests/motion.ray:13 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 400))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 400)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 400))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 400)")
 })
 
 t_case("tests/motion.ray:13 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 400))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 400)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 400))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 400)")
 })
 
 t_case("tests/motion.ray:14 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 440))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 440)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 440))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 440)")
 })
 
 t_case("tests/motion.ray:14 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 440))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 440)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 440))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 440)")
 })
 
 t_case("tests/motion.ray:14 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 440))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 440)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 440))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 440)")
 })
 
 t_case("tests/motion.ray:14 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 440))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 440)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 440))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 440)")
 })
 
 t_case("tests/motion.ray:15 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 1))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 1)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 1))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 1)")
 })
 
 t_case("tests/motion.ray:15 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 1))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 1)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 1))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 1)")
 })
 
 t_case("tests/motion.ray:15 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 1))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 1)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 1))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 1)")
 })
 
 t_case("tests/motion.ray:15 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(m_abs(get(elem(get(it, "holes"), 0), "py_now")), 1))) "pass" else paste0("failed: ", "lt(m_abs(get(elem(get(it, \"holes\"), 0), \"py_now\")), 1)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 1))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 1)")
 })
 
 t_case("tests/motion.ray:16 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 12))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 12)")
+  if (truthy(eq(elem(it$holes, 0)$y, 12))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 12)")
 })
 
 t_case("tests/motion.ray:16 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 12))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 12)")
+  if (truthy(eq(elem(it$holes, 0)$y, 12))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 12)")
 })
 
 t_case("tests/motion.ray:16 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 12))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 12)")
+  if (truthy(eq(elem(it$holes, 0)$y, 12))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 12)")
 })
 
 t_case("tests/motion.ray:16 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(elem(get(it, "holes"), 0), "y"), 12))) "pass" else paste0("failed: ", "eq(get(elem(get(it, \"holes\"), 0), \"y\"), 12)")
+  if (truthy(eq(elem(it$holes, 0)$y, 12))) "pass" else paste0("failed: ", "eq(elem(it$holes, 0)$y, 12)")
 })
 
 t_case("tests/motion.ray:17 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "x"), 15))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"x\"), 15)")
+  if (truthy(ge(elem(it$holes, 0)$x, 15))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$x, 15)")
 })
 
 t_case("tests/motion.ray:17 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "x"), 15))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"x\"), 15)")
+  if (truthy(ge(elem(it$holes, 0)$x, 15))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$x, 15)")
 })
 
 t_case("tests/motion.ray:17 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "x"), 15))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"x\"), 15)")
+  if (truthy(ge(elem(it$holes, 0)$x, 15))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$x, 15)")
 })
 
 t_case("tests/motion.ray:17 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(get(it, "holes")), 1))) eq(get(it, "ticks"), 20) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 1))) eq(it$ticks, 20) else .x))) {
     guard <- guard + 1
     if (guard > 22 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "x"), 15))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"x\"), 15)")
+  if (truthy(ge(elem(it$holes, 0)$x, 15))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$x, 15)")
 })
 
 t_case("tests/motion.ray:25 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "y"), 18))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"y\"), 18)")
+  if (truthy(gt(elem(it$holes, 0)$y, 18))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$y, 18)")
 })
 
 t_case("tests/motion.ray:25 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "y"), 18))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"y\"), 18)")
+  if (truthy(gt(elem(it$holes, 0)$y, 18))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$y, 18)")
 })
 
 t_case("tests/motion.ray:25 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "y"), 18))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"y\"), 18)")
+  if (truthy(gt(elem(it$holes, 0)$y, 18))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$y, 18)")
 })
 
 t_case("tests/motion.ray:25 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(elem(get(it, "holes"), 0), "y"), 18))) "pass" else paste0("failed: ", "gt(get(elem(get(it, \"holes\"), 0), \"y\"), 18)")
+  if (truthy(gt(elem(it$holes, 0)$y, 18))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$y, 18)")
 })
 
 t_case("tests/motion.ray:26 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "y"), 24))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"y\"), 24)")
+  if (truthy(lt(elem(it$holes, 1)$y, 24))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$y, 24)")
 })
 
 t_case("tests/motion.ray:26 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "y"), 24))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"y\"), 24)")
+  if (truthy(lt(elem(it$holes, 1)$y, 24))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$y, 24)")
 })
 
 t_case("tests/motion.ray:26 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "y"), 24))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"y\"), 24)")
+  if (truthy(lt(elem(it$holes, 1)$y, 24))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$y, 24)")
 })
 
 t_case("tests/motion.ray:26 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 1), "y"), 24))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 1), \"y\"), 24)")
+  if (truthy(lt(elem(it$holes, 1)$y, 24))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$y, 24)")
 })
 
 t_case("tests/motion.ray:27 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 600))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 600)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 600))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 600)")
 })
 
 t_case("tests/motion.ray:27 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 600))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 600)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 600))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 600)")
 })
 
 t_case("tests/motion.ray:27 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 600))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 600)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 600))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 600)")
 })
 
 t_case("tests/motion.ray:27 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(get(elem(get(it, "holes"), 0), "px_now"), 600))) "pass" else paste0("failed: ", "ge(get(elem(get(it, \"holes\"), 0), \"px_now\"), 600)")
+  if (truthy(ge(elem(it$holes, 0)$px_now, 600))) "pass" else paste0("failed: ", "ge(elem(it$holes, 0)$px_now, 600)")
 })
 
 t_case("tests/motion.ray:28 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 660))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 660)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 660))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 660)")
 })
 
 t_case("tests/motion.ray:28 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 660))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 660)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 660))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 660)")
 })
 
 t_case("tests/motion.ray:28 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 660))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 660)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 660))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 660)")
 })
 
 t_case("tests/motion.ray:28 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 1) else .x))) eq(get(it, "ticks"), 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 1) else .x))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
     if (guard > 26 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(lt(get(elem(get(it, "holes"), 0), "px_now"), 660))) "pass" else paste0("failed: ", "lt(get(elem(get(it, \"holes\"), 0), \"px_now\"), 660)")
+  if (truthy(lt(elem(it$holes, 0)$px_now, 660))) "pass" else paste0("failed: ", "lt(elem(it$holes, 0)$px_now, 660)")
 })
 
 t_case("tests/motion.ray:36 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), get(elem(get(it, "holes"), 0), "x"))), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), get(elem(get(it, "holes"), 0), "y"))), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), get(elem(get(it, \"holes\"), 0), \"x\"))), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), get(elem(get(it, \"holes\"), 0), \"y\"))), 2)))), 18)")
+  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18)")
 })
 
 t_case("tests/motion.ray:36 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), get(elem(get(it, "holes"), 0), "x"))), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), get(elem(get(it, "holes"), 0), "y"))), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), get(elem(get(it, \"holes\"), 0), \"x\"))), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), get(elem(get(it, \"holes\"), 0), \"y\"))), 2)))), 18)")
+  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18)")
 })
 
 t_case("tests/motion.ray:36 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), get(elem(get(it, "holes"), 0), "x"))), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), get(elem(get(it, "holes"), 0), "y"))), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), get(elem(get(it, \"holes\"), 0), \"x\"))), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), get(elem(get(it, \"holes\"), 0), \"y\"))), 2)))), 18)")
+  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18)")
 })
 
 t_case("tests/motion.ray:36 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), get(elem(get(it, "holes"), 0), "x"))), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), get(elem(get(it, "holes"), 0), "y"))), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), get(elem(get(it, \"holes\"), 0), \"x\"))), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), get(elem(get(it, \"holes\"), 0), \"y\"))), 2)))), 18)")
+  if (truthy(le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18))) "pass" else paste0("failed: ", "le(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, elem(it$holes, 0)$x)), 2), r_pow((r_sub(elem(it$holes, 1)$y, elem(it$holes, 0)$y)), 2)))), 18)")
 })
 
 t_case("tests/motion.ray:37 on line", function() {
-  it <- call(K("G"), "field", 6, 8, 1, 1)
+  it <- G$field(6, 8, 1, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), 27)), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), 27)), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), 18)), 2)))), 6)")
+  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6)")
 })
 
 t_case("tests/motion.ray:37 on alone", function() {
-  it <- call(call(K("G"), "field", 25, 8, 3, 1, 8, 2), "thrown", 6, 12, 1, 2000, 400, 0, 1)
+  it <- G$field(25, 8, 3, 1, 8, 2)$thrown(6, 12, 1, 2000, 400, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), 27)), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), 27)), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), 18)), 2)))), 6)")
+  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6)")
 })
 
 t_case("tests/motion.ray:37 on pair", function() {
-  it <- call(call(call(K("G"), "field", 43, 8, 3, 1, 8, 3), "thrown", 9, 18, 1, 2000, 600, 0, 1), "thrown", 33, 24, 1, 2000, neg(600), 0, 2)
+  it <- G$field(43, 8, 3, 1, 8, 3)$thrown(9, 18, 1, 2000, 600, 0, 1)$thrown(33, 24, 1, 2000, neg(600), 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), 27)), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), 27)), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), 18)), 2)))), 6)")
+  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6)")
 })
 
 t_case("tests/motion.ray:37 on orbit", function() {
-  it <- call(call(call(K("G"), "field", 37, 8, 3, 1, 8, 3), "thrown", 18, 18, 0.25, 4096, 0, 0, 1), "thrown", 27, 18, 1, 64, 0, neg(19.2), 2)
+  it <- G$field(37, 8, 3, 1, 8, 3)$thrown(18, 18, 0.25, 4096, 0, 0, 1)$thrown(27, 18, 1, 64, 0, neg(19.2), 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(get(it, "holes")), 2))) eq(get(elem(get(it, "holes"), 0), "mx"), 0.25) else .x))) eq(get(it, "ticks"), 60) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 2))) eq(elem(it$holes, 0)$mx, 0.25) else .x))) eq(it$ticks, 60) else .x))) {
     guard <- guard + 1
     if (guard > 62 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, "holes"), 1), "x"), 27)), 2), r_pow((r_sub(get(elem(get(it, "holes"), 1), "y"), 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"x\"), 27)), 2), r_pow((r_sub(get(elem(get(it, \"holes\"), 1), \"y\"), 18)), 2)))), 6)")
+  if (truthy(ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6))) "pass" else paste0("failed: ", "ge(m_sqrt((r_add(r_pow((r_sub(elem(it$holes, 1)$x, 27)), 2), r_pow((r_sub(elem(it$holes, 1)$y, 18)), 2)))), 6)")
 })
 
 t_case("tests/notation.ray:8 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "\\bar{r}^{D-1}"), "<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"\\\\bar{r}^{D-1}\"), \"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\")")
+  if (truthy(eq(Notation$html("\\bar{r}^{D-1}"), "<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"\\\\bar{r}^{D-1}\"), \"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\")")
 })
 
 t_case("tests/notation.ray:9 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(len(call(K("Notation"), "parse", "\\frac{1}{2}")), 1))) "pass" else paste0("failed: ", "eq(len(call(K(\"Notation\"), \"parse\", \"\\\\frac{1}{2}\")), 1)")
+  if (truthy(eq(len(Notation$parse("\\frac{1}{2}")), 1))) "pass" else paste0("failed: ", "eq(len(Notation$parse(\"\\\\frac{1}{2}\")), 1)")
 })
 
 t_case("tests/notation.ray:10 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(m_first(call(K("Notation"), "parse", "\\frac{1}{2}")), "kind"), "frac"))) "pass" else paste0("failed: ", "eq(get(m_first(call(K(\"Notation\"), \"parse\", \"\\\\frac{1}{2}\")), \"kind\"), \"frac\")")
+  if (truthy(eq(m_first(Notation$parse("\\frac{1}{2}"))$kind, "frac"))) "pass" else paste0("failed: ", "eq(m_first(Notation$parse(\"\\\\frac{1}{2}\"))$kind, \"frac\")")
 })
 
 t_case("tests/notation.ray:11 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "\\rho_{\\infty}"), "<i>ρ</i><sub>∞</sub>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"\\\\rho_{\\\\infty}\"), \"<i>ρ</i><sub>∞</sub>\")")
+  if (truthy(eq(Notation$html("\\rho_{\\infty}"), "<i>ρ</i><sub>∞</sub>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"\\\\rho_{\\\\infty}\"), \"<i>ρ</i><sub>∞</sub>\")")
 })
 
 t_case("tests/notation.ray:12 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "\\text{the } \\rho"), "<span class=\"tx\">the </span> <i>ρ</i>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"\\\\text{the } \\\\rho\"), \"<span class=\\\"tx\\\">the </span> <i>ρ</i>\")")
+  if (truthy(eq(Notation$html("\\text{the } \\rho"), "<span class=\"tx\">the </span> <i>ρ</i>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"\\\\text{the } \\\\rho\"), \"<span class=\\\"tx\\\">the </span> <i>ρ</i>\")")
 })
 
 t_case("tests/notation.ray:13 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "DEG"), "<span class=\"bar\"><b class=\"k\">DEG</b></span>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"DEG\"), \"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\")")
+  if (truthy(eq(Notation$html("DEG"), "<span class=\"bar\"><b class=\"k\">DEG</b></span>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"DEG\"), \"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\")")
 })
 
 t_case("tests/notation.ray:14 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "l.shell(R)"), "<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"l.shell(R)\"), \"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\")")
+  if (truthy(eq(Notation$html("l.shell(R)"), "<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"))) "pass" else paste0("failed: ", "eq(Notation$html(\"l.shell(R)\"), \"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\")")
 })
 
 t_case("tests/notation.ray:16 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "\\sum_{r}^{R} x"), "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"\\\\sum_{r}^{R} x\"), \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\")")
+  if (truthy(eq(Notation$html("\\sum_{r}^{R} x"), "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"\\\\sum_{r}^{R} x\"), \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\")")
 })
 
 t_case("tests/notation.ray:17 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "html", "\\sum_{r}^{R} y"), "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"html\", \"\\\\sum_{r}^{R} y\"), \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\")")
+  if (truthy(eq(Notation$html("\\sum_{r}^{R} y"), "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"))) "pass" else paste0("failed: ", "eq(Notation$html(\"\\\\sum_{r}^{R} y\"), \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\")")
 })
 
 t_case("tests/notation.ray:18 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_starts_with(call(K("Notation"), "html", "[[ehrhart]]"), "<a class=\"ref\""))) "pass" else paste0("failed: ", "m_starts_with(call(K(\"Notation\"), \"html\", \"[[ehrhart]]\"), \"<a class=\\\"ref\\\"\")")
+  if (truthy(m_starts_with(Notation$html("[[ehrhart]]"), "<a class=\"ref\""))) "pass" else paste0("failed: ", "m_starts_with(Notation$html(\"[[ehrhart]]\"), \"<a class=\\\"ref\\\"\")")
 })
 
 t_case("tests/notation.ray:19 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy((!eq(call(K("Notation"), "banned", "a − b"), NULL)))) "pass" else paste0("failed: ", "(!eq(call(K(\"Notation\"), \"banned\", \"a − b\"), NULL))")
+  if (truthy((!eq(Notation$banned("a − b"), NULL)))) "pass" else paste0("failed: ", "(!eq(Notation$banned(\"a − b\"), NULL))")
 })
 
 t_case("tests/notation.ray:20 on rbar", function() {
-  it <- m_first(call(K("Notation"), "parse", "\\bar{r}^{D-1}"))
+  it <- m_first(Notation$parse("\\bar{r}^{D-1}"))
   guard <- 0
-  while (!truthy(eq(get(it, "kind"), "scripted"))) {
+  while (!truthy(eq(it$kind, "scripted"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(K("Notation"), "banned", "a - b"), NULL))) "pass" else paste0("failed: ", "eq(call(K(\"Notation\"), \"banned\", \"a - b\"), NULL)")
+  if (truthy(eq(Notation$banned("a - b"), NULL))) "pass" else paste0("failed: ", "eq(Notation$banned(\"a - b\"), NULL)")
 })
 
 t_case("tests/reading.ray:9 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(get(it, "equation"), "latex"), "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"))) "pass" else paste0("failed: ", "eq(get(get(it, \"equation\"), \"latex\"), \"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\")")
+  if (truthy(eq(it$equation$latex, "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"))) "pass" else paste0("failed: ", "eq(it$equation$latex, \"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\")")
 })
 
 t_case("tests/reading.ray:11 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_some(get(get(it, "equation"), "terms"), function(t = NULL, ...) {
-  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, "rule"), NULL)))) eq(get(get(t, "rule"), "id"), "/1") else .x))) eq(get(get(get(t, "doing"), "rays"), "source"), "-2") else .x))) eq(get(get(get(t, "doing"), "space"), "source"), "-1") else .x))) eq(get(get(get(t, "doing"), "folds"), "source"), "1") else .x))
+  if (truthy(m_some(it$equation$terms, function(t = NULL, ...) {
+  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, "/1") else .x))) eq(t$doing$rays$source, "-2") else .x))) eq(t$doing$space$source, "-1") else .x))) eq(t$doing$folds$source, "1") else .x))
   NULL
-}))) "pass" else paste0("failed: ", "m_some(get(get(it, \"equation\"), \"terms\"), function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, \"rule\"), NULL)))) eq(get(get(t, \"rule\"), \"id\"), \"/1\") else .x))) eq(get(get(get(t, \"doing\"), \"rays\"), \"source\"), \"-2\") else .x))) eq(get(get(get(t, \"doing\"), \"space\"), \"source\"), \"-1\") else .x))) eq(get(get(get(t, \"doing\"), \"folds\"), \"source\"), \"1\") else .x))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_some(it$equation$terms, function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, \"/1\") else .x))) eq(t$doing$rays$source, \"-2\") else .x))) eq(t$doing$space$source, \"-1\") else .x))) eq(t$doing$folds$source, \"1\") else .x))\n  NULL\n})")
 })
 
 t_case("tests/reading.ray:13 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_some(get(get(it, "equation"), "terms"), function(t = NULL, ...) {
-  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, "rule"), NULL)))) eq(get(get(t, "rule"), "id"), "/1") else .x))) eq(get(get(get(t, "doing"), "share"), "source"), "(1 - s.ρ) * s.F") else .x))) eq(get(get(get(t, "doing"), "space"), "source"), "1") else .x))) eq(get(get(get(t, "doing"), "grew"), "source"), "1") else .x))
+  if (truthy(m_some(it$equation$terms, function(t = NULL, ...) {
+  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, "/1") else .x))) eq(t$doing$share$source, "(1 - s.ρ) * s.F") else .x))) eq(t$doing$space$source, "1") else .x))) eq(t$doing$grew$source, "1") else .x))
   NULL
-}))) "pass" else paste0("failed: ", "m_some(get(get(it, \"equation\"), \"terms\"), function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, \"rule\"), NULL)))) eq(get(get(t, \"rule\"), \"id\"), \"/1\") else .x))) eq(get(get(get(t, \"doing\"), \"share\"), \"source\"), \"(1 - s.ρ) * s.F\") else .x))) eq(get(get(get(t, \"doing\"), \"space\"), \"source\"), \"1\") else .x))) eq(get(get(get(t, \"doing\"), \"grew\"), \"source\"), \"1\") else .x))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_some(it$equation$terms, function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, \"/1\") else .x))) eq(t$doing$share$source, \"(1 - s.ρ) * s.F\") else .x))) eq(t$doing$space$source, \"1\") else .x))) eq(t$doing$grew$source, \"1\") else .x))\n  NULL\n})")
 })
 
 t_case("tests/reading.ray:15 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_some(get(get(it, "equation"), "terms"), function(t = NULL, ...) {
-  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, "rule"), NULL)))) eq(get(get(t, "rule"), "id"), "/2") else .x))) eq(get(get(get(t, "doing"), "rays"), "source"), "s.DEG") else .x))) eq(get(get(get(t, "doing"), "share"), "source"), "1 - s.ρ") else .x))
+  if (truthy(m_some(it$equation$terms, function(t = NULL, ...) {
+  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, "/2") else .x))) eq(t$doing$rays$source, "s.DEG") else .x))) eq(t$doing$share$source, "1 - s.ρ") else .x))
   NULL
-}))) "pass" else paste0("failed: ", "m_some(get(get(it, \"equation\"), \"terms\"), function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, \"rule\"), NULL)))) eq(get(get(t, \"rule\"), \"id\"), \"/2\") else .x))) eq(get(get(get(t, \"doing\"), \"rays\"), \"source\"), \"s.DEG\") else .x))) eq(get(get(get(t, \"doing\"), \"share\"), \"source\"), \"1 - s.ρ\") else .x))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_some(it$equation$terms, function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, \"/2\") else .x))) eq(t$doing$rays$source, \"s.DEG\") else .x))) eq(t$doing$share$source, \"1 - s.ρ\") else .x))\n  NULL\n})")
 })
 
 t_case("tests/reading.ray:17 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_some(get(get(it, "equation"), "terms"), function(t = NULL, ...) {
-  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, "rule"), NULL)))) eq(get(get(t, "rule"), "id"), "/2") else .x))) eq(get(get(get(t, "doing"), "folds"), "source"), "-s.DEG") else .x))) eq(get(get(get(t, "doing"), "share"), "source"), "s.n_f / s.DEG * (1 - s.ρ)") else .x))
+  if (truthy(m_some(it$equation$terms, function(t = NULL, ...) {
+  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, "/2") else .x))) eq(t$doing$folds$source, "-s.DEG") else .x))) eq(t$doing$share$source, "s.n_f / s.DEG * (1 - s.ρ)") else .x))
   NULL
-}))) "pass" else paste0("failed: ", "m_some(get(get(it, \"equation\"), \"terms\"), function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, \"rule\"), NULL)))) eq(get(get(t, \"rule\"), \"id\"), \"/2\") else .x))) eq(get(get(get(t, \"doing\"), \"folds\"), \"source\"), \"-s.DEG\") else .x))) eq(get(get(get(t, \"doing\"), \"share\"), \"source\"), \"s.n_f / s.DEG * (1 - s.ρ)\") else .x))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_some(it$equation$terms, function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, \"/2\") else .x))) eq(t$doing$folds$source, \"-s.DEG\") else .x))) eq(t$doing$share$source, \"s.n_f / s.DEG * (1 - s.ρ)\") else .x))\n  NULL\n})")
 })
 
 t_case("tests/reading.ray:18 on read", function() {
-  it <- K("G")
+  it <- G
   guard <- 0
-  while (!truthy(eq(get(it, "name"), "G"))) {
+  while (!truthy(eq(it$name, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_some(get(get(it, "equation"), "terms"), function(t = NULL, ...) {
-  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, "rule"), NULL)))) eq(get(get(t, "rule"), "id"), "/2") else .x))) eq(get(get(get(t, "doing"), "space"), "source"), "1") else .x))) eq(get(get(get(t, "doing"), "share"), "source"), "s.n_f * (1 - s.ρ)") else .x))
+  if (truthy(m_some(it$equation$terms, function(t = NULL, ...) {
+  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, "/2") else .x))) eq(t$doing$space$source, "1") else .x))) eq(t$doing$share$source, "s.n_f * (1 - s.ρ)") else .x))
   NULL
-}))) "pass" else paste0("failed: ", "m_some(get(get(it, \"equation\"), \"terms\"), function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(get(t, \"rule\"), NULL)))) eq(get(get(t, \"rule\"), \"id\"), \"/2\") else .x))) eq(get(get(get(t, \"doing\"), \"space\"), \"source\"), \"1\") else .x))) eq(get(get(get(t, \"doing\"), \"share\"), \"source\"), \"s.n_f * (1 - s.ρ)\") else .x))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_some(it$equation$terms, function(t = NULL, ...) {\n  return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$rule, NULL)))) eq(t$rule$id, \"/2\") else .x))) eq(t$doing$space$source, \"1\") else .x))) eq(t$doing$share$source, \"s.n_f * (1 - s.ρ)\") else .x))\n  NULL\n})")
 })
 
 t_case("tests/theorems.ray:8 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "has", "vacuum.equation"))) "pass" else paste0("failed: ", "call(it, \"has\", \"vacuum.equation\")")
+  if (truthy(it$has("vacuum.equation"))) "pass" else paste0("failed: ", "it$has(\"vacuum.equation\")")
 })
 
 t_case("tests/theorems.ray:9 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "vacuum.occupancy"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"vacuum.occupancy\")")
+  if (truthy(it$standing("vacuum.occupancy"))) "pass" else paste0("failed: ", "it$standing(\"vacuum.occupancy\")")
 })
 
 t_case("tests/theorems.ray:10 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "force.range"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"force.range\")")
+  if (truthy(it$standing("force.range"))) "pass" else paste0("failed: ", "it$standing(\"force.range\")")
 })
 
 t_case("tests/theorems.ray:11 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(it, "concluded", "vacuum.facing"), "F = \\frac{1}{2}"))) "pass" else paste0("failed: ", "eq(call(it, \"concluded\", \"vacuum.facing\"), \"F = \\\\frac{1}{2}\")")
+  if (truthy(eq(it$concluded("vacuum.facing"), "F = \\frac{1}{2}"))) "pass" else paste0("failed: ", "eq(it$concluded(\"vacuum.facing\"), \"F = \\\\frac{1}{2}\")")
 })
 
 t_case("tests/theorems.ray:12 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(call(it, "concluded", "force.range"), "\\lambda = \\frac{2}{\\rho}"))) "pass" else paste0("failed: ", "eq(call(it, \"concluded\", \"force.range\"), \"\\\\lambda = \\\\frac{2}{\\\\rho}\")")
+  if (truthy(eq(it$concluded("force.range"), "\\lambda = \\frac{2}{\\rho}"))) "pass" else paste0("failed: ", "eq(it$concluded(\"force.range\"), \"\\\\lambda = \\\\frac{2}{\\\\rho}\")")
 })
 
 t_case("tests/theorems.ray:13 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.falloff"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.falloff\")")
+  if (truthy(it$standing("gravity.falloff"))) "pass" else paste0("failed: ", "it$standing(\"gravity.falloff\")")
 })
 
 t_case("tests/theorems.ray:14 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.horizon"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.horizon\")")
+  if (truthy(it$standing("gravity.horizon"))) "pass" else paste0("failed: ", "it$standing(\"gravity.horizon\")")
 })
 
 t_case("tests/theorems.ray:15 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(len(get(it, "ids")), 51))) "pass" else paste0("failed: ", "eq(len(get(it, \"ids\")), 51)")
+  if (truthy(eq(len(it$ids), 51))) "pass" else paste0("failed: ", "eq(len(it$ids), 51)")
 })
 
 t_case("tests/theorems.ray:16 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.coincidence"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.coincidence\")")
+  if (truthy(it$standing("gravity.coincidence"))) "pass" else paste0("failed: ", "it$standing(\"gravity.coincidence\")")
 })
 
 t_case("tests/theorems.ray:17 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.bent"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.bent\")")
+  if (truthy(it$standing("gravity.bent"))) "pass" else paste0("failed: ", "it$standing(\"gravity.bent\")")
 })
 
 t_case("tests/theorems.ray:18 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.standing"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.standing\")")
+  if (truthy(it$standing("gravity.standing"))) "pass" else paste0("failed: ", "it$standing(\"gravity.standing\")")
 })
 
 t_case("tests/theorems.ray:19 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.mass"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.mass\")")
+  if (truthy(it$standing("gravity.mass"))) "pass" else paste0("failed: ", "it$standing(\"gravity.mass\")")
 })
 
 t_case("tests/theorems.ray:20 on closure", function() {
-  it <- get(K("G"), "proved")
+  it <- G$proved
   guard <- 0
-  while (!truthy(eq(get(it, "theory"), "G"))) {
+  while (!truthy(eq(it$theory, "G"))) {
     guard <- guard + 1
     if (guard > 8 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(call(it, "standing", "gravity.newton"))) "pass" else paste0("failed: ", "call(it, \"standing\", \"gravity.newton\")")
+  if (truthy(it$standing("gravity.newton"))) "pass" else paste0("failed: ", "it$standing(\"gravity.newton\")")
 })
 
 t_case("tests/vacuum.ray:16 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "rays"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"rays\"), 0)")
+  if (truthy(eq(it$rays, 0))) "pass" else paste0("failed: ", "eq(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:16 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "rays"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"rays\"), 0)")
+  if (truthy(eq(it$rays, 0))) "pass" else paste0("failed: ", "eq(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:16 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "rays"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"rays\"), 0)")
+  if (truthy(eq(it$rays, 0))) "pass" else paste0("failed: ", "eq(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:16 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "rays"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"rays\"), 0)")
+  if (truthy(eq(it$rays, 0))) "pass" else paste0("failed: ", "eq(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:17 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(eq(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "eq(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:17 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(eq(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "eq(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:17 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(eq(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "eq(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:17 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(eq(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "eq(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:18 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"annihilations\"), 0)")
+  if (truthy(eq(it$annihilations, 0))) "pass" else paste0("failed: ", "eq(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:18 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"annihilations\"), 0)")
+  if (truthy(eq(it$annihilations, 0))) "pass" else paste0("failed: ", "eq(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:18 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"annihilations\"), 0)")
+  if (truthy(eq(it$annihilations, 0))) "pass" else paste0("failed: ", "eq(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:18 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy(eq(get(it, "ticks"), 0))) {
+  while (!truthy(eq(it$ticks, 0))) {
     guard <- guard + 1
     if (guard > 2 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "eq(get(it, \"annihilations\"), 0)")
+  if (truthy(eq(it$annihilations, 0))) "pass" else paste0("failed: ", "eq(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:23 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "created"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"created\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$created, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$created, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:23 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "created"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"created\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$created, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$created, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:23 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "created"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"created\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$created, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$created, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:23 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "created"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"created\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$created, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$created, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:24 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "rays"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"rays\"), 0)")
+  if (truthy(gt(it$rays, 0))) "pass" else paste0("failed: ", "gt(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:24 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "rays"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"rays\"), 0)")
+  if (truthy(gt(it$rays, 0))) "pass" else paste0("failed: ", "gt(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:24 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "rays"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"rays\"), 0)")
+  if (truthy(gt(it$rays, 0))) "pass" else paste0("failed: ", "gt(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:24 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "rays"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"rays\"), 0)")
+  if (truthy(gt(it$rays, 0))) "pass" else paste0("failed: ", "gt(it$rays, 0)")
 })
 
 t_case("tests/vacuum.ray:25 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:25 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:25 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:25 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 1))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 1))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 3 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(eq(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "eq(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(eq(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "eq(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:31 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "gt(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(gt(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "gt(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:31 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "gt(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(gt(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "gt(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:31 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "gt(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(gt(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "gt(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:31 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "points"), m_pow(get(it, "N"), get(get(it, "geometry"), "D"))))) "pass" else paste0("failed: ", "gt(get(it, \"points\"), m_pow(get(it, \"N\"), get(get(it, \"geometry\"), \"D\")))")
+  if (truthy(gt(it$points, m_pow(it$N, it$geometry$D)))) "pass" else paste0("failed: ", "gt(it$points, m_pow(it$N, it$geometry$D))")
 })
 
 t_case("tests/vacuum.ray:32 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(m_every(get(get(v, "at"), "components"), function(c = NULL, ...) {
-    return((if (truthy(.x <- ge(c, r_sub(0, get(it, "margin"))))) lt(c, r_add(get(it, "N"), get(it, "margin"))) else .x))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(m_every(v$at$components, function(c = NULL, ...) {
+    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))
     NULL
   }))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(m_every(get(get(v, \"at\"), \"components\"), function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, get(it, \"margin\"))))) lt(c, r_add(get(it, \"N\"), get(it, \"margin\"))) else .x))\n    NULL\n  }))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(m_every(v$at$components, function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))\n    NULL\n  }))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:32 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(m_every(get(get(v, "at"), "components"), function(c = NULL, ...) {
-    return((if (truthy(.x <- ge(c, r_sub(0, get(it, "margin"))))) lt(c, r_add(get(it, "N"), get(it, "margin"))) else .x))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(m_every(v$at$components, function(c = NULL, ...) {
+    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))
     NULL
   }))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(m_every(get(get(v, \"at\"), \"components\"), function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, get(it, \"margin\"))))) lt(c, r_add(get(it, \"N\"), get(it, \"margin\"))) else .x))\n    NULL\n  }))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(m_every(v$at$components, function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))\n    NULL\n  }))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:32 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(m_every(get(get(v, "at"), "components"), function(c = NULL, ...) {
-    return((if (truthy(.x <- ge(c, r_sub(0, get(it, "margin"))))) lt(c, r_add(get(it, "N"), get(it, "margin"))) else .x))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(m_every(v$at$components, function(c = NULL, ...) {
+    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))
     NULL
   }))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(m_every(get(get(v, \"at\"), \"components\"), function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, get(it, \"margin\"))))) lt(c, r_add(get(it, \"N\"), get(it, \"margin\"))) else .x))\n    NULL\n  }))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(m_every(v$at$components, function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))\n    NULL\n  }))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:32 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(get(it, "ticks"), 3))) gt(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(it$ticks, 3))) gt(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 5 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(m_every(get(get(v, "at"), "components"), function(c = NULL, ...) {
-    return((if (truthy(.x <- ge(c, r_sub(0, get(it, "margin"))))) lt(c, r_add(get(it, "N"), get(it, "margin"))) else .x))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(m_every(v$at$components, function(c = NULL, ...) {
+    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))
     NULL
   }))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(m_every(get(get(v, \"at\"), \"components\"), function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, get(it, \"margin\"))))) lt(c, r_add(get(it, \"N\"), get(it, \"margin\"))) else .x))\n    NULL\n  }))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(m_every(v$at$components, function(c = NULL, ...) {\n    return((if (truthy(.x <- ge(c, r_sub(0, it$margin)))) lt(c, r_add(it$N, it$margin)) else .x))\n    NULL\n  }))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:37 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "created"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"created\"), 0)")
+  if (truthy(gt(it$created, 0))) "pass" else paste0("failed: ", "gt(it$created, 0)")
 })
 
 t_case("tests/vacuum.ray:37 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "created"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"created\"), 0)")
+  if (truthy(gt(it$created, 0))) "pass" else paste0("failed: ", "gt(it$created, 0)")
 })
 
 t_case("tests/vacuum.ray:37 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "created"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"created\"), 0)")
+  if (truthy(gt(it$created, 0))) "pass" else paste0("failed: ", "gt(it$created, 0)")
 })
 
 t_case("tests/vacuum.ray:37 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "created"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"created\"), 0)")
+  if (truthy(gt(it$created, 0))) "pass" else paste0("failed: ", "gt(it$created, 0)")
 })
 
 t_case("tests/vacuum.ray:38 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"annihilations\"), 0)")
+  if (truthy(gt(it$annihilations, 0))) "pass" else paste0("failed: ", "gt(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:38 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"annihilations\"), 0)")
+  if (truthy(gt(it$annihilations, 0))) "pass" else paste0("failed: ", "gt(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:38 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"annihilations\"), 0)")
+  if (truthy(gt(it$annihilations, 0))) "pass" else paste0("failed: ", "gt(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:38 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "annihilations"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"annihilations\"), 0)")
+  if (truthy(gt(it$annihilations, 0))) "pass" else paste0("failed: ", "gt(it$annihilations, 0)")
 })
 
 t_case("tests/vacuum.ray:39 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "folded"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"folded\"), 0)")
+  if (truthy(gt(it$folded, 0))) "pass" else paste0("failed: ", "gt(it$folded, 0)")
 })
 
 t_case("tests/vacuum.ray:39 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "folded"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"folded\"), 0)")
+  if (truthy(gt(it$folded, 0))) "pass" else paste0("failed: ", "gt(it$folded, 0)")
 })
 
 t_case("tests/vacuum.ray:39 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "folded"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"folded\"), 0)")
+  if (truthy(gt(it$folded, 0))) "pass" else paste0("failed: ", "gt(it$folded, 0)")
 })
 
 t_case("tests/vacuum.ray:39 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(gt(get(it, "folded"), 0))) "pass" else paste0("failed: ", "gt(get(it, \"folded\"), 0)")
+  if (truthy(gt(it$folded, 0))) "pass" else paste0("failed: ", "gt(it$folded, 0)")
 })
 
 t_case("tests/vacuum.ray:40 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "folded"), get(it, "annihilations")))) "pass" else paste0("failed: ", "le(get(it, \"folded\"), get(it, \"annihilations\"))")
+  if (truthy(le(it$folded, it$annihilations))) "pass" else paste0("failed: ", "le(it$folded, it$annihilations)")
 })
 
 t_case("tests/vacuum.ray:40 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "folded"), get(it, "annihilations")))) "pass" else paste0("failed: ", "le(get(it, \"folded\"), get(it, \"annihilations\"))")
+  if (truthy(le(it$folded, it$annihilations))) "pass" else paste0("failed: ", "le(it$folded, it$annihilations)")
 })
 
 t_case("tests/vacuum.ray:40 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "folded"), get(it, "annihilations")))) "pass" else paste0("failed: ", "le(get(it, \"folded\"), get(it, \"annihilations\"))")
+  if (truthy(le(it$folded, it$annihilations))) "pass" else paste0("failed: ", "le(it$folded, it$annihilations)")
 })
 
 t_case("tests/vacuum.ray:40 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "folded"), get(it, "annihilations")))) "pass" else paste0("failed: ", "le(get(it, \"folded\"), get(it, \"annihilations\"))")
+  if (truthy(le(it$folded, it$annihilations))) "pass" else paste0("failed: ", "le(it$folded, it$annihilations)")
 })
 
 t_case("tests/vacuum.ray:42 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(ge(get(v, "density"), 1))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(ge(v$density, 1))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(ge(get(v, \"density\"), 1))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(ge(v$density, 1))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:42 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(ge(get(v, "density"), 1))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(ge(v$density, 1))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(ge(get(v, \"density\"), 1))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(ge(v$density, 1))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:42 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(ge(get(v, "density"), 1))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(ge(v$density, 1))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(ge(get(v, \"density\"), 1))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(ge(v$density, 1))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:42 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(m_every(get(it, "vertices"), function(v = NULL, ...) {
-  return(ge(get(v, "density"), 1))
+  if (truthy(m_every(it$vertices, function(v = NULL, ...) {
+  return(ge(v$density, 1))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(get(it, \"vertices\"), function(v = NULL, ...) {\n  return(ge(get(v, \"density\"), 1))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$vertices, function(v = NULL, ...) {\n  return(ge(v$density, 1))\n  NULL\n})")
 })
 
 t_case("tests/vacuum.ray:44 on square", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 4, 1)
+  it <- G$seed(g_SQUARE4(), 4, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "le(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(le(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "le(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:44 on diagonal", function() {
-  it <- call(K("G"), "seed", g_SQUARE8(), 5, 2)
+  it <- G$seed(g_SQUARE8(), 5, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "le(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(le(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "le(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:44 on cubic", function() {
-  it <- call(K("G"), "seed", g_CUBIC6(), 4, 3)
+  it <- G$seed(g_CUBIC6(), 4, 3)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "le(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(le(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "le(it$points, len(it$vertices))")
 })
 
 t_case("tests/vacuum.ray:44 on frontier", function() {
-  it <- call(K("G"), "seed", g_SQUARE4(), 3, 5, 250000, 2)
+  it <- G$seed(g_SQUARE4(), 3, 5, 250000, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(get(it, "ticks"), 4))) m_empty(get(it, "sources")) else .x))) eq(get(it, "margin"), 0) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(it$ticks, 4))) m_empty(it$sources) else .x))) eq(it$margin, 0) else .x))) {
     guard <- guard + 1
     if (guard > 6 || !has(it, "tick")) return("skip")
-    get(it, "tick")
+    it$tick
   }
-  if (truthy(le(get(it, "points"), len(get(it, "vertices"))))) "pass" else paste0("failed: ", "le(get(it, \"points\"), len(get(it, \"vertices\")))")
+  if (truthy(le(it$points, len(it$vertices)))) "pass" else paste0("failed: ", "le(it$points, len(it$vertices))")
 })
 
 cat(sprintf("%d passed, %d failed, %d skipped\n", .passed, .failed, .skipped))

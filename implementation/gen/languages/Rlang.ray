@@ -1,10 +1,12 @@
 /*
  * R, as a mapping from the constructs of Ray to text (the class is `Rlang`: a class named `R` would be a name the
- * physics code already reads). R's objects are copied on change, so a Ray object is an environment, as Java's is a
- * table: a class is a table (`cls`) filled when the package loads, an object an environment holding its class and
- * its own slots, and every member is reached by name - `get(x, "cells")`, `call(x, "add", ...)`, `set(x, "tag", v)`
- * - found class by class up the chain (implementation/gen/backends/cpu.rt.r). A list is an environment around an R
- * list, so that a push is seen by everyone holding it; Ray's indices start at 0 and the runtime says where R's do.
+ * physics code already reads). R's own reference object is the environment, so a Ray object is one: a class is a
+ * generator (`Hole$new(x = 9)`, statics `Medium$GATHER`), and every member is a binding of the object, reached with
+ * `$` - a field a binding (made on first read where it has a default), a member without parameters an active binding
+ * (read, it runs, as a getter does), a method a function bound to the object (`medium$add(h)`); see
+ * implementation/gen/backends/cpu.rt.r, which also says why not Reference Classes. A list is an environment around an
+ * R vector or list, so that a push is seen by everyone holding it; Ray's indices start at 0 and only `elem`/`set_at`
+ * say where R's do.
  *
  * Every function takes `...` last, so a program called with more than it names is not an error (a rule's body, a
  * key given an index). A local written from a lambda inside the scope that bound it goes through `.w`, which finds
@@ -23,20 +25,20 @@ Rlang: Language = class {
   {statement_end} => ""
   {empty_block} => ""
   {interpolation} => "\" %+% text_of({x}) %+% \""
-  {named_arg} => "`{raw}` = {val}"
+  {named_arg} => "{nm} = {val}"
   {parameter} => "{nm} = NULL, "
   {parameter_untyped} => "{nm} = NULL, "
   {parameter_default} => "{nm} = {val}, "
   {parameter_separator} => ""
-  {dynamic_get} => "get({tgt}, key_({key}))"
-  {dynamic_set} => "set({tgt}, key_({key}), {val})"
-  {reserved_names} => "if else repeat while function for next break TRUE FALSE NULL Inf NaN NA NA_integer_ NA_real_ NA_character_ NA_complex_ in self cl T F get set call make invoke elem items lst many K has text_of truthy num eq and_ or_ or_else choose_ ^_ ^[.]"
+  {dynamic_get} => "mem({tgt}, key_({key}))"
+  {dynamic_set} => ".set({tgt}, key_({key}), {val})"
+  {reserved_names} => "if else repeat while function for next break TRUE FALSE NULL Inf NaN NA NA_integer_ NA_real_ NA_character_ NA_complex_ in self cl ^_"
   {escaped_name} => "v_{nm}"
   {global_name} => "g_{nm}()"
   {local_write} => ".w(\"{nm}\", {val})"
   {defaults_in_body} => "yes"
-  {class_ref} => "K(\"{nm}\")"
-  {field_assign} => "field(cl, \"{nm}\", function(self) {val})"
+  {class_ref} => "{nm}"
+  {field_assign} => "field(cl, \"{nm}\", function() {val})"
 
   /* control flow */
   {if cond { yesbody } else { nobody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
@@ -49,7 +51,8 @@ Rlang: Language = class {
 
   /* definitions and assignment */
   {nm := val} => "{nm} <- {val}"
-  {tgt.nm = rhs} => "set({tgt}, \"{nm.raw}\", {rhs})"
+  {this.nm = rhs} => "self${nm} <- {rhs}"
+  {tgt.nm = rhs} => ".set({tgt}, \"{nm}\", {rhs})"
   {lhs = rhs} => "{lhs} <- {rhs}"
   {tgt[k] = rhs} => "set_at({tgt}, {k}, {rhs})"
 
@@ -75,20 +78,20 @@ Rlang: Language = class {
   {a ==.instance_of Array} => "is_list({a})"
   {a ==.instance_of ty} => "instance_of({a}, \"{ty}\")"
   {a as ty} => "{a}"
-  {tgt.nm} => "get({tgt}, \"{nm.raw.method}\")"
-  {tgt?.nm} => "get_opt({tgt}, \"{nm.raw.method}\")"
-  {tgt.nm()} => "get({tgt}, \"{nm.raw.method}\")"
-  {tgt?.nm()} => "get_opt({tgt}, \"{nm.raw.method}\")"
-  {tgt.nm(arglist)} => "call({tgt}, \"{nm.raw.method}\", {arglist})"
-  {tgt?.nm(arglist)} => "call_opt({tgt}, \"{nm.raw.method}\", {arglist})"
+  {tgt.nm} => "{tgt}${nm.method}"
+  {tgt?.nm} => "(if (is.null(.y <- {tgt})) NULL else .y${nm.method})"
+  {tgt.nm()} => "{tgt}${nm.method}"
+  {tgt?.nm()} => "(if (is.null(.y <- {tgt})) NULL else .y${nm.method})"
+  {tgt.nm(arglist)} => "{tgt}${nm.method}({arglist})"
+  {tgt?.nm(arglist)} => "(if (is.null(.y <- {tgt})) NULL else .y${nm.method}({arglist}))"
   {tgt.choose("nm")} => "choose_({tgt}, {nm.quoted})"
   {tgt[k]} => "elem({tgt}, {k})"
-  {fn()} => "invoke({fn})"
-  {fn(arglist)} => "invoke({fn}, {arglist})"
-  {Class()} => "make(\"{Class}\")"
-  {Class(arglist)} => "make(\"{Class}\", {arglist})"
+  {fn()} => "({fn})()"
+  {fn(arglist)} => "({fn})({arglist})"
+  {Class()} => "{Class}$new()"
+  {Class(arglist)} => "{Class}$new({arglist})"
   {[elems]} => "lst({elems})"
-  { {} } => "make(Node)"
+  { {} } => "Node$new()"
   {this} => "self"
   {None} => "NULL"
   {true} => "TRUE"
@@ -97,7 +100,7 @@ Rlang: Language = class {
   {(paramlist) => { stmts }} => "function({paramlist}...) {{\n{stmts.returned.indent}\n  NULL\n}}"
   {(paramlist) => e} => "function({paramlist}...) {e}"
   {xs#} => "many({xs})"
-  {draw([ws], [os])} => "call(get(get(self, \"vertex\"), \"world\"), \"draw\", lst({ws}), lst({os}))"
+  {draw([ws], [os])} => "self$vertex$world$draw(lst({ws}), lst({os}))"
 
   /* a block taken apart by `for`: a function of its own a turn (so what it makes keeps its own turn), and a `return` in it returns from the method */
   {Array.range(cnt).for((x_) => { stmts })} => ".r <- for_range({cnt}, function({x_.bare}) {{\n{stmts.indent}\n  CONTINUE\n}})\nif (!is.null(.r)) return(.r[[1]])"
@@ -169,61 +172,61 @@ Rlang: Language = class {
   {Random.INCREMENT} => "1013904223"
 
   /* classes: a table, filled when the package loads - parents first, as the core lists them */
-  {nm := class < sup { membs }} => "{nm.raw} <- cls(\"{nm.raw}\", {sup.first}, function(cl) {{\n{membs.indent}\n}})"
-  {nm := class { membs }} => "{nm.raw} <- cls(\"{nm.raw}\", Node, function(cl) {{\n{membs.indent}\n}})"
-  {nm: ty = class { membs }} => "{nm.raw}Theory <- cls(\"{nm.raw}\", {ty}, function(cl) {{\n{membs.indent}\n}})\n{nm.raw} <- theory({nm.raw}Theory)"
-  {theorem "nm" () => tbody} => "static_field(cl, \"theorem {nm}\", function(self) make(Theorem, `id` = {nm.quoted}, `body` = function(...) {{\n{tbody.returned.indent}\n  NULL\n}}))"
-  {x_.body()} => "invoke(get({x_}, \"body\"))"
-  {nm: ty = val} => "field(cl, \"{nm.raw}\", function(self) {val})"
-  {nm: ty} => "field(cl, \"{nm.raw}\", NULL)"
-  {nm = val} => "static_field(cl, \"{nm.raw}\", function(self) {val})"
-  {static nm: ty = val} => "static_field(cl, \"{nm.raw}\", function(self) {val})"
-  {static nm = val} => "static_field(cl, \"{nm.raw}\", function(self) {val})"
-  {nm (): ret => mbody} => "getter(cl, \"{nm.raw.method}\", function(self) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {nm () => mbody} => "getter(cl, \"{nm.raw.method}\", function(self) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {static nm (): ret => mbody} => "statik(cl, \"{nm.raw.method}\", function(self, ...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {static nm () => mbody} => "statik(cl, \"{nm.raw.method}\", function(self, ...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {nm (paramlist): ret => mbody} => "method(cl, \"{nm.raw.method}\", function(self, {paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {nm (paramlist) => mbody} => "method(cl, \"{nm.raw.method}\", function(self, {paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {static nm (paramlist): ret => mbody} => "statik(cl, \"{nm.raw.method}\", function(self, {paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {static nm (paramlist) => mbody} => "statik(cl, \"{nm.raw.method}\", function(self, {paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
-  {nm (paramlist): ret} => "method(cl, \"{nm.raw.method}\", function(self, ...) stop(\"{nm} is declared but not defined by anyone\"))"
-  {nm (paramlist)} => "method(cl, \"{nm.raw.method}\", function(self, ...) stop(\"{nm} is declared but not defined by anyone\"))"
-  {nm (): ret} => "getter(cl, \"{nm.raw.method}\", function(self) stop(\"{nm} is declared but not defined by anyone\"))"
-  {nm ()} => "getter(cl, \"{nm.raw.method}\", function(self) stop(\"{nm} is declared but not defined by anyone\"))"
-  {static nm (paramlist): ret} => "statik(cl, \"{nm.raw.method}\", function(self, ...) stop(\"{nm} is declared but not defined by anyone\"))"
-  {static nm (paramlist)} => "statik(cl, \"{nm.raw.method}\", function(self, ...) stop(\"{nm} is declared but not defined by anyone\"))"
-  {rule /rid "nm" | rt () => rbody} => "static_field(cl, \"rule {rid}\", function(self) make(Rule, `id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = {rt.quoted}, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function(...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
-  {rule /rid "nm" () => rbody} => "static_field(cl, \"rule {rid}\", function(self) make(Rule, `id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = NULL, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function(...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
-  {rule /rid "nm" | rt (paramlist) => rbody} => "static_field(cl, \"rule {rid}\", function(self) make(Rule, `id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = {rt.quoted}, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function({paramlist}...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
-  {rule /rid "nm" (paramlist) => rbody} => "static_field(cl, \"rule {rid}\", function(self) make(Rule, `id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = NULL, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function({paramlist}...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
-  {choose "nm" (paramlist): ret} => "method(cl, \"choose {nm}\", function(self, ...) stop(\"the choice {nm} is not defined by anyone\"))"
-  {choose "nm" (paramlist): ret => cbody} => "method(cl, \"choose {nm}\", function(self, {paramlist}...) {{\n{cbody.returned.indent}\n  NULL\n}})"
-  {choose "nm" (paramlist) => cbody} => "method(cl, \"choose {nm}\", function(self, {paramlist}...) {{\n{cbody.returned.indent}\n  NULL\n}})"
-  {as (=== ty) => cbody} => "getter(cl, \"as_{ty}\", function(self) {{\n{cbody.returned.indent}\n  NULL\n}})"
+  {nm := class < sup { membs }} => "{nm.raw} <- ray_class(\"{nm}\", {sup.first}, function(cl) {{\n{membs.indent}\n}})"
+  {nm := class { membs }} => "{nm.raw} <- ray_class(\"{nm}\", Node, function(cl) {{\n{membs.indent}\n}})"
+  {nm: ty = class { membs }} => "{nm.raw}Theory <- ray_class(\"{nm}\", {ty}, function(cl) {{\n{membs.indent}\n}})\n{nm.raw} <- theory({nm.raw}Theory)"
+  {theorem "nm" () => tbody} => "static_field(cl, \"theorem {nm}\", function() Theorem$new(`id` = {nm.quoted}, `body` = function(...) {{\n{tbody.returned.indent}\n  NULL\n}}))"
+  {x_.body()} => "{x_}$body()"
+  {nm: ty = val} => "field(cl, \"{nm}\", function() {val})"
+  {nm: ty} => "field(cl, \"{nm}\", NULL)"
+  {nm = val} => "static_field(cl, \"{nm}\", function() {val})"
+  {static nm: ty = val} => "static_field(cl, \"{nm}\", function() {val})"
+  {static nm = val} => "static_field(cl, \"{nm}\", function() {val})"
+  {nm (): ret => mbody} => "getter(cl, \"{nm.method}\", function() {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {nm () => mbody} => "getter(cl, \"{nm.method}\", function() {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {static nm (): ret => mbody} => "static_getter(cl, \"{nm.method}\", function() {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {static nm () => mbody} => "static_getter(cl, \"{nm.method}\", function() {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {nm (paramlist): ret => mbody} => "method(cl, \"{nm.method}\", function({paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {nm (paramlist) => mbody} => "method(cl, \"{nm.method}\", function({paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {static nm (paramlist): ret => mbody} => "statik(cl, \"{nm.method}\", function({paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {static nm (paramlist) => mbody} => "statik(cl, \"{nm.method}\", function({paramlist}...) {{\n{mbody.returned.indent}\n  NULL\n}})"
+  {nm (paramlist): ret} => "method(cl, \"{nm.method}\", function(...) stop(\"{nm} is declared but not defined by anyone\"))"
+  {nm (paramlist)} => "method(cl, \"{nm.method}\", function(...) stop(\"{nm} is declared but not defined by anyone\"))"
+  {nm (): ret} => "getter(cl, \"{nm.method}\", function() stop(\"{nm} is declared but not defined by anyone\"))"
+  {nm ()} => "getter(cl, \"{nm.method}\", function() stop(\"{nm} is declared but not defined by anyone\"))"
+  {static nm (paramlist): ret} => "statik(cl, \"{nm.method}\", function(...) stop(\"{nm} is declared but not defined by anyone\"))"
+  {static nm (paramlist)} => "statik(cl, \"{nm.method}\", function(...) stop(\"{nm} is declared but not defined by anyone\"))"
+  {rule /rid "nm" | rt () => rbody} => "static_field(cl, \"rule {rid}\", function() Rule$new(`id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = {rt.quoted}, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function(...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
+  {rule /rid "nm" () => rbody} => "static_field(cl, \"rule {rid}\", function() Rule$new(`id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = NULL, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function(...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "static_field(cl, \"rule {rid}\", function() Rule$new(`id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = {rt.quoted}, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function({paramlist}...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
+  {rule /rid "nm" (paramlist) => rbody} => "static_field(cl, \"rule {rid}\", function() Rule$new(`id` = \"/{rid}\", `name` = {nm.quoted}, `rate` = NULL, `over` = {over.quoted}, `single` = {single}, `where` = {where}, `source` = {source.quoted}, `body` = function({paramlist}...) {{\n{rbody.returned.indent}\n  NULL\n}}))"
+  {choose "nm" (paramlist): ret} => "method(cl, \"choose {nm}\", function(...) stop(\"the choice {nm} is not defined by anyone\"))"
+  {choose "nm" (paramlist): ret => cbody} => "method(cl, \"choose {nm}\", function({paramlist}...) {{\n{cbody.returned.indent}\n  NULL\n}})"
+  {choose "nm" (paramlist) => cbody} => "method(cl, \"choose {nm}\", function({paramlist}...) {{\n{cbody.returned.indent}\n  NULL\n}})"
+  {as (=== ty) => cbody} => "getter(cl, \"as_{ty}\", function() {{\n{cbody.returned.indent}\n  NULL\n}})"
 
   /* a nested class is a table of its own, then a static of the outer one */
-  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nset({outer}, \"{inner_name}\", {inner_name})"
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n{outer}${inner_name} <- {inner_name}\n{outer}.{inner_name} <- {inner_name}"
 
   /* a top-level definition is a function of the package, made on first call (`{global_name}`) */
   constant (nm: String, text: String): String => "g_{nm} <- lazy_constant(function() {text})"
 
   term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
     rate_ := rate.empty ? "NULL" : rate.quoted
-    where := where_source.empty ? "NULL" : "make(Node, source = {where_source.quoted})"
-    rule := id.empty ? "NULL" : "make(Node, id = {id.quoted}, rate = {rate_}, name = {rule_name.quoted}, over = {over.quoted}, where = {where}, source = {rule_source.quoted})"
+    where := where_source.empty ? "NULL" : "Node$new(source = {where_source.quoted})"
+    rule := id.empty ? "NULL" : "Node$new(id = {id.quoted}, rate = {rate_}, name = {rule_name.quoted}, over = {over.quoted}, where = {where}, source = {rule_source.quoted})"
     leans_ := leans.empty ? "NULL" : leans.quoted
-    "    make(Node, rule = {rule}, rate = {rate_}, degree = {degree}, outside = {outside}, settles = {settles}, transport = {transport}, leans = {leans_}, turned = {turned.quoted}, doing = make(Node, carries = {carries}, sets = {sets}, grown = {grown}, trades = {trades}, grew = at({grew_source.quoted}, function(s) {grew}), grew_apart = at({grew_apart_source.quoted}, function(s) {grew_apart}), draws = NULL, needs = {degree}, outside = {outside}, settles = {settles}, share = at({share_source.quoted}, function(s) {share}), asked = at({asked_source.quoted}, function(s) {asked}), around = at({around_source.quoted}, function(s) {around}), rays = at({rays_source.quoted}, function(s) {rays}), space = at({space_source.quoted}, function(s) {space}), folds = at({folds_source.quoted}, function(s) {folds})))"
+    "    Node$new(rule = {rule}, rate = {rate_}, degree = {degree}, outside = {outside}, settles = {settles}, transport = {transport}, leans = {leans_}, turned = {turned.quoted}, doing = Node$new(carries = {carries}, sets = {sets}, grown = {grown}, trades = {trades}, grew = at({grew_source.quoted}, function(s) {grew}), grew_apart = at({grew_apart_source.quoted}, function(s) {grew_apart}), draws = NULL, needs = {degree}, outside = {outside}, settles = {settles}, share = at({share_source.quoted}, function(s) {share}), asked = at({asked_source.quoted}, function(s) {asked}), around = at({around_source.quoted}, function(s) {around}), rays = at({rays_source.quoted}, function(s) {rays}), space = at({space_source.quoted}, function(s) {space}), folds = at({folds_source.quoted}, function(s) {folds})))"
   }
   equation_literal (theory: String, latex: String, terms: String[]): String => {
     lines := terms.join(",\n")
-    "set({theory}, \"equation\", make(Node, latex = {latex.quoted}, terms = lst(\n{lines}\n)))"
+     ".set({theory}, \"equation\", Node$new(latex = {latex.quoted}, terms = lst(\n{lines}\n)))"
   }
 
   write_package (code: String) => {
     @./languages/physics.r/README.md := this.readme
     @./languages/physics.r/DESCRIPTION := Rlang.description
-    @./languages/physics.r/NAMESPACE := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nexportPattern(\"^[^\\\\.]\")\nimportFrom(jsonlite, fromJSON)\n"
+    @./languages/physics.r/NAMESPACE := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nexportPattern(\"^[^\\\\.]\")\nimportFrom(jsonlite, fromJSON)\nS3method(print, ray_rule)\nS3method(format, ray_rule)\nS3method(print, ray_many)\nS3method(\"$\", ray_many)\nS3method(\"$<-\", ray_many)\n"
     @./languages/physics.r/LICENSE := "YEAR: 2026\nCOPYRIGHT HOLDER: OrbitMines\n"
     @./languages/physics.r/R/rt.R := @./implementation/gen/backends/cpu.rt.r
     @./languages/physics.r/R/physics.R := code
@@ -234,7 +237,7 @@ Rlang: Language = class {
     requirement := r.requirement.as(Rlang)
     filter := r.filter == None ? "TRUE" : r.filter.as(Rlang)
     label := "{r.location} on {f.name}"
-    "t_case({label.quoted}, function() {{\n  it <- {definition}\n  guard <- 0\n  while (!truthy({filter})) {{\n    guard <- guard + 1\n    if (guard > {r.until} || !has(it, \"tick\")) return(\"skip\")\n    get(it, \"tick\")\n  }}\n  if (truthy({requirement})) \"pass\" else paste0(\"failed: \", {requirement.quoted})\n}})"
+    "t_case({label.quoted}, function() {{\n  it <- {definition}\n  guard <- 0\n  while (!truthy({filter})) {{\n    guard <- guard + 1\n    if (guard > {r.until} || !has(it, \"tick\")) return(\"skip\")\n    it$tick\n  }}\n  if (truthy({requirement})) \"pass\" else paste0(\"failed: \", {requirement.quoted})\n}})"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {
@@ -260,7 +263,7 @@ Rlang: Language = class {
   /* the package's folder under languages/ */
   package_dir (): String => "physics.r"
   install (): String => "```r\n# R\ninstall.packages(\"orbitmines\")\n```"
-  readme (): String => "# orbitmines - R\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in R: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Rlang.install}\n\nOr from this repository: `remotes::install_github(\"orbitmines/physics\", subdir = \"languages/physics.r\")`, or from an r-universe that carries it. R 4.1 or later; it imports `jsonlite`.\n\n## Using it\n\nR copies a value when it is changed, so a Ray object is an environment and its members are reached by name: `get(x, \"name\")`, `call(x, \"method\", args...)`, `set(x, \"name\", value)`, `make(Class, field = value, ...)`. Numbers are doubles, a list is `lst(...)` (Ray counts from 0: `elem(xs, 0)` is the first), `NULL` is None. Attaching the package masks `base::get` and `base::call`; both still do what base R does when called the way base R calls them.\n\n```r\nlibrary(orbitmines)\n\n# a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nmedium <- call(G, \"medium\", 31, 96, 3, 8, 1)\nset(medium, \"local_rays\", TRUE)\ncall(medium, \"add\", make(Hole, x = 15, y = 15, mx = 0.3, ways = 1))\nget(medium, \"seed\")\nfor (t in 1:5) get(medium, \"tick\")\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```r\nplan <- make(Plan, sources = 1e9, side = 241)\nset(get(plan, \"budget\"), \"compact\", TRUE)   # twelve bytes a source\ncat(call(plan, \"report\", 16 * 2^30, 2^31), \"\\n\")\n```\n\n## Theorems\n\n`theorems()` is every theorem, keyed by theory and then by question; `proved(theorems(), \"G\", question)` is one of them, or `NULL`.\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  readme (): String => "# orbitmines - R\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in R: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Rlang.install}\n\nOr from this repository: `remotes::install_github(\"orbitmines/physics\", subdir = \"languages/physics.r\")`, or from an r-universe that carries it. R 4.1 or later; it imports `jsonlite`.\n\n## Using it\n\nA Ray object is an R reference object - an environment - and its members are reached with `$`: `Hole$new(x = 15, y = 15)` makes one, `medium$add(h)` calls a method, `medium$local_rays <- TRUE` sets a field. A member without parameters reads like a field and runs when it is read (`medium$seed`, `medium$tick`), as a getter does; statics hang off the class (`Medium$GATHER`, `Expr$simplify(e)`). Numbers are doubles, `NULL` is None, and a Ray list is shared by whoever holds it, so it is `lst(...)`, read with `elem(xs, 0)` (Ray counts from 0) and `items(xs)` (its R vector or list).\n\n```r\nlibrary(orbitmines)\n\n# a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nmedium <- G$medium(31, 96, 3, 8, 1)\nmedium$local_rays <- TRUE\nmedium$add(Hole$new(x = 15, y = 15, mx = 0.3, ways = 1))\nmedium$seed\nfor (t in 1:5) medium$tick\n\n# a theory's rules are data\nG$rules\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```r\nplan <- Plan$new(sources = 1e9, side = 241)\nplan$budget$compact <- TRUE   # twelve bytes a source\ncat(plan$report(16 * 2^30, 2^31), \"\\n\")\n```\n\n## Theorems\n\n`theorems()` is every theorem, keyed by theory and then by question; `proved(theorems(), \"G\", question)` is one of them, or `NULL`.\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
   description (): String => "Package: orbitmines\nType: Package\nTitle: {Release.description}\nVersion: {Release.numeric}\nAuthor: OrbitMines\nMaintainer: OrbitMines <fadi.shawki@orbitmines.com>\nDescription: {Release.description}.\nLicense: MIT + file LICENSE\nURL: https://github.com/orbitmines/physics\nBugReports: https://github.com/orbitmines/physics/issues\nDepends: R (>= 4.1)\nImports: compiler, jsonlite\nEncoding: UTF-8\nCollate: 'rt.R' 'physics.R' 'theorems.R'\n"
   /* its job in .github/workflows/release.yml (Release.ray): build, keep what it built, publish where the registry's credentials are set */
   release_job (): String => "  r:\n    needs: version\n    runs-on: ubuntu-latest\n    env:\n      PUBLISH: ${{{{ needs.version.outputs.publish }}}}\n      TESTING: ${{{{ needs.version.outputs.testing }}}}\n    steps:\n      - uses: actions/checkout@v7\n      - uses: r-lib/actions/setup-r@v2\n      - name: build\n        run: mkdir -p out && cd out && R CMD build ../languages/physics.r\n      - uses: actions/upload-artifact@v7\n        with:\n          name: r\n          path: out/\n          if-no-files-found: error\n      - name: CRAN takes a package by its web form; r-universe builds it from the repository\n        if: env.PUBLISH == 'true'\n        run: echo \"submit out/orbitmines_{Release.numeric}.tar.gz at https://cran.r-project.org/submit.html (a test release goes to r-universe only)\"\n"

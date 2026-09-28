@@ -3,84 +3,90 @@
 
 (*
  * OrbitMines`Physics` - the physics core and the theories, emitted from implementation/physics.ray, with the
- * runtime they stand on: what the recognised classes (N, String, Array, boolean) and the operators of Ray are in
- * the Wolfram Language.
+ * runtime they stand on.
  *
- * The Wolfram Language has no mutable objects, so a Ray object is an `Obj[id, class, table]` - its class's name and
- * a HashTable of its own slots - and every member is reached by name, found class by class up the chain:
- * `get[x, "cells"]`, `call[x, "add", {args}]`, `set[x, "tag", v]`, `make["Hole", {kw["x", 1.]}]`. A class as a
- * value is `Cls["Hole"]` (`K["Hole"]`), a theory its object (`K["G"]`). A value is one of: Null (None), a machine
- * real (every number, as in the bootstrap), True/False, a String, a list (a DynamicArray: a push is seen by everyone
- * holding it), a Function (every program takes its arguments as one list), an Obj, a Cls or a Many.
+ * Every Ray class is a head of its own: an object is `Hole[id, slots]` (`slots` a HashTable, so that a change is seen
+ * by everyone holding it), made with `Hole[{"x" -> 3., ...}]` or `Hole[<|"x" -> 3., ...|>]`. Its members are read
+ * `hole["mass"]`, called `medium["add", hole]` and written `hole["tag" -> 1.]`; a class's statics are on the head
+ * itself (`Medium["GATHER"]`, `Expr["mentions", e, "x"]`), and a theory is its head (`G["medium", 31., ...]`). Every
+ * member is a definition of its own, in the class's own context (`OrbitMines`Physics`Hole`perWay[self_] := ...`), a
+ * name found class by class up the chain as a prototype chain finds it: the nearest class declaring it decides. A
+ * class whose name the Wolfram Language already has is written `Ray<Name>` (`RayMedium`, `RayRule`).
  *
- * Every method and lambda is written with the depth it stands at (`mfn[d, body]`, `lfn[d, body]`), its locals as
- * `env<k>["name"]` (Ray's names have underscores, which a Wolfram symbol cannot) and its `return` as a `Throw`; when
- * the package loads each is made a Function once: its locals become symbols (in a Module where a lambda may take
- * them, a Block otherwise), and the Catch goes where a `return` still needs one.
+ * A theory's discrete rules are rules: `G["Rules"]` is every one as a RuleDelayed - the pattern what it applies to (its
+ * filter a Condition), the right side the step it takes on the world - and the tick applies those same rules.
+ *
+ * Numbers are machine reals; a Ray list is a DynamicArray (shared: a push is seen by everyone holding it); None is Null.
  *)
 
 BeginPackage["OrbitMines`Physics`"];
 
-get::usage = "get[x, \"name\"] reads a member of a Ray object (a field, a getter, a method as a Function, a static).";
-set::usage = "set[x, \"name\", v] writes a member of a Ray object.";
-call::usage = "call[x, \"name\", {args...}] calls a member of a Ray object.";
-make::usage = "make[\"Class\", {kw[\"field\", value], ...}] makes a Ray object.";
-kw::usage = "kw[\"name\", value] is a named argument to make.";
-K::usage = "K[\"Name\"] is a class of the package as a value, or a theory (K[\"G\"]).";
-invoke::usage = "invoke[f, {args...}] runs a Ray program (a lambda, a method read off an object).";
-items::usage = "items[xs] is a Ray list (or text, or Many) as a Wolfram List.";
+ClassOf::usage = "ClassOf[\"Name\"] is the head of a class of the package (ClassOf[\"Medium\"] is RayMedium), or a theory (ClassOf[\"G\"] is G).";
+Theorems::usage = "Theorems[] is every theorem, keyed by theory and then by question (read from the paclet's theorems.json).";
+Many::usage = "Many[{...}] is a superposition: members apply elementwise, equal things collapse.";
+items::usage = "items[xs] is a Ray list (a DynamicArray), a text or a Many as a Wolfram List.";
 list::usage = "list[a, b, ...] is a Ray list.";
 str::usage = "str[x] is a value as the bootstrap writes it.";
-Theorems::usage = "Theorems[] is every theorem, keyed by theory and then by question (read from the paclet's theorems.json).";
-Obj::usage = "Obj[id, class, slots] is a Ray object.";
-Cls::usage = "Cls[\"Name\"] is a Ray class as a value.";
-Format[Obj[i_, c_, _]] := StringForm["Obj[``, ``]", c, i];
-Format[Cls[c_]] := StringForm["Cls[``]", c];
-Many::usage = "Many[{...}] is a superposition: members apply elementwise, equal things collapse.";
+(* the heads of the classes, made here in the package's own context *)
+OrbitMinesPhysicsClasses;
 
 Begin["`Private`"];
 
 $RecursionLimit = Max[$RecursionLimit, 100000];
 $IterationLimit = Max[$IterationLimit, 1000000];
 Off[General::munfl];
+Off[Infinity::indet];
 $ctx = "OrbitMines`Physics`Private`";
+$localCtx = "OrbitMines`Physics`Local`";
 $root = ParentDirectory[DirectoryName[$InputFileName]];
 Theorems[] := Theorems[] = Import[FileNameJoin[{$root, "Data", "theorems.json"}], "RawJSON"];
 true = True;
 false = False;
 
-(* --- errors: a Ray `fail` (and anything the runtime cannot do) is a Throw with the tag rayError ---------------- *)
+(* --- errors: a Ray `fail` is a Throw with the tag rayError ------------------------------------------------------- *)
 fail[says_] := Throw[str[says], rayError];
 
 (* --- programs: made once, when the package loads --------------------------------------------------------------- *)
-SetAttributes[{mfn, lfn, dfn, sfn, loopScope, fnX, modX, blkX, seqX, andX, orX, notX, tqX, ifX}, HoldAll];
+SetAttributes[{mfn, lfn, dfn, sfn, loopScope, fnX, modX, blkX, seqX, andX, orX, notX, tqX, memberX, rdX, condX, patX}, HoldAll];
 
-(* what a program asks of a comparison is its truth: `If[truthy[lt[a, b]], ...]` is `If[TrueQ[lt[a, b]], ...]`, `&` and `|` there are And and Or, and a parameter is read off the arguments in place *)
+(* what a program asks of a comparison is its truth: `If[truthy[lt[a, b]], ...]` is `If[TrueQ[lt[a, b]], ...]`, and `&` and `|` there are And and Or *)
 peephole = {
   HoldPattern[truthy[andV[a_, b_]]] :> andX[truthy[a], truthy[b]],
   HoldPattern[truthy[orV[a_, b_]]] :> orX[truthy[a], truthy[b]],
   HoldPattern[truthy[not[a_]]] :> notX[truthy[a]],
   HoldPattern[truthy[Not[a_]]] :> notX[truthy[a]],
-  HoldPattern[truthy[x : (_lt | _gt | _le | _ge | _eq)]] :> tqX[x],
+  HoldPattern[truthy[x : (lt | gt | le | ge | eq | listQ | instanceOf)[__]]] :> tqX[x],
   HoldPattern[truthy[True]] -> True,
-  HoldPattern[truthy[False]] -> False,
-  HoldPattern[arg[a_Symbol, i_Integer]] :> With[{j = i + 1}, ifX[Length[a] > i, Part[a, j], Null] /; True]
+  HoldPattern[truthy[False]] -> False
 };
 
-(* a local of the scope at depth k, as a symbol of its own *)
+(*
+ * A local is a symbol of the context OrbitMines`Physics`Local`, named after the Ray name (`local_rays` is `localRays`,
+ * one in a lambda inside `localRays1`): locals are written `env<k>["name"]` (k the depth of the scope that binds it),
+ * since Ray's names have underscores and a Wolfram symbol cannot.
+ *)
 $locals = <||>;
-$localCount = 0;
-locSym[k_Integer, name_String] := Lookup[$locals, Key[{k, name}], $locals[{k, name}] = Symbol[$ctx <> "l" <> ToString[k] <> "v" <> ToString[++$localCount]]];
+$localDepth = <||>;
+sanitize[name_String] := Module[{parts = StringSplit[name, "_"], s},
+  s = StringJoin[If[parts === {}, {""}, Prepend[(ToUpperCase[StringTake[#, 1]] <> StringDrop[#, 1]) & /@ Select[Rest[parts], # =!= "" &], First[parts]]]];
+  s = StringJoin[Select[Characters[s], LetterQ[#] || DigitQ[#] &]];
+  If[s === "" || DigitQ[StringTake[s, 1]], "v" <> s, s]];
+locSym[k_Integer, name_String] := Lookup[$locals, Key[{k, name}], Module[{base = sanitize[name] <> If[k == 0, "", ToString[k]], nm},
+  nm = base;
+  While[KeyExistsQ[$localDepth, nm], nm = nm <> "x"];
+  $localDepth[nm] = k;
+  $locals[{k, name}] = Symbol[$localCtx <> nm]]];
+inSym[s_Symbol] := With[{nm = SymbolName[Unevaluated[s]] <> "In"}, If[!KeyExistsQ[$localDepth, nm], $localDepth[nm] = -1]; Symbol[$localCtx <> nm]];
+SetAttributes[inSym, HoldAll];
 envSymbol[k_Integer] := Symbol[$ctx <> "env" <> ToString[k]];
-argsSymbol[d_Integer] := Symbol[$ctx <> "args" <> ToString[d]];
 SetAttributes[{localSymQ, localDepth}, HoldAll];
-localSymQ[s_Symbol] := Context[s] === $ctx && StringMatchQ[SymbolName[Unevaluated[s]], "l" ~~ DigitCharacter .. ~~ "v" ~~ DigitCharacter ..];
+localSymQ[s_Symbol] := Context[Unevaluated[s]] === $localCtx;
 localSymQ[_] := False;
-localDepth[s_Symbol] := ToExpression[First[StringCases[SymbolName[Unevaluated[s]], "l" ~~ d : DigitCharacter .. ~~ "v" :> d]]];
+localDepth[s_Symbol] := Lookup[$localDepth, SymbolName[Unevaluated[s]], -1];
 
 (* the scopes inside a held body, built first (innermost first) *)
 expandInner[h_Hold] := h /. {
-  lfn[d_Integer, b_] :> RuleCondition[ReleaseHold[build["l", d, Hold[b]]]],
+  lfn[d_Integer, b_] :> RuleCondition[ReleaseHold[fnOf[build[d, Hold[b]]]]],
   loopScope[k_Integer, b_] :> RuleCondition[ReleaseHold[buildLoop[k, Hold[b]]]]
 };
 
@@ -92,167 +98,235 @@ tailH[Hold[If[c_, y_]]] := Replace[tailH[Hold[y]], Hold[a_] :> Hold[If[c, a, Nul
 tailH[Hold[Null]] := Hold[Null];
 tailH[Hold[x_]] := Hold[x; Null];
 
-(* what a scope binds itself: the locals of depth >= k, outside the scopes inside it (which bind their own) *)
-ownLocals[h_Hold, k_Integer] := Join @@ DeleteDuplicates[Cases[h /. {_fnX -> Null, _modX -> Null, _blkX -> Null}, s_Symbol /; localSymQ[s] && localDepth[s] >= k :> HoldComplete[s], Infinity, Heads -> True]];
+(* what a scope binds itself: its locals, outside the scopes inside it (which bind their own) *)
+ownLocals[h_Hold, k_Integer] := Join[HoldComplete[], Sequence @@ DeleteDuplicates[Cases[h /. {_fnX -> Null, _modX -> Null, _blkX -> Null}, s_Symbol /; localSymQ[s] && localDepth[s] >= k :> HoldComplete[s], Infinity, Heads -> True]]];
 closuresQ[h_Hold] := !FreeQ[h, _fnX];
 
 (* a local scope: a Module where a lambda inside may take its locals, a Block where none can *)
 scoped[h_Hold, HoldComplete[]] := h;
-scoped[h_Hold, {}] := h;
 scoped[h_Hold, HoldComplete[s__]] := If[closuresQ[h], h /. Hold[b_] :> Hold[modX[{s}, b]], h /. Hold[b_] :> Hold[blkX[{s}, b]]];
 
-(* a method (kind "m": self and its arguments), a lambda ("l": its arguments), a default ("d": self) or a share ("s": the symbols) *)
-build["d", _, h_Hold] := Replace[expandInner[h] //. peephole, Hold[b_] :> Hold[fnX[{self}, b]]];
-build["s", _, h_Hold] := Replace[expandInner[h] //. peephole, Hold[b_] :> Hold[fnX[{s}, b]]];
-build[kind_String, d_Integer, h_Hold] := Module[{k = d - 1, env, inner, b, a},
+(*
+ * A program at depth d: its parameters (read off the `{p = arg[args, i], ...}` it opens with - a parameter it writes to
+ * is bound as `pIn` and copied), its locals scoped, its `return` at the end a value, a Catch only where one is left.
+ * The result is `memberX[{parameter symbols}, body]`.
+ *)
+build[d_Integer, h_Hold] := Module[{k = d - 1, env, b, ps = HoldComplete[], written, psList, pats, inits, locals},
   env = envSymbol[k];
-  inner = expandInner[h];
-  b = (inner /. (env[s_String] :> RuleCondition[locSym[k, s]])) //. peephole;
+  b = expandInner[h] /. (env[s_String] :> RuleCondition[locSym[k, s]]);
+  If[MatchQ[b, Hold[CompoundExpression[_List, ___]]],
+    ps = Replace[b, Hold[CompoundExpression[List[sets___], ___]] :> HoldComplete[sets]];
+    ps = Join[HoldComplete[], Sequence @@ Cases[ps, HoldPattern[Set[p_Symbol, _]] :> HoldComplete[p]]];
+    b = Replace[b, Hold[CompoundExpression[_List, rest___]] :> Hold[CompoundExpression[rest]]]];
+  b = b //. peephole;
   b = tailH[b];
   If[!FreeQ[b /. {_fnX -> Null}, HoldPattern[Throw[_, ret]]], b = Replace[b, Hold[x_] :> Hold[Catch[x, ret]]]];
-  b = scoped[b, ownLocals[b, k]];
-  a = argsSymbol[d];
-  If[kind === "m",
-    With[{aa = a}, Replace[b, Hold[x_] :> Hold[fnX[{self, aa}, x]]]],
-    With[{aa = a}, Replace[b, Hold[x_] :> Hold[fnX[{aa}, x]]]]]
+  written[HoldComplete[p_]] := !FreeQ[b /. {_fnX -> Null}, HoldPattern[Set[p, _]]];
+  psList = List @@ (HoldComplete /@ ps);
+  pats = Join[HoldComplete[], Sequence @@ Map[If[written[#], Replace[#, HoldComplete[p_] :> With[{q = inSym[p]}, HoldComplete[q] /; True]], #] &, psList]];
+  inits = Join[HoldComplete[], Sequence @@ Map[If[written[#], Replace[#, HoldComplete[p_] :> With[{q = inSym[p]}, HoldComplete[Set[p, q]] /; True]], HoldComplete[]] &, psList]];
+  locals = Join[DeleteCases[ownLocals[b, k], Alternatives @@ (psList /. HoldComplete[p_] :> HoldPattern[p])], inits];
+  b = scoped[b, locals];
+  Replace[{pats, b}, {HoldComplete[pp___], Hold[x_]} :> Hold[memberX[{pp}, x]]]
 ];
+fnOf[Hold[memberX[{pp___}, x_]]] := Hold[fnX[{pp}, x]];
 (* the scope of a block taken apart by `for`: a Module of its own a turn only where a lambda made in it may keep its locals *)
-buildLoop[k_Integer, h_Hold] := Module[{env = envSymbol[k], inner, b},
-  inner = expandInner[h];
-  b = inner /. (env[s_String] :> RuleCondition[locSym[k, s]]);
+buildLoop[k_Integer, h_Hold] := Module[{env = envSymbol[k], b},
+  b = expandInner[h] /. (env[s_String] :> RuleCondition[locSym[k, s]]);
   If[closuresQ[b], scoped[b, ownLocals[b, k]], Replace[b, Hold[x_] :> Hold[seqX[x]]]]
 ];
-release[h_Hold] := ReleaseHold[(h //. seqX[x_] :> x) /. {fnX -> Function, modX -> Module, blkX -> Block, andX -> And, orX -> Or, notX -> Not, tqX -> TrueQ, ifX -> If}];
+released[h_] := (h //. {seqX[x_] :> x, HoldPattern[CompoundExpression[x_]] :> x}) /. {fnX -> Function, modX -> Module, blkX -> Block, andX -> And, orX -> Or, notX -> Not, tqX -> TrueQ};
 
-mfn[d_Integer, body_] := release[build["m", d, Hold[body]]];
-lfn[d_Integer, body_] := release[build["l", d, Hold[body]]];
-dfn[body_] := release[build["d", 0, Hold[body]]];
-sfn[body_] := release[build["s", 0, Hold[body]]];
+(* a method (its self and parameters), a lambda (a Function of its parameters), a default (a Function of self) and a share (a Function of the symbols s) *)
+mfn[d_Integer, body_] := First[released[build[d, Hold[body]]]];
+lfn[d_Integer, body_] := ReleaseHold[released[fnOf[build[d, Hold[body]]]]];
+dfn[body_] := ReleaseHold[released[Replace[expandInner[Hold[body]] //. peephole, Hold[b_] :> Hold[fnX[{self}, b]]]]];
+sfn[body_] := ReleaseHold[released[Replace[expandInner[Hold[body]] //. peephole, Hold[b_] :> Hold[fnX[{s}, b]]]]];
 
-(* --- classes: a table each, filled when the package loads -------------------------------------------------------- *)
-$classes = <||>;
-$theories = <||>;
+(* --- classes: every one a head, every member a definition --------------------------------------------------------- *)
+$nameOf = <||>;
+$headOf = <||>;
+$theoryOf = <||>;
 $id = 0;
-putKey[a_Association, k_, v_] := If[KeyExistsQ[a, k], ReplacePart[a, Key[k] -> v], Append[a, k -> v]];
+$parent[_] = None;
+$call[_, _] = None;
+$static[_, _] = None;
+$declared[_, _] = False;
+declaredQ[c_, n_] := $declared[c, n];
 
-cls[name_String, parent_, def_] := (
-  $classes[name] = True;
-  $parent[name] = If[parent === None || parent === Null, None, parent];
-  $fields[name] = <||>; $getters[name] = <||>; $methods[name] = <||>; $statics[name] = <||>; $sdefs[name] = <||>;
-  $order[name] = {};
-  $sslots[name] = CreateDataStructure["HashTable"];
-  def[name];
-  Cls[name]);
-held[x_] := x;
-field[c_String, n_String, d_] := ($fields[c] = putKey[$fields[c], n, held[d]]; If[!MemberQ[$order[c], n], $order[c] = Append[$order[c], n]];);
-getter[c_String, n_String, f_] := ($getters[c] = putKey[$getters[c], n, held[f]];);
-method[c_String, n_String, f_] := ($methods[c] = putKey[$methods[c], n, held[f]];);
-statik[c_String, n_String, f_] := ($statics[c] = putKey[$statics[c], n, held[f]];);
-staticField[c_String, n_String, d_] := ($sdefs[c] = putKey[$sdefs[c], n, held[d]];);
+(* the context a class's members are named in, and a member's own name there *)
+memberSym[c_Symbol, n_String] := Module[{ctx = Context[c] <> SymbolName[c] <> "`", base = sanitize[StringReplace[n, " " -> "_"]], nm},
+  nm = base;
+  While[NameQ[ctx <> nm] && $memberOwner[ctx <> nm] =!= {c, n}, nm = nm <> "x"];
+  $memberOwner[ctx <> nm] = {c, n};
+  Symbol[ctx <> nm]];
+$memberOwner[_] = None;
 
-isA[c_String, k_String] := MemberQ[chainOf[c], k];
+chainOf[c_Symbol] := chainOf[c] = NestWhileList[$parent, c, # =!= None &] /. None -> Sequence[];
+isA[c_Symbol, k_Symbol] := MemberQ[chainOf[c], k];
+objQ[x_] := MatchQ[x, h_Symbol[_Integer, _DataStructure] /; KeyExistsQ[$nameOf, h]];
+theoryQ[x_] := MatchQ[x, _Symbol] && KeyExistsQ[$theoryOf, x];
+theoryOf[x_] := If[theoryQ[x], $theoryOf[x], x];
 
 (*
- * the lookups, remembered: what a class's chain is, what a name is on it. They are forgotten when the package has
- * loaded (`forget`), since a lookup made while the classes were being filled may have been made before all of them were
+ * A class: its head, its Ray name, its parent's head, and its members (a program of the head, `klass`). What it does
+ * not declare it has from its parent - the nearest class declaring a name decides.
  *)
-forget[] := ($chain = <||>; $res = <||>; $sown = <||>; $fstat = <||>; $allOrder = <||>; Clear[member, resolve, methodOf, staticOwner, findStatic]; staticOwner[c_String, n_String] := staticOwner[c, n] = staticOwnerNow[c, n]; findStatic[c_String, n_String] := findStatic[c, n] = findStaticNow[c, n]; member[c_String, n_String] := member[c, n] = memberNow[c, n]; resolve[c_String, n_String] := resolve[c, n] = resolveNow[c, n]; methodOf[c_String, n_String] := methodOf[c, n] = methodOfNow[c, n]);
-forget[];
-chainOf[c_String] := Lookup[$chain, c, $chain[c] = NestWhileList[$parent, c, # =!= None && KeyExistsQ[$classes, #] &] /. None -> Sequence[]];
-(* the nearest class up the chain with a member of this name decides what it is - as a prototype chain does *)
-resolveNow[c_String, n_String] := (Catch[
-  Do[
-    If[KeyExistsQ[$getters[k], n], Throw[{"getter", $getters[k][n]}, found]];
-    If[KeyExistsQ[$fields[k], n], Throw[{"field", $fields[k][n]}, found]];
-    If[KeyExistsQ[$methods[k], n], Throw[{"method", $methods[k][n]}, found]],
-    {k, chainOf[c]}];
-  {"none", None}, found]);
-methodOfNow[c_String, n_String] := With[{r = resolve[c, n]}, If[r[[1]] === "method", r[[2]], None]];
-(* how a name not among an object's own slots is read: a program of the object, its slots and the name *)
-memberNow[c_String, n_String] := (With[{r = resolve[c, n]}, With[{f = r[[2]]},
-  Switch[r[[1]],
-    "getter", Function[{o, h, nm}, f[o, {}]],
-    "field", If[f === Null, Function[{o, h, nm}, h["Insert", nm -> Null]; Null], Function[{o, h, nm}, With[{v = f[o]}, h["Insert", nm -> v]; v]]],
-    "method", Function[{o, h, nm}, With[{ob = o}, Function[{a}, f[ob, a]]]],
-    _, With[{cc = c}, Function[{o, h, nm}, With[{k = staticOwner[cc, nm]}, If[k === None, Null, getStatic[k, nm]]]]]]]]);
-staticOwnerNow[c_String, n_String] := (Catch[Do[If[KeyExistsQ[$sdefs[k], n] || $sslots[k]["KeyExistsQ", n], Throw[k, found]], {k, chainOf[c]}]; None, found]);
-findStaticNow[c_String, n_String] := (Catch[Do[If[KeyExistsQ[$statics[k], n], Throw[$statics[k][n], found]], {k, chainOf[c]}]; None, found]);
-getStatic[k_String, n_String] := With[{v = $sslots[k]["Lookup", n, absentF]}, If[v =!= absent, v,
-  With[{d = $sdefs[k][n][Null]}, $sslots[k]["Insert", n -> d]; d]]];
-allOrder[c_String] := Lookup[$allOrder, c, $allOrder[c] = Join @@ ($order /@ Reverse[chainOf[c]])];
+DefineClass[c_Symbol, name_String, parent_, members_] := (
+  $nameOf[c] = name; $headOf[name] = c;
+  $parent[c] = If[parent === None || !KeyExistsQ[$nameOf, parent], None, parent];
+  $own[c] = {}; $ownStatic[c] = {}; $order[c] = {}; $sorder[c] = {};
+  generic[c];
+  members[c];
+  inherit[c];
+  c);
 
-(* a class by its name (`Boundary.Terminal` by its own), or a theory by its: what a class written in Ray is, as a value *)
-K[name_String] := With[{n = Last[StringSplit[name, "."]]},
-  Which[KeyExistsQ[$theories, n], $theories[n], KeyExistsQ[$classes, n], K[name] = Cls[n], True, fail["no class " <> name <> " in this package"]]];
+(* what every class's head does: make its objects, read and write its statics, and reach its objects' members by name *)
+generic[c_Symbol] := (
+  c[args_List] := new[c, args];
+  c[a_Association] := new[c, Normal[a]];
+  c[n_String -> v_] := setStatic[c, n, v];
+  c[n_String] := readStatic[c, n];
+  c[n_String, a__] := With[{st = $static[c, n]}, If[st =!= None && st[[1]] === "method", st[[2]][a], callStatic[c, n, {a}]]];
+  (o : c[_Integer, h_DataStructure])[n_String] := If[h["KeyExistsQ", n], h["Lookup", n], $read[c, n][o, h, n]];
+  (o : c[_Integer, h_DataStructure])[n_String -> v_] := (h["Insert", n -> v]; v);
+  (o : c[_Integer, h_DataStructure])[n_String, a__] := With[{m = $call[c, n]}, If[m =!= None, m[o, a], callOther[o, h, n, {a}]]];
+  Format[o : c[i_Integer, _DataStructure], StandardForm] := Interpretation[Row[{SymbolName[c], "[", i, "]"}], o];
+  Format[o : c[i_Integer, _DataStructure], OutputForm] := SymbolName[c] <> "[" <> ToString[i] <> "]";
+  );
+$read[_, _] = Function[{o, h, n}, readStatic[Head[o], n, True]];
+callOther[o_, h_, n_, a_] := With[{f = o[n]}, Which[Head[f] === Function, f @@ a, f === Null, fail["no method " <> n <> " on " <> $nameOf[Head[o]]], True, f]];
 
-(* `Class(x: 1, ...)`: an object of the class, its named fields set *)
-kw[n_String, v_] := Kw[n, v];
-kindName[s_String] := Last[StringSplit[s, "."]];
-kindName[Cls[c_]] := c;
-kindName[Obj[_, c_, _]] := c;
-make[kind_] := make[kind, {}];
-make[kind_, a_List] := Module[{c = kindName[kind], h = CreateDataStructure["HashTable"], names, pos = 0},
-  names = allOrder[c];
-  Do[If[Head[x] === Kw, h["Insert", x[[1]] -> x[[2]]], If[pos < Length[names], pos++; h["Insert", names[[pos]] -> x]]], {x, a}];
-  Obj[++$id, c, h]];
-arg[a_List, i_Integer] := If[i < Length[a], a[[i + 1]], Null];
+own[c_, n_, kind_, read_, call_] := (
+  If[!MemberQ[$own[c], n], $own[c] = Append[$own[c], n]];
+  $read[c, n] = read; $call[c, n] = call; $declared[c, n] = True);
+ownStatic[c_, n_, kind_, sym_] := (
+  If[!MemberQ[$ownStatic[c], n], $ownStatic[c] = Append[$ownStatic[c], n]];
+  If[!MemberQ[$sorder[c], n], $sorder[c] = Append[$sorder[c], n]];
+  $static[c, n] = {kind, sym});
+inherit[c_Symbol] := With[{p = $parent[c]}, If[p =!= None,
+  Scan[Function[n, If[!MemberQ[$own[c], n], $read[c, n] = $read[p, n]; $call[c, n] = $call[p, n]; $declared[c, n] = True]], $names[p]];
+  Scan[Function[n, If[!MemberQ[$ownStatic[c], n], $static[c, n] = $static[p, n]]], $snames[p]]];
+  $names[c] = DeleteDuplicates[Join[If[p === None, {}, $names[p]], $own[c]]];
+  $snames[c] = DeleteDuplicates[Join[If[p === None, {}, $snames[p]], $ownStatic[c]]];
+  (* an operator a class declares is the operator on its objects: `v + w` is `v["plus", w]` *)
+  If[$declared[c, "plus"], c /: Plus[a : c[_Integer, _DataStructure], b_] := a["plus", b]];
+  If[$declared[c, "times"], c /: Times[a : c[_Integer, _DataStructure], b_] := a["times", b]]];
 
-(* a theory: its class made once, its rules and theorems read off the class in the order they are written *)
-theory[name_String] := Module[{o = make[name, {}], rules = {}, thms = {}},
-  Do[Do[Which[StringStartsQ[n, "rule "], AppendTo[rules, get[Cls[name], n]], StringStartsQ[n, "theorem "], AppendTo[thms, get[Cls[name], n]]], {n, Keys[$sdefs[k]]}], {k, Reverse[chainOf[name]]}];
-  set[o, "rules", mkl[rules]];
-  set[o, "theorems", mkl[thms]];
-  $theories[name] = o;
-  K[name] = o;
-  o];
+(* the definition of a member: `sym[self_, p_, q_ : Null, ___] := body` (a method), `sym[self_] := body` (a getter), `sym[p_ : Null, ___] := body` (a static) *)
+defineMember[sym_Symbol, memberX[{ps___}, b_], mode_String] := Module[{pats},
+  pats = Replace[HoldComplete[ps], x_Symbol :> Optional[Pattern @@ {x, Blank[]}, Null], {1}];
+  If[mode === "method", pats = Replace[pats, HoldComplete[Verbatim[Optional][p_, Null], r___] :> HoldComplete[p, r]]];
+  If[mode =!= "getter", pats = Join[pats, HoldComplete[BlankNullSequence[]]]];
+  If[mode =!= "static", pats = Join[HoldComplete[Pattern[self, Blank[]]], pats]];
+  With[{s = sym}, Replace[{pats, If[mode === "static", Hold[b] /. HoldPattern[self] -> Null, Hold[b]]}, {HoldComplete[l___], Hold[r_]} :> SetDelayed[s[l], r]]]];
+(* a default read with self: `sym[self_] := expr` *)
+Quiet[defineDefault[sym_Symbol, HoldPattern[Function[{v_}, b_]]] := With[{s = sym}, SetDelayed[s[Pattern[v, Blank[]]], b]], RuleDelayed::rhs];
 
-(* a share of a term: its source, and the program that reads it at the symbols *)
-at[source_, f_] := With[{o = make["Node", {}]}, set[o, "source", source]; set[o, "at", Function[{a}, f[arg[a, 0]]]]; o];
+field[c_Symbol, n_String] := (If[!MemberQ[$order[c], n], $order[c] = Append[$order[c], n]];
+  own[c, n, "field", Function[{o, h, nm}, h["Insert", nm -> Null]; Null], None]);
+field[c_Symbol, n_String, f_Function] := With[{s = memberSym[c, n]},
+  If[!MemberQ[$order[c], n], $order[c] = Append[$order[c], n]];
+  defineDefault[s, f];
+  own[c, n, "field", Function[{o, h, nm}, With[{v = s[o]}, h["Insert", nm -> v]; v]], None]];
+getter[c_Symbol, n_String, m_memberX] := With[{s = memberSym[c, n]},
+  defineMember[s, m, "getter"];
+  own[c, n, "getter", Function[{o, h, nm}, s[o]], None]];
+method[c_Symbol, n_String, m_memberX] := With[{s = memberSym[c, n]},
+  defineMember[s, m, "method"];
+  own[c, n, "method", Function[{o, h, nm}, With[{oo = o}, Function[Null, s[oo, ##]]]], s]];
+statik[c_Symbol, n_String, m_memberX] := With[{s = memberSym[c, n]},
+  defineMember[s, m, "static"];
+  ownStatic[c, n, "method", s]];
+(* a static field is the head's own memo: `Medium["GATHER"] := Medium["GATHER"] = 8.` - written as `Medium["GATHER" -> v]` *)
+staticField[c_Symbol, n_String, f_Function] := (
+  c[n] := (c[n] = f[Null]);
+  ownStatic[c, n, "field", c]);
+staticValue[c_Symbol, n_String, v_] := (c[n] = v; ownStatic[c, n, "field", c]);
+(* a member declared and defined by no one *)
+declaredOnly[c_Symbol, n_String, kind_String, says_String] := Switch[kind,
+  "getter", own[c, n, "getter", Function[{o, h, nm}, fail[says]], None],
+  "method", With[{s = memberSym[c, n]}, s[___] := fail[says]; own[c, n, "method", Function[{o, h, nm}, fail[says]], s]],
+  "static", With[{s = memberSym[c, n]}, s[___] := fail[says]; ownStatic[c, n, "method", s]]];
 
-instanceOf[x_, ty_] := With[{t = If[StringQ[ty], kindName[ty], ty /. Cls[c_] :> c]},
-  Switch[t,
-    "String", StringQ[x], "Number" | "Real" | "N" | "Z" | "Natural" | "Integer" | "Decimal", numQ[x],
-    "boolean", BooleanQ[x], "Array", listQ[x],
-    _, MatchQ[x, Obj[_, _, _]] && isA[x[[2]], t]]];
+readStatic[c_, n_] := readStatic[c, n, False];
+readStatic[c_, n_, fromObject_] := With[{st = $static[c, n]}, Which[
+  st =!= None && st[[1]] === "field", st[[2]][n],
+  st =!= None && !fromObject, st[[2]][],
+  !fromObject && theoryQ[c], $theoryOf[c][n],
+  True, Null]];
+callStatic[c_, n_, a_] := With[{st = $static[c, n]}, Which[
+  st =!= None && st[[1]] === "method", st[[2]] @@ a,
+  st =!= None, With[{f = st[[2]][n]}, If[Head[f] === Function, f @@ a, f]],
+  theoryQ[c], $theoryOf[c][n, Sequence @@ a],
+  True, fail["no static " <> n <> " on " <> $nameOf[c]]]];
+setStatic[c_, n_, v_] := With[{st = $static[c, n]}, Which[
+  st =!= None && st[[1]] === "field", With[{o = st[[2]]}, o[n] = v],
+  theoryQ[c], $theoryOf[c][n -> v],
+  True, c[n] = v; ownStatic[c, n, "field", c]; Scan[Function[k, If[isA[k, c] && $static[k, n] === None, $static[k, n] = {"field", c}]], Keys[$nameOf]]; v]];
 
-(* --- members by name ---------------------------------------------------------------------------------------------- *)
-absentF = Function[absent];
-get[o : Obj[_, c_, h_], n_String] := If[h["KeyExistsQ", n], h["Lookup", n], member[c, n][o, h, n]];
-getMember[o_, c_, h_, n_] := member[c, n][o, h, n];
-get[Cls[c_], n_String] := With[{k = staticOwner[c, n]},
-  If[k =!= None, getStatic[k, n], With[{s = findStatic[c, n]}, If[s === None, Null, s[Null, {}]]]]];
-get[Many[l_List], n_String] := collapse[If[# === Null, Null, get[#, n]] & /@ l];
-get[Null, n_] := fail["no member " <> str[n] <> " on None"];
-get[x_, "length"] := len[x];
-get[x_, n_] := fail["no member " <> str[n] <> " on " <> str[x]];
-getOpt[Null, _] := Null;
-getOpt[t_, n_] := get[t, n];
+allOrder[c_Symbol] := allOrder[c] = Join @@ ($order /@ Reverse[chainOf[c]]);
+(* `Hole[{"x" -> 3., ...}]`: an object of the class, its named fields set, the rest in the order its fields are declared *)
+new[c_Symbol, args_List] := Module[{h = CreateDataStructure["HashTable"], names = allOrder[c], pos = 0},
+  Do[If[MatchQ[x, _String -> _], h["Insert", x], If[pos < Length[names], pos++; h["Insert", names[[pos]] -> x]]], {x, args}];
+  c[++$id, h]];
 
-set[Obj[_, _, h_], n_String, v_] := (h["Insert", n -> v]; v);
-set[Cls[c_], n_String, v_] := With[{k = staticOwner[c, n]}, If[k === None, forget[]]; $sslots[If[k === None, c, k]]["Insert", n -> v]; v];
-set[Many[l_List], n_String, v_] := (Scan[set[#, n, v] &, l]; v);
-set[t_, n_, v_] := fail["no member " <> str[n] <> " to set on " <> str[t]];
-
-call[o : Obj[_, c_, h_], n_String, a_List] := With[{m = methodOf[c, n]},
-  If[m =!= None && !h["KeyExistsQ", n], m[o, a], callValue[get[o, n], n, c, a]]];
-callValue[f_Function, _, _, a_] := f[a];
-callValue[Null, n_, c_, _] := fail["no method " <> n <> " on " <> c];
-callValue[v_, _, _, _] := v;
-call[Cls[c_], n_String, a_List] := With[{s = findStatic[c, n]},
-  If[s =!= None, s[Null, a], With[{f = get[Cls[c], n]}, If[Head[f] === Function, f[a], fail["no static " <> n <> " on " <> c]]]]];
-call[Many[l_List], n_String, a_List] := collapse[call[#, n, a] & /@ l];
-call[Null, n_, _] := fail["no method " <> str[n] <> " on None"];
-call[t_, n_, _] := fail["no method " <> str[n] <> " on " <> str[t]];
-callOpt[Null, _, _] := Null;
-callOpt[t_, n_, a_] := call[t, n, a];
-invoke[f_Function, a_List] := f[a];
-invoke[f_, _] := fail["not a program: " <> str[f]];
-choose[t_, name_String] := get[t, "choose " <> name];
-
-(* whether an object has a member of this name, of its own or its class's *)
-has[Obj[_, c_, h_], n_String] := h["KeyExistsQ", n] || resolve[c, n][[1]] =!= "none";
-has[Cls[c_], n_String] := findStatic[c, n] =!= None || staticOwner[c, n] =!= None;
+(* a class by its Ray name (`Boundary.Terminal` by its own): its head, or a theory's *)
+ClassOf[name_String] := With[{n = Last[StringSplit[name, "."]]}, Lookup[$headOf, n, fail["no class " <> name <> " in this package"]]];
+has[o_?objQ, n_String] := o[[2]]["KeyExistsQ", n] || declaredQ[Head[o], n];
+has[c_Symbol, n_String] := KeyExistsQ[$nameOf, c] && ($static[c, n] =!= None || (theoryQ[c] && has[$theoryOf[c], n]));
 has[_, _] := False;
+instanceOf[x_, t_Symbol] := Which[
+  t === String, StringQ[x], t === Number || t === Real || t === N || t === Integer, numQ[x], t === Array, listQ[x],
+  KeyExistsQ[$nameOf, t], objQ[x] && isA[Head[x], t],
+  True, False];
+instanceOf[x_, t_String] := instanceOf[x, Lookup[$headOf, t, Symbol[t]]];
+getOpt[Null, _] := Null;
+getOpt[t_, n_] := t[n];
+callOpt[Null, __] := Null;
+callOpt[t_, n_, a___] := t[n, a];
+
+(* --- a theory: its head, one object of it the members stand on, and its rules as rules ----------------------------- *)
+DefineTheory[c_Symbol] := Module[{o = new[c, {}], rules = {}, thms = {}, natives = <||>, info = {}},
+  $theoryOf[c] = o;
+  Do[Do[Which[
+      StringStartsQ[n, "rule "], With[{r = c[n]}, AppendTo[rules, r]; natives[r["id"]] = r["rule"];
+        AppendTo[info, <|"id" -> r["id"], "name" -> r["name"], "rate" -> r["rate"], "over" -> r["over"], "kind" -> r["kind"], "rule" -> r["rule"]|>]],
+      StringStartsQ[n, "theorem "], AppendTo[thms, c[n]]], {n, $sorder[k]}], {k, Reverse[chainOf[c]]}];
+  o["rules" -> mkl[rules]];
+  o["theorems" -> mkl[thms]];
+  o["Rules" -> natives];
+  o["RuleInfo" -> info];
+  c];
+
+(*
+ * A rule of a theory, as a rule: `x_Edge /; truthy[x["active"]] :> x["ANNIHILATE"]` - the pattern what it applies to
+ * (its class and every class under it; a rule over a point's rays takes their Many), its filter a Condition, the right
+ * side the step it takes. Every rule of G changes the world where it matches, so each is a RuleDelayed whose right side
+ * performs the step ("kind" -> "step"). The Ray Rule the tick reads applies this same rule to what it matched.
+ *)
+under[t_Symbol] := Select[Keys[$nameOf], isA[#, t] &];
+headPattern[over_String] := With[{t = Lookup[$headOf, over, None]}, If[t === None, Blank[], (Alternatives @@ (Blank /@ under[t])) /. Verbatim[Alternatives][x_] :> x]];
+nativeRule[over_String, single_, where_, body_Function] := Module[{v, hb, cond, pat},
+  v = If[First[body] === {}, Symbol[$localCtx <> "world"], First[First[body]]];
+  hb = Extract[body, {2}, Hold];
+  pat = If[TrueQ[single] || over === "World", headPattern[over], Many[{Repeated[headPattern[over]]}]];
+  cond = If[where === Null, None,
+    With[{w = where}, If[TrueQ[single], Replace[Extract[w, {2}, Hold] /. First[First[w]] -> v, Hold[x_] :> Hold[truthy[x]]],
+      With[{vv = v}, Hold[AllTrue[First[vv], Function[{r}, truthy[w[r]]]]]]]]];
+  ReleaseHold[If[cond === None,
+    Replace[hb, Hold[r_] :> Hold[rdX[patX[$pv, $pp], r]]],
+    Replace[{cond, hb}, {Hold[c_], Hold[r_]} :> Hold[rdX[condX[patX[$pv, $pp], c], r]]]] /. {$pv -> v, $pp -> pat} /. {rdX -> RuleDelayed, condX -> Condition, patX -> Pattern}]];
+theoryRule[c_Symbol, rid_String, name_, rate_, over_String, single_, source_String, where_, body_Function] := Module[{native, r},
+  native = nativeRule[over, single, where, body];
+  r = $headOf["Rule"][{"id" -> "/" <> rid, "name" -> name, "rate" -> rate, "over" -> over, "single" -> single, "where" -> where, "source" -> source,
+    "body" -> With[{rr = native}, Function[{x}, Replace[x, rr]]], "rule" -> native, "kind" -> "step"}];
+  staticValue[c, "rule " <> rid, r]];
+
+(* --- the Many: a superposition; members apply elementwise, equal things collapse ------------------------------------ *)
+Many[l_List][n_String] := collapse[If[# === Null, Null, #[n]] & /@ l];
+Many[l_List][n_String -> v_] := (Scan[#[n -> v] &, l]; v);
+Many[l_List][n_String, a__] := collapse[#[n, a] & /@ l];
 
 (* --- what the language's operators are here ---------------------------------------------------------------------- *)
 numQ[x_] := MatchQ[x, _Real | _Integer | DirectedInfinity[1 | -1] | Indeterminate];
@@ -287,18 +361,18 @@ machine[x_] := x;
 
 add[a_Real, b_Real] := a + b;
 add[a_String, b_] := a <> str[b];
-add[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] + num[b]]], call[a, "plus", {b}]];
+add[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] + num[b]]], a["plus", b]];
 sub[a_Real, b_Real] := a - b;
-sub[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] - num[b]]], call[a, "minus", {b}]];
+sub[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] - num[b]]], a["minus", b]];
 mul[a_Real, b_Real] := a b;
-mul[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] num[b]]], call[a, "times", {b}]];
+mul[a_, b_] := If[arithQ[a], ieee[Quiet[num[a] num[b]]], a["times", b]];
 div[a_Real, b_Real] := If[b == 0, If[a == 0, 0., If[a > 0, Infinity, -Infinity]], a / b];
-div[a_, b_] := If[arithQ[a], With[{x = num[a], y = num[b]}, If[MatchQ[x, _Real] && MatchQ[y, _Real], div[x, y], ieee[Quiet[x / y]]]], call[a, "over", {b}]];
+div[a_, b_] := If[arithQ[a], With[{x = num[a], y = num[b]}, If[MatchQ[x, _Real] && MatchQ[y, _Real], div[x, y], ieee[Quiet[x / y]]]], a["over", b]];
 mod[a_Real, b_Real] := If[b > 0. && a >= 0. && FractionalPart[a] == 0. && FractionalPart[b] == 0. && a < 9.007199254740992*^15, Mod[a, b], fmod[a, b]];
-mod[a_, b_] := If[arithQ[a], With[{x = num[a], y = num[b]}, If[MatchQ[x, _Real] && MatchQ[y, _Real], fmod[x, y], Indeterminate]], call[a, "mod", {b}]];
+mod[a_, b_] := If[arithQ[a], With[{x = num[a], y = num[b]}, If[MatchQ[x, _Real] && MatchQ[y, _Real], fmod[x, y], Indeterminate]], a["mod", b]];
 neg[a_Real] := -a;
-neg[a_] := If[arithQ[a], ieee[-num[a]], get[a, "negated"]];
-power[a_, b_] := If[arithQ[a], pow[num[a], num[b]], call[a, "pow", {b}]];
+neg[a_] := If[arithQ[a], ieee[-num[a]], a["negated"]];
+power[a_, b_] := If[arithQ[a], pow[num[a], num[b]], a["pow", b]];
 ieee[x_Real] := x;
 ieee[x : DirectedInfinity[1 | -1]] := x;
 ieee[ComplexInfinity] := Indeterminate;
@@ -331,10 +405,10 @@ lt[a_Real, b_Real] := Order[a, b] === 1;
 le[a_Real, b_Real] := Order[a, b] =!= -1;
 gt[a_Real, b_Real] := Order[a, b] === -1;
 ge[a_Real, b_Real] := Order[a, b] =!= 1;
-lt[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, call[a, "lt", {b}], c === None, False, True, c < 0]];
-le[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, call[a, "le", {b}], c === None, False, True, c <= 0]];
-gt[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, call[a, "gt", {b}], c === None, False, True, c > 0]];
-ge[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, call[a, "ge", {b}], c === None, False, True, c >= 0]];
+lt[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, a["lt", b], c === None, False, True, c < 0]];
+le[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, a["le", b], c === None, False, True, c <= 0]];
+gt[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, a["gt", b], c === None, False, True, c > 0]];
+ge[a_, b_] := With[{c = cmp[a, b]}, Which[c === $unordered, a["ge", b], c === None, False, True, c >= 0]];
 
 eq[a_Real, b_Real] := Order[a, b] === 0;
 eq[a_String, b_String] := a === b;
@@ -345,7 +419,8 @@ eq[a_, b_] := Which[
   numQ[a] && numQ[b], TrueQ[num[a] == num[b]],
   listQ[a] && listQ[b], a["Length"] === b["Length"] && And @@ MapThread[eq, {a["Elements"], b["Elements"]}],
   StringQ[a] || BooleanQ[a], False,
-  MatchQ[a, Obj[_, _, _]] && methodOf[a[[2]], "equals"] =!= None, truthy[call[a, "equals", {b}]],
+  theoryQ[a] || theoryQ[b], theoryOf[a] === theoryOf[b],
+  objQ[a] && $call[Head[a], "equals"] =!= None, truthy[a["equals", b]],
   True, False];
 
 (* a number as the bootstrap writes it: whole numbers without a point, the rest as the shortest text that reads back *)
@@ -359,8 +434,8 @@ str[DirectedInfinity[1]] = "Infinity";
 str[DirectedInfinity[-1]] = "-Infinity";
 str[Indeterminate] = "NaN";
 str[l_DataStructure] := StringRiffle[str /@ l["Elements"], ","];
-str[o : Obj[_, c_, _]] := If[methodOf[c, "toString"] =!= None, str[call[o, "toString", {}]], c];
-str[Cls[c_]] := c;
+str[o_?objQ] := If[declaredQ[Head[o], "toString"], str[o["toString"]], $nameOf[Head[o]]];
+str[c_Symbol /; KeyExistsQ[$nameOf, c]] := $nameOf[c];
 str[Many[l_]] := StringRiffle[str /@ l, ","];
 str[_Function] := "function";
 str[x_] := ToString[x, InputForm];
@@ -396,18 +471,19 @@ items[x_] := fail["not a list: " <> str[x]];
 len[l_DataStructure] := N[l["Length"]];
 len[s_String] := N[StringLength[s]];
 len[Many[l_List]] := N[Length[l]];
-len[x_] := get[x, "length"];
+len[x_] := x["length"];
 elem[l_DataStructure, k_Real] := If[0. <= k < l["Length"], l["Part", IntegerPart[k] + 1], elemSlow[l, k]];
 elem[l_DataStructure, k_] := elemSlow[l, k];
 elemSlow[l_DataStructure, k_] := With[{i = IntegerPart[num[k]], n = l["Length"]}, Which[0 <= i < n, l["Part", i + 1], -n <= i < 0, l["Part", i + n + 1], True, Null]];
 elem[s_String, k_] := With[{i = IntegerPart[num[k]], n = StringLength[s]}, Which[0 <= i < n, StringTake[s, {i + 1}], -n <= i < 0, StringTake[s, {i + n + 1}], True, Null]];
 elem[Many[l_List], k_] := collapse[elem[#, k] & /@ l];
-elem[t : (_Obj | _Cls), k_] := get[t, If[StringQ[k], k, str[k]]];
+elem[t_?objQ, k_] := t[If[StringQ[k], k, str[k]]];
+elem[t_Symbol /; KeyExistsQ[$nameOf, t], k_] := t[If[StringQ[k], k, str[k]]];
 elem[_, _] := Null;
 setAt[l_DataStructure, k_, v_] := With[{i = IntegerPart[num[k]]}, While[l["Length"] <= i, l["Append", Null]]; l["SetPart", i + 1, v]; v];
-setAt[t_, k_, v_] := set[t, If[StringQ[k], k, str[k]], v];
-filt[Many[l_List], f_] := Many[Select[l, truthy[f[{#}]] &]];
-filt[xs_, f_] := mkl[Select[items[xs], truthy[f[{#}]] &]];
+setAt[t_, k_, v_] := t[If[StringQ[k], k, str[k]] -> v];
+filt[Many[l_List], f_] := Many[Select[l, truthy[f[#]] &]];
+filt[xs_, f_] := mkl[Select[items[xs], truthy[f[#]] &]];
 rng[n_] := mkl[N[Range[0, IntegerPart[num[n]] - 1]]];
 filled[n_, v_] := mkl[ConstantArray[v, Max[0, IntegerPart[num[n]]]]];
 contains[s_String, x_] := StringContainsQ[s, str[x]];
@@ -421,9 +497,9 @@ last[xs_] := With[{l = items[xs]}, If[l === {}, Null, Last[l]]];
 join[xs_, sep_] := StringRiffle[str /@ items[xs], str[sep]];
 quoted[x_] := "\"" <> StringReplace[str[x], {"\\" -> "\\\\", "\"" -> "\\\"", "\n" -> "\\n", "\r" -> "\\r", "\t" -> "\\t"}] <> "\"";
 most[xs_, key_] := Module[{l = items[xs], best = Null, at = -1, bk = -Infinity, k},
-  Do[k = num[key[{l[[i]]}]]; If[best === Null || gt[k, bk], best = l[[i]]; at = i - 1; bk = k], {i, Length[l]}];
+  Do[k = num[key[l[[i]]]]; If[best === Null || gt[k, bk], best = l[[i]]; at = i - 1; bk = k], {i, Length[l]}];
   If[best === Null, Null, list[best, N[at]]]];
-sortedBy[xs_, key_] := With[{l = items[xs]}, With[{ks = num[key[{#}]] & /@ l}, mkl[l[[SortBy[Range[Length[l]], {ks[[#]] &, # &}]]]]]];
+sortedBy[xs_, key_] := With[{l = items[xs]}, With[{ks = num[key[#]] & /@ l}, mkl[l[[SortBy[Range[Length[l]], {ks[[#]] &, # &}]]]]]];
 summed[xs_] := Fold[add, 0., items[xs]];
 codepoints[s_String] := mkl[N[ToCharacterCode[s]]];
 fromCodepoints[xs_] := FromCharacterCode[Round[num /@ items[xs]]];
@@ -438,72 +514,72 @@ number[s_] := With[{t = StringTrim[str[s]]}, Which[
 (* a member Ray knows on a list, a text or a number - and any object's own member of that name otherwise (`Expr.split(e, name)`) *)
 core[x_] := MatchQ[x, Null | _DataStructure | _String | _Real | _Integer | True | False | _Many | DirectedInfinity[_] | Indeterminate];
 mPush[xs_DataStructure, x_] := (xs["Append", x]; xs);
-mPush[xs_, x_, r___] := If[core[xs], fail["push on " <> str[xs]], call[xs, "push", {x, r}]];
+mPush[xs_, x_, r___] := If[core[xs], fail["push on " <> str[xs]], xs["push", x, r]];
 mChars[s_String] := codepoints[s];
-mChars[xs_] := get[xs, "chars"];
+mChars[xs_] := xs["chars"];
 mPop[xs_DataStructure] := If[xs["Length"] == 0, Null, xs["DropLast"]];
-mPop[xs_] := If[core[xs], Null, get[xs, "pop"]];
-mMap[xs_, f_, r___] := If[core[xs], mkl[f[{#}] & /@ items[xs]], call[xs, "map", {f, r}]];
-mFor[xs_, f_, r___] := If[core[xs], Scan[f[{#}] &, items[xs]]; Null, call[xs, "for", {f, r}]];
-mSome[xs_, f_, r___] := If[core[xs], AnyTrue[items[xs], truthy[f[{#}]] &], call[xs, "some", {f, r}]];
-mEvery[xs_, f_, r___] := If[core[xs], AllTrue[items[xs], truthy[f[{#}]] &], call[xs, "every", {f, r}]];
-mReduce[xs_, z_, f_, r___] := If[core[xs], Fold[f[{#1, #2}] &, z, items[xs]], call[xs, "reduce", {z, f, r}]];
-mStartsWith[xs_, x_, r___] := If[core[xs], StringStartsQ[xs, str[x]], call[xs, "starts_with", {x, r}]];
-mEndsWith[xs_, x_, r___] := If[core[xs], StringEndsQ[xs, str[x]], call[xs, "ends_with", {x, r}]];
-mReplace[xs_, x_, y_, r___] := If[core[xs], StringReplace[xs, str[x] -> str[y]], call[xs, "replace", {x, y, r}]];
-mSplit[xs_, x_, r___] := If[core[xs], With[{sep = str[x]}, mkl[If[sep === "", Characters[xs], StringSplit[xs, sep, All]]]], call[xs, "split", {x, r}]];
-mTrim[xs_] := If[core[xs], StringTrim[xs], get[xs, "trim"]];
-mUpper[xs_] := If[core[xs], ToUpperCase[xs], get[xs, "upper"]];
-mLower[xs_] := If[core[xs], ToLowerCase[xs], get[xs, "lower"]];
-mLines[xs_] := If[core[xs], mSplit[xs, "\n"], get[xs, "lines"]];
-mContains[xs_, x_, r___] := If[core[xs], contains[xs, x], call[xs, "contains", {x, r}]];
-mIndexOf[xs_, x_, r___] := If[core[xs], indexOf[xs, x], call[xs, "index_of", {x, r}]];
-mJoin[xs_, sep_, r___] := If[core[xs], join[xs, sep], call[xs, "join", {sep, r}]];
-mFirst[xs_] := If[core[xs], first[xs], get[xs, "first"]];
-mLast[xs_] := If[core[xs], last[xs], get[xs, "last"]];
-mEmpty[xs_] := If[core[xs], len[xs] == 0, get[xs, "empty"]];
-mTake[xs_, n_, r___] := If[core[xs], With[{k = Max[0, IntegerPart[num[n]]]}, If[StringQ[xs], StringTake[xs, Min[k, StringLength[xs]]], mkl[Take[items[xs], Min[k, Length[items[xs]]]]]]], call[xs, "take", {n, r}]];
-mDrop[xs_, n_, r___] := If[core[xs], With[{k = Max[0, IntegerPart[num[n]]]}, If[StringQ[xs], StringDrop[xs, Min[k, StringLength[xs]]], mkl[Drop[items[xs], Min[k, Length[items[xs]]]]]]], call[xs, "drop", {n, r}]];
-mRest[xs_] := If[core[xs], mDrop[xs, 1.], get[xs, "rest"]];
-mConcat[xs_, ys_, r___] := If[core[xs], If[StringQ[xs], xs <> str[ys], mkl[Join[items[xs], items[ys]]]], call[xs, "concat", {ys, r}]];
-mReverse[xs_] := If[core[xs], If[StringQ[xs], StringReverse[xs], mkl[Reverse[items[xs]]]], get[xs, "reverse"]];
-mSum[xs_] := If[core[xs], summed[xs], get[xs, "sum"]];
-mMost[xs_, f_, r___] := If[core[xs], most[xs, f], call[xs, "most", {f, r}]];
-mSortedBy[xs_, f_, r___] := If[core[xs], sortedBy[xs, f], call[xs, "sorted_by", {f, r}]];
-mEach[xs_] := If[core[xs], Many[items[xs]], get[xs, "each"]];
+mPop[xs_] := If[core[xs], Null, xs["pop"]];
+mMap[xs_, f_, r___] := If[core[xs], mkl[f[#] & /@ items[xs]], xs["map", f, r]];
+mFor[xs_, f_, r___] := If[core[xs], Scan[f[#] &, items[xs]]; Null, xs["for", f, r]];
+mSome[xs_, f_, r___] := If[core[xs], AnyTrue[items[xs], truthy[f[#]] &], xs["some", f, r]];
+mEvery[xs_, f_, r___] := If[core[xs], AllTrue[items[xs], truthy[f[#]] &], xs["every", f, r]];
+mReduce[xs_, z_, f_, r___] := If[core[xs], Fold[f[#1, #2] &, z, items[xs]], xs["reduce", z, f, r]];
+mStartsWith[xs_, x_, r___] := If[core[xs], StringStartsQ[xs, str[x]], xs["starts_with", x, r]];
+mEndsWith[xs_, x_, r___] := If[core[xs], StringEndsQ[xs, str[x]], xs["ends_with", x, r]];
+mReplace[xs_, x_, y_, r___] := If[core[xs], StringReplace[xs, str[x] -> str[y]], xs["replace", x, y, r]];
+mSplit[xs_, x_, r___] := If[core[xs], With[{sep = str[x]}, mkl[If[sep === "", Characters[xs], StringSplit[xs, sep, All]]]], xs["split", x, r]];
+mTrim[xs_] := If[core[xs], StringTrim[xs], xs["trim"]];
+mUpper[xs_] := If[core[xs], ToUpperCase[xs], xs["upper"]];
+mLower[xs_] := If[core[xs], ToLowerCase[xs], xs["lower"]];
+mLines[xs_] := If[core[xs], mSplit[xs, "\n"], xs["lines"]];
+mContains[xs_, x_, r___] := If[core[xs], contains[xs, x], xs["contains", x, r]];
+mIndexOf[xs_, x_, r___] := If[core[xs], indexOf[xs, x], xs["index_of", x, r]];
+mJoin[xs_, sep_, r___] := If[core[xs], join[xs, sep], xs["join", sep, r]];
+mFirst[xs_] := If[core[xs], first[xs], xs["first"]];
+mLast[xs_] := If[core[xs], last[xs], xs["last"]];
+mEmpty[xs_] := If[core[xs], len[xs] == 0, xs["empty"]];
+mTake[xs_, n_, r___] := If[core[xs], With[{k = Max[0, IntegerPart[num[n]]]}, If[StringQ[xs], StringTake[xs, Min[k, StringLength[xs]]], mkl[Take[items[xs], Min[k, Length[items[xs]]]]]]], xs["take", n, r]];
+mDrop[xs_, n_, r___] := If[core[xs], With[{k = Max[0, IntegerPart[num[n]]]}, If[StringQ[xs], StringDrop[xs, Min[k, StringLength[xs]]], mkl[Drop[items[xs], Min[k, Length[items[xs]]]]]]], xs["drop", n, r]];
+mRest[xs_] := If[core[xs], mDrop[xs, 1.], xs["rest"]];
+mConcat[xs_, ys_, r___] := If[core[xs], If[StringQ[xs], xs <> str[ys], mkl[Join[items[xs], items[ys]]]], xs["concat", ys, r]];
+mReverse[xs_] := If[core[xs], If[StringQ[xs], StringReverse[xs], mkl[Reverse[items[xs]]]], xs["reverse"]];
+mSum[xs_] := If[core[xs], summed[xs], xs["sum"]];
+mMost[xs_, f_, r___] := If[core[xs], most[xs, f], xs["most", f, r]];
+mSortedBy[xs_, f_, r___] := If[core[xs], sortedBy[xs, f], xs["sorted_by", f, r]];
+mEach[xs_] := If[core[xs], Many[items[xs]], xs["each"]];
 mSqrt[x_Real] := If[x < 0, Indeterminate, Sqrt[x]];
-mSqrt[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], mSqrt[y], If[y === Infinity, Infinity, Indeterminate]]], get[x, "sqrt"]];
+mSqrt[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], mSqrt[y], If[y === Infinity, Infinity, Indeterminate]]], x["sqrt"]];
 mFloor[x_Real] := N[Floor[x]];
-mFloor[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], N[Floor[y]], y]], get[x, "floor"]];
+mFloor[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], N[Floor[y]], y]], x["floor"]];
 mAbs[x_Real] := Abs[x];
-mAbs[x_] := If[arithQ[x], With[{y = num[x]}, If[y === Indeterminate, y, Abs[y]]], get[x, "abs"]];
-mMagnitude[x_] := If[arithQ[x], mAbs[x], get[x, "magnitude"]];
+mAbs[x_] := If[arithQ[x], With[{y = num[x]}, If[y === Indeterminate, y, Abs[y]]], x["abs"]];
+mMagnitude[x_] := If[arithQ[x], mAbs[x], x["magnitude"]];
 mCos[x_Real] := Cos[x];
-mCos[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], Cos[y], Indeterminate]], get[x, "cos"]];
+mCos[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], Cos[y], Indeterminate]], x["cos"]];
 mSin[x_Real] := Sin[x];
-mSin[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], Sin[y], Indeterminate]], get[x, "sin"]];
+mSin[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], Sin[y], Indeterminate]], x["sin"]];
 mRound[x_Real] := N[Floor[x + 0.5]];
-mRound[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], N[Floor[y + 0.5]], y]], get[x, "round"]];
+mRound[x_] := If[arithQ[x], With[{y = num[x]}, If[MatchQ[y, _Real], N[Floor[y + 0.5]], y]], x["round"]];
 mLn[x_Real] := Which[x > 0, Log[x], x == 0, -Infinity, True, Indeterminate];
-mLn[x_] := If[arithQ[x], With[{y = num[x]}, Which[MatchQ[y, _Real], mLn[y], y === Infinity, Infinity, True, Indeterminate]], get[x, "ln"]];
+mLn[x_] := If[arithQ[x], With[{y = num[x]}, Which[MatchQ[y, _Real], mLn[y], y === Infinity, Infinity, True, Indeterminate]], x["ln"]];
 mExp[x_Real] := Which[x > 709.782712893384, Infinity, x < -745.2, 0., True, Exp[x]];
-mExp[x_] := If[arithQ[x], With[{y = num[x]}, Which[MatchQ[y, _Real], mExp[y], y === Infinity, Infinity, y === -Infinity, 0., True, Indeterminate]], get[x, "exp"]];
+mExp[x_] := If[arithQ[x], With[{y = num[x]}, Which[MatchQ[y, _Real], mExp[y], y === Infinity, Infinity, y === -Infinity, 0., True, Indeterminate]], x["exp"]];
 mAtan2[x_, y_, r___] := If[arithQ[x], With[{a = num[x], b = num[y]}, Which[
     !MatchQ[a, _Real] || !MatchQ[b, _Real], Indeterminate,
     a == 0 && b == 0, 0.,
-    True, ArcTan[b, a]]], call[x, "atan2", {y, r}]];
-mPow[x_, y_, r___] := If[arithQ[x], pow[num[x], num[y]], call[x, "pow", {y, r}]];
+    True, ArcTan[b, a]]], x["atan2", y, r]];
+mPow[x_, y_, r___] := If[arithQ[x], pow[num[x], num[y]], x["pow", y, r]];
 
 (* --- the Many: a superposition; members apply elementwise, equal things collapse ------------------------------------ *)
 many[xs_] := Many[items[xs]];
 collapse[{}] := Many[{}];
 collapse[l_List] := With[{f = First[l]}, If[AllTrue[l, (# === f || (listQ[#] && listQ[f] && eq[#, f])) &], f, Many[l]]];
 
-(* --- the top-level definitions: made on first read ------------------------------------------------------------------ *)
 
-cls["Node", None, Function[{klass}, Null]];
-cls["Iterable", "Node", Function[{klass}, Null]];
-cls["Ordered", "Node", Function[{klass}, Null]];
+(* --- the classes every one stands on ------------------------------------------------------------------------------ *)
+DefineClass[OrbitMines`Physics`Node, "Node", None, Function[{klass}, Null]];
+DefineClass[OrbitMines`Physics`Iterable, "Iterable", OrbitMines`Physics`Node, Function[{klass}, Null]];
+DefineClass[OrbitMines`Physics`Ordered, "Ordered", OrbitMines`Physics`Node, Function[{klass}, Null]];
 
 (* --- emitted from implementation/physics.ray ------------------------------------------------------------------------- *)
 
@@ -512,9 +588,6 @@ cls["Ordered", "Node", Function[{klass}, Null]];
 {theories}
 
 {constants}
-
-(* every lookup made while the classes were being filled is made again, now that they all are *)
-forget[];
 
 End[];
 EndPackage[];

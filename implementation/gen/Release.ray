@@ -12,6 +12,8 @@ Release := class {
   static description = "OrbitMines: Physics Project"
   /* major.minor.patch */
   static version = "0.0.1"
+  /* what a test release says to a registry that reviews what it is sent (Wolfram's Paclet Repository) */
+  static test_note = "This is only a test, to see whether our release pipeline works. A final 1.0.0 version will be released when the article is published later this year."
   /* the test release before it (0: the release itself) */
   static test = 2
 

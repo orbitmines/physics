@@ -15,17 +15,26 @@ Wolfram Language 13 or later (Mathematica, or the free Wolfram Engine with `wolf
 
 ## Using it
 
-Nothing in the Wolfram Language is mutable, so a Ray object is reached by name: `get[x, "name"]`, `call[x, "method", {args...}]`, `set[x, "name", value]`, `make["Class", {kw["field", value], ...}]`; a class or a theory as a value is `K["Name"]`. Numbers are machine reals (write `31.`, not `31`), a list is a `DynamicArray` (`items[xs]` is its elements), `Null` is None. Loading the package keeps machine arithmetic machine arithmetic: it turns off the underflow message and raises `$RecursionLimit`.
+Every class is a head of its own: an object is `Hole[id, slots]`, made with `Hole[<|"x" -> 15., ...|>]` (or `Hole[{"x" -> 15., ...}]`, whose values without a name fill the fields in the order they are declared). A member is read `hole["mass"]`, called `medium["add", hole]` and written `hole["tag" -> 1.]`; a method read without its arguments is a Function (`medium["add"][hole]`). A class's statics are on its head (`RayMedium["GATHER"]`, `Expr["mentions", e, "x"]`), and a theory is its head (`G`). A class whose name the Wolfram Language already has is written `Ray<Name>` (`RayMedium`, `RayRule`, `RayLine`); `ClassOf["Medium"]` finds it. Every member is a definition of its own in the class's context: `?OrbitMines`Physics`Hole`perWay`. Numbers are machine reals (write `31.`, not `31`), a list is a `DynamicArray` (`items[xs]` is its elements), `Null` is None. Loading the package keeps machine arithmetic machine arithmetic: it turns off the underflow and indeterminate-product messages and raises `$RecursionLimit`.
 
 ```wolfram
 Needs["OrbitMines`Physics`"]
 
 (* a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it *)
-medium = call[K["G"], "medium", {31., 96., 3., 8., 1.}];
-set[medium, "local_rays", True];
-call[medium, "add", {make["Hole", {kw["x", 15.], kw["y", 15.], kw["mx", 0.3], kw["ways", 1.]}]}];
-get[medium, "seed"];
-Do[get[medium, "tick"], 5]
+medium = G["medium", 31., 96., 3., 8., 1.];
+medium["local_rays" -> True];
+medium["add", Hole[<|"x" -> 15., "y" -> 15., "mx" -> 0.3, "ways" -> 1.|>]];
+medium["seed"];
+Do[medium["tick"], 5]
+```
+
+## The rules of a theory, as rules
+
+`G["Rules"]` is every rule of the theory as a rule, by its id: the pattern what it applies to (its class - an `Edge`, a `Vertex`, or a point's rays as a `Many`), its filter a Condition, the right side the step it takes. Every rule of G changes the world where it matches, so each is a RuleDelayed whose right side performs the step; `G["RuleInfo"]` gives each one's id, name, rate and what it is over. The tick applies these same rules, one match at a time, so one can be applied by hand:
+
+```wolfram
+G["Rules"]["/1"]      (* x_Edge /; truthy[x["active"]] :> x["ANNIHILATE"] *)
+edge /. G["Rules"]["/1"]
 ```
 
 ## A simulation of sources: the plan
@@ -33,9 +42,9 @@ Do[get[medium, "tick"], 5]
 A run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.
 
 ```wolfram
-plan = make["Plan", {kw["sources", 1.*^9], kw["side", 241.]}];
-set[get[plan, "budget"], "compact", True];   (* twelve bytes a source *)
-Print[call[plan, "report", {16. 2^30, 2.^31}]]
+plan = Plan[<|"sources" -> 1.*^9, "side" -> 241.|>];
+plan["budget"]["compact" -> True];   (* twelve bytes a source *)
+Print[plan["report", 16. 2^30, 2.^31]]
 ```
 
 ## Theorems

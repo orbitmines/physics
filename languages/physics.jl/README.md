@@ -15,18 +15,18 @@ Julia 1.9 or later, no dependencies. From a checkout: `julia --project=languages
 
 ## Using it
 
-A Ray object is reached by name: `rget(x, :name)`, `rcall(x, :method, args...)`, `rset!(x, :name, value)`, `make("Class"; field = value, ...)`; a class or a theory as a value is `K("Name")`. Numbers are `Float64`, lists `Vector{Any}`, and a program takes its arguments as one `Vector{Any}`.
+Every class of the library is a Julia type - `Medium <: AbstractMedium <: AbstractNode` - and every member a function dispatched on it: `tick(m)`, `add(m, h)`, `seed(m)`; a static takes the type (`nearest(Geometry, 3, 12)`). An object also reads as a struct does: `m.seed`, `m.local_rays = true`, `m.add(h)`. A theory is its one object (`G`), with its rules (`G.rules`, each a `Rule` with its body) and theorems. Numbers are `Float64`, lists `Vector{Any}`, indexed from 0 as Ray indexes them (`getat(xs, 0)`).
 
 ```julia
-using OrbitMinesPhysics
+import OrbitMinesPhysics as P
 
 # a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it
-medium = rcall(K("G"), :medium, 31, 96, 3, 8, 1)
-rset!(medium, :local_rays, true)
-rcall(medium, :add, make("Hole"; x = 15, y = 15, mx = 0.3, ways = 1))
-rget(medium, :seed)
+medium = P.medium(P.G, 31, 96, 3, 8, 1)
+medium.local_rays = true
+P.add(medium, P.Hole(x = 15, y = 15, mx = 0.3, ways = 1))
+P.seed(medium)
 for _ in 1:5
-  rget(medium, :tick)
+  P.tick(medium)
 end
 ```
 
@@ -35,9 +35,9 @@ end
 A run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.
 
 ```julia
-plan = make("Plan"; sources = 1e9, side = 241)
-rset!(rget(plan, :budget), :compact, true)   # twelve bytes a source
-println(rcall(plan, :report, 16 * 2^30, 2^31))
+plan = P.Plan(sources = 1e9, side = 241)
+plan.budget.compact = true   # twelve bytes a source
+println(P.report(plan, 16 * 2^30, 2^31))
 ```
 
 ## Theorems

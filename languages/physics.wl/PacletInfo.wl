@@ -7,6 +7,7 @@ PacletObject[<|
   "Creator" -> "OrbitMines",
   "License" -> "MIT",
   "PublisherID" -> "OrbitMines",
+  "PrimaryContext" -> "OrbitMines`Physics`",
   "URL" -> "https://github.com/orbitmines/physics",
   "Extensions" -> {
     {"Kernel", "Root" -> "Kernel", "Context" -> {"OrbitMines`Physics`"}},

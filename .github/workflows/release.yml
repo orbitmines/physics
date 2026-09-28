@@ -387,6 +387,32 @@ jobs:
       - name: the Wolfram Paclet Repository takes a paclet by submission
         if: env.PUBLISH == 'true'
         run: echo "submit out/OrbitMines__Physics-0.0.1.9002.paclet through the Paclet Repository's submission notebook (resources.wolframcloud.com/PacletRepository)"
+  wolfram-submit:
+    needs: [version, wolfram]
+    if: needs.version.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    container:
+      image: wolframresearch/wolframengine:latest
+      options: --user root
+    env:
+      WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+      RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
+      HAS_CREDENTIALS: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID != '' && secrets.RESOURCE_PUBLISHER_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: the definition notebook, off Wolfram's own template
+        if: env.HAS_CREDENTIALS == 'true'
+        run: wolframscript -file languages/physics.wl-definition.wls languages/physics.wl
+      - name: check the paclet as the Paclet Repository will
+        if: env.HAS_CREDENTIALS == 'true'
+        uses: WolframResearch/check-paclet@v1.11.0
+        with:
+          definition_notebook: ./languages/physics.wl/ResourceDefinition.nb
+      - name: submit to the Wolfram Language Paclet Repository (OrbitMines/Physics) - a test release says so to the reviewers
+        if: env.HAS_CREDENTIALS == 'true'
+        run: wolframscript -file languages/physics.wl-submit.wls languages/physics.wl/ResourceDefinition.nb "${{ needs.version.outputs.testing == 'true' && env.TEST_NOTE || '' }}"
+        env:
+          TEST_NOTE: "This is only a test, to see whether our release pipeline works. A final 1.0.0 version will be released when the article is published later this year."
   release:
     needs: [version, typescript, python, ruby, java, csharp, go, cpp, rust, lean, swift, julia, r, wolfram]
     if: needs.version.outputs.publish == 'true'

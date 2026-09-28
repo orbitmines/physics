@@ -16,1516 +16,1516 @@ t[name_String, body_] := If[only === None || StringContainsQ[name, only], Module
   Print[Which[got === "pass", "ok  ", got === "skip", "skip", True, "FAIL"], " ", name, " (", ToString[NumberForm[s, {Infinity, 2}]], " s)", If[got === "pass" || got === "skip", "", " - " <> got]]]];
 
 t["tests/coincidence.ray:13 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[K["Fmt"], "finite", { call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }] }]], "pass", "failed: " <> "call[K[\"Fmt\"], \"finite\", { call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }] }]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[Fmt["finite", it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]]]], "pass", "failed: " <> "Fmt[\"finite\", it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]]]"],
     skip]]];
 
 t["tests/coincidence.ray:14 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }], 0.]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], 0.]], "pass", "failed: " <> "gt[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], 0.]"],
     skip]]];
 
 t["tests/coincidence.ray:16 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 6. }] }], call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }]]], "pass", "failed: " <> "gt[call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 6. }] }], call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }]]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 6.]], it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]]]], "pass", "failed: " <> "gt[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 6.]], it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]]]"],
     skip]]];
 
 t["tests/coincidence.ray:17 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }], call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 18. }] }]]], "pass", "failed: " <> "gt[call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }], call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 18. }] }]]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], it["value_of", "\\frac{a_{0}}{cH}", it["settled", 18.]]]], "pass", "failed: " <> "gt[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 18.]]]"],
     skip]]];
 
 t["tests/coincidence.ray:19 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[mul[call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }], mSqrt[(sub[1., 0.315])]], 0.155]], "pass", "failed: " <> "gt[mul[call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }], mSqrt[(sub[1., 0.315])]], 0.155]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], mSqrt[(sub[1., 0.315])]], 0.155]], "pass", "failed: " <> "gt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], mSqrt[(sub[1., 0.315])]], 0.155]"],
     skip]]];
 
 t["tests/coincidence.ray:20 on coincidence", Module[{it, guard = 0},
-  it = make["Model", { kw["theory", K["G"]] }];
+  it = Model[{ "theory" -> G }];
   Catch[
-    While[!truthy[eq[get[get[it, "theory"], "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mul[call[it, "value_of", { "\\frac{a_{0}}{cH}", call[it, "settled", { 8. }] }], mSqrt[(sub[1., 0.315])]], 0.183]], "pass", "failed: " <> "lt[mul[call[it, \"value_of\", { \"\\\\frac{a_{0}}{cH}\", call[it, \"settled\", { 8. }] }], mSqrt[(sub[1., 0.315])]], 0.183]"],
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]], "pass", "failed: " <> "lt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]"],
     skip]]];
 
 t["tests/field.ray:10 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "n"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["n"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:10 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "n"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["n"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:10 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "n"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["n"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:10 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "n"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["n"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"n\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:11 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "mean"], 0.]], "pass", "failed: " <> "gt[get[it, \"mean\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["mean"], 0.]], "pass", "failed: " <> "gt[it[\"mean\"], 0.]"],
     skip]]];
 
 t["tests/field.ray:11 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "mean"], 0.]], "pass", "failed: " <> "gt[get[it, \"mean\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["mean"], 0.]], "pass", "failed: " <> "gt[it[\"mean\"], 0.]"],
     skip]]];
 
 t["tests/field.ray:11 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "mean"], 0.]], "pass", "failed: " <> "gt[get[it, \"mean\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["mean"], 0.]], "pass", "failed: " <> "gt[it[\"mean\"], 0.]"],
     skip]]];
 
 t["tests/field.ray:11 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "mean"], 0.]], "pass", "failed: " <> "gt[get[it, \"mean\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["mean"], 0.]], "pass", "failed: " <> "gt[it[\"mean\"], 0.]"],
     skip]]];
 
 t["tests/field.ray:12 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:12 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:12 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:12 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
+    While[!truthy[eq[it["ticks"], 5.]], If[++guard > 7 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/field.ray:17 on vacuum", Module[{it, guard = 0},
-  it = make["Rates", { kw["nu", 1.], kw["sigma", 1.], kw["F", 0.5], kw["DEG", 8.], kw["D", 2.] }];
+  it = Rates[{ "nu" -> 1., "sigma" -> 1., "F" -> 0.5, "DEG" -> 8., "D" -> 2. }];
   Catch[
-    While[!truthy[eq[get[it, "nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[(sub[call[K["Solve"], "settles", { it }], 0.7320508075688772])], 0.000001]], "pass", "failed: " <> "lt[mAbs[(sub[call[K[\"Solve\"], \"settles\", { it }], 0.7320508075688772])], 0.000001]"],
+    While[!truthy[eq[it["nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[(sub[RaySolve["settles", it], 0.7320508075688772])], 0.000001]], "pass", "failed: " <> "lt[mAbs[(sub[RaySolve[\"settles\", it], 0.7320508075688772])], 0.000001]"],
     skip]]];
 
 t["tests/field.ray:18 on vacuum", Module[{it, guard = 0},
-  it = make["Rates", { kw["nu", 1.], kw["sigma", 1.], kw["F", 0.5], kw["DEG", 8.], kw["D", 2.] }];
+  it = Rates[{ "nu" -> 1., "sigma" -> 1., "F" -> 0.5, "DEG" -> 8., "D" -> 2. }];
   Catch[
-    While[!truthy[eq[get[it, "nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[K["Solve"], "settles", { it }], 0.]], "pass", "failed: " <> "gt[call[K[\"Solve\"], \"settles\", { it }], 0.]"],
+    While[!truthy[eq[it["nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[RaySolve["settles", it], 0.]], "pass", "failed: " <> "gt[RaySolve[\"settles\", it], 0.]"],
     skip]]];
 
 t["tests/field.ray:19 on vacuum", Module[{it, guard = 0},
-  it = make["Rates", { kw["nu", 1.], kw["sigma", 1.], kw["F", 0.5], kw["DEG", 8.], kw["D", 2.] }];
+  it = Rates[{ "nu" -> 1., "sigma" -> 1., "F" -> 0.5, "DEG" -> 8., "D" -> 2. }];
   Catch[
-    While[!truthy[eq[get[it, "nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[K["Solve"], "settles", { it }], 1.]], "pass", "failed: " <> "lt[call[K[\"Solve\"], \"settles\", { it }], 1.]"],
+    While[!truthy[eq[it["nu"], 1.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[RaySolve["settles", it], 1.]], "pass", "failed: " <> "lt[RaySolve[\"settles\", it], 1.]"],
     skip]]];
 
 t["tests/galaxy.ray:10 on ring", Module[{it, guard = 0},
-  it = make["Annulus", { kw["inner", 4.], kw["outer", 6.], kw["thick", 0.2] }];
+  it = RayAnnulus[{ "inner" -> 4., "outer" -> 6., "thick" -> 0.2 }];
   Catch[
-    While[!truthy[eq[get[it, "outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[(sub[mul[mul[call[it, "pull", { 200., 4., 64. }], 200.], 200.], 1.])], 0.002]], "pass", "failed: " <> "lt[mAbs[(sub[mul[mul[call[it, \"pull\", { 200., 4., 64. }], 200.], 200.], 1.])], 0.002]"],
+    While[!truthy[eq[it["outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[(sub[mul[mul[it["pull", 200., 4., 64.], 200.], 200.], 1.])], 0.002]], "pass", "failed: " <> "lt[mAbs[(sub[mul[mul[it[\"pull\", 200., 4., 64.], 200.], 200.], 1.])], 0.002]"],
     skip]]];
 
 t["tests/galaxy.ray:11 on ring", Module[{it, guard = 0},
-  it = make["Annulus", { kw["inner", 4.], kw["outer", 6.], kw["thick", 0.2] }];
+  it = RayAnnulus[{ "inner" -> 4., "outer" -> 6., "thick" -> 0.2 }];
   Catch[
-    While[!truthy[eq[get[it, "outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[call[it, "pull", { 0.01, 4., 64. }]], 0.001]], "pass", "failed: " <> "lt[mAbs[call[it, \"pull\", { 0.01, 4., 64. }]], 0.001]"],
+    While[!truthy[eq[it["outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[it["pull", 0.01, 4., 64.]], 0.001]], "pass", "failed: " <> "lt[mAbs[it[\"pull\", 0.01, 4., 64.]], 0.001]"],
     skip]]];
 
 t["tests/galaxy.ray:13 on ring", Module[{it, guard = 0},
-  it = make["Annulus", { kw["inner", 4.], kw["outer", 6.], kw["thick", 0.2] }];
+  it = RayAnnulus[{ "inner" -> 4., "outer" -> 6., "thick" -> 0.2 }];
   Catch[
-    While[!truthy[eq[get[it, "outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[mul[call[it, "pull", { 7., 4., 64. }], 49.], 1.]], "pass", "failed: " <> "gt[mul[call[it, \"pull\", { 7., 4., 64. }], 49.], 1.]"],
+    While[!truthy[eq[it["outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[mul[it["pull", 7., 4., 64.], 49.], 1.]], "pass", "failed: " <> "gt[mul[it[\"pull\", 7., 4., 64.], 49.], 1.]"],
     skip]]];
 
 t["tests/galaxy.ray:14 on ring", Module[{it, guard = 0},
-  it = make["Annulus", { kw["inner", 4.], kw["outer", 6.], kw["thick", 0.2] }];
+  it = RayAnnulus[{ "inner" -> 4., "outer" -> 6., "thick" -> 0.2 }];
   Catch[
-    While[!truthy[eq[get[it, "outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[it, "pull", { 3., 4., 64. }], 0.]], "pass", "failed: " <> "lt[call[it, \"pull\", { 3., 4., 64. }], 0.]"],
+    While[!truthy[eq[it["outer"], 6.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["pull", 3., 4., 64.], 0.]], "pass", "failed: " <> "lt[it[\"pull\", 3., 4., 64.], 0.]"],
     skip]]];
 
 t["tests/medium.ray:11 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "rho_inf"], 0.]], "pass", "failed: " <> "gt[get[it, \"rho_inf\"], 0.]"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["rho_inf"], 0.]], "pass", "failed: " <> "gt[it[\"rho_inf\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:12 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[it, "rho_inf"], 1.]], "pass", "failed: " <> "lt[get[it, \"rho_inf\"], 1.]"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["rho_inf"], 1.]], "pass", "failed: " <> "lt[it[\"rho_inf\"], 1.]"],
     skip]]];
 
 t["tests/medium.ray:13 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[K["Fmt"], "finite", { get[it, "nf_inf"] }]], "pass", "failed: " <> "call[K[\"Fmt\"], \"finite\", { get[it, \"nf_inf\"] }]"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[Fmt["finite", it["nf_inf"]]], "pass", "failed: " <> "Fmt[\"finite\", it[\"nf_inf\"]]"],
     skip]]];
 
 t["tests/medium.ray:14 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[(!eq[call[it, "step", { "record" }], Null])], "pass", "failed: " <> "(!eq[call[it, \"step\", { \"record\" }], Null])"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[(!eq[it["step", "record"], Null])], "pass", "failed: " <> "(!eq[it[\"step\", \"record\"], Null])"],
     skip]]];
 
 t["tests/medium.ray:15 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[(!eq[call[it, "step", { "line" }], Null])], "pass", "failed: " <> "(!eq[call[it, \"step\", { \"line\" }], Null])"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[(!eq[it["step", "line"], Null])], "pass", "failed: " <> "(!eq[it[\"step\", \"line\"], Null])"],
     skip]]];
 
 t["tests/medium.ray:16 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[mEvery[list[1., 2., 4., 8., 16., 32.], lfn[2, { env1["R"] = arg[args2, 0] };
-  Throw[call[K["Fmt"], "finite", { call[it, "pull", { 1., env1["R"] }] }], ret]]]], "pass", "failed: " <> "mEvery[list[1., 2., 4., 8., 16., 32.], lfn[2, { env1[\"R\"] = arg[args2, 0] };\n  Throw[call[K[\"Fmt\"], \"finite\", { call[it, \"pull\", { 1., env1[\"R\"] }] }], ret]]]"],
+  Throw[Fmt["finite", it["pull", 1., env1["R"]]], ret]]]], "pass", "failed: " <> "mEvery[list[1., 2., 4., 8., 16., 32.], lfn[2, { env1[\"R\"] = arg[args2, 0] };\n  Throw[Fmt[\"finite\", it[\"pull\", 1., env1[\"R\"]]], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:18 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[K["Fmt"], "finite", { call[it, "circling", { 1., 12., 6. }] }]], "pass", "failed: " <> "call[K[\"Fmt\"], \"finite\", { call[it, \"circling\", { 1., 12., 6. }] }]"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[Fmt["finite", it["circling", 1., 12., 6.]]], "pass", "failed: " <> "Fmt[\"finite\", it[\"circling\", 1., 12., 6.]]"],
     skip]]];
 
 t["tests/medium.ray:19 on law", Module[{it, guard = 0},
-  it = call[K["Aggregate"], "of", { K["G"] }];
+  it = Aggregate["of", G];
   Catch[
-    While[!truthy[eq[get[it, "DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[it, "circling", { 1., 12., 6. }], 1.]], "pass", "failed: " <> "lt[call[it, \"circling\", { 1., 12., 6. }], 1.]"],
+    While[!truthy[eq[it["DEG"], 8.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["circling", 1., 12., 6.], 1.]], "pass", "failed: " <> "lt[it[\"circling\", 1., 12., 6.], 1.]"],
     skip]]];
 
 t["tests/medium.ray:27 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "x"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"x\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["x"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"x\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:27 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "x"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"x\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["x"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"x\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:27 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "x"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"x\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["x"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"x\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:28 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:28 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:28 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 7.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 7.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 7.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 7.]"],
     skip]]];
 
 t["tests/medium.ray:29 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:29 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:29 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:31 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "arrived", { 1., call[it, "at", { 10., 7. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"arrived\", { 1., call[it, \"at\", { 10., 7. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["arrived", 1., it["at", 10., 7.]], 0.]], "pass", "failed: " <> "gt[it[\"arrived\", 1., it[\"at\", 10., 7.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:31 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "arrived", { 1., call[it, "at", { 10., 7. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"arrived\", { 1., call[it, \"at\", { 10., 7. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["arrived", 1., it["at", 10., 7.]], 0.]], "pass", "failed: " <> "gt[it[\"arrived\", 1., it[\"at\", 10., 7.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:31 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "arrived", { 1., call[it, "at", { 10., 7. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"arrived\", { 1., call[it, \"at\", { 10., 7. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["arrived", 1., it["at", 10., 7.]], 0.]], "pass", "failed: " <> "gt[it[\"arrived\", 1., it[\"at\", 10., 7.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:32 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], get[it, "rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], get[it, \"rho_inf\"]], ret]]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:32 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], get[it, "rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], get[it, \"rho_inf\"]], ret]]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:32 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "N"], 16.]], eq[get[it, "ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], get[it, "rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], get[it, \"rho_inf\"]], ret]]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:40 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:40 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:40 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "px_now"], 0.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:41 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "px_now"], 0.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:41 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "px_now"], 0.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:41 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "px_now"], 0.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"px_now\"], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:42 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 0.000001]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:42 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 0.000001]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:42 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 0.000001]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:43 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "x"], 6.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"x\"], 6.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
 t["tests/medium.ray:43 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "x"], 6.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"x\"], 6.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
 t["tests/medium.ray:43 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "x"], 6.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"x\"], 6.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
 t["tests/medium.ray:44 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "x"], 42.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"x\"], 42.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
 t["tests/medium.ray:44 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "x"], 42.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"x\"], 42.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
 t["tests/medium.ray:44 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "x"], 42.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"x\"], 42.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
 t["tests/medium.ray:46 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 6., 24. }] }], call[it, "record_above", { call[it, "at", { 24., 24. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 6., 24. }] }], call[it, \"record_above\", { call[it, \"at\", { 24., 24. }] }]]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
     skip]]];
 
 t["tests/medium.ray:46 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 6., 24. }] }], call[it, "record_above", { call[it, "at", { 24., 24. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 6., 24. }] }], call[it, \"record_above\", { call[it, \"at\", { 24., 24. }] }]]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
     skip]]];
 
 t["tests/medium.ray:46 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 6., 24. }] }], call[it, "record_above", { call[it, "at", { 24., 24. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 6., 24. }] }], call[it, \"record_above\", { call[it, \"at\", { 24., 24. }] }]]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
     skip]]];
 
 t["tests/medium.ray:47 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "crossed", { call[it, "at", { 24., 24. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"crossed\", { call[it, \"at\", { 24., 24. }] }], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:47 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "crossed", { call[it, "at", { 24., 24. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"crossed\", { call[it, \"at\", { 24., 24. }] }], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:47 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 2.], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "crossed", { call[it, "at", { 24., 24. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"crossed\", { call[it, \"at\", { 24., 24. }] }], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:61 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:61 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:61 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 30., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 30., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 30., 18. }] }], 0.]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:64 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], div[get[it, "nf_inf"], 100.]]], "pass", "failed: " <> "lt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], div[get[it, \"nf_inf\"], 100.]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
     skip]]];
 
 t["tests/medium.ray:64 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], div[get[it, "nf_inf"], 100.]]], "pass", "failed: " <> "lt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], div[get[it, \"nf_inf\"], 100.]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
     skip]]];
 
 t["tests/medium.ray:64 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], div[get[it, "nf_inf"], 100.]]], "pass", "failed: " <> "lt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], div[get[it, \"nf_inf\"], 100.]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
     skip]]];
 
 t["tests/medium.ray:65 on alone_medium", Module[{it, guard = 0},
-  it = call[call[K["G"], "medium", { 16., 8., 3., 18., 2. }], "thrown", { 7., 7., 1., 100., 0., 0., 1. }];
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], call[it, "record_above", { call[it, "at", { 30., 18. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
     skip]]];
 
 t["tests/medium.ray:65 on pair_medium", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "medium", { 49., 8., 3., 18., 3. }], "thrown", { 6., 24., 1., 100., 0., 0., 1. }], "thrown", { 42., 24., 1., 100., 0., 0., 2. }];
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], call[it, "record_above", { call[it, "at", { 30., 18. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
     skip]]];
 
 t["tests/medium.ray:65 on standing", Module[{it, guard = 0},
-  it = call[get[call[K["G"], "medium", { 37., 8., 3., 18., 2. }], "under_vacuum"], "thrown", { 18., 18., 0.01, 100., 0., 0., 1. }];
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 1.], get[it, "vacuum"]], eq[get[it, "ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[call[it, "record_above", { call[it, "at", { 24., 18. }] }], call[it, "record_above", { call[it, "at", { 30., 18. }] }]]], "pass", "failed: " <> "gt[call[it, \"record_above\", { call[it, \"at\", { 24., 18. }] }], call[it, \"record_above\", { call[it, \"at\", { 30., 18. }] }]]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
     skip]]];
 
 t["tests/motion.ray:13 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 400.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 400.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 400.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 400.]"],
     skip]]];
 
 t["tests/motion.ray:13 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 400.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 400.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 400.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 400.]"],
     skip]]];
 
 t["tests/motion.ray:13 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 400.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 400.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 400.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 400.]"],
     skip]]];
 
 t["tests/motion.ray:13 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 400.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 400.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 400.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 400.]"],
     skip]]];
 
 t["tests/motion.ray:14 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 440.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 440.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 440.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 440.]"],
     skip]]];
 
 t["tests/motion.ray:14 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 440.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 440.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 440.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 440.]"],
     skip]]];
 
 t["tests/motion.ray:14 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 440.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 440.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 440.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 440.]"],
     skip]]];
 
 t["tests/motion.ray:14 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 440.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 440.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 440.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 440.]"],
     skip]]];
 
 t["tests/motion.ray:15 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 1.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 1.]"],
     skip]]];
 
 t["tests/motion.ray:15 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 1.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 1.]"],
     skip]]];
 
 t["tests/motion.ray:15 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 1.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 1.]"],
     skip]]];
 
 t["tests/motion.ray:15 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[mAbs[get[elem[get[it, "holes"], 0.], "py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[get[elem[get[it, \"holes\"], 0.], \"py_now\"]], 1.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 1.]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 1.]"],
     skip]]];
 
 t["tests/motion.ray:16 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 12.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 12.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 12.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 12.]"],
     skip]]];
 
 t["tests/motion.ray:16 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 12.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 12.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 12.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 12.]"],
     skip]]];
 
 t["tests/motion.ray:16 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 12.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 12.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 12.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 12.]"],
     skip]]];
 
 t["tests/motion.ray:16 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[elem[get[it, "holes"], 0.], "y"], 12.]], "pass", "failed: " <> "eq[get[elem[get[it, \"holes\"], 0.], \"y\"], 12.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[elem[it["holes"], 0.]["y"], 12.]], "pass", "failed: " <> "eq[elem[it[\"holes\"], 0.][\"y\"], 12.]"],
     skip]]];
 
 t["tests/motion.ray:17 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "x"], 15.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"x\"], 15.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["x"], 15.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"x\"], 15.]"],
     skip]]];
 
 t["tests/motion.ray:17 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "x"], 15.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"x\"], 15.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["x"], 15.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"x\"], 15.]"],
     skip]]];
 
 t["tests/motion.ray:17 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "x"], 15.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"x\"], 15.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["x"], 15.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"x\"], 15.]"],
     skip]]];
 
 t["tests/motion.ray:17 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[eq[len[get[it, "holes"]], 1.], eq[get[it, "ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "x"], 15.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"x\"], 15.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 1.], eq[it["ticks"], 20.]]], If[++guard > 22 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["x"], 15.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"x\"], 15.]"],
     skip]]];
 
 t["tests/motion.ray:25 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "y"], 18.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"y\"], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["y"], 18.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"y\"], 18.]"],
     skip]]];
 
 t["tests/motion.ray:25 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "y"], 18.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"y\"], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["y"], 18.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"y\"], 18.]"],
     skip]]];
 
 t["tests/motion.ray:25 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "y"], 18.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"y\"], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["y"], 18.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"y\"], 18.]"],
     skip]]];
 
 t["tests/motion.ray:25 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[elem[get[it, "holes"], 0.], "y"], 18.]], "pass", "failed: " <> "gt[get[elem[get[it, \"holes\"], 0.], \"y\"], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["holes"], 0.]["y"], 18.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"y\"], 18.]"],
     skip]]];
 
 t["tests/motion.ray:26 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "y"], 24.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"y\"], 24.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["y"], 24.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"y\"], 24.]"],
     skip]]];
 
 t["tests/motion.ray:26 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "y"], 24.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"y\"], 24.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["y"], 24.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"y\"], 24.]"],
     skip]]];
 
 t["tests/motion.ray:26 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "y"], 24.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"y\"], 24.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["y"], 24.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"y\"], 24.]"],
     skip]]];
 
 t["tests/motion.ray:26 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 1.], "y"], 24.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 1.], \"y\"], 24.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 1.]["y"], 24.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"y\"], 24.]"],
     skip]]];
 
 t["tests/motion.ray:27 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 600.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 600.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 600.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 600.]"],
     skip]]];
 
 t["tests/motion.ray:27 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 600.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 600.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 600.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 600.]"],
     skip]]];
 
 t["tests/motion.ray:27 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 600.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 600.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 600.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 600.]"],
     skip]]];
 
 t["tests/motion.ray:27 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[get[elem[get[it, "holes"], 0.], "px_now"], 600.]], "pass", "failed: " <> "ge[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 600.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[elem[it["holes"], 0.]["px_now"], 600.]], "pass", "failed: " <> "ge[elem[it[\"holes\"], 0.][\"px_now\"], 600.]"],
     skip]]];
 
 t["tests/motion.ray:28 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 660.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 660.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 660.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 660.]"],
     skip]]];
 
 t["tests/motion.ray:28 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 660.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 660.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 660.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 660.]"],
     skip]]];
 
 t["tests/motion.ray:28 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 660.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 660.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 660.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 660.]"],
     skip]]];
 
 t["tests/motion.ray:28 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 1.]], eq[get[it, "ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[lt[get[elem[get[it, "holes"], 0.], "px_now"], 660.]], "pass", "failed: " <> "lt[get[elem[get[it, \"holes\"], 0.], \"px_now\"], 660.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 1.]], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[elem[it["holes"], 0.]["px_now"], 660.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 0.][\"px_now\"], 660.]"],
     skip]]];
 
 t["tests/motion.ray:36 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], get[elem[get[it, "holes"], 0.], "x"]]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], get[elem[get[it, "holes"], 0.], "y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], get[elem[get[it, \"holes\"], 0.], \"x\"]]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], get[elem[get[it, \"holes\"], 0.], \"y\"]]), 2.]])], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], elem[it["holes"], 0.]["x"]]), 2.], power[(sub[elem[it["holes"], 1.]["y"], elem[it["holes"], 0.]["y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], elem[it[\"holes\"], 0.][\"x\"]]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], elem[it[\"holes\"], 0.][\"y\"]]), 2.]])], 18.]"],
     skip]]];
 
 t["tests/motion.ray:36 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], get[elem[get[it, "holes"], 0.], "x"]]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], get[elem[get[it, "holes"], 0.], "y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], get[elem[get[it, \"holes\"], 0.], \"x\"]]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], get[elem[get[it, \"holes\"], 0.], \"y\"]]), 2.]])], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], elem[it["holes"], 0.]["x"]]), 2.], power[(sub[elem[it["holes"], 1.]["y"], elem[it["holes"], 0.]["y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], elem[it[\"holes\"], 0.][\"x\"]]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], elem[it[\"holes\"], 0.][\"y\"]]), 2.]])], 18.]"],
     skip]]];
 
 t["tests/motion.ray:36 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], get[elem[get[it, "holes"], 0.], "x"]]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], get[elem[get[it, "holes"], 0.], "y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], get[elem[get[it, \"holes\"], 0.], \"x\"]]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], get[elem[get[it, \"holes\"], 0.], \"y\"]]), 2.]])], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], elem[it["holes"], 0.]["x"]]), 2.], power[(sub[elem[it["holes"], 1.]["y"], elem[it["holes"], 0.]["y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], elem[it[\"holes\"], 0.][\"x\"]]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], elem[it[\"holes\"], 0.][\"y\"]]), 2.]])], 18.]"],
     skip]]];
 
 t["tests/motion.ray:36 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], get[elem[get[it, "holes"], 0.], "x"]]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], get[elem[get[it, "holes"], 0.], "y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], get[elem[get[it, \"holes\"], 0.], \"x\"]]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], get[elem[get[it, \"holes\"], 0.], \"y\"]]), 2.]])], 18.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], elem[it["holes"], 0.]["x"]]), 2.], power[(sub[elem[it["holes"], 1.]["y"], elem[it["holes"], 0.]["y"]]), 2.]])], 18.]], "pass", "failed: " <> "le[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], elem[it[\"holes\"], 0.][\"x\"]]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], elem[it[\"holes\"], 0.][\"y\"]]), 2.]])], 18.]"],
     skip]]];
 
 t["tests/motion.ray:37 on line", Module[{it, guard = 0},
-  it = call[K["G"], "field", { 6., 8., 1., 1. }];
+  it = G["field", 6., 8., 1., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], 27.]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], 27.]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], 18.]), 2.]])], 6.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], 27.]), 2.], power[(sub[elem[it["holes"], 1.]["y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], 27.]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], 18.]), 2.]])], 6.]"],
     skip]]];
 
 t["tests/motion.ray:37 on alone", Module[{it, guard = 0},
-  it = call[call[K["G"], "field", { 25., 8., 3., 1., 8., 2. }], "thrown", { 6., 12., 1., 2000., 400., 0., 1. }];
+  it = G["field", 25., 8., 3., 1., 8., 2.]["thrown", 6., 12., 1., 2000., 400., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], 27.]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], 27.]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], 18.]), 2.]])], 6.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], 27.]), 2.], power[(sub[elem[it["holes"], 1.]["y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], 27.]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], 18.]), 2.]])], 6.]"],
     skip]]];
 
 t["tests/motion.ray:37 on pair", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 43., 8., 3., 1., 8., 3. }], "thrown", { 9., 18., 1., 2000., 600., 0., 1. }], "thrown", { 33., 24., 1., 2000., neg[600.], 0., 2. }];
+  it = G["field", 43., 8., 3., 1., 8., 3.]["thrown", 9., 18., 1., 2000., 600., 0., 1.]["thrown", 33., 24., 1., 2000., neg[600.], 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], 27.]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], 27.]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], 18.]), 2.]])], 6.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], 27.]), 2.], power[(sub[elem[it["holes"], 1.]["y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], 27.]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], 18.]), 2.]])], 6.]"],
     skip]]];
 
 t["tests/motion.ray:37 on orbit", Module[{it, guard = 0},
-  it = call[call[call[K["G"], "field", { 37., 8., 3., 1., 8., 3. }], "thrown", { 18., 18., 0.25, 4096., 0., 0., 1. }], "thrown", { 27., 18., 1., 64., 0., neg[19.2], 2. }];
+  it = G["field", 37., 8., 3., 1., 8., 3.]["thrown", 18., 18., 0.25, 4096., 0., 0., 1.]["thrown", 27., 18., 1., 64., 0., neg[19.2], 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[get[it, "holes"]], 2.], eq[get[elem[get[it, "holes"], 0.], "mx"], 0.25]], eq[get[it, "ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[ge[mSqrt[(add[power[(sub[get[elem[get[it, "holes"], 1.], "x"], 27.]), 2.], power[(sub[get[elem[get[it, "holes"], 1.], "y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[get[elem[get[it, \"holes\"], 1.], \"x\"], 27.]), 2.], power[(sub[get[elem[get[it, \"holes\"], 1.], \"y\"], 18.]), 2.]])], 6.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 2.], eq[elem[it["holes"], 0.]["mx"], 0.25]], eq[it["ticks"], 60.]]], If[++guard > 62 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[ge[mSqrt[(add[power[(sub[elem[it["holes"], 1.]["x"], 27.]), 2.], power[(sub[elem[it["holes"], 1.]["y"], 18.]), 2.]])], 6.]], "pass", "failed: " <> "ge[mSqrt[(add[power[(sub[elem[it[\"holes\"], 1.][\"x\"], 27.]), 2.], power[(sub[elem[it[\"holes\"], 1.][\"y\"], 18.]), 2.]])], 6.]"],
     skip]]];
 
 t["tests/notation.ray:8 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "\\bar{r}^{D-1}" }], "<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"\\\\bar{r}^{D-1}\" }], \"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "\\bar{r}^{D-1}"], "<span class=\"bar\"><i>r</i></span><sup><b class=\"k\">D</b>-1</sup>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"\\\\bar{r}^{D-1}\"], \"<span class=\\\"bar\\\"><i>r</i></span><sup><b class=\\\"k\\\">D</b>-1</sup>\"]"],
     skip]]];
 
 t["tests/notation.ray:9 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[len[call[K["Notation"], "parse", { "\\frac{1}{2}" }]], 1.]], "pass", "failed: " <> "eq[len[call[K[\"Notation\"], \"parse\", { \"\\\\frac{1}{2}\" }]], 1.]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[len[Notation["parse", "\\frac{1}{2}"]], 1.]], "pass", "failed: " <> "eq[len[Notation[\"parse\", \"\\\\frac{1}{2}\"]], 1.]"],
     skip]]];
 
 t["tests/notation.ray:10 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[mFirst[call[K["Notation"], "parse", { "\\frac{1}{2}" }]], "kind"], "frac"]], "pass", "failed: " <> "eq[get[mFirst[call[K[\"Notation\"], \"parse\", { \"\\\\frac{1}{2}\" }]], \"kind\"], \"frac\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[mFirst[Notation["parse", "\\frac{1}{2}"]]["kind"], "frac"]], "pass", "failed: " <> "eq[mFirst[Notation[\"parse\", \"\\\\frac{1}{2}\"]][\"kind\"], \"frac\"]"],
     skip]]];
 
 t["tests/notation.ray:11 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "\\rho_{\\infty}" }], "<i>ρ</i><sub>∞</sub>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"\\\\rho_{\\\\infty}\" }], \"<i>ρ</i><sub>∞</sub>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "\\rho_{\\infty}"], "<i>ρ</i><sub>∞</sub>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"\\\\rho_{\\\\infty}\"], \"<i>ρ</i><sub>∞</sub>\"]"],
     skip]]];
 
 t["tests/notation.ray:12 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "\\text{the } \\rho" }], "<span class=\"tx\">the </span> <i>ρ</i>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"\\\\text{the } \\\\rho\" }], \"<span class=\\\"tx\\\">the </span> <i>ρ</i>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "\\text{the } \\rho"], "<span class=\"tx\">the </span> <i>ρ</i>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"\\\\text{the } \\\\rho\"], \"<span class=\\\"tx\\\">the </span> <i>ρ</i>\"]"],
     skip]]];
 
 t["tests/notation.ray:13 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "DEG" }], "<span class=\"bar\"><b class=\"k\">DEG</b></span>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"DEG\" }], \"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "DEG"], "<span class=\"bar\"><b class=\"k\">DEG</b></span>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"DEG\"], \"<span class=\\\"bar\\\"><b class=\\\"k\\\">DEG</b></span>\"]"],
     skip]]];
 
 t["tests/notation.ray:14 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "l.shell(R)" }], "<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"l.shell(R)\" }], \"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "l.shell(R)"], "<span class=\"mu\">l.</span><b class=\"k\">shell</b>(<span class=\"bar\">R</span>)"]], "pass", "failed: " <> "eq[Notation[\"html\", \"l.shell(R)\"], \"<span class=\\\"mu\\\">l.</span><b class=\\\"k\\\">shell</b>(<span class=\\\"bar\\\">R</span>)\"]"],
     skip]]];
 
 t["tests/notation.ray:16 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "\\sum_{r}^{R} x" }], "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"\\\\sum_{r}^{R} x\" }], \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "\\sum_{r}^{R} x"], "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\"mu\">x</span>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"\\\\sum_{r}^{R} x\"], \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <span class=\\\"mu\\\">x</span>\"]"],
     skip]]];
 
 t["tests/notation.ray:17 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "html", { "\\sum_{r}^{R} y" }], "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"html\", { \"\\\\sum_{r}^{R} y\" }], \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["html", "\\sum_{r}^{R} y"], "<span class=\"big\"><span class=\"sign\">&#8721;</span><span class=\"lim\"><sup><span class=\"bar\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>"]], "pass", "failed: " <> "eq[Notation[\"html\", \"\\\\sum_{r}^{R} y\"], \"<span class=\\\"big\\\"><span class=\\\"sign\\\">&#8721;</span><span class=\\\"lim\\\"><sup><span class=\\\"bar\\\">R</span></sup><sub><i>r</i></sub></span></span> <i>y</i>\"]"],
     skip]]];
 
 t["tests/notation.ray:18 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mStartsWith[call[K["Notation"], "html", { "[[ehrhart]]" }], "<a class=\"ref\""]], "pass", "failed: " <> "mStartsWith[call[K[\"Notation\"], \"html\", { \"[[ehrhart]]\" }], \"<a class=\\\"ref\\\"\"]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mStartsWith[Notation["html", "[[ehrhart]]"], "<a class=\"ref\""]], "pass", "failed: " <> "mStartsWith[Notation[\"html\", \"[[ehrhart]]\"], \"<a class=\\\"ref\\\"\"]"],
     skip]]];
 
 t["tests/notation.ray:19 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[(!eq[call[K["Notation"], "banned", { "a − b" }], Null])], "pass", "failed: " <> "(!eq[call[K[\"Notation\"], \"banned\", { \"a − b\" }], Null])"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[(!eq[Notation["banned", "a − b"], Null])], "pass", "failed: " <> "(!eq[Notation[\"banned\", \"a − b\"], Null])"],
     skip]]];
 
 t["tests/notation.ray:20 on rbar", Module[{it, guard = 0},
-  it = mFirst[call[K["Notation"], "parse", { "\\bar{r}^{D-1}" }]];
+  it = mFirst[Notation["parse", "\\bar{r}^{D-1}"]];
   Catch[
-    While[!truthy[eq[get[it, "kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[K["Notation"], "banned", { "a - b" }], Null]], "pass", "failed: " <> "eq[call[K[\"Notation\"], \"banned\", { \"a - b\" }], Null]"],
+    While[!truthy[eq[it["kind"], "scripted"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[Notation["banned", "a - b"], Null]], "pass", "failed: " <> "eq[Notation[\"banned\", \"a - b\"], Null]"],
     skip]]];
 
 t["tests/reading.ray:9 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[get[it, "equation"], "latex"], "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"]], "pass", "failed: " <> "eq[get[get[it, \"equation\"], \"latex\"], \"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\"]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["equation"]["latex"], "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"]], "pass", "failed: " <> "eq[it[\"equation\"][\"latex\"], \"\\\\partial_{t} n + \\\\hat{d} \\\\cdot \\\\nabla_{l} n + \\\\paren{\\\\nabla n_{f}} \\\\cdot \\\\nabla_{\\\\hat{d}} n = - 2 \\\\sigma F n^{2} + \\\\bar{DEG} \\\\nu \\\\paren{1 - \\\\rho} + l.\\\\bar{m} \\\\omega\"]"],
     skip]]];
 
 t["tests/reading.ray:11 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mSome[get[get[it, "equation"], "terms"], lfn[2, { env1["t"] = arg[args2, 0] };
-  Throw[andV[andV[andV[andV[(!eq[get[env1["t"], "rule"], Null]), eq[get[get[env1["t"], "rule"], "id"], "/1"]], eq[get[get[get[env1["t"], "doing"], "rays"], "source"], "-2"]], eq[get[get[get[env1["t"], "doing"], "space"], "source"], "-1"]], eq[get[get[get[env1["t"], "doing"], "folds"], "source"], "1"]], ret]]]], "pass", "failed: " <> "mSome[get[get[it, \"equation\"], \"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[andV[(!eq[get[env1[\"t\"], \"rule\"], Null]), eq[get[get[env1[\"t\"], \"rule\"], \"id\"], \"/1\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"rays\"], \"source\"], \"-2\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"space\"], \"source\"], \"-1\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"folds\"], \"source\"], \"1\"]], ret]]]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mSome[it["equation"]["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
+  Throw[andV[andV[andV[andV[(!eq[env1["t"]["rule"], Null]), eq[env1["t"]["rule"]["id"], "/1"]], eq[env1["t"]["doing"]["rays"]["source"], "-2"]], eq[env1["t"]["doing"]["space"]["source"], "-1"]], eq[env1["t"]["doing"]["folds"]["source"], "1"]], ret]]]], "pass", "failed: " <> "mSome[it[\"equation\"][\"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[andV[(!eq[env1[\"t\"][\"rule\"], Null]), eq[env1[\"t\"][\"rule\"][\"id\"], \"/1\"]], eq[env1[\"t\"][\"doing\"][\"rays\"][\"source\"], \"-2\"]], eq[env1[\"t\"][\"doing\"][\"space\"][\"source\"], \"-1\"]], eq[env1[\"t\"][\"doing\"][\"folds\"][\"source\"], \"1\"]], ret]]]"],
     skip]]];
 
 t["tests/reading.ray:13 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mSome[get[get[it, "equation"], "terms"], lfn[2, { env1["t"] = arg[args2, 0] };
-  Throw[andV[andV[andV[andV[(!eq[get[env1["t"], "rule"], Null]), eq[get[get[env1["t"], "rule"], "id"], "/1"]], eq[get[get[get[env1["t"], "doing"], "share"], "source"], "(1 - s.ρ) * s.F"]], eq[get[get[get[env1["t"], "doing"], "space"], "source"], "1"]], eq[get[get[get[env1["t"], "doing"], "grew"], "source"], "1"]], ret]]]], "pass", "failed: " <> "mSome[get[get[it, \"equation\"], \"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[andV[(!eq[get[env1[\"t\"], \"rule\"], Null]), eq[get[get[env1[\"t\"], \"rule\"], \"id\"], \"/1\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"share\"], \"source\"], \"(1 - s.ρ) * s.F\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"space\"], \"source\"], \"1\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"grew\"], \"source\"], \"1\"]], ret]]]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mSome[it["equation"]["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
+  Throw[andV[andV[andV[andV[(!eq[env1["t"]["rule"], Null]), eq[env1["t"]["rule"]["id"], "/1"]], eq[env1["t"]["doing"]["share"]["source"], "(1 - s.ρ) * s.F"]], eq[env1["t"]["doing"]["space"]["source"], "1"]], eq[env1["t"]["doing"]["grew"]["source"], "1"]], ret]]]], "pass", "failed: " <> "mSome[it[\"equation\"][\"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[andV[(!eq[env1[\"t\"][\"rule\"], Null]), eq[env1[\"t\"][\"rule\"][\"id\"], \"/1\"]], eq[env1[\"t\"][\"doing\"][\"share\"][\"source\"], \"(1 - s.ρ) * s.F\"]], eq[env1[\"t\"][\"doing\"][\"space\"][\"source\"], \"1\"]], eq[env1[\"t\"][\"doing\"][\"grew\"][\"source\"], \"1\"]], ret]]]"],
     skip]]];
 
 t["tests/reading.ray:15 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mSome[get[get[it, "equation"], "terms"], lfn[2, { env1["t"] = arg[args2, 0] };
-  Throw[andV[andV[andV[(!eq[get[env1["t"], "rule"], Null]), eq[get[get[env1["t"], "rule"], "id"], "/2"]], eq[get[get[get[env1["t"], "doing"], "rays"], "source"], "s.DEG"]], eq[get[get[get[env1["t"], "doing"], "share"], "source"], "1 - s.ρ"]], ret]]]], "pass", "failed: " <> "mSome[get[get[it, \"equation\"], \"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[get[env1[\"t\"], \"rule\"], Null]), eq[get[get[env1[\"t\"], \"rule\"], \"id\"], \"/2\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"rays\"], \"source\"], \"s.DEG\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"share\"], \"source\"], \"1 - s.ρ\"]], ret]]]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mSome[it["equation"]["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
+  Throw[andV[andV[andV[(!eq[env1["t"]["rule"], Null]), eq[env1["t"]["rule"]["id"], "/2"]], eq[env1["t"]["doing"]["rays"]["source"], "s.DEG"]], eq[env1["t"]["doing"]["share"]["source"], "1 - s.ρ"]], ret]]]], "pass", "failed: " <> "mSome[it[\"equation\"][\"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[env1[\"t\"][\"rule\"], Null]), eq[env1[\"t\"][\"rule\"][\"id\"], \"/2\"]], eq[env1[\"t\"][\"doing\"][\"rays\"][\"source\"], \"s.DEG\"]], eq[env1[\"t\"][\"doing\"][\"share\"][\"source\"], \"1 - s.ρ\"]], ret]]]"],
     skip]]];
 
 t["tests/reading.ray:17 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mSome[get[get[it, "equation"], "terms"], lfn[2, { env1["t"] = arg[args2, 0] };
-  Throw[andV[andV[andV[(!eq[get[env1["t"], "rule"], Null]), eq[get[get[env1["t"], "rule"], "id"], "/2"]], eq[get[get[get[env1["t"], "doing"], "folds"], "source"], "-s.DEG"]], eq[get[get[get[env1["t"], "doing"], "share"], "source"], "s.n_f / s.DEG * (1 - s.ρ)"]], ret]]]], "pass", "failed: " <> "mSome[get[get[it, \"equation\"], \"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[get[env1[\"t\"], \"rule\"], Null]), eq[get[get[env1[\"t\"], \"rule\"], \"id\"], \"/2\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"folds\"], \"source\"], \"-s.DEG\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"share\"], \"source\"], \"s.n_f / s.DEG * (1 - s.ρ)\"]], ret]]]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mSome[it["equation"]["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
+  Throw[andV[andV[andV[(!eq[env1["t"]["rule"], Null]), eq[env1["t"]["rule"]["id"], "/2"]], eq[env1["t"]["doing"]["folds"]["source"], "-s.DEG"]], eq[env1["t"]["doing"]["share"]["source"], "s.n_f / s.DEG * (1 - s.ρ)"]], ret]]]], "pass", "failed: " <> "mSome[it[\"equation\"][\"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[env1[\"t\"][\"rule\"], Null]), eq[env1[\"t\"][\"rule\"][\"id\"], \"/2\"]], eq[env1[\"t\"][\"doing\"][\"folds\"][\"source\"], \"-s.DEG\"]], eq[env1[\"t\"][\"doing\"][\"share\"][\"source\"], \"s.n_f / s.DEG * (1 - s.ρ)\"]], ret]]]"],
     skip]]];
 
 t["tests/reading.ray:18 on read", Module[{it, guard = 0},
-  it = K["G"];
+  it = G;
   Catch[
-    While[!truthy[eq[get[it, "name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mSome[get[get[it, "equation"], "terms"], lfn[2, { env1["t"] = arg[args2, 0] };
-  Throw[andV[andV[andV[(!eq[get[env1["t"], "rule"], Null]), eq[get[get[env1["t"], "rule"], "id"], "/2"]], eq[get[get[get[env1["t"], "doing"], "space"], "source"], "1"]], eq[get[get[get[env1["t"], "doing"], "share"], "source"], "s.n_f * (1 - s.ρ)"]], ret]]]], "pass", "failed: " <> "mSome[get[get[it, \"equation\"], \"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[get[env1[\"t\"], \"rule\"], Null]), eq[get[get[env1[\"t\"], \"rule\"], \"id\"], \"/2\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"space\"], \"source\"], \"1\"]], eq[get[get[get[env1[\"t\"], \"doing\"], \"share\"], \"source\"], \"s.n_f * (1 - s.ρ)\"]], ret]]]"],
+    While[!truthy[eq[it["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mSome[it["equation"]["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
+  Throw[andV[andV[andV[(!eq[env1["t"]["rule"], Null]), eq[env1["t"]["rule"]["id"], "/2"]], eq[env1["t"]["doing"]["space"]["source"], "1"]], eq[env1["t"]["doing"]["share"]["source"], "s.n_f * (1 - s.ρ)"]], ret]]]], "pass", "failed: " <> "mSome[it[\"equation\"][\"terms\"], lfn[2, { env1[\"t\"] = arg[args2, 0] };\n  Throw[andV[andV[andV[(!eq[env1[\"t\"][\"rule\"], Null]), eq[env1[\"t\"][\"rule\"][\"id\"], \"/2\"]], eq[env1[\"t\"][\"doing\"][\"space\"][\"source\"], \"1\"]], eq[env1[\"t\"][\"doing\"][\"share\"][\"source\"], \"s.n_f * (1 - s.ρ)\"]], ret]]]"],
     skip]]];
 
 t["tests/theorems.ray:8 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "has", { "vacuum.equation" }]], "pass", "failed: " <> "call[it, \"has\", { \"vacuum.equation\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["has", "vacuum.equation"]], "pass", "failed: " <> "it[\"has\", \"vacuum.equation\"]"],
     skip]]];
 
 t["tests/theorems.ray:9 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "vacuum.occupancy" }]], "pass", "failed: " <> "call[it, \"standing\", { \"vacuum.occupancy\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "vacuum.occupancy"]], "pass", "failed: " <> "it[\"standing\", \"vacuum.occupancy\"]"],
     skip]]];
 
 t["tests/theorems.ray:10 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "force.range" }]], "pass", "failed: " <> "call[it, \"standing\", { \"force.range\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "force.range"]], "pass", "failed: " <> "it[\"standing\", \"force.range\"]"],
     skip]]];
 
 t["tests/theorems.ray:11 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[it, "concluded", { "vacuum.facing" }], "F = \\frac{1}{2}"]], "pass", "failed: " <> "eq[call[it, \"concluded\", { \"vacuum.facing\" }], \"F = \\\\frac{1}{2}\"]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["concluded", "vacuum.facing"], "F = \\frac{1}{2}"]], "pass", "failed: " <> "eq[it[\"concluded\", \"vacuum.facing\"], \"F = \\\\frac{1}{2}\"]"],
     skip]]];
 
 t["tests/theorems.ray:12 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[call[it, "concluded", { "force.range" }], "\\lambda = \\frac{2}{\\rho}"]], "pass", "failed: " <> "eq[call[it, \"concluded\", { \"force.range\" }], \"\\\\lambda = \\\\frac{2}{\\\\rho}\"]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["concluded", "force.range"], "\\lambda = \\frac{2}{\\rho}"]], "pass", "failed: " <> "eq[it[\"concluded\", \"force.range\"], \"\\\\lambda = \\\\frac{2}{\\\\rho}\"]"],
     skip]]];
 
 t["tests/theorems.ray:13 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.falloff" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.falloff\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.falloff"]], "pass", "failed: " <> "it[\"standing\", \"gravity.falloff\"]"],
     skip]]];
 
 t["tests/theorems.ray:14 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.horizon" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.horizon\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.horizon"]], "pass", "failed: " <> "it[\"standing\", \"gravity.horizon\"]"],
     skip]]];
 
 t["tests/theorems.ray:15 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[len[get[it, "ids"]], 51.]], "pass", "failed: " <> "eq[len[get[it, \"ids\"]], 51.]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[len[it["ids"]], 51.]], "pass", "failed: " <> "eq[len[it[\"ids\"]], 51.]"],
     skip]]];
 
 t["tests/theorems.ray:16 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.coincidence" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.coincidence\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.coincidence"]], "pass", "failed: " <> "it[\"standing\", \"gravity.coincidence\"]"],
     skip]]];
 
 t["tests/theorems.ray:17 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.bent" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.bent\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.bent"]], "pass", "failed: " <> "it[\"standing\", \"gravity.bent\"]"],
     skip]]];
 
 t["tests/theorems.ray:18 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.standing" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.standing\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.standing"]], "pass", "failed: " <> "it[\"standing\", \"gravity.standing\"]"],
     skip]]];
 
 t["tests/theorems.ray:19 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.mass" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.mass\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.mass"]], "pass", "failed: " <> "it[\"standing\", \"gravity.mass\"]"],
     skip]]];
 
 t["tests/theorems.ray:20 on closure", Module[{it, guard = 0},
-  it = get[K["G"], "proved"];
+  it = G["proved"];
   Catch[
-    While[!truthy[eq[get[it, "theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[call[it, "standing", { "gravity.newton" }]], "pass", "failed: " <> "call[it, \"standing\", { \"gravity.newton\" }]"],
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.newton"]], "pass", "failed: " <> "it[\"standing\", \"gravity.newton\"]"],
     skip]]];
 
 t["tests/vacuum.ray:16 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "rays"], 0.]], "pass", "failed: " <> "eq[get[it, \"rays\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["rays"], 0.]], "pass", "failed: " <> "eq[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:16 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "rays"], 0.]], "pass", "failed: " <> "eq[get[it, \"rays\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["rays"], 0.]], "pass", "failed: " <> "eq[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:16 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "rays"], 0.]], "pass", "failed: " <> "eq[get[it, \"rays\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["rays"], 0.]], "pass", "failed: " <> "eq[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:16 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "rays"], 0.]], "pass", "failed: " <> "eq[get[it, \"rays\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["rays"], 0.]], "pass", "failed: " <> "eq[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:17 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "eq[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:17 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "eq[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:17 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "eq[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:17 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "eq[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:18 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "annihilations"], 0.]], "pass", "failed: " <> "eq[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["annihilations"], 0.]], "pass", "failed: " <> "eq[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:18 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "annihilations"], 0.]], "pass", "failed: " <> "eq[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["annihilations"], 0.]], "pass", "failed: " <> "eq[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:18 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "annihilations"], 0.]], "pass", "failed: " <> "eq[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["annihilations"], 0.]], "pass", "failed: " <> "eq[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:18 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[eq[get[it, "ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "annihilations"], 0.]], "pass", "failed: " <> "eq[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[eq[it["ticks"], 0.]], If[++guard > 2 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["annihilations"], 0.]], "pass", "failed: " <> "eq[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:23 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "created"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"created\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["created"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"created\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:23 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "created"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"created\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["created"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"created\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:23 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "created"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"created\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["created"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"created\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:23 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "created"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"created\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["created"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"created\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:24 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "rays"], 0.]], "pass", "failed: " <> "gt[get[it, \"rays\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["rays"], 0.]], "pass", "failed: " <> "gt[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:24 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "rays"], 0.]], "pass", "failed: " <> "gt[get[it, \"rays\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["rays"], 0.]], "pass", "failed: " <> "gt[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:24 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "rays"], 0.]], "pass", "failed: " <> "gt[get[it, \"rays\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["rays"], 0.]], "pass", "failed: " <> "gt[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:24 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "rays"], 0.]], "pass", "failed: " <> "gt[get[it, \"rays\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["rays"], 0.]], "pass", "failed: " <> "gt[it[\"rays\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:25 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:25 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:25 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:25 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 1.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[eq[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "eq[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 1.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 3 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[eq[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "eq[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:31 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "gt[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "gt[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:31 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "gt[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "gt[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:31 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "gt[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "gt[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:31 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "points"], mPow[get[it, "N"], get[get[it, "geometry"], "D"]]]], "pass", "failed: " <> "gt[get[it, \"points\"], mPow[get[it, \"N\"], get[get[it, \"geometry\"], \"D\"]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["points"], mPow[it["N"], it["geometry"]["D"]]]], "pass", "failed: " <> "gt[it[\"points\"], mPow[it[\"N\"], it[\"geometry\"][\"D\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:32 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[mEvery[get[get[env1["v"], "at"], "components"], lfn[4, { env3["c"] = arg[args4, 0] };
-    Throw[andV[ge[env3["c"], sub[0., get[it, "margin"]]], lt[env3["c"], add[get[it, "N"], get[it, "margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[get[get[env1[\"v\"], \"at\"], \"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., get[it, \"margin\"]]], lt[env3[\"c\"], add[get[it, \"N\"], get[it, \"margin\"]]]], ret]]], ret]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[mEvery[env1["v"]["at"]["components"], lfn[4, { env3["c"] = arg[args4, 0] };
+    Throw[andV[ge[env3["c"], sub[0., it["margin"]]], lt[env3["c"], add[it["N"], it["margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[env1[\"v\"][\"at\"][\"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., it[\"margin\"]]], lt[env3[\"c\"], add[it[\"N\"], it[\"margin\"]]]], ret]]], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:32 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[mEvery[get[get[env1["v"], "at"], "components"], lfn[4, { env3["c"] = arg[args4, 0] };
-    Throw[andV[ge[env3["c"], sub[0., get[it, "margin"]]], lt[env3["c"], add[get[it, "N"], get[it, "margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[get[get[env1[\"v\"], \"at\"], \"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., get[it, \"margin\"]]], lt[env3[\"c\"], add[get[it, \"N\"], get[it, \"margin\"]]]], ret]]], ret]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[mEvery[env1["v"]["at"]["components"], lfn[4, { env3["c"] = arg[args4, 0] };
+    Throw[andV[ge[env3["c"], sub[0., it["margin"]]], lt[env3["c"], add[it["N"], it["margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[env1[\"v\"][\"at\"][\"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., it[\"margin\"]]], lt[env3[\"c\"], add[it[\"N\"], it[\"margin\"]]]], ret]]], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:32 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[mEvery[get[get[env1["v"], "at"], "components"], lfn[4, { env3["c"] = arg[args4, 0] };
-    Throw[andV[ge[env3["c"], sub[0., get[it, "margin"]]], lt[env3["c"], add[get[it, "N"], get[it, "margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[get[get[env1[\"v\"], \"at\"], \"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., get[it, \"margin\"]]], lt[env3[\"c\"], add[get[it, \"N\"], get[it, \"margin\"]]]], ret]]], ret]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[mEvery[env1["v"]["at"]["components"], lfn[4, { env3["c"] = arg[args4, 0] };
+    Throw[andV[ge[env3["c"], sub[0., it["margin"]]], lt[env3["c"], add[it["N"], it["margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[env1[\"v\"][\"at\"][\"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., it[\"margin\"]]], lt[env3[\"c\"], add[it[\"N\"], it[\"margin\"]]]], ret]]], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:32 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[eq[get[it, "ticks"], 3.], gt[get[it, "margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[mEvery[get[get[env1["v"], "at"], "components"], lfn[4, { env3["c"] = arg[args4, 0] };
-    Throw[andV[ge[env3["c"], sub[0., get[it, "margin"]]], lt[env3["c"], add[get[it, "N"], get[it, "margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[get[get[env1[\"v\"], \"at\"], \"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., get[it, \"margin\"]]], lt[env3[\"c\"], add[get[it, \"N\"], get[it, \"margin\"]]]], ret]]], ret]]]"],
+    While[!truthy[andV[eq[it["ticks"], 3.], gt[it["margin"], 0.]]], If[++guard > 5 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[mEvery[env1["v"]["at"]["components"], lfn[4, { env3["c"] = arg[args4, 0] };
+    Throw[andV[ge[env3["c"], sub[0., it["margin"]]], lt[env3["c"], add[it["N"], it["margin"]]]], ret]]], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[mEvery[env1[\"v\"][\"at\"][\"components\"], lfn[4, { env3[\"c\"] = arg[args4, 0] };\n    Throw[andV[ge[env3[\"c\"], sub[0., it[\"margin\"]]], lt[env3[\"c\"], add[it[\"N\"], it[\"margin\"]]]], ret]]], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:37 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "created"], 0.]], "pass", "failed: " <> "gt[get[it, \"created\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["created"], 0.]], "pass", "failed: " <> "gt[it[\"created\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:37 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "created"], 0.]], "pass", "failed: " <> "gt[get[it, \"created\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["created"], 0.]], "pass", "failed: " <> "gt[it[\"created\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:37 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "created"], 0.]], "pass", "failed: " <> "gt[get[it, \"created\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["created"], 0.]], "pass", "failed: " <> "gt[it[\"created\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:37 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "created"], 0.]], "pass", "failed: " <> "gt[get[it, \"created\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["created"], 0.]], "pass", "failed: " <> "gt[it[\"created\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:38 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "annihilations"], 0.]], "pass", "failed: " <> "gt[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["annihilations"], 0.]], "pass", "failed: " <> "gt[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:38 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "annihilations"], 0.]], "pass", "failed: " <> "gt[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["annihilations"], 0.]], "pass", "failed: " <> "gt[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:38 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "annihilations"], 0.]], "pass", "failed: " <> "gt[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["annihilations"], 0.]], "pass", "failed: " <> "gt[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:38 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "annihilations"], 0.]], "pass", "failed: " <> "gt[get[it, \"annihilations\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["annihilations"], 0.]], "pass", "failed: " <> "gt[it[\"annihilations\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:39 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "folded"], 0.]], "pass", "failed: " <> "gt[get[it, \"folded\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["folded"], 0.]], "pass", "failed: " <> "gt[it[\"folded\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:39 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "folded"], 0.]], "pass", "failed: " <> "gt[get[it, \"folded\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["folded"], 0.]], "pass", "failed: " <> "gt[it[\"folded\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:39 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "folded"], 0.]], "pass", "failed: " <> "gt[get[it, \"folded\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["folded"], 0.]], "pass", "failed: " <> "gt[it[\"folded\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:39 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[gt[get[it, "folded"], 0.]], "pass", "failed: " <> "gt[get[it, \"folded\"], 0.]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["folded"], 0.]], "pass", "failed: " <> "gt[it[\"folded\"], 0.]"],
     skip]]];
 
 t["tests/vacuum.ray:40 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "folded"], get[it, "annihilations"]]], "pass", "failed: " <> "le[get[it, \"folded\"], get[it, \"annihilations\"]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["folded"], it["annihilations"]]], "pass", "failed: " <> "le[it[\"folded\"], it[\"annihilations\"]]"],
     skip]]];
 
 t["tests/vacuum.ray:40 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "folded"], get[it, "annihilations"]]], "pass", "failed: " <> "le[get[it, \"folded\"], get[it, \"annihilations\"]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["folded"], it["annihilations"]]], "pass", "failed: " <> "le[it[\"folded\"], it[\"annihilations\"]]"],
     skip]]];
 
 t["tests/vacuum.ray:40 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "folded"], get[it, "annihilations"]]], "pass", "failed: " <> "le[get[it, \"folded\"], get[it, \"annihilations\"]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["folded"], it["annihilations"]]], "pass", "failed: " <> "le[it[\"folded\"], it[\"annihilations\"]]"],
     skip]]];
 
 t["tests/vacuum.ray:40 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "folded"], get[it, "annihilations"]]], "pass", "failed: " <> "le[get[it, \"folded\"], get[it, \"annihilations\"]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["folded"], it["annihilations"]]], "pass", "failed: " <> "le[it[\"folded\"], it[\"annihilations\"]]"],
     skip]]];
 
 t["tests/vacuum.ray:42 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[get[env1["v"], "density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[get[env1[\"v\"], \"density\"], 1.], ret]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"]["density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"][\"density\"], 1.], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:42 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[get[env1["v"], "density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[get[env1[\"v\"], \"density\"], 1.], ret]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"]["density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"][\"density\"], 1.], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:42 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[get[env1["v"], "density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[get[env1[\"v\"], \"density\"], 1.], ret]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"]["density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"][\"density\"], 1.], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:42 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[mEvery[get[it, "vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[get[env1["v"], "density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[get[it, \"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[get[env1[\"v\"], \"density\"], 1.], ret]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[it["vertices"], lfn[2, { env1["v"] = arg[args2, 0] };
+  Throw[ge[env1["v"]["density"], 1.], ret]]]], "pass", "failed: " <> "mEvery[it[\"vertices\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"][\"density\"], 1.], ret]]]"],
     skip]]];
 
 t["tests/vacuum.ray:44 on square", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 4., 1. }];
+  it = G["seed", global["SQUARE4"], 4., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "le[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "le[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:44 on diagonal", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE8"], 5., 2. }];
+  it = G["seed", global["SQUARE8"], 5., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "le[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "le[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:44 on cubic", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["CUBIC6"], 4., 3. }];
+  it = G["seed", global["CUBIC6"], 4., 3.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "le[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "le[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 t["tests/vacuum.ray:44 on frontier", Module[{it, guard = 0},
-  it = call[K["G"], "seed", { global["SQUARE4"], 3., 5., 250000., 2. }];
+  it = G["seed", global["SQUARE4"], 3., 5., 250000., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[get[it, "ticks"], 4.], mEmpty[get[it, "sources"]]], eq[get[it, "margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; get[it, "tick"]];
-    If[truthy[le[get[it, "points"], len[get[it, "vertices"]]]], "pass", "failed: " <> "le[get[it, \"points\"], len[get[it, \"vertices\"]]]"],
+    While[!truthy[andV[andV[eq[it["ticks"], 4.], mEmpty[it["sources"]]], eq[it["margin"], 0.]]], If[++guard > 6 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[le[it["points"], len[it["vertices"]]]], "pass", "failed: " <> "le[it[\"points\"], len[it[\"vertices\"]]]"],
     skip]]];
 
 Print[passed, " passed, ", failed, " failed, ", skipped, " skipped"];

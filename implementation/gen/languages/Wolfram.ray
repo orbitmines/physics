@@ -1,17 +1,21 @@
 /*
- * THE WOLFRAM LANGUAGE, as a mapping from the constructs of Ray to text. Nothing in it is mutable, so a Ray class is a
- * table filled when the package loads, and an object an `Obj[id, class, slots]` (a HashTable of its own slots) whose
- * members are reached by name - `get[x, "cells"]`, `call[x, "add", {h}]`, `set[x, "tag", v]` - found class by class
- * up the chain (implementation/gen/backends/cpu.runtime.wl). A list is a DynamicArray, so that a push is seen by
- * everyone holding it; every number is a machine real (`{whole}` writes `3.`, never the exact 3).
+ * THE WOLFRAM LANGUAGE, as a mapping from the constructs of Ray to text. Every Ray class is a head of its own: an object is
+ * `Hole[id, slots]` (a HashTable, so that a change is seen by everyone holding it), made with `Hole[{"x" -> 3., ...}]`;
+ * its members are read `x["cells"]`, called `x["add", h]` and written `x["tag" -> v]`, and a class's statics are on its
+ * head (`Medium["GATHER"]`, `Expr["mentions", e, "x"]`). Each member is a definition of its own in the class's context
+ * (`Hole`perWay[self_] := ...`), found class by class up the chain (implementation/gen/backends/cpu.runtime.wl). A
+ * theory's rules become rules: `G["Rules"]` holds each as a RuleDelayed, its pattern what it applies to with its filter
+ * a Condition, its right side the step - and the tick applies those same rules. A class is written `⟪Name⟫` here and
+ * given its head when the package is written (`heads`): a name the Wolfram Language already has is `Ray<Name>`.
  *
- * Every method and lambda takes its arguments as one list (`args1`, `args2`, ... by depth, `{d}`), bound at the top of
- * its body (`{parameter}` with `{i}`), so a missing argument is None and a default is set in the body
- * (`{defaults_in_body}`). A Wolfram symbol cannot hold an underscore, which Ray's names have everywhere, so a local is
- * written `env<k>["name"]` (`{local_name}`, `k` the depth of the scope that binds it) and a `return` a `Throw` with the
- * tag `ret`; `mfn`/`lfn`/`dfn` make each program a Function once, when the package loads - its locals symbols of their
- * own, in a Module where a lambda inside may take them and a Block where none can, the Catch only where a `return` is
- * not the last thing it does. A block taken apart by `for` is a `Do` over its items with the scope `loopScope[k, ...]`.
+ * A Wolfram symbol cannot hold an underscore, which Ray's names have everywhere, so a local is written
+ * `env<k>["name"]` (`{local_name}`, `k` the depth of the scope that binds it) and a `return` a `Throw` with the tag
+ * `ret`; when the package loads each program is made a definition (a method, `sym[self_, p_, q_ : Null, ___] := ...`)
+ * or a Function (a lambda, `Function[{p, q}, ...]`), its locals symbols of the context OrbitMines`Physics`Local` named
+ * after the Ray names, in a Module where a lambda inside may take them and a Block where none can, the Catch only where
+ * a `return` is not the last thing it does. Numbers are machine reals (`{whole}` writes `3.`); the operators keep Ray's meaning
+ * through the runtime (`add`, `div`, `lt`, `eq`, ...): an absent number reads as nought, `/` by nought is IEEE's, a
+ * comparison is exact, and an operator on an object is its own member (`v + w` is `v["plus", w]`).
  */
 
 Wolfram: Language = class {
@@ -24,18 +28,18 @@ Wolfram: Language = class {
   {statement_end} => ""
   {empty_block} => "Null"
   {interpolation} => "\" <> str[{x}] <> \""
-  {named_arg} => "kw[\"{raw}\", {val}]"
+  {named_arg} => "\"{raw}\" -> {val}"
   {parameter} => "{nm} = arg[args{d}, {i}]"
   {parameter_untyped} => "{nm} = arg[args{d}, {i}]"
   {parameter_default} => "{nm} = arg[args{d}, {i}]"
   {parameter_separator} => ", "
-  {dynamic_get} => "get[{tgt}, str[{key}]]"
-  {dynamic_set} => "set[{tgt}, str[{key}], {val}]"
+  {dynamic_get} => "{tgt}[str[{key}]]"
+  {dynamic_set} => "{tgt}[str[{key}] -> {val}]"
   {whole} => "{val}."
   {global_name} => "global[\"{nm}\"]"
   {local_name} => "env{k}[\"{nm}\"]"
   {defaults_in_body} => "yes"
-  {class_ref} => "K[\"{nm}\"]"
+  {class_ref} => "⟪{nm}⟫"
   {field_assign} => "field[klass, \"{nm}\", dfn[{val}]]"
 
   /* control flow */
@@ -47,9 +51,9 @@ Wolfram: Language = class {
   {return} => "Throw[Null, ret]"
   {dynamically assert cond} => "If[!truthy[{cond}], fail[{cond.quoted}]]"
 
-  /* definitions and assignment */
+  /* definitions and assignment: a member is written as a rule, `x["tag" -> v]` */
   {nm := val} => "{nm} = {val}"
-  {tgt.nm = rhs} => "set[{tgt}, \"{nm.raw}\", {rhs}]"
+  {tgt.nm = rhs} => "{tgt}[\"{nm.raw}\" -> {rhs}]"
   {lhs = rhs} => "{lhs} = {rhs}"
   {tgt[k] = rhs} => "setAt[{tgt}, {k}, {rhs}]"
 
@@ -73,22 +77,22 @@ Wolfram: Language = class {
   {a ?? b} => "orElse[{a}, {b}]"
   {cond ? a : b} => "If[truthy[{cond}], {a}, {b}]"
   {a ==.instance_of Array} => "listQ[{a}]"
-  {a ==.instance_of ty} => "instanceOf[{a}, \"{ty}\"]"
+  {a ==.instance_of ty} => "instanceOf[{a}, ⟪{ty}⟫]"
   {a as ty} => "{a}"
-  {tgt.nm} => "get[{tgt}, \"{nm.raw.method}\"]"
+  {tgt.nm} => "{tgt}[\"{nm.raw.method}\"]"
   {tgt?.nm} => "getOpt[{tgt}, \"{nm.raw.method}\"]"
-  {tgt.nm()} => "get[{tgt}, \"{nm.raw.method}\"]"
+  {tgt.nm()} => "{tgt}[\"{nm.raw.method}\"]"
   {tgt?.nm()} => "getOpt[{tgt}, \"{nm.raw.method}\"]"
-  {tgt.nm(arglist)} => "call[{tgt}, \"{nm.raw.method}\", {{ {arglist} }}]"
-  {tgt?.nm(arglist)} => "callOpt[{tgt}, \"{nm.raw.method}\", {{ {arglist} }}]"
-  {tgt.choose("nm")} => "choose[{tgt}, {nm.quoted}]"
+  {tgt.nm(arglist)} => "{tgt}[\"{nm.raw.method}\", {arglist}]"
+  {tgt?.nm(arglist)} => "callOpt[{tgt}, \"{nm.raw.method}\", {arglist}]"
+  {tgt.choose("nm")} => "{tgt}[\"choose {nm}\"]"
   {tgt[k]} => "elem[{tgt}, {k}]"
-  {fn()} => "invoke[{fn}, {{}}]"
-  {fn(arglist)} => "invoke[{fn}, {{ {arglist} }}]"
-  {Class()} => "make[\"{Class}\", {{}}]"
-  {Class(arglist)} => "make[\"{Class}\", {{ {arglist} }}]"
+  {fn()} => "{fn}[]"
+  {fn(arglist)} => "{fn}[{arglist}]"
+  {Class()} => "⟪{Class}⟫[{{}}]"
+  {Class(arglist)} => "⟪{Class}⟫[{{ {arglist} }}]"
   {[elems]} => "list[{elems}]"
-  { {} } => "make[\"Node\", {{}}]"
+  { {} } => "⟪Node⟫[{{}}]"
   {this} => "self"
   {None} => "Null"
   {true} => "True"
@@ -97,7 +101,7 @@ Wolfram: Language = class {
   {(paramlist) => { stmts }} => "lfn[{d}, {{ {paramlist} }};\n{stmts.returned.indent}]"
   {(paramlist) => e} => "lfn[{d}, {{ {paramlist} }}; Throw[{e}, ret]]"
   {xs#} => "many[{xs}]"
-  {draw([ws], [os])} => "call[get[get[self, \"vertex\"], \"world\"], \"draw\", {{ list[{ws}], list[{os}] }}]"
+  {draw([ws], [os])} => "self[\"vertex\"][\"world\"][\"draw\", list[{ws}], list[{os}]]"
 
   /* a block taken apart by `for`: a Do over the items, the block a scope of its own (`loopScope`), a `return` in it the method's */
   {Array.range(cnt).for((x_) => { stmts })} => "Do[loopScope[{d}, {x_.bare} = iter{d};\n{stmts.indent}], {{iter{d}, 0., num[{cnt}] - 1.}}]"
@@ -184,14 +188,14 @@ Wolfram: Language = class {
   {ty?} => "Null"
   {Program} => "Null"
 
-  /* classes: a table, filled when the package loads - parents first, as the core lists them */
-  {nm := class < sup { membs }} => "cls[\"{nm.raw}\", \"{sup.first}\", Function[{{klass}},\n{membs.indent}]];"
-  {nm := class { membs }} => "cls[\"{nm.raw}\", \"Node\", Function[{{klass}},\n{membs.indent}]];"
-  {nm: ty = class { membs }} => "cls[\"{nm.raw}\", \"{ty}\", Function[{{klass}},\n{membs.indent}]];\ntheory[\"{nm.raw}\"];"
-  {theorem "nm" () => tbody} => "staticField[klass, \"theorem {nm}\", dfn[make[\"Theorem\", {{ kw[\"id\", {nm.quoted}], kw[\"body\", lfn[{d},\n{tbody.returned.indent}]] }}]]]"
-  {x_.body()} => "invoke[get[{x_}, \"body\"], {{}}]"
+  /* classes: a head each, defined when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "DefineClass[⟪{nm.raw}⟫, \"{nm.raw}\", ⟪{sup.first}⟫, Function[{{klass}},\n{membs.indent}]];"
+  {nm := class { membs }} => "DefineClass[⟪{nm.raw}⟫, \"{nm.raw}\", ⟪Node⟫, Function[{{klass}},\n{membs.indent}]];"
+  {nm: ty = class { membs }} => "DefineClass[⟪{nm.raw}⟫, \"{nm.raw}\", ⟪{ty}⟫, Function[{{klass}},\n{membs.indent}]];\nDefineTheory[⟪{nm.raw}⟫];"
+  {theorem "nm" () => tbody} => "staticField[klass, \"theorem {nm}\", dfn[⟪Theorem⟫[{{ \"id\" -> {nm.quoted}, \"body\" -> lfn[{d},\n{tbody.returned.indent}] }}]]]"
+  {x_.body()} => "{x_}[\"body\"][]"
   {nm: ty = val} => "field[klass, \"{nm.raw}\", dfn[{val}]]"
-  {nm: ty} => "field[klass, \"{nm.raw}\", Null]"
+  {nm: ty} => "field[klass, \"{nm.raw}\"]"
   {nm = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
   {static nm: ty = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
   {static nm = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
@@ -203,38 +207,59 @@ Wolfram: Language = class {
   {nm (paramlist) => mbody} => "method[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
   {static nm (paramlist): ret => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
   {static nm (paramlist) => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
-  {nm (paramlist): ret} => "method[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {nm (paramlist)} => "method[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {nm (): ret} => "getter[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {nm ()} => "getter[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {static nm (paramlist): ret} => "statik[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {static nm (paramlist)} => "statik[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
-  {rule /rid "nm" | rt () => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", {rt.quoted}], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d},\n{rbody.returned.indent}]] }}]]]"
-  {rule /rid "nm" () => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", Null], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d},\n{rbody.returned.indent}]] }}]]]"
-  {rule /rid "nm" | rt (paramlist) => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", {rt.quoted}], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]] }}]]]"
-  {rule /rid "nm" (paramlist) => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", Null], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]] }}]]]"
-  {choose "nm" (paramlist): ret} => "method[klass, \"choose {nm}\", Function[{{self, args}}, fail[\"the choice {nm} is not defined by anyone\"]]]"
+  {nm (paramlist): ret} => "declaredOnly[klass, \"{nm.raw.method}\", \"method\", \"{nm} is declared but not defined by anyone\"]"
+  {nm (paramlist)} => "declaredOnly[klass, \"{nm.raw.method}\", \"method\", \"{nm} is declared but not defined by anyone\"]"
+  {nm (): ret} => "declaredOnly[klass, \"{nm.raw.method}\", \"getter\", \"{nm} is declared but not defined by anyone\"]"
+  {nm ()} => "declaredOnly[klass, \"{nm.raw.method}\", \"getter\", \"{nm} is declared but not defined by anyone\"]"
+  {static nm (paramlist): ret} => "declaredOnly[klass, \"{nm.raw.method}\", \"static\", \"{nm} is declared but not defined by anyone\"]"
+  {static nm (paramlist)} => "declaredOnly[klass, \"{nm.raw.method}\", \"static\", \"{nm} is declared but not defined by anyone\"]"
+  /* a rule of a theory: what it applies to (its class, one or a point's Many), its filter and its step - a RuleDelayed when the package loads */
+  {rule /rid "nm" | rt () => rbody} => "theoryRule[klass, \"{rid}\", {nm.quoted}, {rt.quoted}, {over.quoted}, {single}, {source.quoted}, {where}, lfn[{d},\n{rbody.returned.indent}]]"
+  {rule /rid "nm" () => rbody} => "theoryRule[klass, \"{rid}\", {nm.quoted}, Null, {over.quoted}, {single}, {source.quoted}, {where}, lfn[{d},\n{rbody.returned.indent}]]"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "theoryRule[klass, \"{rid}\", {nm.quoted}, {rt.quoted}, {over.quoted}, {single}, {source.quoted}, {where}, lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]]"
+  {rule /rid "nm" (paramlist) => rbody} => "theoryRule[klass, \"{rid}\", {nm.quoted}, Null, {over.quoted}, {single}, {source.quoted}, {where}, lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]]"
+  {choose "nm" (paramlist): ret} => "declaredOnly[klass, \"choose {nm}\", \"method\", \"the choice {nm} is not defined by anyone\"]"
   {choose "nm" (paramlist): ret => cbody} => "method[klass, \"choose {nm}\", mfn[{d}, {{ {paramlist} }};\n{cbody.returned.indent}]]"
   {choose "nm" (paramlist) => cbody} => "method[klass, \"choose {nm}\", mfn[{d}, {{ {paramlist} }};\n{cbody.returned.indent}]]"
   {as (=== ty) => cbody} => "getter[klass, \"as_{ty}\", mfn[{d},\n{cbody.returned.indent}]]"
 
-  /* a nested class is a table of its own, then a static of the outer one */
-  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nset[Cls[\"{outer}\"], \"{inner_name}\", Cls[\"{inner_name}\"]];"
+  /* a nested class is a head of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n⟪{outer}⟫[\"{inner_name}\" -> ⟪{inner_name}⟫];"
 
   /* a top-level definition is made on its first read (`{global_name}`) */
   constant (nm: String, text: String): String => "With[{{f = dfn[{text}]}}, global[\"{nm}\"] := global[\"{nm}\"] = f[Null]];"
 
   term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
     rate_ := rate.empty ? "Null" : rate.quoted
-    where := where_source.empty ? "Null" : "make[\"Node\", {{ kw[\"source\", {where_source.quoted}] }}]"
-    rule := id.empty ? "Null" : "make[\"Node\", {{ kw[\"id\", {id.quoted}], kw[\"rate\", {rate_}], kw[\"name\", {rule_name.quoted}], kw[\"over\", {over.quoted}], kw[\"where\", {where}], kw[\"source\", {rule_source.quoted}] }}]"
+    where := where_source.empty ? "Null" : "⟪Node⟫[{{ \"source\" -> {where_source.quoted} }}]"
+    rule := id.empty ? "Null" : "⟪Node⟫[{{ \"id\" -> {id.quoted}, \"rate\" -> {rate_}, \"name\" -> {rule_name.quoted}, \"over\" -> {over.quoted}, \"where\" -> {where}, \"source\" -> {rule_source.quoted} }}]"
     leans_ := leans.empty ? "Null" : leans.quoted
-    "    make[\"Node\", {{ kw[\"rule\", {rule}], kw[\"rate\", {rate_}], kw[\"degree\", {degree}.0], kw[\"outside\", {outside}], kw[\"settles\", {settles}], kw[\"transport\", {transport}], kw[\"leans\", {leans_}], kw[\"turned\", {turned.quoted}], kw[\"doing\", make[\"Node\", {{ kw[\"carries\", {carries}], kw[\"sets\", {sets}], kw[\"grown\", {grown}], kw[\"trades\", {trades}], kw[\"grew\", at[{grew_source.quoted}, sfn[{grew}]]], kw[\"grew_apart\", at[{grew_apart_source.quoted}, sfn[{grew_apart}]]], kw[\"draws\", Null], kw[\"needs\", {degree}.0], kw[\"outside\", {outside}], kw[\"settles\", {settles}], kw[\"share\", at[{share_source.quoted}, sfn[{share}]]], kw[\"asked\", at[{asked_source.quoted}, sfn[{asked}]]], kw[\"around\", at[{around_source.quoted}, sfn[{around}]]], kw[\"rays\", at[{rays_source.quoted}, sfn[{rays}]]], kw[\"space\", at[{space_source.quoted}, sfn[{space}]]], kw[\"folds\", at[{folds_source.quoted}, sfn[{folds}]]] }}]] }}]"
+    node_at := (src: String, f: String): String => "⟪Node⟫[{{ \"source\" -> {src.quoted}, \"at\" -> sfn[{f}] }}]"
+    "    ⟪Node⟫[{{ \"rule\" -> {rule}, \"rate\" -> {rate_}, \"degree\" -> {degree}.0, \"outside\" -> {outside}, \"settles\" -> {settles}, \"transport\" -> {transport}, \"leans\" -> {leans_}, \"turned\" -> {turned.quoted}, \"doing\" -> ⟪Node⟫[{{ \"carries\" -> {carries}, \"sets\" -> {sets}, \"grown\" -> {grown}, \"trades\" -> {trades}, \"grew\" -> {node_at(grew_source, grew)}, \"grew_apart\" -> {node_at(grew_apart_source, grew_apart)}, \"draws\" -> Null, \"needs\" -> {degree}.0, \"outside\" -> {outside}, \"settles\" -> {settles}, \"share\" -> {node_at(share_source, share)}, \"asked\" -> {node_at(asked_source, asked)}, \"around\" -> {node_at(around_source, around)}, \"rays\" -> {node_at(rays_source, rays)}, \"space\" -> {node_at(space_source, space)}, \"folds\" -> {node_at(folds_source, folds)} }}] }}]"
   }
   equation_literal (theory: String, latex: String, terms: String[]): String => {
     lines := terms.join(",\n")
-    "set[K[\"{theory}\"], \"equation\", make[\"Node\", {{ kw[\"latex\", {latex.quoted}], kw[\"terms\", list[\n{lines}\n]] }}]];"
+    "⟪{theory}⟫[\"equation\" -> ⟪Node⟫[{{ \"latex\" -> {latex.quoted}, \"terms\" -> list[\n{lines}\n] }}]];"
   }
+
+  /* every class written `⟪Name⟫` given its head: its own name, or `Ray<Name>` where the Wolfram Language already has the name */
+  heads (code: String): String => {
+    parts := code.split("⟪")
+    out := [parts[0]]
+    parts.drop(1).for(p => {
+      nm := p.split("⟫")[0]
+      out.push(Wolfram.head(nm))
+      out.push(p.drop(nm.length + 1))
+    })
+    out.join("")
+  }
+  head (nm: String): String => {
+    n := nm.split(".").last
+    Wolfram.clashes.contains(n) ? "Ray{n}" : n
+  }
+  /* the names of the package's classes that are names of the Wolfram Language's own (System`) */
+  /* the names of the package's classes the Wolfram Language already has (System`, Wolfram Engine 15.0) */
+  clashes (): String[] => ["Random", "Rule", "Around", "Cell", "Grid", "Solve", "Setter", "Line", "Part", "Medium", "Pane", "Panel", "Annulus", "Axis"]
 
   /*
    * A number the emitter writes as `1e11` or `1.5e-3` is `1.*^11` and `1.5*^-3` here (Wolfram reads `1e11` as 1 times
@@ -296,9 +321,25 @@ Wolfram: Language = class {
   }
 
   write_package (code: String) => {
+    @./languages/physics.wl-definition.wls := Wolfram.definition_script
+    @./languages/physics.wl-submit.wls := Wolfram.submit_script
     @./languages/physics.wl/README.md := this.readme
     @./languages/physics.wl/PacletInfo.wl := Wolfram.paclet
-    @./languages/physics.wl/Kernel/Physics.wl := Wolfram.exponents(code)
+    named := Wolfram.heads(code)
+    @./languages/physics.wl/Kernel/Physics.wl := Wolfram.exponents(named.replace("OrbitMinesPhysicsClasses;", "{{{Wolfram.head_names(code)}}};"))
+  }
+  /* every head the code names, once each: made in the package's own context before the code is read */
+  head_names (code: String): String => {
+    seen := {}
+    out := []
+    code.split("⟪").drop(1).for(p => {
+      h := Wolfram.head(p.split("⟫")[0])
+      if seen[h] == None {
+        seen[h] = true
+        out.push(h)
+      }
+    })
+    out.join(", ")
   }
 
   test_case (r: Requirement, f: Fixture): String => {
@@ -306,11 +347,11 @@ Wolfram: Language = class {
     requirement := r.requirement.as(Wolfram)
     filter := r.filter == None ? "True" : r.filter.as(Wolfram)
     label := "{r.location} on {f.name}"
-    "t[{label.quoted}, Module[{{it, guard = 0}},\n  it = {definition};\n  Catch[\n    While[!truthy[{filter}], If[++guard > {r.until} || !has[it, \"tick\"], Throw[\"skip\", skip]]; get[it, \"tick\"]];\n    If[truthy[{requirement}], \"pass\", \"failed: \" <> {requirement.quoted}],\n    skip]]];"
+    "t[{label.quoted}, Module[{{it, guard = 0}},\n  it = {definition};\n  Catch[\n    While[!truthy[{filter}], If[++guard > {r.until} || !has[it, \"tick\"], Throw[\"skip\", skip]]; it[\"tick\"]];\n    If[truthy[{requirement}], \"pass\", \"failed: \" <> {requirement.quoted}],\n    skip]]];"
   }
 
   write_tests (cases: String, fixtures: Fixture[]) => {
-    @./tests/wl/TestG.wl := Wolfram.exponents("(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\n(* wolframscript -file tests/wl/TestG.wl [filter] - every requirement on every fixture the package carries; a filter keeps the cases whose name contains it *)\n(* a script is read as Latin-1: the file is read again as UTF-8, and that reading runs it *)\nIf[!TrueQ[OrbitMinesPhysicsTestUTF8], OrbitMinesPhysicsTestUTF8 = True; Get[$InputFileName, CharacterEncoding -> \"UTF-8\"]; Exit[]];\nPacletDirectoryLoad[FileNameJoin[{{DirectoryName[$InputFileName], \"..\", \"..\", \"languages\", \"physics.wl\"}}]];\nNeeds[\"OrbitMines`Physics`\"];\nBegin[\"OrbitMines`Physics`Private`\"];\n\nonly = If[Length[$ScriptCommandLine] > 1, $ScriptCommandLine[[2]], None];\npassed = 0; failed = 0; skipped = 0;\nSetAttributes[t, HoldRest];\nt[name_String, body_] := If[only === None || StringContainsQ[name, only], Module[{{t0 = AbsoluteTime[], got, s}},\n  got = Catch[Check[str[body], \"error: \" <> ToString[$MessageList]], _, Function[{{v, tag}}, \"error: \" <> ToString[v]]];\n  s = AbsoluteTime[] - t0;\n  Which[got === \"pass\", passed++, got === \"skip\", skipped++, True, failed++];\n  Print[Which[got === \"pass\", \"ok  \", got === \"skip\", \"skip\", True, \"FAIL\"], \" \", name, \" (\", ToString[NumberForm[s, {{Infinity, 2}}]], \" s)\", If[got === \"pass\" || got === \"skip\", \"\", \" - \" <> got]]]];\n\n{cases}\n\nPrint[passed, \" passed, \", failed, \" failed, \", skipped, \" skipped\"];\nExit[If[failed > 0, 1, 0]];\n")
+    @./tests/wl/TestG.wl := Wolfram.exponents(Wolfram.heads("(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\n(* wolframscript -file tests/wl/TestG.wl [filter] - every requirement on every fixture the package carries; a filter keeps the cases whose name contains it *)\n(* a script is read as Latin-1: the file is read again as UTF-8, and that reading runs it *)\nIf[!TrueQ[OrbitMinesPhysicsTestUTF8], OrbitMinesPhysicsTestUTF8 = True; Get[$InputFileName, CharacterEncoding -> \"UTF-8\"]; Exit[]];\nPacletDirectoryLoad[FileNameJoin[{{DirectoryName[$InputFileName], \"..\", \"..\", \"languages\", \"physics.wl\"}}]];\nNeeds[\"OrbitMines`Physics`\"];\nBegin[\"OrbitMines`Physics`Private`\"];\n\nonly = If[Length[$ScriptCommandLine] > 1, $ScriptCommandLine[[2]], None];\npassed = 0; failed = 0; skipped = 0;\nSetAttributes[t, HoldRest];\nt[name_String, body_] := If[only === None || StringContainsQ[name, only], Module[{{t0 = AbsoluteTime[], got, s}},\n  got = Catch[Check[str[body], \"error: \" <> ToString[$MessageList]], _, Function[{{v, tag}}, \"error: \" <> ToString[v]]];\n  s = AbsoluteTime[] - t0;\n  Which[got === \"pass\", passed++, got === \"skip\", skipped++, True, failed++];\n  Print[Which[got === \"pass\", \"ok  \", got === \"skip\", \"skip\", True, \"FAIL\"], \" \", name, \" (\", ToString[NumberForm[s, {{Infinity, 2}}]], \" s)\", If[got === \"pass\" || got === \"skip\", \"\", \" - \" <> got]]]];\n\n{cases}\n\nPrint[passed, \" passed, \", failed, \" failed, \", skipped, \" skipped\"];\nExit[If[failed > 0, 1, 0]];\n"))
   }
 
   /* the Wolfram Language renders no films: the .ray/TypeScript pipeline records them */
@@ -331,8 +372,12 @@ Wolfram: Language = class {
   /* the package's folder under languages/ */
   package_dir (): String => "physics.wl"
   install (): String => "```wolfram\n(* Wolfram Language *)\nPacletInstall[\"OrbitMines/Physics\"]\n```"
-  paclet (): String => "(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\nPacletObject[<|\n  \"Name\" -> \"OrbitMines/Physics\",\n  \"Version\" -> \"{Release.numeric}\",\n  \"WolframVersion\" -> \"13.0+\",\n  \"Description\" -> \"{Release.description}\",\n  \"Creator\" -> \"OrbitMines\",\n  \"License\" -> \"MIT\",\n  \"PublisherID\" -> \"OrbitMines\",\n  \"URL\" -> \"https://github.com/orbitmines/physics\",\n  \"Extensions\" -> {{\n    {{\"Kernel\", \"Root\" -> \"Kernel\", \"Context\" -> {{\"OrbitMines`Physics`\"}}}},\n    {{\"Asset\", \"Assets\" -> {{{{\"theorems\", \"Data/theorems.json\"}}}}}}\n  }}\n|>]\n"
-  readme (): String => "# OrbitMines/Physics - Wolfram Language\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in the Wolfram Language: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Wolfram.install}\n\nWolfram Language 13 or later (Mathematica, or the free Wolfram Engine with `wolframscript`). From a checkout: `PacletDirectoryLoad[\"languages/physics.wl\"]`, then ``Needs[\"OrbitMines`Physics`\"]``.\n\n## Using it\n\nNothing in the Wolfram Language is mutable, so a Ray object is reached by name: `get[x, \"name\"]`, `call[x, \"method\", {{args...}}]`, `set[x, \"name\", value]`, `make[\"Class\", {{kw[\"field\", value], ...}}]`; a class or a theory as a value is `K[\"Name\"]`. Numbers are machine reals (write `31.`, not `31`), a list is a `DynamicArray` (`items[xs]` is its elements), `Null` is None. Loading the package keeps machine arithmetic machine arithmetic: it turns off the underflow message and raises `$RecursionLimit`.\n\n```wolfram\nNeeds[\"OrbitMines`Physics`\"]\n\n(* a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it *)\nmedium = call[K[\"G\"], \"medium\", {{31., 96., 3., 8., 1.}}];\nset[medium, \"local_rays\", True];\ncall[medium, \"add\", {{make[\"Hole\", {{kw[\"x\", 15.], kw[\"y\", 15.], kw[\"mx\", 0.3], kw[\"ways\", 1.]}}]}}];\nget[medium, \"seed\"];\nDo[get[medium, \"tick\"], 5]\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```wolfram\nplan = make[\"Plan\", {{kw[\"sources\", 1.*^9], kw[\"side\", 241.]}}];\nset[get[plan, \"budget\"], \"compact\", True];   (* twelve bytes a source *)\nPrint[call[plan, \"report\", {{16. 2^30, 2.^31}}]]\n```\n\n## Theorems\n\n`Theorems[]` is every theorem, keyed by theory and then by question (an Association read from `Data/theorems.json`).\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  paclet (): String => "(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\nPacletObject[<|\n  \"Name\" -> \"OrbitMines/Physics\",\n  \"Version\" -> \"{Release.numeric}\",\n  \"WolframVersion\" -> \"13.0+\",\n  \"Description\" -> \"{Release.description}\",\n  \"Creator\" -> \"OrbitMines\",\n  \"License\" -> \"MIT\",\n  \"PublisherID\" -> \"OrbitMines\",\n  \"PrimaryContext\" -> \"OrbitMines`Physics`\",\n  \"URL\" -> \"https://github.com/orbitmines/physics\",\n  \"Extensions\" -> {{\n    {{\"Kernel\", \"Root\" -> \"Kernel\", \"Context\" -> {{\"OrbitMines`Physics`\"}}}},\n    {{\"Asset\", \"Assets\" -> {{{{\"theorems\", \"Data/theorems.json\"}}}}}}\n  }}\n|>]\n"
+  readme (): String => "# OrbitMines/Physics - Wolfram Language\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in the Wolfram Language: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Wolfram.install}\n\nWolfram Language 13 or later (Mathematica, or the free Wolfram Engine with `wolframscript`). From a checkout: `PacletDirectoryLoad[\"languages/physics.wl\"]`, then ``Needs[\"OrbitMines`Physics`\"]``.\n\n## Using it\n\nEvery class is a head of its own: an object is `Hole[id, slots]`, made with `Hole[<|\"x\" -> 15., ...|>]` (or `Hole[{{\"x\" -> 15., ...}}]`, whose values without a name fill the fields in the order they are declared). A member is read `hole[\"mass\"]`, called `medium[\"add\", hole]` and written `hole[\"tag\" -> 1.]`; a method read without its arguments is a Function (`medium[\"add\"][hole]`). A class's statics are on its head (`RayMedium[\"GATHER\"]`, `Expr[\"mentions\", e, \"x\"]`), and a theory is its head (`G`). A class whose name the Wolfram Language already has is written `Ray<Name>` (`RayMedium`, `RayRule`, `RayLine`); `ClassOf[\"Medium\"]` finds it. Every member is a definition of its own in the class's context: `?OrbitMines`Physics`Hole`perWay`. Numbers are machine reals (write `31.`, not `31`), a list is a `DynamicArray` (`items[xs]` is its elements), `Null` is None. Loading the package keeps machine arithmetic machine arithmetic: it turns off the underflow and indeterminate-product messages and raises `$RecursionLimit`.\n\n```wolfram\nNeeds[\"OrbitMines`Physics`\"]\n\n(* a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it *)\nmedium = G[\"medium\", 31., 96., 3., 8., 1.];\nmedium[\"local_rays\" -> True];\nmedium[\"add\", Hole[<|\"x\" -> 15., \"y\" -> 15., \"mx\" -> 0.3, \"ways\" -> 1.|>]];\nmedium[\"seed\"];\nDo[medium[\"tick\"], 5]\n```\n\n## The rules of a theory, as rules\n\n`G[\"Rules\"]` is every rule of the theory as a rule, by its id: the pattern what it applies to (its class - an `Edge`, a `Vertex`, or a point's rays as a `Many`), its filter a Condition, the right side the step it takes. Every rule of G changes the world where it matches, so each is a RuleDelayed whose right side performs the step; `G[\"RuleInfo\"]` gives each one's id, name, rate and what it is over. The tick applies these same rules, one match at a time, so one can be applied by hand:\n\n```wolfram\nG[\"Rules\"][\"/1\"]      (* x_Edge /; truthy[x[\"active\"]] :> x[\"ANNIHILATE\"] *)\nedge /. G[\"Rules\"][\"/1\"]\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```wolfram\nplan = Plan[<|\"sources\" -> 1.*^9, \"side\" -> 241.|>];\nplan[\"budget\"][\"compact\" -> True];   (* twelve bytes a source *)\nPrint[plan[\"report\", 16. 2^30, 2.^31]]\n```\n\n## Theorems\n\n`Theorems[]` is every theorem, keyed by theory and then by question (an Association read from `Data/theorems.json`).\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
   /* its job in .github/workflows/release.yml (Release.ray): build, keep what it built, publish where the registry's credentials are set */
-  release_job (): String => "  wolfram:\n    needs: version\n    runs-on: ubuntu-latest\n    env:\n      PUBLISH: ${{{{ needs.version.outputs.publish }}}}\n      TESTING: ${{{{ needs.version.outputs.testing }}}}\n    steps:\n      - uses: actions/checkout@v7\n      - name: pack the paclet\n        run: mkdir -p out && cd languages/physics.wl && zip -r \"../../out/OrbitMines__Physics-{Release.numeric}.paclet\" . -x README.md\n      - uses: actions/upload-artifact@v7\n        with:\n          name: wolfram\n          path: out/\n          if-no-files-found: error\n      - name: the Wolfram Paclet Repository takes a paclet by submission\n        if: env.PUBLISH == 'true'\n        run: echo \"submit out/OrbitMines__Physics-{Release.numeric}.paclet through the Paclet Repository's submission notebook (resources.wolframcloud.com/PacletRepository)\"\n"
+  release_job (): String => "  wolfram:\n    needs: version\n    runs-on: ubuntu-latest\n    env:\n      PUBLISH: ${{{{ needs.version.outputs.publish }}}}\n      TESTING: ${{{{ needs.version.outputs.testing }}}}\n    steps:\n      - uses: actions/checkout@v7\n      - name: pack the paclet\n        run: mkdir -p out && cd languages/physics.wl && zip -r \"../../out/OrbitMines__Physics-{Release.numeric}.paclet\" . -x README.md\n      - uses: actions/upload-artifact@v7\n        with:\n          name: wolfram\n          path: out/\n          if-no-files-found: error\n      - name: the Wolfram Paclet Repository takes a paclet by submission\n        if: env.PUBLISH == 'true'\n        run: echo \"submit out/OrbitMines__Physics-{Release.numeric}.paclet through the Paclet Repository's submission notebook (resources.wolframcloud.com/PacletRepository)\"\n  wolfram-submit:\n    needs: [version, wolfram]\n    if: needs.version.outputs.publish == 'true'\n    runs-on: ubuntu-latest\n    container:\n      image: wolframresearch/wolframengine:latest\n      options: --user root\n    env:\n      WOLFRAMSCRIPT_ENTITLEMENTID: ${{{{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}}}\n      RESOURCE_PUBLISHER_TOKEN: ${{{{ secrets.RESOURCE_PUBLISHER_TOKEN }}}}\n      HAS_CREDENTIALS: ${{{{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID != '' && secrets.RESOURCE_PUBLISHER_TOKEN != '' }}}}\n    steps:\n      - uses: actions/checkout@v7\n      - name: the definition notebook, off Wolfram's own template\n        if: env.HAS_CREDENTIALS == 'true'\n        run: wolframscript -file languages/physics.wl-definition.wls languages/physics.wl\n      - name: check the paclet as the Paclet Repository will\n        if: env.HAS_CREDENTIALS == 'true'\n        uses: WolframResearch/check-paclet@v1.11.0\n        with:\n          definition_notebook: ./languages/physics.wl/ResourceDefinition.nb\n      - name: submit to the Wolfram Language Paclet Repository (OrbitMines/Physics) - a test release says so to the reviewers\n        if: env.HAS_CREDENTIALS == 'true'\n        run: wolframscript -file languages/physics.wl-submit.wls languages/physics.wl/ResourceDefinition.nb \"${{{{ needs.version.outputs.testing == 'true' && env.TEST_NOTE || '' }}}}\"\n        env:\n          TEST_NOTE: \"{Release.test_note}\"\n"
+  /* the Paclet Repository's definition notebook, made in CI from Wolfram's own template (no front end): the fields filled as the template fills them, and the system settings the runtime raises disclosed */
+  definition_script (): String => "(* GENERATED by `npx ray gen` from implementation/gen/languages/Wolfram.ray - do not edit *)\n(* wolframscript -file languages/physics.wl-definition.wls languages/physics.wl *)\n(* the Paclet Repository's definition notebook for this paclet, made from Wolfram's own template - no front end needed *)\nNeeds[\"DefinitionNotebookClient`\"];\ndir = If[Length[$ScriptCommandLine] > 1, AbsoluteFileName[$ScriptCommandLine[[2]]], FileNameJoin[{{Directory[], \"physics.wl\"}}]];\ntext[s_] := Cell[s, \"Text\"]; item[s_] := Cell[s, \"Item\"];\ntemplate = Get[DefinitionNotebookClient`DefinitionTemplateLocation[\"Paclet\"]];\ndefault[slot_] := First@Cases[template, TemplateSlot[slot, ___, DefaultValue -> v_, ___] :> v, Infinity, 1];\n(* the runtime raises $RecursionLimit and $IterationLimit when it loads (deep call chains): disclosed, as the repository asks *)\n(* a slot filled as the template fills it: its own cell, its text replaced and no longer marked as default content *)\nfill[slot_, old_String, new_String] := default[slot] /. Cell[old, style_, opts___] :> Cell[new, style, Sequence @@ ({{opts}} /. (CellTags -> tags_List) :> (CellTags -> DeleteCases[tags, \"DefaultContent\"]))];\ndisclosures = default[\"Disclosures\"] /. CheckboxBox[False, {{False, k : \"WLSystemConfiguration\" | \"WLSystemSymbols\"}}] :> CheckboxBox[k, {{False, k}}];\nslots = <|\n  \"PacletDirectory\" -> dir,\n  \"Name\" -> fill[\"Name\", \"MyPublisherID/MyPaclet\", \"OrbitMines/Physics\"],\n  \"Description\" -> fill[\"Description\", \"One-line description of the paclet\", \"OrbitMines: Physics Project\"],\n  \"CompatibilityWolframLanguageVersionRequired\" -> Replace[default[\"CompatibilityWolframLanguageVersionRequired\"], Cell[_String, style_, opts___] :> Cell[\"13.0+\", style, Sequence @@ ({{opts}} /. (CellTags -> tags_List) :> (CellTags -> DeleteCases[tags, \"DefaultContent\"]))], {{1}}],\n  \"LongDescription\" -> {{text[\"The discrete theory G and the continuous medium derived from its rules - the same library, generated from one set of .ray definitions, in Wolfram Language and twelve other languages.\"]}},\n  \"Details\" -> {{Cell[\"Every class and theory is generated from implementation/physics.ray by npx ray gen; nothing in the paclet is written by hand.\", \"Notes\"]}},\n  \"PrimaryContext\" -> {{text[\"OrbitMines`Physics`\"]}},\n  \"Contributed By\" -> {{text[\"OrbitMines\"]}},\n  \"SourceControlURL\" -> {{text[\"https://github.com/orbitmines/physics\"]}},\n  \"Keywords\" -> {{item[\"physics\"], item[\"gravity\"], item[\"simulation\"], item[\"discrete theory\"]}},\n  \"Disclosures\" -> disclosures\n|>;\n(* THE PAGE: what the paclet does, shown with the visuals the project renders (visuals/<id>/snapshot.png, beside the paclet in the repository) *)\nvisuals = FileNameJoin[{{DirectoryName[dir, 2], \"visuals\"}}];\nsnapshot[id_, w_] := Module[{{f = FileNameJoin[{{visuals, id, \"snapshot.png\"}}]}}, If[FileExistsQ[f], ImageResize[Import[f], w], Missing[]]];\npicture[id_, w_] := With[{{i = snapshot[id, w]}}, If[MissingQ[i], Nothing, Cell[BoxData[ToBoxes[i]], \"Output\"]]];\nhero = default[\"HeroImage\"] /. Cell[BoxData[_], rest___] :> With[{{i = snapshot[\"galaxy.rar\", 640]}}, If[MissingQ[i], Cell[BoxData[\"\"], rest], Cell[BoxData[ToBoxes[i]], rest]]];\ncode[s_String] := Cell[s, \"Input\"];\nexamples = {{Cell[CellGroupData[{{\n    Cell[\"Basic Examples\", \"Subsection\"],\n    Cell[\"Load the paclet:\", \"Text\"],\n    code[\"Needs[\\\"OrbitMines`Physics`\\\"]\"],\n    Cell[\"The theory G, its continuous model on the CPU - a box of cells, the vacuum settled, one body in it - ticked:\", \"Text\"],\n    code[\"medium = G[\\\"medium\\\", 31., 96., 3., 8., 1.];\\nmedium[\\\"local_rays\\\" -> True];\\nmedium[\\\"add\\\", Hole[<|\\\"x\\\" -> 15., \\\"y\\\" -> 15., \\\"mx\\\" -> 0.3, \\\"ways\\\" -> 1.|>]];\\nmedium[\\\"seed\\\"];\\nDo[medium[\\\"tick\\\"], 5]\"],\n    Cell[\"The theory's discrete rules are rules - each a RuleDelayed on what it acts on, applied as any other:\", \"Text\"],\n    code[\"G[\\\"Rules\\\"]\"],\n    code[\"G[\\\"Rules\\\"][\\\"/1\\\"]\"],\n    Cell[\"What a simulation of a billion sources would take of a 16 GiB device:\", \"Text\"],\n    code[\"plan = Plan[<|\\\"sources\\\" -> 1.*^9, \\\"side\\\" -> 241.|>];\\nplan[\\\"budget\\\"][\\\"compact\\\" -> True];\\nplan[\\\"report\\\", 16. 2^30, 2.^31]\"]\n  }}, Open]],\n  Cell[CellGroupData[Join[{{\n    Cell[\"Visuals\", \"Subsection\"],\n    Cell[\"What the project renders from the same definitions (rendered on the GPU by its TypeScript package; the films are in the repository's visuals/):\", \"Text\"]}},\n    Flatten[{{Cell[\"A galaxy's rotation against its visible mass:\", \"Text\"], picture[\"galaxy.rar\", 520],\n      Cell[\"A body's pull, from the medium itself:\", \"Text\"], picture[\"gravity.pull\", 520],\n      Cell[\"A galaxy in the medium, every star its own body:\", \"Text\"], picture[\"galaxy.medium\", 520],\n      Cell[\"The inner solar system in the medium:\", \"Text\"], picture[\"solar.inner\", 520]}}]], Open]]}};\nchosen = {{\"Scientific and Medical Data & Computation\", \"Symbolic & Numeric Computation\", \"Visualization & Graphics\"}};\ncategories = default[\"Categories\"] /. CheckboxBox[False, {{False, k_String}}] /; MemberQ[chosen, k] :> CheckboxBox[k, {{False, k}}];\nslots = Join[slots, <|\n  \"HeroImage\" -> hero,\n  \"ExampleNotebook\" -> examples,\n  \"Categories\" -> categories,\n  \"Links\" -> {{item[\"https://github.com/orbitmines/physics\"], item[\"https://orbitmines.com/physics\"]}},\n  \"Details\" -> {{Cell[\"Everything in the paclet is generated from the project's .ray definitions (implementation/physics.ray) by npx ray gen: the theory G and its discrete rules, the continuous medium derived from them, the prover's theorems, and the plan of a simulation of sources. The same library exists, from the same definitions, in TypeScript, Python, Julia, Lean, Rust, C++ and seven other languages.\", \"Notes\"]}}\n|>];\nnb = DefinitionNotebookClient`GenerateDefinitionNotebook[\"Paclet\", slots];\nExport[FileNameJoin[{{dir, \"ResourceDefinition.nb\"}}], nb, \"NB\"];\nPrint[\"wrote \", FileNameJoin[{{dir, \"ResourceDefinition.nb\"}}]];\n"
+  /* the submission itself: Wolfram's SubmitPaclet, with the note for the reviewers its action cannot send */
+  submit_script (): String => "(* GENERATED by `npx ray gen` from implementation/gen/languages/Wolfram.ray - do not edit *)\n(* wolframscript -file languages/physics.wl-submit.wls languages/physics.wl/ResourceDefinition.nb [\"a note for the reviewers\"] *)\n(* Submits the paclet to the Wolfram Language Paclet Repository, as Wolfram's submit-paclet action does - and with a note for\n   the reviewers where there is one (a test release says it is one), which that action cannot send *)\nPacletInstall[\"Wolfram/PacletCICD\"];\nNeeds[\"Wolfram`PacletCICD`\"];\nNeeds[\"ResourceSystemClient`\"];\nnb = AbsoluteFileName[$ScriptCommandLine[[2]]];\nnote = If[Length[$ScriptCommandLine] > 2, $ScriptCommandLine[[3]], \"\"];\n(* what the definition notebook's own submit dialog sets: the notes the submission carries to the reviewers *)\nIf[StringLength[note] > 0, ResourceSystemClient`Private`$localSubmissionNotes = note; Print[\"with a note for the reviewers: \", note]];\nresult = Symbol[\"Wolfram`PacletCICD`SubmitPaclet\"][File[nb], Symbol[\"Wolfram`PacletCICD`Private`PublisherToken\"] -> Environment[\"RESOURCE_PUBLISHER_TOKEN\"]];\nPrint[result];\nIf[FailureQ[result], Exit[1]];\n"
 }
