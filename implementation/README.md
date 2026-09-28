@@ -277,6 +277,13 @@ WGSL: Language = class {
 - **Bindings every rule gets**: `{d}` (how deep in methods and lambdas it stands: `a{d}` names a lambda's argument
   array apart from its enclosing one's), and on a lambda `{free}` (the enclosing locals it uses, spelled as locals).
 - A block hole `{ stmts }` that takes an expression body (`xs.for(f => walk(f))`) gets it as one statement.
+- **The release (`gen/Release.ray`, 2026-09-28).** One version for every package (`Release.version`, and `test`: a
+  test release before it, published as a pre-release wherever one exists), spelled per registry: `Release.semver`
+  (0.0.1-test.1: npm, crates.io, NuGet, Maven, Julia, Swift, git tags), `pep440` (0.0.1.dev1), `rubygems`
+  (0.0.1.test.1), `numeric` (0.0.1.9001: R, Wolfram). gen writes `languages/VERSION` and
+  `.github/workflows/release.yml`: a job that reads the version and whether it changed, every language's own
+  `release_job` (build, upload the artifact, publish where its registry's secret is set), and a GitHub release with
+  every artifact attached. A language added later brings its job with it.
 - A language's CPU runtime is its own `cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.<ext>`
   (TypeScript's and Python's are read in CPU.ray); a language without one is not run on the CPU and not listed
   in the README's installation. `npx ray gen Ruby Java` writes only those languages' packages.
@@ -290,7 +297,9 @@ WGSL: Language = class {
   object they are its own member of that name (`Expr.split(e, name)` is Expr's). A language whose spelling of
   them differs routes them through its runtime (`m_split(xs, ...)`), which tells the two apart.
 - A Language also has ordinary methods gen calls: `nested(outer, name, inner)`, `constant(name, text)`,
-  `write_package(code)`, `test_case(requirement, fixture)`, `write_tests(cases, fixtures)`.
+  `write_package(code)`, `test_case(requirement, fixture)`, `write_tests(cases, fixtures)`, and
+  `write_proofs(theory)` (Language.ray: nothing by default; a language with a theorem prover fills it - see
+  "Checking the theorems in a prover" below; gen calls it per theory before `write_theorems`).
 - The runtime template holes are `{{core}}`, `{{theories}}`, `{{constants}}` (written with doubled
   braces in .ray strings, since `{x}` interpolates).
 
@@ -574,6 +583,40 @@ method body after loading.
   growing brackets) and the index; `languages/physics.ts/theorems.ts` (`PROVED`, `proved`, `theories`,
   `asked`) and `orbitmines/physics/theorems.py` carry the same records. Old theorem folders the new
   pipeline does not regenerate are left in place.
+- **Checking the theorems in a prover (gen/Derivation.ray, 2026-09-28).** The language-neutral half: `Derivations.of(theory)`
+  runs the prover once (`Prover(theory).proof`, handed to `Prover.PROOFS` when that is empty, so `gen Lean` closes once),
+  rebuilds the equation's chain exactly as `Prover.proof` does (`chain_of` - keep it in step with `proof`), takes each
+  theorem's steps as `proof` chooses them, and reads each as a `Claim` (`place role fact_kind fact_key subject value markup
+  via because working rests_on status check uses reason`): role `premise` (upon empty, `read off the continuous model`,
+  or a rule's name - read off the program by design), `step`, `standing` (a settled number `Prover.settled` fills the
+  answer with), `relation`, `read`, `concluded`; status `premise | checked | unchecked`. A `Derivation` (`theorem_id
+  theory_name asks claims matched steps_count`; `names`, `divisors`, `powered`, `counted(status)`, `concluded`) is one
+  theorem. WHAT IS CHECKED: (1) an inference's RELATION is read off its own code - it is fired again
+  (`Derivations.inferences_named(via)`) on the store as it stood before the step (`before`), with the lines the step cites
+  (failing that, every non-numeric line) standing as `Expr.field(name)` (`named_step`); what it concludes is a premise
+  (role `relation`), and the step is checked where that relation with the lines put back is its value by algebra. The
+  chain's `ledgers_are_one`, `general` and `record_here` are read the same way (`Derivations.CHAIN`). (2) A step that
+  names again an earlier claim's subject (`restated`). (3) The answer: the last step with `Prover.settled` put in
+  (`filled`), or the step it restates. Every offered check is first SAMPLED (`agree`: two seeded points, names drawn off
+  their spelling, a call/gradient/root an unknown keyed by its sampled arguments, a root's body read at 0.35, 0.55 and 0)
+  and offered only where the sides agree; the prover language must then prove it. Guards: a relation holding a root in a
+  name the cited lines are written in is not checked (substitution under a binder), nor a cancellation of a sum carrying a
+  real power; only earlier claims are reused (no forward references). `Model.copy` keeps only `Model.NAMES` - never use
+  it to copy a sampling env. Findings the reading surfaced: `spreading` reads `v` without citing it (upon is incomplete).
+  **Lean** (`Lean.write_proofs`) writes the theorems INTO the physics package, `languages/physics.lean` (the user,
+  2026-09-28: "in the lean autogenerated package ... so other people can build on it"): its lakefile requires Mathlib (rev
+  `v4.34.1`, toolchain `v4.34.1`) and the library `OrbitMines` has two roots - `OrbitMines.Physics` (the runtime, which
+  imports no Mathlib, so its executables compile no Mathlib C) and `OrbitMines.Physics.Proofs` (every theorem).
+  `OrbitMines/Physics/Proofs/Basic.lean` (opaque `Fn Grad Choose GammaInc RootOf LimitAtInfinity Conserved Isotropic
+  GrowsAs RestoredAt Positive Stated`, the `check_algebra` tactic), one module a theorem
+  (`OrbitMines/Physics/Proofs/G/<id>.lean`, namespace `OrbitMines.Physics.Proofs.G.«id»`): every name is a real
+  (`«\rho»`, the markup between « »), `structure Premises xs`, `structure Unchecked xs` (fields
+  `unchecked_<theorem>_<k>`, each with its reason), `structure Defined xs` (`ne_i : d ≠ 0` for what it divides by,
+  `pos_i : 0 < b` for what it raises to a real power), `theorem check_<k> xs p u w`, and `theorem answer`. No axioms, no
+  `sorry`: an unchecked step is a hypothesis (an axiom over free reals stating it would be inconsistent). The coverage per
+  theorem is `languages/physics.lean/THEOREMS.md`. Build: `cd languages/physics.lean && lake exe cache get && lake
+  build` (runtime and theorems). `lake-manifest.json` there and in `tests/lean` is Lake's own (not gen's): after a
+  change of requirements, `lake update` it. 2026-09-28: 709 steps, 345 premises, 203 checked, 161 not; 48 of 53 answers.
 - `fail(says)` throws (what `assert` calls); `Array.pop` takes the last element off.
 
 ### The notation and the data (phase 4)

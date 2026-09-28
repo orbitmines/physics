@@ -8,7 +8,7 @@ The physics library in Swift: the theories and their rules, the continuous model
 
 ```swift
 // Swift (Package.swift)
-.package(url: "https://github.com/orbitmines/physics", from: "0.0.1")
+.package(url: "https://github.com/orbitmines/physics", from: "0.0.1-test.1")
 ```
 
 and `.product(name: "OrbitMinesPhysics", package: "physics")` in your target's dependencies. Swift 6 or later (the package is written in the Swift 5 language mode); it needs Foundation, not FoundationNetworking.

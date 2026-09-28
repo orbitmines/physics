@@ -11,7 +11,7 @@ The physics library in C#: the theories and their rules, the continuous model de
 dotnet add package OrbitMines.Physics
 ```
 
-.NET 8 or later. Or in a project file: `<PackageReference Include="OrbitMines.Physics" Version="0.0.1" />`.
+.NET 8 or later. Or in a project file: `<PackageReference Include="OrbitMines.Physics" Version="0.0.1-test.1" />`.
 
 ## Using it
 

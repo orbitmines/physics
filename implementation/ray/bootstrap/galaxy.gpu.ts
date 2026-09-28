@@ -365,16 +365,63 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   }
   await w.stand();
   const pulls = await w.leans();
-  /* each star launched circling at what the medium pulls it with where it stands */
-  let vsum = 0, vn = 0;
+  /*
+   * EACH STAR LAUNCHED CIRCLING at what the medium pulls it with where it stands, and stirred just enough that the disc
+   * holds (RAY_Q, Toomre's Q; 0: a flat spread of RAY_SIGMA of the circling speed, as the first films were). A disc
+   * stirred too little breaks into clumps that fling its stars out, whatever the pull. Off the medium's own numbers,
+   * in rings of half a c-bar: the circling speed off the pull the stars stand in (v^2 = g R), the epicycles' rate
+   * off how that falls (kappa^2 = d(v^2)/dR / R + 2 v^2 / R^2), the surface density off the stars' own count, and G off
+   * the lone unit mass's pull (p1 rcal^(D-1), as the mass was set). The radial stir sigma_R = Q 3.36 G Sigma / kappa,
+   * across it sigma_R kappa / 2 Omega, and the mean circling less the asymmetric drift the stir holds up
+   * (v_phi^2 = v^2 + sigma_R^2 (1 - kappa^2 / 4 Omega^2 - 2 R / R_d)). Then the whole disc is set at rest - its
+   * momentum taken off every star alike - so a drift later is the medium's and not the draw's
+   */
+  const Q = Number(Deno.env.get("RAY_Q") ?? 1.5), GEFF = p1 * rcal ** (D - 1), DR = 0.5, RINGS = Math.ceil(span / DR) + 1;
+  const ringG = new Float64Array(RINGS), ringN = new Float64Array(RINGS), ringM = new Float64Array(RINGS);
   w.holes.forEach((h: any, s: number) => {
     const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
     if (R <= 0) return;
-    const g = -(pulls[s][0] * dx + pulls[s][1] * dy) / R;
-    const v = Math.sqrt(Math.max(0, g * R));
-    if (Math.abs(R - RD) < 1) { vsum += v; vn++; }
-    const vx = -v * dy / R + SIGMA * v * gauss(), vy = v * dx / R + SIGMA * v * gauss();
+    const k = Math.min(RINGS - 1, Math.floor(R / DR));
+    ringG[k] += -(pulls[s][0] * dx + pulls[s][1] * dy) / R; ringN[k]++; ringM[k] += h.mass;
+  });
+  const at = (k: number) => (k + 0.5) * DR;
+  const v2 = Array.from({ length: RINGS }, (_, k) => ringN[k] ? Math.max(0, ringG[k] / ringN[k] * at(k)) : NaN);
+  /* rings too thin to say anything take their neighbours' */
+  for (let k = 0; k < RINGS; k++) if (!(ringN[k] >= 20)) { let j = k; while (j > 0 && !(ringN[j] >= 20)) j--; v2[k] = ringN[j] >= 20 ? v2[j] * at(j) / at(k) : NaN; }
+  /* and those at the very middle, before any ring says enough, turn as a solid body up to the first that does */
+  const first = v2.findIndex((x, k) => ringN[k] >= 20 && Number.isFinite(x));
+  for (let k = 0; k < first; k++) v2[k] = v2[first] * (at(k) / at(first)) ** 2;
+  const sigmaSurf = Array.from({ length: RINGS }, (_, k) => ringM[k] / (Math.PI * ((k + 1) ** 2 - k ** 2) * DR * DR));
+  /* the slope over two c-bar either side (a ring's own is noise), and never less than the circling's own rate - a fall past Kepler's is the count's noise, not the pull's */
+  const kappa2 = Array.from({ length: RINGS }, (_, k) => {
+    const lo = Math.max(0, k - 4), hi = Math.min(RINGS - 1, k + 4);
+    const d = (v2[hi] - v2[lo]) / (at(hi) - at(lo)), om2 = v2[k] / (at(k) * at(k));
+    return Math.max(om2, d / at(k) + 2 * om2);
+  });
+  const stir = (R: number) => {
+    const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), kap = Math.sqrt(kappa2[k]);
+    /* where the pull stood holds nothing (none, or outwards), nothing circles and nothing is stirred */
+    if (!(om2 > 0) || !(kap > 0)) return { sR: 0, sP: 0, vphi: 0, q: NaN, v: 0 };
+    /* and no stir past half the circling, where the disc thins out to a few stars a ring */
+    const sR = Q > 0 ? Math.min(0.5 * Math.sqrt(v2[k]), Q * 3.36 * GEFF * sigmaSurf[k] / kap) : SIGMA * Math.sqrt(v2[k]);
+    const sP = Q > 0 ? sR * kap / (2 * Math.sqrt(om2)) : sR;
+    const vphi = Q > 0 ? Math.sqrt(Math.max(0, v2[k] + sR * sR * (1 - kappa2[k] / (4 * om2) - 2 * R / RD))) : Math.sqrt(v2[k]);
+    return { sR, sP, vphi, q: sR * kap / (3.36 * GEFF * sigmaSurf[k]), v: Math.sqrt(v2[k]) };
+  };
+  console.log(`  the launch, ${Q > 0 ? `stirred to Toomre's Q ${Q}` : `a flat spread of ${SIGMA} of the circling`}: ${[1, 2, 3].map(n => { const st = stir(n * RD); return `at ${n} R_d circling ${st.v.toFixed(4)}, radial stir ${st.sR.toFixed(4)} (Q ${st.q.toFixed(2)})`; }).join("; ")}`);
+  let vsum = 0, vn = 0, mx = 0, my = 0, mt = 0;
+  w.holes.forEach((h: any) => {
+    const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
+    if (R <= 0) return;
+    const st = stir(R);
+    if (Math.abs(R - RD) < 1) { vsum += st.v; vn++; }
+    const vr = st.sR * gauss(), vp = st.vphi + st.sP * gauss();
+    const vx = (vr * dx - vp * dy) / R, vy = (vr * dy + vp * dx) / R;
     h.px = h.mass * vx; h.py = h.mass * vy;
+    mx += h.px; my += h.py; mt += h.mass;
+  });
+  w.holes.forEach((h: any) => {
+    h.px -= h.mass * mx / mt; h.py -= h.mass * my / mt;
     h.momentum = new physics.Vector({ components: [h.px, h.py] });
     h.moves = true;
   });

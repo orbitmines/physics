@@ -1,0 +1,654 @@
+/*
+ * A DERIVATION, AS A THEOREM PROVER READS IT - the language-neutral half of checking the theorems in a prover
+ * (Lean first; any language with a theorem prover after it).
+ *
+ * `theory.proved` is written for a page: every line of it is markup. The prover's own records hold more - every step
+ * is a Fact whose value is an Expr tree, cited to the facts it rests on - and that is what a prover language needs:
+ * a proposition over real-valued names, and what stands behind it. `Derivations.of(theory)` runs the prover once more
+ * (the same closure `theory.proved` is, which it hands back to the cache when that is still empty), takes each
+ * theorem's steps exactly as `Prover.proof` chooses them, and reads every one as a `Claim`:
+ *
+ *   premise    read off the program - a rule's own body, the continuous model the rules were read into, the lattice,
+ *              a count. The prover takes these from the rules BY DESIGN: nothing here is believed or measured, and a
+ *              prover language states them as what is given, never as something it proved.
+ *   step       what an inference of the prover concluded. It is CHECKED where the line follows from claims before it
+ *              by algebra alone, and UNCHECKED - stated, with the reason, and never presented as proven - where it does
+ *              not: an inference of Inferences.ray / Prove.ray builds its line in its own code, and the relation it
+ *              applies is not recorded with the step, so there is nothing a prover can check the line against.
+ *   standing   a settled number the answer is filled with (a rate is one per match per tick, the facing factor a half):
+ *              the store's own fact, cited where a check puts it in.
+ *   relation   what an inference (or a method of the equation's chain) does to the lines it stands on, read off its own
+ *              code by running it again with those lines standing as their names - a premise, as every reading is.
+ *   read       a line an inference read without the step citing it (spreading reads v): the store's, put in beside it.
+ *   concluded  the theorem's answer: the last step with the settled numbers put in, or the step it restates.
+ *
+ * WHAT IS CHECKED is decided here, the same for every prover: a step that names again what an earlier claim named
+ * (`restated`), and the concluded line (`filled`: the end step with the store's settled numbers in). Both sides are
+ * sampled at two seeded points - every name its own number, the settled ones at their values, and anything the
+ * algebra cannot see into (a call, a gradient, a root, a limit) an unknown of its own by how it is written - and only
+ * where they agree is the claim offered as algebra. The prover then has to prove it symbolically; a sample never
+ * stands in for a proof. Where they do not agree the step stays unchecked and says so.
+ */
+
+/* one line of a derivation as a prover states it: a proposition, and what stands behind it */
+Claim := class < place: N, role: String {
+  /* the fact's kind (`is`, `grows`, `restored`, `conserved`, `isotropic`, `positive`), what it is about, and its value */
+  fact_kind: String = "is"
+  /* the store's key for it, `is(ρ_∞)` */
+  fact_key: String = ""
+  subject: String = ""
+  value: Expr? = None
+  /* the line as a page writes it */
+  markup: String = ""
+  via: String = ""
+  because: String = ""
+  working: String[] = []
+  /* the claims its step cites, by place */
+  rests_on: N[] = []
+  /* premise | checked | unchecked */
+  status: String = "premise"
+  /* how a checked claim follows: `restated` (the same name again, its value the earlier one's by algebra) or `filled` (the settled numbers put in) */
+  check: String = ""
+  /* the claims a check stands on, by place */
+  uses: N[] = []
+  /* where a premise comes from; why a step is not checked; what a check is */
+  reason: String = ""
+}
+
+/* one theorem's derivation: its claims in order - the record's steps, then the settled numbers the answer needs, then the answer */
+Derivation := class < theorem_id: String, theory_name: String {
+  asks: String = ""
+  claims: Claim[] = []
+  /* whether the prover's steps were matched one for one against the record's lines */
+  matched: boolean = true
+  /* how many of the record's own steps there are (the claims before the standing numbers and the answer) */
+  steps_count: N = 0
+
+  claim_at (place: N): Claim => this.claims[place - 1]
+  /* what the derivation divides by: the prover's algebra cancels across these, so a prover takes them to be nonzero - where the lines are defined */
+  /* what the derivation raises to a power that is not a number: taken to be positive, where a real power is defined */
+  powered (): Expr[] => {
+    out := []
+    this.claims.for(c => { Derivations.powered_in(c.value, out) if c.value != None })
+    out
+  }
+  divisors (): Expr[] => {
+    out := []
+    this.claims.for(c => { Derivations.divisors_in(c.value, out) if c.value != None })
+    out
+  }
+  recorded (): Claim[] => this.claims.filter(c => c.role == "premise" | c.role == "step")
+  counted (status: String): N => this.recorded.filter(c => c.status == status).length
+  concluded (): Claim? => this.claims.filter(c => c.role == "concluded").first
+  /* every name that stands in a claim, in the order they first appear: what an `is` fact is about, and every name in a value */
+  names (): String[] => {
+    out := []
+    this.claims.for(c => {
+      out.push(c.subject) if c.fact_kind == "is" & c.value != None & !out.contains(c.subject)
+      unless c.value == None {
+        Derivations.names_in(c.value).for(n => { out.push(n) if !out.contains(n) })
+      }
+    })
+    out
+  }
+}
+
+Derivations := class {
+  /* one set of derivations per theory, made once however often a language asks */
+  static MADE = { }
+
+  static of (theory: Theory): Derivation[] => {
+    return Derivations.MADE[theory.name] if Derivations.MADE[theory.name] != None
+    pr := Prover(theory: theory)
+    proof := pr.proof
+    /* the same closure `theory.proved` is: handed to its cache when nothing has asked for it yet */
+    Prover.PROOFS[theory.name] = proof if Prover.PROOFS[theory.name] == None
+    s := pr.store
+    fill := Prover.settled(s)
+    made := Derivations.chain_of(pr, s)
+    chain := made[0]
+    named := made[1]
+    root := s.steps[Fact.key_of("is", "the continuous model")]
+    out := theory.theorems.map(t => {
+      q := t.asked
+      p := proof.theorem(t.id)
+      hit := q.about.empty ? None : named.get(q.about)
+      /* the steps behind the answer, chosen as `Prover.proof` chooses them */
+      steps := q.about.empty ? chain : (hit != None ? (root == None ? [hit] : [root, hit]) : Prover.behind(s, q.about))
+      Derivations.read(p, q, steps, s, fill, hit != None)
+    })
+    Derivations.MADE[theory.name] = out
+    out
+  }
+
+  /*
+   * THE EQUATION'S CHAIN, as `Prover.proof` builds it - the steps past the line are not kept in the store, so they are
+   * built again here, in the same order and off the same methods: [the chain, the steps its names answer by, keyed]
+   */
+  static chain_of (pr: Prover, s: Store): Array => {
+    line := pr.line_steps
+    filled := pr.line_filled(s)
+    spaced := pr.ledger_filled(s, "space")
+    folded := pr.ledger_filled(s, "folds")
+    pr.population_line = filled
+    pr.record_line = folded
+    one := pr.ledgers_are_one(s, folded, spaced)
+    whole := pr.general(filled, folded)
+    settled := pr.settled_record(folded)
+    short := settled == None ? None : pr.single(whole, settled, folded, s)
+    agg := short == None ? None : pr.aggregate(whole, short, s)
+    back := agg == None ? None : pr.remembered(s, agg)
+    each_ := back == None ? None : pr.from_each(s, back)
+    known := each_ == None ? None : pr.forgotten(s, each_, settled)
+    pull := known == None ? None : pr.felt(s, known, settled)
+    one_ := pull == None ? None : pr.one_body(s, pull)
+    rec := pull == None ? None : pr.record_of_all(known, pull, settled)
+    locals := rec == None ? None : pr.every_local(rec, settled)
+    at_ := locals == None ? None : pr.at_time(locals)
+    follow := locals == None ? None : pr.following(locals)
+    lean_ := locals == None ? None : pr.lean(locals)
+    bal := locals == None ? None : pr.balance(locals, s)
+    worth := bal == None ? None : pr.record_worth(locals, folded)
+    big_s := bal == None ? None : pr.record_S(locals, folded)
+    far := bal == None ? None : pr.record_sum(locals)
+    whole_line := bal == None ? None : pr.one_line(locals, filled)
+    quiet := whole_line == None ? None : pr.settled_line(whole_line, bal)
+    quiet_s := whole_line == None ? None : pr.settled_S(whole_line, bal)
+    bent := (quiet == None | lean_ == None) ? None : pr.bent_line(quiet, lean_, s)
+    bent_far := (bent == None | known == None) ? None : pr.bent_far(bent, known, quiet)
+    here := (big_s == None | bal == None) ? None : pr.record_here(big_s, bal)
+    slope := here == None ? None : pr.record_slope(here, s)
+    solved := [back, each_, known, pull, one_, rec, locals, at_, follow, lean_, bal, worth, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
+    chain := line.concat([pr.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
+    named := Keyed()
+    [at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    /*
+     * THE CHAIN'S OWN ALGEBRA, read off its methods as an inference's is: the steps that are algebra on the lines they are
+     * given - one line taken from another, two added - run again with those lines standing as their names
+     */
+    Derivations.CHAIN = []
+    Derivations.CHAIN.push([one, pr.ledgers_are_one(s, Derivations.named_step(folded), Derivations.named_step(spaced)), [folded, spaced]])
+    Derivations.CHAIN.push([whole, pr.general(Derivations.named_step(filled), Derivations.named_step(folded)), [filled, folded]])
+    Derivations.CHAIN.push([here, (here == None | big_s == None | bal == None) ? None : pr.record_here(big_s, Derivations.named_step(bal)), [bal]]) if here != None
+    [chain, named]
+  }
+  static CHAIN = []
+  /* a step standing as its name: what it says, with its value the name itself */
+  static named_step (st: Step): Step => {
+    x := Step.of(Fact(kind: st.fact.kind, of: st.fact.of, to: Expr.field(st.fact.of)), st.via, st.upon, st.because, st.working)
+    x.parts_ = st.parts_
+    x
+  }
+
+  /* a step the prover took from the program rather than from anything it derived: it rests on nothing, or on the model alone, or it is a rule's own */
+  static is_premise (st: Step): boolean => st.upon.empty | st.via == "read off the continuous model" | Prover.is_rule_name(st.via)
+  static premise_reason (st: Step): String => {
+    return "the rule {st.via}, read off its own body" if Prover.is_rule_name(st.via)
+    return "read off the continuous model - a term of the line the rules were read into, or how the line is made" if st.via == "read off the continuous model"
+    return "the rules read as a line (Reading.ray): the root every derivation passes through" if st.via == "the reading"
+    return "a fact of the lattice itself" if st.via == "the lattice"
+    "{st.via}: it rests on nothing the prover derived - a reading or a count of the program itself"
+  }
+  static inference_reason (st: Step, cited: String[]): String => {
+    from := cited.empty ? "what the store held" : cited.join("; ")
+    "the inference '{st.via}' reached it from {from} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it"
+  }
+
+  static claim_of (st: Step, place: N): Claim => {
+    c := Claim(place: place, role: Derivations.is_premise(st) ? "premise" : "step")
+    c.fact_kind = st.fact.kind
+    c.fact_key = st.fact.key
+    c.subject = st.fact.of
+    c.value = st.fact.to
+    c.markup = Prover.headline(st.fact, None)
+    c.via = st.via
+    c.because = st.because
+    c.working = st.working
+    c.status = c.role == "premise" ? "premise" : "unchecked"
+    c.reason = c.role == "premise" ? Derivations.premise_reason(st) : ""
+    c
+  }
+
+  /* the latest claim before `place` that stands for the same fact */
+  static latest (claims: Claim[], keys: String[], key: String, place: N): Claim? => {
+    hit := None
+    Array.range(place - 1).for(i => { hit = claims[i] if keys[i] == key })
+    hit
+  }
+
+  /* one theorem's claims: its steps, the settled numbers a check puts in, the answer */
+  static read (p: Proved, q: Asked, steps: Step[], s: Store, fill: {}, by_name: boolean): Derivation => {
+    d := Derivation(theorem_id: p.theorem, theory_name: p.theory)
+    d.asks = p.asks
+    d.matched = steps.length == p.steps.length & Array.range(steps.length).every(i => steps[i].fact.key == p.steps[i].id)
+    d.steps_count = steps.length
+    claims := []
+    keys := []
+    Array.range(steps.length).for(i => {
+      st := steps[i]
+      c := Derivations.claim_of(st, i + 1)
+      st.upon.for(k => {
+        j := Derivations.latest(claims, keys, k, i + 1)
+        c.rests_on.push(j.place) if j != None
+      })
+      claims.push(c)
+      keys.push(st.fact.key)
+    })
+    d.claims = claims
+    /* each step: restated by algebra, or the inference's own */
+    Array.range(steps.length).for(i => {
+      c := claims[i]
+      if c.role == "step" {
+        cited := c.rests_on.map(j => claims[j - 1].markup)
+        c.reason = Derivations.inference_reason(steps[i], cited)
+        same := (c.fact_kind == "is" & c.value != None) ? Derivations.latest(claims, keys, keys[i], i + 1) : None
+        unless same == None | same.value == None {
+          Derivations.try_check(d, c, same, c.value, s, fill, "restated")
+        }
+        if c.status == "unchecked" & c.fact_kind == "is" & c.value != None & s.steps[keys[i]] == steps[i] {
+          Derivations.try_relation(d, c, steps[i], s, fill)
+        }
+        mine := Derivations.CHAIN.filter(x => x[0] == steps[i]).first
+        if c.status == "unchecked" & c.value != None & mine != None {
+          said := mine[1] == None ? "the method concluded nothing" : Derivations.attempt(d, c, mine[1].fact.to, mine[2], s, fill)
+          c.reason = "{c.reason} (Its method, run again with the lines it is given standing as their names: {said}.)" if !said.empty
+        }
+      }
+    })
+    /* the answer */
+    unless p.concluded == None {
+      Derivations.conclude(d, p, q, s, fill, by_name)
+    }
+    d
+  }
+
+  /* the claim that stands for a settled number: the theorem's own where it has it, else the store's fact, added as standing */
+  static standing (d: Derivation, name: String, s: Store): Claim? => {
+    st := s.get("is", name)
+    return None if st == None
+    had := d.claims.filter(c => c.fact_kind == "is" & c.subject == name & c.value != None & Expr.show(c.value) == Expr.show(st.fact.to)).last
+    return had if had != None
+    c := Derivations.claim_of(st, d.claims.length + 1)
+    c.role = "standing"
+    c.status = Derivations.is_premise(st) ? "premise" : "unchecked"
+    c.reason = Derivations.is_premise(st) ? Derivations.premise_reason(st) : Derivations.inference_reason(st, [])
+    d.claims.push(c)
+    c
+  }
+
+  /*
+   * OFFER A CLAIM AS ALGEBRA: `value` from the claim `from` (the same name), with every settled number either names put
+   * in - sampled first, and checked only where the two sides agree. The prover language proves it; this only decides
+   * that there is something to prove
+   */
+  static try_check (d: Derivation, c: Claim, from: Claim, value: Expr, s: Store, fill: {}, how: String) => {
+    names := Derivations.names_in(value).concat(Derivations.names_in(from.value))
+    fixed := { }
+    used := []
+    names.for(n => {
+      if fill[n] != None & !used.contains(n) {
+        fixed[n] = fill[n]
+        used.push(n)
+      }
+    })
+    agreed := Derivations.agree(from.value, value, fixed)
+    if agreed == "yes" {
+      numbers := used.map(n => Derivations.standing(d, n, s)).filter(x => x != None)
+      c.status = "checked"
+      c.check = how
+      c.uses = [from.place].concat(numbers.map(x => x.place).filter(k => k != from.place))
+      put := numbers.empty ? "" : ", with {numbers.map(x => x.markup).join(sep2)} put in"
+      c.reason = how == "restated" ? "it names {from.subject} again (claim {from.place}), and its value is the earlier one's by algebra{put}" : "claim {from.place} with the settled numbers put in{put}"
+    } elsif agreed == "no" {
+      c.reason = how == "restated" ? "it names {from.subject} again (claim {from.place}) with a value that is not the earlier one by algebra, even with the settled numbers in: what makes them one is the inference '{c.via}', not an identity. {c.reason}" : "with the settled numbers in, the algebra does not give it from claim {from.place}: the filling evaluated something a prover cannot follow by algebra (a root found by bisection, a limit, a number read off a table)"
+    } else {
+      c.reason = "its two sides could not be evaluated at a sample - a power of a negative base, or a root whose body divides by the name it binds (under a binder nothing may be cancelled) - so it is not offered as algebra. {c.reason}"
+    }
+  }
+
+  /* the answer, last: placed once the settled numbers its check puts in have been added before it */
+  static conclude (d: Derivation, p: Proved, q: Asked, s: Store, fill: {}, by_name: boolean) => {
+    c := Claim(place: 0, role: "concluded")
+    c.markup = p.concluded
+    c.via = "the answer"
+    c.status = "unchecked"
+    recorded := d.claims.filter(x => x.role == "premise" | x.role == "step")
+    if q.about.empty {
+      /* the line: it restates the step it was written off */
+      from := recorded.filter(x => x.markup == p.concluded).last
+      if from == None {
+        c.reason = "the concluded line is not one of its steps"
+      } else {
+        c.fact_kind = from.fact_kind
+        c.subject = from.subject
+        c.value = from.value
+        Derivations.try_check(d, c, from, from.value, s, fill, "restated")
+      }
+    } else {
+      last := recorded.last
+      if last == None | last.subject != q.about | last.value == None {
+        c.reason = "the last step is not about {q.about}"
+      } else {
+        c.fact_kind = last.fact_kind
+        c.subject = last.subject
+        c.value = by_name ? last.value : Expr.deep_factored(Expr.evaluate(last.value, fill))
+        Derivations.try_check(d, c, last, c.value, s, fill, by_name ? "restated" : "filled")
+        written := by_name ? last.markup : Prover.headline(Fact.stands(last.subject, last.value), fill)
+        c.reason = "{c.reason}. The record writes on past it: {p.concluded} - the rest is the law of {q.chain}, named beside it, and not checked" if written != p.concluded & q.chain != None
+      }
+    }
+    c.place = d.claims.length + 1
+    d.claims.push(c)
+  }
+
+  /*
+   * THE RELATION AN INFERENCE APPLIES, READ OFF ITS OWN CODE. A step records its value, not how the inference built it
+   * out of the lines it cites. But the inference is a program over the store: run it again on the store as it stood when
+   * the step arrived, with every line the step cites standing as ITS NAME rather than its value, and what it concludes
+   * is the relation itself - `λ = ρ / what is taken` rather than `λ = 1/(σFρ)`. That relation is a premise, read off the
+   * inference (Inferences.ray) as every other premise is read off the program; the step is then CHECKED where the
+   * relation, with the cited lines put back in, is its value by algebra. Where the inference does not fire the same way
+   * on the names (it looked inside a value, a guard went the other way), the step stays unchecked.
+   */
+  static INFERENCES = { }
+  static RELATED = { }
+  static inferences_named (name: String): Inference[] => {
+    if Derivations.INFERENCES["(read)"] == None {
+      Inferences.RULES.for(r => {
+        Derivations.INFERENCES[r.name] = [] if Derivations.INFERENCES[r.name] == None
+        Derivations.INFERENCES[r.name].push(r)
+      })
+      Derivations.INFERENCES["(read)"] = []
+    }
+    Derivations.INFERENCES[name] ?? []
+  }
+  /* the store as it stood when `key` arrived, the facts named in `named` standing as their names */
+  static before (s: Store, key: String, named: String[]): Store? => {
+    i := s.keys.index_of(key)
+    return None if i == None
+    out := Store()
+    s.keys.take(i).for(k => {
+      st := s.steps[k]
+      f := st.fact
+      fact := named.contains(k) ? Fact(kind: "is", of: f.of, to: Expr.field(f.of)) : f
+      out.add(Step.of(fact, st.via, st.upon, st.because, st.working))
+    })
+    out
+  }
+  /* [the relation, the keys it is written over], or None: once per step of the store */
+  /* what the inference concludes for this step when the facts `named` stand as their names, or None where it concludes nothing for it: once per step and way of asking */
+  static relation_of (st: Step, named: String[], s: Store, how: String): Expr? => {
+    key := st.fact.key
+    had := Derivations.RELATED["{key} {how}"]
+    return had[0] if had != None
+    found := None
+    unless named.empty {
+      s2 := Derivations.before(s, key, named)
+      unless s2 == None {
+        Derivations.inferences_named(st.via).for(r => {
+          if found == None {
+            r.fire(s2).for(x => { found = x if found == None & x.fact.key == key & x.fact.to != None })
+          }
+        })
+      }
+    }
+    got := found == None ? None : found.fact.to
+    Derivations.RELATED["{key} {how}"] = [got]
+    got
+  }
+  /*
+   * Asked twice: first with only the lines the step cites standing as names; and where that does not give the line back,
+   * with every line of the store standing as its name - an inference may read a line it does not cite (spreading reads
+   * v), and such a line is then put in beside the step as one it READ. The first way that gives the step's value back by
+   * algebra is kept; what each way found is said where none does
+   */
+  static try_relation (d: Derivation, c: Claim, st: Step, s: Store, fill: {}) => {
+    cited := c.rests_on.map(j => d.claim_at(j)).filter(x => x.fact_kind == "is" & x.value != None).map(x => x.fact_key)
+    got := cited.empty ? "it cites no line with a value" : Derivations.attempt(d, c, Derivations.relation_of(st, cited, s, "cited"), cited.map(k => s.steps[k]), s, fill)
+    return if got.empty
+    i := s.keys.index_of(st.fact.key)
+    every := i == None ? [] : s.keys.take(i).filter(k => s.steps[k].fact.kind == "is" & s.steps[k].fact.to != None & Expr.simplify(s.steps[k].fact.to).kind != "num")
+    again := every.empty ? "there is no line to stand as a name" : Derivations.attempt(d, c, Derivations.relation_of(st, every, s, "every"), every.map(k => s.steps[k]), s, fill)
+    return if again.empty
+    c.reason = "the inference '{c.via}' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: {got}; and with every line of the store standing as its name: {again}. So there is no relation to check the line against, and it is stated as the prover wrote it"
+  }
+  /* one way of asking: "" where the step is checked, else what was found */
+  static attempt (d: Derivation, c: Claim, relation: Expr?, sources: Step[], s: Store, fill: {}): String => {
+    return "it concluded nothing for this line (it looks inside a value, or a guard went the other way)" if relation == None
+    mentioned := Derivations.names_in(relation)
+    /* the lines the relation is written over: the step's own citations first, then any it read, from the store */
+    used := []
+    sources.for(src => {
+      f := src.fact
+      if mentioned.contains(f.of) {
+        j := d.claims.filter(x => x.place < c.place & x.fact_key == f.key & x.value != None & Expr.show(x.value) == Expr.show(f.to)).last
+        used.push([src, j])
+      }
+    })
+    /* a root or a limit binds a name; a line put in by name under it would mean the bound one, which substitution in a prover does not do */
+    bound := Derivations.bound_in(relation)
+    return "its relation holds a root in the name the lines it cites are written in, and they are put in under the root by name - which substitution in a prover does not do" if used.some(x => Derivations.names_in(x[0].fact.to).some(n => bound.contains(n)))
+    /* a line it divides by whose value is a sum carrying a real power cannot be shown nonzero by the algebra of a field */
+    under := []
+    Derivations.divisors_in(relation, under)
+    return "its relation divides by a line whose value carries a real power inside a sum (1 - q^{{R}}), which the algebra of a field cannot show is not nought" if used.some(x => under.some(u => u.named & u.label == x[0].fact.of) & Derivations.powered_sum(x[0].fact.to))
+    back := relation
+    mine := c.value
+    used.for(x => {
+      f := x[0].fact
+      back = Expr.replace(back, f.of, f.to)
+      mine = Expr.replace(mine, f.of, f.to)
+    })
+    names := Derivations.names_in(back).concat(Derivations.names_in(mine))
+    fixed := { }
+    numbers := []
+    names.for(n => {
+      if fill[n] != None & fixed[n] == None {
+        fixed[n] = fill[n]
+        numbers.push(n)
+      }
+    })
+    verdict := Derivations.agree(back, mine, fixed)
+    return "its relation, {Prover.headline(Fact.stands(c.subject, relation), None)}, with the lines put back is not this line by algebra" if verdict == "no"
+    return "its relation could not be sampled (a power of a negative base)" if verdict != "yes"
+    /* checked: the relation is a premise, and a line read without being cited is put in beside the step */
+    r := Claim(place: d.claims.length + 1, role: "relation")
+    r.fact_kind = "is"
+    r.fact_key = c.fact_key
+    r.subject = c.subject
+    r.value = relation
+    r.markup = Prover.headline(Fact.stands(c.subject, relation), None)
+    r.via = "the inference '{c.via}'"
+    r.status = "premise"
+    r.reason = "read off its own code (Inferences.ray, or the method of Prove.ray that builds the equation's chain): run on the store as it stood when step {c.place} arrived, with the lines it stands on as their names, it concludes this - the relation it applies, taken from the program as every premise is"
+    d.claims.push(r)
+    read := used.filter(x => x[1] == None)
+    lines := used.map(x => x[1] == None ? Derivations.read_line(d, x[0]) : x[1])
+    standing := numbers.map(n => Derivations.standing(d, n, s)).filter(x => x != None)
+    c.status = "checked"
+    c.check = "related"
+    c.uses = [r.place].concat(lines.map(x => x.place)).concat(standing.map(x => x.place))
+    them := lines.map(x => x.markup).join("; ")
+    put := standing.empty ? "" : ", with {standing.map(x => x.markup).join(sep2)} put in"
+    uncited := read.empty ? "" : " ({read.length} of them read by the inference without being cited by the step)"
+    c.reason = "the inference's relation (claim {r.place}, read off its code) with the lines it stands on put in{uncited} - {them}{put} - is this line, by algebra"
+    ""
+  }
+  /* a line an inference read without the step citing it: the store's, beside the step */
+  static read_line (d: Derivation, st: Step): Claim => {
+    c := Derivations.claim_of(st, d.claims.length + 1)
+    c.role = "read"
+    c.status = Derivations.is_premise(st) ? "premise" : "unchecked"
+    c.reason = Derivations.is_premise(st) ? Derivations.premise_reason(st) : Derivations.inference_reason(st, [])
+    d.claims.push(c)
+    c
+  }
+
+  /* the names a root or a limit binds, anywhere in an expression */
+  static bound_in (e: Expr): String[] => {
+    out := []
+    walk := (x: Expr) => {
+      k := x.kind
+      out.push(x.bound) if (k == "root" | k == "limit") & !out.contains(x.bound)
+      if k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
+      elsif k == "pow" { walk(x.base); walk(x.power) }
+      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
+      elsif x.base != None { walk(x.base) }
+    }
+    walk(e)
+    out
+  }
+  /* what an expression divides by: every base under a negative power, a product taken factor by factor */
+  static divisors_in (e: Expr, out: Expr[]) => {
+    seen := out.map(x => Expr.show(x))
+    keep := (x: Expr) => {
+      unless x.kind == "num" | seen.contains(Expr.show(x)) {
+        out.push(x)
+        seen.push(Expr.show(x))
+      }
+    }
+    walk := (x: Expr) => {
+      k := x.kind
+      if k == "pow" {
+        kk := x.by_num
+        if kk != None & kk < 0 {
+          if x.base.kind == "mul" {
+            x.base.of.for(y => { keep((y.kind == "pow" & y.by_num != None & y.by_num > 0) ? y.base : y) })
+          } else {
+            keep(x.base)
+          }
+        }
+        walk(x.base)
+        walk(x.power)
+      }
+      elsif k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
+      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
+      elsif x.base != None & k != "root" & k != "limit" { walk(x.base) }
+    }
+    walk(e)
+  }
+
+  /* what an expression raises to a power that is not a number: a real power of a base is defined where the base is positive */
+  static powered_in (e: Expr, out: Expr[]) => {
+    seen := out.map(x => Expr.show(x))
+    walk := (x: Expr) => {
+      k := x.kind
+      if k == "pow" {
+        if x.by_num == None & x.base.kind != "num" & !seen.contains(Expr.show(x.base)) {
+          out.push(x.base)
+          seen.push(Expr.show(x.base))
+        }
+        walk(x.base)
+        walk(x.power)
+      }
+      elsif k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
+      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
+      elsif x.base != None & k != "root" & k != "limit" { walk(x.base) }
+    }
+    walk(e)
+  }
+
+  /* whether a sum somewhere in it carries a real power: (1 - q^R) */
+  static powered_sum (e: Expr): boolean => {
+    found := false
+    walk := (x: Expr, in_sum: boolean) => {
+      k := x.kind
+      if k == "pow" {
+        found = true if in_sum & x.by_num == None
+        walk(x.base, in_sum)
+      }
+      elsif k == "add" { x.of.for(y => { walk(y, true) }) }
+      elsif k == "mul" { x.of.for(y => { walk(y, in_sum) }) }
+    }
+    walk(e, false)
+    found
+  }
+
+  /* the names in an expression, in the order they appear */
+  static names_in (e: Expr): String[] => {
+    out := []
+    walk := (x: Expr) => {
+      k := x.kind
+      if k == "sym" | k == "field" { out.push(x.label) if !out.contains(x.label) }
+      elsif k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
+      elsif k == "pow" { walk(x.base); walk(x.power) }
+      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
+      elsif x.base != None { walk(x.base) }
+    }
+    walk(e)
+    out
+  }
+
+  /* "yes" where the two agree at both samples, "no" where they differ at one, "unknown" where a sample is not a number */
+  static agree (a: Expr, b: Expr, fixed: {}): String => {
+    out := "yes"
+    [1, 2].for(seed => {
+      env := { }
+      Derivations.names_in(a).concat(Derivations.names_in(b)).for(n => { env[n] = fixed[n] if fixed[n] != None })
+      x := Derivations.sampled(a, env, seed)
+      y := Derivations.sampled(b, env, seed)
+      if !Expr.finite(x) | !Expr.finite(y) {
+        out = out == "no" ? "no" : "unknown"
+      } elsif (x - y).abs > 0.000000001 * (1 + x.abs + y.abs) {
+        out = "no"
+      }
+    })
+    out
+  }
+  /* an expression at a sample: every name its own number, and what the algebra cannot see into an unknown by how it is written */
+  static sampled (e: Expr, env: {}, seed: N): Real => {
+    k := e.kind
+    return e.value if k == "num"
+    return Derivations.drawn(e.label, env, seed) if k == "sym" | k == "field"
+    if k == "add" {
+      total_ := 0
+      e.of.for(x => { total_ = total_ + Derivations.sampled(x, env, seed) })
+      return total_
+    }
+    if k == "mul" {
+      prod := 1
+      e.of.for(x => { prod = prod * Derivations.sampled(x, env, seed) })
+      return prod
+    }
+    return Derivations.sampled(e.base, env, seed) ^ Derivations.sampled(e.power, env, seed) if k == "pow"
+    return Derivations.sampled(e.base, env, seed).ln if k == "log"
+    return Derivations.sampled(e.base, env, seed).exp if k == "exp"
+    /* what the algebra cannot see into is an unknown of its own - but a function all the same: the same function of the same values is the same number */
+    if k == "call" | k == "grad" {
+      at := Derivations.key_of(Derivations.sampled(e.base, env, seed))
+      return Derivations.drawn("\\atom{{{k} {e.label} {at}}}", env, seed)
+    }
+    if k == "choose" | k == "gammaInc" {
+      at := Derivations.key_of(Derivations.sampled(e.first_, env, seed))
+      at2 := Derivations.key_of(Derivations.sampled(e.second_, env, seed))
+      return Derivations.drawn("\\atom{{{k} {at} {at2}}}", env, seed)
+    }
+    if k == "root" | k == "limit" {
+      /* a function of the whole body, read at two values of the name it binds */
+      had := env[e.bound]
+      env[e.bound] = 0.35
+      at := Derivations.key_of(Derivations.sampled(e.base, env, seed))
+      env[e.bound] = 0.55
+      at2 := Derivations.key_of(Derivations.sampled(e.base, env, seed))
+      /* and at nought: a body that divides by the name it binds is not the same function everywhere, and under a binder nothing may be cancelled */
+      env[e.bound] = 0
+      at0 := Derivations.sampled(e.base, env, seed)
+      env[e.bound] = had
+      return Expr.NAN if !Expr.finite(at0)
+      return Derivations.drawn("\\atom{{{k} {at} {at2} {Derivations.key_of(at0)}}}", env, seed)
+    }
+    Derivations.drawn("\\atom{{{Expr.show(e)}}}", env, seed)
+  }
+  /* a sampled value as a key: equal to nine places, or NaN */
+  static key_of (x: Real): String => Expr.finite(x) ? "{(x * 1000000000).round}" : "NaN"
+  /* a name's number at a sample: its own where it has one, else one drawn off its spelling, in (0.3, 0.7) */
+  static drawn (label: String, env: {}, seed: N): Real => {
+    had := env[label]
+    return had if had != None
+    h := seed * 7919
+    label.chars.for(c => { h = (h * 131 + c) % 2147483647 })
+    v := 0.3 + 0.4 * (h % 100003) / 100003
+    env[label] = v
+    v
+  }
+}

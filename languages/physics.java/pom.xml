@@ -4,12 +4,49 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.orbitmines</groupId>
   <artifactId>physics</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.1-test.1</version>
   <name>orbitmines physics</name>
-  <description>The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.</description>
+  <description>OrbitMines: Physics Project</description>
   <url>https://github.com/orbitmines/physics</url>
+  <licenses>
+    <license><name>MIT License</name><url>https://opensource.org/licenses/MIT</url></license>
+  </licenses>
+  <developers>
+    <developer><id>orbitmines</id><name>OrbitMines</name><email>fadi.shawki@orbitmines.com</email><url>https://github.com/orbitmines</url></developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/orbitmines/physics.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/orbitmines/physics.git</developerConnection>
+    <url>https://github.com/orbitmines/physics</url>
+  </scm>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <build>
+    <plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version>
+        <configuration><release>17</release><encoding>UTF-8</encoding><compilerArgs><arg>-nowarn</arg></compilerArgs></configuration></plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <!-- mvn -P release deploy: what Maven Central asks of a release - sources, javadoc, every file signed - sent through the Central Portal -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.3.1</version>
+            <executions><execution><id>sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions></plugin>
+          <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId><version>3.10.1</version>
+            <configuration><doclint>none</doclint><failOnError>false</failOnError><quiet>true</quiet></configuration>
+            <executions><execution><id>javadoc</id><goals><goal>jar</goal></goals></execution></executions></plugin>
+          <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-gpg-plugin</artifactId><version>3.2.7</version>
+            <configuration><gpgArguments><arg>--pinentry-mode</arg><arg>loopback</arg></gpgArguments></configuration>
+            <executions><execution><id>sign</id><phase>verify</phase><goals><goal>sign</goal></goals></execution></executions></plugin>
+          <plugin><groupId>org.sonatype.central</groupId><artifactId>central-publishing-maven-plugin</artifactId><version>0.7.0</version><extensions>true</extensions>
+            <configuration><publishingServerId>central</publishingServerId><autoPublish>true</autoPublish></configuration></plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

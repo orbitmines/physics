@@ -1,11 +1,10 @@
 Package: orbitmines
 Type: Package
-Title: The Discrete Theory G and the Medium Derived from It
-Version: 0.0.1
+Title: OrbitMines: Physics Project
+Version: 0.0.1.9001
 Author: OrbitMines
 Maintainer: OrbitMines <fadi.shawki@orbitmines.com>
-Description: The discrete theory G - the rules, and the smallest thing that runs them - with the continuous model
-    derived from them and the plan of a simulation of sources. Generated from implementation/physics.ray.
+Description: OrbitMines: Physics Project.
 License: MIT + file LICENSE
 URL: https://github.com/orbitmines/physics
 BugReports: https://github.com/orbitmines/physics/issues

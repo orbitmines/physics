@@ -1,0 +1,28 @@
+/*
+ * THE RELEASE: the one version every package is published at, set here and nowhere else, and how each registry spells
+ * it. `npx ray gen` writes it into every package's manifest and into `languages/VERSION`; a push to main that changes
+ * `languages/VERSION` runs .github/workflows/release.yml (written by gen too), which builds every package, keeps what it
+ * built as GitHub artifacts, and publishes to each registry whose credentials the repository has.
+ *
+ * A test release comes before its version (`test` 1, 2, ...): published everywhere that has pre-releases as one, so
+ * nobody installs it without asking for it. `test = 0` is the version itself.
+ */
+Release := class {
+  /* what every package says it is */
+  static description = "OrbitMines: Physics Project"
+  /* major.minor.patch */
+  static version = "0.0.1"
+  /* the test release before it (0: the release itself) */
+  static test = 1
+
+  /* semver - npm, crates.io, NuGet, Maven Central, Julia, Swift, and the git tags Go, Lean and Swift read: 0.0.1-test.1 */
+  static semver (): String => Release.test > 0 ? "{Release.version}-test.{Release.test}" : Release.version
+  /* PEP 440 - PyPI: 0.0.1.dev1, which pip installs only with --pre */
+  static pep440 (): String => Release.test > 0 ? "{Release.version}.dev{Release.test}" : Release.version
+  /* RubyGems - a letter in it makes it a pre-release: 0.0.1.test.1 */
+  static rubygems (): String => Release.test > 0 ? "{Release.version}.test.{Release.test}" : Release.version
+  /* numbers only - R, a Wolfram paclet: a test release is the version's development one, 0.0.1.9001 */
+  static numeric (): String => Release.test > 0 ? "{Release.version}.{9000 + Release.test}" : Release.version
+  /* whether this is a test release, for the workflow */
+  static testing (): boolean => Release.test > 0
+}

@@ -30,6 +30,16 @@ Language := class {
 
   /* the CPU backend's runtime template in this language (None: the CPU backend does not run in it) - a language reads its own, since a path is read where it is written */
   cpu_runtime (): String => None
+
+  /*
+   * this language's job in .github/workflows/release.yml (Release.ray): build the package, keep what it built as an
+   * artifact named after the language, and publish it where the repository has the registry's credentials - YAML,
+   * two spaces in under `jobs:` ("": the language has none)
+   */
+  release_job (): String => ""
+
+  /* a language with a theorem prover states every theorem of the theory and its derivation (gen/Derivation.ray: premises, steps, the answer) for its prover to check; any other writes nothing */
+  write_proofs (theory: Theory) => { }
 }
 
 MapRule := class < pattern: Program, target: String {

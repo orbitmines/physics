@@ -44,6 +44,10 @@ sm (← gm plan "budget") "compact" (.bool true)   -- twelve bytes a source
 IO.println (← strv (← cm plan "report" #[17179869184, 2147483648]))
 ```
 
+## The theorems, checked by Lean
+
+Every theorem of the theories and its derivation is in the package too, as Lean statements Lean checks (with Mathlib; the runtime imports none of it): `import OrbitMines.Physics.Proofs`, or one theorem, `import OrbitMines.Physics.Proofs.G.force_range` - its answer is `OrbitMines.Physics.Proofs.G.«force.range».answer`. What the prover takes from the rules is a `Premises` field, every step Lean does not check an `Unchecked` field with its reason, and every step it does a `check_<k>`. `lake exe cache get` first fetches Mathlib's compiled files; `lake build` builds the runtime and checks the theorems. Which steps are checked, theorem by theorem: [THEOREMS.md](THEOREMS.md).
+
 ## On the GPU
 
 The GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).
