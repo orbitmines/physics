@@ -315,7 +315,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: build
-        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.2.tar.gz --exclude .build -C languages physics.swift
+        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics.swift-0.0.1-test.2.tar.gz --exclude .build -C languages physics.swift
       - uses: actions/upload-artifact@v7
         with:
           name: swift
@@ -339,7 +339,7 @@ jobs:
         with:
           version: "1"
       - name: load
-        run: julia --project=languages/physics.jl -e 'using Pkg; Pkg.instantiate(); using OrbitMinesPhysics' && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.2.tar.gz -C languages physics.jl
+        run: julia --project=languages/physics.jl -e 'using Pkg; Pkg.instantiate(); using OrbitMinesPhysics' && mkdir -p out && tar czf out/OrbitMinesPhysics.jl-0.0.1-test.2.tar.gz -C languages physics.jl
       - uses: actions/upload-artifact@v7
         with:
           name: julia
