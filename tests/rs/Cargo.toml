@@ -2,7 +2,7 @@
 # cargo run --release [filter]
 [package]
 name = "orbitmines-physics-tests"
-version = "0.0.1-test.1"
+version = "0.0.1-test.2"
 edition = "2021"
 publish = false
 

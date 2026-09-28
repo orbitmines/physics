@@ -11,11 +11,11 @@ The physics library in Java: the theories and their rules, the continuous model 
 <dependency>
   <groupId>com.orbitmines</groupId>
   <artifactId>physics</artifactId>
-  <version>0.0.1-test.1</version>
+  <version>0.0.1-test.2</version>
 </dependency>
 ```
 
-Java 17 or later. Gradle: `implementation("com.orbitmines:physics:0.0.1-test.1")`.
+Java 17 or later. Gradle: `implementation("com.orbitmines:physics:0.0.1-test.2")`.
 
 ## Using it
 

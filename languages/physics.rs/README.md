@@ -11,7 +11,7 @@ The physics library in Rust: the theories and their rules, the continuous model 
 cargo add orbitmines-physics
 ```
 
-Or in `Cargo.toml`: `orbitmines-physics = "0.0.1-test.1"`. Rust 2021 edition.
+Or in `Cargo.toml`: `orbitmines-physics = "0.0.1-test.2"`. Rust 2021 edition.
 
 ## Using it
 

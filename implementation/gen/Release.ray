@@ -13,7 +13,7 @@ Release := class {
   /* major.minor.patch */
   static version = "0.0.1"
   /* the test release before it (0: the release itself) */
-  static test = 1
+  static test = 2
 
   /* semver - npm, crates.io, NuGet, Maven Central, Julia, Swift, and the git tags Go, Lean and Swift read: 0.0.1-test.1 */
   static semver (): String => Release.test > 0 ? "{Release.version}-test.{Release.test}" : Release.version

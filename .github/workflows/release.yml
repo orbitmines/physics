@@ -216,7 +216,7 @@ jobs:
         with:
           go-version: stable
       - name: build
-        run: cd languages/physics.go && go build ./... && go vet ./... && mkdir -p ../../out && tar czf ../../out/physics.go-0.0.1-test.1.tar.gz .
+        run: cd languages/physics.go && go build ./... && go vet ./... && mkdir -p ../../out && tar czf ../../out/physics.go-0.0.1-test.2.tar.gz .
       - uses: actions/upload-artifact@v4
         with:
           name: go
@@ -225,8 +225,8 @@ jobs:
       - name: publish to the Go module proxy (a tag is the release)
         if: env.PUBLISH == 'true'
         run: |
-          git tag "languages/physics.go/v0.0.1-test.1" && git push origin "languages/physics.go/v0.0.1-test.1"
-          curl -fsS "https://proxy.golang.org/github.com/orbitmines/physics/languages/physics.go/@v/v0.0.1-test.1.info" || true
+          git tag "languages/physics.go/v0.0.1-test.2" && git push origin "languages/physics.go/v0.0.1-test.2"
+          curl -fsS "https://proxy.golang.org/github.com/orbitmines/physics/languages/physics.go/@v/v0.0.1-test.2.info" || true
   cpp:
     needs: version
     runs-on: ubuntu-latest
@@ -241,8 +241,8 @@ jobs:
           cmake --build build -j 4
           cmake --install build --prefix install/orbitmines-physics
           mkdir -p out
-          tar czf out/orbitmines-physics-0.0.1-test.1-linux-x64.tar.gz -C install orbitmines-physics
-          tar czf out/orbitmines-physics-0.0.1-test.1-source.tar.gz -C languages physics.cpp
+          tar czf out/orbitmines-physics-0.0.1-test.2-linux-x64.tar.gz -C install orbitmines-physics
+          tar czf out/orbitmines-physics-0.0.1-test.2-source.tar.gz -C languages physics.cpp
       - uses: actions/upload-artifact@v4
         with:
           name: cpp
@@ -288,7 +288,7 @@ jobs:
       - name: build the package and check the theorems
         run: cd languages/physics.lean && lake exe cache get && lake build
       - name: package
-        run: mkdir -p out && tar czf out/orbitmines-physics-lean-0.0.1-test.1.tar.gz --exclude .lake -C languages physics.lean
+        run: mkdir -p out && tar czf out/orbitmines-physics-lean-0.0.1-test.2.tar.gz --exclude .lake -C languages physics.lean
       - uses: actions/upload-artifact@v4
         with:
           name: lean
@@ -296,7 +296,7 @@ jobs:
           if-no-files-found: error
       - name: Reservoir reads the release's tag
         if: env.PUBLISH == 'true'
-        run: echo "Lean is released by the repository tag v0.0.1-test.1, which the release job creates and Reservoir indexes"
+        run: echo "Lean is released by the repository tag v0.0.1-test.2, which the release job creates and Reservoir indexes"
   swift:
     needs: version
     runs-on: ubuntu-latest
@@ -306,7 +306,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: build
-        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.1.tar.gz --exclude .build -C languages physics.swift
+        run: swift build -c release --package-path languages/physics.swift && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.2.tar.gz --exclude .build -C languages physics.swift
       - uses: actions/upload-artifact@v4
         with:
           name: swift
@@ -314,7 +314,7 @@ jobs:
           if-no-files-found: error
       - name: SwiftPM reads the release's tag
         if: env.PUBLISH == 'true'
-        run: echo "Swift is released by the repository tag v0.0.1-test.1 (the release job); the Swift Package Index lists it once the repository carries a root Package.swift"
+        run: echo "Swift is released by the repository tag v0.0.1-test.2 (the release job); the Swift Package Index lists it once the repository carries a root Package.swift"
   julia:
     needs: version
     runs-on: ubuntu-latest
@@ -330,7 +330,7 @@ jobs:
         with:
           version: "1"
       - name: load
-        run: julia --project=languages/physics.jl -e 'using Pkg; Pkg.instantiate(); using OrbitMinesPhysics' && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.1.tar.gz -C languages physics.jl
+        run: julia --project=languages/physics.jl -e 'using Pkg; Pkg.instantiate(); using OrbitMinesPhysics' && mkdir -p out && tar czf out/OrbitMinesPhysics-0.0.1-test.2.tar.gz -C languages physics.jl
       - uses: actions/upload-artifact@v4
         with:
           name: julia
@@ -359,7 +359,7 @@ jobs:
           if-no-files-found: error
       - name: CRAN takes a package by its web form; r-universe builds it from the repository
         if: env.PUBLISH == 'true'
-        run: echo "submit out/orbitmines_0.0.1.9001.tar.gz at https://cran.r-project.org/submit.html (a test release goes to r-universe only)"
+        run: echo "submit out/orbitmines_0.0.1.9002.tar.gz at https://cran.r-project.org/submit.html (a test release goes to r-universe only)"
   wolfram:
     needs: version
     runs-on: ubuntu-latest
@@ -369,7 +369,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: pack the paclet
-        run: mkdir -p out && cd languages/physics.wl && zip -r "../../out/OrbitMines__Physics-0.0.1.9001.paclet" . -x README.md
+        run: mkdir -p out && cd languages/physics.wl && zip -r "../../out/OrbitMines__Physics-0.0.1.9002.paclet" . -x README.md
       - uses: actions/upload-artifact@v4
         with:
           name: wolfram
@@ -377,7 +377,7 @@ jobs:
           if-no-files-found: error
       - name: the Wolfram Paclet Repository takes a paclet by submission
         if: env.PUBLISH == 'true'
-        run: echo "submit out/OrbitMines__Physics-0.0.1.9001.paclet through the Paclet Repository's submission notebook (resources.wolframcloud.com/PacletRepository)"
+        run: echo "submit out/OrbitMines__Physics-0.0.1.9002.paclet through the Paclet Repository's submission notebook (resources.wolframcloud.com/PacletRepository)"
   release:
     needs: [version, typescript, python, ruby, java, csharp, go, cpp, rust, lean, swift, julia, r, wolfram]
     if: needs.version.outputs.publish == 'true'

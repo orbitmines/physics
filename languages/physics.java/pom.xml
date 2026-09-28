@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.orbitmines</groupId>
   <artifactId>physics</artifactId>
-  <version>0.0.1-test.1</version>
+  <version>0.0.1-test.2</version>
   <name>orbitmines physics</name>
   <description>OrbitMines: Physics Project</description>
   <url>https://github.com/orbitmines/physics</url>

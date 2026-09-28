@@ -2,7 +2,7 @@
 name = "OrbitMinesPhysics"
 uuid = "49c02cea-eab4-4431-9e6b-273cb9967b25"
 authors = ["OrbitMines"]
-version = "0.0.1-test.1"
+version = "0.0.1-test.2"
 
 [compat]
 julia = "1.9"
