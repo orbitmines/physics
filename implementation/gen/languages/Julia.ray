@@ -1,0 +1,272 @@
+/*
+ * JULIA, as a mapping from the constructs of Ray to text. A Julia struct has fixed fields, so a Ray class is a
+ * table (`Cls`) filled when the package loads, and an object an `Obj` whose members are reached by name
+ * (`rget(x, :cells)`, `rcall(x, :add, Any[h])`, `rset!(x, :tag, v)`) - see implementation/gen/backends/cpu.rt.jl.
+ * Every method and lambda takes its arguments as one `Vector{Any}` (`a1`, `a2`, ... by depth, `{d}`), bound at the
+ * top of its body (`{parameter}` with `{i}`), so a missing argument is `nothing` and a default is set in the body
+ * (`{defaults_in_body}`): one signature a program, compiled once. A Julia closure takes a local by reference, so a
+ * local is a plain variable; it is spelled with the depth of the scope that binds it (`{local_name}`), because a
+ * closure assigning a name its enclosing function has would write that one. Every text is written `j"..."`, read
+ * raw by the runtime's string macro, so a `$` in it is only a `$`. A class is reached by name (`K("Hole")`) and
+ * never is a global, so no Ray name shadows one of Julia's (`Vector`, `Expr`).
+ */
+
+Julia: Language = class {
+  name = "Julia"
+  extension = ".jl"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ""
+  {empty_block} => "nothing"
+  {interpolation} => "\" * str({x}) * j\""
+  {named_arg} => "kw(:{raw}, {val})"
+  {parameter} => "{nm} = arg(a{d}, {i})"
+  {parameter_untyped} => "{nm} = arg(a{d}, {i})"
+  {parameter_default} => "{nm} = arg(a{d}, {i})"
+  {parameter_separator} => "; "
+  {dynamic_get} => "rget({tgt}, Symbol(str({key})))"
+  {dynamic_set} => "rset!({tgt}, Symbol(str({key})), {val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "baremodule begin break catch const continue do else elseif end export false finally for function global if import let local macro module quote return struct true try using while abstract mutable primitive type where in isa outer public var nothing missing self c"
+  {escaped_name} => "{nm}_"
+  {global_name} => "g_{nm}()"
+  {local_name} => "{nm}_{k}"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K(\"{nm}\")"
+  {field_assign} => "field!(c, :{nm}, (self) -> {val})"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if truthy({cond})\n{yesbody.indent}\nelse\n{nobody.indent}\nend"
+  {if cond { yesbody }} => "if truthy({cond})\n{yesbody.indent}\nend"
+  {unless cond { yesbody }} => "if !truthy({cond})\n{yesbody.indent}\nend"
+  {while cond { loopbody }} => "while truthy({cond})\n{loopbody.indent}\nend"
+  {return val} => "return {val}"
+  {return} => "return nothing"
+  {dynamically assert cond} => "truthy({cond}) || throw(AssertionError(j{cond.quoted}))"
+
+  /* definitions and assignment */
+  {nm := val} => "{nm} = {val}"
+  {tgt.nm = rhs} => "rset!({tgt}, :{nm.raw}, {rhs})"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "set_at!({tgt}, {k}, {rhs})"
+
+  /* expressions */
+  {a & b} => "(truthy({a}) && truthy({b}))"
+  {a | b} => "(truthy({a}) || truthy({b}))"
+  {!a} => "rnot({a})"
+  {-a} => "neg({a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "!eq({a}, {b})"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "rdiv({a}, {b})"
+  {a % b} => "rmod({a}, {b})"
+  {a ^ b} => "power({a}, {b})"
+  {a ?? b} => "(let q_ = {a}; q_ === nothing ? ({b}) : q_ end)"
+  {cond ? a : b} => "(truthy({cond}) ? ({a}) : ({b}))"
+  {a ==.instance_of Array} => "({a} isa Vector)"
+  {a ==.instance_of ty} => "instance_of({a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "rget({tgt}, :{nm.raw.method})"
+  {tgt?.nm} => "rget_opt({tgt}, :{nm.raw.method})"
+  {tgt.nm()} => "rget({tgt}, :{nm.raw.method})"
+  {tgt.nm(arglist)} => "rcall({tgt}, :{nm.raw.method}, Any[{arglist}])"
+  {tgt?.nm(arglist)} => "rcall_opt({tgt}, :{nm.raw.method}, Any[{arglist}])"
+  {tgt.choose("nm")} => "choose({tgt}, j{nm.quoted})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "rinvoke({fn}, Any[{arglist}])"
+  {Class(arglist)} => "make(\"{Class}\", Any[{arglist}])"
+  {[elems]} => "Any[{elems}]"
+  { {} } => "make(NODE)"
+  {this} => "self"
+  {None} => "nothing"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "(j\"{txt}\")"
+  {(paramlist) => { stmts }} => "(function (a{d}::Vector{{Any}})\n  {paramlist}\n{stmts.returned.indent}\n  nothing\nend)"
+  {(paramlist) => e} => "(function (a{d}::Vector{{Any}})\n  {paramlist}\n  {e}\nend)"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "rcall(rget(rget(self, :vertex), :world), :draw, Any[Any[{ws}], Any[{os}]])"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} in 0:(ceil(Int, num({cnt})) - 1)\n  {x_.bare} = Float64(i{d})\n{stmts.indent}\nend"
+  {xs.for((x_) => { stmts })} => "for {x_.bare} in items({xs})\n{stmts.indent}\nend"
+  {fail(x_)} => "rfail({x_})"
+  {Catalogue.number(x_)} => "number({x_})"
+  {String(chars: xs)} => "from_codepoints({xs})"
+  {x_.blank} => "blank({x_})"
+  {xs.push(x_)} => "m_push({xs}, {x_})"
+  {xs.chars} => "m_chars({xs})"
+  {xs.pop} => "m_pop({xs})"
+  {xs.length} => "len({xs})"
+  {xs.map(f)} => "m_map({xs}, {f})"
+  {xs.filter(f)} => "filt({xs}, {f})"
+  {xs.for(f)} => "m_for({xs}, {f})"
+  {xs.some(f)} => "m_some({xs}, {f})"
+  {xs.every(f)} => "m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "m_split({xs}, {x_})"
+  {xs.trim} => "m_trim({xs})"
+  {xs.upper} => "m_upper({xs})"
+  {xs.lower} => "m_lower({xs})"
+  {xs.lines} => "m_lines({xs})"
+  {xs.quoted} => "quoted({xs})"
+  {xs.contains(x_)} => "m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "m_join({xs}, {sep})"
+  {xs.first} => "m_first({xs})"
+  {xs.last} => "m_last({xs})"
+  {xs.empty} => "m_empty({xs})"
+  {xs.take(cnt)} => "m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "m_drop({xs}, {cnt})"
+  {xs.rest} => "m_rest({xs})"
+  {xs.concat(ys)} => "m_concat({xs}, {ys})"
+  {xs.reverse} => "m_reverse({xs})"
+  {xs.sum} => "m_sum({xs})"
+  {xs.most(f)} => "m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "m_sorted_by({xs}, {f})"
+  {xs.each} => "m_each({xs})"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "m_sqrt({x_})"
+  {x_.floor} => "m_floor({x_})"
+  {x_.abs} => "m_abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "m_magnitude({x_})"
+  {x_.cos} => "m_cos({x_})"
+  {x_.sin} => "m_sin({x_})"
+  {x_.round} => "m_round({x_})"
+  {x_.ln} => "m_ln({x_})"
+  {x_.exp} => "m_exp({x_})"
+  {x_.atan2(y_)} => "m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "3.141592653589793"
+  {Real.NAN} => "NaN"
+  {Real.INFINITY} => "Inf"
+  {Real.TAU} => "6.283185307179586"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written: a type is its Ray name, for a parent and `instance_of` */
+  {N} => "N"
+  {Natural} => "Natural"
+  {Z} => "Z"
+  {Integer} => "Integer"
+  {Real} => "Real"
+  {Decimal} => "Decimal"
+  {boolean} => "boolean"
+  {String} => "String"
+  {Array} => "Array"
+  {*} => "Any"
+  {{}} => "Node"
+  {ty[]} => "Array"
+  {ty?} => "{ty}"
+  {Program} => "Program"
+
+  /* classes: a table, filled when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "let c = cls(\"{nm.raw}\", \"{sup.first}\")\n{membs.indent}\nend"
+  {nm := class { membs }} => "let c = cls(\"{nm.raw}\", \"Node\")\n{membs.indent}\nend"
+  {nm: ty = class { membs }} => "let c = cls(\"{nm.raw}\", \"{ty}\")\n{membs.indent}\nend\ntheory!(\"{nm.raw}\")"
+  {theorem "nm" () => tbody} => "static_field!(c, Symbol(\"theorem {nm}\"), (self) -> make(\"Theorem\", Any[kw(:id, j{nm.quoted}), kw(:body, function (a{d}::Vector{{Any}})\n{tbody.returned.indent}\n  nothing\nend)]))"
+  {x_.body()} => "rinvoke(rget({x_}, :body), Any[])"
+  {nm: ty = val} => "field!(c, :{nm.raw}, (self) -> {val})"
+  {nm: ty} => "field!(c, :{nm.raw}, nothing)"
+  {nm = val} => "static_field!(c, :{nm.raw}, (self) -> {val})"
+  {static nm: ty = val} => "static_field!(c, :{nm.raw}, (self) -> {val})"
+  {static nm = val} => "static_field!(c, :{nm.raw}, (self) -> {val})"
+  {nm (): ret => mbody} => "getter!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n{mbody.returned.indent}\n  nothing\nend)"
+  {nm () => mbody} => "getter!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n{mbody.returned.indent}\n  nothing\nend)"
+  {static nm (): ret => mbody} => "statik!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n{mbody.returned.indent}\n  nothing\nend)"
+  {static nm () => mbody} => "statik!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n{mbody.returned.indent}\n  nothing\nend)"
+  {nm (paramlist): ret => mbody} => "method!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{mbody.returned.indent}\n  nothing\nend)"
+  {nm (paramlist) => mbody} => "method!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{mbody.returned.indent}\n  nothing\nend)"
+  {static nm (paramlist): ret => mbody} => "statik!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{mbody.returned.indent}\n  nothing\nend)"
+  {static nm (paramlist) => mbody} => "statik!(c, :{nm.raw.method}, function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{mbody.returned.indent}\n  nothing\nend)"
+  {nm (paramlist): ret} => "method!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {nm (paramlist)} => "method!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {nm (): ret} => "getter!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {nm ()} => "getter!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {static nm (paramlist): ret} => "statik!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {static nm (paramlist)} => "statik!(c, :{nm.raw.method}, (self, a{d}::Vector{{Any}}) -> error(j\"{nm} is declared but not defined by anyone\"))"
+  {rule /rid "nm" | rt () => rbody} => "static_field!(c, Symbol(\"rule {rid}\"), (self) -> make(\"Rule\", Any[kw(:id, \"/{rid}\"), kw(:name, j{nm.quoted}), kw(:rate, j{rt.quoted}), kw(:over, j{over.quoted}), kw(:single, {single}), kw(:where, {where}), kw(:source, {source}), kw(:body, function (a{d}::Vector{{Any}})\n{rbody.returned.indent}\n  nothing\nend)]))"
+  {rule /rid "nm" () => rbody} => "static_field!(c, Symbol(\"rule {rid}\"), (self) -> make(\"Rule\", Any[kw(:id, \"/{rid}\"), kw(:name, j{nm.quoted}), kw(:rate, nothing), kw(:over, j{over.quoted}), kw(:single, {single}), kw(:where, {where}), kw(:source, {source}), kw(:body, function (a{d}::Vector{{Any}})\n{rbody.returned.indent}\n  nothing\nend)]))"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "static_field!(c, Symbol(\"rule {rid}\"), (self) -> make(\"Rule\", Any[kw(:id, \"/{rid}\"), kw(:name, j{nm.quoted}), kw(:rate, j{rt.quoted}), kw(:over, j{over.quoted}), kw(:single, {single}), kw(:where, {where}), kw(:source, {source}), kw(:body, function (a{d}::Vector{{Any}})\n  {paramlist}\n{rbody.returned.indent}\n  nothing\nend)]))"
+  {rule /rid "nm" (paramlist) => rbody} => "static_field!(c, Symbol(\"rule {rid}\"), (self) -> make(\"Rule\", Any[kw(:id, \"/{rid}\"), kw(:name, j{nm.quoted}), kw(:rate, nothing), kw(:over, j{over.quoted}), kw(:single, {single}), kw(:where, {where}), kw(:source, {source}), kw(:body, function (a{d}::Vector{{Any}})\n  {paramlist}\n{rbody.returned.indent}\n  nothing\nend)]))"
+  {choose "nm" (paramlist): ret} => "method!(c, Symbol(\"choose {nm}\"), (self, a{d}::Vector{{Any}}) -> error(j\"the choice {nm} is not defined by anyone\"))"
+  {choose "nm" (paramlist): ret => cbody} => "method!(c, Symbol(\"choose {nm}\"), function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{cbody.returned.indent}\n  nothing\nend)"
+  {choose "nm" (paramlist) => cbody} => "method!(c, Symbol(\"choose {nm}\"), function (self, a{d}::Vector{{Any}})\n  {paramlist}\n{cbody.returned.indent}\n  nothing\nend)"
+  {as (=== ty) => cbody} => "getter!(c, :as_{ty}, function (self, a{d}::Vector{{Any}})\n{cbody.returned.indent}\n  nothing\nend)"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nset_nested!(\"{outer}\", \"{inner_name}\")"
+
+  /* a top-level definition is a function of the module, made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "const _{nm}_cell = Ref{{Any}}(nothing)\nconst _{nm}_made = Ref(false)\nfunction g_{nm}()\n  if !_{nm}_made[]\n    _{nm}_made[] = true\n    _{nm}_cell[] = {text}\n  end\n  _{nm}_cell[]\nend"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "nothing" : "j{rate.quoted}"
+    where := where_source.empty ? "nothing" : "make(NODE, Any[kw(:source, j{where_source.quoted})])"
+    rule := id.empty ? "nothing" : "make(NODE, Any[kw(:id, j{id.quoted}), kw(:rate, {rate_}), kw(:name, j{rule_name.quoted}), kw(:over, j{over.quoted}), kw(:where, {where}), kw(:source, j{rule_source.quoted})])"
+    leans_ := leans.empty ? "nothing" : "j{leans.quoted}"
+    "    make(NODE, Any[kw(:rule, {rule}), kw(:rate, {rate_}), kw(:degree, {degree}.0), kw(:outside, {outside}), kw(:settles, {settles}), kw(:transport, {transport}), kw(:leans, {leans_}), kw(:turned, j{turned.quoted}), kw(:doing, make(NODE, Any[kw(:carries, {carries}), kw(:sets, {sets}), kw(:grown, {grown}), kw(:trades, {trades}), kw(:grew, at(j{grew_source.quoted}, s -> {grew})), kw(:grew_apart, at(j{grew_apart_source.quoted}, s -> {grew_apart})), kw(:draws, nothing), kw(:needs, {degree}.0), kw(:outside, {outside}), kw(:settles, {settles}), kw(:share, at(j{share_source.quoted}, s -> {share})), kw(:asked, at(j{asked_source.quoted}, s -> {asked})), kw(:around, at(j{around_source.quoted}, s -> {around})), kw(:rays, at(j{rays_source.quoted}, s -> {rays})), kw(:space, at(j{space_source.quoted}, s -> {space})), kw(:folds, at(j{folds_source.quoted}, s -> {folds}))]))])"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "rset!(K(\"{theory}\"), :equation, make(NODE, Any[kw(:latex, j{latex.quoted}), kw(:terms, Any[\n{lines}\n])]))"
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.jl/README.md := this.readme
+    @./languages/physics.jl/src/OrbitMinesPhysics.jl := code
+    @./languages/physics.jl/src/Rt.jl = @./implementation/gen/backends/cpu.rt.jl
+    @./languages/physics.jl/Project.toml := Julia.project
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Julia)
+    requirement := r.requirement.as(Julia)
+    filter := r.filter == None ? "true" : r.filter.as(Julia)
+    label := "{r.location} on {f.name}"
+    "t(j{label.quoted}, () -> begin\n  it = {definition}\n  guard = 0\n  while !truthy({filter})\n    guard += 1\n    (guard > {r.until} || !has(it, :tick)) && return SKIP\n    rget(it, :tick)\n  end\n  truthy({requirement}) ? PASS : \"failed: \" * j{requirement.quoted}\nend)\n"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/jl/test_G.jl := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n# julia tests/jl/test_G.jl [filter]\npush!(LOAD_PATH, joinpath(@__DIR__, \"..\", \"..\", \"languages\", \"physics.jl\"))\nusing OrbitMinesPhysics\nusing OrbitMinesPhysics.Rt\nusing OrbitMinesPhysics.Rt: @j_str\nfor n in names(OrbitMinesPhysics; all = true)\n  startswith(String(n), \"g_\") && Core.eval(Main, :(using OrbitMinesPhysics: $n))\nend\n\nconst PASS = \"pass\"\nconst SKIP = \"skip\"\nconst COUNTS = [0, 0, 0]\nconst ONLY = isempty(ARGS) ? nothing : ARGS[1]\nfunction t(name::String, body::Function)\n  (ONLY !== nothing && !occursin(ONLY, name)) && return\n  t0 = time()\n  got = try\n    string(body())\n  catch e\n    \"error: \" * first(sprint(showerror, e), 300)\n  end\n  s = round(time() - t0; digits = 2)\n  mark = got == PASS ? \"ok  \" : got == SKIP ? \"skip\" : \"FAIL\"\n  COUNTS[got == PASS ? 1 : got == SKIP ? 3 : 2] += 1\n  println(mark, \" \", name, \" (\", s, \" s)\", got == PASS || got == SKIP ? \"\" : \" - \" * replace(got, r\"\\s*\\n\\s*\" => \" \"))\n  flush(stdout)\nend\n\n{cases}\nprintln(COUNTS[1], \" passed, \", COUNTS[2], \" failed, \", COUNTS[3], \" skipped\")\nexit(COUNTS[2] > 0 ? 1 : 0)\n"
+  }
+
+  /* Julia renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `OrbitMinesPhysics.theorems_json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.jl/src/theorems.json := "{{{proofs}}}"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.jl
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.jl"
+  install (): String => "```julia\n# Julia\nusing Pkg; Pkg.add(\"OrbitMinesPhysics\")\n```"
+  readme (): String => "# OrbitMinesPhysics - Julia\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Julia: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Julia.install}\n\nJulia 1.9 or later, no dependencies. From a checkout: `julia --project=languages/physics.jl`.\n\n## Using it\n\nA Ray object is reached by name: `rget(x, :name)`, `rcall(x, :method, args...)`, `rset!(x, :name, value)`, `make(\"Class\"; field = value, ...)`; a class or a theory as a value is `K(\"Name\")`. Numbers are `Float64`, lists `Vector{{Any}}`, and a program takes its arguments as one `Vector{{Any}}`.\n\n```julia\nusing OrbitMinesPhysics\n\n# a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nmedium = rcall(K(\"G\"), :medium, 31, 96, 3, 8, 1)\nrset!(medium, :local_rays, true)\nrcall(medium, :add, make(\"Hole\"; x = 15, y = 15, mx = 0.3, ways = 1))\nrget(medium, :seed)\nfor _ in 1:5\n  rget(medium, :tick)\nend\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```julia\nplan = make(\"Plan\"; sources = 1e9, side = 241)\nrset!(rget(plan, :budget), :compact, true)   # twelve bytes a source\nprintln(rcall(plan, :report, 16 * 2^30, 2^31))\n```\n\n## Theorems\n\n`OrbitMinesPhysics.theorems_json()` is every theorem, keyed by theory and then by question, as JSON text.\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  project (): String => "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nname = \"OrbitMinesPhysics\"\nuuid = \"49c02cea-eab4-4431-9e6b-273cb9967b25\"\nauthors = [\"OrbitMines\"]\nversion = \"0.0.1\"\n\n[compat]\njulia = \"1.9\"\n"
+}

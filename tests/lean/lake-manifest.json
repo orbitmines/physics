@@ -1,0 +1,13 @@
+{"version": "1.2.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"type": "path",
+   "scope": "",
+   "name": "«orbitmines-physics»",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../../languages/physics.lean",
+   "configFile": "lakefile.toml"}],
+ "name": "«orbitmines-physics-tests»",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}

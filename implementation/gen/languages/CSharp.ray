@@ -1,0 +1,290 @@
+/*
+ * C#, as a mapping from the constructs of Ray to text. The object model is Java's (see Java.ray): C# has no dynamic
+ * members worth the name (`dynamic` cannot call a field holding a program as `p.place(p)`, nor default a parameter
+ * to anything but null), so a Ray class is a table (`Cls`) filled when the package loads, and an object an `Obj`
+ * whose members are reached by name (`get(x, "cells")`, `call(x, "add", ...)`, `set(x, "tag", v)`) - see
+ * implementation/gen/backends/cpu.rt.cs. Every method and lambda takes its arguments as one array (`a1`, `a2`, ... by
+ * depth, `{d}`), bound at the top of its body (`{parameter}` with `{i}`), so a missing argument is None and a default
+ * is set in the body (`{defaults_in_body}`). A C# lambda takes its locals by reference, so a local is a plain
+ * variable; it is spelled with the depth of the scope that binds it (`{local_name}`: C# lets no lambda reuse an
+ * enclosing name). A Ray class `X` is the static field `Physics.X` (its table) and its members sit in the nested
+ * class `Physics.C_X`.
+ */
+
+CSharp: Language = class {
+  name = "C#"
+  extension = ".cs"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ";"
+  {empty_block} => ""
+  {interpolation} => "\" + str({x}) + \""
+  {named_arg} => "kw(\"{raw}\", {val})"
+  {parameter} => "object {nm} = arg(a{d}, {i});"
+  {parameter_untyped} => "object {nm} = arg(a{d}, {i});"
+  {parameter_default} => "object {nm} = arg(a{d}, {i});"
+  {parameter_separator} => " "
+  {dynamic_get} => "get({tgt}, str({key}))"
+  {dynamic_set} => "set({tgt}, str({key}), {val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual void volatile while var dynamic value yield async await nameof when record with init global self c"
+  {escaped_name} => "{nm}_"
+  {global_name} => "{nm}()"
+  {local_name} => "{nm}_{k}"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K(\"{nm}\")"
+  {field_assign} => "c.field(\"{nm}\", self => {val});"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}}"
+  /*
+   * C# lets no block define a name that a block around it defines too (`s := ...` in an `if`, and again after it):
+   * so every branch of an `if` is made a program `cs_branch` takes apart - a scope of its own, whose locals are
+   * spelled apart (`{local_name}`) - and written back as the `if` it was. Returned, its branches return their values.
+   */
+  { if cond { yesbody } else { nobody } } => { cond.cs_branch((_) => yesbody, (_) => nobody) }
+  { if cond { yesbody } } => { cond.cs_branch((_) => yesbody) }
+  {cond.cs_branch((y_) => { yesbody }, (n_) => { nobody })} => "if (truthy({cond})) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {cond.cs_branch((y_) => { yesbody })} => "if (truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {return cond.cs_branch((y_) => { yesbody }, (n_) => { nobody })} => "if (truthy({cond})) {{\n{yesbody.returned.indent}\n}} else {{\n{nobody.returned.indent}\n}}"
+  {return cond.cs_branch((y_) => { yesbody })} => "if (truthy({cond})) {{\n{yesbody.returned.indent}\n}}"
+  cs_branch (yes: Program, no: Program) => None
+  {unless cond { yesbody }} => "if (!truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while (truthy({cond})) {{\n{loopbody.indent}\n}}"
+  /* a body always ends `return null;`: C# only warns of what cannot be reached */
+  {return val} => "return {val};"
+  {return} => "return null;"
+  {dynamically assert cond} => "if (!truthy({cond})) throw new System.Exception({cond.quoted});"
+
+  /* definitions and assignment */
+  /* declared, then made: a program that calls itself reads its own name */
+  {nm := val} => "object {nm} = null; {nm} = {val};"
+  {tgt.nm = rhs} => "set({tgt}, \"{nm.raw}\", {rhs});"
+  {lhs = rhs} => "{lhs} = {rhs};"
+  {tgt[k] = rhs} => "setAt({tgt}, {k}, {rhs});"
+
+  /* expressions */
+  {a & b} => "(truthy({a}) && truthy({b}))"
+  {a | b} => "(truthy({a}) || truthy({b}))"
+  {!a} => "not({a})"
+  {-a} => "neg({a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "!eq({a}, {b})"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "div({a}, {b})"
+  {a % b} => "mod({a}, {b})"
+  {a ^ b} => "power({a}, {b})"
+  {a ?? b} => "orElse({a}, () => {b})"
+  {cond ? a : b} => "(truthy({cond}) ? (object) {a} : (object) {b})"
+  {a ==.instance_of Array} => "isList({a})"
+  {a ==.instance_of ty} => "instanceOf({a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "get({tgt}, \"{nm.raw.method}\")"
+  {tgt?.nm} => "getOpt({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm()} => "get({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "call({tgt}, \"{nm.raw.method}\", new object[] {{ {arglist} }})"
+  {tgt?.nm(arglist)} => "callOpt({tgt}, \"{nm.raw.method}\", new object[] {{ {arglist} }})"
+  {tgt.choose("nm")} => "choose({tgt}, {nm.quoted})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "invoke({fn}, new object[] {{ {arglist} }})"
+  {Class(arglist)} => "make(\"{Class}\", new object[] {{ {arglist} }})"
+  {[elems]} => "list({elems})"
+  { {} } => "make(NODE)"
+  {this} => "self"
+  {None} => "null"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "new Fn((a{d}) => {{\n  {paramlist}\n{stmts.returned.indent}\n  return null;\n}})"
+  {(paramlist) => e} => "new Fn((a{d}) => {{ {paramlist} return {e}; }})"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "call(get(get(self, \"vertex\"), \"world\"), \"draw\", new object[] {{ list({ws}), list({os}) }})"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for (double i{d} = 0; i{d} < num({cnt}); i{d}++) {{\n  object {x_.bare} = i{d};\n{stmts.indent}\n}}"
+  {xs.for((x_) => { stmts })} => "foreach (object e{d} in each_of({xs})) {{\n  object {x_.bare} = e{d};\n{stmts.indent}\n}}"
+  {fail(x_)} => "fail({x_})"
+  {Catalogue.number(x_)} => "number({x_})"
+  {String(chars: xs)} => "fromCodepoints({xs})"
+  {x_.blank} => "blank({x_})"
+  {xs.push(x_)} => "m_push({xs}, {x_})"
+  {xs.chars} => "m_chars({xs})"
+  {xs.pop} => "m_pop({xs})"
+  {xs.length} => "len({xs})"
+  {xs.map(f)} => "m_map({xs}, {f})"
+  {xs.filter(f)} => "filt({xs}, {f})"
+  {xs.for(f)} => "m_for({xs}, {f})"
+  {xs.some(f)} => "m_some({xs}, {f})"
+  {xs.every(f)} => "m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "m_split({xs}, {x_})"
+  {xs.trim} => "m_trim({xs})"
+  {xs.upper} => "m_upper({xs})"
+  {xs.lower} => "m_lower({xs})"
+  {xs.lines} => "m_lines({xs})"
+  {xs.quoted} => "quoted({xs})"
+  {xs.contains(x_)} => "m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "m_join({xs}, {sep})"
+  {xs.first} => "m_first({xs})"
+  {xs.last} => "m_last({xs})"
+  {xs.empty} => "m_empty({xs})"
+  {xs.take(cnt)} => "m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "m_drop({xs}, {cnt})"
+  {xs.rest} => "m_rest({xs})"
+  {xs.concat(ys)} => "m_concat({xs}, {ys})"
+  {xs.reverse} => "m_reverse({xs})"
+  {xs.sum} => "m_sum({xs})"
+  {xs.most(f)} => "m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "m_sorted_by({xs}, {f})"
+  {xs.each} => "m_each({xs})"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "m_sqrt({x_})"
+  {x_.floor} => "m_floor({x_})"
+  {x_.abs} => "m_abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "m_magnitude({x_})"
+  {x_.cos} => "m_cos({x_})"
+  {x_.sin} => "m_sin({x_})"
+  {x_.round} => "m_round({x_})"
+  {x_.ln} => "m_ln({x_})"
+  {x_.exp} => "m_exp({x_})"
+  {x_.atan2(y_)} => "m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "System.Math.PI"
+  {Real.NAN} => "double.NaN"
+  {Real.INFINITY} => "double.PositiveInfinity"
+  {Real.TAU} => "(2 * System.Math.PI)"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written */
+  {N} => "object"
+  {Natural} => "object"
+  {Z} => "object"
+  {Integer} => "object"
+  {Real} => "object"
+  {Decimal} => "object"
+  {boolean} => "object"
+  {String} => "object"
+  {Array} => "object"
+  {*} => "object"
+  {{}} => "object"
+  {ty[]} => "object"
+  {ty?} => "object"
+  {Program} => "object"
+
+  /* classes: a table, filled by its nested class when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "public static readonly Cls {nm.raw} = cls(\"{nm.raw}\", {sup.first}, C_{nm.raw}.define);\npublic static class C_{nm.raw} {{\n  public static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm := class { membs }} => "public static readonly Cls {nm.raw} = cls(\"{nm.raw}\", Node, C_{nm.raw}.define);\npublic static class C_{nm.raw} {{\n  public static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm: ty = class { membs }} => "public static readonly Cls {nm.raw}Theory = cls(\"{nm.raw}\", {ty}, C_{nm.raw}.define);\npublic static class C_{nm.raw} {{\n  public static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}\npublic static readonly Obj {nm.raw} = theory({nm.raw}Theory);"
+  {theorem "nm" () => tbody} => "c.staticField(\"theorem {nm}\", self => make(Theorem, kw(\"id\", {nm.quoted}), kw(\"body\", new Fn((a{d}) => {{\n{tbody.returned.indent}\n  return null;\n}}))));"
+  {x_.body()} => "invoke(get({x_}, \"body\"), new object[] {{ }})"
+  {nm: ty = val} => "c.field(\"{nm.raw}\", self => {val});"
+  {nm: ty} => "c.field(\"{nm.raw}\", null);"
+  {nm = val} => "c.staticField(\"{nm.raw}\", self => {val});"
+  {static nm: ty = val} => "c.staticField(\"{nm.raw}\", self => {val});"
+  {static nm = val} => "c.staticField(\"{nm.raw}\", self => {val});"
+  {nm (): ret => mbody} => "c.getter(\"{nm.raw.method}\", (self, a{d}) => {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm () => mbody} => "c.getter(\"{nm.raw.method}\", (self, a{d}) => {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (): ret => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm () => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret => mbody} => "c.method(\"{nm.raw.method}\", (self, a{d}) => {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist) => mbody} => "c.method(\"{nm.raw.method}\", (self, a{d}) => {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist): ret => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist) => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret} => "c.method(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (paramlist)} => "c.method(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (): ret} => "c.getter(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm ()} => "c.getter(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist): ret} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist)} => "c.statik(\"{nm.raw.method}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"{nm} is declared but not defined by anyone\"); }});"
+  {rule /rid "nm" | rt () => rbody} => "c.staticField(\"rule {rid}\", self => make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", new Fn((a{d}) => {{\n{rbody.returned.indent}\n  return null;\n}}))));"
+  {rule /rid "nm" () => rbody} => "c.staticField(\"rule {rid}\", self => make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", null), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", new Fn((a{d}) => {{\n{rbody.returned.indent}\n  return null;\n}}))));"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "c.staticField(\"rule {rid}\", self => make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", new Fn((a{d}) => {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}}))));"
+  {rule /rid "nm" (paramlist) => rbody} => "c.staticField(\"rule {rid}\", self => make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", null), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", new Fn((a{d}) => {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}}))));"
+  {choose "nm" (paramlist): ret} => "c.method(\"choose {nm}\", (self, a{d}) => {{ throw new System.NotSupportedException(\"the choice {nm} is not defined by anyone\"); }});"
+  {choose "nm" (paramlist): ret => cbody} => "c.method(\"choose {nm}\", (self, a{d}) => {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {choose "nm" (paramlist) => cbody} => "c.method(\"choose {nm}\", (self, a{d}) => {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {as (=== ty) => cbody} => "c.getter(\"as_{ty}\", (self, a{d}) => {{\n{cbody.returned.indent}\n  return null;\n}});"
+
+  /* a nested class is a table of its own, then a static of the outer one (C# has one static constructor a class, so a field made for it) */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nprivate static readonly object {outer}_{inner_name}_nested = set({outer}, \"{inner_name}\", {inner_name});"
+
+  /* a top-level definition is a static method of Physics, made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "private static object {nm}_value;\nprivate static bool {nm}_made;\npublic static object {nm}() {{\n  if (!{nm}_made) {{ {nm}_made = true; {nm}_value = {text}; }}\n  return {nm}_value;\n}}"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "null" : rate.quoted
+    where := where_source.empty ? "null" : "make(Node, kw(\"source\", {where_source.quoted}))"
+    rule := id.empty ? "null" : "make(Node, kw(\"id\", {id.quoted}), kw(\"rate\", {rate_}), kw(\"name\", {rule_name.quoted}), kw(\"over\", {over.quoted}), kw(\"where\", {where}), kw(\"source\", {rule_source.quoted}))"
+    leans_ := leans.empty ? "null" : leans.quoted
+    "    make(Node, kw(\"rule\", {rule}), kw(\"rate\", {rate_}), kw(\"degree\", {degree}.0), kw(\"outside\", {outside}), kw(\"settles\", {settles}), kw(\"transport\", {transport}), kw(\"leans\", {leans_}), kw(\"turned\", {turned.quoted}), kw(\"doing\", make(Node, kw(\"carries\", {carries}), kw(\"sets\", {sets}), kw(\"grown\", {grown}), kw(\"trades\", {trades}), kw(\"grew\", at({grew_source.quoted}, s => {grew})), kw(\"grew_apart\", at({grew_apart_source.quoted}, s => {grew_apart})), kw(\"draws\", null), kw(\"needs\", {degree}.0), kw(\"outside\", {outside}), kw(\"settles\", {settles}), kw(\"share\", at({share_source.quoted}, s => {share})), kw(\"asked\", at({asked_source.quoted}, s => {asked})), kw(\"around\", at({around_source.quoted}, s => {around})), kw(\"rays\", at({rays_source.quoted}, s => {rays})), kw(\"space\", at({space_source.quoted}, s => {space})), kw(\"folds\", at({folds_source.quoted}, s => {folds})))))"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "private static readonly object {theory}_equation = set({theory}, \"equation\", make(Node, kw(\"latex\", {latex.quoted}), kw(\"terms\", list(\n{lines}\n))));"
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.cs/README.md := this.readme
+    @./languages/physics.cs/OrbitMines.Physics.csproj := CSharp.csproj
+    @./languages/physics.cs/.gitignore := "bin/\nobj/\n"
+    @./languages/physics.cs/src/Physics.cs := code
+    @./languages/physics.cs/src/Rt.cs = @./implementation/gen/backends/cpu.rt.cs
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(CSharp)
+    requirement := r.requirement.as(CSharp)
+    filter := r.filter == None ? "true" : r.filter.as(CSharp)
+    label := "{r.location} on {f.name}"
+    "    t({label.quoted}, () => {{\n      object it = {definition};\n      int guard = 0;\n      while (!truthy({filter})) {{\n        if (++guard > {r.until} || !has(it, \"tick\")) return SKIP;\n        get(it, \"tick\");\n      }}\n      return truthy({requirement}) ? PASS : \"failed: \" + {requirement.quoted};\n    }});"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/cs/TestG.cs := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// dotnet run -c Release -- [filter]\n#pragma warning disable\nusing static OrbitMines.Physics.Rt;\nusing static OrbitMines.Physics.Physics;\nusing OrbitMines.Physics;\n\npublic static class TestG {{\n  const string PASS = \"pass\", SKIP = \"skip\";\n  static int passed, failed, skipped;\n  static string only;\n  static void t(string name, System.Func<object> body) {{\n    if (only != null && !name.Contains(only)) return;\n    var clock = System.Diagnostics.Stopwatch.StartNew();\n    string got;\n    try {{ got = str(body()); }} catch (System.Exception e) {{ var x = e; while (x.InnerException != null) x = x.InnerException; got = \"error: \" + x.GetType().Name + \": \" + x.Message; }}\n    string s = clock.Elapsed.TotalSeconds.ToString(\"0.00\", System.Globalization.CultureInfo.InvariantCulture);\n    if (got == PASS) passed++; else if (got == SKIP) skipped++; else failed++;\n    System.Console.WriteLine((got == PASS ? \"ok  \" : got == SKIP ? \"skip\" : \"FAIL\") + \" \" + name + \" (\" + s + \" s)\" + (got == PASS || got == SKIP ? \"\" : \" - \" + got));\n  }}\n\n  public static int Main(string[] args) {{\n    only = args.Length > 0 ? args[0] : null;\n{cases}\n    System.Console.WriteLine(passed + \" passed, \" + failed + \" failed, \" + skipped + \" skipped\");\n    return failed > 0 ? 1 : 0;\n  }}\n}}\n"
+    @./tests/cs/TestG.csproj := "<Project Sdk=\"Microsoft.NET.Sdk\">\n  <!-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit -->\n  <PropertyGroup>\n    <OutputType>Exe</OutputType>\n    <TargetFramework>net8.0</TargetFramework>\n    <Nullable>disable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <InvariantGlobalization>true</InvariantGlobalization>\n    <StartupObject>TestG</StartupObject>\n  </PropertyGroup>\n  <ItemGroup>\n    <ProjectReference Include=\"../../languages/physics.cs/OrbitMines.Physics.csproj\" />\n  </ItemGroup>\n</Project>\n"
+    @./tests/cs/.gitignore := "bin/\nobj/\n"
+  }
+
+  /* C# renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text carried in the assembly: `Theorems.Json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.cs/src/theorems.json := "{{{proofs}}}"
+    @./languages/physics.cs/src/Theorems.cs := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nnamespace OrbitMines.Physics\n{{\n  /// <summary>what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON</summary>\n  public static class Theorems\n  {{\n    public static string Json()\n    {{\n      using var stream = typeof(Theorems).Assembly.GetManifestResourceStream(\"OrbitMines.Physics.theorems.json\");\n      using var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8);\n      return reader.ReadToEnd();\n    }}\n  }}\n}}\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.cs
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.cs"
+  install (): String => "```bash\n# C#\ndotnet add package OrbitMines.Physics\n```"
+  readme (): String => "# OrbitMines.Physics - C#\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in C#: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{CSharp.install}\n\n.NET 8 or later. Or in a project file: `<PackageReference Include=\"OrbitMines.Physics\" Version=\"0.0.1\" />`.\n\n## Using it\n\nA Ray object is reached by name: `get(x, \"name\")`, `call(x, \"method\", args...)`, `set(x, \"name\", value)`, `make(Class, kw(\"field\", value), ...)`. Numbers are `double`, lists `List<object>`.\n\n```csharp\nusing static OrbitMines.Physics.Rt;\nusing static OrbitMines.Physics.Physics;\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nobject medium = call(G, \"medium\", 31.0, 96.0, 3.0, 8.0, 1.0);\nset(medium, \"local_rays\", true);\ncall(medium, \"add\", make(Hole, kw(\"x\", 15.0), kw(\"y\", 15.0), kw(\"mx\", 0.3), kw(\"ways\", 1.0)));\nget(medium, \"seed\");\nfor (int t = 0; t < 5; t++) get(medium, \"tick\");\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```csharp\nobject plan = make(Plan, kw(\"sources\", 1e9), kw(\"side\", 241.0));\nset(get(plan, \"budget\"), \"compact\", true);   // twelve bytes a source\nSystem.Console.WriteLine(call(plan, \"report\", 16.0 * (1L << 30), (double) (1L << 31)));\n```\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  csproj (): String => "<Project Sdk=\"Microsoft.NET.Sdk\">\n  <!-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit -->\n  <PropertyGroup>\n    <TargetFramework>net8.0</TargetFramework>\n    <RootNamespace>OrbitMines.Physics</RootNamespace>\n    <AssemblyName>OrbitMines.Physics</AssemblyName>\n    <Nullable>disable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <NoWarn>$(NoWarn);CS0162;CS0168;CS0219;CS1591</NoWarn>\n    <PackageId>OrbitMines.Physics</PackageId>\n    <Version>0.0.1</Version>\n    <Authors>orbitmines</Authors>\n    <Description>The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.</Description>\n    <PackageProjectUrl>https://github.com/orbitmines/physics</PackageProjectUrl>\n    <RepositoryUrl>https://github.com/orbitmines/physics</RepositoryUrl>\n    <PackageReadmeFile>README.md</PackageReadmeFile>\n  </PropertyGroup>\n  <ItemGroup>\n    <EmbeddedResource Include=\"src/theorems.json\" LogicalName=\"OrbitMines.Physics.theorems.json\" />\n    <None Include=\"README.md\" Pack=\"true\" PackagePath=\"/\" />\n  </ItemGroup>\n</Project>\n"
+}

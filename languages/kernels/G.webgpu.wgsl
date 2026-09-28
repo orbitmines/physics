@@ -17,6 +17,14 @@ struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32
 @group(0) @binding(4) var<storage, read_write> ho: array<f32>;
 @group(0) @binding(5) var<storage, read_write> hn: array<f32>;
 @group(0) @binding(6) var<storage, read_write> link: array<atomic<i32>>;
+@group(0) @binding(7) var<storage, read_write> sb0: array<u32>;
+@group(0) @binding(8) var<storage, read_write> sb1: array<u32>;
+@group(0) @binding(9) var<storage, read_write> sb2: array<u32>;
+@group(0) @binding(10) var<storage, read_write> sb3: array<u32>;
+@group(0) @binding(11) var<storage, read_write> sb4: array<u32>;
+@group(0) @binding(12) var<storage, read_write> sb5: array<u32>;
+@group(0) @binding(13) var<storage, read_write> sb6: array<u32>;
+@group(0) @binding(14) var<storage, read_write> sb7: array<u32>;
 
 fn nA(a: u32, c: u32) -> u32 {
   return a * P.cells + c;
@@ -294,7 +302,7 @@ fn point4_gate(rho: f32, nf: f32) -> f32 {
   return clampf(omega, 0.0, 1.0);
 }
 
-//! medium MKEEP MCARRY MHWANT MHSTREAM MHSHINE MHJOIN MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLH MMOVEH MSTEP MSTEPH MHCLEAR MHLINK MHSCAN MHSCAN2 MHSCAN3 MHPLACE MHSRC1 MHSRC MBLOCK
+//! medium MKEEP MCARRY MHWANT MHSTREAM MHSHINE MHJOIN MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLC MPULLH MMOVEH MSTEP MSTEPH MSOURCE MHCLEAR MHLINK MHSCAN MHSCAN2 MHSCAN3 MHPLACE MHSRC1 MHSRC MBLOCK
 
 fn powi(b: f32, n: i32) -> f32 {
   var r: f32 = 1.0;
@@ -577,6 +585,10 @@ const MNEARF: f32 = 5.0;
 
 const MNEAR: u32 = 96u;
 
+const MCELLPULL: bool = true;
+
+const MFUSED: bool = true;
+
 fn mtay(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 12u + P.cells * 2u + P.cells * 8u + c * 9u; }
 
 fn mnear(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 12u + P.cells * 2u + P.cells * 8u + P.cells * 9u + c * (MNEAR + 1u); }
@@ -590,6 +602,26 @@ fn mstart(c: u32) -> u32 { return P.cells + 1u + c; }
 fn mblk(b: u32) -> u32 { return 2u * P.cells + 3u + b; }
 
 fn morder(j: u32) -> u32 { return 2u * P.cells + 3u + mnb() + j; }
+
+fn mcellpull(c: u32) -> u32 { return P.part + select(2u * P.holes, 0u, MCOMPACT) + 2u * c; }
+
+fn mgen(k: u32) -> u32 { return P.track - 16u + k; }
+
+fn mhash(a: u32, b: u32) -> f32 { var z: u32 = a * 747796405u + b * 2891336453u + 12345u; z = (z ^ (z >> 16u)) * 2246822519u; z = (z ^ (z >> 13u)) * 3266489917u; z = z ^ (z >> 16u); return (f32(z >> 8u) + 0.5) / 16777216.0; }
+
+fn mgauss(a: u32, b: u32) -> f32 { return sqrt(-2.0 * log(mhash(a, b))) * cos(6.283185307179586 * mhash(a, b + 7919u)); }
+
+fn mgrid(k: u32) -> u32 { return 10u * P.cells + 4u + k; }
+
+fn mqref() -> f32 { return max(cel[BODS() + 10u], 1e-30); }
+
+fn macc(c: u32, k: u32) -> u32 { return c * 10u + k; }
+
+const MSQ: f32 = 4096.0;
+
+const MSX: f32 = 4096.0;
+
+const MSV: f32 = 16384.0;
 
 fn msrcpart(c: u32, l: u32) -> u32 { return P.part - P.cells * 384u + (c * 32u + l) * 12u; }
 
@@ -688,9 +720,15 @@ fn marrive(px: f32, py: f32, zown: u32) -> vec3<f32> {
   var srcid: f32 = 0.5;
   if (own >= 0) {
     let o: vec4<f32> = bodat(u32(own));
+    let oc: i32 = mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5)));
     mine = memit(u32(own));
     me = f32(own);
-    srcid = -2.0 - f32(mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5))));
+    srcid = -2.0 - f32(oc);
+    /* standing with others on its cell, it reads as its cell's gathering: all but what the cell sends (Medium.arriving_at) */
+    if (MCELLPULL && oc >= 0) {
+      let w: array<f32, 8> = msourcewas(u32(oc));
+      if (w[6] == srcid && w[0] > 0.0) { mine = w; mine[7] = 0.0; me = srcid; }
+    }
     owns = mbin(ux - mine[1] / mine[0], uy - mine[2] / mine[0]);
     var far: f32 = 0.0;
     for (var e: u32 = 0u; e < n; e = e + 1u) {
@@ -1108,13 +1146,70 @@ fn RUNGS() -> u32 { return P.rungs; }
 
 fn BODS() -> u32 { return P.bod; }
 
-fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
+const MCOMPACT: bool = false;
 
-fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+const MSHARD: u32 = 178956970u;
 
-fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
+const MVMAX: f32 = 1.0;
 
-fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
+fn mword(h: u32, w: u32) -> u32 {
+  let k: u32 = h / MSHARD;
+  let j: u32 = (h % MSHARD) * 3u + w;
+  if (k == 0u) { return sb0[j]; }
+  if (k == 1u) { return sb1[j]; }
+  if (k == 2u) { return sb2[j]; }
+  if (k == 3u) { return sb3[j]; }
+  if (k == 4u) { return sb4[j]; }
+  if (k == 5u) { return sb5[j]; }
+  if (k == 6u) { return sb6[j]; }
+  return sb7[j];
+}
+
+fn msetword(h: u32, w: u32, v: u32) {
+  let k: u32 = h / MSHARD;
+  let j: u32 = (h % MSHARD) * 3u + w;
+  if (k == 0u) { sb0[j] = v; } else if (k == 1u) { sb1[j] = v; } else if (k == 2u) { sb2[j] = v; } else if (k == 3u) { sb3[j] = v; } else if (k == 4u) { sb4[j] = v; } else if (k == 5u) { sb5[j] = v; } else if (k == 6u) { sb6[j] = v; } else { sb7[j] = v; }
+}
+
+fn mfixed(w: u32) -> f32 { return f32(w >> 20u) + f32(w & 1048575u) * 9.5367431640625e-7 - 1024.0; }
+
+fn mtofixed(x: f32) -> u32 { let y: f32 = clamp(x + 1024.0, 0.0, 4095.999); let whole: f32 = floor(y); return (u32(whole) << 20u) | min(u32((y - whole) * 1048576.0), 1048575u); }
+
+fn mvel(w: u32) -> vec2<f32> { return vec2<f32>(f32(i32(w << 16u) >> 16u), f32(i32(w) >> 16u)) * (MVMAX / 32767.0); }
+
+fn mdither(h: u32, k: u32) -> f32 { var z: u32 = h * 747796405u + P.tick * 2891336453u + k * 1181783497u; z = (z ^ (z >> 16u)) * 2246822519u; z = (z ^ (z >> 13u)) * 3266489917u; z = z ^ (z >> 16u); return f32(z >> 8u) / 16777216.0; }
+
+fn mtovel(v: vec2<f32>, h: u32) -> u32 { let s: vec2<f32> = v / MVMAX * 32767.0; let q: vec2<f32> = clamp(floor(s + vec2<f32>(mdither(h, 1u), mdither(h, 2u))), vec2<f32>(-32767.0), vec2<f32>(32767.0)); return (u32(i32(q.x)) & 65535u) | (u32(i32(q.y)) << 16u); }
+
+fn bodat(h: u32) -> vec4<f32> {
+  if (MCOMPACT) { return vec4<f32>(mfixed(mword(h, 0u)), mfixed(mword(h, 1u)), cel[BODS() + 2u], f32(h + 1u)); }
+  let b: u32 = BODS() + 12u * h;
+  return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]);
+}
+
+fn bodgo(h: u32) -> vec4<f32> {
+  if (MCOMPACT) { let v: vec2<f32> = mvel(mword(h, 2u)); let m: f32 = cel[BODS() + 2u]; return vec4<f32>(v.x * m, v.y * m, cel[BODS() + 6u], 0.0); }
+  let b: u32 = BODS() + 12u * h;
+  return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]);
+}
+
+fn bodface(h: u32) -> f32 { return cel[BODS() + select(12u * h, 0u, MCOMPACT) + 8u]; }
+
+fn bodskin(h: u32) -> f32 { return cel[BODS() + select(12u * h, 0u, MCOMPACT) + 9u]; }
+
+fn msetat(h: u32, x: f32, y: f32) {
+  if (MCOMPACT) { msetword(h, 0u, mtofixed(x)); msetword(h, 1u, mtofixed(y)); return; }
+  let b: u32 = BODS() + 12u * h;
+  cel[b] = x;
+  cel[b + 1u] = y;
+}
+
+fn msetgo(h: u32, px: f32, py: f32) {
+  if (MCOMPACT) { let m: f32 = cel[BODS() + 2u]; msetword(h, 2u, mtovel(vec2<f32>(px, py) / m, h)); return; }
+  let b: u32 = BODS() + 12u * h;
+  cel[b + 4u] = px;
+  cel[b + 5u] = py;
+}
 
 fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
   if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
@@ -2030,6 +2125,12 @@ fn munder(h: u32, k: u32) -> i32 {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells + 1u || !mlocal()) { return; }
+  if (MCOMPACT) {
+    if (i < P.cells) { for (var k: u32 = 0u; k < 10u; k = k + 1u) { atomicStore(&link[macc(i, k)], 0); } }
+    /* one past the last: the sources that have left the box (Medium.departed) */
+    if (i == P.cells) { atomicStore(&link[macc(P.cells, 0u)], 0); }
+    return;
+  }
   atomicStore(&link[i], 0);
 }
 
@@ -2037,7 +2138,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= mnb() || !mlocal()) { return; }
+  if (i >= mnb() || !mlocal() || MCOMPACT) { return; }
   var sum: i32 = 0;
   for (var c: u32 = i * 256u; c < min((i + 1u) * 256u, P.cells + 1u); c = c + 1u) {
     let v: i32 = atomicLoad(&link[c]);
@@ -2051,7 +2152,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN2(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i > 0u || !mlocal()) { return; }
+  if (i > 0u || !mlocal() || MCOMPACT) { return; }
   var run: i32 = 0;
   for (var b: u32 = 0u; b < mnb(); b = b + 1u) {
     let v: i32 = atomicLoad(&link[mblk(b)]);
@@ -2065,7 +2166,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN3(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.cells + 1u || !mlocal()) { return; }
+  if (i >= P.cells + 1u || !mlocal() || MCOMPACT) { return; }
   atomicStore(&link[mstart(i)], atomicLoad(&link[mstart(i)]) + atomicLoad(&link[mblk(i / 256u)]));
   atomicStore(&link[i], 0);
 }
@@ -2074,7 +2175,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHPLACE(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mlocal()) { return; }
+  if (i >= P.holes || !mlocal() || MCOMPACT) { return; }
   let c: u32 = mbodycell(i);
   let j: i32 = atomicLoad(&link[mstart(c)]) + atomicAdd(&link[c], 1);
   atomicStore(&link[morder(u32(j))], i32(i));
@@ -2086,7 +2187,7 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i / 32u;
   let l: u32 = i % 32u;
-  if (c >= P.cells || !mlocal()) { return; }
+  if (c >= P.cells || !mlocal() || MCOMPACT) { return; }
   var s: array<f32, 12>;
   let cx: f32 = f32(c % P.N);
   let cy: f32 = f32(c / P.N);
@@ -2114,6 +2215,32 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells || !mlocal()) { return; }
+  if (MCOMPACT) {
+    /* compact: the cell's sums, as a source (Medium.cell_sources) */
+    var t: array<f32, 12>;
+    let n: i32 = atomicLoad(&link[macc(c, 0u)]);
+    let qn: f32 = f32(atomicLoad(&link[macc(c, 1u)])) / MSQ;
+    if (n > 0 && qn > 0.0) {
+      let q: f32 = qn * mqref();
+      let cx: f32 = f32(c % P.N) + f32(atomicLoad(&link[macc(c, 2u)])) / MSX / qn;
+      let cy: f32 = f32(c / P.N) + f32(atomicLoad(&link[macc(c, 3u)])) / MSX / qn;
+      let last: i32 = atomicLoad(&link[macc(c, 9u)]);
+      t[0] = q;
+      t[1] = q * cx;
+      t[2] = q * cy;
+      t[3] = q * f32(atomicLoad(&link[macc(c, 4u)])) / MSV / qn;
+      t[4] = q * f32(atomicLoad(&link[macc(c, 5u)])) / MSV / qn;
+      let one: array<f32, 8> = memit(u32(max(last - 1, 0)));
+      t[5] = q * one[5] / max(one[0], 1e-30);
+      t[6] = select(-2.0 - f32(c), f32(last - 1), n == 1);
+      t[7] = f32(last);
+      t[8] = mqref() * f32(atomicLoad(&link[macc(c, 6u)])) / MSX;
+      t[9] = mqref() * f32(atomicLoad(&link[macc(c, 7u)])) / MSX;
+      t[10] = mqref() * f32(atomicLoad(&link[macc(c, 8u)])) / MSX;
+    }
+    for (var q2: u32 = 0u; q2 < 12u; q2 = q2 + 1u) { hn[msrc(c) + q2] = t[q2]; }
+    return;
+  }
   var s: array<f32, 12>;
   for (var l: u32 = 0u; l < 32u; l = l + 1u) {
     for (var q: u32 = 0u; q < 6u; q = q + 1u) { s[q] = s[q] + cel[msrcpart(c, l) + q]; }
@@ -2168,6 +2295,27 @@ fn munder(h: u32, k: u32) -> i32 {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.holes || !mlocal()) { return; }
+  if (MCOMPACT) {
+    let c: u32 = mbodycell(i);
+    if (c >= P.cells) { atomicAdd(&link[macc(P.cells, 0u)], 1); return; }
+    let e: array<f32, 8> = memit(i);
+    if (!(e[0] > 0.0)) { return; }
+    let qn: f32 = e[0] / mqref();
+    let o: vec4<f32> = bodat(i);
+    let dx: f32 = o.x - f32(c % P.N);
+    let dy: f32 = o.y - f32(c / P.N);
+    atomicAdd(&link[macc(c, 0u)], 1);
+    atomicAdd(&link[macc(c, 1u)], i32(round(qn * MSQ)));
+    atomicAdd(&link[macc(c, 2u)], i32(round(qn * dx * MSX)));
+    atomicAdd(&link[macc(c, 3u)], i32(round(qn * dy * MSX)));
+    atomicAdd(&link[macc(c, 4u)], i32(round(qn * e[3] / e[0] * MSV)));
+    atomicAdd(&link[macc(c, 5u)], i32(round(qn * e[4] / e[0] * MSV)));
+    atomicAdd(&link[macc(c, 6u)], i32(round(qn * dx * dx * MSX)));
+    atomicAdd(&link[macc(c, 7u)], i32(round(qn * dx * dy * MSX)));
+    atomicAdd(&link[macc(c, 8u)], i32(round(qn * dy * dy * MSX)));
+    atomicMax(&link[macc(c, 9u)], i32(i + 1u));
+    return;
+  }
   atomicAdd(&link[mbodycell(i)], 1);
 }
 
@@ -2175,30 +2323,212 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MSTEPH(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mapart()) { return; }
+  if (i >= P.holes || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let out: u32 = P.outs;
   let h: u32 = i;
+  let pulled: vec2<f32> = vec2<f32>(cel[out + 4u * h], cel[out + 4u * h + 1u]);
   let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 12u * h;
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
     if (g.z >= 0.5) {
-      var px: f32 = g.x + cel[out + 4u * h] * o.z;
-      var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
       let m: f32 = sqrt(px * px + py * py);
       if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
-      cel[b + 4u] = px;
-      cel[b + 5u] = py;
-      cel[b] = o.x + px / o.z * f32(P.K);
-      cel[b + 1u] = o.y + py / o.z * f32(P.K);
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
     }
     /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
     if (h < TRACKB) {
       let tr: u32 = TRACK(P.tick, h);
-      cel[tr] = cel[b];
-      cel[tr + 1u] = cel[b + 1u];
-      cel[tr + 2u] = cel[b + 4u];
-      cel[tr + 3u] = cel[b + 5u];
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
     }
+}
+
+//! kernel MSOURCE over holes
+@compute @workgroup_size(64) fn MSOURCE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !mapart() || !mlocal() || !MCELLPULL || !MFUSED) { return; }
+  let out: u32 = P.outs;
+  let h: u32 = i;
+  var pulled: vec2<f32> = vec2<f32>(0.0, 0.0);
+  {
+    let o: vec4<f32> = bodat(h);
+    let bc: u32 = mbodycell(h);
+    var gx: f32 = 0.0;
+    var gy: f32 = 0.0;
+    if (bc < P.cells) {
+      gx = cel[mcellpull(bc)];
+      gy = cel[mcellpull(bc) + 1u];
+    }
+    let n: f32 = f32(P.K * P.K);
+    let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy) / n);
+    pulled = vec2<f32>(gx / n * f, gy / n * f);
+    /* kept for a reading (leans) where each body has room for it; compact, a reading asks for it (MLEANS) */
+    if (!MCOMPACT) {
+      cel[out + 4u * h] = pulled.x;
+      cel[out + 4u * h + 1u] = pulled.y;
+    }
+  }
+  let g: vec4<f32> = bodgo(h);
+    let o: vec4<f32> = bodat(h);
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
+    if (g.z >= 0.5) {
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
+      let m: f32 = sqrt(px * px + py * py);
+      if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
+    }
+    /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
+    if (h < TRACKB) {
+      let tr: u32 = TRACK(P.tick, h);
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
+    }
+}
+
+//! kernel MPULLC over cells
+@compute @workgroup_size(64) fn MPULLC(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (c >= P.cells || !mlocal() || !MCELLPULL) { return; }
+  var many: u32 = 0u;
+  var h0: u32 = 0u;
+  if (MCOMPACT) {
+    many = u32(max(atomicLoad(&link[macc(c, 0u)]), 0));
+    h0 = u32(max(atomicLoad(&link[macc(c, 9u)]) - 1, 0));
+  } else {
+    let j0: u32 = u32(atomicLoad(&link[mstart(c)]));
+    let j1: u32 = u32(atomicLoad(&link[mstart(c + 1u)]));
+    many = j1 - min(j0, j1);
+    if (many > 0u) { h0 = u32(atomicLoad(&link[morder(j0)])); }
+  }
+  if (many == 0u) { return; }
+  var o: vec4<f32> = bodat(h0);
+  let w: array<f32, 8> = msourcewas(c);
+  if (many > 1u && w[0] > 0.0) { o = vec4<f32>(w[1] / w[0], w[2] / w[0], o.z, o.w); }
+  let zown: u32 = h0 + 1u;
+  let half: f32 = f32(P.K - 1u) / 2.0;
+  var gx: f32 = 0.0;
+  var gy: f32 = 0.0;
+  for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
+    let px: f32 = o.x - half + f32(k % P.K);
+      let py: f32 = o.y - half + f32(k / P.K);
+      let rho: f32 = mtapc(0u, px, py, 0.0);
+      let nf: f32 = mtapc(1u, px, py, 0.0);
+      var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+      let stood: f32 = mtap(STAND(), px, py, 0.0);
+      let came: vec3<f32> = marrive(px, py, zown);
+      let per: f32 = rate / select(1.0, 1.0 + stood, xc(20u) > 0.5);
+      gx = gx - per * came.y;
+      gy = gy - per * came.z;
+  }
+  cel[mcellpull(c)] = gx;
+  cel[mcellpull(c) + 1u] = gy;
+}
+
+//! kernel MGEN over made
+@compute @workgroup_size(64) fn MGEN(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let h: u32 = u32(cel[mgen(6u)]) + i;
+  if (i >= u32(cel[mgen(7u)]) || h >= P.holes) { return; }
+  let seed: u32 = u32(cel[mgen(5u)]);
+  let cx: f32 = cel[mgen(1u)];
+  let cy: f32 = cel[mgen(2u)];
+  let sc: f32 = cel[mgen(3u)];
+  let cut: f32 = cel[mgen(4u)];
+  var x: f32 = cx;
+  var y: f32 = cy;
+  if (cel[mgen(0u)] < 0.5) {
+    /* surface density falling as e^(-r/scale): r off two draws, as a disc's is */
+    let r: f32 = min(-sc * log(mhash(h, seed) * mhash(h, seed + 1u)), cut);
+    let th: f32 = 6.283185307179586 * mhash(h, seed + 2u);
+    x = cx + r * cos(th);
+    y = cy + r * sin(th);
+  } else {
+    x = cx + (2.0 * mhash(h, seed) - 1.0) * sc;
+    y = cy + (2.0 * mhash(h, seed + 1u) - 1.0) * sc;
+  }
+  msetat(h, x, y);
+  msetgo(h, 0.0, 0.0);
+}
+
+//! kernel MLAUNCH over holes
+@compute @workgroup_size(64) fn MLAUNCH(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes) { return; }
+  let h: u32 = i;
+  let o: vec4<f32> = bodat(h);
+  let bc: u32 = mbodycell(h);
+  if (bc >= P.cells) { return; }
+  let n: f32 = f32(P.K * P.K);
+  var gx: f32 = cel[mcellpull(bc)] / n;
+  var gy: f32 = cel[mcellpull(bc) + 1u] / n;
+  let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy));
+  gx = gx * f;
+  gy = gy * f;
+  let dx: f32 = (o.x - cel[mgen(1u)]) / f32(P.K);
+  let dy: f32 = (o.y - cel[mgen(2u)]) / f32(P.K);
+  let r: f32 = sqrt(dx * dx + dy * dy);
+  if (!(r > 0.0)) { return; }
+  let g: f32 = -(gx * dx + gy * dy) / r;
+  let v: f32 = sqrt(max(0.0, g * r));
+  let sig: f32 = cel[mgen(8u)];
+  let seed: u32 = u32(cel[mgen(5u)]) + 101u;
+  let vx: f32 = -v * dy / r + sig * v * mgauss(h, seed);
+  let vy: f32 = v * dx / r + sig * v * mgauss(h, seed + 3u);
+  msetgo(h, o.z * vx, o.z * vy);
+}
+
+//! kernel MFRAMECLEAR over grid2
+@compute @workgroup_size(64) fn MFRAMECLEAR(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let G: u32 = u32(cel[mgen(10u)]);
+  if (i >= G * G) { return; }
+  atomicStore(&link[mgrid(i)], 0);
+}
+
+//! kernel MFRAME over holes
+@compute @workgroup_size(64) fn MFRAME(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !MCOMPACT) { return; }
+  let o: vec4<f32> = bodat(i);
+  let G: u32 = u32(cel[mgen(10u)]);
+  let span: f32 = cel[mgen(13u)];
+  let gx: f32 = ((o.x - cel[mgen(11u)]) / span + 1.0) / 2.0 * f32(G);
+  let gy: f32 = ((o.y - cel[mgen(12u)]) / span + 1.0) / 2.0 * f32(G);
+  if (gx < 0.0 || gy < 0.0 || gx >= f32(G) || gy >= f32(G)) { return; }
+  atomicAdd(&link[mgrid(u32(gy) * G + u32(gx))], 1);
 }
 
 //! kernel MPULLH over pulls
@@ -2207,7 +2537,7 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   /* held where they are, a thread a body walks its c-bar's K x K points and keeps only their sum: a part a point was 72 bytes a star */
   let per: u32 = select(P.K * P.K * mchunks(), 1u, mlocal());
-  if (i >= P.holes * per || !mapart()) { return; }
+  if (i >= P.holes * per || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let half: f32 = f32(P.K - 1u) / 2.0;
   let h: u32 = select(i / per, u32(atomicLoad(&link[morder(min(i, P.holes - 1u))])), mlocal());
   let ch: u32 = i % mchunks();
@@ -2217,7 +2547,14 @@ fn munder(h: u32, k: u32) -> i32 {
   var gy: f32 = 0.0;
   let z0: u32 = select(ch * MPCHUNK, 1u, ch == 0u);
   let z1: u32 = select((ch + 1u) * MPCHUNK, mplanes(), (ch + 1u) * MPCHUNK > mplanes());
-  if (mlocal()) {
+  if (mlocal() && MCELLPULL) {
+    /* held where they are, a body's pull is its cell's, read once for all on it (MPULLC); off the box, none */
+    let bc: u32 = mbodycell(h);
+    if (bc < P.cells) {
+      gx = cel[mcellpull(bc)];
+      gy = cel[mcellpull(bc) + 1u];
+    }
+  } else if (mlocal()) {
     for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
     let px: f32 = o.x - half + f32(k % P.K);
       let py: f32 = o.y - half + f32(k / P.K);
@@ -2265,7 +2602,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MMOVEH(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mapart()) { return; }
+  if (i >= P.holes || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let out: u32 = P.outs;
   let h: u32 = i;
   let o: vec4<f32> = bodat(h);
@@ -2289,26 +2626,32 @@ fn munder(h: u32, k: u32) -> i32 {
   if (i >= 1u || mapart()) { return; }
   let out: u32 = P.outs;
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let pulled: vec2<f32> = vec2<f32>(cel[out + 4u * h], cel[out + 4u * h + 1u]);
     let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 12u * h;
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
     if (g.z >= 0.5) {
-      var px: f32 = g.x + cel[out + 4u * h] * o.z;
-      var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
       let m: f32 = sqrt(px * px + py * py);
       if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
-      cel[b + 4u] = px;
-      cel[b + 5u] = py;
-      cel[b] = o.x + px / o.z * f32(P.K);
-      cel[b + 1u] = o.y + py / o.z * f32(P.K);
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
     }
     /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
     if (h < TRACKB) {
       let tr: u32 = TRACK(P.tick, h);
-      cel[tr] = cel[b];
-      cel[tr + 1u] = cel[b + 1u];
-      cel[tr + 2u] = cel[b + 4u];
-      cel[tr + 3u] = cel[b + 5u];
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
     }
   }
 }
@@ -2764,7 +3107,7 @@ fn munder(h: u32, k: u32) -> i32 {
   }
   let n: f32 = f32(P.K * P.K);
   let f: f32 = mrecur(ask.x, ask.y, sqrt(gx * gx + gy * gy) / n);
-  let out: u32 = P.outs + 4u * P.holes;
+  let out: u32 = P.outs + select(4u * P.holes, 0u, MCOMPACT);
   cel[out + 2u * i] = gx / n * f;
   cel[out + 2u * i + 1u] = gy / n * f;
 }

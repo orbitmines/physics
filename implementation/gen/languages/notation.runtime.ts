@@ -29,6 +29,67 @@ export const set = <T,>(pieces: any[], setter: any): T => Notation.set(pieces, s
 export const check = (line: string, where: string): string => Notation.check(line, where);
 export const REFERENCES: Record<string, any> = Object.fromEntries(Notation.REFERENCES.map((r: any) => [r.key, r]));
 
+/** a line set as LaTeX - the same walk again, into what a paper would write. What the page only colours (a count, a name, a muted aside) becomes upright; a citation is dropped */
+const SYMBOLS: Record<string, string> = {
+  α: "\\alpha", β: "\\beta", γ: "\\gamma", δ: "\\delta", ε: "\\varepsilon", ϵ: "\\epsilon", ζ: "\\zeta", η: "\\eta", θ: "\\theta", ϑ: "\\vartheta",
+  ι: "\\iota", κ: "\\kappa", λ: "\\lambda", μ: "\\mu", ν: "\\nu", ξ: "\\xi", π: "\\pi", ρ: "\\rho", σ: "\\sigma", τ: "\\tau", υ: "\\upsilon",
+  φ: "\\varphi", ϕ: "\\phi", χ: "\\chi", ψ: "\\psi", ω: "\\omega",
+  Γ: "\\Gamma", Δ: "\\Delta", Θ: "\\Theta", Λ: "\\Lambda", Ξ: "\\Xi", Π: "\\Pi", Σ: "\\Sigma", Υ: "\\Upsilon", Φ: "\\Phi", Ψ: "\\Psi", Ω: "\\Omega",
+  "·": "\\cdot", "⋅": "\\cdot", "×": "\\times", "÷": "\\div", "−": "-", "–": "-", "±": "\\pm", "∓": "\\mp",
+  "≈": "\\approx", "≠": "\\neq", "≤": "\\leq", "≥": "\\geq", "≪": "\\ll", "≫": "\\gg", "∝": "\\propto", "∼": "\\sim", "≡": "\\equiv",
+  "→": "\\to", "←": "\\leftarrow", "⇒": "\\Rightarrow", "⇔": "\\Leftrightarrow", "↦": "\\mapsto",
+  "∞": "\\infty", "∂": "\\partial", "∇": "\\nabla", "∑": "\\sum", "∏": "\\prod", "∫": "\\int", "∮": "\\oint", "√": "\\surd",
+  "∈": "\\in", "∉": "\\notin", "⊂": "\\subset", "∪": "\\cup", "∩": "\\cap", "∀": "\\forall", "∃": "\\exists", "∅": "\\emptyset",
+  "¬": "\\neg", "∧": "\\land", "∨": "\\lor", "⊕": "\\oplus", "⊗": "\\otimes", "∘": "\\circ", "•": "\\bullet",
+  "⟨": "\\langle", "⟩": "\\rangle", "…": "\\ldots", "⋯": "\\cdots", "ℏ": "\\hbar", "ℓ": "\\ell",
+  "′": "'", "″": "''", "°": "^{\\circ}", "⁰": "^{0}", "¹": "^{1}", "²": "^{2}", "³": "^{3}",
+  "%": "\\%", "#": "\\#", "&": "\\&", "$": "\\$",
+  " ": " ", " ": " ", " ": " ", "​": "",
+};
+const OPERATORS = new Set(["ln", "log", "exp", "sin", "cos", "tan", "sinh", "cosh", "tanh", "min", "max", "lim", "det", "dim"]);
+const texText = (t: string): string =>
+  t
+    /* a run of words is prose, a lone word a name - and both are upright, or LaTeX reads them as a product of letters */
+    .replace(/[A-Za-z]{2,}(?:[ ]+[A-Za-z]+)+|[A-Za-z]{2,}/g, w => w.includes(" ") ? `\\text{ ${w} }` : OPERATORS.has(w) ? `\\${w} ` : `\\mathrm{${w}}`)
+    .replace(/[^\x00-\x7f]|[%#&$]/g, c => c in SYMBOLS ? (/^\\[A-Za-z]+$/.test(SYMBOLS[c]) ? `${SYMBOLS[c]} ` : SYMBOLS[c]) : c);
+/** what a variable holds is letters in italics: the uprighting of a lone name is undone */
+const loose = (c: string): string => c.replace(/\\(?:mathrm|text)\{\s*([^{}]*?)\s*\}/g, "$1");
+const upright = (c: string): string => /^\s*\\[A-Za-z]+\s*$/.test(c) ? c : `\\mathrm{${loose(c)}}`;
+const single = (c: string): boolean => /^\s*(?:[A-Za-z0-9]|\\[A-Za-z]+)\s*$/.test(c);
+export const LATEX = {
+  together: (parts: string[]) => parts.join(""),
+  text: texText,
+  words: (t: string) => `\\text{${t}}`,
+  wrap: (kind: string, c: string): string => {
+    switch (kind) {
+      case "var": return loose(c);
+      case "count": case "fn": case "muted": return upright(c);
+      case "bar": return single(c) ? `\\bar{${c.trim()}}` : `\\overline{${c}}`;
+      case "hat": return single(c) ? `\\hat{${c.trim()}}` : `\\widehat{${c}}`;
+      case "tilde": return single(c) ? `\\tilde{${c.trim()}}` : `\\widetilde{${c}}`;
+      case "vec": return `\\vec{${c}}`;
+      case "dot": return `\\dot{${c}}`;
+      case "ddot": return `\\ddot{${c}}`;
+      case "bold": return `\\mathbf{${loose(c)}}`;
+      case "cal": return `\\mathcal{${loose(c)}}`;
+      case "bb": return `\\mathbb{${loose(c)}}`;
+      case "sqrt": return `\\sqrt{${c}}`;
+      case "sup": return `^{${c}}`;
+      case "sub": return `_{${c}}`;
+      case "paren": return `\\left(${c}\\right)`;
+      default: return c;
+    }
+  },
+  big: (kind: string, lo: string, hi: string) => `\\${kind}${lo ? `_{${lo}}` : ""}${hi ? `^{${hi}}` : ""} `,
+  frac: (over: string, under: string) => `\\frac{${over}}{${under}}`,
+  binom: (over: string, under: string) => `\\binom{${over}}{${under}}`,
+  scripted: (base: string, sup: string | null, sub: string | null) => `{${base}}${sup != null ? `^{${sup}}` : ""}${sub != null ? `_{${sub}}` : ""}`,
+  underset: (base: string, under: string) => `\\underset{${under}}{${base}}`,
+  ref: (_: string) => "",
+};
+export const tidy = (tex: string): string => tex.replace(/\s+/g, " ").replace(/\s+([_^])/g, "$1").replace(/\\mathrm\{([^{}]*)\}\\mathrm\{/g, "\\mathrm{$1").trim();
+export const latex = (src: string): string => tidy(Notation.set(Notation.parse(src), LATEX));
+
 export type Runtime<N> = {
   createElement(type: unknown, props?: object | null, ...children: unknown[]): N;
   Fragment: unknown;
@@ -203,24 +264,65 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
       ], { ref: panel, role: "dialog", "aria-modal": true, "aria-label": `Where ${of.label} comes from`, tabIndex: -1, className: "law-panel" }),
     );
   };
-  const Line = ({ children, note, derive, open }: { children?: Content<N>; note?: Content<N>; derive?: Derivation<N>; open?: (d: Derivation<N>) => void }) => {
+  /* Font Awesome's `copy` (Free, CC BY 4.0) - the one orbitmines.com's repository pages use */
+  const CopyIcon = () => h("svg", { viewBox: "0 0 640 640", width: "1.3em", height: "1.3em", fill: "currentColor", "aria-hidden": true, style: { display: "block" } },
+    h("path", { d: "M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" }));
+  const clipboard = (text: string): Promise<void> => {
+    if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+    /* an insecure origin has no clipboard API; the old way still works there */
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    return Promise.resolve();
+  };
+  const Copy = ({ tex }: { tex: () => string }) => {
+    const [copied, setCopied] = React.useState(false);
+    const fade = (e: { currentTarget: { style: Style } }, to: number) => { e.currentTarget.style.opacity = String(to); };
+    return h("button", {
+      type: "button", title: "Copy as LaTeX", "aria-label": copied ? "Copied as LaTeX" : "Copy as LaTeX",
+      onClick: (e: { stopPropagation(): void }) => {
+        e.stopPropagation();
+        clipboard(tex()).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1200); }, () => {});
+      },
+      style: { display: "inline-flex", alignItems: "center", gap: "0.45em", background: "none", border: "none", padding: "0.2em 0.1em", cursor: "pointer", font: "inherit", color: copied ? DERIVED : DIM, opacity: 0.6, transition: "opacity 120ms, color 120ms" },
+      onMouseEnter: (e: { currentTarget: { style: Style } }) => fade(e, 1),
+      onMouseLeave: (e: { currentTarget: { style: Style } }) => fade(e, 0.6),
+      onFocus: (e: { currentTarget: { style: Style } }) => fade(e, 1),
+      onBlur: (e: { currentTarget: { style: Style } }) => fade(e, 0.6),
+    }, h(CopyIcon, null), copied ? "copied" : "LaTeX");
+  };
+  const Line = ({ children, note, derive, open, tex }: { children?: Content<N>; note?: Content<N>; derive?: Derivation<N>; open?: (d: Derivation<N>) => void; tex?: () => string }) => {
     const [shown, setShown] = React.useState(false);
     const from = React.useRef<{ focus(): void } | null>(null);
     const inner = list(
       div({ overflowX: "auto", position: "relative", textAlign: "center", color: INK, fontFamily: SERIF, fontSize: "1.18em", padding: "0.2em 0" }, breakable(children)),
       note ? div({ textAlign: "center", color: FAINT, fontSize: "0.72em", letterSpacing: "0.04em", paddingTop: "0.5em" }, note) : null,
     );
-    if (!derive) return div({ margin: "1.5em 0" }, inner);
+    /* top right, over the line: what it was derived from, and the line as LaTeX. The label only shows; a click on it falls through to the line beneath */
+    const corner = div({ position: "absolute", right: "0.7em", top: "0.3em", display: "flex", alignItems: "center", gap: "1.2em", fontSize: "0.6em", letterSpacing: "0.1em", zIndex: 1 }, [
+      derive ? span({ color: DERIVED, textTransform: "uppercase", opacity: 0.75, pointerEvents: "none" }, "derived ›", { key: "d" }) : null,
+      h(Copy, { key: "c", tex: tex ?? (() => toTex(children)) }),
+    ]);
+    if (!derive) return div({ width: "100%", boxSizing: "border-box", margin: "1.5em 0", position: "relative", padding: "0.9em 0 0.7em" }, [h(Fragment, { key: "l" }, inner), h(Fragment, { key: "c" }, corner)]);
     const edge = (e: { currentTarget: { style: Style } }, colour: string) => { e.currentTarget.style.borderColor = colour; };
     return list(
-      h("button", {
-        onClick: () => { if (open) return open(derive); from.current = document.activeElement as unknown as { focus(): void }; setShown(true); },
-        style: { display: "block", width: "100%", margin: "1.5em 0", background: "none", border: "1px solid transparent", borderRadius: 3, padding: "0.9em 0.5em 0.7em", cursor: "pointer", font: "inherit", color: "inherit", textAlign: "inherit", position: "relative", transition: "background 120ms, border-color 120ms" },
-        onMouseEnter: (e: { currentTarget: { style: Style } }) => { e.currentTarget.style.background = "rgba(127,184,212,0.05)"; edge(e, RULE); },
-        onMouseLeave: (e: { currentTarget: { style: Style } }) => { e.currentTarget.style.background = "none"; edge(e, "transparent"); },
-        onFocus: (e: { currentTarget: { style: Style } }) => edge(e, DERIVED),
-        onBlur: (e: { currentTarget: { style: Style } }) => edge(e, "transparent"),
-      }, inner, span({ position: "absolute", right: "0.7em", top: "0.45em", color: DERIVED, fontSize: "0.6em", letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.75 }, "derived ›")),
+      div({ width: "100%", margin: "1.5em 0", position: "relative" }, [
+        h("button", {
+          key: "l",
+          onClick: () => { if (open) return open(derive); from.current = document.activeElement as unknown as { focus(): void }; setShown(true); },
+          style: { display: "block", width: "100%", margin: 0, background: "none", border: "1px solid transparent", borderRadius: 3, padding: "0.9em 0.5em 0.7em", cursor: "pointer", font: "inherit", color: "inherit", textAlign: "inherit", position: "relative", transition: "background 120ms, border-color 120ms" },
+          onMouseEnter: (e: { currentTarget: { style: Style } }) => { e.currentTarget.style.background = "rgba(127,184,212,0.05)"; edge(e, RULE); },
+          onMouseLeave: (e: { currentTarget: { style: Style } }) => { e.currentTarget.style.background = "none"; edge(e, "transparent"); },
+          onFocus: (e: { currentTarget: { style: Style } }) => edge(e, DERIVED),
+          onBlur: (e: { currentTarget: { style: Style } }) => edge(e, "transparent"),
+        }, inner),
+        h(Fragment, { key: "c" }, corner),
+      ]),
       shown ? h(Panel, { of: derive, onClose: () => { setShown(false); from.current?.focus(); } }) : null,
     );
   };
@@ -288,6 +390,36 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
   const pieces = (of: string): Content<N> => Notation.set(Notation.parse(of), SETTER);
   const Markup = ({ of }: { of: string }) => h(Fragment, null, pieces(of));
 
+  /** a line written by hand, read back out of its elements as LaTeX: each component is the piece of markup it sets */
+  const KINDS = new Map<unknown, string>([
+    [V, "var"], [R, "var"], [Borrowed, "var"], [K, "count"], [D, "fn"], [F, "muted"], [B, "bold"],
+    [Bar, "bar"], [Hat, "hat"], [Tilde, "tilde"], [Vec, "vec"], [Dot, "dot"], [DDot, "ddot"], [Sqrt, "sqrt"],
+    [Sub, "sub"], [Sup, "sup"], [Paren, "paren"], ["sub", "sub"], ["sup", "sup"], ["b", "bold"], ["strong", "bold"],
+  ]);
+  const walk = (node: unknown): string => {
+    if (node == null || typeof node === "boolean") return "";
+    if (typeof node === "string" || typeof node === "number") return LATEX.text(String(node));
+    if (Array.isArray(node)) return node.map(walk).join("");
+    if (!isValidElement(node)) return "";
+    const { type, props = {} } = node as { type: unknown; props?: any };
+    const inside = () => walk(props.children);
+    if (type === Markup) return Notation.set(Notation.parse(props.of), LATEX);
+    if (type === Frac) return LATEX.frac(walk(props.over), walk(props.under));
+    if (type === Binom) return LATEX.binom(walk(props.over), walk(props.under));
+    if (type === Type || type === Under) return LATEX.underset(walk(props.of), walk(props.is));
+    const kind = KINDS.get(type);
+    if (kind) return LATEX.wrap(kind, inside());
+    /* the spacer a hand-written line is broken at: a wide gap, and what it says, as words */
+    const at = gap(node);
+    if (at === "after") return " \\qquad ";
+    if (at === "both") return ` \\qquad \\text{${texWords(props.children)}} \\qquad `;
+    return inside();
+  };
+  const texWords = (node: unknown): string =>
+    node == null || typeof node === "boolean" ? "" : typeof node === "string" || typeof node === "number" ? String(node)
+      : Array.isArray(node) ? node.map(texWords).join("") : isValidElement(node) ? texWords((node as { props?: any }).props?.children) : "";
+  const toTex = (children: Content<N>): string => tidy(walk(children));
+
   // —— and a theorem, cited by name ——
   const Absent = ({ says }: { says: string }) =>
     div({ margin: "1.5em 0", padding: "0.9em 1em", textAlign: "center", border: `1px dashed ${BORROWED}`, borderRadius: 3, color: BORROWED, fontSize: "0.8em", letterSpacing: "0.04em" }, says);
@@ -323,13 +455,13 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     const caption = (says: string | null) => says ? div({ color: FAINT, fontSize: "0.72em", lineHeight: 1.6, textAlign: "center", maxWidth: "44em", margin: "1.4em auto -0.6em" }, says) : null;
     return list(
       caption(of.also ? of.leads : null),
-      h(Line, { note: note ?? of.theorem, derive: behind(of), open }, pieces(of.concluded)),
+      h(Line, { note: note ?? of.theorem, derive: behind(of), open, tex: () => latex(of.concluded) }, pieces(of.concluded)),
       /* what the claim's names are, one line below another */
-      ...((of.beneath ?? []).map((b: string, i: number) => h(Line, { key: `beneath-${i}` }, pieces(b)))),
-      of.also ? list(caption(of.then), h(Line, null, pieces(of.also))) : null,
+      ...((of.beneath ?? []).map((b: string, i: number) => h(Line, { key: `beneath-${i}`, tex: () => latex(b) }, pieces(b)))),
+      of.also ? list(caption(of.then), h(Line, { tex: () => latex(of.also) }, pieces(of.also))) : null,
     );
   };
-  const EqMarkup = ({ of, note, derive, open }: { of: string; note?: Content<N>; derive?: Derivation<N>; open?: (d: Derivation<N>) => void }) => h(Line, { note, derive, open }, h(Markup, { of }));
+  const EqMarkup = ({ of, note, derive, open }: { of: string; note?: Content<N>; derive?: Derivation<N>; open?: (d: Derivation<N>) => void }) => h(Line, { note, derive, open, tex: () => latex(of) }, h(Markup, { of }));
   const derivation = (theorem: string, theory = "G"): Derivation<N> | undefined => {
     const of = theorems && proved(theorems, theory, theorem);
     return of ? behind(of) : undefined;
@@ -349,5 +481,7 @@ export const notation = <N,>(React: Runtime<N>, theorems?: Registry) => {
     Markup, EqMarkup, derivation,
     /** the walk itself, for anything that wants to set a line into something else */
     setter: SETTER,
+    /** a line's elements read back out as LaTeX - what the copy button on every line hands over */
+    latex: toTex,
   };
 };

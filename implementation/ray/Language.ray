@@ -27,6 +27,9 @@ Language := class {
 
   /* the map rules written in the class body, in order */
   rules: MapRule[] = []
+
+  /* the CPU backend's runtime template in this language (None: the CPU backend does not run in it) - a language reads its own, since a path is read where it is written */
+  cpu_runtime (): String => None
 }
 
 MapRule := class < pattern: Program, target: String {

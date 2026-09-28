@@ -64,7 +64,7 @@ Galaxies := class {
     n > 0 ? [r / n, g / n, bl / n] : Galaxies.SEVERAL
   }
   /* the names the space being drawn uses, set as a panel starts (a picture draws one measurement at a time) */
-  static NAMES_NOW = Galaxies.FREEDOMS
+  static NAMES_NOW = ["mass", "face", "moving", "spread"]
   static name_of (mask: N): String => {
     /* the fewest freedoms that reach a cell; nought is the source as it starts - one mass, its own cell, at rest - the law's own line */
     return "the source as it starts" if mask == 0

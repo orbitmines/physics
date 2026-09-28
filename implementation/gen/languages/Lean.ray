@@ -1,0 +1,276 @@
+/*
+ * LEAN 4, as a mapping from the constructs of Ray to text. Lean has no dynamic members, so it follows Java: a Ray
+ * class is a table filled when the package loads, an object a table of slots, and every member is reached by name
+ * through the runtime - `gm x "cells"`, `cm x "add" #[...]`, `sm x "tag" v`, `mk "Hole" #[...]` - see
+ * implementation/gen/backends/cpu.rt.lean. Everything runs in `IO`: an expression is a term whose effects are
+ * written `(← ...)` (Lean lifts them in order to the statement they stand in), a statement a line of a `do`
+ * block, a local an `IO.Ref` (`(← x_1.get)`, spelled by the depth of the scope that binds it, `{local_name}`), so
+ * that a lambda can take it and write it. What must not run unless it is reached (`a & b`, `a ?? b`, `c ? a : b`)
+ * is handed over as an action of its own (`(do pure ...)`). A loop is a statement that ends on a value (`Value.null`),
+ * since every statement written as an expression is ended ` |> sink`. Every member of a class is one `initialize` of its
+ * own, inside the class's namespace (`thisClass` is its name), so that no term is large; every class is a module
+ * of its own (`write_package` splits the text at `/-@@PIECE@@-/`). A `return` is `if true then return x`, which
+ * Lean reads as a return from the enclosing method or lambda, loops included, and never as dead code.
+ */
+
+Lean: Language = class {
+  name = "Lean"
+  extension = ".lean"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => " |> sink"
+  {empty_block} => ""
+  {interpolation} => "\" ++ (← strv {x}) ++ \""
+  {named_arg} => "(Value.kw \"{raw}\" {val})"
+  {parameter} => "let {nm} ← IO.mkRef (arg a{d} {i})"
+  {parameter_untyped} => "let {nm} ← IO.mkRef (arg a{d} {i})"
+  {parameter_default} => "let {nm} ← IO.mkRef (arg a{d} {i})"
+  {parameter_separator} => "\n  "
+  {dynamic_get} => "(← gm {tgt} (← strv {key}))"
+  {dynamic_set} => "(← smV {tgt} (← strv {key}) {val})"
+  {whole} => "(Value.num {val})"
+  {reserved_names} => "at by do else end fun if in let match then with from have show for return where open namespace section def theorem structure class instance import mut unless try catch finally break continue repeat while macro syntax deriving extends variable universe example abbrev axiom opaque private protected partial unsafe noncomputable inductive mutual export attribute local scoped set_option calc suffices obtain nomatch termination_by decreasing_by Type Prop Sort forall exists fun this self sink thisClass"
+  {escaped_name} => "{nm}_"
+  {global_name} => "(← glob \"{nm}\")"
+  {local_name} => "{nm}_{k}"
+  {local_read} => "(← {nm}.get)"
+  {local_write} => "(← wr {nm} {val})"
+  {defaults_in_body} => "yes"
+  {class_ref} => "(← K \"{nm}\")"
+  {field_assign} => "initialize field thisClass \"{nm}\" (fun self => do\n  return {val})"
+
+  /* control flow: a body is closed by `pure ()`, so that one ending on a definition is still a block */
+  {if cond { yesbody } else { nobody }} => "if truthy {cond} then\n{yesbody.indent}\n  pure ()\nelse\n{nobody.indent}\n  pure ()"
+  {if cond { yesbody }} => "if truthy {cond} then\n{yesbody.indent}\n  pure ()"
+  {unless cond { yesbody }} => "if !truthy {cond} then\n{yesbody.indent}\n  pure ()"
+  {while cond { loopbody }} => "while truthy {cond} do\n{loopbody.indent}\n  pure ()"
+  /* `if true`: a body always ends `return Value.null`, which Lean would otherwise call dead code */
+  {return val} => "if true then return {val}"
+  {return} => "if true then return Value.null"
+  {dynamically assert cond} => "if !truthy {cond} then throw (IO.userError {cond.quoted})"
+
+  /* definitions and assignment */
+  /* made before it is set, so that a lambda may call itself by it */
+  {nm := val} => "let {nm} ← IO.mkRef Value.null\n{nm}.set ({val} : Value)"
+  {tgt.nm = rhs} => "sm {tgt} \"{nm.raw}\" {rhs}"
+  {lhs = rhs} => "(← wr {lhs} {rhs}) |> sink"
+  {tgt[k] = rhs} => "setAt {tgt} {k} {rhs}"
+
+  /* expressions: every one is a term, parenthesised or a single word */
+  {a & b} => "(← andV {a} (do pure {b}))"
+  {a | b} => "(← orV {a} (do pure {b}))"
+  {!a} => "(← notV {a})"
+  {-a} => "(← negV {a})"
+  {a == b} => "(← eqV {a} {b})"
+  {a != b} => "(← neV {a} {b})"
+  {a < b} => "(← ltV {a} {b})"
+  {a <= b} => "(← leV {a} {b})"
+  {a > b} => "(← gtV {a} {b})"
+  {a >= b} => "(← geV {a} {b})"
+  {a + b} => "(← addV {a} {b})"
+  {a - b} => "(← subV {a} {b})"
+  {a * b} => "(← mulV {a} {b})"
+  {a / b} => "(← divV {a} {b})"
+  {a % b} => "(← modV {a} {b})"
+  {a ^ b} => "(← powV {a} {b})"
+  {a ?? b} => "(← orElse {a} (do pure {b}))"
+  {cond ? a : b} => "(← tern {cond} (do pure {a}) (do pure {b}))"
+  {a ==.instance_of Array} => "(isList {a})"
+  {a ==.instance_of ty} => "(← instanceOf {a} \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "(← gm {tgt} \"{nm.raw.method}\")"
+  {tgt?.nm} => "(← gmo {tgt} \"{nm.raw.method}\")"
+  {tgt.nm()} => "(← gm {tgt} \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "(← cm {tgt} \"{nm.raw.method}\" #[{arglist}])"
+  {tgt?.nm(arglist)} => "(← cmo {tgt} \"{nm.raw.method}\" #[{arglist}])"
+  {tgt.choose("nm")} => "(← choose {tgt} {nm.quoted})"
+  {tgt[k]} => "(← elemv {tgt} {k})"
+  {fn(arglist)} => "(← inv {fn} #[{arglist}])"
+  {Class(arglist)} => "(← mk \"{Class}\" #[{arglist}])"
+  {[elems]} => "(← lst #[{elems}])"
+  { {} } => "(← mk \"Node\" #[])"
+  {this} => "self"
+  {None} => "Value.null"
+  {true} => "(Value.bool true)"
+  {false} => "(Value.bool false)"
+  {"txt"} => "(Value.str (\"{txt}\"))"
+  {(paramlist) => { stmts }} => "(mkFn (fun a{d} => do\n  {paramlist}\n{stmts.returned.indent}\n  return Value.null))"
+  {(paramlist) => e} => "(mkFn (fun a{d} => do\n  {paramlist}\n  return {e}))"
+  {xs#} => "(← manyv {xs})"
+  {draw([ws], [os])} => "(← cm (← gm (← gm self \"vertex\") \"world\") \"draw\" #[(← lst #[{ws}]), (← lst #[{os}])])"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} in [0:rangeN {cnt}] do\n  let {x_.bare} ← IO.mkRef (Value.num (natF i{d}))\n{stmts.indent}\n  pure ()\nValue.null"
+  {xs.for((x_) => { stmts })} => "for e{d} in (← itemsv {xs}) do\n  let {x_.bare} ← IO.mkRef e{d}\n{stmts.indent}\n  pure ()\nValue.null"
+  {fail(x_)} => "(← failV {x_})"
+  {Catalogue.number(x_)} => "(← number {x_})"
+  {String(chars: xs)} => "(← fromCodepoints {xs})"
+  {x_.blank} => "(blank {x_})"
+  {xs.push(x_)} => "(← m_push {xs} #[{x_}])"
+  {xs.chars} => "(← m_chars {xs})"
+  {xs.pop} => "(← m_pop {xs})"
+  {xs.length} => "(← lenOf {xs})"
+  {xs.map(f)} => "(← m_map {xs} #[{f}])"
+  {xs.filter(f)} => "(← m_filter {xs} #[{f}])"
+  {xs.for(f)} => "(← m_for {xs} #[{f}])"
+  {xs.some(f)} => "(← m_some {xs} #[{f}])"
+  {xs.every(f)} => "(← m_every {xs} #[{f}])"
+  {xs.reduce(z, f)} => "(← m_reduce {xs} #[{z}, {f}])"
+  {xs.starts_with(x_)} => "(← m_starts_with {xs} #[{x_}])"
+  {xs.ends_with(x_)} => "(← m_ends_with {xs} #[{x_}])"
+  {xs.replace(x_, y_)} => "(← m_replace {xs} #[{x_}, {y_}])"
+  {xs.split(x_)} => "(← m_split {xs} #[{x_}])"
+  {xs.trim} => "(← m_trim {xs})"
+  {xs.upper} => "(← m_upper {xs})"
+  {xs.lower} => "(← m_lower {xs})"
+  {xs.lines} => "(← m_lines {xs})"
+  {xs.quoted} => "(← m_quoted {xs})"
+  {xs.contains(x_)} => "(← m_contains {xs} #[{x_}])"
+  {xs.index_of(x_)} => "(← m_index_of {xs} #[{x_}])"
+  {xs.join(sep)} => "(← m_join {xs} #[{sep}])"
+  {xs.first} => "(← m_first {xs})"
+  {xs.last} => "(← m_last {xs})"
+  {xs.empty} => "(← m_empty {xs})"
+  {xs.take(cnt)} => "(← m_take {xs} #[{cnt}])"
+  {xs.drop(cnt)} => "(← m_drop {xs} #[{cnt}])"
+  {xs.rest} => "(← m_rest {xs})"
+  {xs.concat(ys)} => "(← m_concat {xs} #[{ys}])"
+  {xs.reverse} => "(← m_reverse {xs})"
+  {xs.sum} => "(← m_sum {xs})"
+  {xs.most(f)} => "(← m_most {xs} #[{f}])"
+  {xs.sorted_by(f)} => "(← m_sorted_by {xs} #[{f}])"
+  {xs.each} => "(← m_each {xs})"
+  {Array.range(cnt)} => "(← rng {cnt})"
+  {Array.filled(cnt, x_)} => "(← filled {cnt} {x_})"
+  {x_.sqrt} => "(← m_sqrt {x_})"
+  {x_.floor} => "(← m_floor {x_})"
+  {x_.abs} => "(← m_abs {x_})"
+  {x_.negated} => "(← negV {x_})"
+  {x_.magnitude} => "(← m_magnitude {x_})"
+  {x_.cos} => "(← m_cos {x_})"
+  {x_.sin} => "(← m_sin {x_})"
+  {x_.round} => "(← m_round {x_})"
+  {x_.ln} => "(← m_ln {x_})"
+  {x_.exp} => "(← m_exp {x_})"
+  {x_.atan2(y_)} => "(← m_atan2 {x_} #[{y_}])"
+  {x_.pow(y_)} => "(← m_pow {x_} #[{y_}])"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "(Value.num 0)"
+  {Real.ONE} => "(Value.num 1)"
+  {Real.TWO} => "(Value.num 2)"
+  {Real.PI} => "(Value.num 3.141592653589793)"
+  {Real.NAN} => "(Value.num (0.0 / 0.0))"
+  {Real.INFINITY} => "(Value.num (1.0 / 0.0))"
+  {Real.TAU} => "(Value.num 6.283185307179586)"
+  {Random.MODULUS} => "(Value.num 4294967296)"
+  {Random.MULTIPLIER} => "(Value.num 1664525)"
+  {Random.INCREMENT} => "(Value.num 1013904223)"
+
+  /* classes: a namespace whose members are `initialize`s filling the class's table when the package loads */
+  {nm := class < sup { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"{sup.first}\"\n{membs}\nend C_{nm.raw}"
+  {nm := class { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"Node\"\n{membs}\nend C_{nm.raw}"
+  {nm: ty = class { membs }} => "/-@@PIECE@@-/\nnamespace C_{nm.raw}\ndef thisClass : String := \"{nm.raw}\"\ninitialize defineClass thisClass \"{ty}\"\n{membs}\ninitialize defineTheory thisClass\nend C_{nm.raw}"
+  {theorem "nm" () => tbody} => "initialize staticField thisClass \"theorem {nm}\" (fun self => do\n  return (← mk \"Theorem\" #[(Value.kw \"id\" (Value.str {nm.quoted})), (Value.kw \"body\" (mkFn (fun a{d} => do\n{tbody.returned.indent}\n  return Value.null)))]))"
+  {x_.body()} => "(← inv (← gm {x_} \"body\") #[])"
+  {nm: ty = val} => "initialize field thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
+  {nm: ty} => "initialize fieldNone thisClass \"{nm.raw}\""
+  {nm = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
+  {static nm: ty = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
+  {static nm = val} => "initialize staticField thisClass \"{nm.raw}\" (fun self => do\n  return {val})"
+  {nm (): ret => mbody} => "initialize getter thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
+  {nm () => mbody} => "initialize getter thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
+  {static nm (): ret => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
+  {static nm () => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n{mbody.returned.indent}\n  return Value.null)"
+  {nm (paramlist): ret => mbody} => "initialize method thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
+  {nm (paramlist) => mbody} => "initialize method thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
+  {static nm (paramlist): ret => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
+  {static nm (paramlist) => mbody} => "initialize statik thisClass \"{nm.raw.method}\" (fun self a{d} => do\n  {paramlist}\n{mbody.returned.indent}\n  return Value.null)"
+  {nm (paramlist): ret} => "initialize method thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {nm (paramlist)} => "initialize method thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {nm (): ret} => "initialize getter thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {nm ()} => "initialize getter thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {static nm (paramlist): ret} => "initialize statik thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {static nm (paramlist)} => "initialize statik thisClass \"{nm.raw.method}\" (declared \"{nm}\")"
+  {rule /rid "nm" | rt () => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" (Value.str {rt.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n{rbody.returned.indent}\n  return Value.null)))]))"
+  {rule /rid "nm" () => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" Value.null), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n{rbody.returned.indent}\n  return Value.null)))]))"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" (Value.str {rt.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n  {paramlist}\n{rbody.returned.indent}\n  return Value.null)))]))"
+  {rule /rid "nm" (paramlist) => rbody} => "initialize staticField thisClass \"rule {rid}\" (fun self => do\n  return (← mk \"Rule\" #[(Value.kw \"id\" (Value.str \"/{rid}\")), (Value.kw \"name\" (Value.str {nm.quoted})), (Value.kw \"rate\" Value.null), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"single\" (Value.bool {single})), (Value.kw \"where\" {where}), (Value.kw \"source\" {source}), (Value.kw \"body\" (mkFn (fun a{d} => do\n  {paramlist}\n{rbody.returned.indent}\n  return Value.null)))]))"
+  {choose "nm" (paramlist): ret} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => throwMsg \"the choice {nm} is not defined by anyone\")"
+  {choose "nm" (paramlist): ret => cbody} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => do\n  {paramlist}\n{cbody.returned.indent}\n  return Value.null)"
+  {choose "nm" (paramlist) => cbody} => "initialize method thisClass \"choose {nm}\" (fun self a{d} => do\n  {paramlist}\n{cbody.returned.indent}\n  return Value.null)"
+  {as (=== ty) => cbody} => "initialize getter thisClass \"as_{ty}\" (fun self a{d} => do\n{cbody.returned.indent}\n  return Value.null)"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\ninitialize setStaticCls \"{outer}\" \"{inner_name}\""
+
+  /* a top-level definition is made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "initialize defGlobal \"{nm}\" (do\n  return {text})"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "Value.null" : "(Value.str {rate.quoted})"
+    where := where_source.empty ? "Value.null" : "(← mk \"Node\" #[(Value.kw \"source\" (Value.str {where_source.quoted}))])"
+    rule := id.empty ? "Value.null" : "(← mk \"Node\" #[(Value.kw \"id\" (Value.str {id.quoted})), (Value.kw \"rate\" {rate_}), (Value.kw \"name\" (Value.str {rule_name.quoted})), (Value.kw \"over\" (Value.str {over.quoted})), (Value.kw \"where\" {where}), (Value.kw \"source\" (Value.str {rule_source.quoted}))])"
+    leans_ := leans.empty ? "Value.null" : "(Value.str {leans.quoted})"
+    "    (← mk \"Node\" #[(Value.kw \"rule\" {rule}), (Value.kw \"rate\" {rate_}), (Value.kw \"degree\" (Value.num {degree})), (Value.kw \"outside\" (Value.bool {outside})), (Value.kw \"settles\" (Value.bool {settles})), (Value.kw \"transport\" (Value.bool {transport})), (Value.kw \"leans\" {leans_}), (Value.kw \"turned\" (Value.str {turned.quoted})), (Value.kw \"doing\" (← mk \"Node\" #[(Value.kw \"carries\" (Value.bool {carries})), (Value.kw \"sets\" (Value.bool {sets})), (Value.kw \"grown\" (Value.bool {grown})), (Value.kw \"trades\" (Value.bool {trades})), (Value.kw \"grew\" (← atv {grew_source.quoted} (fun s => do return {grew}))), (Value.kw \"grew_apart\" (← atv {grew_apart_source.quoted} (fun s => do return {grew_apart}))), (Value.kw \"draws\" Value.null), (Value.kw \"needs\" (Value.num {degree})), (Value.kw \"outside\" (Value.bool {outside})), (Value.kw \"settles\" (Value.bool {settles})), (Value.kw \"share\" (← atv {share_source.quoted} (fun s => do return {share}))), (Value.kw \"asked\" (← atv {asked_source.quoted} (fun s => do return {asked}))), (Value.kw \"around\" (← atv {around_source.quoted} (fun s => do return {around}))), (Value.kw \"rays\" (← atv {rays_source.quoted} (fun s => do return {rays}))), (Value.kw \"space\" (← atv {space_source.quoted} (fun s => do return {space}))), (Value.kw \"folds\" (← atv {folds_source.quoted} (fun s => do return {folds})))]))])"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "initialize do\n  sm (← K \"{theory}\") \"equation\" (← mk \"Node\" #[(Value.kw \"latex\" (Value.str {latex.quoted})), (Value.kw \"terms\" (← lst #[\n{lines}\n  ]))])"
+  }
+
+  /* what every module of the package opens with */
+  prologue (): String => "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport OrbitMines.Physics.Runtime\nset_option linter.unusedVariables false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nopen Rt\n"
+
+  /* the package: the runtime, one module a class (the text is split where a class begins), and the module that imports them all in order */
+  write_package (code: String) => {
+    parts := code.split("/-@@PIECE@@-/").filter(p => p.trim != "")
+    imports := Array.range(parts.length).map(i => "import OrbitMines.Physics.Part{i}").join("\n")
+    Array.range(parts.length).for(i => {
+      @./languages/physics.lean/OrbitMines/Physics/Part{i}.lean := "{Lean.prologue}\n{parts[i]}\n"
+    })
+    @./languages/physics.lean/OrbitMines/Physics/Runtime.lean := @./implementation/gen/backends/cpu.rt.lean
+    @./languages/physics.lean/OrbitMines/Physics.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n/-\n  OrbitMines.Physics - the physics core and the theories, emitted from implementation/physics.ray. Every Ray class\n  is a table filled when the package loads (`K \"Medium\"`), every theory an object (`K \"G\"`); their members are\n  reached through the runtime (`gm`, `cm`, `sm`, `mk` in `Rt`).\n-/\nimport OrbitMines.Physics.Runtime\n{imports}\nimport OrbitMines.Physics.Theorems\n"
+    @./languages/physics.lean/README.md := this.readme
+    @./languages/physics.lean/lakefile.toml := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nname = \"orbitmines-physics\"\nversion = \"0.0.1\"\ndefaultTargets = [\"OrbitMines\"]\n\n[[lean_lib]]\nname = \"OrbitMines\"\nroots = [\"OrbitMines.Physics\"]\n"
+    @./languages/physics.lean/lean-toolchain := "leanprover/lean4:v4.34.1\n"
+    @./languages/physics.lean/.gitignore := "/.lake\n"
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Lean)
+    requirement := r.requirement.as(Lean)
+    filter := r.filter == None ? "(Value.bool true)" : r.filter.as(Lean)
+    label := "{r.location} on {f.name}"
+    "initialize addTest {label.quoted} (do\n  let it : Value := {definition}\n  let mut guard := 0\n  while !truthy {filter} do\n    guard := guard + 1\n    if guard > {r.until} || !(← has it \"tick\") then return \"skip\"\n    sink (← gm it \"tick\")\n  return (if truthy {requirement} then \"pass\" else \"failed: \" ++ {requirement.quoted}))"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/lean/TestG.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n-- lake build && .lake/build/bin/testg [filter]\nimport OrbitMines.Physics\nset_option linter.unusedVariables false\nset_option maxHeartbeats 0\nset_option maxRecDepth 100000\nopen Rt\n\ninitialize testsRef : IO.Ref (Array (String × IO String)) ← IO.mkRef #[]\ndef addTest (name : String) (body : IO String) : IO Unit := testsRef.modify (·.push (name, body))\n\n{cases}\n\ndef main (args : List String) : IO UInt32 := do\n  let only := args.head?\n  let mut passed := 0\n  let mut failed := 0\n  let mut skipped := 0\n  for (name, body) in (← testsRef.get) do\n    if let some o := only then\n      if (strFind name o).isNone then continue\n    let t0 ← IO.monoNanosNow\n    let got ← try body catch e => pure (\"error: \" ++ toString e)\n    let t1 ← IO.monoNanosNow\n    let secs := fixed2 ((t1 - t0).toFloat / 1e9)\n    if got == \"pass\" then\n      passed := passed + 1\n      IO.println (\"ok   \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else if got == \"skip\" then\n      skipped := skipped + 1\n      IO.println (\"skip \" ++ name ++ \" (\" ++ secs ++ \" s)\")\n    else\n      failed := failed + 1\n      IO.println (\"FAIL \" ++ name ++ \" (\" ++ secs ++ \" s) - \" ++ got)\n    (← IO.getStdout).flush\n  IO.println (toString passed ++ \" passed, \" ++ toString failed ++ \" failed, \" ++ toString skipped ++ \" skipped\")\n  return (if failed > 0 then 1 else 0)\n"
+    @./tests/lean/lakefile.toml := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nname = \"orbitmines-physics-tests\"\ndefaultTargets = [\"testg\"]\n\n[[require]]\nname = \"orbitmines-physics\"\npath = \"../../languages/physics.lean\"\n\n[[lean_exe]]\nname = \"testg\"\nroot = \"TestG\"\n"
+    @./tests/lean/lean-toolchain := "leanprover/lean4:v4.34.1\n"
+    @./tests/lean/.gitignore := "/.lake\n"
+  }
+
+  /* Lean renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `OrbitMines.Physics.Theorems.json` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.lean/OrbitMines/Physics/theorems.json := "{{{proofs}}}"
+    @./languages/physics.lean/OrbitMines/Physics/Theorems.lean := "-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nnamespace OrbitMines.Physics.Theorems\n\n/-- what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON -/\ndef json : String := include_str \"theorems.json\"\n\nend OrbitMines.Physics.Theorems\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.lean
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.lean"
+  install (): String => "```lean\n-- Lean 4 (lakefile.toml)\n[[require]]\nname = \"orbitmines-physics\"\ngit = \"https://github.com/orbitmines/physics\"\nsubDir = \"languages/physics.lean\"\n```"
+  readme (): String => "# orbitmines-physics - Lean 4\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Lean 4: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Lean.install}\n\nLean 4.34 or later (`lake build`), library `OrbitMines`, module `OrbitMines.Physics`.\n\n## Using it\n\nLean has no dynamic members, so a Ray object is reached by name, in `IO`: `gm x \"name\"`, `cm x \"method\" #[args]`, `sm x \"name\" value`, `mk \"Class\" #[kw \"field\" value, ...]`, `K \"G\"` for a class or a theory. A value is an `Rt.Value`: numbers are `Float`, lists shared and mutable (`Value.toList`), `strv` writes any value as text.\n\n```lean\nimport OrbitMines.Physics\nopen Rt\n\n-- a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\ndef main : IO Unit := do\n  let medium ← cm (← K \"G\") \"medium\" #[31, 96, 3, 8, 1]\n  sm medium \"local_rays\" (.bool true)\n  discard <| cm medium \"add\" #[← mk \"Hole\" #[kw \"x\" 15, kw \"y\" 15, kw \"mx\" 0.3, kw \"ways\" 1]]\n  discard <| gm medium \"seed\"\n  for _ in [0:5] do\n    discard <| gm medium \"tick\"\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```lean\nlet plan ← mk \"Plan\" #[kw \"sources\" 1e9, kw \"side\" 241]\nsm (← gm plan \"budget\") \"compact\" (.bool true)   -- twelve bytes a source\nIO.println (← strv (← cm plan \"report\" #[17179869184, 2147483648]))\n```\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+}

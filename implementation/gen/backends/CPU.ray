@@ -9,11 +9,11 @@ CPU: Backend = class {
   name = "CPU"
   kernel = None
 
-  /* the runtime template of a host language - read here, because a path is read where it is written */
+  /* the runtime template of a host language: the language's own (`cpu_runtime`), or one of the first two, read here */
   runtime_for (language: Language): String => {
     return @./implementation/gen/backends/cpu.runtime.ts if language.name == "TypeScript"
     return @./implementation/gen/backends/cpu.runtime.py if language.name == "Python"
-    None
+    language.cpu_runtime
   }
-  supports (language: Language): boolean => language.name == "TypeScript" | language.name == "Python"
+  supports (language: Language): boolean => language.name == "TypeScript" | language.name == "Python" | language.cpu_runtime != None
 }

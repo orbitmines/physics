@@ -5594,7 +5594,7 @@ export class Prover extends Node {
         if (!(eq(st, null))) {
           seen[k] = true;
           for (const f of [...st.upon]) {
-            walk(f)
+            walk(f);
           };
           push(out, st);
         }
@@ -8320,6 +8320,13 @@ export class Medium extends Node {
       return h.mass;
     }));
   }
+  get departed(): number {
+    return sum(this.holes.filter(((h: any) => {
+      return lt(this.at(Math.round(h.x), Math.round(h.y)), 0);
+    })).map(((h: any) => {
+      return h.mass;
+    })));
+  }
   tap(f: number[], base: number, x: number, y: number, outside: number): number {
     let x0 = Math.floor(x);
     let y0 = Math.floor(y);
@@ -8568,22 +8575,22 @@ export class Medium extends Node {
   lay(c: number, b: number, got: number[][]) {
     let x = this.column_of(c);
     let y = this.row_of(c);
-    let list = got.filter(((m: any) => {
+    let group_now = got.filter(((m: any) => {
       return gt(elem(m, 0), 0);
     }));
-    while (gt(list.length, this.keeps)) {
-      let fr = list.map(((m: any) => {
+    while (gt(group_now.length, this.keeps)) {
+      let fr = group_now.map(((m: any) => {
         return this.fresh(m, x, y);
       }));
       let best = 0;
       let bi = (-1);
       let bj = (-1);
-      for (let pass = 0; pass < 2; pass++) {
+      for (let tries = 0; tries < 2; tries++) {
         if (lt(bi, 0)) {
-          for (let i = 0; i < list.length; i++) {
-            for (let j = 0; j < list.length; j++) {
-              if ((gt(j, i) && ((eq(pass, 1) || eq(elem(fr, i), elem(fr, j)))))) {
-                let seen = this.apart_seen(elem(list, i), elem(list, j), x, y);
+          for (let i = 0; i < group_now.length; i++) {
+            for (let j = 0; j < group_now.length; j++) {
+              if ((gt(j, i) && ((eq(tries, 1) || eq(elem(fr, i), elem(fr, j)))))) {
+                let seen = this.apart_seen(elem(group_now, i), elem(group_now, j), x, y);
                 if ((lt(bi, 0) || lt(seen, best))) {
                   best = seen;
                   bi = i;
@@ -8594,16 +8601,16 @@ export class Medium extends Node {
           };
         }
       };
-      let merged = this.gathered(elem(list, bi), elem(list, bj), x, y);
-      list = range(list.length).filter(((i: any) => {
+      let merged = this.gathered(elem(group_now, bi), elem(group_now, bj), x, y);
+      group_now = range(group_now.length).filter(((i: any) => {
         return (!eq(i, bi) && !eq(i, bj));
       })).map(((i: any) => {
-        return elem(list, i);
+        return elem(group_now, i);
       })).concat([merged]);
     }
     let base = this.first_slot(c, b);
     for (let j = 0; j < this.keeps; j++) {
-      let m = (lt(j, list.length) ? elem(list, j) : [0, 0, 0, 0, 0, 0, (-1), 0]);
+      let m = (lt(j, group_now.length) ? elem(group_now, j) : [0, 0, 0, 0, 0, 0, (-1), 0]);
       this.bq[add(base, j)] = elem(m, 0);
       this.bsx[add(base, j)] = elem(m, 1);
       this.bsy[add(base, j)] = elem(m, 2);
@@ -8814,9 +8821,10 @@ export class Medium extends Node {
       return [0, 0, 0];
     }
     let own = (((this.local_rays && ge(zown, 1)) && le(zown, this.holes.length)) ? elem(this.holes, sub(zown, 1)) : null);
-    let mine = (eq(own, null) ? [0, 0, 0, 0, 0, 0, (-1), 0] : this.emitted(own));
-    let me = sub(zown, 1);
     let srcid = (eq(own, null) ? 0.5 : sub((-2), this.at(Math.round(own.x), Math.round(own.y))));
+    let whole = this.own_gathering(own);
+    let mine = (eq(own, null) ? [0, 0, 0, 0, 0, 0, (-1), 0] : ((eq(whole, null) ? this.emitted(own) : [elem(whole, 0), elem(whole, 1), elem(whole, 2), elem(whole, 3), elem(whole, 4), elem(whole, 5), elem(whole, 6), 0])));
+    let me = (eq(whole, null) ? sub(zown, 1) : srcid);
     let sum = 0;
     let gx = 0;
     let gy = 0;
@@ -9185,6 +9193,22 @@ export class Medium extends Node {
     };
     return this.recurred(x, y, [gx, gy]);
   }
+  get cell_pull(): boolean { return this.read("cell_pull", () => true); }
+  set cell_pull(v: boolean) { this.write("cell_pull", v); }
+  own_gathering(h: Hole): number[] {
+    if (((eq(h, null) || !(this.cell_pull)) || !eq(this.shone.length, this.cells))) {
+      return null;
+    }
+    let c = this.at(Math.round(h.x), Math.round(h.y));
+    if (lt(c, 0)) {
+      return null;
+    }
+    let e = elem(this.shone, c);
+    if (eq(e, null)) {
+      return null;
+    }
+    return ((eq(elem(e, 6), sub((-2), c)) && gt(elem(e, 0), 0)) ? e : null);
+  }
   recurred(x: number, y: number, g: number[]): number[] {
     let n = mul(this.K, this.K);
     let f = this.recur_at(x, y, Fmt.hypot(div(elem(g, 0), n), div(elem(g, 1), n)));
@@ -9200,12 +9224,15 @@ export class Medium extends Node {
   }
   pull_local(x: number, y: number, zown: number): number[] {
     let half = div(sub(this.K, 1), 2);
+    let whole = this.own_gathering(((ge(zown, 1) && le(zown, this.holes.length)) ? elem(this.holes, sub(zown, 1)) : null));
+    let cx = (eq(whole, null) ? x : div(elem(whole, 1), elem(whole, 0)));
+    let cy = (eq(whole, null) ? y : div(elem(whole, 2), elem(whole, 0)));
     let gx = 0;
     let gy = 0;
     for (let dy = 0; dy < this.K; dy++) {
       for (let dx = 0; dx < this.K; dx++) {
-        let px = add(sub(x, half), dx);
-        let py = add(sub(y, half), dy);
+        let px = add(sub(cx, half), dx);
+        let py = add(sub(cy, half), dy);
         let per = this.per_at(px, py);
         let came = this.arriving_at(px, py, zown);
         gx = sub(gx, mul(per, elem(came, 1)));
@@ -11192,7 +11219,7 @@ export class Galaxies extends Node {
   static SEVERAL = [86, 168, 235];
   static FREEDOMS = [`mass`, `face`, `moving`, `spread`];
   static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]];
-  static NAMES_NOW = Galaxies.FREEDOMS;
+  static NAMES_NOW = [`mass`, `face`, `moving`, `spread`];
   static LEVELS = [(-4), (-2), 0, 1, 2, 3];
   static WIDTHS = [0, 2];
   static DISK_ID = `law.disk`;
@@ -12782,6 +12809,149 @@ export class HeldDisc extends Painter {
   frame(s: Surface, dt: number) {
     Galaxies.medium_panel(s, this.formed, this.shown_frames);
     this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Resolution extends Node {
+  get cells(): number { return this.read("cells", () => 3); }
+  set cells(v: number) { this.write("cells", v); }
+  get ways(): number { return this.read("ways", () => 96); }
+  set ways(v: number) { this.write("ways", v); }
+  get keeps(): number { return this.read("keeps", () => 4); }
+  set keeps(v: number) { this.write("keeps", v); }
+  get list(): number { return this.read("list", () => 12); }
+  set list(v: number) { this.write("list", v); }
+  get near_list(): number { return this.read("near_list", () => 96); }
+  set near_list(v: number) { this.write("near_list", v); }
+  get near_cells(): number { return this.read("near_cells", () => 5); }
+  set near_cells(v: number) { this.write("near_cells", v); }
+  get cell_pull(): boolean { return this.read("cell_pull", () => true); }
+  set cell_pull(v: boolean) { this.write("cell_pull", v); }
+  get margin(): number { return this.read("margin", () => 2); }
+  set margin(v: number) { this.write("margin", v); }
+  get speed(): number { return this.read("speed", () => 0.25); }
+  set speed(v: number) { this.write("speed", v); }
+  get constants(): object {
+    let out = ({});
+    out[`MLIST`] = this.list;
+    out[`MNEAR`] = this.near_list;
+    out[`MCELLPULL`] = this.cell_pull;
+    return out;
+  }
+}
+
+export class Budget extends Node {
+  get memory(): number { return this.read("memory", () => 0); }
+  set memory(v: number) { this.write("memory", v); }
+  get binding(): number { return this.read("binding", () => 0); }
+  set binding(v: number) { this.write("binding", v); }
+  get aim_ms(): number { return this.read("aim_ms", () => 15); }
+  set aim_ms(v: number) { this.write("aim_ms", v); }
+  get longest_ms(): number { return this.read("longest_ms", () => 250); }
+  set longest_ms(v: number) { this.write("longest_ms", v); }
+  get duty(): number { return this.read("duty", () => 0.5); }
+  set duty(v: number) { this.write("duty", v); }
+  get in_flight(): number { return this.read("in_flight", () => 2); }
+  set in_flight(v: number) { this.write("in_flight", v); }
+  get host(): number { return this.read("host", () => 0); }
+  set host(v: number) { this.write("host", v); }
+  get compact(): boolean { return this.read("compact", () => false); }
+  set compact(v: boolean) { this.write("compact", v); }
+}
+
+export class Batching extends Node {
+  get tiles(): number { return this.read("tiles", () => 1); }
+  set tiles(v: number) { this.write("tiles", v); }
+  get ticks(): number { return this.read("ticks", () => 1); }
+  set ticks(v: number) { this.write("ticks", v); }
+}
+
+export class Output extends Node {
+  get every(): number { return this.read("every", () => 0); }
+  set every(v: number) { this.write("every", v); }
+  get grid(): number { return this.read("grid", () => 128); }
+  set grid(v: number) { this.write("grid", v); }
+  get sources(): boolean { return this.read("sources", () => false); }
+  set sources(v: boolean) { this.write("sources", v); }
+}
+
+export class Plan extends Node {
+  get sources(): number { return this.read("sources"); }
+  set sources(v: number) { this.write("sources", v); }
+  get side(): number { return this.read("side"); }
+  set side(v: number) { this.write("side", v); }
+  get resolution(): Resolution { return this.read("resolution", () => new Resolution({  })); }
+  set resolution(v: Resolution) { this.write("resolution", v); }
+  get budget(): Budget { return this.read("budget", () => new Budget({  })); }
+  set budget(v: Budget) { this.write("budget", v); }
+  get batching(): Batching { return this.read("batching", () => new Batching({  })); }
+  set batching(v: Batching) { this.write("batching", v); }
+  get output(): Output { return this.read("output", () => new Output({  })); }
+  set output(v: Output) { this.write("output", v); }
+  get box_side(): number {
+    return add(this.side, mul(mul(2, this.resolution.margin), this.resolution.cells));
+  }
+  get box_cells(): number {
+    return mul(this.box_side, this.box_side);
+  }
+  get reach(): number {
+    return add(mul(3, this.resolution.cells), 4);
+  }
+  get tile_side(): number {
+    return add(Math.floor((div(sub(add(this.box_side, this.batching.tiles), 1), this.batching.tiles))), mul(mul(2, this.reach), this.batching.ticks));
+  }
+  get tile_cells(): number {
+    return (eq(this.batching.tiles, 1) ? this.box_cells : mul(this.tile_side, this.tile_side));
+  }
+  get tile_sources(): number {
+    return div(mul(this.sources, this.tile_cells), this.box_cells);
+  }
+  get parts(): any[] {
+    let c = this.tile_cells;
+    let s = this.tile_sources;
+    let r = this.resolution;
+    let held = mul(mul(c, (add(add(add(add(add(add(add(add(add(add(mul(mul(r.ways, r.keeps), 8), 1), r.ways), 12), 2), 4), 4), 9), r.near_list), 1), 1))), 4);
+    let each = (this.budget.compact ? 0 : add(add(add(12, 4), 2), 1));
+    let ledgers = mul((add(add(mul(c, add(add(11, 384), 2)), mul(s, each)), mul(mul(4096, 64), 4))), 4);
+    let lists = (this.budget.compact ? mul((add(mul(10, c), mul(1024, 1024))), 4) : mul((add(mul(2, c), s)), 4));
+    let base = [[`held rays (a box)`, held, true], [`held rays (the other)`, held, true], [`ledgers and sources`, ledgers, true], [`sources by cell`, lists, true], [`planes`, mul(mul(3, c), 4), true]];
+    let shards = (this.budget.compact ? range(8).map(((k: any) => {
+      return Fmt.max(0, Fmt.min(178956970, sub(s, mul(k, 178956970))));
+    })).filter(((n: any) => {
+      return gt(n, 0);
+    })) : []);
+    return base.concat(range(shards.length).map(((k: any) => {
+      return [`sources (shard ${k})`, mul(elem(shards, k), 12), true];
+    })));
+  }
+  get total(): number {
+    let sum = 0;
+    for (const p of [...this.parts]) {
+      sum = add(sum, elem(p, 1));
+    };
+    return sum;
+  }
+  get per_source(): number {
+    return (this.budget.compact ? 12 : mul(add(add(add(add(12, 4), 2), 1), 1), 4));
+  }
+  fits(memory: number, binding: number): boolean {
+    let cap = (gt(this.budget.memory, 0) ? this.budget.memory : memory);
+    let one = (gt(this.budget.binding, 0) ? this.budget.binding : binding);
+    return (le(this.total, cap) && this.parts.every(((p: any) => {
+      return le(elem(p, 1), one);
+    })));
+  }
+  report(memory: number, binding: number): string {
+    let cap = (gt(this.budget.memory, 0) ? this.budget.memory : memory);
+    let one = (gt(this.budget.binding, 0) ? this.budget.binding : binding);
+    let over = ` - more than one binding holds (${Fmt.fixed(div(one, 1048576), 0)} MiB)`;
+    let lines = this.parts.map(((p: any) => {
+      let tail = (gt(elem(p, 1), one) ? over : ``);
+      return `  ${elem(p, 0)}: ${Fmt.fixed(div(elem(p, 1), 1048576), 0)} MiB${tail}`;
+    }));
+    let head = `${Fmt.fixed(this.sources, 0)} sources on a ${this.side}-cell view in a ${this.box_side}-cell box (${mul(this.batching.tiles, this.batching.tiles)} tile(s), ${this.resolution.cells} cells to a c-bar, ${this.resolution.ways} ways): ${Fmt.fixed(div(this.total, 1073741824), 2)} GiB of ${Fmt.fixed(div(cap, 1073741824), 2)} GiB, ${Fmt.fixed(this.per_source, 0)} bytes a source`;
+    let verdict = (this.fits(memory, binding) ? `  fits` : `  does not fit`);
+    return [head].concat(lines).concat([verdict]).join(`\n`);
   }
 }
 

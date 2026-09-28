@@ -12,9 +12,9 @@
 Definition := class < name: String, definition: Program { }
 
 Gen := class {
-  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Aggregate, Medium, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, Panel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Sweeping, Orbiting, Forming, HeldDisc, Annulus, Simulation, Formed, Model, Axis, Shaded, Sweep, Measure]
+  static core (): Array => [Ray, Boundary, Edge, Vertex, Vector, Geometry, Random, Rule, Theory, World, Source, Visual, Theorem, Around, Cell, Beam, Port, Bodies, Hole, Field, Rates, Grid, Solve, Piece, Braced, Args, Reference, Setter, Notation, Keyed, Expr, ExprReader, Fact, Step, Store, Inference, Asked, Line, Standing, Part, TermRecord, Proved, Proof, TermInfo, Prover, Inferences, Aggregate, Medium, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, Panel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, Annulus, Simulation, Formed, Model, Axis, Shaded, Sweep, Measure]
   static theories (): Array => [G]
-  static languages (): Array => [TypeScript, Python]
+  static languages (): Array => [TypeScript, Python, Ruby, Java, CSharp, Go, Cpp, Rust, Lean, Swift, Julia, Rlang, Wolfram]
   static backends (): Array => [CPU, WebGPU, Vulkan, OpenGL, OpenCL, CUDA, Metal, DirectX]
   /* whether a package carries a class of this name: the core, or a theory */
   static emits (kind: String): boolean => Gen.core.some(c => c.name == kind) | Gen.theories.some(t => t.name == kind)
@@ -56,8 +56,34 @@ Gen := class {
     @./languages/kernels/{tn}.{bn} := text
   }
 
+  /*
+   * THE REPOSITORY'S INSTALLATION, written between `<!-- gen:installation -->` and `<!-- /gen:installation -->` in the
+   * README: every language's package, Python's first - the one the README's own explanations are in - and each
+   * language's own README beside it. Everything else in the README is written by hand
+   */
+  static installation (): String => {
+    /* a language not yet written has nothing to install */
+    ready := Gen.languages.filter(l => l.install != "")
+    ordered := ready.filter(l => l.name == "Python").concat(ready.filter(l => l.name != "Python"))
+    links := ordered.map(l => "[{l.name}](./languages/{l.package_dir}/README.md)").join(", ")
+    blocks := ordered.map(l => l.install).join("\n\n")
+    "While all the explanations here are for Python, packages exist for every language in the [languages/](./languages/) folder, each with its own README ({links}).\n\n{blocks}"
+  }
+  static write_installation () => {
+    start := "<!-- gen:installation -->"
+    stop := "<!-- /gen:installation -->"
+    text := @./README.md
+    return if !(text.contains(start) & text.contains(stop))
+    before := text.split(start).first
+    after := text.split(stop).last
+    @./README.md = "{before}{start}\n{Gen.installation}\n{stop}{after}"
+  }
+
+  /* `npx ray gen Ruby Python`: those languages' packages alone; `npx ray gen` (all): every package, the theorems, the kernels and the README */
   static run (targets: String[]) => {
-    Gen.languages.for(language => {
+    everything := targets.some(t => t == "all")
+    wanted := everything ? Gen.languages : Gen.languages.filter(l => targets.some(t => t == l.name))
+    wanted.for(language => {
       Gen.backends.for(backend => {
         if backend.supports(language) {
           runtime := backend.runtime_for(language)
@@ -82,6 +108,9 @@ Gen := class {
         }
       })
     })
+    return if !everything
+    /* the repository's README: how every language's package is installed, Python's first (between the markers) */
+    Gen.write_installation
     /* what the rules come to: theorems/, off one closure per theory */
     Gen.theories.for(t => { Theorems.write(t) })
     /* every GPU backend's kernels, runtime or not */

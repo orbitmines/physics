@@ -1,0 +1,11 @@
+{
+  "name": "orbitmines-physics",
+  "version": "0.0.1",
+  "description": "The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.",
+  "homepage": "https://github.com/orbitmines/physics",
+  "license": null,
+  "dependencies": [
+    { "name": "vcpkg-cmake", "host": true },
+    { "name": "vcpkg-cmake-config", "host": true }
+  ]
+}

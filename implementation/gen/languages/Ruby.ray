@@ -1,0 +1,271 @@
+/*
+ * RUBY, as a mapping from the constructs of Ray to text - the same rules as Python.ray, with Ruby's
+ * own spelling. Everything is emitted inside `module OrbitMines::Physics` (Ruby has a `Random` of its
+ * own); the runtime's operators are called as `Ops.x(...)`, since an emitted class may have a member
+ * of the same name. A field is a method, so `x.neutral` reads the same whether it is stored or
+ * computed; a field holding a program is called through the same method (`p.place(p)`). A local may
+ * not be a keyword nor capitalised (Ruby reads `N` as a constant): those are escaped (`_N`), members
+ * are not. Lambdas are `->(x) { }` and called as `f.(x)`.
+ */
+
+Ruby: Language = class {
+  name = "Ruby"
+  extension = ".rb"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ""
+  {empty_block} => "nil"
+  {interpolation} => "#{{{x}}}"
+  {named_arg} => "{raw}: {val}"
+  {parameter} => "{nm}"
+  {parameter_untyped} => "{nm}"
+  {parameter_default} => "{nm} = {val}"
+  {dynamic_get} => "Ops.getattr({tgt}, {key})"
+  {dynamic_set} => "Ops.setattr({tgt}, {key}, {val})"
+  {reserved_names} => "alias and begin BEGIN break case class def defined do else elsif end END ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield __FILE__ __LINE__ __method__ ^[A-Z]"
+  {escaped_name} => "_{nm}"
+  {global_name} => "Physics.{nm}"
+  {field_assign} => "def {nm}(*args_)\n  @{nm} = ({val}) unless instance_variable_defined?(:@{nm})\n  args_.empty? ? @{nm} : @{nm}.(*args_)\nend\nattr_writer :{nm}"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if {cond}\n{yesbody.indent}\nelse\n{nobody.indent}\nend"
+  {if cond { yesbody }} => "if {cond}\n{yesbody.indent}\nend"
+  {unless cond { yesbody }} => "unless {cond}\n{yesbody.indent}\nend"
+  {while cond { loopbody }} => "while {cond}\n{loopbody.indent}\nend"
+  {return val} => "return {val}"
+  {return} => "return"
+  {dynamically assert cond} => "raise {cond.quoted} unless {cond}"
+
+  /* definitions and assignment */
+  {nm := val} => "{nm} = {val}"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "Ops.set_at({tgt}, {k}, {rhs})"
+
+  /* expressions */
+  {a & b} => "({a} && {b})"
+  {a | b} => "({a} || {b})"
+  {!a} => "!({a})"
+  {-a} => "(-{a})"
+  {a == b} => "Ops.eq({a}, {b})"
+  {a != b} => "!Ops.eq({a}, {b})"
+  {a < b} => "Ops.lt({a}, {b})"
+  {a <= b} => "Ops.le({a}, {b})"
+  {a > b} => "Ops.gt({a}, {b})"
+  {a >= b} => "Ops.ge({a}, {b})"
+  {a + b} => "Ops.add({a}, {b})"
+  {a - b} => "Ops.sub({a}, {b})"
+  {a * b} => "Ops.mul({a}, {b})"
+  {a / b} => "Ops.div({a}, {b})"
+  {a % b} => "Ops.mod({a}, {b})"
+  {a ^ b} => "Ops.power({a}, {b})"
+  {a ?? b} => "Ops.or_else({a}) {{ {b} }}"
+  {cond ? a : b} => "({cond} ? {a} : {b})"
+  {a ==.instance_of Array} => "{a}.is_a?(Array)"
+  {a ==.instance_of ty} => "Ops.instance_of({a}, {ty})"
+  {a as ty} => "{a}"
+  {tgt.nm} => "{tgt}.{nm.raw.method}"
+  {tgt?.nm} => "{tgt}&.{nm.raw.method}"
+  {tgt.nm()} => "{tgt}.{nm.raw.method}"
+  {tgt.nm(arglist)} => "{tgt}.{nm.raw.method}({arglist})"
+  {tgt?.nm(arglist)} => "{tgt}&.{nm.raw.method}({arglist})"
+  {tgt.choose("nm")} => "{tgt}.choose({nm.quoted})"
+  {tgt[k]} => "Ops.elem({tgt}, {k})"
+  {fn(arglist)} => "{fn}.({arglist})"
+  {Class(arglist)} => "{Class}.new({arglist})"
+  {[elems]} => "[{elems}]"
+  { {} } => "Node.new"
+  {this} => "self"
+  {None} => "nil"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "->({paramlist}) {{\n{stmts.returned.indent}\n}}"
+  {(paramlist) => e} => "->({paramlist}) {{ {e} }}"
+  {xs#} => "Ops.many({xs})"
+  {draw([ws], [os])} => "self.vertex.world.draw([{ws}], [{os}])"
+
+  /* the recognised classes: what their members are here */
+  {Array.range(cnt).for((x_) => { stmts })} => "{cnt}.times do |{x_.bare}|\n{stmts.indent}\nend"
+  {xs.for((x_) => { stmts })} => "Ops.list({xs}).each do |{x_.bare}|\n{stmts.indent}\nend"
+  {fail(x_)} => "Ops.fail({x_})"
+  {Catalogue.number(x_)} => "Float({x_})"
+  {String(chars: xs)} => "{xs}.pack(\"U*\")"
+  {x_.blank} => "[32, 9, 10, 13].include?({x_})"
+  /* a member Ray knows on a list, a text or a number - and any class's own member of that name otherwise (`Expr.split(e, name)`) */
+  {xs.push(x_)} => "Ops.m_push({xs}, {x_})"
+  {xs.chars} => "Ops.m_chars({xs})"
+  {xs.pop} => "Ops.m_pop({xs})"
+  {xs.length} => "{xs}.length"
+  {xs.map(f)} => "Ops.m_map({xs}, {f})"
+  {xs.filter(f)} => "Ops.filt({xs}, {f})"
+  {xs.for(f)} => "Ops.m_for({xs}, {f})"
+  {xs.some(f)} => "Ops.m_some({xs}, {f})"
+  {xs.every(f)} => "Ops.m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "Ops.m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "Ops.m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "Ops.m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "Ops.m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "Ops.m_split({xs}, {x_})"
+  {xs.trim} => "Ops.m_trim({xs})"
+  {xs.upper} => "Ops.m_upper({xs})"
+  {xs.lower} => "Ops.m_lower({xs})"
+  {xs.lines} => "Ops.m_lines({xs})"
+  {xs.quoted} => "Ops.quoted({xs})"
+  {xs.contains(x_)} => "Ops.m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "Ops.m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "Ops.m_join({xs}, {sep})"
+  {xs.first} => "Ops.m_first({xs})"
+  {xs.last} => "Ops.m_last({xs})"
+  {xs.empty} => "Ops.m_empty({xs})"
+  {xs.take(cnt)} => "Ops.m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "Ops.m_drop({xs}, {cnt})"
+  {xs.rest} => "Ops.m_rest({xs})"
+  {xs.concat(ys)} => "Ops.m_concat({xs}, {ys})"
+  {xs.reverse} => "Ops.m_reverse({xs})"
+  {xs.sum} => "Ops.m_sum({xs})"
+  {xs.most(f)} => "Ops.m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "Ops.m_sorted_by({xs}, {f})"
+  {xs.each} => "Ops.m_each({xs})"
+  {Array.range(cnt)} => "Ops.rng({cnt})"
+  {Array.filled(cnt, x_)} => "Ops.filled({cnt}, {x_})"
+  {x_.sqrt} => "Ops.m_sqrt({x_})"
+  {x_.floor} => "Ops.m_floor({x_})"
+  {x_.abs} => "Ops.m_abs({x_})"
+  {x_.negated} => "Ops.neg({x_})"
+  {x_.magnitude} => "Ops.m_magnitude({x_})"
+  {x_.cos} => "Ops.m_cos({x_})"
+  {x_.sin} => "Ops.m_sin({x_})"
+  {x_.round} => "Ops.m_round({x_})"
+  {x_.ln} => "Ops.m_ln({x_})"
+  {x_.exp} => "Ops.m_exp({x_})"
+  {x_.atan2(y_)} => "Ops.m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "Ops.m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0"
+  {Real.ONE} => "1"
+  {Real.TWO} => "2"
+  {Real.PI} => "Math::PI"
+  {Real.NAN} => "Float::NAN"
+  {Real.INFINITY} => "Float::INFINITY"
+  {Real.TAU} => "(2 * Math::PI)"
+  {Random.MODULUS} => "4294967296"
+  {Random.MULTIPLIER} => "1664525"
+  {Random.INCREMENT} => "1013904223"
+
+  /* types are not written */
+  {N} => "Integer"
+  {Natural} => "Integer"
+  {Z} => "Integer"
+  {Integer} => "Integer"
+  {Real} => "Float"
+  {Decimal} => "Float"
+  {boolean} => "Object"
+  {String} => "String"
+  {Array} => "Array"
+  {*} => "Object"
+  {{}} => "Node"
+  {ty[]} => "Array"
+  {ty?} => "{ty}"
+  {Program} => "Proc"
+
+  /* classes: a field is a method; its default is made on first read, and a field holding a program is called through it */
+  {nm := class < sup { membs }} => "class {nm.raw} < {sup.first}\n{membs.indent}\n  __exposed\nend"
+  {nm := class { membs }} => "class {nm.raw} < Node\n{membs.indent}\n  __exposed\nend"
+  {nm: ty = class { membs }} => "class {nm.raw}Theory < {ty}\n{membs.indent}\n  __exposed\n  def initialize(**kw)\n    super(**kw)\n    self.rules = Physics.collect_rules(self)\n    self.theorems = Physics.collect_theorems(self)\n  end\nend\n{nm.raw} = {nm.raw}Theory.new\ndef self.{nm.raw} = {nm.raw}"
+  {theorem "nm" () => tbody} => "THEOREM_{nm.identifier} = Theorem.new(id: {nm.quoted}, body: -> {{\n{tbody.returned.indent}\n}})"
+  {x_.body()} => "{x_}.body.()"
+  {nm: ty = val} => "def {nm.raw}(*args_)\n  @{nm.raw} = ({val}) unless instance_variable_defined?(:@{nm.raw})\n  args_.empty? ? @{nm.raw} : @{nm.raw}.(*args_)\nend\nattr_writer :{nm.raw}"
+  {nm: ty} => "def {nm.raw}(*args_)\n  args_.empty? ? @{nm.raw} : @{nm.raw}.(*args_)\nend\nattr_writer :{nm.raw}"
+  {nm = val} => "{nm.raw} = {val}"
+  {static nm: ty = val} => "def self.{nm.raw}\n  @{nm.raw} = ({val}) unless instance_variable_defined?(:@{nm.raw})\n  @{nm.raw}\nend\ndef self.{nm.raw}=(v)\n  @{nm.raw} = v\nend"
+  {static nm = val} => "def self.{nm.raw}\n  @{nm.raw} = ({val}) unless instance_variable_defined?(:@{nm.raw})\n  @{nm.raw}\nend\ndef self.{nm.raw}=(v)\n  @{nm.raw} = v\nend"
+  {nm (): ret => mbody} => "def {nm.raw.method}\n{mbody.returned.indent}\nend"
+  {nm () => mbody} => "def {nm.raw.method}\n{mbody.returned.indent}\nend"
+  {static nm (): ret => mbody} => "def self.{nm.raw.method}\n{mbody.returned.indent}\nend"
+  {nm (paramlist): ret => mbody} => "def {nm.raw.method}({paramlist})\n{mbody.returned.indent}\nend"
+  {nm (paramlist) => mbody} => "def {nm.raw.method}({paramlist})\n{mbody.returned.indent}\nend"
+  {nm (paramlist): ret} => "def {nm.raw.method}({paramlist})\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {nm (paramlist)} => "def {nm.raw.method}({paramlist})\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {nm (): ret} => "def {nm.raw.method}\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {nm ()} => "def {nm.raw.method}\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {static nm (paramlist): ret} => "def self.{nm.raw.method}({paramlist})\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {static nm (paramlist)} => "def self.{nm.raw.method}({paramlist})\n  raise NotImplementedError, \"{nm} is declared but not defined by anyone\"\nend"
+  {static nm (paramlist): ret => mbody} => "def self.{nm.raw.method}({paramlist})\n{mbody.returned.indent}\nend"
+  {static nm (paramlist) => mbody} => "def self.{nm.raw.method}({paramlist})\n{mbody.returned.indent}\nend"
+  {static nm () => mbody} => "def self.{nm.raw.method}\n{mbody.returned.indent}\nend"
+  {rule /rid "nm" | rt () => rbody} => "RULE_{rid.identifier} = Rule.new(id: \"/{rid}\", name: {nm.quoted}, rate: {rt.quoted}, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: ->(_ = nil) {{\n{rbody.returned.indent}\n}})"
+  {rule /rid "nm" () => rbody} => "RULE_{rid.identifier} = Rule.new(id: \"/{rid}\", name: {nm.quoted}, rate: nil, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: ->(_ = nil) {{\n{rbody.returned.indent}\n}})"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "RULE_{rid.identifier} = Rule.new(id: \"/{rid}\", name: {nm.quoted}, rate: {rt.quoted}, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: ->({paramlist}) {{\n{rbody.returned.indent}\n}})"
+  {rule /rid "nm" (paramlist) => rbody} => "RULE_{rid.identifier} = Rule.new(id: \"/{rid}\", name: {nm.quoted}, rate: nil, over: {over.quoted}, single: {single}, where: {where}, source: {source.quoted}, body: ->({paramlist}) {{\n{rbody.returned.indent}\n}})"
+  {choose "nm" (paramlist): ret} => "def choose_{nm.identifier}({paramlist})\n  raise NotImplementedError, \"the choice {nm} is not defined by anyone\"\nend"
+  {choose "nm" (paramlist): ret => cbody} => "def choose_{nm.identifier}({paramlist})\n{cbody.returned.indent}\nend"
+  {choose "nm" (paramlist) => cbody} => "def choose_{nm.identifier}({paramlist})\n{cbody.returned.indent}\nend"
+  {as (=== ty) => cbody} => "def as_{ty}\n{cbody.returned.indent}\nend"
+
+  /* a nested class is a class of its own, then hung on the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n{outer}.const_set(:{inner_name}, {inner_name})\n{outer}.define_singleton_method(:{inner_name}) {{ {inner_name} }}"
+
+  /* a top-level definition is a method of the module, reached as `Physics.x` from anywhere (`{global_name}`), made on first read */
+  constant (nm: String, text: String): String => "def self.{nm}\n  @{nm} = ({text}) unless instance_variable_defined?(:@{nm})\n  @{nm}\nend"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "nil" : rate.quoted
+    where := where_source.empty ? "nil" : "Node.new(source: {where_source.quoted})"
+    rule := id.empty ? "nil" : "Node.new(id: {id.quoted}, rate: {rate_}, name: {rule_name.quoted}, over: {over.quoted}, where: {where}, source: {rule_source.quoted})"
+    leans_ := leans.empty ? "nil" : leans.quoted
+    "  Node.new(rule: {rule}, rate: {rate_}, degree: {degree}, outside: {outside}, settles: {settles}, transport: {transport}, leans: {leans_}, turned: {turned.quoted}, doing: Node.new(carries: {carries}, sets: {sets}, grown: {grown}, trades: {trades}, grew: Node.new(source: {grew_source.quoted}, at: ->(s) {{ {grew} }}), grew_apart: Node.new(source: {grew_apart_source.quoted}, at: ->(s) {{ {grew_apart} }}), draws: nil, needs: {degree}, outside: {outside}, settles: {settles}, share: Node.new(source: {share_source.quoted}, at: ->(s) {{ {share} }}), asked: Node.new(source: {asked_source.quoted}, at: ->(s) {{ {asked} }}), around: Node.new(source: {around_source.quoted}, at: ->(s) {{ {around} }}), rays: Node.new(source: {rays_source.quoted}, at: ->(s) {{ {rays} }}), space: Node.new(source: {space_source.quoted}, at: ->(s) {{ {space} }}), folds: Node.new(source: {folds_source.quoted}, at: ->(s) {{ {folds} }})))"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "{theory}.define_singleton_method(:equation, &(eq_ = Node.new(latex: {latex.quoted}, terms: [\n{lines}\n]); -> {{ eq_ }}))"
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.rb/README.md := this.readme
+    @./languages/physics.rb/lib/orbitmines/physics.rb := code
+    @./languages/physics.rb/orbitmines-physics.gemspec := Ruby.gemspec
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Ruby)
+    requirement := r.requirement.as(Ruby)
+    filter := r.filter == None ? "true" : r.filter.as(Ruby)
+    label := "{r.location} on {f.name}"
+    name := label.snake.replace("/", "_").replace(":", "_").replace(" ", "_")
+    "  def test_{name}\n    it = {definition}\n    guard = 0\n    until {filter}\n      guard += 1\n      skip(\"the refinement never held\") if guard > {r.until} || !it.respond_to?(:tick)\n      it.tick\n    end\n    assert({requirement}, {requirement.quoted})\n  end"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/rb/test_G.rb := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n$LOAD_PATH.unshift File.join(__dir__, \"..\", \"..\", \"languages\", \"physics.rb\", \"lib\")\nrequire \"minitest/autorun\"\nrequire \"orbitmines/physics\"\n\nclass TestG < Minitest::Test\n  include OrbitMines::Physics\n  Ops = OrbitMines::Physics::Ops\n  Physics = OrbitMines::Physics\n\n{cases}\nend\n"
+  }
+
+  /* Ruby renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+
+  /* the notation: the parser and the HTML setter, as the package carries them */
+  write_notation () => {
+    @./languages/physics.rb/lib/orbitmines/physics/notation.rb = "# orbitmines/physics/notation - the markup a proof is set in: `Notation.parse(src)` reads it into pieces,\n# `Notation.html(src)` sets it for a page, `Notation.set(pieces, setter)` walks it through a Setter of your own.\n# GENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\nrequire \"orbitmines/physics\"\n"
+  }
+
+  /* every theorem, as one value: `require \"orbitmines/physics/theorems\"`, then `OrbitMines::Physics::Theorems::PROVED` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.rb/lib/orbitmines/physics/theorems.json := "{{{proofs}}}"
+    @./languages/physics.rb/lib/orbitmines/physics/theorems.rb := "# orbitmines/physics/theorems - what the rules come to, as something to look up: every theorem, keyed by\n# theory and then by question. GENERATED by `npx ray gen` from implementation/physics.ray. Do not edit.\nrequire \"json\"\n\nmodule OrbitMines\n  module Physics\n    module Theorems\n      PROVED = JSON.parse(File.read(File.join(__dir__, \"theorems.json\")))\n\n      # one theorem, or nothing - and never a raise\n      def self.proved(of, theory, theorem) = (of[theory] || {{}})[theorem]\n      # which theories have an answer to a question\n      def self.theories(of, theorem) = of.keys.select {{ |t| of[t].key?(theorem) }}\n      # every question a theory answers\n      def self.asked(of, theory) = (of[theory] || {{}}).keys\n    end\n  end\nend\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.rb
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.rb"
+  /* how this language's package is installed, for a README (the repository's own lists every language's, Python's first) */
+  install (): String => "```bash\n# Ruby\ngem install orbitmines-physics\n```"
+  /* the package's own README: written by gen with the package (languages/physics.rb/README.md) */
+  readme (): String => "# orbitmines-physics - Ruby\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Ruby: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Ruby.install}\n\nOr in a Gemfile: `gem \"orbitmines-physics\"`. Ruby 3.1 or later.\n\n## Using it\n\n```ruby\nrequire \"orbitmines/physics\"\ninclude OrbitMines::Physics\n\n# a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nmedium = G.medium(31, 96, 3, 8, 1)\nmedium.local_rays = true\nmedium.add(Hole.new(x: 15, y: 15, mx: 0.3, ways: 1))\nmedium.seed\n5.times {{ medium.tick }}\n```\n\nNames Ruby reserves are spelled with a leading underscore where they are a method's own (a parameter `N` is `_N`); members keep their names (`medium.N`).\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```ruby\nplan = Plan.new(sources: 1e9, side: 241)\nplan.budget.compact = true   # twelve bytes a source\nputs plan.report(16 * 2**30, 2**31)\n```\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  gemspec (): String => "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nGem::Specification.new do |s|\n  s.name = \"orbitmines-physics\"\n  s.version = \"0.0.1\"\n  s.summary = \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\"\n  s.authors = [\"OrbitMines\"]\n  s.homepage = \"https://github.com/orbitmines/physics\"\n  s.required_ruby_version = \">= 3.1\"\n  s.files = Dir[\"lib/**/*\", \"README.md\"]\n  s.require_paths = [\"lib\"]\nend\n"
+}

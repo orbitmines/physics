@@ -30,12 +30,81 @@ The remainder of this README is dedicated to explaining how you can use the phys
 
 ## Installation
 
-While all the explanations here are for Python. Packages exist for all the languages in the [languages/](./languages/) folder - find your favorite language there!
+<!-- gen:installation -->
+While all the explanations here are for Python, packages exist for every language in the [languages/](./languages/) folder, each with its own README ([Python](./languages/physics.py/README.md), [TypeScript](./languages/physics.ts/README.md), [Ruby](./languages/physics.rb/README.md), [Java](./languages/physics.java/README.md), [C#](./languages/physics.cs/README.md), [Go](./languages/physics.go/README.md), [C++](./languages/physics.cpp/README.md), [Rust](./languages/physics.rs/README.md), [Lean](./languages/physics.lean/README.md), [Swift](./languages/physics.swift/README.md), [Julia](./languages/physics.jl/README.md), [R](./languages/physics.r/README.md), [Wolfram](./languages/physics.wl/README.md)).
+
+```bash
+# Python
+pip install orbitmines-physics
+```
 
 ```bash
 # JavaScript/TypeScript
 npm install @orbitmines/physics
 ```
+
+```bash
+# Ruby
+gem install orbitmines-physics
+```
+
+```xml
+<!-- Java (Maven) -->
+<dependency>
+  <groupId>com.orbitmines</groupId>
+  <artifactId>physics</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
+```bash
+# C#
+dotnet add package OrbitMines.Physics
+```
+
+```bash
+# Go
+go get github.com/orbitmines/physics/languages/physics.go
+```
+
+```bash
+# C++ (vcpkg)
+vcpkg install orbitmines-physics
+```
+
+```bash
+# Rust
+cargo add orbitmines-physics
+```
+
+```lean
+-- Lean 4 (lakefile.toml)
+[[require]]
+name = "orbitmines-physics"
+git = "https://github.com/orbitmines/physics"
+subDir = "languages/physics.lean"
+```
+
+```swift
+// Swift (Package.swift)
+.package(url: "https://github.com/orbitmines/physics", from: "0.0.1")
+```
+
+```julia
+# Julia
+using Pkg; Pkg.add("OrbitMinesPhysics")
+```
+
+```r
+# R
+install.packages("orbitmines")
+```
+
+```wolfram
+(* Wolfram Language *)
+PacletInstall["OrbitMines/Physics"]
+```
+<!-- /gen:installation -->
 
 ## Running simulations
 

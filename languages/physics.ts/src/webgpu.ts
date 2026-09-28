@@ -34,6 +34,14 @@ struct Par { cells: u32, A: u32, N: u32, K: u32, DEG: f32, holes: u32, tick: u32
 @group(0) @binding(4) var<storage, read_write> ho: array<f32>;
 @group(0) @binding(5) var<storage, read_write> hn: array<f32>;
 @group(0) @binding(6) var<storage, read_write> link: array<atomic<i32>>;
+@group(0) @binding(7) var<storage, read_write> sb0: array<u32>;
+@group(0) @binding(8) var<storage, read_write> sb1: array<u32>;
+@group(0) @binding(9) var<storage, read_write> sb2: array<u32>;
+@group(0) @binding(10) var<storage, read_write> sb3: array<u32>;
+@group(0) @binding(11) var<storage, read_write> sb4: array<u32>;
+@group(0) @binding(12) var<storage, read_write> sb5: array<u32>;
+@group(0) @binding(13) var<storage, read_write> sb6: array<u32>;
+@group(0) @binding(14) var<storage, read_write> sb7: array<u32>;
 
 fn nA(a: u32, c: u32) -> u32 {
   return a * P.cells + c;
@@ -311,7 +319,7 @@ fn point4_gate(rho: f32, nf: f32) -> f32 {
   return clampf(omega, 0.0, 1.0);
 }
 
-//! medium MKEEP MCARRY MHWANT MHSTREAM MHSHINE MHJOIN MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLH MMOVEH MSTEP MSTEPH MHCLEAR MHLINK MHSCAN MHSCAN2 MHSCAN3 MHPLACE MHSRC1 MHSRC MBLOCK
+//! medium MKEEP MCARRY MHWANT MHSTREAM MHSHINE MHJOIN MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLC MPULLH MMOVEH MSTEP MSTEPH MSOURCE MHCLEAR MHLINK MHSCAN MHSCAN2 MHSCAN3 MHPLACE MHSRC1 MHSRC MBLOCK
 
 fn powi(b: f32, n: i32) -> f32 {
   var r: f32 = 1.0;
@@ -594,6 +602,10 @@ const MNEARF: f32 = 5.0;
 
 const MNEAR: u32 = 96u;
 
+const MCELLPULL: bool = true;
+
+const MFUSED: bool = true;
+
 fn mtay(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 12u + P.cells * 2u + P.cells * 8u + c * 9u; }
 
 fn mnear(c: u32) -> u32 { return P.cells * MGATHER * mslots() * 8u + P.cells + P.cells * MGATHER + P.cells * 12u + P.cells * 2u + P.cells * 8u + P.cells * 9u + c * (MNEAR + 1u); }
@@ -607,6 +619,26 @@ fn mstart(c: u32) -> u32 { return P.cells + 1u + c; }
 fn mblk(b: u32) -> u32 { return 2u * P.cells + 3u + b; }
 
 fn morder(j: u32) -> u32 { return 2u * P.cells + 3u + mnb() + j; }
+
+fn mcellpull(c: u32) -> u32 { return P.part + select(2u * P.holes, 0u, MCOMPACT) + 2u * c; }
+
+fn mgen(k: u32) -> u32 { return P.track - 16u + k; }
+
+fn mhash(a: u32, b: u32) -> f32 { var z: u32 = a * 747796405u + b * 2891336453u + 12345u; z = (z ^ (z >> 16u)) * 2246822519u; z = (z ^ (z >> 13u)) * 3266489917u; z = z ^ (z >> 16u); return (f32(z >> 8u) + 0.5) / 16777216.0; }
+
+fn mgauss(a: u32, b: u32) -> f32 { return sqrt(-2.0 * log(mhash(a, b))) * cos(6.283185307179586 * mhash(a, b + 7919u)); }
+
+fn mgrid(k: u32) -> u32 { return 10u * P.cells + 4u + k; }
+
+fn mqref() -> f32 { return max(cel[BODS() + 10u], 1e-30); }
+
+fn macc(c: u32, k: u32) -> u32 { return c * 10u + k; }
+
+const MSQ: f32 = 4096.0;
+
+const MSX: f32 = 4096.0;
+
+const MSV: f32 = 16384.0;
 
 fn msrcpart(c: u32, l: u32) -> u32 { return P.part - P.cells * 384u + (c * 32u + l) * 12u; }
 
@@ -705,9 +737,15 @@ fn marrive(px: f32, py: f32, zown: u32) -> vec3<f32> {
   var srcid: f32 = 0.5;
   if (own >= 0) {
     let o: vec4<f32> = bodat(u32(own));
+    let oc: i32 = mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5)));
     mine = memit(u32(own));
     me = f32(own);
-    srcid = -2.0 - f32(mcell(i32(floor(o.x + 0.5)), i32(floor(o.y + 0.5))));
+    srcid = -2.0 - f32(oc);
+    /* standing with others on its cell, it reads as its cell's gathering: all but what the cell sends (Medium.arriving_at) */
+    if (MCELLPULL && oc >= 0) {
+      let w: array<f32, 8> = msourcewas(u32(oc));
+      if (w[6] == srcid && w[0] > 0.0) { mine = w; mine[7] = 0.0; me = srcid; }
+    }
     owns = mbin(ux - mine[1] / mine[0], uy - mine[2] / mine[0]);
     var far: f32 = 0.0;
     for (var e: u32 = 0u; e < n; e = e + 1u) {
@@ -1125,13 +1163,70 @@ fn RUNGS() -> u32 { return P.rungs; }
 
 fn BODS() -> u32 { return P.bod; }
 
-fn bodat(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]); }
+const MCOMPACT: bool = false;
 
-fn bodgo(h: u32) -> vec4<f32> { let b: u32 = BODS() + 12u * h; return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]); }
+const MSHARD: u32 = 178956970u;
 
-fn bodface(h: u32) -> f32 { return cel[BODS() + 12u * h + 8u]; }
+const MVMAX: f32 = 1.0;
 
-fn bodskin(h: u32) -> f32 { return cel[BODS() + 12u * h + 9u]; }
+fn mword(h: u32, w: u32) -> u32 {
+  let k: u32 = h / MSHARD;
+  let j: u32 = (h % MSHARD) * 3u + w;
+  if (k == 0u) { return sb0[j]; }
+  if (k == 1u) { return sb1[j]; }
+  if (k == 2u) { return sb2[j]; }
+  if (k == 3u) { return sb3[j]; }
+  if (k == 4u) { return sb4[j]; }
+  if (k == 5u) { return sb5[j]; }
+  if (k == 6u) { return sb6[j]; }
+  return sb7[j];
+}
+
+fn msetword(h: u32, w: u32, v: u32) {
+  let k: u32 = h / MSHARD;
+  let j: u32 = (h % MSHARD) * 3u + w;
+  if (k == 0u) { sb0[j] = v; } else if (k == 1u) { sb1[j] = v; } else if (k == 2u) { sb2[j] = v; } else if (k == 3u) { sb3[j] = v; } else if (k == 4u) { sb4[j] = v; } else if (k == 5u) { sb5[j] = v; } else if (k == 6u) { sb6[j] = v; } else { sb7[j] = v; }
+}
+
+fn mfixed(w: u32) -> f32 { return f32(w >> 20u) + f32(w & 1048575u) * 9.5367431640625e-7 - 1024.0; }
+
+fn mtofixed(x: f32) -> u32 { let y: f32 = clamp(x + 1024.0, 0.0, 4095.999); let whole: f32 = floor(y); return (u32(whole) << 20u) | min(u32((y - whole) * 1048576.0), 1048575u); }
+
+fn mvel(w: u32) -> vec2<f32> { return vec2<f32>(f32(i32(w << 16u) >> 16u), f32(i32(w) >> 16u)) * (MVMAX / 32767.0); }
+
+fn mdither(h: u32, k: u32) -> f32 { var z: u32 = h * 747796405u + P.tick * 2891336453u + k * 1181783497u; z = (z ^ (z >> 16u)) * 2246822519u; z = (z ^ (z >> 13u)) * 3266489917u; z = z ^ (z >> 16u); return f32(z >> 8u) / 16777216.0; }
+
+fn mtovel(v: vec2<f32>, h: u32) -> u32 { let s: vec2<f32> = v / MVMAX * 32767.0; let q: vec2<f32> = clamp(floor(s + vec2<f32>(mdither(h, 1u), mdither(h, 2u))), vec2<f32>(-32767.0), vec2<f32>(32767.0)); return (u32(i32(q.x)) & 65535u) | (u32(i32(q.y)) << 16u); }
+
+fn bodat(h: u32) -> vec4<f32> {
+  if (MCOMPACT) { return vec4<f32>(mfixed(mword(h, 0u)), mfixed(mword(h, 1u)), cel[BODS() + 2u], f32(h + 1u)); }
+  let b: u32 = BODS() + 12u * h;
+  return vec4<f32>(cel[b], cel[b + 1u], cel[b + 2u], cel[b + 3u]);
+}
+
+fn bodgo(h: u32) -> vec4<f32> {
+  if (MCOMPACT) { let v: vec2<f32> = mvel(mword(h, 2u)); let m: f32 = cel[BODS() + 2u]; return vec4<f32>(v.x * m, v.y * m, cel[BODS() + 6u], 0.0); }
+  let b: u32 = BODS() + 12u * h;
+  return vec4<f32>(cel[b + 4u], cel[b + 5u], cel[b + 6u], cel[b + 7u]);
+}
+
+fn bodface(h: u32) -> f32 { return cel[BODS() + select(12u * h, 0u, MCOMPACT) + 8u]; }
+
+fn bodskin(h: u32) -> f32 { return cel[BODS() + select(12u * h, 0u, MCOMPACT) + 9u]; }
+
+fn msetat(h: u32, x: f32, y: f32) {
+  if (MCOMPACT) { msetword(h, 0u, mtofixed(x)); msetword(h, 1u, mtofixed(y)); return; }
+  let b: u32 = BODS() + 12u * h;
+  cel[b] = x;
+  cel[b + 1u] = y;
+}
+
+fn msetgo(h: u32, px: f32, py: f32) {
+  if (MCOMPACT) { let m: f32 = cel[BODS() + 2u]; msetword(h, 2u, mtovel(vec2<f32>(px, py) / m, h)); return; }
+  let b: u32 = BODS() + 12u * h;
+  cel[b + 4u] = px;
+  cel[b + 5u] = py;
+}
 
 fn mrecur(px: f32, py: f32, gn: f32) -> f32 {
   if (xc(19u) < 1.5 || gn <= 0.0) { return 1.0; }
@@ -2047,6 +2142,12 @@ fn munder(h: u32, k: u32) -> i32 {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.cells + 1u || !mlocal()) { return; }
+  if (MCOMPACT) {
+    if (i < P.cells) { for (var k: u32 = 0u; k < 10u; k = k + 1u) { atomicStore(&link[macc(i, k)], 0); } }
+    /* one past the last: the sources that have left the box (Medium.departed) */
+    if (i == P.cells) { atomicStore(&link[macc(P.cells, 0u)], 0); }
+    return;
+  }
   atomicStore(&link[i], 0);
 }
 
@@ -2054,7 +2155,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= mnb() || !mlocal()) { return; }
+  if (i >= mnb() || !mlocal() || MCOMPACT) { return; }
   var sum: i32 = 0;
   for (var c: u32 = i * 256u; c < min((i + 1u) * 256u, P.cells + 1u); c = c + 1u) {
     let v: i32 = atomicLoad(&link[c]);
@@ -2068,7 +2169,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN2(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i > 0u || !mlocal()) { return; }
+  if (i > 0u || !mlocal() || MCOMPACT) { return; }
   var run: i32 = 0;
   for (var b: u32 = 0u; b < mnb(); b = b + 1u) {
     let v: i32 = atomicLoad(&link[mblk(b)]);
@@ -2082,7 +2183,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHSCAN3(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.cells + 1u || !mlocal()) { return; }
+  if (i >= P.cells + 1u || !mlocal() || MCOMPACT) { return; }
   atomicStore(&link[mstart(i)], atomicLoad(&link[mstart(i)]) + atomicLoad(&link[mblk(i / 256u)]));
   atomicStore(&link[i], 0);
 }
@@ -2091,7 +2192,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MHPLACE(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mlocal()) { return; }
+  if (i >= P.holes || !mlocal() || MCOMPACT) { return; }
   let c: u32 = mbodycell(i);
   let j: i32 = atomicLoad(&link[mstart(c)]) + atomicAdd(&link[c], 1);
   atomicStore(&link[morder(u32(j))], i32(i));
@@ -2103,7 +2204,7 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i / 32u;
   let l: u32 = i % 32u;
-  if (c >= P.cells || !mlocal()) { return; }
+  if (c >= P.cells || !mlocal() || MCOMPACT) { return; }
   var s: array<f32, 12>;
   let cx: f32 = f32(c % P.N);
   let cy: f32 = f32(c / P.N);
@@ -2131,6 +2232,32 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   let c: u32 = i;
   if (i >= P.cells || !mlocal()) { return; }
+  if (MCOMPACT) {
+    /* compact: the cell's sums, as a source (Medium.cell_sources) */
+    var t: array<f32, 12>;
+    let n: i32 = atomicLoad(&link[macc(c, 0u)]);
+    let qn: f32 = f32(atomicLoad(&link[macc(c, 1u)])) / MSQ;
+    if (n > 0 && qn > 0.0) {
+      let q: f32 = qn * mqref();
+      let cx: f32 = f32(c % P.N) + f32(atomicLoad(&link[macc(c, 2u)])) / MSX / qn;
+      let cy: f32 = f32(c / P.N) + f32(atomicLoad(&link[macc(c, 3u)])) / MSX / qn;
+      let last: i32 = atomicLoad(&link[macc(c, 9u)]);
+      t[0] = q;
+      t[1] = q * cx;
+      t[2] = q * cy;
+      t[3] = q * f32(atomicLoad(&link[macc(c, 4u)])) / MSV / qn;
+      t[4] = q * f32(atomicLoad(&link[macc(c, 5u)])) / MSV / qn;
+      let one: array<f32, 8> = memit(u32(max(last - 1, 0)));
+      t[5] = q * one[5] / max(one[0], 1e-30);
+      t[6] = select(-2.0 - f32(c), f32(last - 1), n == 1);
+      t[7] = f32(last);
+      t[8] = mqref() * f32(atomicLoad(&link[macc(c, 6u)])) / MSX;
+      t[9] = mqref() * f32(atomicLoad(&link[macc(c, 7u)])) / MSX;
+      t[10] = mqref() * f32(atomicLoad(&link[macc(c, 8u)])) / MSX;
+    }
+    for (var q2: u32 = 0u; q2 < 12u; q2 = q2 + 1u) { hn[msrc(c) + q2] = t[q2]; }
+    return;
+  }
   var s: array<f32, 12>;
   for (var l: u32 = 0u; l < 32u; l = l + 1u) {
     for (var q: u32 = 0u; q < 6u; q = q + 1u) { s[q] = s[q] + cel[msrcpart(c, l) + q]; }
@@ -2185,6 +2312,27 @@ fn munder(h: u32, k: u32) -> i32 {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   if (i >= P.holes || !mlocal()) { return; }
+  if (MCOMPACT) {
+    let c: u32 = mbodycell(i);
+    if (c >= P.cells) { atomicAdd(&link[macc(P.cells, 0u)], 1); return; }
+    let e: array<f32, 8> = memit(i);
+    if (!(e[0] > 0.0)) { return; }
+    let qn: f32 = e[0] / mqref();
+    let o: vec4<f32> = bodat(i);
+    let dx: f32 = o.x - f32(c % P.N);
+    let dy: f32 = o.y - f32(c / P.N);
+    atomicAdd(&link[macc(c, 0u)], 1);
+    atomicAdd(&link[macc(c, 1u)], i32(round(qn * MSQ)));
+    atomicAdd(&link[macc(c, 2u)], i32(round(qn * dx * MSX)));
+    atomicAdd(&link[macc(c, 3u)], i32(round(qn * dy * MSX)));
+    atomicAdd(&link[macc(c, 4u)], i32(round(qn * e[3] / e[0] * MSV)));
+    atomicAdd(&link[macc(c, 5u)], i32(round(qn * e[4] / e[0] * MSV)));
+    atomicAdd(&link[macc(c, 6u)], i32(round(qn * dx * dx * MSX)));
+    atomicAdd(&link[macc(c, 7u)], i32(round(qn * dx * dy * MSX)));
+    atomicAdd(&link[macc(c, 8u)], i32(round(qn * dy * dy * MSX)));
+    atomicMax(&link[macc(c, 9u)], i32(i + 1u));
+    return;
+  }
   atomicAdd(&link[mbodycell(i)], 1);
 }
 
@@ -2192,30 +2340,212 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MSTEPH(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mapart()) { return; }
+  if (i >= P.holes || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let out: u32 = P.outs;
   let h: u32 = i;
+  let pulled: vec2<f32> = vec2<f32>(cel[out + 4u * h], cel[out + 4u * h + 1u]);
   let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 12u * h;
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
     if (g.z >= 0.5) {
-      var px: f32 = g.x + cel[out + 4u * h] * o.z;
-      var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
       let m: f32 = sqrt(px * px + py * py);
       if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
-      cel[b + 4u] = px;
-      cel[b + 5u] = py;
-      cel[b] = o.x + px / o.z * f32(P.K);
-      cel[b + 1u] = o.y + py / o.z * f32(P.K);
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
     }
     /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
     if (h < TRACKB) {
       let tr: u32 = TRACK(P.tick, h);
-      cel[tr] = cel[b];
-      cel[tr + 1u] = cel[b + 1u];
-      cel[tr + 2u] = cel[b + 4u];
-      cel[tr + 3u] = cel[b + 5u];
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
     }
+}
+
+//! kernel MSOURCE over holes
+@compute @workgroup_size(64) fn MSOURCE(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !mapart() || !mlocal() || !MCELLPULL || !MFUSED) { return; }
+  let out: u32 = P.outs;
+  let h: u32 = i;
+  var pulled: vec2<f32> = vec2<f32>(0.0, 0.0);
+  {
+    let o: vec4<f32> = bodat(h);
+    let bc: u32 = mbodycell(h);
+    var gx: f32 = 0.0;
+    var gy: f32 = 0.0;
+    if (bc < P.cells) {
+      gx = cel[mcellpull(bc)];
+      gy = cel[mcellpull(bc) + 1u];
+    }
+    let n: f32 = f32(P.K * P.K);
+    let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy) / n);
+    pulled = vec2<f32>(gx / n * f, gy / n * f);
+    /* kept for a reading (leans) where each body has room for it; compact, a reading asks for it (MLEANS) */
+    if (!MCOMPACT) {
+      cel[out + 4u * h] = pulled.x;
+      cel[out + 4u * h + 1u] = pulled.y;
+    }
+  }
+  let g: vec4<f32> = bodgo(h);
+    let o: vec4<f32> = bodat(h);
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
+    if (g.z >= 0.5) {
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
+      let m: f32 = sqrt(px * px + py * py);
+      if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
+    }
+    /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
+    if (h < TRACKB) {
+      let tr: u32 = TRACK(P.tick, h);
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
+    }
+}
+
+//! kernel MPULLC over cells
+@compute @workgroup_size(64) fn MPULLC(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let c: u32 = i;
+  if (c >= P.cells || !mlocal() || !MCELLPULL) { return; }
+  var many: u32 = 0u;
+  var h0: u32 = 0u;
+  if (MCOMPACT) {
+    many = u32(max(atomicLoad(&link[macc(c, 0u)]), 0));
+    h0 = u32(max(atomicLoad(&link[macc(c, 9u)]) - 1, 0));
+  } else {
+    let j0: u32 = u32(atomicLoad(&link[mstart(c)]));
+    let j1: u32 = u32(atomicLoad(&link[mstart(c + 1u)]));
+    many = j1 - min(j0, j1);
+    if (many > 0u) { h0 = u32(atomicLoad(&link[morder(j0)])); }
+  }
+  if (many == 0u) { return; }
+  var o: vec4<f32> = bodat(h0);
+  let w: array<f32, 8> = msourcewas(c);
+  if (many > 1u && w[0] > 0.0) { o = vec4<f32>(w[1] / w[0], w[2] / w[0], o.z, o.w); }
+  let zown: u32 = h0 + 1u;
+  let half: f32 = f32(P.K - 1u) / 2.0;
+  var gx: f32 = 0.0;
+  var gy: f32 = 0.0;
+  for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
+    let px: f32 = o.x - half + f32(k % P.K);
+      let py: f32 = o.y - half + f32(k / P.K);
+      let rho: f32 = mtapc(0u, px, py, 0.0);
+      let nf: f32 = mtapc(1u, px, py, 0.0);
+      var rate: f32 = 0.0;
+  rate = rate + mmeet0_share(rho, nf) * mmeet0_folds(rho, nf) / 2.0;
+  rate = rate + mmeet1_share(rho, nf) * mmeet1_folds(rho, nf) / 2.0;
+  rate = rate + mmeet2_share(rho, nf) * mmeet2_folds(rho, nf) / 2.0;
+      let stood: f32 = mtap(STAND(), px, py, 0.0);
+      let came: vec3<f32> = marrive(px, py, zown);
+      let per: f32 = rate / select(1.0, 1.0 + stood, xc(20u) > 0.5);
+      gx = gx - per * came.y;
+      gy = gy - per * came.z;
+  }
+  cel[mcellpull(c)] = gx;
+  cel[mcellpull(c) + 1u] = gy;
+}
+
+//! kernel MGEN over made
+@compute @workgroup_size(64) fn MGEN(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let h: u32 = u32(cel[mgen(6u)]) + i;
+  if (i >= u32(cel[mgen(7u)]) || h >= P.holes) { return; }
+  let seed: u32 = u32(cel[mgen(5u)]);
+  let cx: f32 = cel[mgen(1u)];
+  let cy: f32 = cel[mgen(2u)];
+  let sc: f32 = cel[mgen(3u)];
+  let cut: f32 = cel[mgen(4u)];
+  var x: f32 = cx;
+  var y: f32 = cy;
+  if (cel[mgen(0u)] < 0.5) {
+    /* surface density falling as e^(-r/scale): r off two draws, as a disc's is */
+    let r: f32 = min(-sc * log(mhash(h, seed) * mhash(h, seed + 1u)), cut);
+    let th: f32 = 6.283185307179586 * mhash(h, seed + 2u);
+    x = cx + r * cos(th);
+    y = cy + r * sin(th);
+  } else {
+    x = cx + (2.0 * mhash(h, seed) - 1.0) * sc;
+    y = cy + (2.0 * mhash(h, seed + 1u) - 1.0) * sc;
+  }
+  msetat(h, x, y);
+  msetgo(h, 0.0, 0.0);
+}
+
+//! kernel MLAUNCH over holes
+@compute @workgroup_size(64) fn MLAUNCH(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes) { return; }
+  let h: u32 = i;
+  let o: vec4<f32> = bodat(h);
+  let bc: u32 = mbodycell(h);
+  if (bc >= P.cells) { return; }
+  let n: f32 = f32(P.K * P.K);
+  var gx: f32 = cel[mcellpull(bc)] / n;
+  var gy: f32 = cel[mcellpull(bc) + 1u] / n;
+  let f: f32 = mrecur(o.x, o.y, sqrt(gx * gx + gy * gy));
+  gx = gx * f;
+  gy = gy * f;
+  let dx: f32 = (o.x - cel[mgen(1u)]) / f32(P.K);
+  let dy: f32 = (o.y - cel[mgen(2u)]) / f32(P.K);
+  let r: f32 = sqrt(dx * dx + dy * dy);
+  if (!(r > 0.0)) { return; }
+  let g: f32 = -(gx * dx + gy * dy) / r;
+  let v: f32 = sqrt(max(0.0, g * r));
+  let sig: f32 = cel[mgen(8u)];
+  let seed: u32 = u32(cel[mgen(5u)]) + 101u;
+  let vx: f32 = -v * dy / r + sig * v * mgauss(h, seed);
+  let vy: f32 = v * dx / r + sig * v * mgauss(h, seed + 3u);
+  msetgo(h, o.z * vx, o.z * vy);
+}
+
+//! kernel MFRAMECLEAR over grid2
+@compute @workgroup_size(64) fn MFRAMECLEAR(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  let G: u32 = u32(cel[mgen(10u)]);
+  if (i >= G * G) { return; }
+  atomicStore(&link[mgrid(i)], 0);
+}
+
+//! kernel MFRAME over holes
+@compute @workgroup_size(64) fn MFRAME(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
+  let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
+  if (i >= P.holes || !MCOMPACT) { return; }
+  let o: vec4<f32> = bodat(i);
+  let G: u32 = u32(cel[mgen(10u)]);
+  let span: f32 = cel[mgen(13u)];
+  let gx: f32 = ((o.x - cel[mgen(11u)]) / span + 1.0) / 2.0 * f32(G);
+  let gy: f32 = ((o.y - cel[mgen(12u)]) / span + 1.0) / 2.0 * f32(G);
+  if (gx < 0.0 || gy < 0.0 || gx >= f32(G) || gy >= f32(G)) { return; }
+  atomicAdd(&link[mgrid(u32(gy) * G + u32(gx))], 1);
 }
 
 //! kernel MPULLH over pulls
@@ -2224,7 +2554,7 @@ fn munder(h: u32, k: u32) -> i32 {
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
   /* held where they are, a thread a body walks its c-bar's K x K points and keeps only their sum: a part a point was 72 bytes a star */
   let per: u32 = select(P.K * P.K * mchunks(), 1u, mlocal());
-  if (i >= P.holes * per || !mapart()) { return; }
+  if (i >= P.holes * per || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let half: f32 = f32(P.K - 1u) / 2.0;
   let h: u32 = select(i / per, u32(atomicLoad(&link[morder(min(i, P.holes - 1u))])), mlocal());
   let ch: u32 = i % mchunks();
@@ -2234,7 +2564,14 @@ fn munder(h: u32, k: u32) -> i32 {
   var gy: f32 = 0.0;
   let z0: u32 = select(ch * MPCHUNK, 1u, ch == 0u);
   let z1: u32 = select((ch + 1u) * MPCHUNK, mplanes(), (ch + 1u) * MPCHUNK > mplanes());
-  if (mlocal()) {
+  if (mlocal() && MCELLPULL) {
+    /* held where they are, a body's pull is its cell's, read once for all on it (MPULLC); off the box, none */
+    let bc: u32 = mbodycell(h);
+    if (bc < P.cells) {
+      gx = cel[mcellpull(bc)];
+      gy = cel[mcellpull(bc) + 1u];
+    }
+  } else if (mlocal()) {
     for (var k: u32 = 0u; k < P.K * P.K; k = k + 1u) {
     let px: f32 = o.x - half + f32(k % P.K);
       let py: f32 = o.y - half + f32(k / P.K);
@@ -2282,7 +2619,7 @@ fn munder(h: u32, k: u32) -> i32 {
 @compute @workgroup_size(64) fn MMOVEH(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (P.fill > 0u && gid.y * 1024u * 64u + gid.x >= P.fill) { return; }
   let i: u32 = P.first + gid.y * 1024u * 64u + gid.x;
-  if (i >= P.holes || !mapart()) { return; }
+  if (i >= P.holes || !mapart() || (mlocal() && MCELLPULL && MFUSED)) { return; }
   let out: u32 = P.outs;
   let h: u32 = i;
   let o: vec4<f32> = bodat(h);
@@ -2306,26 +2643,32 @@ fn munder(h: u32, k: u32) -> i32 {
   if (i >= 1u || mapart()) { return; }
   let out: u32 = P.outs;
   for (var h: u32 = 0u; h < P.holes; h = h + 1u) {
+    let pulled: vec2<f32> = vec2<f32>(cel[out + 4u * h], cel[out + 4u * h + 1u]);
     let g: vec4<f32> = bodgo(h);
     let o: vec4<f32> = bodat(h);
-    let b: u32 = BODS() + 12u * h;
+    var nx: f32 = o.x;
+    var ny: f32 = o.y;
+    var npx: f32 = g.x;
+    var npy: f32 = g.y;
     if (g.z >= 0.5) {
-      var px: f32 = g.x + cel[out + 4u * h] * o.z;
-      var py: f32 = g.y + cel[out + 4u * h + 1u] * o.z;
+      var px: f32 = g.x + pulled.x * o.z;
+      var py: f32 = g.y + pulled.y * o.z;
       let m: f32 = sqrt(px * px + py * py);
       if (m > o.z) { px = px * o.z / m; py = py * o.z / m; }
-      cel[b + 4u] = px;
-      cel[b + 5u] = py;
-      cel[b] = o.x + px / o.z * f32(P.K);
-      cel[b + 1u] = o.y + py / o.z * f32(P.K);
+      npx = px;
+      npy = py;
+      nx = o.x + px / o.z * f32(P.K);
+      ny = o.y + py / o.z * f32(P.K);
+      msetgo(h, px, py);
+      msetat(h, nx, ny);
     }
     /* and where that leaves it is kept, this tick's own place on the track - for the bodies an orbit is read off */
     if (h < TRACKB) {
       let tr: u32 = TRACK(P.tick, h);
-      cel[tr] = cel[b];
-      cel[tr + 1u] = cel[b + 1u];
-      cel[tr + 2u] = cel[b + 4u];
-      cel[tr + 3u] = cel[b + 5u];
+      cel[tr] = nx;
+      cel[tr + 1u] = ny;
+      cel[tr + 2u] = npx;
+      cel[tr + 3u] = npy;
     }
   }
 }
@@ -2781,7 +3124,7 @@ fn munder(h: u32, k: u32) -> i32 {
   }
   let n: f32 = f32(P.K * P.K);
   let f: f32 = mrecur(ask.x, ask.y, sqrt(gx * gx + gy * gy) / n);
-  let out: u32 = P.outs + 4u * P.holes;
+  let out: u32 = P.outs + select(4u * P.holes, 0u, MCOMPACT);
   cel[out + 2u * i] = gx / n * f;
   cel[out + 2u * i + 1u] = gy / n * f;
 }
@@ -3100,7 +3443,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean; local?: boolean; slots?: number }): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean; local?: boolean; slots?: number; constants?: Record<string, number | boolean>; plan?: any; compact?: boolean; vmax?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -3114,10 +3457,41 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const lim = adapter.limits ?? {};
   /* paced, the device times its own work (timestamp queries), so a submission is sized by what the device did and not by the host's round trip */
   const timed = !!how?.paced && !!adapter.features?.has?.("timestamp-query");
-  const device = await adapter.requestDevice({ requiredFeatures: timed ? ["timestamp-query"] : [], requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
+  /* the medium binds fourteen storage buffers to a kernel (seven, and eight shards of compact sources): more than the eight a device gives unasked */
+  const STORAGE = 14;
+  if ((lim.maxStorageBuffersPerShaderStage ?? 8) < STORAGE) throw new Error(`WebGPU: the medium binds ${STORAGE} storage buffers to a kernel, this adapter allows ${lim.maxStorageBuffersPerShaderStage}`);
+  const device = await adapter.requestDevice({ requiredFeatures: timed ? ["timestamp-query"] : [], requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize, maxStorageBuffersPerShaderStage: STORAGE } });
+  /* a device's validation errors are otherwise silent - every dispatch after one does nothing: the first is kept, and the next tick throws it */
+  let invalid: string | null = null;
+  device.addEventListener?.("uncapturederror", (e: any) => { invalid ??= String(e?.error?.message ?? e); });
+  device.pushErrorScope("validation");
   A = Math.max(8, A & ~1);
-  const { order, common, kernels } = medium_manifest(KERNELS);
+  const { order, common: written, kernels } = medium_manifest(KERNELS);
   if (!order.length) throw new Error("the kernels carry no `//! medium` manifest - regenerate");
+  /*
+   * THE KERNELS' OWN CONSTANTS, SET FOR THIS RUN (`how.constants`, by name: MCELLPULL, MLIST, MNEAR, ...): the text is
+   * compiled here, so what was written as a default is only that - a run sets its own before any pipeline is made.
+   * A name the kernels do not carry is an error, not a silent default
+   */
+  /* a run's plan (physics `Plan`): its resolution sets the kernels' constants, its budget the pacing; what `how` says outright wins */
+  const plan = how?.plan;
+  /*
+   * COMPACT (`how.compact`): a run of many sources of one kind - each three words in shards of 2 GiB (Kernels
+   * MCOMPACT), its cell's sums in place of the sort, no per-source room for a pull or a beam. It takes the pull a cell's
+   * and a source's tick in one (MCELLPULL, MFUSED); MVMAX is the fastest a source is kept at (c-bar a tick)
+   */
+  const compact = !!(how?.compact ?? plan?.budget?.compact);
+  /* sources made on the device (`generate`): counted with the host's, and never held on the host */
+  let made = 0, making = 0, made_mass = 0;
+  const constants: Record<string, number | boolean> = { ...(plan?.resolution?.constants ?? {}), ...(compact ? { MCOMPACT: true, MCELLPULL: true, MFUSED: true, MVMAX: how?.vmax ?? plan?.resolution?.speed ?? 0.25 } : {}), ...(how?.constants ?? {}) };
+  const common = Object.entries(constants).reduce((text, [name, v]) => {
+    const at = new RegExp(`const ${name}: (\\w+) = [^;]+;`);
+    const m = at.exec(text);
+    if (!m) throw new Error(`the medium's kernels carry no constant ${name}`);
+    const kind = m[1];
+    const value = kind === "bool" ? (v ? "true" : "false") : kind === "u32" ? `${Math.max(0, Math.floor(Number(v)))}u` : kind === "i32" ? `${Math.floor(Number(v))}` : `${Number(v).toFixed(8)}`;
+    return text.replace(at, `const ${name}: ${kind} = ${value};`);
+  }, written);
   /* how many bodies the medium carries and whose track it keeps, as the kernels were written with them (Kernels.MAXM, Kernels.TRACKB) */
   const MAXM = Number(/const MAXM: u32 = (\d+)u;/.exec(common)?.[1] ?? MAXH);
   const TRACKB = Number(/const TRACKB: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
@@ -3161,16 +3535,19 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
   };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * CAP + 2 * ENTRIES, BEAMC = BOD + 12 * CAP, WHOM = BEAMC + 2 * BEAM;
+  /* compact, no source keeps a pull, a beam or a plane of its own here: one kind's twelve numbers stand for all */
+  const OUTS = compact ? 0 : CAP, KINDS = compact ? 1 : CAP;
+  const BOD = OUT + 4 * OUTS + 2 * ENTRIES, BEAMC = BOD + 12 * KINDS, WHOM = BEAMC + 2 * BEAM;
   /* where each of the first TRACKB bodies stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
-  const TRACKED = 4096, TRACK = WHOM + planes + 1;
+  /* and sixteen numbers of what the host asks made or counted (Kernels mgen), just before the tracks */
+  const TRACKED = 4096, TRACK = WHOM + (compact ? 2 : planes + 1) + 16, GEN = TRACK - 16;
   /* where every body is apart, the parts of each body's pull: a point of it against a run of PCHUNK planes, two numbers each (Kernels MPULLH) */
   const PCHUNK = Number(/const MPCHUNK: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
   const chunks = (n: number) => how?.local ? 1 : Math.ceil((n + 1) / PCHUNK);
   /* held where they are, each cell's bodies gathered in 32 parts first (Kernels MHSRC1), just before the pulls' parts */
   const PART = TRACK + TRACKED * TRACKB * 4 + (how?.local ? cells * 384 : 0);
   /* held where they are (how.local) a body's pull is summed over its c-bar by its own thread: one part a body */
-  const celBytes = (PART + (apart ? 2 * apart * (how?.local ? 1 : K * K * chunks(apart)) : 0)) * 4;
+  const celBytes = (PART + (apart && !compact ? 2 * apart * (how?.local ? 1 : K * K * chunks(apart)) : 0) + (how?.local ? 2 * cells : 0)) * 4;
   fits("ledgers", celBytes);
   const cel = buffer(celBytes, usage.storage);
   fits("ways and asks", (A + 2 * MAXH + CN + ENTRIES) * 16);
@@ -3191,7 +3568,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const local = !!how?.local;
   if (local && !apart) throw new Error("the medium holds every body's rays where they are only with every body apart (how.apart, how many)");
   const GATHER = Number(/const MGATHER: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
-  const HSLOTS = Math.max(1, Math.floor(how?.slots ?? 4));
+  const HSLOTS = Math.max(1, Math.floor(how?.slots ?? plan?.resolution?.keeps ?? 4));
   /* how many near bundles a cell lists to be read exactly (Kernels MNEAR) */
   const MNEAR = Number(/const MNEAR: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
   /* the slots, then a cell's middle, then whether each of its ways holds anything, then the bodies on it gathered into one source (and how they stand about the cell's middle: twelve numbers), then what arrives there times its way (x, y), then which ways it holds and which it can be reached on, each as four words of 24 bits, then its far bodies' field (nine numbers) and its near ones listed (a count and 96), then whether a source is near (MHWANT, for MHSHINE) */
@@ -3200,7 +3577,14 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const held = [buffer(heldFloats * 4, usage.storage), buffer(heldFloats * 4, usage.storage)];
   /* every body on its cell's list: a head a cell, then the next body after each (Kernels MHCLEAR, MHLINK) */
   /* each cell's count, where its run starts (and one past), the sums of 256 cells, then every body in cell order (Kernels MHCLEAR .. MHPLACE) */
-  const links = buffer(Math.max(16, (local ? 2 * cells + 3 + Math.ceil((cells + 1) / 256) + CAP : 4) * 4), usage.storage);
+  /* a frame's grid, as big as it may be (Kernels mgrid) */
+  const GRIDMAX = 1024;
+  let frame_grid = 0;
+  const links = buffer(Math.max(16, (local ? (compact ? 10 * cells + 4 + GRIDMAX * GRIDMAX : 2 * cells + 3 + Math.ceil((cells + 1) / 256) + CAP) : 4) * 4), usage.storage);
+  /* compact, the sources themselves: three words each, MSHARD to a shard, eight shards at most (Kernels mword) */
+  const MSHARD = Number(/const MSHARD: u32 = (\d+)u;/.exec(common)?.[1] ?? 178956970);
+  if (compact && CAP > 8 * MSHARD) throw new Error(`compact, the medium carries at most ${8 * MSHARD} sources, not ${CAP}`);
+  const shards = Array.from({ length: 8 }, (_, k) => { const n = compact ? Math.max(0, Math.min(MSHARD, CAP - k * MSHARD)) : 0; if (n) fits(`sources (shard ${k})`, n * 12); return buffer(Math.max(16, n * 12), usage.storage); });
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform", hasDynamicOffset: true } },
     { binding: 1, visibility: 4, buffer: { type: "storage" } },
@@ -3209,16 +3593,18 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     { binding: 4, visibility: 4, buffer: { type: "storage" } },
     { binding: 5, visibility: 4, buffer: { type: "storage" } },
     { binding: 6, visibility: 4, buffer: { type: "storage" } },
+    ...shards.map((_, k) => ({ binding: 7 + k, visibility: 4, buffer: { type: "storage" } })),
   ] });
   /* per tick parity: tick t leaves its rays in held[t % 2] and opens on the other */
   const bind_ring = [0, 1].map(p => ring.map(set => set.map(par => device.createBindGroup({ layout, entries: [
     { binding: 0, resource: { buffer: par, size: 80 } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
     { binding: 4, resource: { buffer: held[1 - p] } }, { binding: 5, resource: { buffer: held[p] } }, { binding: 6, resource: { buffer: links } },
+    ...shards.map((b, k) => ({ binding: 7 + k, resource: { buffer: b } })),
   ] }))));
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
   /* the lean at every cell and each body's rays at every cell are what a panel draws: they are run where a panel reads, not on every tick (Medium.lean, Medium.sweep) */
   const drawn = ["MLEAN", "MSWEEP"], stepped = order.filter(n => !drawn.includes(n));
-  const every = [...stepped, ...drawn, "MPROBE", "MHSEED"].filter((n, k, all) => all.indexOf(n) === k);
+  const every = [...stepped, ...drawn, "MPROBE", "MHSEED", "MGEN", "MLAUNCH", "MFRAMECLEAR", "MFRAME"].filter((n, k, all) => all.indexOf(n) === k);
   const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
   for (const name of every.map(n => n.replace(/@z$/, ""))) {
     const k = kernels[name];
@@ -3228,6 +3614,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     pipes[name] = device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint: name } });
     over[name] = k.over;
   }
+  /* what was made so far - layout, bindings, pipelines - is checked now, not found out by a tick that does nothing */
+  { const e = await device.popErrorScope(); if (e) throw new Error(`WebGPU: the medium could not be set up: ${e.message}`); }
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
   const DIR = new Float32Array((A + 2 * MAXH + CN + ENTRIES) * 4);
@@ -3275,7 +3663,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
   /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
-  const BODS = new Float32Array(12 * CAP);
+  const BODS = new Float32Array(12 * KINDS);
   /* how big a source is, and what that size lets out of it - the store's own skin law (Medium.face_of, Medium.skin_of) */
   const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
   const at_one = 1 - law.reach_at(law.NEAR);
@@ -3305,11 +3693,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   const SORT = ["MHCLEAR", "MHLINK", "MHSCAN", "MHSCAN2", "MHSCAN3", "MHPLACE"];
   const relist = (parity: number) => in_pieces([...SORT, "MHSRC1", "MHSRC"], parity);
+  const count = () => Math.min(Math.max(holes.length, made), CAP);
   const push = () => {
     /* what is gathered goes first: a write lands on the queue after it, as it would have unpaced */
     send();
     stale = false;
-    const n = Math.min(holes.length, CAP);
+    const n = count();
+    if (compact) { push_compact(n); if (local) relist((t + 1) % 2); return; }
     for (let k = 0; k < n; k++) {
       const h = holes[k];
       /* every body apart is on its own plane, the one after its place in the list */
@@ -3330,11 +3720,54 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
      */
     if (local) relist((t + 1) % 2);
   };
+  /*
+   * COMPACT, THE SOURCES WRITTEN: one kind's numbers (the first source's, and what a source of it sends at rest), and
+   * three words a source - where it is on each axis in fixed point and its velocity in MVMAX's 32767ths (Kernels mword)
+   */
+  const VMAX = Number(constants.MVMAX ?? 0.25);
+  const fixed = (x: number) => { const y = Math.min(4095.999, Math.max(0, x + 1024)); const w = Math.floor(y); return ((w << 20) >>> 0) + Math.min(1048575, Math.floor((y - w) * 1048576)); };
+  const unfixed = (w: number) => (w >>> 20) + (w & 1048575) / 1048576 - 1024;
+  const packed = (vx: number, vy: number) => { const q = (v: number) => Math.max(-32767, Math.min(32767, Math.round(v / VMAX * 32767))); return ((q(vx) & 65535) | ((q(vy) & 65535) << 16)) >>> 0; };
+  const unpacked = (w: number) => [((w << 16) >> 16) / 32767 * VMAX, (w >> 16) / 32767 * VMAX];
+  const push_compact = (n: number) => {
+    /* sources made on the device stand there already: only the host's own are written */
+    if (!n || !holes.length) return;
+    const h0 = holes[0];
+    const kind = new Float32Array(12);
+    kind[2] = h0.mass; kind[6] = h0.moves ? 1 : 0; kind[8] = face_of(h0); kind[9] = skin_of(h0);
+    kind[10] = per_way({ mass: h0.mass, face: h0.face, px: 0, py: 0 }) * Math.pow(face_of(h0), D - 1);
+    device.queue.writeBuffer(cel, BOD * 4, kind);
+    for (let k = 0; k * MSHARD < n; k++) {
+      const m = Math.min(MSHARD, n - k * MSHARD), words = new Uint32Array(3 * m);
+      for (let j = 0; j < m; j++) {
+        const h = holes[k * MSHARD + j], mass = h.mass || 1;
+        words[3 * j] = fixed(h.x); words[3 * j + 1] = fixed(h.y);
+        words[3 * j + 2] = packed((h.momentum?.components?.[0] ?? h.px ?? 0) / mass, (h.momentum?.components?.[1] ?? h.py ?? 0) / mass);
+      }
+      device.queue.writeBuffer(shards[k], 0, words);
+    }
+  };
   /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
   const sync = async () => {
     if (stale) push();
-    const n = Math.min(holes.length, CAP);
+    const n = count();
     if (!n) return;
+    if (compact) {
+      if (!holes.length) return;
+      for (let k = 0; k * MSHARD < n; k++) {
+        const m = Math.min(MSHARD, n - k * MSHARD);
+        const f = await read(shards[k], 3 * m);
+        const w = new Uint32Array(f.buffer, f.byteOffset, 3 * m);
+        for (let j = 0; j < m; j++) {
+          const h = holes[k * MSHARD + j];
+          if (!h.moves) continue;
+          h.x = unfixed(w[3 * j]); h.y = unfixed(w[3 * j + 1]);
+          const v = unpacked(w[3 * j + 2]);
+          h.momentum = new physics.Vector({ components: [v[0] * h.mass, v[1] * h.mass] });
+        }
+      }
+      return;
+    }
     const got = await read(cel, 12 * n, BOD * 4);
     holes.slice(0, n).forEach((h: any, k: number) => {
       if (!h.moves) return;
@@ -3354,7 +3787,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     return got;
   };
   const entries: number[] = [];
-  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, CAP), "pulls": apart ? Math.min(holes.length, CAP) * (how?.local ? 1 : K * K * chunks(Math.min(holes.length, CAP))) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0, "cells1": local ? cells + 1 : 0, "cells32": local ? cells * 32 : 0, "blocks": local ? Math.ceil((cells + 1) / 256) : 0 } as Record<string, number>)[o];
+  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": count(), "pulls": apart ? count() * (how?.local ? 1 : K * K * chunks(count())) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0, "cells1": local ? cells + 1 : 0, "cells32": local ? cells * 32 : 0, "made": making, "grid2": frame_grid * frame_grid, "blocks": local ? Math.ceil((cells + 1) / 256) : 0 } as Record<string, number>)[o];
   /* one pass; paced, with the device's own clock on either side of it (the pass's pair of `stamps`) */
   /* the parity a pass runs on: a tick's own leaves its rays in held[t % 2]; a reading after it reads the last left, held[(t + 1) % 2] */
   /* and a piece of one: `count` threads from `first`, read off its own region of the tick's uniforms (Par.first) */
@@ -3389,7 +3822,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
   const uniforms = (slot = 0) => {
-    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, CAP); P[6] = t; P[7] = (apart ? holes.length + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = count(); P[6] = t; P[7] = (apart ? count() + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
     /* where the ledgers stand, as whole numbers: past sixteen million a float is no longer one (Kernels.medium_helpers) */
     P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM; P[17] = PART; P[18] = 0;
     /* a set of uniforms taken afresh: its regions are free again (each pass writes its own, `run`) */
@@ -3407,7 +3840,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
    * before it runs, and while a field is still spreading out it grows by up to some 70% from one tick to the next -
    * at 20 a submission reached 34 ms; the display's own line is 30
    */
-  const LONGEST_MS = 250, AIM_MS = 15, MAXPASS = 1024;
+  const LONGEST_MS = Number(plan?.budget?.longest_ms ?? 250), AIM_MS = Number(plan?.budget?.aim_ms ?? 15), MAXPASS = 1024;
+  /* at most this share of the time busy, and this many submissions on the queue (the plan's budget) */
+  const DUTY = Math.min(1, Math.max(0.05, Number(plan?.budget?.duty ?? 0.5))), IN_FLIGHT = Math.max(1, Math.floor(Number(plan?.budget?.in_flight ?? 2)));
   let longest = 0, longest_was = "";
   /* the cheapest one pass has taken, in ms: what a dispatch costs however few its threads */
   let floor_ms = Infinity;
@@ -3534,10 +3969,10 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
        * guess is on the high side (cut with a margin), and resting on it rested every piece twice as long as it worked.
        * Never more than two AIM_MS on credit, so no more than two are ever back to back
        */
-      if (!rest) { debt = Math.max(-2 * AIM_MS, debt + 2 * (busy - f.guess)); return; }
+      if (!rest) { debt = Math.max(-AIM_MS / DUTY, debt + (busy - f.guess) / DUTY); return; }
       const r0 = performance.now();
       const idle = Math.max(0, r0 - f.t0 - busy);
-      await new Promise(r => setTimeout(r, Math.max(2, busy - idle)));
+      await new Promise(r => setTimeout(r, Math.max(2, busy * (1 / DUTY - 1) - idle)));
       clock.rested += performance.now() - r0;
   };
   const settle = async () => { while (inflight.length) await settle_one(true); };
@@ -3552,13 +3987,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   let last_sent = 0, last_work = 0, debt = 0;
   const next = async () => {
     if (!enc) return;
-    const wait = last_sent + 2 * last_work + debt - performance.now();
+    const wait = last_sent + last_work / DUTY + debt - performance.now();
     debt = Math.min(0, Math.max(debt, wait));
     if (wait > 0) { const r0 = performance.now(); await new Promise(r => setTimeout(r, wait)); clock.rested += performance.now() - r0; }
     last_work = guess;
     send();
     last_sent = performance.now();
-    while (inflight.length > 2) await settle_one(false);
+    while (inflight.length > IN_FLIGHT) await settle_one(false);
   };
   const owe = async () => {
     if (owing) return;
@@ -3711,8 +4146,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
     async leans() {
-      const n = Math.min(holes.length, CAP);
+      const n = count();
       if (!n) return [];
+      if (compact) throw new Error("compact, no source keeps its pull: read a cell's (`cellpulls`) or run uncompact");
       const got = await read(cel, 4 * n, OUT * 4);
       return holes.slice(0, n).map((_: any, k: number) => [got[4 * k], got[4 * k + 1]]);
     },
@@ -3779,6 +4215,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     mass: (h: any) => h.mass,
     at,
     async tick() {
+      if (invalid) throw new Error(`WebGPU: the device refused the medium's work: ${invalid}`);
       if (stale) push();
       await submit(stepped, t % 2);
       t++;
@@ -3810,16 +4247,78 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
      * stream carries the rest a c-bar a tick - so the bodies are held where they are (each still sending as fast as it
      * goes) for a crossing of the box, and then let go as they were. Without the rays held, it is the seed
      */
+    /*
+     * SOURCES MADE ON THE DEVICE (compact): `count` of one kind (`mass`, `face`), laid as `shape` ("disc": surface
+     * density falling as e^(-r/scale), cut at `cut`; "square": even, `scale` either side) about `centre` (cells), off
+     * `seed` - at rest, never on the host. Made after any the host added, and counted with them
+     */
+    async generate(spec: { count: number; mass: number; face?: number; shape?: string; centre?: number[]; scale: number; cut?: number; seed?: number }) {
+      if (!compact) throw new Error("sources are made on the device only compact (how.compact)");
+      if (holes.length) throw new Error("compact, the host's own sources and those made on the device are not mixed");
+      const n = Math.min(Math.floor(spec.count), CAP - made);
+      if (n <= 0) return 0;
+      send();
+      const kind = new Float32Array(12), h0 = { mass: spec.mass, face: spec.face ?? 0, px: 0, py: 0 };
+      kind[2] = spec.mass; kind[6] = 1; kind[8] = face_of(h0); kind[9] = skin_of(h0);
+      kind[10] = per_way(h0) * Math.pow(face_of(h0), D - 1);
+      device.queue.writeBuffer(cel, BOD * 4, kind);
+      const c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      device.queue.writeBuffer(cel, GEN * 4, new Float32Array([spec.shape === "square" ? 1 : 0, c[0], c[1], spec.scale, spec.cut ?? spec.scale * 8, (spec.seed ?? 1) >>> 0, made, n]));
+      made += n; making = n; made_mass = spec.mass;
+      await submit(["MGEN"]);
+      making = 0;
+      stale = false;
+      if (local) relist((t + 1) % 2);
+      return n;
+    },
+    /* every source set going round `centre` at the speed its cell's pull holds a circle at, and `sigma` of that spread (Kernels MLAUNCH) */
+    async launch(spec: { centre?: number[]; sigma?: number; seed?: number }) {
+      send();
+      const c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      device.queue.writeBuffer(cel, (GEN + 1) * 4, new Float32Array([c[0], c[1]]));
+      device.queue.writeBuffer(cel, (GEN + 5) * 4, new Float32Array([(spec.seed ?? 1) >>> 0]));
+      device.queue.writeBuffer(cel, (GEN + 8) * 4, new Float32Array([spec.sigma ?? 0]));
+      await submit(["MLAUNCH"]);
+    },
+    /*
+     * WHAT HAS LEFT THE BOX (Medium.departed): the mass of the sources past its edge, which no longer shine into it or
+     * are pulled by it - the box is the view and its margin, so what is here has left both. Compact, counted on the
+     * device as the sources are linked; otherwise off the host's places, after a sync
+     */
+    async departed(): Promise<number> {
+      if (!local) return 0;
+      if (compact) {
+        send();
+        await submit(["MHCLEAR", "MHLINK"]);
+        const got = await read(links, 1, 10 * cells * 4);
+        return new Int32Array(got.buffer, got.byteOffset, 1)[0] * made_mass;
+      }
+      if (this.sync) await this.sync();
+      let m = 0;
+      for (const h of holes) { const x = Math.floor(h.x + 0.5), y = Math.floor(h.y + 0.5); if (x < 0 || y < 0 || x >= N || y >= N) m += h.mass; }
+      return m;
+    },
+    /* A FRAME: the sources counted on a `grid` x `grid` picture, `span` cells either side of `centre`, on the device */
+    async grid(spec: { grid: number; centre?: number[]; span: number }) {
+      if (!compact) throw new Error("a frame is counted on the device only compact (how.compact)");
+      const G = Math.min(GRIDMAX, Math.floor(spec.grid)), c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      send();
+      device.queue.writeBuffer(cel, (GEN + 10) * 4, new Float32Array([G, c[0], c[1], spec.span]));
+      frame_grid = G;
+      await submit(["MFRAMECLEAR", "MFRAME"]);
+      const got = await read(links, G * G, (10 * cells + 4) * 4);
+      return new Int32Array(got.buffer, got.byteOffset, G * G);
+    },
     async stand() {
       this.seed();
       if (!local) return;
       const moving = holes.map((h: any) => h.moves);
       holes.forEach((h: any) => { h.moves = false; });
-      push();
+      if (made) { send(); device.queue.writeBuffer(cel, (BOD + 6) * 4, new Float32Array([0])); } else push();
       const crossing = Math.ceil(N / K) + 2;
       for (let i = 0; i < crossing; i++) await this.tick();
       holes.forEach((h: any, k: number) => { h.moves = moving[k]; });
-      push();
+      if (made) { send(); device.queue.writeBuffer(cel, (BOD + 6) * 4, new Float32Array([1])); } else push();
     },
     async settle() {
       this.seed();
@@ -3862,7 +4361,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       device.queue.submit([enc.finish()]);
       /* the reading is submitted behind it on the same queue, so waiting for the work here is a round trip for nothing */
       /* the answers stand past the bodies' own, as many as there are (Kernels MPROBE: P.outs + 4 holes) */
-      const got = await read(cel, 2 * n, (OUT + 4 * Math.min(holes.length, CAP)) * 4);
+      const got = await read(cel, 2 * n, (OUT + (compact ? 0 : 4 * count())) * 4);
       return Array.from({ length: n }, (_, i) => [got[2 * i], got[2 * i + 1]]);
     },
     async rho() { return read(cel, cells, 0); },

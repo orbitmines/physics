@@ -1,0 +1,279 @@
+/*
+ * SWIFT, as a mapping from the constructs of Ray to text. Swift has no dynamic members, so - as in Java - a Ray
+ * class is a table (`Cls`) filled when the package is first used, and an object an `Obj` whose members are reached
+ * by name (`get(x, "cells")`, `call(x, "add", [...])`, `set(x, "tag", v)`) - see
+ * implementation/gen/backends/cpu.rt.swift. Every value is a `V` (an enum: none, a number, a boolean, a text, a
+ * list, a program, an object, ...), and everything that can fail throws, so every call is written `try`. A class
+ * `X` is `Physics.X` and its members sit in `C_X.define`; `def_X` makes its table, and `loadAll` (written at the end
+ * of the package, off the `def_` functions in the order the core lists them) makes every table on the first use.
+ * Every method and lambda takes its arguments as one array (`a1`, `a2`, ... by depth, `{d}`), bound at the top of
+ * its body (`{parameter}` with `{i}`), so a missing argument is None and a default is set in the body
+ * (`{defaults_in_body}`). Swift's closures take a local by reference, so a local is a plain `var`, spelled with
+ * the depth of the scope that binds it (`{local_name}`), declared before it is set so that a lambda can call itself.
+ */
+
+Swift: Language = class {
+  name = "Swift"
+  extension = ".swift"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ""
+  {empty_block} => ""
+  {interpolation} => "\", try str({x}), \""
+  {named_arg} => "kw(\"{raw}\", {val})"
+  {parameter} => "var {nm}: V = arg(a{d}, {i});"
+  {parameter_untyped} => "var {nm}: V = arg(a{d}, {i});"
+  {parameter_default} => "var {nm}: V = arg(a{d}, {i});"
+  {parameter_separator} => " "
+  {dynamic_get} => "try get({tgt}, Name(try str({key})))"
+  {dynamic_set} => "try set({tgt}, Name(try str({key})), {val})"
+  {whole} => "{val}.0"
+  {escaped_name} => "{nm}_"
+  {global_name} => "(try Physics.{nm})"
+  {local_name} => "{nm}_{k}"
+  {defaults_in_body} => "yes"
+  {class_ref} => "(try K(\"{nm}\"))"
+  {field_assign} => "c.field(\"{nm}\", {{ (this_: V) throws -> V in return {val} }})"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if truthy({cond}) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if truthy({cond}) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if !truthy({cond}) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while truthy({cond}) {{\n{loopbody.indent}\n}}"
+  {return val} => "return {val}"
+  {return} => "return V.null"
+  {dynamically assert cond} => "if !truthy({cond}) {{ throw RayError({cond.quoted}) }}"
+
+  /* definitions and assignment: declared first, so that a lambda can take itself */
+  {nm := val} => "var {nm}: V = V.null; {nm} = {val}"
+  {tgt.nm = rhs} => "try set({tgt}, \"{nm.raw}\", {rhs})"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "try setAt({tgt}, {k}, {rhs})"
+
+  /* expressions: every one a V; the right side of `&`, `|`, `??` and `? :` is read only when it decides */
+  {a & b} => "try and_({a}, {b})"
+  {a | b} => "try or_({a}, {b})"
+  {!a} => "not({a})"
+  {-a} => "try neg({a})"
+  {a == b} => "V.b(try eq({a}, {b}))"
+  {a != b} => "V.b(!(try eq({a}, {b})))"
+  {a < b} => "try lt({a}, {b})"
+  {a <= b} => "try le({a}, {b})"
+  {a > b} => "try gt({a}, {b})"
+  {a >= b} => "try ge({a}, {b})"
+  {a + b} => "try add({a}, {b})"
+  {a - b} => "try sub({a}, {b})"
+  {a * b} => "try mul({a}, {b})"
+  {a / b} => "try div({a}, {b})"
+  {a % b} => "try mod({a}, {b})"
+  {a ^ b} => "try power({a}, {b})"
+  {a ?? b} => "try orElse({a}, {b})"
+  {cond ? a : b} => "try sel(truthy({cond}), {a}, {b})"
+  {a ==.instance_of Array} => "V.b(isList({a}))"
+  {a ==.instance_of ty} => "V.b(try instanceOf({a}, \"{ty}\"))"
+  {a as ty} => "{a}"
+  {tgt.nm} => "try get({tgt}, \"{nm.raw.method}\")"
+  {tgt?.nm} => "try getOpt({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm()} => "try get({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "try call({tgt}, \"{nm.raw.method}\", [{arglist}])"
+  {tgt?.nm(arglist)} => "try callOpt({tgt}, \"{nm.raw.method}\", [{arglist}])"
+  {tgt.choose("nm")} => "try choose({tgt}, {nm.quoted})"
+  {tgt[k]} => "try elem({tgt}, {k})"
+  {fn(arglist)} => "try invoke({fn}, [{arglist}])"
+  {Class(arglist)} => "try makeNamed(\"{Class}\", [{arglist}])"
+  {[elems]} => "list({elems})"
+  { {} } => "makeNode()"
+  {this} => "this_"
+  {None} => "V.null"
+  {true} => "V.b(true)"
+  {false} => "V.b(false)"
+  {"txt"} => "V.s(cat(\"{txt}\"))"
+  {(paramlist) => { stmts }} => "V.fn({{ (a{d}: [V]) throws -> V in\n  {paramlist}\n{stmts.returned.indent}\n  return V.null\n}})"
+  {(paramlist) => e} => "V.fn({{ (a{d}: [V]) throws -> V in {paramlist} return {e} }})"
+  {xs#} => "try many({xs})"
+  {draw([ws], [os])} => "try call(try get(try get(this_, \"vertex\"), \"world\"), \"draw\", [list({ws}), list({os})])"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "do {{\n  var i{d}: Double = 0\n  while i{d} < num({cnt}) {{\n    var {x_.bare}: V = V.num(i{d})\n{stmts.indent.indent}\n    i{d} += 1\n  }}\n}}"
+  {xs.for((x_) => { stmts })} => "for e{d} in try items({xs}) {{\n  var {x_.bare}: V = e{d}\n{stmts.indent}\n}}"
+  {fail(x_)} => "try fail_({x_})"
+  {Catalogue.number(x_)} => "try number({x_})"
+  {String(chars: xs)} => "try fromCodepoints({xs})"
+  {x_.blank} => "blank({x_})"
+  {xs.push(x_)} => "try m_push({xs}, {x_})"
+  {xs.chars} => "try m_chars({xs})"
+  {xs.pop} => "try m_pop({xs})"
+  {xs.length} => "try len({xs})"
+  {xs.map(f)} => "try m_map({xs}, {f})"
+  {xs.filter(f)} => "try filt({xs}, {f})"
+  {xs.for(f)} => "try m_for({xs}, {f})"
+  {xs.some(f)} => "try m_some({xs}, {f})"
+  {xs.every(f)} => "try m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "try m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "try m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "try m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "try m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "try m_split({xs}, {x_})"
+  {xs.trim} => "try m_trim({xs})"
+  {xs.upper} => "try m_upper({xs})"
+  {xs.lower} => "try m_lower({xs})"
+  {xs.lines} => "try m_lines({xs})"
+  {xs.quoted} => "try quoted({xs})"
+  {xs.contains(x_)} => "try m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "try m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "try m_join({xs}, {sep})"
+  {xs.first} => "try m_first({xs})"
+  {xs.last} => "try m_last({xs})"
+  {xs.empty} => "try m_empty({xs})"
+  {xs.take(cnt)} => "try m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "try m_drop({xs}, {cnt})"
+  {xs.rest} => "try m_rest({xs})"
+  {xs.concat(ys)} => "try m_concat({xs}, {ys})"
+  {xs.reverse} => "try m_reverse({xs})"
+  {xs.sum} => "try m_sum({xs})"
+  {xs.most(f)} => "try m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "try m_sorted_by({xs}, {f})"
+  {xs.each} => "try m_each({xs})"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "try m_sqrt({x_})"
+  {x_.floor} => "try m_floor({x_})"
+  {x_.abs} => "try m_abs({x_})"
+  {x_.negated} => "try neg({x_})"
+  {x_.magnitude} => "try m_magnitude({x_})"
+  {x_.cos} => "try m_cos({x_})"
+  {x_.sin} => "try m_sin({x_})"
+  {x_.round} => "try m_round({x_})"
+  {x_.ln} => "try m_ln({x_})"
+  {x_.exp} => "try m_exp({x_})"
+  {x_.atan2(y_)} => "try m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "try m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "V.num(0.0)"
+  {Real.ONE} => "V.num(1.0)"
+  {Real.TWO} => "V.num(2.0)"
+  {Real.PI} => "V.num(Double.pi)"
+  {Real.NAN} => "V.num(Double.nan)"
+  {Real.INFINITY} => "V.num(Double.infinity)"
+  {Real.TAU} => "V.num(2.0 * Double.pi)"
+  {Random.MODULUS} => "V.num(4294967296.0)"
+  {Random.MULTIPLIER} => "V.num(1664525.0)"
+  {Random.INCREMENT} => "V.num(1013904223.0)"
+
+  /* types are not written */
+  {N} => "V"
+  {Natural} => "V"
+  {Z} => "V"
+  {Integer} => "V"
+  {Real} => "V"
+  {Decimal} => "V"
+  {boolean} => "V"
+  {String} => "V"
+  {Array} => "V"
+  {*} => "V"
+  {{}} => "V"
+  {ty[]} => "V"
+  {ty?} => "V"
+  {Program} => "V"
+
+  /* classes: a table, made by `def_X` and filled by `C_X.define` when the package is first used - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "func def_{nm.raw}() throws {{ try cls(\"{nm.raw}\", Physics.{sup.first}, C_{nm.raw}.define) }}\nextension Physics {{ public static var {nm.raw}: V {{ get throws {{ return try K(\"{nm.raw}\") }} }} }}\nenum C_{nm.raw} {{\n  static func define(_ c: Cls) throws {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm := class { membs }} => "func def_{nm.raw}() throws {{ try cls(\"{nm.raw}\", Physics.Node, C_{nm.raw}.define) }}\nextension Physics {{ public static var {nm.raw}: V {{ get throws {{ return try K(\"{nm.raw}\") }} }} }}\nenum C_{nm.raw} {{\n  static func define(_ c: Cls) throws {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm: ty = class { membs }} => "func def_{nm.raw}() throws {{ try theory(cls(\"{nm.raw}\", Physics.{ty}, C_{nm.raw}.define)) }}\nextension Physics {{ public static var {nm.raw}: V {{ get throws {{ return try K(\"{nm.raw}\") }} }} }}\nenum C_{nm.raw} {{\n  static func define(_ c: Cls) throws {{\n{membs.indent.indent}\n  }}\n}}"
+  {theorem "nm" () => tbody} => "c.staticField(\"theorem {nm}\", {{ (this_: V) throws -> V in return try makeNamed(\"Theorem\", [kw(\"id\", V.s({nm.quoted})), kw(\"body\", V.fn({{ (a{d}: [V]) throws -> V in\n{tbody.returned.indent}\n  return V.null\n}}))]) }})"
+  {x_.body()} => "try invoke(try get({x_}, \"body\"), [])"
+  {nm: ty = val} => "c.field(\"{nm.raw}\", {{ (this_: V) throws -> V in return {val} }})"
+  {nm: ty} => "c.field(\"{nm.raw}\", nil)"
+  {nm = val} => "c.staticField(\"{nm.raw}\", {{ (this_: V) throws -> V in return {val} }})"
+  {static nm: ty = val} => "c.staticField(\"{nm.raw}\", {{ (this_: V) throws -> V in return {val} }})"
+  {static nm = val} => "c.staticField(\"{nm.raw}\", {{ (this_: V) throws -> V in return {val} }})"
+  {nm (): ret => mbody} => "c.getter(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n{mbody.returned.indent}\n  return V.null\n}})"
+  {nm () => mbody} => "c.getter(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n{mbody.returned.indent}\n  return V.null\n}})"
+  {static nm (): ret => mbody} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n{mbody.returned.indent}\n  return V.null\n}})"
+  {static nm () => mbody} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n{mbody.returned.indent}\n  return V.null\n}})"
+  {nm (paramlist): ret => mbody} => "c.method(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{mbody.returned.indent}\n  return V.null\n}})"
+  {nm (paramlist) => mbody} => "c.method(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{mbody.returned.indent}\n  return V.null\n}})"
+  {static nm (paramlist): ret => mbody} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{mbody.returned.indent}\n  return V.null\n}})"
+  {static nm (paramlist) => mbody} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{mbody.returned.indent}\n  return V.null\n}})"
+  {nm (paramlist): ret} => "c.method(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {nm (paramlist)} => "c.method(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {nm (): ret} => "c.getter(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {nm ()} => "c.getter(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {static nm (paramlist): ret} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {static nm (paramlist)} => "c.statik(\"{nm.raw.method}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"{nm} is declared but not defined by anyone\") }})"
+  {rule /rid "nm" | rt () => rbody} => "c.staticField(\"rule {rid}\", {{ (this_: V) throws -> V in return try makeNamed(\"Rule\", [kw(\"id\", V.s(\"/{rid}\")), kw(\"name\", V.s({nm.quoted})), kw(\"rate\", V.s({rt.quoted})), kw(\"over\", V.s({over.quoted})), kw(\"single\", V.b({single})), kw(\"where\", {where}), kw(\"source\", V.s({source.quoted})), kw(\"body\", V.fn({{ (a{d}: [V]) throws -> V in\n{rbody.returned.indent}\n  return V.null\n}}))]) }})"
+  {rule /rid "nm" () => rbody} => "c.staticField(\"rule {rid}\", {{ (this_: V) throws -> V in return try makeNamed(\"Rule\", [kw(\"id\", V.s(\"/{rid}\")), kw(\"name\", V.s({nm.quoted})), kw(\"rate\", V.null), kw(\"over\", V.s({over.quoted})), kw(\"single\", V.b({single})), kw(\"where\", {where}), kw(\"source\", V.s({source.quoted})), kw(\"body\", V.fn({{ (a{d}: [V]) throws -> V in\n{rbody.returned.indent}\n  return V.null\n}}))]) }})"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "c.staticField(\"rule {rid}\", {{ (this_: V) throws -> V in return try makeNamed(\"Rule\", [kw(\"id\", V.s(\"/{rid}\")), kw(\"name\", V.s({nm.quoted})), kw(\"rate\", V.s({rt.quoted})), kw(\"over\", V.s({over.quoted})), kw(\"single\", V.b({single})), kw(\"where\", {where}), kw(\"source\", V.s({source.quoted})), kw(\"body\", V.fn({{ (a{d}: [V]) throws -> V in\n  {paramlist}\n{rbody.returned.indent}\n  return V.null\n}}))]) }})"
+  {rule /rid "nm" (paramlist) => rbody} => "c.staticField(\"rule {rid}\", {{ (this_: V) throws -> V in return try makeNamed(\"Rule\", [kw(\"id\", V.s(\"/{rid}\")), kw(\"name\", V.s({nm.quoted})), kw(\"rate\", V.null), kw(\"over\", V.s({over.quoted})), kw(\"single\", V.b({single})), kw(\"where\", {where}), kw(\"source\", V.s({source.quoted})), kw(\"body\", V.fn({{ (a{d}: [V]) throws -> V in\n  {paramlist}\n{rbody.returned.indent}\n  return V.null\n}}))]) }})"
+  {choose "nm" (paramlist): ret} => "c.method(\"choose {nm}\", {{ (this_: V, a{d}: [V]) throws -> V in throw RayError(\"the choice {nm} is not defined by anyone\") }})"
+  {choose "nm" (paramlist): ret => cbody} => "c.method(\"choose {nm}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{cbody.returned.indent}\n  return V.null\n}})"
+  {choose "nm" (paramlist) => cbody} => "c.method(\"choose {nm}\", {{ (this_: V, a{d}: [V]) throws -> V in\n  {paramlist}\n{cbody.returned.indent}\n  return V.null\n}})"
+  {as (=== ty) => cbody} => "c.getter(\"as_{ty}\", {{ (this_: V, a{d}: [V]) throws -> V in\n{cbody.returned.indent}\n  return V.null\n}})"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nfunc def_nested_{outer}_{inner_name}() throws {{ try set(Physics.{outer}, \"{inner_name}\", Physics.{inner_name}) }}"
+
+  /* a top-level definition is a static of Physics, made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "extension Physics {{\n  public static var {nm}: V {{\n    get throws {{\n      if let v = CONSTANTS[\"{nm}\"] {{ return v }}\n      CONSTANTS[\"{nm}\"] = V.null\n      let v: V = {text}\n      CONSTANTS[\"{nm}\"] = v\n      return v\n    }}\n  }}\n}}"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "V.null" : "V.s({rate.quoted})"
+    where := where_source.empty ? "V.null" : "try makeNamed(\"Node\", [kw(\"source\", V.s({where_source.quoted}))])"
+    rule := id.empty ? "V.null" : "try makeNamed(\"Node\", [kw(\"id\", V.s({id.quoted})), kw(\"rate\", {rate_}), kw(\"name\", V.s({rule_name.quoted})), kw(\"over\", V.s({over.quoted})), kw(\"where\", {where}), kw(\"source\", V.s({rule_source.quoted}))])"
+    leans_ := leans.empty ? "V.null" : "V.s({leans.quoted})"
+    "    try makeNamed(\"Node\", [kw(\"rule\", {rule}), kw(\"rate\", {rate_}), kw(\"degree\", V.num({degree}.0)), kw(\"outside\", V.b({outside})), kw(\"settles\", V.b({settles})), kw(\"transport\", V.b({transport})), kw(\"leans\", {leans_}), kw(\"turned\", V.s({turned.quoted})), kw(\"doing\", try makeNamed(\"Node\", [kw(\"carries\", V.b({carries})), kw(\"sets\", V.b({sets})), kw(\"grown\", V.b({grown})), kw(\"trades\", V.b({trades})), kw(\"grew\", at({grew_source.quoted}, {{ (s: V) throws -> V in return {grew} }})), kw(\"grew_apart\", at({grew_apart_source.quoted}, {{ (s: V) throws -> V in return {grew_apart} }})), kw(\"draws\", V.null), kw(\"needs\", V.num({degree}.0)), kw(\"outside\", V.b({outside})), kw(\"settles\", V.b({settles})), kw(\"share\", at({share_source.quoted}, {{ (s: V) throws -> V in return {share} }})), kw(\"asked\", at({asked_source.quoted}, {{ (s: V) throws -> V in return {asked} }})), kw(\"around\", at({around_source.quoted}, {{ (s: V) throws -> V in return {around} }})), kw(\"rays\", at({rays_source.quoted}, {{ (s: V) throws -> V in return {rays} }})), kw(\"space\", at({space_source.quoted}, {{ (s: V) throws -> V in return {space} }})), kw(\"folds\", at({folds_source.quoted}, {{ (s: V) throws -> V in return {folds} }}))]))])"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "func def_equation_{theory}() throws {{\n  try set(Physics.{theory}, \"equation\", try makeNamed(\"Node\", [kw(\"latex\", V.s({latex.quoted})), kw(\"terms\", list(\n{lines}\n))]))\n}}"
+  }
+
+  /* the package: the emitted classes, and `loadAll` - every `def_` in the order it is written - after them */
+  write_package (code: String) => {
+    space := " "
+    newline := "\n"
+    loads := code.lines.filter(l => l.starts_with("func def_")).map(l => "  try {l.split(space)[1]}")
+    loader := "/** every class table, parents first - run on the first use of any (`ensureLoaded`) */\nfunc loadAll() throws {{\n{loads.join(newline)}\n}}\n"
+    @./languages/physics.swift/README.md := this.readme
+    @./languages/physics.swift/Package.swift := Swift.manifest
+    @./languages/physics.swift/Sources/OrbitMinesPhysics/Physics.swift := "{code}\n\n{loader}"
+    @./languages/physics.swift/Sources/OrbitMinesPhysics/Rt.swift = @./implementation/gen/backends/cpu.rt.swift
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Swift)
+    requirement := r.requirement.as(Swift)
+    filter := r.filter == None ? "V.b(true)" : r.filter.as(Swift)
+    label := "{r.location} on {f.name}"
+    "t({label.quoted}) {{\n  let it: V = {definition}\n  var guard_: Int = 0\n  while !truthy({filter}) {{\n    guard_ += 1\n    if guard_ > {r.until} || !has(it, \"tick\") {{ return SKIP }}\n    try get(it, \"tick\")\n  }}\n  let ok: Bool = truthy({requirement})\n  return ok ? PASS : \"failed: \" + {requirement.quoted}\n}}"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/swift/Package.swift := "// swift-tools-version:6.0\n// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// swift run -c release TestG [filter]\nimport PackageDescription\n\nlet package = Package(\n  name: \"TestG\",\n  dependencies: [.package(path: \"../../languages/physics.swift\")],\n  targets: [\n    .executableTarget(name: \"TestG\", dependencies: [.product(name: \"OrbitMinesPhysics\", package: \"physics.swift\")], path: \"Sources/TestG\"),\n  ],\n  swiftLanguageModes: [.v5]\n)\n"
+    @./tests/swift/Sources/TestG/main.swift := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// swift run -c release TestG [filter]\nimport Foundation\nimport OrbitMinesPhysics\n\nlet PASS = \"pass\", SKIP = \"skip\"\nvar passed = 0, failed = 0, skipped = 0\nlet only: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : nil\n\nfunc t(_ name: String, _ body: () throws -> String) {{\n  if let o = only, !name.contains(o) {{ return }}\n  let clock = ContinuousClock()\n  let t0 = clock.now\n  var got: String\n  do {{ got = try body() }} catch {{ got = \"error: \\(error)\" }}\n  let d = clock.now - t0\n  let s = Double(d.components.seconds) + Double(d.components.attoseconds) / 1e18\n  if got == PASS {{ passed += 1 }} else if got == SKIP {{ skipped += 1 }} else {{ failed += 1 }}\n  let mark = got == PASS ? \"ok  \" : got == SKIP ? \"skip\" : \"FAIL\"\n  let why = got == PASS || got == SKIP ? \"\" : \" - \\(got)\"\n  print(\"\\(mark) \\(name) (\\(String(format: \"%.2f\", s)) s)\\(why)\")\n}}\n\n{cases}\n\nprint(\"\\(passed) passed, \\(failed) failed, \\(skipped) skipped\")\nexit(failed > 0 ? 1 : 0)\n"
+  }
+
+  /* Swift renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `Theorems.json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.swift/Sources/OrbitMinesPhysics/theorems.json := "{{{proofs}}}"
+    @./languages/physics.swift/Sources/OrbitMinesPhysics/Theorems.swift := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport Foundation\n\n/** what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON */\npublic enum Theorems {{\n  public static func json() throws -> String {{\n    guard let url = Bundle.module.url(forResource: \"theorems\", withExtension: \"json\") else {{ throw RayError(\"theorems.json is not in the package\") }}\n    return try String(contentsOf: url, encoding: .utf8)\n  }}\n}}\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.swift
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.swift"
+  install (): String => "```swift\n// Swift (Package.swift)\n.package(url: \"https://github.com/orbitmines/physics\", from: \"0.0.1\")\n```"
+  manifest (): String => "// swift-tools-version:6.0\n// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nimport PackageDescription\n\nlet package = Package(\n  name: \"OrbitMinesPhysics\",\n  products: [\n    .library(name: \"OrbitMinesPhysics\", targets: [\"OrbitMinesPhysics\"]),\n  ],\n  targets: [\n    .target(name: \"OrbitMinesPhysics\", path: \"Sources/OrbitMinesPhysics\", resources: [.copy(\"theorems.json\")]),\n  ],\n  swiftLanguageModes: [.v5]\n)\n"
+  readme (): String => "# OrbitMinesPhysics - Swift\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Swift: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Swift.install}\n\nand `.product(name: \"OrbitMinesPhysics\", package: \"physics\")` in your target's dependencies. Swift 6 or later (the package is written in the Swift 5 language mode); it needs Foundation, not FoundationNetworking.\n\nSwiftPM reads a package's `Package.swift` at the root of its repository, and this one lives in `languages/physics.swift/` of the physics repository. Until it is mirrored to a repository of its own (which is also what the Swift Package Index needs), depend on a checkout by its path:\n\n```swift\n.package(path: \"../physics/languages/physics.swift\")\n// and in the target: .product(name: \"OrbitMinesPhysics\", package: \"physics.swift\")\n```\n\n## Using it\n\nSwift has no dynamic members, so a Ray object is reached by name: `get(x, \"name\")`, `call(x, \"method\", [args])`, `set(x, \"name\", value)`, `make(Physics.Class, [kw(\"field\", value), ...])`. Every value is a `V` (numbers are `Double`s, lists are shared), and everything that can fail throws a `RayError`.\n\n```swift\nimport OrbitMinesPhysics\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nlet medium = try call(Physics.G, \"medium\", [31.0, 96.0, 3.0, 8.0, 1.0])\ntry set(medium, \"local_rays\", true)\ntry call(medium, \"add\", [try make(Physics.Hole, [kw(\"x\", 15.0), kw(\"y\", 15.0), kw(\"mx\", 0.3), kw(\"ways\", 1.0)])])\ntry get(medium, \"seed\")\nfor _ in 0..<5 {{ try get(medium, \"tick\") }}\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```swift\nlet plan = try make(Physics.Plan, [kw(\"sources\", 1e9), kw(\"side\", 241.0)])\ntry set(try get(plan, \"budget\"), \"compact\", true)   // twelve bytes a source\nprint(try str(try call(plan, \"report\", [V.num(16 * 1073741824.0), V.num(2147483648.0)])))\n```\n\n## Tests\n\nThe requirements of the `.ray` (`dynamically assert`) are generated into [tests/swift](../../tests/swift/): `swift run -c release TestG [filter]` there.\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+}

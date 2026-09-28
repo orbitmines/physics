@@ -1,0 +1,274 @@
+/*
+ * JAVA, as a mapping from the constructs of Ray to text. Java has no dynamic members, so a Ray class is a
+ * table (`Rt.Cls`) filled when the package loads, and an object an `Rt.Obj` whose members are reached by name
+ * (`get(x, "cells")`, `call(x, "add", ...)`, `set(x, "tag", v)`) - see implementation/gen/backends/cpu.rt.java.
+ * Every method and lambda takes its arguments as one array (`a1`, `a2`, ... by depth, `{d}`), bound at the top
+ * of its body (`{parameter}` with `{i}`), so a missing argument is None and a default is set in the body
+ * (`{defaults_in_body}`). A local is a one-element array (`x_1[0]`) so that a lambda can take it and write it,
+ * and is spelled with the depth of the scope that binds it (`{local_name}`: Java lets no lambda reuse an
+ * enclosing name). A Ray class `X` is the static `Physics.X` (its table) and its members sit in the nested
+ * class `C_X`, which keeps every class file under Java's limits.
+ */
+
+Java: Language = class {
+  name = "Java"
+  extension = ".java"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ";"
+  {empty_block} => ""
+  {interpolation} => "\" + str({x}) + \""
+  {named_arg} => "kw(\"{raw}\", {val})"
+  {parameter} => "Object[] {nm} = {{ arg(a{d}, {i}) }};"
+  {parameter_untyped} => "Object[] {nm} = {{ arg(a{d}, {i}) }};"
+  {parameter_default} => "Object[] {nm} = {{ arg(a{d}, {i}) }};"
+  {parameter_separator} => " "
+  {dynamic_get} => "get({tgt}, str({key}))"
+  {dynamic_set} => "set({tgt}, str({key}), {val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "abstract assert boolean break byte case catch char class const continue default do double else enum extends final finally float for goto if implements import instanceof int interface long native new package private protected public return short static strictfp super switch synchronized this throw throws transient try void volatile while var record yield sealed permits true false null self c"
+  {escaped_name} => "{nm}_"
+  {global_name} => "{nm}()"
+  {local_name} => "{nm}_{k}"
+  {local_read} => "{nm}[0]"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K(\"{nm}\")"
+  {field_assign} => "c.field(\"{nm}\", self -> {val});"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if (!truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while (truthy({cond})) {{\n{loopbody.indent}\n}}"
+  /* `if (true)`: a body always ends `return null;`, which Java would otherwise call unreachable */
+  {return val} => "if (true) return {val};"
+  {return} => "if (true) return null;"
+  {dynamically assert cond} => "if (!truthy({cond})) throw new AssertionError({cond.quoted});"
+
+  /* definitions and assignment */
+  {nm := val} => "Object[] {nm} = new Object[1]; {nm}[0] = {val};"
+  {tgt.nm = rhs} => "set({tgt}, \"{nm.raw}\", {rhs});"
+  {lhs = rhs} => "{lhs} = {rhs};"
+  {tgt[k] = rhs} => "setAt({tgt}, {k}, {rhs});"
+
+  /* expressions */
+  {a & b} => "(truthy({a}) && truthy({b}))"
+  {a | b} => "(truthy({a}) || truthy({b}))"
+  {!a} => "not({a})"
+  {-a} => "neg({a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "!eq({a}, {b})"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "div({a}, {b})"
+  {a % b} => "mod({a}, {b})"
+  {a ^ b} => "power({a}, {b})"
+  {a ?? b} => "orElse({a}, () -> {b})"
+  {cond ? a : b} => "(truthy({cond}) ? (Object) {a} : (Object) {b})"
+  {a ==.instance_of Array} => "({a} instanceof List)"
+  {a ==.instance_of ty} => "instanceOf({a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "get({tgt}, \"{nm.raw.method}\")"
+  {tgt?.nm} => "getOpt({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm()} => "get({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "call({tgt}, \"{nm.raw.method}\", new Object[] {{ {arglist} }})"
+  {tgt?.nm(arglist)} => "callOpt({tgt}, \"{nm.raw.method}\", new Object[] {{ {arglist} }})"
+  {tgt.choose("nm")} => "choose({tgt}, {nm.quoted})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "invoke({fn}, new Object[] {{ {arglist} }})"
+  {Class(arglist)} => "make(\"{Class}\", new Object[] {{ {arglist} }})"
+  {[elems]} => "list({elems})"
+  { {} } => "make(NODE)"
+  {this} => "self"
+  {None} => "null"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "(Fn) (a{d}) -> {{\n  {paramlist}\n{stmts.returned.indent}\n  return null;\n}}"
+  {(paramlist) => e} => "(Fn) (a{d}) -> {{ {paramlist} return {e}; }}"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "call(get(get(self, \"vertex\"), \"world\"), \"draw\", new Object[] {{ list({ws}), list({os}) }})"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for (double i{d} = 0; i{d} < num({cnt}); i{d}++) {{\n  Object[] {x_.bare} = {{ i{d} }};\n{stmts.indent}\n}}"
+  {xs.for((x_) => { stmts })} => "for (Object e{d} : items({xs})) {{\n  Object[] {x_.bare} = {{ e{d} }};\n{stmts.indent}\n}}"
+  {fail(x_)} => "fail({x_})"
+  {Catalogue.number(x_)} => "number({x_})"
+  {String(chars: xs)} => "fromCodepoints({xs})"
+  {x_.blank} => "blank({x_})"
+  {xs.push(x_)} => "m_push({xs}, {x_})"
+  {xs.chars} => "m_chars({xs})"
+  {xs.pop} => "m_pop({xs})"
+  {xs.length} => "len({xs})"
+  {xs.map(f)} => "m_map({xs}, {f})"
+  {xs.filter(f)} => "filt({xs}, {f})"
+  {xs.for(f)} => "m_for({xs}, {f})"
+  {xs.some(f)} => "m_some({xs}, {f})"
+  {xs.every(f)} => "m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "m_split({xs}, {x_})"
+  {xs.trim} => "m_trim({xs})"
+  {xs.upper} => "m_upper({xs})"
+  {xs.lower} => "m_lower({xs})"
+  {xs.lines} => "m_lines({xs})"
+  {xs.quoted} => "quoted({xs})"
+  {xs.contains(x_)} => "m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "m_join({xs}, {sep})"
+  {xs.first} => "m_first({xs})"
+  {xs.last} => "m_last({xs})"
+  {xs.empty} => "m_empty({xs})"
+  {xs.take(cnt)} => "m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "m_drop({xs}, {cnt})"
+  {xs.rest} => "m_rest({xs})"
+  {xs.concat(ys)} => "m_concat({xs}, {ys})"
+  {xs.reverse} => "m_reverse({xs})"
+  {xs.sum} => "m_sum({xs})"
+  {xs.most(f)} => "m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "m_sorted_by({xs}, {f})"
+  {xs.each} => "m_each({xs})"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "m_sqrt({x_})"
+  {x_.floor} => "m_floor({x_})"
+  {x_.abs} => "m_abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "m_magnitude({x_})"
+  {x_.cos} => "m_cos({x_})"
+  {x_.sin} => "m_sin({x_})"
+  {x_.round} => "m_round({x_})"
+  {x_.ln} => "m_ln({x_})"
+  {x_.exp} => "m_exp({x_})"
+  {x_.atan2(y_)} => "m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "Math.PI"
+  {Real.NAN} => "Double.NaN"
+  {Real.INFINITY} => "Double.POSITIVE_INFINITY"
+  {Real.TAU} => "(2 * Math.PI)"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written */
+  {N} => "Object"
+  {Natural} => "Object"
+  {Z} => "Object"
+  {Integer} => "Object"
+  {Real} => "Object"
+  {Decimal} => "Object"
+  {boolean} => "Object"
+  {String} => "Object"
+  {Array} => "Object"
+  {*} => "Object"
+  {{}} => "Object"
+  {ty[]} => "Object"
+  {ty?} => "Object"
+  {Program} => "Object"
+
+  /* classes: a table, filled by its nested class when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "public static final Cls {nm.raw} = cls(\"{nm.raw}\", {sup.first}, C_{nm.raw}::define);\nstatic final class C_{nm.raw} {{\n  static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm := class { membs }} => "public static final Cls {nm.raw} = cls(\"{nm.raw}\", Node, C_{nm.raw}::define);\nstatic final class C_{nm.raw} {{\n  static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}"
+  {nm: ty = class { membs }} => "public static final Cls {nm.raw}Theory = cls(\"{nm.raw}\", {ty}, C_{nm.raw}::define);\nstatic final class C_{nm.raw} {{\n  static void define(Cls c) {{\n{membs.indent.indent}\n  }}\n}}\npublic static final Obj {nm.raw} = theory({nm.raw}Theory);"
+  {theorem "nm" () => tbody} => "c.staticField(\"theorem {nm}\", self -> make(Theorem, kw(\"id\", {nm.quoted}), kw(\"body\", (Fn) (a{d}) -> {{\n{tbody.returned.indent}\n  return null;\n}})));"
+  {x_.body()} => "invoke(get({x_}, \"body\"), new Object[] {{ }})"
+  {nm: ty = val} => "c.field(\"{nm.raw}\", self -> {val});"
+  {nm: ty} => "c.field(\"{nm.raw}\", null);"
+  {nm = val} => "c.staticField(\"{nm.raw}\", self -> {val});"
+  {static nm: ty = val} => "c.staticField(\"{nm.raw}\", self -> {val});"
+  {static nm = val} => "c.staticField(\"{nm.raw}\", self -> {val});"
+  {nm (): ret => mbody} => "c.getter(\"{nm.raw.method}\", (self, a{d}) -> {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm () => mbody} => "c.getter(\"{nm.raw.method}\", (self, a{d}) -> {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (): ret => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm () => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret => mbody} => "c.method(\"{nm.raw.method}\", (self, a{d}) -> {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist) => mbody} => "c.method(\"{nm.raw.method}\", (self, a{d}) -> {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist): ret => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist) => mbody} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret} => "c.method(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (paramlist)} => "c.method(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (): ret} => "c.getter(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm ()} => "c.getter(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist): ret} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist)} => "c.statik(\"{nm.raw.method}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"{nm} is declared but not defined by anyone\"); }});"
+  {rule /rid "nm" | rt () => rbody} => "c.staticField(\"rule {rid}\", self -> make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", (Fn) (a{d}) -> {{\n{rbody.returned.indent}\n  return null;\n}})));"
+  {rule /rid "nm" () => rbody} => "c.staticField(\"rule {rid}\", self -> make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", null), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", (Fn) (a{d}) -> {{\n{rbody.returned.indent}\n  return null;\n}})));"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "c.staticField(\"rule {rid}\", self -> make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", (Fn) (a{d}) -> {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}})));"
+  {rule /rid "nm" (paramlist) => rbody} => "c.staticField(\"rule {rid}\", self -> make(Rule, kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", null), kw(\"over\", {over.quoted}), kw(\"single\", {single}), kw(\"where\", {where}), kw(\"source\", {source.quoted}), kw(\"body\", (Fn) (a{d}) -> {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}})));"
+  {choose "nm" (paramlist): ret} => "c.method(\"choose {nm}\", (self, a{d}) -> {{ throw new UnsupportedOperationException(\"the choice {nm} is not defined by anyone\"); }});"
+  {choose "nm" (paramlist): ret => cbody} => "c.method(\"choose {nm}\", (self, a{d}) -> {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {choose "nm" (paramlist) => cbody} => "c.method(\"choose {nm}\", (self, a{d}) -> {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {as (=== ty) => cbody} => "c.getter(\"as_{ty}\", (self, a{d}) -> {{\n{cbody.returned.indent}\n  return null;\n}});"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nstatic {{ set({outer}, \"{inner_name}\", {inner_name}); }}"
+
+  /* a top-level definition is a static method of Physics, made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "private static Object {nm}$;\nprivate static boolean {nm}$made;\npublic static Object {nm}() {{\n  if (!{nm}$made) {{ {nm}$made = true; {nm}$ = {text}; }}\n  return {nm}$;\n}}"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "null" : rate.quoted
+    where := where_source.empty ? "null" : "make(Node, kw(\"source\", {where_source.quoted}))"
+    rule := id.empty ? "null" : "make(Node, kw(\"id\", {id.quoted}), kw(\"rate\", {rate_}), kw(\"name\", {rule_name.quoted}), kw(\"over\", {over.quoted}), kw(\"where\", {where}), kw(\"source\", {rule_source.quoted}))"
+    leans_ := leans.empty ? "null" : leans.quoted
+    "    make(Node, kw(\"rule\", {rule}), kw(\"rate\", {rate_}), kw(\"degree\", {degree}.0), kw(\"outside\", {outside}), kw(\"settles\", {settles}), kw(\"transport\", {transport}), kw(\"leans\", {leans_}), kw(\"turned\", {turned.quoted}), kw(\"doing\", make(Node, kw(\"carries\", {carries}), kw(\"sets\", {sets}), kw(\"grown\", {grown}), kw(\"trades\", {trades}), kw(\"grew\", at({grew_source.quoted}, s -> {grew})), kw(\"grew_apart\", at({grew_apart_source.quoted}, s -> {grew_apart})), kw(\"draws\", null), kw(\"needs\", {degree}.0), kw(\"outside\", {outside}), kw(\"settles\", {settles}), kw(\"share\", at({share_source.quoted}, s -> {share})), kw(\"asked\", at({asked_source.quoted}, s -> {asked})), kw(\"around\", at({around_source.quoted}, s -> {around})), kw(\"rays\", at({rays_source.quoted}, s -> {rays})), kw(\"space\", at({space_source.quoted}, s -> {space})), kw(\"folds\", at({folds_source.quoted}, s -> {folds})))))"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "static {{ set({theory}, \"equation\", make(Node, kw(\"latex\", {latex.quoted}), kw(\"terms\", list(\n{lines}\n)))); }}"
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.java/README.md := this.readme
+    @./languages/physics.java/src/main/java/com/orbitmines/physics/Physics.java := code
+    @./languages/physics.java/src/main/java/com/orbitmines/physics/Rt.java = @./implementation/gen/backends/cpu.rt.java
+    @./languages/physics.java/pom.xml := Java.pom
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Java)
+    requirement := r.requirement.as(Java)
+    filter := r.filter == None ? "true" : r.filter.as(Java)
+    label := "{r.location} on {f.name}"
+    "    t({label.quoted}, () -> {{\n      Object it = {definition};\n      int guard = 0;\n      while (!truthy({filter})) {{\n        if (++guard > {r.until} || !has(it, \"tick\")) return SKIP;\n        get(it, \"tick\");\n      }}\n      return truthy({requirement}) ? PASS : \"failed: \" + {requirement.quoted};\n    }});"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/java/TestG.java := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// javac -encoding UTF-8 -d out ../../languages/physics.java/src/main/java/com/orbitmines/physics/*.java TestG.java && java -cp out TestG [filter]\nimport static com.orbitmines.physics.Rt.*;\nimport static com.orbitmines.physics.Physics.*;\nimport java.util.function.Supplier;\n\npublic final class TestG {{\n  static final String PASS = \"pass\", SKIP = \"skip\";\n  static int passed, failed, skipped;\n  static String only;\n  static void t(String name, Supplier<Object> body) {{\n    if (only != null && !name.contains(only)) return;\n    long t0 = System.nanoTime();\n    String got;\n    try {{ got = String.valueOf(body.get()); }} catch (Throwable e) {{ got = \"error: \" + e; }}\n    double s = (System.nanoTime() - t0) / 1e9;\n    if (got.equals(PASS)) passed++; else if (got.equals(SKIP)) skipped++; else failed++;\n    System.out.printf(\"%s %s (%.2f s)%s%n\", got.equals(PASS) ? \"ok  \" : got.equals(SKIP) ? \"skip\" : \"FAIL\", name, s, got.equals(PASS) || got.equals(SKIP) ? \"\" : \" - \" + got);\n  }}\n\n  public static void main(String[] args) {{\n    only = args.length > 0 ? args[0] : null;\n{cases}\n    System.out.printf(\"%d passed, %d failed, %d skipped%n\", passed, failed, skipped);\n    System.exit(failed > 0 ? 1 : 0);\n  }}\n}}\n"
+  }
+
+  /* Java renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `Theorems.json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.java/src/main/resources/com/orbitmines/physics/theorems.json := "{{{proofs}}}"
+    @./languages/physics.java/src/main/java/com/orbitmines/physics/Theorems.java := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\npackage com.orbitmines.physics;\n\n/** what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON */\npublic final class Theorems {{\n  private Theorems() {{}}\n  public static String json() {{\n    try (var in = Theorems.class.getResourceAsStream(\"theorems.json\")) {{ return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8); }}\n    catch (java.io.IOException e) {{ throw new RuntimeException(e); }}\n  }}\n}}\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.java
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.java"
+  install (): String => "```xml\n<!-- Java (Maven) -->\n<dependency>\n  <groupId>com.orbitmines</groupId>\n  <artifactId>physics</artifactId>\n  <version>0.0.1</version>\n</dependency>\n```"
+  readme (): String => "# com.orbitmines:physics - Java\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Java: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Java.install}\n\nJava 17 or later. Gradle: `implementation(\"com.orbitmines:physics:0.0.1\")`.\n\n## Using it\n\nJava has no dynamic members, so a Ray object is reached by name: `get(x, \"name\")`, `call(x, \"method\", args...)`, `set(x, \"name\", value)`, `make(Class, kw(\"field\", value), ...)`. Numbers are `Double`, lists `List<Object>`.\n\n```java\nimport static com.orbitmines.physics.Rt.*;\nimport static com.orbitmines.physics.Physics.*;\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nObject medium = call(G, \"medium\", 31.0, 96.0, 3.0, 8.0, 1.0);\nset(medium, \"local_rays\", true);\ncall(medium, \"add\", make(Hole, kw(\"x\", 15.0), kw(\"y\", 15.0), kw(\"mx\", 0.3), kw(\"ways\", 1.0)));\nget(medium, \"seed\");\nfor (int t = 0; t < 5; t++) get(medium, \"tick\");\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```java\nObject plan = make(Plan, kw(\"sources\", 1e9), kw(\"side\", 241.0));\nset(get(plan, \"budget\"), \"compact\", true);   // twelve bytes a source\nSystem.out.println(call(plan, \"report\", 16.0 * (1L << 30), (double) (1L << 31)));\n```\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  pom (): String => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- GENERATED by `npx ray gen` from implementation/physics.ray - do not edit -->\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n  <modelVersion>4.0.0</modelVersion>\n  <groupId>com.orbitmines</groupId>\n  <artifactId>physics</artifactId>\n  <version>0.0.1</version>\n  <name>orbitmines physics</name>\n  <description>The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.</description>\n  <url>https://github.com/orbitmines/physics</url>\n  <properties>\n    <maven.compiler.release>17</maven.compiler.release>\n    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n  </properties>\n</project>\n"
+}

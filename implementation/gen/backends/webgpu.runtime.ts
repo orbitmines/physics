@@ -305,7 +305,7 @@ export function medium_manifest(text: string): { order: string[]; common: string
  * `mean`, `add(hole)`, `holes`, `arrived(z)`, `crossed`, and `frame()`. The bodies move on the host, each pulled
  * by the record the others leave (Aggregate.lean_at), exactly as Medium.move does
  */
-export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean; local?: boolean; slots?: number }): Promise<any> {
+export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, DEG?: number, D?: number, how?: { vacuum?: boolean; facing?: boolean; enhance?: number; a0_share?: number; own?: number; crowd?: boolean; a0_from?: number; apart?: number; paced?: boolean; local?: boolean; slots?: number; constants?: Record<string, number | boolean>; plan?: any; compact?: boolean; vmax?: number }): Promise<any> {
   const physics: any = await import("./physics.ts");
   theory = theory ?? physics.G;
   /* the theory's own lattice unless another is named: DEG ways, a world of D dimensions the box is a plane through (Medium) */
@@ -319,10 +319,41 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const lim = adapter.limits ?? {};
   /* paced, the device times its own work (timestamp queries), so a submission is sized by what the device did and not by the host's round trip */
   const timed = !!how?.paced && !!adapter.features?.has?.("timestamp-query");
-  const device = await adapter.requestDevice({ requiredFeatures: timed ? ["timestamp-query"] : [], requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize } }).catch(() => adapter.requestDevice());
+  /* the medium binds fourteen storage buffers to a kernel (seven, and eight shards of compact sources): more than the eight a device gives unasked */
+  const STORAGE = 14;
+  if ((lim.maxStorageBuffersPerShaderStage ?? 8) < STORAGE) throw new Error(`WebGPU: the medium binds ${STORAGE} storage buffers to a kernel, this adapter allows ${lim.maxStorageBuffersPerShaderStage}`);
+  const device = await adapter.requestDevice({ requiredFeatures: timed ? ["timestamp-query"] : [], requiredLimits: { maxStorageBufferBindingSize: lim.maxStorageBufferBindingSize, maxBufferSize: lim.maxBufferSize, maxStorageBuffersPerShaderStage: STORAGE } });
+  /* a device's validation errors are otherwise silent - every dispatch after one does nothing: the first is kept, and the next tick throws it */
+  let invalid: string | null = null;
+  device.addEventListener?.("uncapturederror", (e: any) => { invalid ??= String(e?.error?.message ?? e); });
+  device.pushErrorScope("validation");
   A = Math.max(8, A & ~1);
-  const { order, common, kernels } = medium_manifest(KERNELS);
+  const { order, common: written, kernels } = medium_manifest(KERNELS);
   if (!order.length) throw new Error("the kernels carry no `//! medium` manifest - regenerate");
+  /*
+   * THE KERNELS' OWN CONSTANTS, SET FOR THIS RUN (`how.constants`, by name: MCELLPULL, MLIST, MNEAR, ...): the text is
+   * compiled here, so what was written as a default is only that - a run sets its own before any pipeline is made.
+   * A name the kernels do not carry is an error, not a silent default
+   */
+  /* a run's plan (physics `Plan`): its resolution sets the kernels' constants, its budget the pacing; what `how` says outright wins */
+  const plan = how?.plan;
+  /*
+   * COMPACT (`how.compact`): a run of many sources of one kind - each three words in shards of 2 GiB (Kernels
+   * MCOMPACT), its cell's sums in place of the sort, no per-source room for a pull or a beam. It takes the pull a cell's
+   * and a source's tick in one (MCELLPULL, MFUSED); MVMAX is the fastest a source is kept at (c-bar a tick)
+   */
+  const compact = !!(how?.compact ?? plan?.budget?.compact);
+  /* sources made on the device (`generate`): counted with the host's, and never held on the host */
+  let made = 0, making = 0, made_mass = 0;
+  const constants: Record<string, number | boolean> = { ...(plan?.resolution?.constants ?? {}), ...(compact ? { MCOMPACT: true, MCELLPULL: true, MFUSED: true, MVMAX: how?.vmax ?? plan?.resolution?.speed ?? 0.25 } : {}), ...(how?.constants ?? {}) };
+  const common = Object.entries(constants).reduce((text, [name, v]) => {
+    const at = new RegExp(`const ${name}: (\\w+) = [^;]+;`);
+    const m = at.exec(text);
+    if (!m) throw new Error(`the medium's kernels carry no constant ${name}`);
+    const kind = m[1];
+    const value = kind === "bool" ? (v ? "true" : "false") : kind === "u32" ? `${Math.max(0, Math.floor(Number(v)))}u` : kind === "i32" ? `${Math.floor(Number(v))}` : `${Number(v).toFixed(8)}`;
+    return text.replace(at, `const ${name}: ${kind} = ${value};`);
+  }, written);
   /* how many bodies the medium carries and whose track it keeps, as the kernels were written with them (Kernels.MAXM, Kernels.TRACKB) */
   const MAXM = Number(/const MAXM: u32 = (\d+)u;/.exec(common)?.[1] ?? MAXH);
   const TRACKB = Number(/const TRACKB: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
@@ -366,16 +397,19 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     if (bytes > cap) throw new Error(`WebGPU: the medium's ${what} is ${(bytes / 1048576).toFixed(0)} MiB, more than this device binds (${(cap / 1048576).toFixed(0)} MiB) - fewer cells to a c-bar, a smaller box, or fewer tags`);
   };
   /* the bodies' own numbers and their rays live in cel, where the device writes them: a tick needs nothing of the host (Kernels.medium_helpers) */
-  const BOD = OUT + 4 * CAP + 2 * ENTRIES, BEAMC = BOD + 12 * CAP, WHOM = BEAMC + 2 * BEAM;
+  /* compact, no source keeps a pull, a beam or a plane of its own here: one kind's twelve numbers stand for all */
+  const OUTS = compact ? 0 : CAP, KINDS = compact ? 1 : CAP;
+  const BOD = OUT + 4 * OUTS + 2 * ENTRIES, BEAMC = BOD + 12 * KINDS, WHOM = BEAMC + 2 * BEAM;
   /* where each of the first TRACKB bodies stood on each of the last TRACKED ticks, kept on the device and read in blocks (Kernels TRACK) */
-  const TRACKED = 4096, TRACK = WHOM + planes + 1;
+  /* and sixteen numbers of what the host asks made or counted (Kernels mgen), just before the tracks */
+  const TRACKED = 4096, TRACK = WHOM + (compact ? 2 : planes + 1) + 16, GEN = TRACK - 16;
   /* where every body is apart, the parts of each body's pull: a point of it against a run of PCHUNK planes, two numbers each (Kernels MPULLH) */
   const PCHUNK = Number(/const MPCHUNK: u32 = (\d+)u;/.exec(common)?.[1] ?? 64);
   const chunks = (n: number) => how?.local ? 1 : Math.ceil((n + 1) / PCHUNK);
   /* held where they are, each cell's bodies gathered in 32 parts first (Kernels MHSRC1), just before the pulls' parts */
   const PART = TRACK + TRACKED * TRACKB * 4 + (how?.local ? cells * 384 : 0);
   /* held where they are (how.local) a body's pull is summed over its c-bar by its own thread: one part a body */
-  const celBytes = (PART + (apart ? 2 * apart * (how?.local ? 1 : K * K * chunks(apart)) : 0)) * 4;
+  const celBytes = (PART + (apart && !compact ? 2 * apart * (how?.local ? 1 : K * K * chunks(apart)) : 0) + (how?.local ? 2 * cells : 0)) * 4;
   fits("ledgers", celBytes);
   const cel = buffer(celBytes, usage.storage);
   fits("ways and asks", (A + 2 * MAXH + CN + ENTRIES) * 16);
@@ -396,7 +430,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const local = !!how?.local;
   if (local && !apart) throw new Error("the medium holds every body's rays where they are only with every body apart (how.apart, how many)");
   const GATHER = Number(/const MGATHER: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
-  const HSLOTS = Math.max(1, Math.floor(how?.slots ?? 4));
+  const HSLOTS = Math.max(1, Math.floor(how?.slots ?? plan?.resolution?.keeps ?? 4));
   /* how many near bundles a cell lists to be read exactly (Kernels MNEAR) */
   const MNEAR = Number(/const MNEAR: u32 = (\d+)u;/.exec(common)?.[1] ?? 96);
   /* the slots, then a cell's middle, then whether each of its ways holds anything, then the bodies on it gathered into one source (and how they stand about the cell's middle: twelve numbers), then what arrives there times its way (x, y), then which ways it holds and which it can be reached on, each as four words of 24 bits, then its far bodies' field (nine numbers) and its near ones listed (a count and 96), then whether a source is near (MHWANT, for MHSHINE) */
@@ -405,7 +439,14 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const held = [buffer(heldFloats * 4, usage.storage), buffer(heldFloats * 4, usage.storage)];
   /* every body on its cell's list: a head a cell, then the next body after each (Kernels MHCLEAR, MHLINK) */
   /* each cell's count, where its run starts (and one past), the sums of 256 cells, then every body in cell order (Kernels MHCLEAR .. MHPLACE) */
-  const links = buffer(Math.max(16, (local ? 2 * cells + 3 + Math.ceil((cells + 1) / 256) + CAP : 4) * 4), usage.storage);
+  /* a frame's grid, as big as it may be (Kernels mgrid) */
+  const GRIDMAX = 1024;
+  let frame_grid = 0;
+  const links = buffer(Math.max(16, (local ? (compact ? 10 * cells + 4 + GRIDMAX * GRIDMAX : 2 * cells + 3 + Math.ceil((cells + 1) / 256) + CAP) : 4) * 4), usage.storage);
+  /* compact, the sources themselves: three words each, MSHARD to a shard, eight shards at most (Kernels mword) */
+  const MSHARD = Number(/const MSHARD: u32 = (\d+)u;/.exec(common)?.[1] ?? 178956970);
+  if (compact && CAP > 8 * MSHARD) throw new Error(`compact, the medium carries at most ${8 * MSHARD} sources, not ${CAP}`);
+  const shards = Array.from({ length: 8 }, (_, k) => { const n = compact ? Math.max(0, Math.min(MSHARD, CAP - k * MSHARD)) : 0; if (n) fits(`sources (shard ${k})`, n * 12); return buffer(Math.max(16, n * 12), usage.storage); });
   const layout = device.createBindGroupLayout({ entries: [
     { binding: 0, visibility: 4, buffer: { type: "uniform", hasDynamicOffset: true } },
     { binding: 1, visibility: 4, buffer: { type: "storage" } },
@@ -414,16 +455,18 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     { binding: 4, visibility: 4, buffer: { type: "storage" } },
     { binding: 5, visibility: 4, buffer: { type: "storage" } },
     { binding: 6, visibility: 4, buffer: { type: "storage" } },
+    ...shards.map((_, k) => ({ binding: 7 + k, visibility: 4, buffer: { type: "storage" } })),
   ] });
   /* per tick parity: tick t leaves its rays in held[t % 2] and opens on the other */
   const bind_ring = [0, 1].map(p => ring.map(set => set.map(par => device.createBindGroup({ layout, entries: [
     { binding: 0, resource: { buffer: par, size: 80 } }, { binding: 1, resource: { buffer: st } }, { binding: 2, resource: { buffer: cel } }, { binding: 3, resource: { buffer: dirb } },
     { binding: 4, resource: { buffer: held[1 - p] } }, { binding: 5, resource: { buffer: held[p] } }, { binding: 6, resource: { buffer: links } },
+    ...shards.map((b, k) => ({ binding: 7 + k, resource: { buffer: b } })),
   ] }))));
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
   /* the lean at every cell and each body's rays at every cell are what a panel draws: they are run where a panel reads, not on every tick (Medium.lean, Medium.sweep) */
   const drawn = ["MLEAN", "MSWEEP"], stepped = order.filter(n => !drawn.includes(n));
-  const every = [...stepped, ...drawn, "MPROBE", "MHSEED"].filter((n, k, all) => all.indexOf(n) === k);
+  const every = [...stepped, ...drawn, "MPROBE", "MHSEED", "MGEN", "MLAUNCH", "MFRAMECLEAR", "MFRAME"].filter((n, k, all) => all.indexOf(n) === k);
   const pipes: Record<string, any> = {}; const over: Record<string, string> = {};
   for (const name of every.map(n => n.replace(/@z$/, ""))) {
     const k = kernels[name];
@@ -433,6 +476,8 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     pipes[name] = device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint: name } });
     over[name] = k.over;
   }
+  /* what was made so far - layout, bindings, pipelines - is checked now, not found out by a tick that does nothing */
+  { const e = await device.popErrorScope(); if (e) throw new Error(`WebGPU: the medium could not be set up: ${e.message}`); }
   const ANG = Array.from({ length: A }, (_, a) => 2 * Math.PI * a / A);
   const UX = ANG.map(Math.cos), UY = ANG.map(Math.sin);
   const DIR = new Float32Array((A + 2 * MAXH + CN + ENTRIES) * 4);
@@ -480,7 +525,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   const under = (h: any) => { const out: number[] = []; for (let dy = 0; dy < K; dy++) for (let dx = 0; dx < K; dx++) { const c = at(Math.round(h.x) - half + dx, Math.round(h.y) - half + dy); if (c >= 0) out.push(c); } return out; };
   const blocks = new Float32Array(cells);
   /* the bodies as the device holds them: where they are, their mass and plane, what they carry and whether they move (Kernels MSTEP, MBLOCK, MCARRY) */
-  const BODS = new Float32Array(12 * CAP);
+  const BODS = new Float32Array(12 * KINDS);
   /* how big a source is, and what that size lets out of it - the store's own skin law (Medium.face_of, Medium.skin_of) */
   const face_of = (h: any) => Math.max(law.NEAR, h.face ?? 0);
   const at_one = 1 - law.reach_at(law.NEAR);
@@ -510,11 +555,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   const SORT = ["MHCLEAR", "MHLINK", "MHSCAN", "MHSCAN2", "MHSCAN3", "MHPLACE"];
   const relist = (parity: number) => in_pieces([...SORT, "MHSRC1", "MHSRC"], parity);
+  const count = () => Math.min(Math.max(holes.length, made), CAP);
   const push = () => {
     /* what is gathered goes first: a write lands on the queue after it, as it would have unpaced */
     send();
     stale = false;
-    const n = Math.min(holes.length, CAP);
+    const n = count();
+    if (compact) { push_compact(n); if (local) relist((t + 1) % 2); return; }
     for (let k = 0; k < n; k++) {
       const h = holes[k];
       /* every body apart is on its own plane, the one after its place in the list */
@@ -535,11 +582,54 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
      */
     if (local) relist((t + 1) % 2);
   };
+  /*
+   * COMPACT, THE SOURCES WRITTEN: one kind's numbers (the first source's, and what a source of it sends at rest), and
+   * three words a source - where it is on each axis in fixed point and its velocity in MVMAX's 32767ths (Kernels mword)
+   */
+  const VMAX = Number(constants.MVMAX ?? 0.25);
+  const fixed = (x: number) => { const y = Math.min(4095.999, Math.max(0, x + 1024)); const w = Math.floor(y); return ((w << 20) >>> 0) + Math.min(1048575, Math.floor((y - w) * 1048576)); };
+  const unfixed = (w: number) => (w >>> 20) + (w & 1048575) / 1048576 - 1024;
+  const packed = (vx: number, vy: number) => { const q = (v: number) => Math.max(-32767, Math.min(32767, Math.round(v / VMAX * 32767))); return ((q(vx) & 65535) | ((q(vy) & 65535) << 16)) >>> 0; };
+  const unpacked = (w: number) => [((w << 16) >> 16) / 32767 * VMAX, (w >> 16) / 32767 * VMAX];
+  const push_compact = (n: number) => {
+    /* sources made on the device stand there already: only the host's own are written */
+    if (!n || !holes.length) return;
+    const h0 = holes[0];
+    const kind = new Float32Array(12);
+    kind[2] = h0.mass; kind[6] = h0.moves ? 1 : 0; kind[8] = face_of(h0); kind[9] = skin_of(h0);
+    kind[10] = per_way({ mass: h0.mass, face: h0.face, px: 0, py: 0 }) * Math.pow(face_of(h0), D - 1);
+    device.queue.writeBuffer(cel, BOD * 4, kind);
+    for (let k = 0; k * MSHARD < n; k++) {
+      const m = Math.min(MSHARD, n - k * MSHARD), words = new Uint32Array(3 * m);
+      for (let j = 0; j < m; j++) {
+        const h = holes[k * MSHARD + j], mass = h.mass || 1;
+        words[3 * j] = fixed(h.x); words[3 * j + 1] = fixed(h.y);
+        words[3 * j + 2] = packed((h.momentum?.components?.[0] ?? h.px ?? 0) / mass, (h.momentum?.components?.[1] ?? h.py ?? 0) / mass);
+      }
+      device.queue.writeBuffer(shards[k], 0, words);
+    }
+  };
   /* and back on the host, where the host wants to know - a reading a tick was most of a tick */
   const sync = async () => {
     if (stale) push();
-    const n = Math.min(holes.length, CAP);
+    const n = count();
     if (!n) return;
+    if (compact) {
+      if (!holes.length) return;
+      for (let k = 0; k * MSHARD < n; k++) {
+        const m = Math.min(MSHARD, n - k * MSHARD);
+        const f = await read(shards[k], 3 * m);
+        const w = new Uint32Array(f.buffer, f.byteOffset, 3 * m);
+        for (let j = 0; j < m; j++) {
+          const h = holes[k * MSHARD + j];
+          if (!h.moves) continue;
+          h.x = unfixed(w[3 * j]); h.y = unfixed(w[3 * j + 1]);
+          const v = unpacked(w[3 * j + 2]);
+          h.momentum = new physics.Vector({ components: [v[0] * h.mass, v[1] * h.mass] });
+        }
+      }
+      return;
+    }
     const got = await read(cel, 12 * n, BOD * 4);
     holes.slice(0, n).forEach((h: any, k: number) => {
       if (!h.moves) return;
@@ -559,7 +649,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     return got;
   };
   const entries: number[] = [];
-  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": Math.min(holes.length, CAP), "pulls": apart ? Math.min(holes.length, CAP) * (how?.local ? 1 : K * K * chunks(Math.min(holes.length, CAP))) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0, "cells1": local ? cells + 1 : 0, "cells32": local ? cells * 32 : 0, "blocks": local ? Math.ceil((cells + 1) / 256) : 0 } as Record<string, number>)[o];
+  const size = (o: string) => ({ "cells": cells, "cells*G": local ? cells * GATHER : 0, "cells*A": cells * A, "rungs": planes * rungs, "holes": count(), "pulls": apart ? count() * (how?.local ? 1 : K * K * chunks(count())) : 0, "entries": Math.min(entries.length / 4, ENTRIES), "one": holes.length ? 1 : 0, "cells1": local ? cells + 1 : 0, "cells32": local ? cells * 32 : 0, "made": making, "grid2": frame_grid * frame_grid, "blocks": local ? Math.ceil((cells + 1) / 256) : 0 } as Record<string, number>)[o];
   /* one pass; paced, with the device's own clock on either side of it (the pass's pair of `stamps`) */
   /* the parity a pass runs on: a tick's own leaves its rays in held[t % 2]; a reading after it reads the last left, held[(t + 1) % 2] */
   /* and a piece of one: `count` threads from `first`, read off its own region of the tick's uniforms (Par.first) */
@@ -594,7 +684,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   };
   const P = new Uint32Array(20); const PF = new Float32Array(P.buffer);
   const uniforms = (slot = 0) => {
-    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = Math.min(holes.length, CAP); P[6] = t; P[7] = (apart ? holes.length + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
+    P[0] = cells; P[1] = A; P[2] = N; P[3] = K; PF[4] = DEG; P[5] = count(); P[6] = t; P[7] = (apart ? count() + 1 : planes) + 1; P[9] = Math.min(entries.length / 4, ENTRIES);
     /* where the ledgers stand, as whole numbers: past sixteen million a float is no longer one (Kernels.medium_helpers) */
     P[10] = OUT; P[11] = BOD; P[12] = BEAMC; P[13] = WHOM; P[14] = TRACK; P[15] = rungs; P[16] = BEAM; P[17] = PART; P[18] = 0;
     /* a set of uniforms taken afresh: its regions are free again (each pass writes its own, `run`) */
@@ -612,7 +702,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
    * before it runs, and while a field is still spreading out it grows by up to some 70% from one tick to the next -
    * at 20 a submission reached 34 ms; the display's own line is 30
    */
-  const LONGEST_MS = 250, AIM_MS = 15, MAXPASS = 1024;
+  const LONGEST_MS = Number(plan?.budget?.longest_ms ?? 250), AIM_MS = Number(plan?.budget?.aim_ms ?? 15), MAXPASS = 1024;
+  /* at most this share of the time busy, and this many submissions on the queue (the plan's budget) */
+  const DUTY = Math.min(1, Math.max(0.05, Number(plan?.budget?.duty ?? 0.5))), IN_FLIGHT = Math.max(1, Math.floor(Number(plan?.budget?.in_flight ?? 2)));
   let longest = 0, longest_was = "";
   /* the cheapest one pass has taken, in ms: what a dispatch costs however few its threads */
   let floor_ms = Infinity;
@@ -739,10 +831,10 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
        * guess is on the high side (cut with a margin), and resting on it rested every piece twice as long as it worked.
        * Never more than two AIM_MS on credit, so no more than two are ever back to back
        */
-      if (!rest) { debt = Math.max(-2 * AIM_MS, debt + 2 * (busy - f.guess)); return; }
+      if (!rest) { debt = Math.max(-AIM_MS / DUTY, debt + (busy - f.guess) / DUTY); return; }
       const r0 = performance.now();
       const idle = Math.max(0, r0 - f.t0 - busy);
-      await new Promise(r => setTimeout(r, Math.max(2, busy - idle)));
+      await new Promise(r => setTimeout(r, Math.max(2, busy * (1 / DUTY - 1) - idle)));
       clock.rested += performance.now() - r0;
   };
   const settle = async () => { while (inflight.length) await settle_one(true); };
@@ -757,13 +849,13 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
   let last_sent = 0, last_work = 0, debt = 0;
   const next = async () => {
     if (!enc) return;
-    const wait = last_sent + 2 * last_work + debt - performance.now();
+    const wait = last_sent + last_work / DUTY + debt - performance.now();
     debt = Math.min(0, Math.max(debt, wait));
     if (wait > 0) { const r0 = performance.now(); await new Promise(r => setTimeout(r, wait)); clock.rested += performance.now() - r0; }
     last_work = guess;
     send();
     last_sent = performance.now();
-    while (inflight.length > 2) await settle_one(false);
+    while (inflight.length > IN_FLIGHT) await settle_one(false);
   };
   const owe = async () => {
     if (owing) return;
@@ -916,8 +1008,9 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     room: { binds: device.limits?.maxStorageBufferBindingSize ?? 0, holds: device.limits?.maxBufferSize ?? 0, ledgers: celBytes, planes: stBytes },
     /* the lean the device found under each body on the last tick, in c-bar a tick a tick (Medium.lean_under) */
     async leans() {
-      const n = Math.min(holes.length, CAP);
+      const n = count();
       if (!n) return [];
+      if (compact) throw new Error("compact, no source keeps its pull: read a cell's (`cellpulls`) or run uncompact");
       const got = await read(cel, 4 * n, OUT * 4);
       return holes.slice(0, n).map((_: any, k: number) => [got[4 * k], got[4 * k + 1]]);
     },
@@ -984,6 +1077,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
     mass: (h: any) => h.mass,
     at,
     async tick() {
+      if (invalid) throw new Error(`WebGPU: the device refused the medium's work: ${invalid}`);
       if (stale) push();
       await submit(stepped, t % 2);
       t++;
@@ -1015,16 +1109,78 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
      * stream carries the rest a c-bar a tick - so the bodies are held where they are (each still sending as fast as it
      * goes) for a crossing of the box, and then let go as they were. Without the rays held, it is the seed
      */
+    /*
+     * SOURCES MADE ON THE DEVICE (compact): `count` of one kind (`mass`, `face`), laid as `shape` ("disc": surface
+     * density falling as e^(-r/scale), cut at `cut`; "square": even, `scale` either side) about `centre` (cells), off
+     * `seed` - at rest, never on the host. Made after any the host added, and counted with them
+     */
+    async generate(spec: { count: number; mass: number; face?: number; shape?: string; centre?: number[]; scale: number; cut?: number; seed?: number }) {
+      if (!compact) throw new Error("sources are made on the device only compact (how.compact)");
+      if (holes.length) throw new Error("compact, the host's own sources and those made on the device are not mixed");
+      const n = Math.min(Math.floor(spec.count), CAP - made);
+      if (n <= 0) return 0;
+      send();
+      const kind = new Float32Array(12), h0 = { mass: spec.mass, face: spec.face ?? 0, px: 0, py: 0 };
+      kind[2] = spec.mass; kind[6] = 1; kind[8] = face_of(h0); kind[9] = skin_of(h0);
+      kind[10] = per_way(h0) * Math.pow(face_of(h0), D - 1);
+      device.queue.writeBuffer(cel, BOD * 4, kind);
+      const c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      device.queue.writeBuffer(cel, GEN * 4, new Float32Array([spec.shape === "square" ? 1 : 0, c[0], c[1], spec.scale, spec.cut ?? spec.scale * 8, (spec.seed ?? 1) >>> 0, made, n]));
+      made += n; making = n; made_mass = spec.mass;
+      await submit(["MGEN"]);
+      making = 0;
+      stale = false;
+      if (local) relist((t + 1) % 2);
+      return n;
+    },
+    /* every source set going round `centre` at the speed its cell's pull holds a circle at, and `sigma` of that spread (Kernels MLAUNCH) */
+    async launch(spec: { centre?: number[]; sigma?: number; seed?: number }) {
+      send();
+      const c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      device.queue.writeBuffer(cel, (GEN + 1) * 4, new Float32Array([c[0], c[1]]));
+      device.queue.writeBuffer(cel, (GEN + 5) * 4, new Float32Array([(spec.seed ?? 1) >>> 0]));
+      device.queue.writeBuffer(cel, (GEN + 8) * 4, new Float32Array([spec.sigma ?? 0]));
+      await submit(["MLAUNCH"]);
+    },
+    /*
+     * WHAT HAS LEFT THE BOX (Medium.departed): the mass of the sources past its edge, which no longer shine into it or
+     * are pulled by it - the box is the view and its margin, so what is here has left both. Compact, counted on the
+     * device as the sources are linked; otherwise off the host's places, after a sync
+     */
+    async departed(): Promise<number> {
+      if (!local) return 0;
+      if (compact) {
+        send();
+        await submit(["MHCLEAR", "MHLINK"]);
+        const got = await read(links, 1, 10 * cells * 4);
+        return new Int32Array(got.buffer, got.byteOffset, 1)[0] * made_mass;
+      }
+      if (this.sync) await this.sync();
+      let m = 0;
+      for (const h of holes) { const x = Math.floor(h.x + 0.5), y = Math.floor(h.y + 0.5); if (x < 0 || y < 0 || x >= N || y >= N) m += h.mass; }
+      return m;
+    },
+    /* A FRAME: the sources counted on a `grid` x `grid` picture, `span` cells either side of `centre`, on the device */
+    async grid(spec: { grid: number; centre?: number[]; span: number }) {
+      if (!compact) throw new Error("a frame is counted on the device only compact (how.compact)");
+      const G = Math.min(GRIDMAX, Math.floor(spec.grid)), c = spec.centre ?? [(N - 1) / 2, (N - 1) / 2];
+      send();
+      device.queue.writeBuffer(cel, (GEN + 10) * 4, new Float32Array([G, c[0], c[1], spec.span]));
+      frame_grid = G;
+      await submit(["MFRAMECLEAR", "MFRAME"]);
+      const got = await read(links, G * G, (10 * cells + 4) * 4);
+      return new Int32Array(got.buffer, got.byteOffset, G * G);
+    },
     async stand() {
       this.seed();
       if (!local) return;
       const moving = holes.map((h: any) => h.moves);
       holes.forEach((h: any) => { h.moves = false; });
-      push();
+      if (made) { send(); device.queue.writeBuffer(cel, (BOD + 6) * 4, new Float32Array([0])); } else push();
       const crossing = Math.ceil(N / K) + 2;
       for (let i = 0; i < crossing; i++) await this.tick();
       holes.forEach((h: any, k: number) => { h.moves = moving[k]; });
-      push();
+      if (made) { send(); device.queue.writeBuffer(cel, (BOD + 6) * 4, new Float32Array([1])); } else push();
     },
     async settle() {
       this.seed();
@@ -1067,7 +1223,7 @@ export async function medium(N: number, A = 96, K = 3, tags = 1, theory?: any, D
       device.queue.submit([enc.finish()]);
       /* the reading is submitted behind it on the same queue, so waiting for the work here is a round trip for nothing */
       /* the answers stand past the bodies' own, as many as there are (Kernels MPROBE: P.outs + 4 holes) */
-      const got = await read(cel, 2 * n, (OUT + 4 * Math.min(holes.length, CAP)) * 4);
+      const got = await read(cel, 2 * n, (OUT + (compact ? 0 : 4 * count())) * 4);
       return Array.from({ length: n }, (_, i) => [got[2 * i], got[2 * i + 1]]);
     },
     async rho() { return read(cel, cells, 0); },

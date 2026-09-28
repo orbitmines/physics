@@ -1,0 +1,153 @@
+/*
+ * A RUN OF SOURCES, PLANNED FOR A DEVICE - what any simulation of sources in the medium (stars in a galaxy, a sun and
+ * its planets, any bodies a theory has) is set by, and what a device must hold for it.
+ *
+ * Four kinds of setting, each its own class, each with the defaults the medium has been checked with:
+ *   `Resolution` - how finely the medium reads: cells to a c-bar, ways, bundles kept, the kernels' own lists
+ *   `Budget`     - how much of a device the run may take: memory, one binding, how long a submission, how busy
+ *   `Batching`   - how a run larger than the device is carried: tiles of the box, ticks a tile goes at a time
+ *   `Output`     - what comes back: frames every so many ticks, on a grid, and the sources themselves or not
+ * `Plan` holds them with the run's size (how many sources, how many cells a side) and says what each part of the
+ * device's memory must hold (`parts`), whether it fits (`fits`), and why not (`report`). Every number here is the one
+ * the runtime lays (webgpu.runtime `medium`), so a plan and a run can only differ where the device does.
+ */
+
+/* HOW FINELY THE MEDIUM READS - every number the kernels were written with that a run may set for itself */
+Resolution := class {
+  /* cells to a c-bar (K): the lattice's own spacing is a c-bar; every cost a cell grows as its square */
+  cells: N = 3
+  /* the ways a point gathers on (GATHER): how finely a direction is told apart - the stream costs as many */
+  ways: N = 96
+  /* bundles a way keeps apart before the nearest two are gathered (Medium.SLOTS) */
+  keeps: N = 4
+  /* bundles one thread holds at once while it gathers (Kernels MLIST): 8 leaned a million-source disc 5%, 12 does not */
+  list: N = 12
+  /* near bundles a cell lists to read exactly (Kernels MNEAR); past them, a cell's field (Taylor) */
+  near_list: N = 96
+  /* within this many cells a bundle is read exactly, past it off its cell's field (Medium.NEAR_CELLS) */
+  near_cells: N = 5
+  /* sources standing together on a cell read as the cell, once (Medium.cell_pull; alone on a cell, the same either way) */
+  cell_pull: boolean = true
+  /*
+   * c-bars of box kept round the view, computed and never drawn: a source just past the view still shines into it,
+   * one on the view's edge reads what stands beyond it, and only what has gone past the margin too has left
+   * (Medium.departed). At the box's own edge the medium sees nothing further - a body there is pulled a quarter short,
+   * and one past it no longer shines - so that edge is kept out of the view
+   */
+  margin: N = 2
+  /* compact, the fastest a source is kept at, c-bar a tick: its velocity is kept in 32767ths of it (Kernels MVMAX) */
+  speed: Real = 0.25
+  /* the kernels' constants this sets, by name, for the runtime to write before it compiles (`how.constants`) */
+  constants (): {} => {
+    out := { }
+    out["MLIST"] = this.list
+    out["MNEAR"] = this.near_list
+    out["MCELLPULL"] = this.cell_pull
+    out
+  }
+}
+
+/* HOW MUCH OF A DEVICE A RUN MAY TAKE - the device also draws the screen (a long submission once took it off the bus) */
+Budget := class {
+  /* bytes of device memory the run may hold (0: all the device says it has) */
+  memory: Real = 0
+  /* bytes one binding may hold (0: the device's own limit - 2 GiB on the cards met so far) */
+  binding: Real = 0
+  /* how long one submission is cut to, and past what the run stops (ms, by the device's own clock) */
+  aim_ms: Real = 15
+  longest_ms: Real = 250
+  /* at most this share of the time busy: after each submission the device rests the rest */
+  duty: Real = 0.5
+  /* submissions on the device's queue at once */
+  in_flight: N = 2
+  /* bytes of host memory for what the device does not hold at once (`Batching`); 0: none - it must all fit */
+  host: Real = 0
+  /*
+   * sources of one kind kept in three words each - where on each axis in fixed point and the velocity in halves of one
+   * - their cells summed as they come rather than sorted, none keeping a pull of its own (Kernels MCOMPACT): 12 bytes
+   * a source rather than 80. Made on the device, and read back only as frames
+   */
+  compact: boolean = false
+}
+
+/* HOW A RUN LARGER THAN THE DEVICE IS CARRIED - the box cut into tiles, each with a margin a tick's reach wide */
+Batching := class {
+  /* tiles a side (1: the whole box on the device at once) */
+  tiles: N = 1
+  /* ticks a tile goes before the next is carried in: its margin is that many ticks' reach */
+  ticks: N = 1
+}
+
+/* WHAT A RUN HANDS BACK */
+Output := class {
+  /* a frame every this many ticks (0: none) */
+  every: N = 0
+  /* on a grid this many cells a side, counted on the device */
+  grid: N = 128
+  /* the sources themselves read back (their places and motion) with each frame, or only what the grid counts */
+  sources: boolean = false
+}
+
+/* A RUN OF SOURCES AND WHAT IT TAKES OF A DEVICE */
+Plan := class < sources: Real, side: N {
+  resolution: Resolution = Resolution()
+  budget: Budget = Budget()
+  batching: Batching = Batching()
+  output: Output = Output()
+  /* the cells of the box, and of one tile with its margin (a tick's reach: what a source lays and a way streams) */
+  /* the box the medium runs: the view (`side` cells) and its margin all round */
+  box_side (): N => this.side + 2 * this.resolution.margin * this.resolution.cells
+  box_cells (): Real => Real.of(this.box_side) * Real.of(this.box_side)
+  reach (): N => 3 * this.resolution.cells + 4
+  tile_side (): N => (Real.of(this.box_side + this.batching.tiles - 1) / Real.of(this.batching.tiles)).floor + 2 * this.reach * this.batching.ticks
+  tile_cells (): Real => this.batching.tiles == 1 ? this.box_cells : Real.of(this.tile_side) * Real.of(this.tile_side)
+  /* the sources one tile holds, the box's spread evenly - a guide: a tile over a disc's middle holds more */
+  tile_sources (): Real => this.sources * this.tile_cells / this.box_cells
+  /*
+   * WHAT THE DEVICE HOLDS, a part at a time, in bytes - as the runtime lays it: the held rays (two boxes, the one a tick
+   * opened on and the one it leaves), the ledgers with every source's numbers, the sources sorted by cell, and the
+   * planes. [name, bytes, whether it must sit in one binding]
+   */
+  parts (): Array => {
+    c := this.tile_cells
+    s := this.tile_sources
+    r := this.resolution
+    held := c * (Real.of(r.ways * r.keeps * 8 + 1 + r.ways + 12 + 2 + 4 + 4 + 9 + r.near_list + 1 + 1)) * 4
+    /* a source's own numbers (12), what it goes by (4), its part of the pull (2), and whose plane it is (1) - or, compact, none of these here */
+    each := this.budget.compact ? 0 : Real.of(12 + 4 + 2 + 1)
+    ledgers := (c * Real.of(11 + 384 + 2) + s * each + Real.of(4096 * 64 * 4)) * 4
+    /* the sources by cell: sorted (a place each) or, compact, each cell's ten sums and a frame's grid */
+    lists := this.budget.compact ? (10 * c + Real.of(1024 * 1024)) * 4 : (2 * c + s) * 4
+    base := [["held rays (a box)", held, true], ["held rays (the other)", held, true], ["ledgers and sources", ledgers, true], ["sources by cell", lists, true], ["planes", 3 * c * 4, true]]
+    /* compact, the sources themselves: twelve bytes each, in shards of at most 2 GiB (178956970 a shard) */
+    shards := this.budget.compact ? Array.range(8).map(k => Fmt.max(0, Fmt.min(178956970, s - Real.of(k * 178956970)))).filter(n => n > 0) : []
+    base.concat(Array.range(shards.length).map(k => ["sources (shard {k})", shards[k] * 12, true]))
+  }
+  /* all the device holds at once */
+  total (): Real => {
+    sum := 0
+    this.parts.for(p => { sum = sum + p[1] })
+    sum
+  }
+  /* a source's own share of it, in bytes: what a run of more sources needs a byte at a time */
+  per_source (): Real => this.budget.compact ? 12 : Real.of(12 + 4 + 2 + 1 + 1) * 4
+  /* whether it all fits: every part under one binding, and the whole under the memory the budget gives */
+  fits (memory: Real, binding: Real): boolean => {
+    cap := this.budget.memory > 0 ? this.budget.memory : memory
+    one := this.budget.binding > 0 ? this.budget.binding : binding
+    this.total <= cap & this.parts.every(p => p[1] <= one)
+  }
+  /* what it takes, a part at a line, and what does not fit where */
+  report (memory: Real, binding: Real): String => {
+    cap := this.budget.memory > 0 ? this.budget.memory : memory
+    one := this.budget.binding > 0 ? this.budget.binding : binding
+    over := " - more than one binding holds ({Fmt.fixed(one / 1048576, 0)} MiB)"
+    lines := this.parts.map(p => {
+      tail := p[1] > one ? over : ""
+      "  {p[0]}: {Fmt.fixed(p[1] / 1048576, 0)} MiB{tail}"
+    })
+    head := "{Fmt.fixed(this.sources, 0)} sources on a {this.side}-cell view in a {this.box_side}-cell box ({this.batching.tiles * this.batching.tiles} tile(s), {this.resolution.cells} cells to a c-bar, {this.resolution.ways} ways): {Fmt.fixed(this.total / 1073741824, 2)} GiB of {Fmt.fixed(cap / 1073741824, 2)} GiB, {Fmt.fixed(this.per_source, 0)} bytes a source"
+    verdict := this.fits(memory, binding) ? "  fits" : "  does not fit"
+    [head].concat(lines).concat([verdict]).join("\n")
+  }
+}

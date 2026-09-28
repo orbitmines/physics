@@ -255,7 +255,40 @@ WGSL: Language = class {
 - **Reserved settings** (a rule whose pattern is the bare name): `{separator}`, `{indent}`, `{newline}`,
   `{statement_end}`, `{interpolation}` (with `{x}`), `{named_arg}` (`{nm}`, `{val}`), `{parameter}`,
   `{parameter_untyped}`, `{parameter_default}` (`{nm}`, `{ty}`, `{val}`), `{empty_block}`, `{whole}` (a whole-number
-  literal, `{val}`: a shader writes `{val}.0`).
+  literal, `{val}`: a shader writes `{val}.0`). A reserved setting is never matched as a rule, even where a program
+  has a name of the same spelling (Medium.ray has a local `whole`).
+- **Settings for languages further from Ray** (all optional; a language without them is emitted as before):
+  - `{reserved_names}` - words the language reserves, space-separated; a word opening with `^` is a pattern
+    (Ruby: `^[A-Z]`, a capitalised local is a constant there). `{escaped_name}` (`{nm}`) spells such a name.
+    Escaping applies to locals and parameters; a member keeps its name through `{x.raw}` (below).
+  - `{global_name}` (`{nm}`) - how a top-level definition (`plus := " + "`) is reached (Ruby `Physics.{nm}`, Java
+    `{nm}()`); `constant(nm, text)` then defines it that way.
+  - `{class_ref}` (`{nm}`) - a class as a value (Java: `K("{nm}")`, looked up when run, so a class the package does
+    not carry fails only where it is used, as in Python).
+  - `{field_assign}` (`{nm}`, `{val}`) - `name = "G"` written in a class's own body: a field with that value.
+  - `{local_name}` (`{nm}`, `{k}`: how deep the scope that binds it stands) - every local and parameter spelled apart
+    by scope, for a language that lets no lambda reuse an enclosing name (Java: `{nm}_{k}`).
+  - `{local_read}` / `{local_write}` (`{nm}`, `{val}`) - a local read, and written, through a cell (Java `{nm}[0]`,
+    so a lambda can take a local and write it).
+  - `{defaults_in_body}` (`yes`) - every parameter default moved into the body (`if x == None { x = <default> }`),
+    for a language without default parameters (or with constant ones only).
+  - `{parameter_separator}` - how a parameter list is joined (Java `" "`: each parameter is a statement binding
+    `arg(a{d}, {i})`); the parameter settings get `{i}` (its position) and `{d}` (the depth, as below).
+- **Bindings every rule gets**: `{d}` (how deep in methods and lambdas it stands: `a{d}` names a lambda's argument
+  array apart from its enclosing one's), and on a lambda `{free}` (the enclosing locals it uses, spelled as locals).
+- A block hole `{ stmts }` that takes an expression body (`xs.for(f => walk(f))`) gets it as one statement.
+- A language's CPU runtime is its own `cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.<ext>`
+  (TypeScript's and Python's are read in CPU.ray); a language without one is not run on the CPU and not listed
+  in the README's installation. `npx ray gen Ruby Java` writes only those languages' packages.
+- **A language without dynamic members** (Java; the model for C#, Go, C++, Rust, Swift, Lean): a Ray class is a
+  table filled when the package loads (`Rt.Cls`: fields with their defaults, getters, methods, statics), an object
+  an `Rt.Obj` (its class and its slots), and every member is reached by name - `get(x, "cells")`,
+  `call(x, "add", args)`, `set(x, "tag", v)`, `make(Class, kw("x", 1.0))`. A member is found class by class up the
+  chain (the nearest class declaring the name decides whether it is a getter, a field or a method), as a
+  prototype chain does. Numbers are all doubles (as the bootstrap's), and an absent number reads as 0.
+- The recognised members (`split`, `map`, `first`, `pow`, ...) apply to a list, a text or a number; on any other
+  object they are its own member of that name (`Expr.split(e, name)` is Expr's). A language whose spelling of
+  them differs routes them through its runtime (`m_split(xs, ...)`), which tells the two apart.
 - A Language also has ordinary methods gen calls: `nested(outer, name, inner)`, `constant(name, text)`,
   `write_package(code)`, `test_case(requirement, fixture)`, `write_tests(cases, fixtures)`.
 - The runtime template holes are `{{core}}`, `{{theories}}`, `{{constants}}` (written with doubled
@@ -862,6 +895,46 @@ method body after loading.
   a loop is not re-zeroed each iteration on this device - initialise it; the medium's EXTRAS count (24) and MAXH are
   shared with the Field's kernels - never change them (index 23 carries the slot count, 0 = not held); a `.ray`
   member named `slots` overrides the TS Node's field store (named `keeps` here).
+- **A run of sources, planned for a device (`physics.ray/Plan.ray`; 2026-09-27, the user: "get to 1B stars on a single
+  GPU ... configurable ... a nice API in all the language settings", "generalize it to any kind of source").** Four
+  settings classes, each with the checked defaults: `Resolution` (cells to a c-bar, ways, keeps, the kernels' `list`
+  MLIST and `near_list` MNEAR, `near_cells`, `cell_pull`, `speed` - the fastest a compact source is kept at),
+  `Budget` (device `memory` and one `binding`, `aim_ms`, `longest_ms`, `duty`, `in_flight`, `host`, `compact`),
+  `Batching` (`tiles` a side, `ticks` a tile goes at a time - planned, not yet run) and `Output` (`every`, `grid`,
+  `sources`); `Plan(sources:, side:)` holds them and says what each part of the device holds (`parts`), whether it
+  fits (`fits(memory, binding)`) and why not (`report`), laid exactly as the runtime lays it. The runtime takes it as
+  `how.plan`: the resolution's `constants` (MLIST, MNEAR, MCELLPULL) are written into the kernels' text before any
+  pipeline is made (`how.constants`, by name - an unknown name is an error), the budget sets the pacing (AIM_MS,
+  LONGEST_MS, DUTY, IN_FLIGHT). Generated for TypeScript and Python alike.
+- **The pull once a cell (`Medium.cell_pull`, Kernels MCELLPULL, MPULLC; on by default).** Sources standing together
+  on a cell read as the cell's gathering is laid - one source a cell - so once a cell, at the gathering's middle,
+  everything but the cell's own; a source alone on its cell reads exactly as before (solar.inner unchanged). What
+  sources on one cell do to each other is below what the lattice tells apart: a cell's pull on another is the other's
+  on it, and none on itself (a 200-source disc: self-pull 3.1e-3 -> 6e-4). With it a source's pull, move and step are
+  one pass (MFUSED, MSOURCE).
+- **Compact sources (`how.compact`, `Budget.compact`, Kernels MCOMPACT).** A run of many sources of one kind: each
+  three words - its place on each axis in fixed point (20 bits of a cell; a box up to 3072 cells, 1024 past its edge)
+  and its velocity as two halves of a word in MVMAX's 32767ths, rounded at random (`mdither`: a tick's pull is a few
+  32767ths, and rounded to the nearest a steady pull was lost or doubled) - in up to eight shards of 2 GiB (bindings
+  7-14, `mword`); what it weighs, how big it is and whether it moves are its kind's (the numbers at BODS, and what one
+  sends at rest, `mqref`). No sort: MHLINK adds each source into its cell's ten sums (fixed point, atomic), MHSRC makes
+  them the cell's source, MPULLC reads the count and the lone source off them; no source keeps a pull, a beam or a
+  plane. 12 bytes a source, not 80: `Plan` puts 10^9 on a 241 box at 12.7 GiB. Made on the device
+  (`generate({count, mass, shape: "disc" | "square", centre, scale, cut, seed})`, MGEN), set going round a middle at
+  the speed its cell's pull holds a circle at (`launch({centre, sigma, seed})`, MLAUNCH), counted into frames there
+  (`grid({grid, centre, span})`, MFRAME - named apart from `frame()`, the CPU-readable snapshot, which an object
+  literal's later key had silently replaced) - never held on the host.
+- **The box's edge (2026-09-27).** The medium sees nothing past its box: a body on the last cell reads its pull partly
+  from outside and is pulled 23% short (while pulling its partner in full - a net push outwards), and a body whose
+  cell leaves the box stops shining at once (its near field inside falls 0.68 -> 0.18 in one tick) and pulls nothing
+  after. Measured: a body coasting off keeps its speed exactly and has no self-pull; a pair six cells apart cancels
+  exactly anywhere short of the last cell. So a run's box is its view and a margin round it, run and never drawn
+  (`Resolution.margin`, 2 c-bars; `Plan.box_side`; galaxy.gpu.ts `RAY_MARGIN`), and what has gone past the box is
+  counted: `Medium.departed` (mass off the box), and on the device `departed()` (compact: MHLINK counts the sources
+  off the box into the word after the cells' sums).
+- The device needs 14 storage buffers a kernel (seven, and eight shards): asked for when the device is made, and a
+  WebGPU validation error is otherwise silent - every dispatch after it does nothing (the device computed zeros from
+  the shards' addition until this was found). The runtime keeps the first and throws it on the next tick.
 - `Sweep.base_env` binds the vacuum's own body defaults (m-bar_x 1, A 1, R-bar 0, beta 0) before
   solving n_f per radius; without them n_f is NaN at every radius and the sweep lands nothing - which
   is why the OLD galaxy fields on disk had `most: 0` and a blank region.
@@ -885,6 +958,9 @@ Gotchas met writing these (all confirmed the hard way):
   wrap it: `f () => { xs.for(...) }`. A Python lambda captures the enclosing names as defaults, so
   `xs.filter(...).for(rule => ...)` fails with the loop variable unbound - hoist the filter into a
   local first. `Line` is the prover's (a step on a page); the hole's world is `Around`.
+- A local is emitted under its own name, so one named like a Python builtin the Python emitter calls
+  (`list`, `len`, `range`) shadows it in that function (`list := ...` broke every `.for` there, since loops
+  emit `for x in list(...)`); and `pass` and other Python keywords cannot be names at all.
 - Inside a theory's own methods the theory is `this`, not its name (`G` in the emitted TypeScript is
   the class, not the instance): `Setup(theory: this, ...)`.
 - `.nonempty` is an Array method only: on a String it is emitted as a plain property read, undefined in TypeScript (a filter on it dropped every string). Write `!s.empty` or branch on `s.empty` - `.empty` on a String is emitted as `length === 0`.

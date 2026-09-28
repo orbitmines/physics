@@ -1,0 +1,336 @@
+/*
+ * THE WOLFRAM LANGUAGE, as a mapping from the constructs of Ray to text. Nothing in it is mutable, so a Ray class is a
+ * table filled when the package loads, and an object an `Obj[id, class, slots]` (a HashTable of its own slots) whose
+ * members are reached by name - `get[x, "cells"]`, `call[x, "add", {h}]`, `set[x, "tag", v]` - found class by class
+ * up the chain (implementation/gen/backends/cpu.runtime.wl). A list is a DynamicArray, so that a push is seen by
+ * everyone holding it; every number is a machine real (`{whole}` writes `3.`, never the exact 3).
+ *
+ * Every method and lambda takes its arguments as one list (`args1`, `args2`, ... by depth, `{d}`), bound at the top of
+ * its body (`{parameter}` with `{i}`), so a missing argument is None and a default is set in the body
+ * (`{defaults_in_body}`). A Wolfram symbol cannot hold an underscore, which Ray's names have everywhere, so a local is
+ * written `env<k>["name"]` (`{local_name}`, `k` the depth of the scope that binds it) and a `return` a `Throw` with the
+ * tag `ret`; `mfn`/`lfn`/`dfn` make each program a Function once, when the package loads - its locals symbols of their
+ * own, in a Module where a lambda inside may take them and a Block where none can, the Catch only where a `return` is
+ * not the last thing it does. A block taken apart by `for` is a `Do` over its items with the scope `loopScope[k, ...]`.
+ */
+
+Wolfram: Language = class {
+  name = "Wolfram"
+  extension = ".wl"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => ";\n"
+  {statement_end} => ""
+  {empty_block} => "Null"
+  {interpolation} => "\" <> str[{x}] <> \""
+  {named_arg} => "kw[\"{raw}\", {val}]"
+  {parameter} => "{nm} = arg[args{d}, {i}]"
+  {parameter_untyped} => "{nm} = arg[args{d}, {i}]"
+  {parameter_default} => "{nm} = arg[args{d}, {i}]"
+  {parameter_separator} => ", "
+  {dynamic_get} => "get[{tgt}, str[{key}]]"
+  {dynamic_set} => "set[{tgt}, str[{key}], {val}]"
+  {whole} => "{val}."
+  {global_name} => "global[\"{nm}\"]"
+  {local_name} => "env{k}[\"{nm}\"]"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K[\"{nm}\"]"
+  {field_assign} => "field[klass, \"{nm}\", dfn[{val}]]"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "If[truthy[{cond}],\n{yesbody.indent},\n{nobody.indent}]"
+  {if cond { yesbody }} => "If[truthy[{cond}],\n{yesbody.indent}]"
+  {unless cond { yesbody }} => "If[!truthy[{cond}],\n{yesbody.indent}]"
+  {while cond { loopbody }} => "While[truthy[{cond}],\n{loopbody.indent}]"
+  {return val} => "Throw[{val}, ret]"
+  {return} => "Throw[Null, ret]"
+  {dynamically assert cond} => "If[!truthy[{cond}], fail[{cond.quoted}]]"
+
+  /* definitions and assignment */
+  {nm := val} => "{nm} = {val}"
+  {tgt.nm = rhs} => "set[{tgt}, \"{nm.raw}\", {rhs}]"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "setAt[{tgt}, {k}, {rhs}]"
+
+  /* expressions: `&` and `|` hand back one of their sides, as TypeScript's do, the second read only when it is needed */
+  {a & b} => "andV[{a}, {b}]"
+  {a | b} => "orV[{a}, {b}]"
+  {!a} => "not[{a}]"
+  {-a} => "neg[{a}]"
+  {a == b} => "eq[{a}, {b}]"
+  {a != b} => "(!eq[{a}, {b}])"
+  {a < b} => "lt[{a}, {b}]"
+  {a <= b} => "le[{a}, {b}]"
+  {a > b} => "gt[{a}, {b}]"
+  {a >= b} => "ge[{a}, {b}]"
+  {a + b} => "add[{a}, {b}]"
+  {a - b} => "sub[{a}, {b}]"
+  {a * b} => "mul[{a}, {b}]"
+  {a / b} => "div[{a}, {b}]"
+  {a % b} => "mod[{a}, {b}]"
+  {a ^ b} => "power[{a}, {b}]"
+  {a ?? b} => "orElse[{a}, {b}]"
+  {cond ? a : b} => "If[truthy[{cond}], {a}, {b}]"
+  {a ==.instance_of Array} => "listQ[{a}]"
+  {a ==.instance_of ty} => "instanceOf[{a}, \"{ty}\"]"
+  {a as ty} => "{a}"
+  {tgt.nm} => "get[{tgt}, \"{nm.raw.method}\"]"
+  {tgt?.nm} => "getOpt[{tgt}, \"{nm.raw.method}\"]"
+  {tgt.nm()} => "get[{tgt}, \"{nm.raw.method}\"]"
+  {tgt?.nm()} => "getOpt[{tgt}, \"{nm.raw.method}\"]"
+  {tgt.nm(arglist)} => "call[{tgt}, \"{nm.raw.method}\", {{ {arglist} }}]"
+  {tgt?.nm(arglist)} => "callOpt[{tgt}, \"{nm.raw.method}\", {{ {arglist} }}]"
+  {tgt.choose("nm")} => "choose[{tgt}, {nm.quoted}]"
+  {tgt[k]} => "elem[{tgt}, {k}]"
+  {fn()} => "invoke[{fn}, {{}}]"
+  {fn(arglist)} => "invoke[{fn}, {{ {arglist} }}]"
+  {Class()} => "make[\"{Class}\", {{}}]"
+  {Class(arglist)} => "make[\"{Class}\", {{ {arglist} }}]"
+  {[elems]} => "list[{elems}]"
+  { {} } => "make[\"Node\", {{}}]"
+  {this} => "self"
+  {None} => "Null"
+  {true} => "True"
+  {false} => "False"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "lfn[{d}, {{ {paramlist} }};\n{stmts.returned.indent}]"
+  {(paramlist) => e} => "lfn[{d}, {{ {paramlist} }}; Throw[{e}, ret]]"
+  {xs#} => "many[{xs}]"
+  {draw([ws], [os])} => "call[get[get[self, \"vertex\"], \"world\"], \"draw\", {{ list[{ws}], list[{os}] }}]"
+
+  /* a block taken apart by `for`: a Do over the items, the block a scope of its own (`loopScope`), a `return` in it the method's */
+  {Array.range(cnt).for((x_) => { stmts })} => "Do[loopScope[{d}, {x_.bare} = iter{d};\n{stmts.indent}], {{iter{d}, 0., num[{cnt}] - 1.}}]"
+  {xs.for((x_) => { stmts })} => "Do[loopScope[{d}, {x_.bare} = iter{d};\n{stmts.indent}], {{iter{d}, items[{xs}]}}]"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {fail(x_)} => "fail[{x_}]"
+  {Catalogue.number(x_)} => "number[{x_}]"
+  {String(chars: xs)} => "fromCodepoints[{xs}]"
+  {x_.blank} => "blank[{x_}]"
+  {xs.push(x_)} => "mPush[{xs}, {x_}]"
+  {xs.chars} => "mChars[{xs}]"
+  {xs.pop} => "mPop[{xs}]"
+  {xs.length} => "len[{xs}]"
+  {xs.map(f)} => "mMap[{xs}, {f}]"
+  {xs.filter(f)} => "filt[{xs}, {f}]"
+  {xs.for(f)} => "mFor[{xs}, {f}]"
+  {xs.some(f)} => "mSome[{xs}, {f}]"
+  {xs.every(f)} => "mEvery[{xs}, {f}]"
+  {xs.reduce(z, f)} => "mReduce[{xs}, {z}, {f}]"
+  {xs.starts_with(x_)} => "mStartsWith[{xs}, {x_}]"
+  {xs.ends_with(x_)} => "mEndsWith[{xs}, {x_}]"
+  {xs.replace(x_, y_)} => "mReplace[{xs}, {x_}, {y_}]"
+  {xs.split(x_)} => "mSplit[{xs}, {x_}]"
+  {xs.trim} => "mTrim[{xs}]"
+  {xs.upper} => "mUpper[{xs}]"
+  {xs.lower} => "mLower[{xs}]"
+  {xs.lines} => "mLines[{xs}]"
+  {xs.quoted} => "quoted[{xs}]"
+  {xs.contains(x_)} => "mContains[{xs}, {x_}]"
+  {xs.index_of(x_)} => "mIndexOf[{xs}, {x_}]"
+  {xs.join(sep)} => "mJoin[{xs}, {sep}]"
+  {xs.first} => "mFirst[{xs}]"
+  {xs.last} => "mLast[{xs}]"
+  {xs.empty} => "mEmpty[{xs}]"
+  {xs.take(cnt)} => "mTake[{xs}, {cnt}]"
+  {xs.drop(cnt)} => "mDrop[{xs}, {cnt}]"
+  {xs.rest} => "mRest[{xs}]"
+  {xs.concat(ys)} => "mConcat[{xs}, {ys}]"
+  {xs.reverse} => "mReverse[{xs}]"
+  {xs.sum} => "mSum[{xs}]"
+  {xs.most(f)} => "mMost[{xs}, {f}]"
+  {xs.sorted_by(f)} => "mSortedBy[{xs}, {f}]"
+  {xs.each} => "mEach[{xs}]"
+  {Array.range(cnt)} => "rng[{cnt}]"
+  {Array.filled(cnt, x_)} => "filled[{cnt}, {x_}]"
+  {x_.sqrt} => "mSqrt[{x_}]"
+  {x_.floor} => "mFloor[{x_}]"
+  {x_.abs} => "mAbs[{x_}]"
+  {x_.negated} => "neg[{x_}]"
+  {x_.magnitude} => "mMagnitude[{x_}]"
+  {x_.cos} => "mCos[{x_}]"
+  {x_.sin} => "mSin[{x_}]"
+  {x_.round} => "mRound[{x_}]"
+  {x_.ln} => "mLn[{x_}]"
+  {x_.exp} => "mExp[{x_}]"
+  {x_.atan2(y_)} => "mAtan2[{x_}, {y_}]"
+  {x_.pow(y_)} => "mPow[{x_}, {y_}]"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0."
+  {Real.ONE} => "1."
+  {Real.TWO} => "2."
+  {Real.PI} => "3.141592653589793"
+  {Real.NAN} => "Indeterminate"
+  {Real.INFINITY} => "Infinity"
+  {Real.TAU} => "6.283185307179586"
+  {Random.MODULUS} => "4294967296."
+  {Random.MULTIPLIER} => "1664525."
+  {Random.INCREMENT} => "1013904223."
+
+  /* types are not written */
+  {N} => "Null"
+  {Natural} => "Null"
+  {Z} => "Null"
+  {Integer} => "Null"
+  {Real} => "Null"
+  {Decimal} => "Null"
+  {boolean} => "Null"
+  {String} => "Null"
+  {Array} => "Null"
+  {*} => "Null"
+  {{}} => "Null"
+  {ty[]} => "Null"
+  {ty?} => "Null"
+  {Program} => "Null"
+
+  /* classes: a table, filled when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "cls[\"{nm.raw}\", \"{sup.first}\", Function[{{klass}},\n{membs.indent}]];"
+  {nm := class { membs }} => "cls[\"{nm.raw}\", \"Node\", Function[{{klass}},\n{membs.indent}]];"
+  {nm: ty = class { membs }} => "cls[\"{nm.raw}\", \"{ty}\", Function[{{klass}},\n{membs.indent}]];\ntheory[\"{nm.raw}\"];"
+  {theorem "nm" () => tbody} => "staticField[klass, \"theorem {nm}\", dfn[make[\"Theorem\", {{ kw[\"id\", {nm.quoted}], kw[\"body\", lfn[{d},\n{tbody.returned.indent}]] }}]]]"
+  {x_.body()} => "invoke[get[{x_}, \"body\"], {{}}]"
+  {nm: ty = val} => "field[klass, \"{nm.raw}\", dfn[{val}]]"
+  {nm: ty} => "field[klass, \"{nm.raw}\", Null]"
+  {nm = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
+  {static nm: ty = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
+  {static nm = val} => "staticField[klass, \"{nm.raw}\", dfn[{val}]]"
+  {nm (): ret => mbody} => "getter[klass, \"{nm.raw.method}\", mfn[{d},\n{mbody.returned.indent}]]"
+  {nm () => mbody} => "getter[klass, \"{nm.raw.method}\", mfn[{d},\n{mbody.returned.indent}]]"
+  {static nm (): ret => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d},\n{mbody.returned.indent}]]"
+  {static nm () => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d},\n{mbody.returned.indent}]]"
+  {nm (paramlist): ret => mbody} => "method[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
+  {nm (paramlist) => mbody} => "method[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
+  {static nm (paramlist): ret => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
+  {static nm (paramlist) => mbody} => "statik[klass, \"{nm.raw.method}\", mfn[{d}, {{ {paramlist} }};\n{mbody.returned.indent}]]"
+  {nm (paramlist): ret} => "method[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {nm (paramlist)} => "method[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {nm (): ret} => "getter[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {nm ()} => "getter[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {static nm (paramlist): ret} => "statik[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {static nm (paramlist)} => "statik[klass, \"{nm.raw.method}\", Function[{{self, args}}, fail[\"{nm} is declared but not defined by anyone\"]]]"
+  {rule /rid "nm" | rt () => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", {rt.quoted}], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d},\n{rbody.returned.indent}]] }}]]]"
+  {rule /rid "nm" () => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", Null], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d},\n{rbody.returned.indent}]] }}]]]"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", {rt.quoted}], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]] }}]]]"
+  {rule /rid "nm" (paramlist) => rbody} => "staticField[klass, \"rule {rid}\", dfn[make[\"Rule\", {{ kw[\"id\", \"/{rid}\"], kw[\"name\", {nm.quoted}], kw[\"rate\", Null], kw[\"over\", {over.quoted}], kw[\"single\", {single}], kw[\"where\", {where}], kw[\"source\", {source.quoted}], kw[\"body\", lfn[{d}, {{ {paramlist} }};\n{rbody.returned.indent}]] }}]]]"
+  {choose "nm" (paramlist): ret} => "method[klass, \"choose {nm}\", Function[{{self, args}}, fail[\"the choice {nm} is not defined by anyone\"]]]"
+  {choose "nm" (paramlist): ret => cbody} => "method[klass, \"choose {nm}\", mfn[{d}, {{ {paramlist} }};\n{cbody.returned.indent}]]"
+  {choose "nm" (paramlist) => cbody} => "method[klass, \"choose {nm}\", mfn[{d}, {{ {paramlist} }};\n{cbody.returned.indent}]]"
+  {as (=== ty) => cbody} => "getter[klass, \"as_{ty}\", mfn[{d},\n{cbody.returned.indent}]]"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nset[Cls[\"{outer}\"], \"{inner_name}\", Cls[\"{inner_name}\"]];"
+
+  /* a top-level definition is made on its first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "With[{{f = dfn[{text}]}}, global[\"{nm}\"] := global[\"{nm}\"] = f[Null]];"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "Null" : rate.quoted
+    where := where_source.empty ? "Null" : "make[\"Node\", {{ kw[\"source\", {where_source.quoted}] }}]"
+    rule := id.empty ? "Null" : "make[\"Node\", {{ kw[\"id\", {id.quoted}], kw[\"rate\", {rate_}], kw[\"name\", {rule_name.quoted}], kw[\"over\", {over.quoted}], kw[\"where\", {where}], kw[\"source\", {rule_source.quoted}] }}]"
+    leans_ := leans.empty ? "Null" : leans.quoted
+    "    make[\"Node\", {{ kw[\"rule\", {rule}], kw[\"rate\", {rate_}], kw[\"degree\", {degree}.0], kw[\"outside\", {outside}], kw[\"settles\", {settles}], kw[\"transport\", {transport}], kw[\"leans\", {leans_}], kw[\"turned\", {turned.quoted}], kw[\"doing\", make[\"Node\", {{ kw[\"carries\", {carries}], kw[\"sets\", {sets}], kw[\"grown\", {grown}], kw[\"trades\", {trades}], kw[\"grew\", at[{grew_source.quoted}, sfn[{grew}]]], kw[\"grew_apart\", at[{grew_apart_source.quoted}, sfn[{grew_apart}]]], kw[\"draws\", Null], kw[\"needs\", {degree}.0], kw[\"outside\", {outside}], kw[\"settles\", {settles}], kw[\"share\", at[{share_source.quoted}, sfn[{share}]]], kw[\"asked\", at[{asked_source.quoted}, sfn[{asked}]]], kw[\"around\", at[{around_source.quoted}, sfn[{around}]]], kw[\"rays\", at[{rays_source.quoted}, sfn[{rays}]]], kw[\"space\", at[{space_source.quoted}, sfn[{space}]]], kw[\"folds\", at[{folds_source.quoted}, sfn[{folds}]]] }}]] }}]"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "set[K[\"{theory}\"], \"equation\", make[\"Node\", {{ kw[\"latex\", {latex.quoted}], kw[\"terms\", list[\n{lines}\n]] }}]];"
+  }
+
+  /*
+   * A number the emitter writes as `1e11` or `1.5e-3` is `1.*^11` and `1.5*^-3` here (Wolfram reads `1e11` as 1 times
+   * the name e11): outside every string of the code, a run of digits before an `e` and a whole power after it.
+   */
+  exponents (code: String): String => {
+    parts := code.split("\"")
+    out := []
+    inside := false
+    parts.for(p => {
+      out.push(inside ? p : Wolfram.exponent(p))
+      inside = inside ? Wolfram.escaped(p) : true
+    })
+    out.join("\"")
+  }
+  /* whether the quote after a piece of a string is escaped: an odd number of backslashes before it */
+  escaped (p: String): boolean => {
+    n := 0
+    q := p
+    while q.ends_with("\\") {
+      n = n + 1
+      q = q.take(q.length - 1)
+    }
+    n % 2 == 1
+  }
+  exponent (p: String): String => {
+    return p if !["0e", "1e", "2e", "3e", "4e", "5e", "6e", "7e", "8e", "9e"].some(dg => p.contains(dg))
+    segs := p.split("e")
+    out := segs[0]
+    segs.drop(1).for(nxt => {
+      run := Wolfram.mantissa(out)
+      if run != "" & Wolfram.power_starts(nxt) {
+        head := out.take(out.length - run.length)
+        point := run.contains(".") ? run : "{run}."
+        out = "{head}{point}*^{nxt}"
+      } else {
+        out = "{out}e{nxt}"
+      }
+    })
+    out
+  }
+  /* the digits a text ends with, where they stand as a number of their own (not the end of a name) */
+  mantissa (s: String): String => {
+    i := s.length
+    while i > 0 & "0123456789.".contains(s.drop(i - 1).take(1)) {
+      i = i - 1
+    }
+    run := s.drop(i)
+    before := i == 0 ? "" : s.drop(i - 1).take(1)
+    return "" if run == "" | run.starts_with(".")
+    return "" if before != "" & !" [({{,=+-*/^;\n<>!&|".contains(before)
+    run
+  }
+  power_starts (n: String): boolean => {
+    c0 := n.take(1)
+    c1 := n.drop(1).take(1)
+    return true if c0 != "" & "0123456789".contains(c0)
+    (c0 == "-" | c0 == "+") & c1 != "" & "0123456789".contains(c1)
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.wl/README.md := this.readme
+    @./languages/physics.wl/PacletInfo.wl := Wolfram.paclet
+    @./languages/physics.wl/Kernel/Physics.wl := Wolfram.exponents(code)
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Wolfram)
+    requirement := r.requirement.as(Wolfram)
+    filter := r.filter == None ? "True" : r.filter.as(Wolfram)
+    label := "{r.location} on {f.name}"
+    "t[{label.quoted}, Module[{{it, guard = 0}},\n  it = {definition};\n  Catch[\n    While[!truthy[{filter}], If[++guard > {r.until} || !has[it, \"tick\"], Throw[\"skip\", skip]]; get[it, \"tick\"]];\n    If[truthy[{requirement}], \"pass\", \"failed: \" <> {requirement.quoted}],\n    skip]]];"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/wl/TestG.wl := Wolfram.exponents("(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\n(* wolframscript -file tests/wl/TestG.wl [filter] - every requirement on every fixture the package carries; a filter keeps the cases whose name contains it *)\n(* a script is read as Latin-1: the file is read again as UTF-8, and that reading runs it *)\nIf[!TrueQ[OrbitMinesPhysicsTestUTF8], OrbitMinesPhysicsTestUTF8 = True; Get[$InputFileName, CharacterEncoding -> \"UTF-8\"]; Exit[]];\nPacletDirectoryLoad[FileNameJoin[{{DirectoryName[$InputFileName], \"..\", \"..\", \"languages\", \"physics.wl\"}}]];\nNeeds[\"OrbitMines`Physics`\"];\nBegin[\"OrbitMines`Physics`Private`\"];\n\nonly = If[Length[$ScriptCommandLine] > 1, $ScriptCommandLine[[2]], None];\npassed = 0; failed = 0; skipped = 0;\nSetAttributes[t, HoldRest];\nt[name_String, body_] := If[only === None || StringContainsQ[name, only], Module[{{t0 = AbsoluteTime[], got, s}},\n  got = Catch[Check[str[body], \"error: \" <> ToString[$MessageList]], _, Function[{{v, tag}}, \"error: \" <> ToString[v]]];\n  s = AbsoluteTime[] - t0;\n  Which[got === \"pass\", passed++, got === \"skip\", skipped++, True, failed++];\n  Print[Which[got === \"pass\", \"ok  \", got === \"skip\", \"skip\", True, \"FAIL\"], \" \", name, \" (\", ToString[NumberForm[s, {{Infinity, 2}}]], \" s)\", If[got === \"pass\" || got === \"skip\", \"\", \" - \" <> got]]]];\n\n{cases}\n\nPrint[passed, \" passed, \", failed, \" failed, \", skipped, \" skipped\"];\nExit[If[failed > 0, 1, 0]];\n")
+  }
+
+  /* the Wolfram Language renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => "Null"
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text in the paclet's Data/, read with `Theorems[]` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.wl/Data/theorems.json := "{{{proofs}}}"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.wl
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.wl"
+  install (): String => "```wolfram\n(* Wolfram Language *)\nPacletInstall[\"OrbitMines/Physics\"]\n```"
+  paclet (): String => "(* GENERATED by `npx ray gen` from implementation/physics.ray - do not edit *)\nPacletObject[<|\n  \"Name\" -> \"OrbitMines/Physics\",\n  \"Version\" -> \"0.0.1\",\n  \"WolframVersion\" -> \"13.0+\",\n  \"Description\" -> \"The discrete theory G - the rules, and the smallest thing that runs them - with the continuous model derived from them and the plan of a simulation of sources. Generated from implementation/physics.ray.\",\n  \"Creator\" -> \"OrbitMines\",\n  \"License\" -> \"MIT\",\n  \"PublisherID\" -> \"OrbitMines\",\n  \"URL\" -> \"https://github.com/orbitmines/physics\",\n  \"Extensions\" -> {{\n    {{\"Kernel\", \"Root\" -> \"Kernel\", \"Context\" -> {{\"OrbitMines`Physics`\"}}}},\n    {{\"Asset\", \"Assets\" -> {{{{\"theorems\", \"Data/theorems.json\"}}}}}}\n  }}\n|>]\n"
+  readme (): String => "# OrbitMines/Physics - Wolfram Language\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in the Wolfram Language: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Wolfram.install}\n\nWolfram Language 13 or later (Mathematica, or the free Wolfram Engine with `wolframscript`). From a checkout: `PacletDirectoryLoad[\"languages/physics.wl\"]`, then ``Needs[\"OrbitMines`Physics`\"]``.\n\n## Using it\n\nNothing in the Wolfram Language is mutable, so a Ray object is reached by name: `get[x, \"name\"]`, `call[x, \"method\", {{args...}}]`, `set[x, \"name\", value]`, `make[\"Class\", {{kw[\"field\", value], ...}}]`; a class or a theory as a value is `K[\"Name\"]`. Numbers are machine reals (write `31.`, not `31`), a list is a `DynamicArray` (`items[xs]` is its elements), `Null` is None. Loading the package keeps machine arithmetic machine arithmetic: it turns off the underflow message and raises `$RecursionLimit`.\n\n```wolfram\nNeeds[\"OrbitMines`Physics`\"]\n\n(* a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it *)\nmedium = call[K[\"G\"], \"medium\", {{31., 96., 3., 8., 1.}}];\nset[medium, \"local_rays\", True];\ncall[medium, \"add\", {{make[\"Hole\", {{kw[\"x\", 15.], kw[\"y\", 15.], kw[\"mx\", 0.3], kw[\"ways\", 1.]}}]}}];\nget[medium, \"seed\"];\nDo[get[medium, \"tick\"], 5]\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```wolfram\nplan = make[\"Plan\", {{kw[\"sources\", 1.*^9], kw[\"side\", 241.]}}];\nset[get[plan, \"budget\"], \"compact\", True];   (* twelve bytes a source *)\nPrint[call[plan, \"report\", {{16. 2^30, 2.^31}}]]\n```\n\n## Theorems\n\n`Theorems[]` is every theorem, keyed by theory and then by question (an Association read from `Data/theorems.json`).\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+}

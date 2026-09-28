@@ -1,0 +1,308 @@
+/*
+ * C++, as a mapping from the constructs of Ray to text - the object model of Java.ray, in C++20. C++ has no dynamic
+ * members, so a Ray class is a table (`Cls`) filled when the package loads, and an object an `Obj` whose members are
+ * reached by name (`get(x, S<"cells">())`, `call(x, S<"add">(), {...})`, `set(x, S<"tag">(), v)`) - see
+ * implementation/gen/backends/cpu.rt.hpp. A name is interned once for every place it is spelled (`S<"cells">()`).
+ * Every value is a `Value`; every method and lambda takes its arguments as one list (`a1`, `a2`, ... by depth, `{d}`),
+ * bound at the top of its body, so a missing argument is null and a default is set in the body (`{defaults_in_body}`).
+ * A local is a counted cell (`x_1->v`), so that a lambda can take it by value (`[=]`) and still write it, and it
+ * lives as long as any lambda holding it; it is spelled with the depth of the scope that binds it (`{local_name}`).
+ * Every class is registered where it is written (`define_class`) and made, parents first, when the package is first
+ * used; the package is split into translation units at the classes (`//@part`) by `write_package`.
+ */
+
+Cpp: Language = class {
+  name = "C++"
+  extension = ".cpp"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ";"
+  {empty_block} => ""
+  {interpolation} => "\" + str({x}) + \""
+  {named_arg} => "kw(S<\"{raw}\">(), {val})"
+  {parameter} => "auto {nm} = cell(arg(a{d}, {i}));"
+  {parameter_untyped} => "auto {nm} = cell(arg(a{d}, {i}));"
+  {parameter_default} => "auto {nm} = cell(arg(a{d}, {i}));"
+  {parameter_separator} => " "
+  {dynamic_get} => "get({tgt}, Sym(str({key})))"
+  {dynamic_set} => "set({tgt}, Sym(str({key})), {val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "alignas alignof and and_eq asm auto bitand bitor bool break case catch char char8_t char16_t char32_t class compl concept const consteval constexpr constinit const_cast continue co_await co_return co_yield decltype default delete do double dynamic_cast else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept not not_eq nullptr operator or or_eq private protected public register reinterpret_cast requires return short signed sizeof static static_assert static_cast struct switch template this thread_local throw true try typedef typeid typename union unsigned using virtual void volatile wchar_t while xor xor_eq self c null"
+  {escaped_name} => "{nm}_"
+  {global_name} => "global(S<\"{nm}\">())"
+  {local_name} => "{nm}_{k}"
+  {local_read} => "{nm}->v"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K(S<\"{nm}\">())"
+  {field_assign} => "c.field(\"{nm}\", [](const Value& self) -> Value {{ return {val}; }});"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if (truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if (!truthy({cond})) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while (truthy({cond})) {{\n{loopbody.indent}\n}}"
+  {return val} => "return {val};"
+  {return} => "return null;"
+  {dynamically assert cond} => "if (!truthy({cond})) throw std::runtime_error(std::string(\"assertion failed: \") + {cond.quoted});"
+
+  /* definitions and assignment */
+  {nm := val} => "auto {nm} = cell(); {nm}->v = {val};"
+  {tgt.nm = rhs} => "set({tgt}, S<\"{nm.raw}\">(), {rhs});"
+  {lhs = rhs} => "{lhs} = {rhs};"
+  {tgt[k] = rhs} => "setAt({tgt}, {k}, {rhs});"
+
+  /* expressions */
+  {a & b} => "(truthy({a}) && truthy({b}))"
+  {a | b} => "(truthy({a}) || truthy({b}))"
+  {!a} => "(!truthy({a}))"
+  {-a} => "neg({a})"
+  {a == b} => "eq({a}, {b})"
+  {a != b} => "(!eq({a}, {b}))"
+  {a < b} => "lt({a}, {b})"
+  {a <= b} => "le({a}, {b})"
+  {a > b} => "gt({a}, {b})"
+  {a >= b} => "ge({a}, {b})"
+  {a + b} => "add({a}, {b})"
+  {a - b} => "sub({a}, {b})"
+  {a * b} => "mul({a}, {b})"
+  {a / b} => "div({a}, {b})"
+  {a % b} => "mod({a}, {b})"
+  {a ^ b} => "power({a}, {b})"
+  {a ?? b} => "orElse({a}, [&]() -> Value {{ return {b}; }})"
+  {cond ? a : b} => "(truthy({cond}) ? Value({a}) : Value({b}))"
+  {a ==.instance_of Array} => "is_list({a})"
+  {a ==.instance_of ty} => "instanceOf({a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "get({tgt}, S<\"{nm.raw.method}\">())"
+  {tgt?.nm} => "getOpt({tgt}, S<\"{nm.raw.method}\">())"
+  {tgt.nm()} => "get({tgt}, S<\"{nm.raw.method}\">())"
+  {tgt.nm(arglist)} => "call({tgt}, S<\"{nm.raw.method}\">(), {{ {arglist} }})"
+  {tgt?.nm(arglist)} => "callOpt({tgt}, S<\"{nm.raw.method}\">(), {{ {arglist} }})"
+  {tgt.choose("nm")} => "choose({tgt}, {nm.quoted})"
+  {tgt[k]} => "elem({tgt}, {k})"
+  {fn(arglist)} => "invoke({fn}, {{ {arglist} }})"
+  {Class(arglist)} => "make(S<\"{Class}\">(), {{ {arglist} }})"
+  {[elems]} => "list({{ {elems} }})"
+  { {} } => "make(S<\"Node\">(), {{ }})"
+  {this} => "self"
+  {None} => "null"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "fn([=](const Args& a{d}) -> Value {{\n  {paramlist}\n{stmts.returned.indent}\n  return null;\n}})"
+  {(paramlist) => e} => "fn([=](const Args& a{d}) -> Value {{ {paramlist} return {e}; }})"
+  {xs#} => "many({xs})"
+  {draw([ws], [os])} => "call(get(get(self, S<\"vertex\">()), S<\"world\">()), S<\"draw\">(), {{ list({{ {ws} }}), list({{ {os} }}) }})"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for (double i{d} = 0, n{d} = num({cnt}); i{d} < n{d}; i{d}++) {{\n  auto {x_.bare} = cell(i{d});\n{stmts.indent}\n}}"
+  {xs.for((x_) => { stmts })} => "for (const Value& e{d} : Each({xs})) {{\n  auto {x_.bare} = cell(e{d});\n{stmts.indent}\n}}"
+  {fail(x_)} => "fail({x_})"
+  {Catalogue.number(x_)} => "number({x_})"
+  {String(chars: xs)} => "fromCodepoints({xs})"
+  {x_.blank} => "blank({x_})"
+  {xs.push(x_)} => "m_push({xs}, {x_})"
+  {xs.chars} => "m_chars({xs})"
+  {xs.pop} => "m_pop({xs})"
+  {xs.length} => "len({xs})"
+  {xs.map(f)} => "m_map({xs}, {f})"
+  {xs.filter(f)} => "filt({xs}, {f})"
+  {xs.for(f)} => "m_for({xs}, {f})"
+  {xs.some(f)} => "m_some({xs}, {f})"
+  {xs.every(f)} => "m_every({xs}, {f})"
+  {xs.reduce(z, f)} => "m_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "m_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "m_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "m_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "m_split({xs}, {x_})"
+  {xs.trim} => "m_trim({xs})"
+  {xs.upper} => "m_upper({xs})"
+  {xs.lower} => "m_lower({xs})"
+  {xs.lines} => "m_lines({xs})"
+  {xs.quoted} => "quoted({xs})"
+  {xs.contains(x_)} => "m_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "m_index_of({xs}, {x_})"
+  {xs.join(sep)} => "m_join({xs}, {sep})"
+  {xs.first} => "m_first({xs})"
+  {xs.last} => "m_last({xs})"
+  {xs.empty} => "m_empty({xs})"
+  {xs.take(cnt)} => "m_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "m_drop({xs}, {cnt})"
+  {xs.rest} => "m_rest({xs})"
+  {xs.concat(ys)} => "m_concat({xs}, {ys})"
+  {xs.reverse} => "m_reverse({xs})"
+  {xs.sum} => "m_sum({xs})"
+  {xs.most(f)} => "m_most({xs}, {f})"
+  {xs.sorted_by(f)} => "m_sorted_by({xs}, {f})"
+  {xs.each} => "m_each({xs})"
+  {Array.range(cnt)} => "rng({cnt})"
+  {Array.filled(cnt, x_)} => "filled({cnt}, {x_})"
+  {x_.sqrt} => "m_sqrt({x_})"
+  {x_.floor} => "m_floor({x_})"
+  {x_.abs} => "m_abs({x_})"
+  {x_.negated} => "neg({x_})"
+  {x_.magnitude} => "m_magnitude({x_})"
+  {x_.cos} => "m_cos({x_})"
+  {x_.sin} => "m_sin({x_})"
+  {x_.round} => "m_round({x_})"
+  {x_.ln} => "m_ln({x_})"
+  {x_.exp} => "m_exp({x_})"
+  {x_.atan2(y_)} => "m_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "m_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "RAY_PI"
+  {Real.NAN} => "RAY_NAN"
+  {Real.INFINITY} => "RAY_INFINITY"
+  {Real.TAU} => "(2 * RAY_PI)"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written */
+  {N} => "Value"
+  {Natural} => "Value"
+  {Z} => "Value"
+  {Integer} => "Value"
+  {Real} => "Value"
+  {Decimal} => "Value"
+  {boolean} => "Value"
+  {String} => "Value"
+  {Array} => "Value"
+  {*} => "Value"
+  {{}} => "Value"
+  {ty[]} => "Value"
+  {ty?} => "Value"
+  {Program} => "Value"
+
+  /* classes: a table, registered where it is written and filled when the package loads - parents first */
+  {nm := class < sup { membs }} => "//@part\nstatic void C_{nm.raw}(Cls& c) {{\n{membs.indent}\n}}\nstatic const bool R_{nm.raw} = define_class(\"{nm.raw}\", \"{sup.first}\", &C_{nm.raw});"
+  {nm := class { membs }} => "//@part\nstatic void C_{nm.raw}(Cls& c) {{\n{membs.indent}\n}}\nstatic const bool R_{nm.raw} = define_class(\"{nm.raw}\", \"Node\", &C_{nm.raw});"
+  {nm: ty = class { membs }} => "//@part\nstatic void C_{nm.raw}(Cls& c) {{\n{membs.indent}\n}}\nstatic const bool R_{nm.raw} = define_class(\"{nm.raw}\", \"{ty}\", &C_{nm.raw}, true);"
+  {theorem "nm" () => tbody} => "c.staticField(\"theorem {nm}\", [](const Value& self) -> Value {{ return make(S<\"Theorem\">(), {{ kw(S<\"id\">(), {nm.quoted}), kw(S<\"body\">(), fn([=](const Args& a{d}) -> Value {{\n{tbody.returned.indent}\n  return null;\n}})) }}); }});"
+  {x_.body()} => "invoke(get({x_}, S<\"body\">()), {{ }})"
+  {nm: ty = val} => "c.field(\"{nm.raw}\", [](const Value& self) -> Value {{ return {val}; }});"
+  {nm: ty} => "c.field(\"{nm.raw}\", nullptr);"
+  {nm = val} => "c.staticField(\"{nm.raw}\", [](const Value& self) -> Value {{ return {val}; }});"
+  {static nm: ty = val} => "c.staticField(\"{nm.raw}\", [](const Value& self) -> Value {{ return {val}; }});"
+  {static nm = val} => "c.staticField(\"{nm.raw}\", [](const Value& self) -> Value {{ return {val}; }});"
+  {nm (): ret => mbody} => "c.getter(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm () => mbody} => "c.getter(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (): ret => mbody} => "c.statik(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm () => mbody} => "c.statik(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret => mbody} => "c.method(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist) => mbody} => "c.method(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist): ret => mbody} => "c.statik(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {static nm (paramlist) => mbody} => "c.statik(\"{nm.raw.method}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{mbody.returned.indent}\n  return null;\n}});"
+  {nm (paramlist): ret} => "c.method(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (paramlist)} => "c.method(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm (): ret} => "c.getter(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {nm ()} => "c.getter(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist): ret} => "c.statik(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {static nm (paramlist)} => "c.statik(\"{nm.raw.method}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"{nm} is declared but not defined by anyone\"); }});"
+  {rule /rid "nm" | rt () => rbody} => "c.staticField(\"rule {rid}\", [](const Value& self) -> Value {{ return make(S<\"Rule\">(), {{ kw(S<\"id\">(), \"/{rid}\"), kw(S<\"name\">(), {nm.quoted}), kw(S<\"rate\">(), {rt.quoted}), kw(S<\"over\">(), {over.quoted}), kw(S<\"single\">(), {single}), kw(S<\"where\">(), {where}), kw(S<\"source\">(), {source.quoted}), kw(S<\"body\">(), fn([=](const Args& a{d}) -> Value {{\n{rbody.returned.indent}\n  return null;\n}})) }}); }});"
+  {rule /rid "nm" () => rbody} => "c.staticField(\"rule {rid}\", [](const Value& self) -> Value {{ return make(S<\"Rule\">(), {{ kw(S<\"id\">(), \"/{rid}\"), kw(S<\"name\">(), {nm.quoted}), kw(S<\"rate\">(), null), kw(S<\"over\">(), {over.quoted}), kw(S<\"single\">(), {single}), kw(S<\"where\">(), {where}), kw(S<\"source\">(), {source.quoted}), kw(S<\"body\">(), fn([=](const Args& a{d}) -> Value {{\n{rbody.returned.indent}\n  return null;\n}})) }}); }});"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "c.staticField(\"rule {rid}\", [](const Value& self) -> Value {{ return make(S<\"Rule\">(), {{ kw(S<\"id\">(), \"/{rid}\"), kw(S<\"name\">(), {nm.quoted}), kw(S<\"rate\">(), {rt.quoted}), kw(S<\"over\">(), {over.quoted}), kw(S<\"single\">(), {single}), kw(S<\"where\">(), {where}), kw(S<\"source\">(), {source.quoted}), kw(S<\"body\">(), fn([=](const Args& a{d}) -> Value {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}})) }}); }});"
+  {rule /rid "nm" (paramlist) => rbody} => "c.staticField(\"rule {rid}\", [](const Value& self) -> Value {{ return make(S<\"Rule\">(), {{ kw(S<\"id\">(), \"/{rid}\"), kw(S<\"name\">(), {nm.quoted}), kw(S<\"rate\">(), null), kw(S<\"over\">(), {over.quoted}), kw(S<\"single\">(), {single}), kw(S<\"where\">(), {where}), kw(S<\"source\">(), {source.quoted}), kw(S<\"body\">(), fn([=](const Args& a{d}) -> Value {{\n  {paramlist}\n{rbody.returned.indent}\n  return null;\n}})) }}); }});"
+  {choose "nm" (paramlist): ret} => "c.method(\"choose {nm}\", [](Value, const Args&) -> Value {{ throw std::runtime_error(\"the choice {nm} is not defined by anyone\"); }});"
+  {choose "nm" (paramlist): ret => cbody} => "c.method(\"choose {nm}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {choose "nm" (paramlist) => cbody} => "c.method(\"choose {nm}\", [](Value self, const Args& a{d}) -> Value {{\n  {paramlist}\n{cbody.returned.indent}\n  return null;\n}});"
+  {as (=== ty) => cbody} => "c.getter(\"as_{ty}\", [](Value self, const Args& a{d}) -> Value {{\n{cbody.returned.indent}\n  return null;\n}});"
+
+  /* a nested class is a table of its own, then a static of the outer one, set once every class is made */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\nstatic const bool N_{outer}_{inner_name} = at_load([] {{ set(K(S<\"{outer}\">()), S<\"{inner_name}\">(), K(S<\"{inner_name}\">())); }});"
+
+  /* a top-level definition, made on first read (`{global_name}`) */
+  constant (nm: String, text: String): String => "//@part\nstatic Value D_{nm}() {{ return {text}; }}\nstatic const bool R_D_{nm} = define_global(\"{nm}\", &D_{nm});"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "null" : rate.quoted
+    where := where_source.empty ? "null" : "make(S<\"Node\">(), {{ kw(S<\"source\">(), {where_source.quoted}) }})"
+    rule := id.empty ? "null" : "make(S<\"Node\">(), {{ kw(S<\"id\">(), {id.quoted}), kw(S<\"rate\">(), {rate_}), kw(S<\"name\">(), {rule_name.quoted}), kw(S<\"over\">(), {over.quoted}), kw(S<\"where\">(), {where}), kw(S<\"source\">(), {rule_source.quoted}) }})"
+    leans_ := leans.empty ? "null" : leans.quoted
+    "    make(S<\"Node\">(), {{ kw(S<\"rule\">(), {rule}), kw(S<\"rate\">(), {rate_}), kw(S<\"degree\">(), {degree}.0), kw(S<\"outside\">(), {outside}), kw(S<\"settles\">(), {settles}), kw(S<\"transport\">(), {transport}), kw(S<\"leans\">(), {leans_}), kw(S<\"turned\">(), {turned.quoted}), kw(S<\"doing\">(), make(S<\"Node\">(), {{ kw(S<\"carries\">(), {carries}), kw(S<\"sets\">(), {sets}), kw(S<\"grown\">(), {grown}), kw(S<\"trades\">(), {trades}), kw(S<\"grew\">(), at({grew_source.quoted}, [](Value s) -> Value {{ return {grew}; }})), kw(S<\"grew_apart\">(), at({grew_apart_source.quoted}, [](Value s) -> Value {{ return {grew_apart}; }})), kw(S<\"draws\">(), null), kw(S<\"needs\">(), {degree}.0), kw(S<\"outside\">(), {outside}), kw(S<\"settles\">(), {settles}), kw(S<\"share\">(), at({share_source.quoted}, [](Value s) -> Value {{ return {share}; }})), kw(S<\"asked\">(), at({asked_source.quoted}, [](Value s) -> Value {{ return {asked}; }})), kw(S<\"around\">(), at({around_source.quoted}, [](Value s) -> Value {{ return {around}; }})), kw(S<\"rays\">(), at({rays_source.quoted}, [](Value s) -> Value {{ return {rays}; }})), kw(S<\"space\">(), at({space_source.quoted}, [](Value s) -> Value {{ return {space}; }})), kw(S<\"folds\">(), at({folds_source.quoted}, [](Value s) -> Value {{ return {folds}; }})) }})) }})"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "static const bool E_{theory} = at_load([] {{ set(K(S<\"{theory}\">()), S<\"equation\">(), make(S<\"Node\">(), {{ kw(S<\"latex\">(), {latex.quoted}), kw(S<\"terms\">(), list({{\n{lines}\n}})) }})); }});"
+  }
+
+  /*
+   * the package: the runtime, and the emitted classes in a fixed number of translation units (`parts`), cut at the
+   * classes (`//@part`) - so that each compiles on its own, in parallel, and a part never holds half a class
+   */
+  units (): N => 12
+  write_package (code: String) => {
+    @./languages/physics.cpp/README.md := this.readme
+    @./languages/physics.cpp/CMakeLists.txt := Cpp.cmake
+    @./languages/physics.cpp/vcpkg.json := Cpp.vcpkg
+    @./languages/physics.cpp/include/orbitmines/physics/rt.hpp := @./implementation/gen/backends/cpu.rt.hpp
+    @./languages/physics.cpp/include/orbitmines/physics.hpp := Cpp.header
+    @./languages/physics.cpp/src/rt.cpp := @./implementation/gen/backends/cpu.rt.cpp
+    pieces := code.split("//@part\n")
+    target := code.length / Cpp.units
+    parts := []
+    current := ""
+    pieces.for(p => {
+      if (current.length > 0) & (current.length + p.length > target) & (parts.length < Cpp.units - 1) {
+        parts.push(current)
+        current = ""
+      }
+      current = "{current}{p}"
+    })
+    parts.push(current)
+    while parts.length < Cpp.units {
+      parts.push("")
+    }
+    head := Cpp.part_head
+    Array.range(Cpp.units).for(k => {
+      text := parts[k]
+      @./languages/physics.cpp/src/physics_{k}.cpp := "{head}{text}\n\nvoid part_{k}() {{ }}\n\n}}  // namespace orbitmines::physics\n"
+    })
+    declared := Array.range(Cpp.units).map(k => "void part_{k}();").join("\n")
+    called := Array.range(Cpp.units).map(k => "part_{k}();").join(" ")
+    @./languages/physics.cpp/src/parts.cpp := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n#include \"orbitmines/physics/rt.hpp\"\n\nnamespace orbitmines::physics {{\n\n{declared}\n\n/* every part of the package, named once, so that a static link carries each (and its classes) */\nvoid link_parts() {{ {called} }}\n\n}}  // namespace orbitmines::physics\n"
+  }
+  part_head (): String => "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// one part of the physics core and the theories, emitted from implementation/physics.ray: every class is registered here and made when the package is first used\n#include \"orbitmines/physics/rt.hpp\"\n\n#if defined(__GNUC__)\n#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n#pragma GCC diagnostic ignored \"-Wunused-variable\"\n#endif\n\nnamespace orbitmines::physics {{\n\n"
+  header (): String => "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n#pragma once\n/*\n * orbitmines::physics - the physics core and the theories, emitted from implementation/physics.ray. Every Ray class\n * is a table here, reached by its name (`K(\"Medium\")`, `make(\"Hole\", {{...}})`), every theory an object (`K(\"G\")`),\n * and their members are reached by name (`get`, `call`, `set`) - see orbitmines/physics/rt.hpp.\n */\n#include \"orbitmines/physics/rt.hpp\"\n\n#include <string>\n\nnamespace orbitmines::physics {{\n\n/** what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON (read from the installed share/orbitmines-physics/theorems.json, or from `path`) */\nstd::string theorems_json(const std::string& path = \"\");\n\n}}  // namespace orbitmines::physics\n"
+  cmake (): String => "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\ncmake_minimum_required(VERSION 3.16)\nproject(orbitmines-physics VERSION 0.0.1 DESCRIPTION \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\" LANGUAGES CXX)\n\ninclude(GNUInstallDirs)\n\nif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR AND NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)\n  set(CMAKE_BUILD_TYPE Release CACHE STRING \"\" FORCE)\nendif()\n\nfile(GLOB ORBITMINES_PHYSICS_SOURCES CONFIGURE_DEPENDS ${{CMAKE_CURRENT_SOURCE_DIR}}/src/*.cpp)\nadd_library(orbitmines_physics ${{ORBITMINES_PHYSICS_SOURCES}})\nadd_library(orbitmines::physics ALIAS orbitmines_physics)\nset_target_properties(orbitmines_physics PROPERTIES EXPORT_NAME physics OUTPUT_NAME orbitmines-physics)\ntarget_compile_features(orbitmines_physics PUBLIC cxx_std_20)\ntarget_include_directories(orbitmines_physics PUBLIC $<BUILD_INTERFACE:${{CMAKE_CURRENT_SOURCE_DIR}}/include> $<INSTALL_INTERFACE:${{CMAKE_INSTALL_INCLUDEDIR}}>)\ntarget_compile_definitions(orbitmines_physics PRIVATE\n  ORBITMINES_PHYSICS_THEOREMS_INSTALLED=\"${{CMAKE_INSTALL_FULL_DATADIR}}/orbitmines-physics/theorems.json\"\n  ORBITMINES_PHYSICS_THEOREMS_SOURCE=\"${{CMAKE_CURRENT_SOURCE_DIR}}/share/orbitmines-physics/theorems.json\")\nif(MSVC)\n  target_compile_options(orbitmines_physics PRIVATE /bigobj /utf-8)\nendif()\n\ninstall(TARGETS orbitmines_physics EXPORT orbitmines-physics-targets\n  ARCHIVE DESTINATION ${{CMAKE_INSTALL_LIBDIR}} LIBRARY DESTINATION ${{CMAKE_INSTALL_LIBDIR}} RUNTIME DESTINATION ${{CMAKE_INSTALL_BINDIR}})\ninstall(DIRECTORY include/ DESTINATION ${{CMAKE_INSTALL_INCLUDEDIR}})\ninstall(FILES share/orbitmines-physics/theorems.json DESTINATION ${{CMAKE_INSTALL_DATADIR}}/orbitmines-physics)\ninstall(EXPORT orbitmines-physics-targets NAMESPACE orbitmines:: FILE orbitmines-physics-config.cmake DESTINATION ${{CMAKE_INSTALL_LIBDIR}}/cmake/orbitmines-physics)\n"
+  vcpkg (): String => "{{\n  \"name\": \"orbitmines-physics\",\n  \"version\": \"0.0.1\",\n  \"description\": \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\",\n  \"homepage\": \"https://github.com/orbitmines/physics\",\n  \"license\": null,\n  \"dependencies\": [\n    {{ \"name\": \"vcpkg-cmake\", \"host\": true }},\n    {{ \"name\": \"vcpkg-cmake-config\", \"host\": true }}\n  ]\n}}\n"
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Cpp)
+    requirement := r.requirement.as(Cpp)
+    filter := r.filter == None ? "true" : r.filter.as(Cpp)
+    label := "{r.location} on {f.name}"
+    "  t({label.quoted}, [&]() -> std::string {{\n    Value it = {definition};\n    int guard = 0;\n    while (!truthy({filter})) {{\n      if (++guard > {r.until} || !has(it, S<\"tick\">())) return SKIP;\n      get(it, S<\"tick\">());\n    }}\n    return truthy({requirement}) ? std::string(PASS) : std::string(\"failed: \") + {requirement.quoted};\n  }});"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/cpp/CMakeLists.txt := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n# cmake -S tests/cpp -B build && cmake --build build -j && ./build/test_G [filter]\ncmake_minimum_required(VERSION 3.16)\nproject(orbitmines-physics-tests LANGUAGES CXX)\nif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)\n  set(CMAKE_BUILD_TYPE Release CACHE STRING \"\" FORCE)\nendif()\nadd_subdirectory(${{CMAKE_CURRENT_SOURCE_DIR}}/../../languages/physics.cpp ${{CMAKE_CURRENT_BINARY_DIR}}/physics)\nadd_executable(test_G test_G.cpp)\ntarget_link_libraries(test_G PRIVATE orbitmines::physics)\n"
+    @./tests/cpp/test_G.cpp := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// cmake -S tests/cpp -B build && cmake --build build -j && ./build/test_G [filter]\n#include \"orbitmines/physics.hpp\"\n\n#include <chrono>\n#include <cstdio>\n#include <exception>\n#include <functional>\n#include <string>\n\nusing namespace orbitmines::physics;\n\nstatic const char* const PASS = \"pass\";\nstatic const char* const SKIP = \"skip\";\nstatic int passed = 0, failed = 0, skipped = 0;\nstatic const char* only = nullptr;\n\nstatic void t(const std::string& name, const std::function<std::string()>& body) {{\n  if (only && name.find(only) == std::string::npos) return;\n  auto t0 = std::chrono::steady_clock::now();\n  std::string got;\n  try {{ got = body(); }} catch (const std::exception& e) {{ got = std::string(\"error: \") + e.what(); }} catch (...) {{ got = \"error: unknown\"; }}\n  double s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();\n  bool pass = got == PASS, skip = got == SKIP;\n  if (pass) passed++; else if (skip) skipped++; else failed++;\n  std::printf(\"%s %s (%.2f s)%s%s\\n\", pass ? \"ok  \" : skip ? \"skip\" : \"FAIL\", name.c_str(), s, pass || skip ? \"\" : \" - \", pass || skip ? \"\" : got.c_str());\n  std::fflush(stdout);\n}}\n\nint main(int argc, char** argv) {{\n  only = argc > 1 ? argv[1] : nullptr;\n{cases}\n  std::printf(\"%d passed, %d failed, %d skipped\\n\", passed, failed, skipped);\n  return failed > 0 ? 1 : 0;\n}}\n"
+  }
+
+  /* C++ renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `theorems_json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.cpp/share/orbitmines-physics/theorems.json := "{{{proofs}}}"
+    @./languages/physics.cpp/src/theorems.cpp := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n#include \"orbitmines/physics.hpp\"\n\n#include <fstream>\n#include <sstream>\n#include <stdexcept>\n\nnamespace orbitmines::physics {{\n\n/* what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON */\nstd::string theorems_json(const std::string& path) {{\n  for (const std::string& at : {{ path, std::string(ORBITMINES_PHYSICS_THEOREMS_INSTALLED), std::string(ORBITMINES_PHYSICS_THEOREMS_SOURCE) }}) {{\n    if (at.empty()) continue;\n    std::ifstream in(at, std::ios::binary);\n    if (!in) continue;\n    std::ostringstream out;\n    out << in.rdbuf();\n    return out.str();\n  }}\n  throw std::runtime_error(\"theorems.json is not installed (share/orbitmines-physics/theorems.json)\");\n}}\n\n}}  // namespace orbitmines::physics\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes: the classes, cut into parts by `write_package` */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.cpp
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.cpp"
+  install (): String => "```bash\n# C++ (vcpkg)\nvcpkg install orbitmines-physics\n```"
+  readme (): String => "# orbitmines-physics - C++\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in C++: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Cpp.install}\n\nC++20 (GCC 11, Clang 14, MSVC 19.30 or later) and CMake 3.16. With vcpkg or Conan it is `orbitmines-physics`; from CMake directly:\n\n```cmake\ninclude(FetchContent)\nFetchContent_Declare(orbitmines_physics GIT_REPOSITORY https://github.com/orbitmines/physics GIT_TAG main SOURCE_SUBDIR languages/physics.cpp)\nFetchContent_MakeAvailable(orbitmines_physics)\ntarget_link_libraries(your_target PRIVATE orbitmines::physics)\n```\n\nor, once installed, `find_package(orbitmines-physics CONFIG REQUIRED)` and the same `orbitmines::physics`.\n\n## Using it\n\nC++ has no dynamic members, so a Ray object is reached by name: `get(x, \"name\")`, `call(x, \"method\", {{args...}})`, `set(x, \"name\", value)`, `make(\"Class\", {{kw(\"field\", value), ...}})`, and a class or a theory is `K(\"Name\")`. Every value is a `Value`: numbers are `double`, lists hold `Value`s, `str(x)` writes one as text.\n\n```cpp\n#include <orbitmines/physics.hpp>\nusing namespace orbitmines::physics;\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nValue medium = call(K(\"G\"), \"medium\", {{31.0, 96.0, 3.0, 8.0, 1.0}});\nset(medium, \"local_rays\", true);\ncall(medium, \"add\", {{make(\"Hole\", {{kw(\"x\", 15.0), kw(\"y\", 15.0), kw(\"mx\", 0.3), kw(\"ways\", 1.0)}})}});\nget(medium, \"seed\");\nfor (int t = 0; t < 5; t++) get(medium, \"tick\");\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```cpp\nValue plan = make(\"Plan\", {{kw(\"sources\", 1e9), kw(\"side\", 241.0)}});\nset(get(plan, \"budget\"), \"compact\", true);   // twelve bytes a source\nstd::printf(\"%s\\n\", str(call(plan, \"report\", {{16.0 * (1LL << 30), (double) (1LL << 31)}})).c_str());\n```\n\n## Theorems\n\n`theorems_json()` is every theorem, keyed by theory and then by question, as JSON (installed as `share/orbitmines-physics/theorems.json`).\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+}

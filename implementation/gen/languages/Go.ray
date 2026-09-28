@@ -1,0 +1,275 @@
+/*
+ * GO, as a mapping from the constructs of Ray to text. Go has no dynamic members, so - as in Java.ray - a Ray
+ * class is a table (`*Cls`) filled when the package loads, one `init` each, parents first, and an object an `*Obj`
+ * whose members are reached by name (`Get(x, "cells")`, `Call(x, "add", []any{...})`, `Set(x, "tag", v)`) - see
+ * implementation/gen/backends/cpu.rt.go. A value is `any`: a number is a float64 (`{whole}` writes `3.0`), a list a
+ * `*List` every holder shares. Every method and lambda takes its arguments as one slice (`a1`, `a2`, ... by depth,
+ * `{d}`), bound at the top of its body (`{parameter}` with `{i}`), so a missing argument is None and a default is
+ * set in the body (`{defaults_in_body}`). A Go closure takes its locals by reference, so a local is a plain
+ * variable; Go forbids one that is never read, so each is read once as it is made (`_ = x`). The runtime's names
+ * are exported (capitalised), since the tests reach them from a package of their own.
+ */
+
+Go: Language = class {
+  name = "Go"
+  extension = ".go"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ""
+  {empty_block} => ""
+  {interpolation} => "\" + Str({x}) + \""
+  {named_arg} => "Kw(\"{raw}\", {val})"
+  {parameter} => "var {nm} any = Arg(a{d}, {i}); _ = {nm};"
+  {parameter_untyped} => "var {nm} any = Arg(a{d}, {i}); _ = {nm};"
+  {parameter_default} => "var {nm} any = Arg(a{d}, {i}); _ = {nm};"
+  {parameter_separator} => " "
+  {dynamic_get} => "Get({tgt}, Str({key}))"
+  {dynamic_set} => "Set({tgt}, Str({key}), {val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var self c"
+  {escaped_name} => "{nm}_"
+  {global_name} => "Def_{nm}()"
+  {local_name} => "{nm}_{k}"
+  {defaults_in_body} => "yes"
+  {class_ref} => "K(\"{nm}\")"
+  /* `name = "G"` in a class body: an instance field default on that class, nearer than the one it overrides */
+  {field_assign} => "c.Field(\"{nm}\", func(self any) any {{ return {val} }})"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if Truthy({cond}) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if Truthy({cond}) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if !Truthy({cond}) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "for Truthy({cond}) {{\n{loopbody.indent}\n}}"
+  /* `if true`: a body always ends `return nil`, which `go vet` would otherwise call unreachable */
+  {return val} => "if true {{\n  return {val}\n}}"
+  {return} => "if true {{\n  return nil\n}}"
+  {dynamically assert cond} => "if !Truthy({cond}) {{\n  panic(Assertion({cond.quoted}))\n}}"
+
+  /* definitions and assignment: a local is declared before its value, so that a program may name itself */
+  {nm := val} => "var {nm} any\n{nm} = {val}\n_ = {nm}"
+  {tgt.nm = rhs} => "Set({tgt}, \"{nm.raw}\", {rhs})"
+  {lhs = rhs} => "{lhs} = {rhs}"
+  {tgt[k] = rhs} => "SetAt({tgt}, {k}, {rhs})"
+
+  /* expressions */
+  {a & b} => "(Truthy({a}) && Truthy({b}))"
+  {a | b} => "(Truthy({a}) || Truthy({b}))"
+  {!a} => "Not({a})"
+  {-a} => "Neg({a})"
+  {a == b} => "Eq({a}, {b})"
+  {a != b} => "!Eq({a}, {b})"
+  {a < b} => "Lt({a}, {b})"
+  {a <= b} => "Le({a}, {b})"
+  {a > b} => "Gt({a}, {b})"
+  {a >= b} => "Ge({a}, {b})"
+  {a + b} => "Add({a}, {b})"
+  {a - b} => "Sub({a}, {b})"
+  {a * b} => "Mul({a}, {b})"
+  {a / b} => "Div({a}, {b})"
+  {a % b} => "Mod({a}, {b})"
+  {a ^ b} => "Power({a}, {b})"
+  {a ?? b} => "OrElse({a}, func() any {{ return {b} }})"
+  {cond ? a : b} => "Tern(Truthy({cond}), func() any {{ return {a} }}, func() any {{ return {b} }})"
+  {a ==.instance_of Array} => "IsList({a})"
+  {a ==.instance_of ty} => "InstanceOf({a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "Get({tgt}, \"{nm.raw.method}\")"
+  {tgt?.nm} => "GetOpt({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm()} => "Get({tgt}, \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "Call({tgt}, \"{nm.raw.method}\", []any{{ {arglist} }})"
+  {tgt?.nm(arglist)} => "CallOpt({tgt}, \"{nm.raw.method}\", []any{{ {arglist} }})"
+  {tgt.choose("nm")} => "Choose({tgt}, {nm.quoted})"
+  {tgt[k]} => "Elem({tgt}, {k})"
+  {fn(arglist)} => "Invoke({fn}, []any{{ {arglist} }})"
+  {Class(arglist)} => "Make(\"{Class}\", []any{{ {arglist} }}...)"
+  {[elems]} => "Lst({elems})"
+  { {} } => "Make(Node)"
+  {this} => "self"
+  {None} => "nil"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "\"{txt}\""
+  {(paramlist) => { stmts }} => "Fn(func(a{d} []any) any {{\n  {paramlist}\n{stmts.returned.indent}\n  return nil\n}})"
+  {(paramlist) => e} => "Fn(func(a{d} []any) any {{ {paramlist} return {e} }})"
+  {xs#} => "ManyOf({xs})"
+  {draw([ws], [os])} => "Call(Get(Get(self, \"vertex\"), \"world\"), \"draw\", []any{{ Lst({ws}), Lst({os}) }})"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} := 0.0; i{d} < Num({cnt}); i{d}++ {{\n  var {x_.bare} any = Box(i{d})\n  _ = {x_.bare}\n{stmts.indent}\n}}"
+  {xs.for((x_) => { stmts })} => "for _, e{d} := range Items({xs}) {{\n  var {x_.bare} any = e{d}\n  _ = {x_.bare}\n{stmts.indent}\n}}"
+  {fail(x_)} => "Fail({x_})"
+  {Catalogue.number(x_)} => "Number({x_})"
+  {String(chars: xs)} => "FromCodepoints({xs})"
+  {x_.blank} => "Blank({x_})"
+  {xs.push(x_)} => "M_push({xs}, {x_})"
+  {xs.chars} => "M_chars({xs})"
+  {xs.pop} => "M_pop({xs})"
+  {xs.length} => "Len({xs})"
+  {xs.map(f)} => "M_map({xs}, {f})"
+  {xs.filter(f)} => "Filt({xs}, {f})"
+  {xs.for(f)} => "M_for({xs}, {f})"
+  {xs.some(f)} => "M_some({xs}, {f})"
+  {xs.every(f)} => "M_every({xs}, {f})"
+  {xs.reduce(z, f)} => "M_reduce({xs}, {z}, {f})"
+  {xs.starts_with(x_)} => "M_starts_with({xs}, {x_})"
+  {xs.ends_with(x_)} => "M_ends_with({xs}, {x_})"
+  {xs.replace(x_, y_)} => "M_replace({xs}, {x_}, {y_})"
+  {xs.split(x_)} => "M_split({xs}, {x_})"
+  {xs.trim} => "M_trim({xs})"
+  {xs.upper} => "M_upper({xs})"
+  {xs.lower} => "M_lower({xs})"
+  {xs.lines} => "M_lines({xs})"
+  {xs.quoted} => "Quoted({xs})"
+  {xs.contains(x_)} => "M_contains({xs}, {x_})"
+  {xs.index_of(x_)} => "M_index_of({xs}, {x_})"
+  {xs.join(sep)} => "M_join({xs}, {sep})"
+  {xs.first} => "M_first({xs})"
+  {xs.last} => "M_last({xs})"
+  {xs.empty} => "M_empty({xs})"
+  {xs.take(cnt)} => "M_take({xs}, {cnt})"
+  {xs.drop(cnt)} => "M_drop({xs}, {cnt})"
+  {xs.rest} => "M_rest({xs})"
+  {xs.concat(ys)} => "M_concat({xs}, {ys})"
+  {xs.reverse} => "M_reverse({xs})"
+  {xs.sum} => "M_sum({xs})"
+  {xs.most(f)} => "M_most({xs}, {f})"
+  {xs.sorted_by(f)} => "M_sorted_by({xs}, {f})"
+  {xs.each} => "M_each({xs})"
+  {Array.range(cnt)} => "Rng({cnt})"
+  {Array.filled(cnt, x_)} => "Filled({cnt}, {x_})"
+  {x_.sqrt} => "M_sqrt({x_})"
+  {x_.floor} => "M_floor({x_})"
+  {x_.abs} => "M_abs({x_})"
+  {x_.negated} => "Neg({x_})"
+  {x_.magnitude} => "M_magnitude({x_})"
+  {x_.cos} => "M_cos({x_})"
+  {x_.sin} => "M_sin({x_})"
+  {x_.round} => "M_round({x_})"
+  {x_.ln} => "M_ln({x_})"
+  {x_.exp} => "M_exp({x_})"
+  {x_.atan2(y_)} => "M_atan2({x_}, {y_})"
+  {x_.pow(y_)} => "M_pow({x_}, {y_})"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "math.Pi"
+  {Real.NAN} => "math.NaN()"
+  {Real.INFINITY} => "math.Inf(1)"
+  {Real.TAU} => "(2 * math.Pi)"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written */
+  {N} => "any"
+  {Natural} => "any"
+  {Z} => "any"
+  {Integer} => "any"
+  {Real} => "any"
+  {Decimal} => "any"
+  {boolean} => "any"
+  {String} => "any"
+  {Array} => "any"
+  {*} => "any"
+  {{}} => "any"
+  {ty[]} => "any"
+  {ty?} => "any"
+  {Program} => "any"
+
+  /* classes: a table, filled by its own `init` when the package loads - parents first, as the core lists them */
+  {nm := class < sup { membs }} => "var {nm.raw} *Cls\n\nfunc init() {{\n  {nm.raw} = cls(\"{nm.raw}\", {sup.first}, func(c *Cls) {{\n{membs.indent.indent}\n  }})\n}}"
+  {nm := class { membs }} => "var {nm.raw} *Cls\n\nfunc init() {{\n  {nm.raw} = cls(\"{nm.raw}\", Node, func(c *Cls) {{\n{membs.indent.indent}\n  }})\n}}"
+  {nm: ty = class { membs }} => "var {nm.raw}Theory *Cls\nvar {nm.raw} *Obj\n\nfunc init() {{\n  {nm.raw}Theory = cls(\"{nm.raw}\", {ty}, func(c *Cls) {{\n{membs.indent.indent}\n  }})\n  {nm.raw} = theory({nm.raw}Theory)\n}}"
+  {theorem "nm" () => tbody} => "c.StaticField(\"theorem {nm}\", func(self any) any {{\n  return Make(Theorem, Kw(\"id\", {nm.quoted}), Kw(\"body\", Fn(func(a{d} []any) any {{\n{tbody.returned.indent.indent}\n    return nil\n  }})))\n}})"
+  {x_.body()} => "Invoke(Get({x_}, \"body\"), []any{{}})"
+  {nm: ty = val} => "c.Field(\"{nm.raw}\", func(self any) any {{ return {val} }})"
+  {nm: ty} => "c.Field(\"{nm.raw}\", nil)"
+  {nm = val} => "c.StaticField(\"{nm.raw}\", func(self any) any {{ return {val} }})"
+  {static nm: ty = val} => "c.StaticField(\"{nm.raw}\", func(self any) any {{ return {val} }})"
+  {static nm = val} => "c.StaticField(\"{nm.raw}\", func(self any) any {{ return {val} }})"
+  {nm (): ret => mbody} => "c.Getter(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n{mbody.returned.indent}\n  return nil\n}})"
+  {nm () => mbody} => "c.Getter(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n{mbody.returned.indent}\n  return nil\n}})"
+  {static nm (): ret => mbody} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n{mbody.returned.indent}\n  return nil\n}})"
+  {static nm () => mbody} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n{mbody.returned.indent}\n  return nil\n}})"
+  {nm (paramlist): ret => mbody} => "c.Method(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{mbody.returned.indent}\n  return nil\n}})"
+  {nm (paramlist) => mbody} => "c.Method(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{mbody.returned.indent}\n  return nil\n}})"
+  {static nm (paramlist): ret => mbody} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{mbody.returned.indent}\n  return nil\n}})"
+  {static nm (paramlist) => mbody} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{mbody.returned.indent}\n  return nil\n}})"
+  {nm (paramlist): ret} => "c.Method(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {nm (paramlist)} => "c.Method(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {nm (): ret} => "c.Getter(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {nm ()} => "c.Getter(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {static nm (paramlist): ret} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {static nm (paramlist)} => "c.Static(\"{nm.raw.method}\", func(self any, a{d} []any) any {{ panic(\"{nm} is declared but not defined by anyone\") }})"
+  {rule /rid "nm" | rt () => rbody} => "c.StaticField(\"rule {rid}\", func(self any) any {{\n  return Make(Rule, Kw(\"id\", \"/{rid}\"), Kw(\"name\", {nm.quoted}), Kw(\"rate\", {rt.quoted}), Kw(\"over\", {over.quoted}), Kw(\"single\", {single}), Kw(\"where\", {where}), Kw(\"source\", {source.quoted}), Kw(\"body\", Fn(func(a{d} []any) any {{\n{rbody.returned.indent.indent}\n    return nil\n  }})))\n}})"
+  {rule /rid "nm" () => rbody} => "c.StaticField(\"rule {rid}\", func(self any) any {{\n  return Make(Rule, Kw(\"id\", \"/{rid}\"), Kw(\"name\", {nm.quoted}), Kw(\"rate\", nil), Kw(\"over\", {over.quoted}), Kw(\"single\", {single}), Kw(\"where\", {where}), Kw(\"source\", {source.quoted}), Kw(\"body\", Fn(func(a{d} []any) any {{\n{rbody.returned.indent.indent}\n    return nil\n  }})))\n}})"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "c.StaticField(\"rule {rid}\", func(self any) any {{\n  return Make(Rule, Kw(\"id\", \"/{rid}\"), Kw(\"name\", {nm.quoted}), Kw(\"rate\", {rt.quoted}), Kw(\"over\", {over.quoted}), Kw(\"single\", {single}), Kw(\"where\", {where}), Kw(\"source\", {source.quoted}), Kw(\"body\", Fn(func(a{d} []any) any {{\n    {paramlist}\n{rbody.returned.indent.indent}\n    return nil\n  }})))\n}})"
+  {rule /rid "nm" (paramlist) => rbody} => "c.StaticField(\"rule {rid}\", func(self any) any {{\n  return Make(Rule, Kw(\"id\", \"/{rid}\"), Kw(\"name\", {nm.quoted}), Kw(\"rate\", nil), Kw(\"over\", {over.quoted}), Kw(\"single\", {single}), Kw(\"where\", {where}), Kw(\"source\", {source.quoted}), Kw(\"body\", Fn(func(a{d} []any) any {{\n    {paramlist}\n{rbody.returned.indent.indent}\n    return nil\n  }})))\n}})"
+  {choose "nm" (paramlist): ret} => "c.Method(\"choose {nm}\", func(self any, a{d} []any) any {{ panic(\"the choice {nm} is not defined by anyone\") }})"
+  {choose "nm" (paramlist): ret => cbody} => "c.Method(\"choose {nm}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{cbody.returned.indent}\n  return nil\n}})"
+  {choose "nm" (paramlist) => cbody} => "c.Method(\"choose {nm}\", func(self any, a{d} []any) any {{\n  {paramlist}\n{cbody.returned.indent}\n  return nil\n}})"
+  {as (=== ty) => cbody} => "c.Getter(\"as_{ty}\", func(self any, a{d} []any) any {{\n{cbody.returned.indent}\n  return nil\n}})"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n\nfunc init() {{ Set({outer}, \"{inner_name}\", {inner_name}) }}"
+
+  /* a top-level definition is a function of the package, made on first call (`{global_name}`) */
+  constant (nm: String, text: String): String => "var def_{nm} any\nvar def_{nm}_made bool\n\n// Def_{nm} is the top-level definition {nm}, made on first call.\nfunc Def_{nm}() any {{\n  if !def_{nm}_made {{\n    def_{nm}_made = true\n    def_{nm} = {text}\n  }}\n  return def_{nm}\n}}"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "nil" : rate.quoted
+    where := where_source.empty ? "nil" : "Make(Node, Kw(\"source\", {where_source.quoted}))"
+    rule := id.empty ? "nil" : "Make(Node, Kw(\"id\", {id.quoted}), Kw(\"rate\", {rate_}), Kw(\"name\", {rule_name.quoted}), Kw(\"over\", {over.quoted}), Kw(\"where\", {where}), Kw(\"source\", {rule_source.quoted}))"
+    leans_ := leans.empty ? "nil" : leans.quoted
+    "    Make(Node, Kw(\"rule\", {rule}), Kw(\"rate\", {rate_}), Kw(\"degree\", {degree}.0), Kw(\"outside\", {outside}), Kw(\"settles\", {settles}), Kw(\"transport\", {transport}), Kw(\"leans\", {leans_}), Kw(\"turned\", {turned.quoted}), Kw(\"doing\", Make(Node, Kw(\"carries\", {carries}), Kw(\"sets\", {sets}), Kw(\"grown\", {grown}), Kw(\"trades\", {trades}), Kw(\"grew\", At({grew_source.quoted}, func(s any) any {{ return {grew} }})), Kw(\"grew_apart\", At({grew_apart_source.quoted}, func(s any) any {{ return {grew_apart} }})), Kw(\"draws\", nil), Kw(\"needs\", {degree}.0), Kw(\"outside\", {outside}), Kw(\"settles\", {settles}), Kw(\"share\", At({share_source.quoted}, func(s any) any {{ return {share} }})), Kw(\"asked\", At({asked_source.quoted}, func(s any) any {{ return {asked} }})), Kw(\"around\", At({around_source.quoted}, func(s any) any {{ return {around} }})), Kw(\"rays\", At({rays_source.quoted}, func(s any) any {{ return {rays} }})), Kw(\"space\", At({space_source.quoted}, func(s any) any {{ return {space} }})), Kw(\"folds\", At({folds_source.quoted}, func(s any) any {{ return {folds} }})))))"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "func init() {{\n  Set({theory}, \"equation\", Make(Node, Kw(\"latex\", {latex.quoted}), Kw(\"terms\", Lst(\n{lines},\n  ))))\n}}"
+  }
+
+  write_package (code: String) => {
+    @./languages/physics.go/README.md := this.readme
+    @./languages/physics.go/physics.go := code
+    @./languages/physics.go/rt.go = @./implementation/gen/backends/cpu.rt.go
+    @./languages/physics.go/go.mod := Go.gomod
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Go)
+    requirement := r.requirement.as(Go)
+    filter := r.filter == None ? "true" : r.filter.as(Go)
+    label := "{r.location} on {f.name}"
+    "  t({label.quoted}, func() any {{\n    var it any = {definition}\n    _ = it\n    guard := 0.0\n    for !Truthy({filter}) {{\n      guard++\n      if guard > {r.until} || !Has(it, \"tick\") {{\n        return skip_\n      }}\n      Get(it, \"tick\")\n    }}\n    if Truthy({requirement}) {{\n      return pass_\n    }}\n    return \"failed: \" + {requirement.quoted}\n  }})"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/go/go.mod := "module github.com/orbitmines/physics/tests/go\n\ngo 1.22\n\nrequire github.com/orbitmines/physics/languages/physics.go v0.0.0\n\nreplace github.com/orbitmines/physics/languages/physics.go => ../../languages/physics.go\n"
+    @./tests/go/main.go := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// go run . [filter]\npackage main\n\nimport (\n  \"fmt\"\n  \"math\"\n  \"os\"\n  \"strings\"\n  \"time\"\n\n  . \"github.com/orbitmines/physics/languages/physics.go\"\n)\n\nvar _ = math.Pi\n\nconst pass_, skip_ = \"pass\", \"skip\"\n\nvar passed, failed, skipped int\nvar only string\n\nfunc run(body func() any) (got string) {{\n  defer func() {{\n    if e := recover(); e != nil {{\n      got = fmt.Sprint(\"error: \", e)\n    }}\n  }}()\n  return Str(body())\n}}\n\nfunc t(name string, body func() any) {{\n  if only != \"\" && !strings.Contains(name, only) {{\n    return\n  }}\n  t0 := time.Now()\n  got := run(body)\n  s := time.Since(t0).Seconds()\n  mark, why := \"FAIL\", \" - \" + got\n  switch got {{\n  case pass_:\n    passed++\n    mark, why = \"ok  \", \"\"\n  case skip_:\n    skipped++\n    mark, why = \"skip\", \"\"\n  default:\n    failed++\n  }}\n  fmt.Println(fmt.Sprintf(\"%s %s (%.2f s)%s\", mark, name, s, why))\n}}\n\nfunc main() {{\n  if len(os.Args) > 1 {{\n    only = os.Args[1]\n  }}\n{cases}\n  fmt.Println(fmt.Sprintf(\"%d passed, %d failed, %d skipped\", passed, failed, skipped))\n  if failed > 0 {{\n    os.Exit(1)\n  }}\n}}\n"
+  }
+
+  /* Go renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text, embedded in the package: `physics.Theorems()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.go/theorems.json := "{{{proofs}}}"
+    @./languages/physics.go/theorems.go := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\npackage physics\n\nimport _ \"embed\"\n\n//go:embed theorems.json\nvar theoremsJSON string\n\n// Theorems is what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON.\nfunc Theorems() string {{ return theoremsJSON }}\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.go
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.go"
+  install (): String => "```bash\n# Go\ngo get github.com/orbitmines/physics/languages/physics.go\n```"
+  readme (): String => "# github.com/orbitmines/physics/languages/physics.go - Go\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Go: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Go.install}\n\nGo 1.22 or later. The package is `physics`.\n\n## Using it\n\nGo has no dynamic members, so a Ray object is reached by name: `physics.Get(x, \"name\")`, `physics.Call(x, \"method\", []any{{...}})`, `physics.Set(x, \"name\", value)`, `physics.Make(physics.Class, physics.Kw(\"field\", value), ...)`. Every value is an `any`: numbers are `float64`, lists `*physics.List` (their elements in `.Items`).\n\n```go\nimport . \"github.com/orbitmines/physics/languages/physics.go\"\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nmedium := Call(G, \"medium\", []any{{31.0, 96.0, 3.0, 8.0, 1.0}})\nSet(medium, \"local_rays\", true)\nCall(medium, \"add\", []any{{Make(Hole, Kw(\"x\", 15.0), Kw(\"y\", 15.0), Kw(\"mx\", 0.3), Kw(\"ways\", 1.0))}})\nGet(medium, \"seed\")\nfor t := 0; t < 5; t++ {{\n  Get(medium, \"tick\")\n}}\n```\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```go\nplan := Make(Plan, Kw(\"sources\", 1e9), Kw(\"side\", 241.0))\nSet(Get(plan, \"budget\"), \"compact\", true)   // twelve bytes a source\nfmt.Println(Str(Call(plan, \"report\", []any{{16.0 * (1 << 30), float64(1 << 31)}})))\n```\n\n## Theorems\n\n`physics.Theorems()` is every theorem, keyed by theory and then by question, as JSON.\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  gomod (): String => "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\nmodule github.com/orbitmines/physics/languages/physics.go\n\ngo 1.22\n"
+}

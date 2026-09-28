@@ -393,6 +393,12 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     Array.range(this.holes.length).for(k => { this.under(this.holes[k]).for(c => { this.blocks[c] = k + 1 }) })
   }
   masses (): Real[] => this.holes.map(h => h.mass)
+  /*
+   * WHAT HAS LEFT THE BOX: the mass of the bodies past its edge. None of it shines into the box or is pulled by it any
+   * more, so a run whose view is the whole box loses it from every pull at once; a run views the box less a margin
+   * (Plan's `Resolution.margin`), and this is what has left both
+   */
+  departed (): Real => this.holes.filter(h => this.at(h.x.round, h.y.round) < 0).map(h => h.mass).sum
 
   /* a field read by area at a true position (x, y) in cells, with what stands across the box's edge */
   tap (f: Real[], base: N, x: Real, y: Real, outside: Real): Real => {
@@ -684,19 +690,19 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   lay (c: N, b: N, got: Real[][]) => {
     x := Real.of(this.column_of(c))
     y := Real.of(this.row_of(c))
-    list := got.filter(m => m[0] > 0)
-    while list.length > this.keeps {
-      fr := list.map(m => this.fresh(m, x, y))
+    group_now := got.filter(m => m[0] > 0)
+    while group_now.length > this.keeps {
+      fr := group_now.map(m => this.fresh(m, x, y))
       best := 0
       bi := -1
       bj := -1
       /* of one kind first; only where no two are of one kind (a slot or two a way) any pair */
-      Array.range(2).for(pass => {
+      Array.range(2).for(tries => {
         if bi < 0 {
-          Array.range(list.length).for(i => {
-            Array.range(list.length).for(j => {
-              if j > i & (pass == 1 | fr[i] == fr[j]) {
-                seen := this.apart_seen(list[i], list[j], x, y)
+          Array.range(group_now.length).for(i => {
+            Array.range(group_now.length).for(j => {
+              if j > i & (tries == 1 | fr[i] == fr[j]) {
+                seen := this.apart_seen(group_now[i], group_now[j], x, y)
                 if bi < 0 | seen < best {
                   best = seen
                   bi = i
@@ -707,12 +713,12 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
           })
         }
       })
-      merged := this.gathered(list[bi], list[bj], x, y)
-      list = Array.range(list.length).filter(i => i != bi & i != bj).map(i => list[i]).concat([merged])
+      merged := this.gathered(group_now[bi], group_now[bj], x, y)
+      group_now = Array.range(group_now.length).filter(i => i != bi & i != bj).map(i => group_now[i]).concat([merged])
     }
     base := this.first_slot(c, b)
     Array.range(this.keeps).for(j => {
-      m := j < list.length ? list[j] : [0, 0, 0, 0, 0, 0, -1, 0]
+      m := j < group_now.length ? group_now[j] : [0, 0, 0, 0, 0, 0, -1, 0]
       this.bq[base + j] = m[0]
       this.bsx[base + j] = m[1]
       this.bsy[base + j] = m[2]
@@ -970,10 +976,15 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     u := this.at(x.round, y.round)
     return [0, 0, 0] if u < 0
     own := this.local_rays & zown >= 1 & zown <= this.holes.length ? this.holes[zown - 1] : None
-    mine := own == None ? [0, 0, 0, 0, 0, 0, -1, 0] : this.emitted(own)
-    me := Real.of(zown - 1)
     /* the name its own cell's gathering goes by, where it stands with others (`cell_sources`) */
     srcid := own == None ? 0.5 : Real.of(-2 - this.at(own.x.round, own.y.round))
+    /*
+     * what reads itself here: the body at zown alone on its cell, or - where it stands with others - its cell's
+     * gathering, which reads as one what its cell does not send itself (`pull_local`)
+     */
+    whole := this.own_gathering(own)
+    mine := own == None ? [0, 0, 0, 0, 0, 0, -1, 0] : (whole == None ? this.emitted(own) : [whole[0], whole[1], whole[2], whole[3], whole[4], whole[5], whole[6], 0])
+    me := whole == None ? Real.of(zown - 1) : srcid
     sum := 0
     gx := 0
     gy := 0
@@ -1412,6 +1423,21 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     })
     this.recurred(x, y, [gx, gy])
   }
+  /*
+   * whether bodies standing together on a cell read as the cell, once (true: what they do to each other within it is
+   * below what the lattice tells apart), or each round where it stands, reading its cell's others off their gathering
+   * less its own share (Kernels MCELLPULL). A body alone on its cell reads the same either way
+   */
+  cell_pull: boolean = true
+  /* the cell's gathering a body stands in with others, as the shine laid it (None where it stands alone, or held nowhere, or `cell_pull` is off) */
+  own_gathering (h: Hole): Real[] => {
+    return None if h == None | !this.cell_pull | this.shone.length != this.cells
+    c := this.at(h.x.round, h.y.round)
+    return None if c < 0
+    e := this.shone[c]
+    return None if e == None
+    e[6] == Real.of(-2 - c) & e[0] > 0 ? e : None
+  }
   /* the pull summed over a c-bar's K x K points, as a mean, and what the recursion makes of it (`recur_at`) */
   recurred (x: Real, y: Real, g: Real[]): Real[] => {
     n := Real.of(this.K * this.K)
@@ -1425,15 +1451,24 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.meets.for(t => { rate = rate + this.share(t, s) * t.doing.folds.at(s) / 2 })
     rate / (this.crowd ? 1 + this.tap(this.stand, 0, px, py, 0) : 1)
   }
-  /* WHERE A BODY IS GOING, HELD: what its ways hold at each of its c-bar's K x K points (`arriving_at`) */
+  /*
+   * WHERE A BODY IS GOING, HELD: what its ways hold at each of its c-bar's K x K points (`arriving_at`). A body alone on
+   * its cell reads round where it stands; bodies standing together on one read as their cell's gathering does, round
+   * its middle, all but their cell itself - read as they are laid (`cell_sources`: one source a cell), and so once a
+   * cell however many stand on it. What they do to each other within the cell is below what the lattice tells apart:
+   * a cell's pull on another is the other's on it, gathering and gathering alike, and none on itself
+   */
   pull_local (x: Real, y: Real, zown: N): Real[] => {
     half := Real.of(this.K - 1) / 2
+    whole := this.own_gathering(zown >= 1 & zown <= this.holes.length ? this.holes[zown - 1] : None)
+    cx := whole == None ? x : whole[1] / whole[0]
+    cy := whole == None ? y : whole[2] / whole[0]
     gx := 0
     gy := 0
     Array.range(this.K).for(dy => {
       Array.range(this.K).for(dx => {
-        px := x - half + Real.of(dx)
-        py := y - half + Real.of(dy)
+        px := cx - half + Real.of(dx)
+        py := cy - half + Real.of(dy)
         per := this.per_at(px, py)
         came := this.arriving_at(px, py, zown)
         gx = gx - per * came[1]

@@ -1,0 +1,305 @@
+/*
+ * RUST, as a mapping from the constructs of Ray to text. Rust has no dynamic members, so - as in Java.ray - a Ray
+ * class is a table (`Cls`) filled when the package loads, and an object an `Obj` whose members are reached by name
+ * (`get(&x, "cells")`, `call(&x, "add", args![...])`, `set(&x, "tag", &v)`) - see implementation/gen/backends/cpu.rt.rs.
+ * Every value is a `Value`; every operand is passed by reference (`&{a}`: a `Value`, or a number, a truth or a text
+ * written as Rust's own) and every result is an owned `Value`, so that nothing is moved out of a name.
+ * Every method and lambda takes its arguments as one slice (`a1`, `a2`, ... by depth, `{d}`), bound at the top of
+ * its body (`{parameter}` with `{i}`), so a missing argument is None and a default is set in the body
+ * (`{defaults_in_body}`). A local is a shared cell (`let x_1 = cell(..)`, read `rd(&x_1)`, written `wr(&x_1, ..)`)
+ * spelled with the depth of the scope that binds it (`{local_name}`), and a lambda is a `move` closure that takes a
+ * clone of every cell it uses (`cl!({free})`) and of `self_`, so that it can read and write them after the scope
+ * that made them is gone - and call itself through its own cell. A class is a module of its own (`c_Medium`), whose
+ * `define` fills its table; `load` registers every class, theory and top-level definition once per thread.
+ */
+
+Rust: Language = class {
+  name = "Rust"
+  extension = ".rs"
+
+  {indent} => "  "
+  {separator} => ", "
+  {newline} => "\n"
+  {statement_end} => ";"
+  {empty_block} => ""
+  {interpolation} => "\", &tos(&{x}), \""
+  {named_arg} => "kw(\"{raw}\", &{val})"
+  {parameter} => "let {nm} = cell(&arg(a{d}, {i}));"
+  {parameter_untyped} => "let {nm} = cell(&arg(a{d}, {i}));"
+  {parameter_default} => "let {nm} = cell(&arg(a{d}, {i}));"
+  {parameter_separator} => " "
+  {dynamic_get} => "get(&{tgt}, &tos(&{key}))"
+  {dynamic_set} => "set(&{tgt}, &tos(&{key}), &{val})"
+  {whole} => "{val}.0"
+  {reserved_names} => "as break const continue crate else enum extern false fn for if impl in let loop match mod move mut pub ref return self Self static struct super trait true type unsafe use where while async await dyn abstract become box do final macro override priv typeof unsized virtual yield try gen union c"
+  {escaped_name} => "{nm}_"
+  {global_name} => "glob(\"{nm}\")"
+  {local_name} => "{nm}_{k}"
+  {local_read} => "rd(&{nm})"
+  {local_write} => "wr(&{nm}, &{val})"
+  {defaults_in_body} => "yes"
+  {class_ref} => "k!(\"{nm}\")"
+  {field_assign} => "//> c.field(\"{nm}\", |self_: &Value| -> Value {{ own(&{val}) }});//<"
+
+  /* control flow */
+  {if cond { yesbody } else { nobody }} => "if truthy(&{cond}) {{\n{yesbody.indent}\n}} else {{\n{nobody.indent}\n}}"
+  {if cond { yesbody }} => "if truthy(&{cond}) {{\n{yesbody.indent}\n}}"
+  {unless cond { yesbody }} => "if !truthy(&{cond}) {{\n{yesbody.indent}\n}}"
+  {while cond { loopbody }} => "while truthy(&{cond}) {{\n{loopbody.indent}\n}}"
+  {return val} => "return own(&{val});"
+  {return} => "return Value::Null;"
+  {dynamically assert cond} => "if !truthy(&{cond}) {{ assert_fail({cond.quoted}); }}"
+
+  /* definitions and assignment: the cell first, so that a lambda it holds can take it (and call itself) */
+  {nm := val} => "let {nm} = cell(&Value::Null); wr(&{nm}, &{val});"
+  {tgt.nm = rhs} => "set(&{tgt}, \"{nm.raw}\", &{rhs});"
+  {lhs = rhs} => "{lhs} = own(&{rhs});"
+  {tgt[k] = rhs} => "set_at(&{tgt}, &{k}, &{rhs});"
+
+  /* expressions */
+  {a & b} => "(truthy(&{a}) && truthy(&{b}))"
+  {a | b} => "(truthy(&{a}) || truthy(&{b}))"
+  {!a} => "(!truthy(&{a}))"
+  {-a} => "neg(&{a})"
+  {a == b} => "eq(&{a}, &{b})"
+  {a != b} => "(!eq(&{a}, &{b}))"
+  {a < b} => "lt(&{a}, &{b})"
+  {a <= b} => "le(&{a}, &{b})"
+  {a > b} => "gt(&{a}, &{b})"
+  {a >= b} => "ge(&{a}, &{b})"
+  {a + b} => "add(&{a}, &{b})"
+  {a - b} => "sub(&{a}, &{b})"
+  {a * b} => "mul(&{a}, &{b})"
+  {a / b} => "div(&{a}, &{b})"
+  {a % b} => "modulo(&{a}, &{b})"
+  {a ^ b} => "power(&{a}, &{b})"
+  {a ?? b} => "or_else(&{a}, || own(&{b}))"
+  {cond ? a : b} => "(if truthy(&{cond}) {{ own(&{a}) }} else {{ own(&{b}) }})"
+  {a ==.instance_of Array} => "is_list(&{a})"
+  {a ==.instance_of ty} => "instance_of(&{a}, \"{ty}\")"
+  {a as ty} => "{a}"
+  {tgt.nm} => "get(&{tgt}, \"{nm.raw.method}\")"
+  {tgt?.nm} => "get_opt(&{tgt}, \"{nm.raw.method}\")"
+  {tgt.nm()} => "get(&{tgt}, \"{nm.raw.method}\")"
+  {tgt.nm(arglist)} => "call(&{tgt}, \"{nm.raw.method}\", args![{arglist}])"
+  {tgt?.nm(arglist)} => "call_opt(&{tgt}, \"{nm.raw.method}\", args![{arglist}])"
+  {tgt.choose("nm")} => "choose(&{tgt}, {nm.quoted})"
+  {tgt[k]} => "elem(&{tgt}, &{k})"
+  {fn(arglist)} => "invoke(&{fn}, args![{arglist}])"
+  {Class(arglist)} => "make_k(&k!(\"{Class}\"), args![{arglist}])"
+  {[elems]} => "list![{elems}]"
+  { {} } => "node()"
+  {this} => "self_"
+  {None} => "Value::Null"
+  {true} => "true"
+  {false} => "false"
+  {"txt"} => "sv![\"{txt}\"]"
+  /* a lambda: a closure that owns a clone of `self_` and of every cell it uses */
+  {(paramlist) => { stmts }} => "{{ let self_: Value = self_.clone(); cl!({free}); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n  {paramlist}\n{stmts.returned.indent}\n  Value::Null\n}}) }}"
+  {(paramlist) => e} => "{{ let self_: Value = self_.clone(); cl!({free}); fnv(move |a{d}: &[&Value]| -> Value {{ let self_: &Value = &self_; {paramlist} own(&{e}) }}) }}"
+  {xs#} => "many(&{xs})"
+  {draw([ws], [os])} => "call(&get(&get(self_, \"vertex\"), \"world\"), \"draw\", args![list![{ws}], list![{os}]])"
+
+  /* the recognised classes: a list, a text or a number's own member - and any object's own member of that name otherwise */
+  {Array.range(cnt).for((x_) => { stmts })} => "for i{d} in 0..(num(&{cnt}).ceil() as i64) {{\n  let {x_.bare} = cell(&(i{d} as f64));\n{stmts.indent}\n}}"
+  {xs.for((x_) => { stmts })} => "for e{d} in items(&{xs}) {{\n  let {x_.bare} = cell(&e{d});\n{stmts.indent}\n}}"
+  {fail(x_)} => "fail_with(&{x_})"
+  {Catalogue.number(x_)} => "number(&{x_})"
+  {String(chars: xs)} => "from_codepoints(&{xs})"
+  {x_.blank} => "blank(&{x_})"
+  {xs.push(x_)} => "m_push(&{xs}, args![{x_}])"
+  {xs.chars} => "m_chars(&{xs})"
+  {xs.pop} => "m_pop(&{xs})"
+  {xs.length} => "len(&{xs})"
+  {xs.map(f)} => "m_map(&{xs}, args![{f}])"
+  {xs.filter(f)} => "filt(&{xs}, &{f})"
+  {xs.for(f)} => "m_for(&{xs}, args![{f}])"
+  {xs.some(f)} => "m_some(&{xs}, args![{f}])"
+  {xs.every(f)} => "m_every(&{xs}, args![{f}])"
+  {xs.reduce(z, f)} => "m_reduce(&{xs}, args![{z}, {f}])"
+  {xs.starts_with(x_)} => "m_starts_with(&{xs}, args![{x_}])"
+  {xs.ends_with(x_)} => "m_ends_with(&{xs}, args![{x_}])"
+  {xs.replace(x_, y_)} => "m_replace(&{xs}, args![{x_}, {y_}])"
+  {xs.split(x_)} => "m_split(&{xs}, args![{x_}])"
+  {xs.trim} => "m_trim(&{xs})"
+  {xs.upper} => "m_upper(&{xs})"
+  {xs.lower} => "m_lower(&{xs})"
+  {xs.lines} => "m_lines(&{xs})"
+  {xs.quoted} => "quoted(&{xs})"
+  {xs.contains(x_)} => "m_contains(&{xs}, args![{x_}])"
+  {xs.index_of(x_)} => "m_index_of(&{xs}, args![{x_}])"
+  {xs.join(sep)} => "m_join(&{xs}, args![{sep}])"
+  {xs.first} => "m_first(&{xs})"
+  {xs.last} => "m_last(&{xs})"
+  {xs.empty} => "m_empty(&{xs})"
+  {xs.take(cnt)} => "m_take(&{xs}, args![{cnt}])"
+  {xs.drop(cnt)} => "m_drop(&{xs}, args![{cnt}])"
+  {xs.rest} => "m_rest(&{xs})"
+  {xs.concat(ys)} => "m_concat(&{xs}, args![{ys}])"
+  {xs.reverse} => "m_reverse(&{xs})"
+  {xs.sum} => "m_sum(&{xs})"
+  {xs.most(f)} => "m_most(&{xs}, args![{f}])"
+  {xs.sorted_by(f)} => "m_sorted_by(&{xs}, args![{f}])"
+  {xs.each} => "m_each(&{xs})"
+  {Array.range(cnt)} => "rng(&{cnt})"
+  {Array.filled(cnt, x_)} => "filled(&{cnt}, &{x_})"
+  {x_.sqrt} => "m_sqrt(&{x_})"
+  {x_.floor} => "m_floor(&{x_})"
+  {x_.abs} => "m_abs(&{x_})"
+  {x_.negated} => "neg(&{x_})"
+  {x_.magnitude} => "m_magnitude(&{x_})"
+  {x_.cos} => "m_cos(&{x_})"
+  {x_.sin} => "m_sin(&{x_})"
+  {x_.round} => "m_round(&{x_})"
+  {x_.ln} => "m_ln(&{x_})"
+  {x_.exp} => "m_exp(&{x_})"
+  {x_.atan2(y_)} => "m_atan2(&{x_}, args![{y_}])"
+  {x_.pow(y_)} => "m_pow(&{x_}, args![{y_}])"
+  {Real.of(x_)} => "{x_}"
+  {Real.ZERO} => "0.0"
+  {Real.ONE} => "1.0"
+  {Real.TWO} => "2.0"
+  {Real.PI} => "std::f64::consts::PI"
+  {Real.NAN} => "f64::NAN"
+  {Real.INFINITY} => "f64::INFINITY"
+  {Real.TAU} => "(2.0 * std::f64::consts::PI)"
+  {Random.MODULUS} => "4294967296.0"
+  {Random.MULTIPLIER} => "1664525.0"
+  {Random.INCREMENT} => "1013904223.0"
+
+  /* types are not written: where one is named (`instance_of`, a parent), it is its name */
+  {ty[]} => "Array"
+  {ty?} => "{ty}"
+  {{}} => "Node"
+
+  /*
+   * classes: a table, filled by its module's `define` when the package loads - parents first, as the core lists them.
+   * Every class is a module of the package's own (so that the compiler builds them apart); what `load` does for it is
+   * written on a line of its own, `//+ ...`, which `write_package` gathers into `load` in the order written.
+   */
+  {nm := class < sup { membs }} => "pub mod c_{nm.raw} {{\n  use crate::rt::*;\n{membs.indent}\n//= define\n}}\n//+ cls(\"{nm.raw}\", \"{sup.first}\", c_{nm.raw}::define);"
+  {nm := class { membs }} => "pub mod c_{nm.raw} {{\n  use crate::rt::*;\n{membs.indent}\n//= define\n}}\n//+ cls(\"{nm.raw}\", \"Node\", c_{nm.raw}::define);"
+  {nm: ty = class { membs }} => "pub mod c_{nm.raw} {{\n  use crate::rt::*;\n{membs.indent}\n//= define\n}}\n//+ cls(\"{nm.raw}\", \"{ty}\", c_{nm.raw}::define);\n//+ theory(\"{nm.raw}\");"
+  {theorem "nm" () => tbody} => "pub mod h_{nm.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value) -> Value {{\n    make(\"Theorem\", args![kw(\"id\", {nm.quoted}), kw(\"body\", &{{ let self_: Value = self_.clone(); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n{tbody.returned.indent}\n  Value::Null\n}}) }})])\n  }}\n}}\n//> c.static_field(\"theorem {nm}\", h_{nm.identifier}::f);//<"
+  {x_.body()} => "invoke(&get(&{x_}, \"body\"), &[])"
+  {nm: ty = val} => "//> c.field(\"{nm.raw}\", |self_: &Value| -> Value {{ own(&{val}) }});//<"
+  {nm: ty} => "//> c.field_none(\"{nm.raw}\");//<"
+  {nm = val} => "//> c.static_field(\"{nm.raw}\", |self_: &Value| -> Value {{ own(&{val}) }});//<"
+  {static nm: ty = val} => "//> c.static_field(\"{nm.raw}\", |self_: &Value| -> Value {{ own(&{val}) }});//<"
+  {static nm = val} => "//> c.static_field(\"{nm.raw}\", |self_: &Value| -> Value {{ own(&{val}) }});//<"
+  {nm (): ret => mbody} => "pub mod g_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.getter(\"{nm.raw.method}\", g_{nm.raw.method}::f);//<"
+  {nm () => mbody} => "pub mod g_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.getter(\"{nm.raw.method}\", g_{nm.raw.method}::f);//<"
+  {static nm (): ret => mbody} => "pub mod s_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.statik(\"{nm.raw.method}\", s_{nm.raw.method}::f);//<"
+  {static nm () => mbody} => "pub mod s_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.statik(\"{nm.raw.method}\", s_{nm.raw.method}::f);//<"
+  {nm (paramlist): ret => mbody} => "pub mod m_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.method(\"{nm.raw.method}\", m_{nm.raw.method}::f);//<"
+  {nm (paramlist) => mbody} => "pub mod m_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.method(\"{nm.raw.method}\", m_{nm.raw.method}::f);//<"
+  {static nm (paramlist): ret => mbody} => "pub mod s_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.statik(\"{nm.raw.method}\", s_{nm.raw.method}::f);//<"
+  {static nm (paramlist) => mbody} => "pub mod s_{nm.raw.method} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{mbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.statik(\"{nm.raw.method}\", s_{nm.raw.method}::f);//<"
+  {nm (paramlist): ret} => "//> c.method(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {nm (paramlist)} => "//> c.method(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {nm (): ret} => "//> c.getter(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {nm ()} => "//> c.getter(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {static nm (paramlist): ret} => "//> c.statik(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {static nm (paramlist)} => "//> c.statik(\"{nm.raw.method}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"{nm} is declared but not defined by anyone\") }});//<"
+  {rule /rid "nm" | rt () => rbody} => "pub mod r_{rid.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value) -> Value {{\n    make(\"Rule\", args![kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", &{single}), kw(\"where\", &{where}), kw(\"source\", {source.quoted}), kw(\"body\", &{{ let self_: Value = self_.clone(); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n{rbody.returned.indent}\n  Value::Null\n}}) }})])\n  }}\n}}\n//> c.static_field(\"rule {rid}\", r_{rid.identifier}::f);//<"
+  {rule /rid "nm" () => rbody} => "pub mod r_{rid.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value) -> Value {{\n    make(\"Rule\", args![kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", &Value::Null), kw(\"over\", {over.quoted}), kw(\"single\", &{single}), kw(\"where\", &{where}), kw(\"source\", {source.quoted}), kw(\"body\", &{{ let self_: Value = self_.clone(); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n{rbody.returned.indent}\n  Value::Null\n}}) }})])\n  }}\n}}\n//> c.static_field(\"rule {rid}\", r_{rid.identifier}::f);//<"
+  {rule /rid "nm" | rt (paramlist) => rbody} => "pub mod r_{rid.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value) -> Value {{\n    make(\"Rule\", args![kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", {rt.quoted}), kw(\"over\", {over.quoted}), kw(\"single\", &{single}), kw(\"where\", &{where}), kw(\"source\", {source.quoted}), kw(\"body\", &{{ let self_: Value = self_.clone(); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n  {paramlist}\n{rbody.returned.indent}\n  Value::Null\n}}) }})])\n  }}\n}}\n//> c.static_field(\"rule {rid}\", r_{rid.identifier}::f);//<"
+  {rule /rid "nm" (paramlist) => rbody} => "pub mod r_{rid.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value) -> Value {{\n    make(\"Rule\", args![kw(\"id\", \"/{rid}\"), kw(\"name\", {nm.quoted}), kw(\"rate\", &Value::Null), kw(\"over\", {over.quoted}), kw(\"single\", &{single}), kw(\"where\", &{where}), kw(\"source\", {source.quoted}), kw(\"body\", &{{ let self_: Value = self_.clone(); fnv(move |a{d}: &[&Value]| -> Value {{\n  let self_: &Value = &self_;\n  {paramlist}\n{rbody.returned.indent}\n  Value::Null\n}}) }})])\n  }}\n}}\n//> c.static_field(\"rule {rid}\", r_{rid.identifier}::f);//<"
+  {choose "nm" (paramlist): ret} => "//> c.method(\"choose {nm}\", |_s: &Value, _a: &[&Value]| -> Value {{ fail_with(\"the choice {nm} is not defined by anyone\") }});//<"
+  {choose "nm" (paramlist): ret => cbody} => "pub mod ch_{nm.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{cbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.method(\"choose {nm}\", ch_{nm.identifier}::f);//<"
+  {choose "nm" (paramlist) => cbody} => "pub mod ch_{nm.identifier} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n  {paramlist}\n{cbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.method(\"choose {nm}\", ch_{nm.identifier}::f);//<"
+  {as (=== ty) => cbody} => "pub mod a_{ty} {{\n  use crate::rt::*;\n  pub fn f(self_: &Value, a{d}: &[&Value]) -> Value {{\n{cbody.returned.indent.indent}\n    Value::Null\n  }}\n}}\n//> c.getter(\"as_{ty}\", a_{ty}::f);//<"
+
+  /* a nested class is a table of its own, then a static of the outer one */
+  nested (outer: String, inner_name: String, inner: String): String => "{inner}\n//+ set(&K(\"{outer}\"), \"{inner_name}\", &K(\"{inner_name}\"));"
+
+  /* a top-level definition is made on first read (`{global_name}`: `glob("LINE2")`) */
+  constant (nm: String, text: String): String => "pub fn k_{nm}(self_: &Value) -> Value {{\n  own(&{text})\n}}\n//+ konst(\"{nm}\", k_{nm});"
+
+  term_literal (id: String, rate: String, degree: N, outside: boolean, settles: boolean, transport: boolean, share: String, rays: String, space: String, folds: String, share_source: String, rays_source: String, space_source: String, folds_source: String, rule_name: String, over: String, where_source: String, rule_source: String, leans: String, carries: boolean, sets: boolean, turned: String, asked: String, asked_source: String, around: String, around_source: String, grown: boolean, grew: String, grew_source: String, trades: boolean, grew_apart: String, grew_apart_source: String): String => {
+    rate_ := rate.empty ? "Value::Null" : "Value::from({rate.quoted})"
+    where := where_source.empty ? "Value::Null" : "make(\"Node\", args![kw(\"source\", {where_source.quoted})])"
+    rule := id.empty ? "Value::Null" : "make(\"Node\", args![kw(\"id\", {id.quoted}), kw(\"rate\", &{rate_}), kw(\"name\", {rule_name.quoted}), kw(\"over\", {over.quoted}), kw(\"where\", &{where}), kw(\"source\", {rule_source.quoted})])"
+    leans_ := leans.empty ? "Value::Null" : "Value::from({leans.quoted})"
+    "    make(\"Node\", args![kw(\"rule\", &{rule}), kw(\"rate\", &{rate_}), kw(\"degree\", &{degree}.0), kw(\"outside\", &{outside}), kw(\"settles\", &{settles}), kw(\"transport\", &{transport}), kw(\"leans\", &{leans_}), kw(\"turned\", {turned.quoted}), kw(\"doing\", &make(\"Node\", args![kw(\"carries\", &{carries}), kw(\"sets\", &{sets}), kw(\"grown\", &{grown}), kw(\"trades\", &{trades}), kw(\"grew\", &at({grew_source.quoted}, |s: &Value| own(&{grew}))), kw(\"grew_apart\", &at({grew_apart_source.quoted}, |s: &Value| own(&{grew_apart}))), kw(\"draws\", &Value::Null), kw(\"needs\", &{degree}.0), kw(\"outside\", &{outside}), kw(\"settles\", &{settles}), kw(\"share\", &at({share_source.quoted}, |s: &Value| own(&{share}))), kw(\"asked\", &at({asked_source.quoted}, |s: &Value| own(&{asked}))), kw(\"around\", &at({around_source.quoted}, |s: &Value| own(&{around}))), kw(\"rays\", &at({rays_source.quoted}, |s: &Value| own(&{rays}))), kw(\"space\", &at({space_source.quoted}, |s: &Value| own(&{space}))), kw(\"folds\", &at({folds_source.quoted}, |s: &Value| own(&{folds})))]))])"
+  }
+  equation_literal (theory: String, latex: String, terms: String[]): String => {
+    lines := terms.join(",\n")
+    "pub fn equation_{theory}() {{\n  let self_: &Value = &Value::Null;\n  set(&K(\"{theory}\"), \"equation\", &make(\"Node\", args![kw(\"latex\", {latex.quoted}), kw(\"terms\", &list![\n{lines}\n])]));\n}}\n//+ equation_{theory}();"
+  }
+
+  /*
+   * The package's one module, put together: a class's members are items of its module (so that the compiler builds
+   * them apart), each written with what its `define` does for it: `//> ...`, running on to the line that ends `//<`.
+   * Those are gathered, in the order written, into the `define` that ends the class (where `//= define` stands),
+   * and what `load` does is gathered off the `//+ ...` lines the same way.
+   */
+  write_package (code: String) => {
+    @./languages/physics.rs/.gitignore := "Cargo.lock\ntarget/\n"
+    kept := []
+    loaded := []
+    gathered := []
+    running := false
+    code.split("\n").for(l => {
+      t := l.trim
+      if running {
+        gathered.push(l)
+        running = !t.ends_with("//<")
+      } elsif t.starts_with("//> ") {
+        gathered.push(t.drop(4))
+        running = !t.ends_with("//<")
+      } elsif t == "//= define" {
+        kept.push("  pub fn define(c: &mut Cls) {{")
+        gathered.for(x => { kept.push("    {x}") })
+        kept.push("  }}")
+        gathered = []
+      } elsif l.starts_with("//+ ") {
+        loaded.push(l.drop(4))
+      } else {
+        kept.push(l)
+      }
+    })
+    @./languages/physics.rs/README.md := this.readme
+    @./languages/physics.rs/Cargo.toml := Rust.cargo
+    @./languages/physics.rs/src/physics.rs := kept.join("\n").replace("{{load}}", loaded.join("\n  "))
+    @./languages/physics.rs/src/rt.rs = @./implementation/gen/backends/cpu.rt.rs
+    @./languages/physics.rs/src/lib.rs = Rust.lib
+  }
+
+  test_case (r: Requirement, f: Fixture): String => {
+    definition := f.definition.as(Rust)
+    requirement := r.requirement.as(Rust)
+    filter := r.filter == None ? "true" : r.filter.as(Rust)
+    label := "{r.location} on {f.name}"
+    "    t(s, {label.quoted}, || {{\n      let self_: &'static Value = &Value::Null;\n      let it: &'static Value = Box::leak(Box::new(own(&{definition})));\n      let mut guard = 0;\n      while !truthy(&{filter}) {{\n        guard += 1;\n        if guard > {r.until} || !has(it, \"tick\") {{ return SKIP.to_string(); }}\n        get(it, \"tick\");\n      }}\n      if truthy(&{requirement}) {{ PASS.to_string() }} else {{ format!(\"failed: {{}}\", {requirement.quoted}) }}\n    }});"
+  }
+
+  write_tests (cases: String, fixtures: Fixture[]) => {
+    @./tests/rs/.gitignore := "Cargo.lock\ntarget/\n"
+    @./tests/rs/Cargo.toml := "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n# cargo run --release [filter]\n[package]\nname = \"orbitmines-physics-tests\"\nversion = \"0.0.1\"\nedition = \"2021\"\npublish = false\n\n[dependencies]\norbitmines-physics = {{ path = \"../../languages/physics.rs\" }}\n\n[[bin]]\nname = \"test_g\"\npath = \"test_G.rs\"\n"
+    @./tests/rs/test_G.rs := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n// cargo run --release [filter]    (in tests/rs)\nuse orbitmines_physics::*;\nuse std::panic;\n\nconst PASS: &str = \"pass\";\nconst SKIP: &str = \"skip\";\nstruct Suite {{ only: Option<String>, passed: u32, failed: u32, skipped: u32 }}\n\nfn t(s: &mut Suite, name: &str, body: impl FnOnce() -> String) {{\n  if let Some(only) = &s.only {{ if !name.contains(only.as_str()) {{ return; }} }}\n  let t0 = std::time::Instant::now();\n  let got = match panic::catch_unwind(panic::AssertUnwindSafe(body)) {{\n    Ok(got) => got,\n    Err(e) => format!(\"error: {{}}\", e.downcast_ref::<String>().cloned().or_else(|| e.downcast_ref::<&str>().map(|x| x.to_string())).unwrap_or_default()),\n  }};\n  let secs = t0.elapsed().as_secs_f64();\n  let (mark, why) = if got == PASS {{ s.passed += 1; (\"ok  \", String::new()) }} else if got == SKIP {{ s.skipped += 1; (\"skip\", String::new()) }} else {{ s.failed += 1; (\"FAIL\", format!(\" - {{}}\", got)) }};\n  println!(\"{{}} {{}} ({{:.2}} s){{}}\", mark, name, secs, why);\n}}\n\nfn run(only: Option<String>) -> bool {{\n  let s = &mut Suite {{ only, passed: 0, failed: 0, skipped: 0 }};\n{cases}\n  println!(\"{{}} passed, {{}} failed, {{}} skipped\", s.passed, s.failed, s.skipped);\n  s.failed == 0\n}}\n\nfn main() {{\n  panic::set_hook(Box::new(|_| {{}}));\n  let only = std::env::args().nth(1);\n  /* a Ray program recurses deeply: a stack of its own */\n  let ok = std::thread::Builder::new().stack_size(1 << 30).spawn(move || run(only)).unwrap().join().unwrap_or(false);\n  std::process::exit(if ok {{ 0 }} else {{ 1 }});\n}}\n"
+  }
+
+  /* Rust renders no films: the .ray/TypeScript pipeline records them */
+  {visual "nm" () => vbody} => ""
+  write_visuals (entries: String) => { }
+  write_notation () => { }
+
+  /* every theorem, as one JSON text: `orbitmines_physics::theorems::json()` */
+  write_theorems (proofs: String) => {
+    @./languages/physics.rs/src/theorems.json := "{{{proofs}}}"
+    @./languages/physics.rs/src/theorems.rs := "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n//! what the rules come to, as something to look up: every theorem, keyed by theory and then by question, as JSON\n\n/// every theorem, as one JSON text\npub fn json() -> &'static str {{\n  include_str!(\"theorems.json\")\n}}\n"
+  }
+
+  write_backend_tests (nm: String, theory: Theory) => { }
+  write_backend (nm: String, code: String) => { }
+
+  /* the CPU backend's runtime around the emitted classes */
+  cpu_runtime (): String => @./implementation/gen/backends/cpu.runtime.rs
+  /* the package's folder under languages/ */
+  package_dir (): String => "physics.rs"
+  install (): String => "```bash\n# Rust\ncargo add orbitmines-physics\n```"
+  readme (): String => "# orbitmines-physics - Rust\n\n> Generated by `npx ray gen` from [implementation/physics.ray](../../implementation/physics.ray/) and [implementation/gen](../../implementation/gen/). Do not edit - change the `.ray` and regenerate.\n\nThe physics library in Rust: the theories and their rules, the continuous model derived from them (the medium), and the settings a simulation of sources - stars, planets, any bodies a theory has - is planned by. Back to the [project README](../../README.md).\n\n## Installation\n\n{Rust.install}\n\nOr in `Cargo.toml`: `orbitmines-physics = \"0.0.1\"`. Rust 2021 edition.\n\n## Using it\n\nRust has no dynamic members, so a Ray object is reached by name: `get(&x, \"name\")`, `call(&x, \"method\", args![...])`, `set(&x, \"name\", &value)`, `make(\"Class\", args![kw(\"field\", &value), ...])`, and a class or a theory by its name: `K(\"G\")`. Every value is a `Value` (numbers are `f64`, lists `Value::List`); an operand may also be a plain `f64`, `bool` or `&str`. The classes are registered once per thread, on first use.\n\n```rust\nuse orbitmines_physics::*;\n\n// a theory, and its continuous model on the CPU: a box of cells, the vacuum settled, one body in it\nlet medium = call(&K(\"G\"), \"medium\", args![31.0, 96.0, 3.0, 8.0, 1.0]);\nset(&medium, \"local_rays\", &true);\ncall(&medium, \"add\", args![make(\"Hole\", args![kw(\"x\", &15.0), kw(\"y\", &15.0), kw(\"mx\", &0.3), kw(\"ways\", &1.0)])]);\nget(&medium, \"seed\");\nfor _ in 0..5 {{ get(&medium, \"tick\"); }}\n```\n\nA Ray program can recurse deeply: run a large one on a thread with a stack of its own (`std::thread::Builder::new().stack_size(1 << 30)`).\n\n## A simulation of sources: the plan\n\nA run is set by a `Plan`: how many sources, how big a box, and four kinds of setting - `Resolution` (how finely the medium reads), `Budget` (how much of the device it may take), `Batching` (how a run larger than the device is carried) and `Output` (what comes back). The plan says what the device must hold before anything runs.\n\n```rust\nlet plan = make(\"Plan\", args![kw(\"sources\", &1e9), kw(\"side\", &241.0)]);\nset(&get(&plan, \"budget\"), \"compact\", &true);   // twelve bytes a source\nprintln!(\"{{}}\", call(&plan, \"report\", args![16.0 * 1073741824.0, 2147483648.0]));\n```\n\n## On the GPU\n\nThe GPU runtime of the medium is being carried into `.ray`, so that every language runs the same thing on every backend. Until then it runs from the [TypeScript package](../physics.ts/README.md).\n"
+  cargo (): String => "# GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n[package]\nname = \"orbitmines-physics\"\nversion = \"0.0.1\"\nedition = \"2021\"\ndescription = \"The discrete theory G - the rules, and the smallest thing that runs them. Generated from implementation/physics.ray.\"\nlicense = \"MIT\"\nrepository = \"https://github.com/orbitmines/physics\"\nhomepage = \"https://github.com/orbitmines/physics\"\nreadme = \"README.md\"\nkeywords = [\"physics\", \"simulation\", \"orbitmines\"]\n\n[lib]\nname = \"orbitmines_physics\"\npath = \"src/lib.rs\"\n"
+  lib (): String => "// GENERATED by `npx ray gen` from implementation/physics.ray - do not edit\n//! orbitmines-physics - the physics core and the theories, emitted from implementation/physics.ray: the classes\n//! (`K(\"Medium\")`), the theories (`K(\"G\")`), the top-level definitions (`glob(\"LINE2\")`), and the runtime they\n//! stand on (`rt`: `get`, `call`, `set`, `make`, `kw`, `args!`).\n\n#[macro_use]\npub mod rt;\npub mod physics;\npub mod theorems;\n\npub use rt::*;\n"
+}

@@ -19,7 +19,7 @@ type Bindings = Map<string, Node | Node[] | string>;
 
 export type MapRule = { pattern: Block; target: Expr; text?: string; replacement?: Block; specificity: number; root: string };
 
-const RESERVED = new Set(["separator", "indent", "newline", "statement_end", "interpolation", "named_arg", "parameter", "parameter_untyped", "parameter_default", "empty_block", "dynamic_get", "dynamic_set", "lambda_hoist", "whole"]);
+const RESERVED = new Set(["separator", "indent", "newline", "statement_end", "interpolation", "named_arg", "parameter", "parameter_untyped", "parameter_default", "empty_block", "dynamic_get", "dynamic_set", "lambda_hoist", "whole", "reserved_names", "escaped_name", "global_name", "parameter_separator", "local_read", "local_write", "defaults_in_body", "local_name", "class_ref", "field_assign"]);
 
 export class Emitter {
   known = new Set<string>();
@@ -198,7 +198,7 @@ export class Emitter {
       case "this": return true;
       case "context": return p.name === n.name;
       case "list": return this.match(p.items, n.items, b);
-      case "member": return this.match(p.target, n.target, b) && this.matchName(p.name, n.name, b) && !!p.optional === !!n.optional;
+      case "member": return this.match(p.target, n.target, b) && this.matchName(p.name, n.name, b, "member") && !!p.optional === !!n.optional;
       case "dynamic": return this.match(p.target, n.target, b) && this.match(p.name, n.name, b);
       case "index": return this.match(p.target, n.target, b) && this.match(p.at, n.at, b);
       case "call": {
@@ -233,11 +233,11 @@ export class Emitter {
       case "return": return this.matchOpt(p.value, n.value, b) && this.matchOpt(p.predicate, n.predicate, b);
       case "recur": return true;
       case "assert": return this.match(p.requirement, n.requirement, b);
-      case "define": return this.matchName(p.names[0], n.names[0], b) && this.matchOptType(p.type, n.type, b) && this.matchOpt(p.value, n.value, b)
+      case "define": return this.matchName(p.names[0], n.names[0], b, "local") && this.matchOptType(p.type, n.type, b) && this.matchOpt(p.value, n.value, b)
         && (p.modifiers.includes("static") === n.modifiers.includes("static"));
       case "assign": return this.match(p.target, n.target, b) && this.match(p.value, n.value, b);
       case "extend": return this.match(p.target, n.target, b) && this.match(p.body.statements, n.body.statements, b);
-      case "method": return this.matchName(p.names[0], n.names[0], b) && this.match(p.params, n.params, b) && this.matchOptType(p.returns, n.returns, b) && this.matchOptBody(p.body, n.body, b)
+      case "method": return this.matchName(p.names[0], n.names[0], b, "member") && this.match(p.params, n.params, b) && this.matchOptType(p.returns, n.returns, b) && this.matchOptBody(p.body, n.body, b)
         && (p.modifiers.includes("static") === n.modifiers.includes("static"));
       case "rule": return this.matchName(p.id.replace(/^\//, ""), n.id.replace(/^\//, ""), b) && this.matchName(p.name, n.name, b) && this.match(p.params, n.params, b) && this.matchBody(p.body, n.body, b)
         && (p.rate === undefined || (n.rate !== undefined && this.matchName(p.rate, n.rate, b)));
@@ -261,7 +261,7 @@ export class Emitter {
         if (p.literal !== undefined) return p.literal === n.literal;
         return p.name === n.name && this.matchOpt(p.filter, n.filter, b) && (p.count === undefined || p.count === n.count);
       }
-      case "param": return this.matchName(p.name, n.name, b) && this.matchOptType(p.type, n.type, b);
+      case "param": return this.matchName(p.name, n.name, b, "local") && this.matchOptType(p.type, n.type, b);
     }
     // args `{ name?, value }` and parts
     if ("value" in p && "kind" in p === false) return this.matchOpt(p.name, n.name, b) && this.match(p.value, n.value, b);
@@ -300,9 +300,36 @@ export class Emitter {
     return true;
   }
 
-  private matchName(p: string, n: string, b: Bindings): boolean {
-    if (this.isHole(p)) return this.bind(b, p, n);
+  private matchName(p: string, n: string, b: Bindings, ident?: "local" | "member"): boolean {
+    if (this.isHole(p)) { if (ident) this.identHoles(b).set(p, ident); return this.bind(b, p, n); }
     return p === n;
+  }
+  /** the holes a rule bound to a program's own names - a local or parameter, or a member - what `{reserved_names}` escapes and `{local_name}` spells */
+  private identHoles(b: Bindings): Map<string, "local" | "member"> {
+    const k = "__idents";
+    if (!b.has(k)) (b as any).set(k, new Map<string, "local" | "member">());
+    return (b as any).get(k);
+  }
+  /** a local as the language spells it: escaped, and `{local_name}` (`{nm}`, `{k}`: how deep the scope that binds it stands) */
+  localName(name: string, language: RayClass): string {
+    const esc = this.ident(name, language);
+    const tpl = this.setting(language, "local_name", "");
+    if (!tpl) return esc;
+    let k = -1;
+    for (let i = this.locals.length - 1; i >= 0; i--) if (this.locals[i].has(name)) { k = i; break; }
+    return k < 0 ? esc : this.fill(tpl, { nm: esc, k: String(k) });
+  }
+  /** a name the language reserves, escaped by its `{escaped_name}` (`{reserved_names}`: the words, space-separated) */
+  /* a word opening with `^` is a pattern (`^[A-Z]`: Ruby reads a capitalised local as a constant); a top-level definition is never escaped */
+  private reservedCache = new Map<RayClass, { words: Set<string>; patterns: RegExp[] }>();
+  ident(name: string, language: RayClass, global = false): string {
+    if (!this.reservedCache.has(language)) {
+      const all = this.setting(language, "reserved_names", "").split(/\s+/).filter(Boolean);
+      this.reservedCache.set(language, { words: new Set(all.filter(w => !w.startsWith("^"))), patterns: all.filter(w => w.startsWith("^")).map(w => new RegExp(w)) });
+    }
+    const r = this.reservedCache.get(language)!;
+    if (!r.words.has(name) && !(r.patterns.some(p => p.test(name)) && !(global && this.rt.global.lookup(name)))) return name;
+    return this.fill(this.setting(language, "escaped_name", "{nm}_"), { nm: name });
   }
   private matchOpt(p: Node | undefined, n: Node | undefined, b: Bindings): boolean {
     if (p === undefined) return n === undefined;
@@ -318,6 +345,8 @@ export class Emitter {
     if (hole) {
       // of a lambda, `=> e` takes an expression and `=> { stmts }` a block; a method's body may be either
       if (lambda && !isBlock(p) && isBlock(n)) return false;
+      // `{ stmts }` taking an expression body (`xs.for(f => walk(f))`): one statement, ended as the language ends one
+      if (isBlock(p) && !isBlock(n) && (n as any).kind !== "block") { const one: any = [{ kind: "expr", expr: n, loc: (n as any).loc }]; one.__block = true; return this.bind(b, hole, one); }
       return this.bind(b, hole, n);
     }
     return this.match(p, n, b);
@@ -339,12 +368,64 @@ export class Emitter {
     return fallback;
   }
 
+  /** the names each method, rule or lambda being emitted binds itself (its parameters and definitions), innermost last */
+  private locals: Set<string>[] = [];
+  private bindsOf(n: any): Set<string> {
+    const out = new Set<string>((n.params ?? []).map((p: any) => p?.name).filter((x: any) => typeof x === "string"));
+    const walk = (x: any) => {
+      if (!x || typeof x !== "object") return;
+      if (Array.isArray(x)) { x.forEach(walk); return; }
+      if (x.kind === "define" && Array.isArray(x.names)) x.names.forEach((m: string) => out.add(m));
+      // a nested lambda or method binds its own, in a scope of its own
+      if (Array.isArray(x.params) && x.body !== undefined) return;
+      for (const [k, v] of Object.entries(x)) if (k !== "loc" && v && typeof v === "object") walk(v);
+    };
+    walk(n.body);
+    return out;
+  }
+  private isLocal(name: string): boolean { return this.locals.some(s => s.has(name)); }
+  private paramIndex = 0;
+
+  /**
+   * `{defaults_in_body} => "yes"`: a language without default parameters (or with only constant ones) gets every
+   * default as the body's first statements - `if x == None { x = <default> }` - and the parameter defaulting to None
+   */
+  private defaultsInBody(n: any, language: RayClass): any {
+    if (!this.setting(language, "defaults_in_body", "") || !n.params.some((p: any) => p?.default)) return n;
+    const loc = n.loc;
+    const none = { kind: "name", name: "None", loc };
+    const firsts = n.params.filter((p: any) => p?.default).map((p: any) => ({ kind: "if", predicate: { kind: "binary", op: "==", left: { kind: "name", name: p.name, loc }, right: none, loc },
+      yes: { kind: "program", statements: [{ kind: "assign", target: { kind: "name", name: p.name, loc }, value: p.default, loc }], loc }, loc }));
+    const stmts = firsts.map((f: any) => ({ kind: "expr", expr: f, loc }));
+    const body = n.body;
+    let nb: any;
+    if (body.kind === "program") nb = { ...body, statements: [...stmts, ...body.statements] };
+    else if (body.kind === "block") nb = { kind: "program", statements: [...stmts, ...body.body.statements], loc };
+    else nb = { kind: "program", statements: [...stmts, { kind: "expr", expr: body, loc }], loc };
+    return { ...n, params: n.params.map((p: any) => p?.default ? { ...p, default: none } : p), body: nb };
+  }
+
   emit(node: Node | Node[] | string | undefined, language: RayClass, depth = 0): string {
+    let n0 = node as any;
+    if (n0 && typeof n0 === "object" && !Array.isArray(n0) && Array.isArray(n0.params) && n0.body !== undefined && n0.body !== null) {
+      n0 = this.defaultsInBody(n0, language); node = n0;
+      this.locals.push(this.bindsOf(n0));
+      try { return this.emitScoped(node, language, depth); } finally { this.locals.pop(); }
+    }
+    return this.emitScoped(node, language, depth);
+  }
+  private emitScoped(node: Node | Node[] | string | undefined, language: RayClass, depth = 0): string {
     if (node === undefined || node === null) return "";
     if (depth > 400) throw new RayError(`emit: runaway recursion at ${this.describe(node as any)}`, (node as any).loc);
     depth++;
     if (typeof node === "string") return node;
     if (Array.isArray(node)) {
+      // a parameter list: each knows where it stands (`{i}`), and they are joined by `{parameter_separator}`
+      const isParam = (x: any) => x && typeof x === "object" && !("kind" in x) && "name" in x && "optional" in x;
+      if (node.length && node.every(isParam)) {
+        const parts = node.map((n, i) => { this.paramIndex = i; try { return this.emit(n, language, depth); } finally { this.paramIndex = 0; } });
+        return parts.join(this.setting(language, "parameter_separator", this.setting(language, "separator", ", ")));
+      }
       const parts = node.map(n => this.emit(n, language, depth));
       const allStatements = node.every(n => this.isStatement(n));
       if (allStatements && node.length > 0) return parts.join(this.setting(language, "newline", "\n"));
@@ -360,13 +441,14 @@ export class Emitter {
       // an argument
       const value = this.emit(n.value, language, depth);
       if (n.name === undefined) return value;
-      return this.fill(this.setting(language, "named_arg", "{nm}: {val}"), { nm: n.name, val: value });
+      return this.fill(this.setting(language, "named_arg", "{nm}: {val}"), { nm: this.ident(n.name, language), raw: n.name, val: value });
     }
     if (n.kind === undefined && "name" in n && "optional" in n) {
       // a parameter
-      if (n.default) return this.fill(this.setting(language, "parameter_default", "{nm} = {val}"), { nm: n.name, ty: n.type ? this.emit(n.type, language, depth) : "any", val: this.emit(n.default, language, depth) });
-      if (n.type) return this.fill(this.setting(language, "parameter", "{nm}: {ty}"), { nm: n.name, ty: this.emit(n.type, language, depth) });
-      return this.fill(this.setting(language, "parameter_untyped", "{nm}"), { nm: n.name });
+      const where = { i: String(this.paramIndex), d: String(this.locals.length) };
+      if (n.default) return this.fill(this.setting(language, "parameter_default", "{nm} = {val}"), { ...where, nm: this.localName(n.name, language), ty: n.type ? this.emit(n.type, language, depth) : "any", val: this.emit(n.default, language, depth) });
+      if (n.type) return this.fill(this.setting(language, "parameter", "{nm}: {ty}"), { ...where, nm: this.localName(n.name, language), ty: this.emit(n.type, language, depth) });
+      return this.fill(this.setting(language, "parameter_untyped", "{nm}"), { ...where, nm: this.localName(n.name, language) });
     }
     // a statement with a postfix `if`: `return x if p` is `if p { return x }`
     if (n.predicate && ["goto", "return", "assert", "define", "assign", "expr"].includes(n.kind)) {
@@ -374,7 +456,12 @@ export class Emitter {
       return this.emit({ kind: "expr", expr: { kind: "if", predicate: n.predicate, yes: { kind: "program", statements: [inner], loc: n.loc }, loc: n.loc }, loc: n.loc } as Stmt, language, depth);
     }
     // `x["name"] = v`: no rule can say this; the language's `dynamic_set` setting does
+    // `{field_assign}`: `name = "G"` written in a class's own body is a field with that value, where the language's class body is no place for an assignment
+    if (n.kind === "define" && n.value?.kind === "class") for (const st of n.value.body?.statements ?? []) if (st.kind === "assign" && st.target?.kind === "name") Object.defineProperty(st, "__field", { value: true, configurable: true });
+    if (n.kind === "assign" && (n as any).__field && this.setting(language, "field_assign", "")) return this.fill(this.setting(language, "field_assign", ""), { nm: n.target.name, val: this.emit(n.value, language, depth) });
     if (n.kind === "assign" && n.target.kind === "dynamic") return this.fill(this.setting(language, "dynamic_set", "{tgt}[{key}] = {val}"), { tgt: this.emit(n.target.target, language, depth), key: this.emit(n.target.name, language, depth), val: this.emit(n.value, language, depth) }) + this.setting(language, "statement_end", "");
+    // `{local_write}`: an assignment to a local, where the language writes it otherwise than it reads it (a cell: `*x.borrow_mut() = v`)
+    if (n.kind === "assign" && n.target.kind === "name" && this.isLocal(n.target.name) && this.setting(language, "local_write", "")) return this.fill(this.setting(language, "local_write", ""), { nm: this.localName(n.target.name, language), val: this.emit(n.value, language, depth) }) + this.setting(language, "statement_end", "");
     if (n.kind === "program") {
       // a language without goto gets the lowering of Rewrite.ray
       if (this.hasGotos(n) && !this.rules(language).some(r => r.root === "goto")) return this.emit(this.lowered(n), language, depth);
@@ -393,7 +480,9 @@ export class Emitter {
     }
     // reserved settings are not constructs
     const typeRule = (r: MapRule) => { const st = r.pattern.statements[0]; return r.root === "name" && st.kind === "expr" && st.expr.kind === "name" && this.rt.classes.has(st.expr.name); };
-    const candidates = this.rules(language).filter(r => !RESERVED.has(r.root) && (
+    // a reserved setting is never a rule, even where a program has a name of the same spelling (a local `whole`)
+    const setting = (r: MapRule) => { const st: any = r.pattern.statements[0]; return r.pattern.statements.length === 1 && st?.kind === "expr" && st.expr?.kind === "name" && RESERVED.has(st.expr.name); };
+    const candidates = this.rules(language).filter(r => !RESERVED.has(r.root) && !setting(r) && (
       (r.root === n.kind && !(n.kind === "name" && typeRule(r))) || (n.kind === "type" && (r.root === "name" || r.root === "optional" || r.root === "type"))));
     let best: { rule: MapRule; b: Bindings } | undefined;
     for (const r of candidates) {
@@ -410,7 +499,15 @@ export class Emitter {
       if (n.union) return n.union.map((t: Type) => this.emit(t, language, depth)).join(" | ");
       return n.name.split(".").pop()! + "[]".repeat(n.array) + (n.optional ? " | null" : "");
     }
-    if (!best && n.kind === "name") return n.name;
+    if (!best && n.kind === "name") {
+      if (this.isLocal(n.name)) { const read = this.setting(language, "local_read", ""); return read ? this.fill(read, { nm: this.localName(n.name, language) }) : this.localName(n.name, language); }
+      // `{class_ref}`: a class as a value, where the language reaches it otherwise than by its bare name (Java: `K("Hole")`)
+      if (this.rt.classes.has(n.name)) { const ref = this.setting(language, "class_ref", ""); return ref ? this.fill(ref, { nm: n.name }) : n.name; }
+      // a top-level definition (`plus := " + "`), where the language reaches it otherwise than by its bare name (`{global_name} => "Physics.{nm}"`)
+      const global = this.setting(language, "global_name", "");
+      if (global && this.rt.global.lookup(n.name)) return this.fill(global, { nm: n.name });
+      return this.ident(n.name, language, true);
+    }
     if (!best && n.kind === "paren") return "(" + this.emit(n.inner, language, depth) + ")";
     if (!best && n.kind === "lambda" && this.hoisted.length && this.setting(language, "lambda_hoist", "") !== "") {
       // a block lambda where the language has none: a function of its own, before this statement
@@ -449,9 +546,23 @@ export class Emitter {
     const outer = [...new Set(this.scopeParams.flat().filter(p => !introduced.includes(p)))];
     const own = n.kind === "lambda" ? n.params.length : introduced.length;
     best.b.set("captures", outer.length ? (own ? ", " : "") + outer.map(p => `${p}=${p}`).join(", ") : "");
+    // `{d}`: how deep in methods and lambdas this stands (a lambda's own arguments can be named apart from its enclosing one's)
+    best.b.set("d", String(this.locals.length));
+    // `{free}`: the enclosing locals a lambda reads or writes (for a language that must say what a closure takes: `let x = x.clone();`)
+    if (n.kind === "lambda") {
+      const own = this.locals[this.locals.length - 1] ?? new Set<string>();
+      const used = new Set<string>();
+      const walk = (x: any) => { if (!x || typeof x !== "object") return; if (Array.isArray(x)) { x.forEach(walk); return; } if (x.kind === "name") used.add(x.name); for (const [k, v] of Object.entries(x)) if (k !== "loc" && v && typeof v === "object") walk(v); };
+      walk(n.body);
+      const free = [...used].filter(u => !own.has(u) && this.locals.slice(0, -1).some(sc => sc.has(u)));
+      best.b.set("free", free.map(u => this.localName(u, language)).join(", "));
+    }
     this.scopeParams.push(introduced);
     this.innerStack.push(this.innerHoles(best.rule));
-    try { return this.render(best.rule.target, best.b, language, depth); } finally { this.scopeParams.pop(); this.innerStack.pop(); }
+    // a lambda a rule takes apart (`xs.for((x) => { ... })`) is never emitted whole: its scope stands while the rule renders
+    const taken = n.kind === "call" ? (n.args ?? []).map((a: any) => a?.value).filter((v: any) => v?.kind === "lambda") : [];
+    if (taken.length) { const sc = new Set<string>(); for (const l of taken) for (const x of this.bindsOf(l)) sc.add(x); this.locals.push(sc); }
+    try { return this.render(best.rule.target, best.b, language, depth); } finally { this.scopeParams.pop(); this.innerStack.pop(); if (taken.length) this.locals.pop(); }
   }
 
   /** what a rule quantifies over, read off its first parameter: `over`, `single`, `where` */
@@ -540,8 +651,10 @@ export class Emitter {
       if (typeof part === "string") { out += part; continue; }
       if (part.kind === "name") {
         const v = b.get(part.name);
-        if (v === undefined) throw new RayError(`the rule binds no ${part.name}`, part.loc);
-        out += this.emitHole(part.name, v, language, depth);
+        if (v === undefined) throw new RayError(`the rule binds no ${part.name} (in "${target.parts.map((q: any) => typeof q === "string" ? q : `{${q.name ?? "..."}}`).join("").slice(0, 80)}")`, part.loc);
+        const plain = this.emitHole(part.name, v, language, depth);
+        const kind = typeof v === "string" ? this.identHoles(b).get(part.name) : undefined;
+        out += kind === "local" && this.isLocal(plain) ? this.localName(plain, language) : kind ? this.ident(plain, language) : plain;
         continue;
       }
       // `{stmts.returned.indent}`-style helpers: members on a hole, applied in order
@@ -557,9 +670,14 @@ export class Emitter {
           const h = chain.shift()!;
           if (h === "returned") v = this.returned(v ?? "");
           if (h === "first") v = Array.isArray(v) ? (v[0] as Node) : v;
-          if (h === "bare") { const p: any = Array.isArray(v) ? v[0] : v; v = typeof p === "string" ? p : (p?.name ?? this.emit(p ?? "", language, depth)); }
+          if (h === "bare") { const p: any = Array.isArray(v) ? v[0] : v; v = typeof p === "string" ? p : (p?.name !== undefined ? this.localName(p.name, language) : this.emit(p ?? "", language, depth)); }
         }
-        let text = this.emitHole(e.name, v ?? "", language, depth);
+        // `{x.raw}`: a name as written, never escaped - a member's own name, where the language escapes only its locals
+        const rawName = chain[0] === "raw" && v && typeof v === "object" && !Array.isArray(v) && (v as any).kind === "name" ? (v as any).name as string : undefined;
+        let text = rawName ?? this.emitHole(e.name, v ?? "", language, depth);
+        const kind = typeof v === "string" ? this.identHoles(b).get(e.name) : undefined;
+        if (kind && chain[0] !== "quoted" && chain[0] !== "raw") text = kind === "local" && this.isLocal(text) ? this.localName(text, language) : this.ident(text, language);
+        if (chain[0] === "raw") chain.shift();
         for (const h of chain) text = this.helper(h, text, language);
         out += text;
         continue;
@@ -645,7 +763,9 @@ export class Emitter {
       const braces = wrap.startsWith("{");
       // a backtick is only special inside a template literal
       const template = wrap.startsWith("${");
-      const text = (p: string) => { let e = this.escape(p); if (!template) e = e.replace(/\\`/g, "`"); return braces ? e.replace(/\{/g, "{{").replace(/\}/g, "}}") : e; };
+      // a language whose interpolation opens with `#{` (Ruby) reads `#{`, `#@` and `#$` in text as its own: every `#` escaped
+      const hash = wrap.startsWith("#{");
+      const text = (p: string) => { let e = this.escape(p); if (!template) e = e.replace(/\\`/g, "`"); if (hash) e = e.replace(/#/g, "\\#"); return braces ? e.replace(/\{/g, "{{").replace(/\}/g, "}}") : e; };
       return (v as any[]).map(p => typeof p === "string" ? text(p) : wrap.replace("{x}", this.emit(p, language, depth))).join("");
     }
     return this.emit(v, language, depth);

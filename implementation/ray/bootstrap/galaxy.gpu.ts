@@ -322,20 +322,24 @@ if (Deno.env.get("RAY_ONLY") === "held-disc") {
 
 /*
  * RAY_ONLY=medium-galaxy: A GALAXY IN THE MEDIUM ITSELF, FILMED (Galaxies.medium, visual galaxy.medium). RAY_STARS stars
- * (exponential surface density, scale RAY_RD c-bar) laid at rest in a RAY_SIDE box, every star its own body and every
+ * (exponential surface density, scale RAY_RD c-bar) laid at rest in a RAY_SIDE view, every star its own body and every
  * step local (how.local); the field let stand with them held (Medium.stand), and each star launched circling at the
  * pull the medium itself gives it there - sqrt(g R), with a spread of RAY_SIGMA of it - then left to the medium for
  * RAY_FRAMES frames of RAY_TPF ticks. The total mass is set, off one lone body's pull measured in the same medium, so
- * the disc circles at about RAY_SPEED c-bar a tick at one scale length: well below the light a tick carries
+ * the disc circles at about RAY_SPEED c-bar a tick at one scale length: well below the light a tick carries.
+ * The box is the view and RAY_MARGIN c-bars round it (Plan's `Resolution.margin`), run and never drawn: at the box's own
+ * edge a star is pulled a quarter short and one past it no longer shines, so that edge is kept out of the view, and
+ * what has gone past it is counted (Medium.departed) frame by frame
  */
 if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
   const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D;
-  const SIDE = Number(Deno.env.get("RAY_SIDE") ?? 361), STARS = Number(Deno.env.get("RAY_STARS") ?? 100000);
+  const VIEW = Number(Deno.env.get("RAY_SIDE") ?? 361), STARS = Number(Deno.env.get("RAY_STARS") ?? 100000);
+  const MARGIN = Number(Deno.env.get("RAY_MARGIN") ?? 2), SIDE = VIEW + 2 * MARGIN * 3;
   const RD = Number(Deno.env.get("RAY_RD") ?? 8), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.03), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
   const FRAMES = Number(Deno.env.get("RAY_FRAMES") ?? 120), TPF = Number(Deno.env.get("RAY_TPF") ?? 40), GRID = 128;
   const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true };
-  const mid = (SIDE - 1) / 2, span = mid / K - 2;
+  const mid = (SIDE - 1) / 2, span = (VIEW - 1) / 2 / K - 2;
   const t0 = performance.now();
   /* what one body of unit mass pulls with, a little out, in a small box of the same medium: the scale the mass is set by */
   const CAL = 121, cmid = (CAL - 1) / 2, rcal = 8;
@@ -347,7 +351,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   /* an exponential disc holds 0.264 of itself within one scale length; that much pulls about as one body there */
   const pRD = p1 * (rcal / RD) ** (D - 1);
   const MASS = SPEED * SPEED / RD / (0.264 * pRD), m = MASS / STARS;
-  console.log(`\n  a galaxy in the medium: ${STARS} stars, R_d ${RD} c-bar, box ${SIDE} (K ${K}, DEG ${DEG}); a unit mass pulls ${p1.toExponential(3)} at ${rcal} c-bar, so the disc weighs ${MASS.toExponential(3)} (${m.toExponential(3)} a star) to circle near ${SPEED} c-bar a tick`);
+  console.log(`\n  a galaxy in the medium: ${STARS} stars, R_d ${RD} c-bar, view ${VIEW} in a box ${SIDE} (a margin of ${MARGIN} c-bar; K ${K}, DEG ${DEG}); a unit mass pulls ${p1.toExponential(3)} at ${rcal} c-bar, so the disc weighs ${MASS.toExponential(3)} (${m.toExponential(3)} a star) to circle near ${SPEED} c-bar a tick`);
   /* the disc, seeded so a run is the run again: radius off R e^(-R/RD), angle uniform */
   /* mulberry32, in whole 32-bit steps: the float LCG it replaces lost bits past 2^53 and gave 10917 distinct draws in two million - a million stars stood on some five thousand places */
   let seed = 2026 >>> 0; const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let z = seed; z = Math.imul(z ^ (z >>> 15), z | 1); z ^= z + Math.imul(z ^ (z >>> 7), z | 61); return (((z ^ (z >>> 14)) >>> 0) + 0.5) / 4294967296; };
@@ -378,7 +382,9 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const speedRD = vn ? vsum / vn : 0;
   console.log(`  launched: at R_d they circle at ${speedRD.toFixed(4)} c-bar a tick (the field stood in ${((performance.now() - t0) / 1000).toFixed(0)}s)`);
   /* star counts on a GRID x GRID face-on picture, span c-bar either side of the box's middle */
-  const density: number[] = [], ticks: number[] = [];
+  const density: number[] = [], ticks: number[] = [], departed: number[] = [];
+  /* what a closed system keeps: its momentum (zero, launched about the middle) and its turn about the middle - and its motion's own energy, and how spread its stars are, frame by frame */
+  const momentum: number[] = [], turn: number[] = [], motion: number[] = [], half: number[] = [], holding: number[] = [];
   const shoot = async () => {
     await w.sync();
     const grid = new Float32Array(GRID * GRID);
@@ -388,16 +394,40 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     }
     for (const v of grid) density.push(v);
     ticks.push(w.t);
+    let px = 0, py = 0, lz = 0, ke = 0, pabs = 0;
+    const rs: number[] = [];
+    for (const h of w.holes) {
+      const p = h.momentum?.components ?? [h.px ?? 0, h.py ?? 0];
+      const dx = (h.x - mid) / K, dy = (h.y - mid) / K;
+      px += p[0]; py += p[1]; pabs += Math.hypot(p[0], p[1]);
+      lz += dx * p[1] - dy * p[0];
+      ke += (p[0] * p[0] + p[1] * p[1]) / (2 * h.mass);
+      rs.push(Math.hypot(dx, dy));
+    }
+    rs.sort((a, b) => a - b);
+    /* how well the pull a star now feels holds its circling: g R / v_turn^2, the median over stars 2-3 R_d out (1 at the launch, where each was set going at the pull it stood in) */
+    const felt = await w.leans(), ratios: number[] = [];
+    w.holes.forEach((h: any, s: number) => {
+      const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
+      if (R < 2 * RD || R > 3 * RD) return;
+      const p = h.momentum?.components ?? [h.px ?? 0, h.py ?? 0];
+      const vt = (dx * p[1] - dy * p[0]) / R / h.mass, g = -(felt[s][0] * dx + felt[s][1] * dy) / R;
+      if (vt * vt > 1e-12) ratios.push(g * R / (vt * vt));
+    });
+    ratios.sort((a, b) => a - b);
+    holding.push(ratios[Math.floor(ratios.length / 2)] ?? NaN);
+    momentum.push(Math.hypot(px, py) / Math.max(pabs, 1e-30)); turn.push(lz); motion.push(ke); half.push(rs[Math.floor(rs.length / 2)] ?? 0);
+    departed.push((await w.departed()) / MASS);
   };
   await shoot();
   for (let f = 1; f < FRAMES; f++) {
     for (let t = 0; t < TPF; t++) await w.tick();
     await shoot();
-    if (f % 10 === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms (${w.longest_was.slice(0, 120)})`);
+    if (f % Number(Deno.env.get("RAY_LOG") ?? 10) === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms (${w.longest_was.slice(0, 120)}); ${(100 * departed[departed.length - 1]).toFixed(2)}% of the mass has left the box; net momentum ${(100 * momentum[momentum.length - 1]).toFixed(3)}% of the stars' own, turn ${(turn[turn.length - 1] / turn[0]).toFixed(4)} of the first, energy of motion ${(motion[motion.length - 1] / motion[0]).toFixed(3)} of the first, half the stars within ${half[half.length - 1].toFixed(1)} c-bar, the pull holds ${holding[holding.length - 1].toFixed(3)} of their circling`);
   }
   physics.Measure.save("galaxy.medium", ["density"], { density }, {
     names: ["a disc in the medium"], mass: [MASS], scale: [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
-    deg: DEG, side: SIDE, speed: speedRD, sigma: SIGMA, tpf: TPF,
+    deg: DEG, side: SIDE, view: VIEW, margin: MARGIN, departed, momentum, turn, motion, half, holding, speed: speedRD, sigma: SIGMA, tpf: TPF,
     about: "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame",
   });
   console.log(`  written to visuals/galaxy.medium (${((performance.now() - t0) / 1000).toFixed(0)}s); draw it: npx ray visuals galaxy.medium`);
