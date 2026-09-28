@@ -65,11 +65,14 @@ jobs:
           name: typescript
           path: out/
           if-no-files-found: error
-      - name: publish to npm (@orbitmines/physics)
-        if: env.PUBLISH == 'true' && (env.TRUSTED == 'true' || env.HAS_TOKEN == 'true')
-        run: cd languages/physics.ts && npm publish --access public --provenance --tag ${{ env.TESTING == 'true' && 'test' || 'latest' }}
+      - name: publish to npm (@orbitmines/physics), as a trusted publisher
+        if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
+        run: cd languages/physics.ts && if npm view "@orbitmines/physics@0.0.1-test.2" version >/dev/null 2>&1; then echo "@orbitmines/physics@0.0.1-test.2 is on npm already"; else npm publish --access public --provenance --tag ${{ env.TESTING == 'true' && 'test' || 'latest' }}; fi
+      - name: publish to npm (@orbitmines/physics), with a token
+        if: env.PUBLISH == 'true' && env.TRUSTED != 'true' && env.HAS_TOKEN == 'true'
+        run: cd languages/physics.ts && if npm view "@orbitmines/physics@0.0.1-test.2" version >/dev/null 2>&1; then echo "@orbitmines/physics@0.0.1-test.2 is on npm already"; else npm publish --access public --provenance --tag ${{ env.TESTING == 'true' && 'test' || 'latest' }}; fi
         env:
-          NODE_AUTH_TOKEN: ${{ env.TRUSTED != 'true' && secrets.NPM_TOKEN || '' }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   python:
     needs: version
     runs-on: ubuntu-latest
@@ -99,11 +102,13 @@ jobs:
         with:
           packages-dir: out/
           password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
       - name: publish to PyPI (orbitmines-physics), as a trusted publisher
         if: env.PUBLISH == 'true' && env.HAS_TOKEN != 'true' && env.TRUSTED == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: out/
+          skip-existing: true
   ruby:
     needs: version
     runs-on: ubuntu-latest
@@ -130,11 +135,14 @@ jobs:
       - name: sign in to RubyGems as a trusted publisher (no one-time code; a key for this run alone)
         if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
         uses: rubygems/configure-rubygems-credentials@v1.0.0
-      - name: publish to RubyGems (orbitmines-physics)
-        if: env.PUBLISH == 'true' && (env.TRUSTED == 'true' || env.HAS_KEY == 'true')
-        run: gem push out/*.gem
+      - name: publish to RubyGems (orbitmines-physics), as a trusted publisher - with the key the step above set
+        if: env.PUBLISH == 'true' && env.TRUSTED == 'true'
+        run: if curl -fsS -o /dev/null "https://rubygems.org/api/v2/rubygems/orbitmines-physics/versions/0.0.1.test.2.json"; then echo "orbitmines-physics 0.0.1.test.2 is on RubyGems already"; else gem push out/*.gem; fi
+      - name: publish to RubyGems (orbitmines-physics), with an API key
+        if: env.PUBLISH == 'true' && env.TRUSTED != 'true' && env.HAS_KEY == 'true'
+        run: if curl -fsS -o /dev/null "https://rubygems.org/api/v2/rubygems/orbitmines-physics/versions/0.0.1.test.2.json"; then echo "orbitmines-physics 0.0.1.test.2 is on RubyGems already"; else gem push out/*.gem; fi
         env:
-          GEM_HOST_API_KEY: ${{ env.TRUSTED != 'true' && secrets.RUBYGEMS_API_KEY || '' }}
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
   java:
     needs: version
     runs-on: ubuntu-latest
@@ -162,7 +170,7 @@ jobs:
           if-no-files-found: error
       - name: publish to Maven Central (com.orbitmines:physics)
         if: env.PUBLISH == 'true' && env.HAS_CREDENTIALS == 'true'
-        run: mvn -B -f languages/physics.java/pom.xml -P release -DskipTests deploy
+        run: if curl -fsS -o /dev/null "https://repo1.maven.org/maven2/com/orbitmines/physics/0.0.1-test.2/physics-0.0.1-test.2.pom"; then echo "com.orbitmines:physics:0.0.1-test.2 is on Maven Central already"; else mvn -B -f languages/physics.java/pom.xml -P release -DskipTests deploy; fi
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -225,7 +233,7 @@ jobs:
       - name: publish to the Go module proxy (a tag is the release)
         if: env.PUBLISH == 'true'
         run: |
-          git tag "languages/physics.go/v0.0.1-test.2" && git push origin "languages/physics.go/v0.0.1-test.2"
+          if git ls-remote --exit-code --tags origin "languages/physics.go/v0.0.1-test.2" >/dev/null; then echo "the tag is there already"; else git tag "languages/physics.go/v0.0.1-test.2" && git push origin "languages/physics.go/v0.0.1-test.2"; fi
           curl -fsS "https://proxy.golang.org/github.com/orbitmines/physics/languages/physics.go/@v/v0.0.1-test.2.info" || true
   cpp:
     needs: version
@@ -270,7 +278,7 @@ jobs:
           if-no-files-found: error
       - name: publish to crates.io (orbitmines-physics)
         if: env.PUBLISH == 'true' && env.HAS_CREDENTIALS == 'true'
-        run: cargo publish --manifest-path languages/physics.rs/Cargo.toml --allow-dirty
+        run: if curl -fsS -o /dev/null -A "orbitmines-physics release (github.com/orbitmines/physics)" "https://crates.io/api/v1/crates/orbitmines-physics/0.0.1-test.2"; then echo "orbitmines-physics 0.0.1-test.2 is on crates.io already"; else cargo publish --manifest-path languages/physics.rs/Cargo.toml --allow-dirty; fi
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   lean:
@@ -390,6 +398,9 @@ jobs:
         with:
           path: artifacts
       - name: the GitHub release, every package attached (and the tag Swift and Lean read)
-        run: gh release create "v${{ needs.version.outputs.version }}" artifacts/*/* --target "${{ github.sha }}" --title "v${{ needs.version.outputs.version }}" --generate-notes ${{ needs.version.outputs.testing == 'true' && '--prerelease' || '' }}
+        run: |
+          v="v${{ needs.version.outputs.version }}"
+          if gh release view "$v" >/dev/null 2>&1; then gh release upload "$v" artifacts/*/* --clobber
+          else gh release create "$v" artifacts/*/* --target "${{ github.sha }}" --title "$v" --generate-notes ${{ needs.version.outputs.testing == 'true' && '--prerelease' || '' }}; fi
         env:
           GH_TOKEN: ${{ github.token }}
