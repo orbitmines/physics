@@ -3,7 +3,7 @@
 > [!NOTE] This is still a WIP, for progress see the writeup [here](https://physics.orbitmines-com.pages.dev/physics)
 
 <div align="center">
-<img src="./visuals/solar.inner/snapshot.png" alt="Image" height="200">
+<img src="./visuals/video.milkyway.measured/snapshot.png" alt="Image" height="200">
 </div>
 
 ---
@@ -13,6 +13,10 @@ Hi! In short this is a discrete and a subsequently derived continuous theory for
 For theory, you can start reading [here](https://orbitmines.com/physics). It walks you through all the concepts in this repository.
 
 The remainder of this README is dedicated to explaining how you can use the physics libraries yourself!
+
+<div align="center">
+<img src="./visuals/solar.inner/snapshot.png" alt="Image" height="200">
+</div>
 
 ## What is in this repo
 
