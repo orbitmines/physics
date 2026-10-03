@@ -9461,6 +9461,8 @@ export class Surface extends Node {
   rotate(angle: number) { throw new Error("rotate is declared but not defined by anyone"); }
   dash(segments: number[]) { throw new Error("dash is declared but not defined by anyone"); }
   gradient_stroke(x0: number, x1: number, stops: string[], at: number[]) { throw new Error("gradient_stroke is declared but not defined by anyone"); }
+  image(src: string, x: number, y: number, w: number, h: number) { throw new Error("image is declared but not defined by anyone"); }
+  field(rgb: number[], cols: number, rows: number, x: number, y: number, w: number, h: number, blur: number) { throw new Error("field is declared but not defined by anyone"); }
 }
 
 export class Measured extends Node {
@@ -9595,6 +9597,12 @@ export class Picture extends Node {
   set panes(v: Pane[]) { this.write("panes", v); }
   get on_request(): boolean { return this.read("on_request", () => false); }
   set on_request(v: boolean) { this.write("on_request", v); }
+  get images(): string[] { return this.read("images", () => []); }
+  set images(v: string[]) { this.write("images", v); }
+  get parts(): string[] { return this.read("parts", () => []); }
+  set parts(v: string[]) { this.write("parts", v); }
+  get uses(): string[] { return this.read("uses", () => []); }
+  set uses(v: string[]) { this.write("uses", v); }
   get paint(): Program { return this.read("paint"); }
   set paint(v: Program) { this.write("paint", v); }
   get played(): (Played | null) {
@@ -15363,6 +15371,955 @@ export class Measure extends Node {
   }
 }
 
+export class Sighted extends Node {
+  get name(): string { return this.read("name"); }
+  set name(v: string) { this.write("name", v); }
+  get disc_mass(): number { return this.read("disc_mass"); }
+  set disc_mass(v: number) { this.write("disc_mass", v); }
+  get disc_scale(): number { return this.read("disc_scale"); }
+  set disc_scale(v: number) { this.write("disc_scale", v); }
+  get bulge_mass(): number { return this.read("bulge_mass"); }
+  set bulge_mass(v: number) { this.write("bulge_mass", v); }
+  get bulge_scale(): number { return this.read("bulge_scale"); }
+  set bulge_scale(v: number) { this.write("bulge_scale", v); }
+  get circling(): number { return this.read("circling"); }
+  set circling(v: number) { this.write("circling", v); }
+  get sun(): number { return this.read("sun"); }
+  set sun(v: number) { this.write("sun", v); }
+  get inclination(): number { return this.read("inclination"); }
+  set inclination(v: number) { this.write("inclination", v); }
+  get position_angle(): number { return this.read("position_angle"); }
+  set position_angle(v: number) { this.write("position_angle", v); }
+  get distance(): number { return this.read("distance"); }
+  set distance(v: number) { this.write("distance", v); }
+  get approach(): number { return this.read("approach"); }
+  set approach(v: number) { this.write("approach", v); }
+  get across(): number { return this.read("across"); }
+  set across(v: number) { this.write("across", v); }
+  get source(): string { return this.read("source"); }
+  set source(v: string) { this.write("source", v); }
+  get mass(): number {
+    return add(this.disc_mass, this.bulge_mass);
+  }
+}
+
+export class Video extends Node {
+  static WIDTH = 2560;
+  static HEIGHT = 1440;
+  static FPS = 60;
+  static FILM_RD = 6;
+  static PER_MYR = 0.0010227;
+  static LIGHT = 299792.458;
+  static MILKY_WAY = new Sighted({ name: `Milky Way`, disc_mass: 3.77, disc_scale: 2.6, bulge_mass: 1.83, bulge_scale: 0.6, circling: 238, sun: 8.2, inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: `Bland-Hawthorn & Gerhard 2016` });
+  static ANDROMEDA = new Sighted({ name: `Andromeda (M31)`, disc_mass: 8.4, disc_scale: 5.4, bulge_mass: 3.3, bulge_scale: 0.61, circling: 250, sun: 0, inclination: 77, position_angle: 38, distance: 785, approach: 110, across: 17, source: `Geehan et al. 2006, van der Marel et al. 2012` });
+  static MW_BAR1 = [0.316, 0.490, 0.392, 0.229, 1.991, 2.232, 0.873, 0.626, 1.940, 1.342, 0.751, 0.469, 4.370];
+  static MW_BAR2 = [0.050, 5.364, 0.959, 0.611, 3.051, 0.970, 3.190, 0.558, 16.731, 3.196];
+  static MW_BAR3 = [1743.049, 0.478, 0.267, 0.252, 0.980, 1.879, 2.204, 7.607, (-27.291), 1.630];
+  static MW_BAR_MASSES = [1.28, 0.33, 0.22];
+  static MW_BAR_ANGLE = 27;
+  static MW_DISCS = [[3.22, 2.6, 1], [0.55, 2.0, 0]];
+  static MW_DISC_HOLE = 4.688;
+  static MW_ARMS = [[3.27, 38.5, 9.87, 0, 0], [4.29, 189.0, 10.51, 0, 1], [3.58, 215.2, 10.01, 0, 0], [3.98, 320.1, 8.14, 0, 1], [8.16, 50.6, 2.71, 140, 0]];
+  static MW_ARM_WIDTH = [0.336, 0.036, 8.15];
+  static MW_ARM_CONTRAST = 1.32;
+  static MW_ARM_FADE = 12;
+  static MW_ARM_FADE_IN = 45;
+  static MW_YOUNG = 0.1;
+  static MW_CLUSTERS = [0.5, 50, 0.1];
+  static MW_DUST = [0.34, 0.12, 0.1];
+  static MW_STIR = [[35, 14], [50, 7.5], [10, 14]];
+  static LIGHT_STARS = [0.95, 2.4, 3.2];
+  static ANDROMEDA_IMAGE = 512;
+  static ANDROMEDA_FOV = 3.2;
+  static MW_SUN_MOTION = [11.1, 10.5];
+  static SOURCE = `74,168,235`;
+  static STRIP_TOP = 570;
+  static STRIP_TALL = 300;
+  static PLANET_INK = [`#9a9a9a`, `#e8d3a0`, `#4a90e2`, `#c1440e`];
+  static SOLAR_FROM = 160;
+  static SOLAR_TO = 280;
+  static LOGO = `../orbitmines.com/orbitmines.com/public/logo.png`;
+  static PARTS = [`video.transport`, `video.to-source`, `video.to-solar`, `video.to-milkyway`, `video.milkyway`, `video.to-andromeda`, `video.collision`, `video.end`];
+  static galaxy(name: string): Sighted {
+    return (eq(name, `andromeda`) ? Video.ANDROMEDA : Video.MILKY_WAY);
+  }
+  static get per_kpc(): number {
+    return div(Video.FILM_RD, Video.MILKY_WAY.disc_scale);
+  }
+  static myr_per_tick(film: Measured): number {
+    let c = film.header[`clock`];
+    return div((div(elem(c, 1), elem(c, 0))), (mul(div(elem(c, 3), elem(c, 2)), Video.PER_MYR)));
+  }
+  static faster(film: Measured): number {
+    return div(elem(film.header[`clock`], 1), (div(elem(film.header[`clock`], 3), Video.LIGHT)));
+  }
+  static smooth(t: number): number {
+    let u = Fmt.min(1, Fmt.max(0, t));
+    return mul(mul(u, u), (sub(3, mul(2, u))));
+  }
+  static shot(id: string, what: string, shot: Shot): Picture {
+    let pic = new Picture({ id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: ((played: (Played | null)) => {
+      return new Sky({ shot: shot });
+    }) });
+    pic.on_request = true;
+    return pic;
+  }
+  static solar_meta(theory: Theory): number[] {
+    let r = theory.solar.record;
+    let at = 0;
+    for (let k = 0; k < r.names.length; k++) {
+      at = (eq(elem(r.names, k), `marks`) ? k : at);
+    };
+    let off = 0;
+    for (let k = 0; k < at; k++) {
+      off = add(off, elem(r.sizes, k));
+    };
+    let SOLAR = Measured.of(`solar-inner`);
+    let NAMES = SOLAR.header[`names`];
+    let PER = SOLAR.columns[`period`];
+    let PLANETS = range(NAMES.length).filter(((i: any) => {
+      return gt(elem(PER, i), 0);
+    }));
+    let earth_body = 0;
+    for (let k = 0; k < PLANETS.length; k++) {
+      earth_body = (eq(elem(NAMES, elem(PLANETS, k)), `Earth`) ? add(k, 1) : earth_body);
+    };
+    return [off, r.width, Math.round((div((sub(elem(r.sizes, at), 1)), 6))), earth_body];
+  }
+  static shot_after_solar(theory: Theory, id: string, what: string, shot: Shot): Picture {
+    let meta = Video.solar_meta(theory);
+    let stamp = theory.solar.record.stamp;
+    let pic = new Picture({ id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: ((played: (Played | null)) => {
+      let sky = new Sky({ shot: shot });
+      sky.meta = meta;
+      sky.sol_stamp = stamp;
+      return sky;
+    }) });
+    pic.uses = [`solar.inner`];
+    pic.on_request = true;
+    return pic;
+  }
+  static light(s: Surface, film: Measured, b0: number, b1: number, w: number, G: number, span: number, cx: number, cy: number, px: number, ci: number, side: number) {
+    let D = film.columns[`density`];
+    let Y = film.columns[`young`];
+    let U = film.columns[`dust`];
+    let top = 0;
+    let ytop = 0;
+    let utop = 0;
+    for (let c = 0; c < mul(G, G); c++) {
+      top = Fmt.max(top, add(elem(D, add(b0, c)), mul(w, (sub(elem(D, add(b1, c)), elem(D, add(b0, c)))))));
+      ytop = Fmt.max(ytop, add(elem(Y, add(b0, c)), mul(w, (sub(elem(Y, add(b1, c)), elem(Y, add(b0, c)))))));
+      utop = Fmt.max(utop, add(elem(U, add(b0, c)), mul(w, (sub(elem(U, add(b1, c)), elem(U, add(b0, c)))))));
+    };
+    let lt = Math.log((add(1, top)));
+    let rgb = [];
+    for (let row = 0; row < G; row++) {
+      let gy = sub(sub(G, 1), row);
+      for (let gx = 0; gx < G; gx++) {
+        let c = add(mul(gy, G), gx);
+        let o = Fmt.min(1, div(Math.log((add(add(1, elem(D, add(b0, c))), mul(w, (sub(elem(D, add(b1, c)), elem(D, add(b0, c)))))))), lt));
+        let y = Fmt.min(1, Math.sqrt((div((add(elem(Y, add(b0, c)), mul(w, (sub(elem(Y, add(b1, c)), elem(Y, add(b0, c))))))), ytop))));
+        let lo = mul(Math.sqrt(o), o);
+        let hii = Fmt.max(0, div((sub(y, 0.7)), 0.3));
+        let dim = sub(1, mul(0.7, Fmt.min(1, Math.sqrt((div((add(elem(U, add(b0, c)), mul(w, (sub(elem(U, add(b1, c)), elem(U, add(b0, c))))))), utop))))));
+        push(rgb, Fmt.min(255, mul(dim, (add(add(mul(lo, (add(130, mul(125, o)))), mul(mul(95, y), y)), mul(110, hii))))));
+        push(rgb, Fmt.min(255, mul(dim, (add(add(mul(lo, (add(140, mul(85, o)))), mul(mul(120, y), y)), mul(25, hii))))));
+        push(rgb, Fmt.min(255, mul(dim, (add(add(mul(lo, (sub(175, mul(55, o)))), mul(mul(165, y), y)), mul(70, hii))))));
+      };
+    };
+    let x0 = mul((sub(sub(0, span), cx)), px);
+    let y0 = sub(0, mul(mul((sub(span, cy)), px), ci));
+    let bw = mul(mul(2, span), px);
+    let bh = mul(mul(mul(2, span), px), ci);
+    let fade = Fmt.min(1, Fmt.max(0, div((sub(90, side)), 50)));
+    s.alpha(mul(0.3, fade));
+    s.field(rgb, G, G, x0, y0, bw, bh, Fmt.max(2, mul(2, side)));
+    s.alpha(mul(0.9, fade));
+    s.field(rgb, G, G, x0, y0, bw, bh, 0);
+    return s.alpha(1);
+  }
+  static sky(s: Surface, shot: Shot, film: Measured, tracks: (Measured | null), i: number, sol: (Measured | null), meta: number[]) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let H = film.header;
+    let n = shot.frames;
+    let t = (gt(n, 1) ? div(i, (sub(n, 1))) : 0);
+    let e = Video.smooth(t);
+    let FR = H[`frames`];
+    let u = mul((add(shot.from_at, mul((sub(shot.to_at, shot.from_at)), t))), (sub(FR, 1)));
+    let f0 = Fmt.min(Math.floor(u), sub(FR, 1));
+    let f1 = Fmt.min(add(f0, 1), sub(FR, 1));
+    let w = sub(u, f0);
+    let ez = (lt(shot.from_zoom, 1) ? sub(1, mul((sub(1, Video.smooth(div(t, 0.6)))), (sub(1, Video.smooth(div(t, 0.6)))))) : e);
+    let across = Math.exp((add(Math.log(shot.from_zoom), mul((sub(Math.log(shot.to_zoom), Math.log(shot.from_zoom))), ez))));
+    let px = div(s.height, across);
+    let has_sun = (!eq(tracks, null) && eq(tracks.header[`sun`], 0));
+    let sx = 0;
+    let sy = 0;
+    if (has_sun) {
+      let XY = tracks.columns[`xy`];
+      let m = tracks.header[`shown`];
+      sx = add(elem(XY, mul(mul(f0, m), 2)), mul(w, (sub(elem(XY, mul(mul(f1, m), 2)), elem(XY, mul(mul(f0, m), 2))))));
+      sy = add(elem(XY, add(mul(mul(f0, m), 2), 1)), mul(w, (sub(elem(XY, add(mul(mul(f1, m), 2), 1)), elem(XY, add(mul(mul(f0, m), 2), 1))))));
+    }
+    let look = (has_sun ? add(shot.from_sun, mul((sub(shot.to_sun, shot.from_sun)), e)) : 0);
+    let px_end = div(s.height, shot.to_zoom);
+    let away = (has_sun ? div(mul((sub(1, look)), px_end), px) : 0);
+    let cx = mul(sx, (sub(1, away)));
+    let cy = mul(sy, (sub(1, away)));
+    let ci = Math.cos((div(mul(shot.tilt, Math.PI), 180)));
+    let SF = (!eq(sol, null) ? sol.columns[`frames`] : []);
+    let sys = [0, 0, 0, 0, 0];
+    if (!eq(sol, null)) {
+      let FRS = sol.header[`frames`];
+      let at_f = Fmt.min(sub(FRS, 1), Video.SOLAR_TO);
+      let mk = ((f: number, k: number, c: number) => {
+        return elem(SF, add(add(add(mul(f, elem(meta, 1)), elem(meta, 0)), mul(6, k)), c));
+      });
+      let reach = 0;
+      for (let f = 0; f < FRS; f++) {
+        for (let k = 0; k < sub(elem(meta, 2), 1); k++) {
+          reach = Fmt.max(reach, Fmt.hypot(sub(mk(f, add(k, 1), 0), mk(f, 0, 0)), sub(mk(f, add(k, 1), 1), mk(f, 0, 1))));
+        };
+      };
+      let eb = elem(meta, 3);
+      let ex = mk(at_f, eb, 0);
+      let ey = mk(at_f, eb, 1);
+      let last = mul(2.1, (add(reach, Fmt.hypot(sub(ex, mk(at_f, 0, 0)), sub(ey, mk(at_f, 0, 1))))));
+      let pxs = mul(div(s.height, last), (div(shot.from_zoom, across)));
+      let sun_x = mul((sub(mk(at_f, 0, 0), ex)), pxs);
+      let sun_y = mul((sub(mk(at_f, 0, 1), ey)), pxs);
+      cx = sub(cx, div(sun_x, px));
+      cy = sub(cy, div(sun_y, (mul(px, ci))));
+      sys = [pxs, mk(at_f, 0, 0), mk(at_f, 0, 1), at_f, sub(1, Video.smooth(div(e, 0.3)))];
+    }
+    s.save;
+    s.translate(div(s.width, 2), div(s.height, 2));
+    s.rotate(sub(0, div(mul(shot.turn, Math.PI), 180)));
+    let G = H[`grid`];
+    let span = elem(H[`span`], 0);
+    let D = film.columns[`density`];
+    let cs = div(mul(2, span), G);
+    let b0 = mul(mul(f0, G), G);
+    let b1 = mul(mul(f1, G), G);
+    let top = 0;
+    for (let c = 0; c < mul(G, G); c++) {
+      top = Fmt.max(top, add(elem(D, add(b0, c)), mul(w, (sub(elem(D, add(b1, c)), elem(D, add(b0, c)))))));
+    };
+    let side = add(mul(cs, px), 0.6);
+    let half_w = add(div(s.width, 2), side);
+    if (eq(H[`young`], 1)) {
+      Video.light(s, film, b0, b1, w, G, span, cx, cy, px, ci, side);
+    } else {
+      s.alpha(Fmt.min(1, Fmt.max(0, div((sub(24, side)), 14))));
+      for (let gy = 0; gy < G; gy++) {
+        let y = mul(mul((sub(add(sub(0, span), mul((add(gy, 0.5)), cs)), cy)), px), ci);
+        if (lt(Math.abs(y), half_w)) {
+          for (let gx = 0; gx < G; gx++) {
+            let c = add(mul(gy, G), gx);
+            let v = add(elem(D, add(b0, c)), mul(w, (sub(elem(D, add(b1, c)), elem(D, add(b0, c))))));
+            if (gt(v, 0)) {
+              let x = mul((sub(add(sub(0, span), mul((add(gx, 0.5)), cs)), cx)), px);
+              if (lt(Math.abs(x), half_w)) {
+                let k = Fmt.min(1, div(Math.log((add(1, v))), Math.log((add(1, top)))));
+                let r = Math.round((add(40, mul(mul(215, k), k))));
+                let gr = Math.round((add(60, mul(190, k))));
+                let b = Math.round((add(110, mul(145, Fmt.min(1, mul(1.6, k))))));
+                s.fill_style(`rgb(${r},${gr},${b})`);
+                s.fill_rect(sub(x, div(side, 2)), sub(sub(0, y), div(mul(side, ci), 2)), side, add(mul(side, ci), 0.6));
+              }
+            }
+          };
+        }
+      };
+      s.alpha(1);
+    }
+    let lit = eq(H[`young`], 1);
+    if ((!eq(tracks, null) && gt(px, ((lit ? 6 : 12))))) {
+      let XY = tracks.columns[`xy`];
+      let m = tracks.header[`shown`];
+      let tags = tracks.header[`tags`];
+      s.alpha((lit ? Fmt.min(elem(Video.LIGHT_STARS, 0), div((sub(px, 6)), 14)) : Fmt.min(0.85, div((sub(px, 12)), 40))));
+      for (let k = 0; k < m; k++) {
+        let x = mul((sub(add(elem(XY, mul((add(mul(f0, m), k)), 2)), mul(w, (sub(elem(XY, mul((add(mul(f1, m), k)), 2)), elem(XY, mul((add(mul(f0, m), k)), 2)))))), cx)), px);
+        let y = mul(mul((sub(add(elem(XY, add(mul((add(mul(f0, m), k)), 2), 1)), mul(w, (sub(elem(XY, add(mul((add(mul(f1, m), k)), 2), 1)), elem(XY, add(mul((add(mul(f0, m), k)), 2), 1)))))), cy)), px), ci);
+        if ((lt(Math.abs(x), half_w) && lt(Math.abs(y), half_w))) {
+          let tg = elem(tags, k);
+          s.fill_style((ge(tg, 4) ? `#d4e6ff` : ((eq(tg, 1) || eq(tg, 3)) ? `#ffd9a0` : (eq(tg, 2) ? `#ffc7e0` : `#dfe8ff`))));
+          let sz = (lit ? ((ge(tg, 4) ? elem(Video.LIGHT_STARS, 2) : elem(Video.LIGHT_STARS, 1))) : 2.4);
+          s.fill_rect(sub(x, div(sz, 2)), sub(sub(0, y), div(sz, 2)), sz, sz);
+        }
+      };
+      s.alpha(1);
+    }
+    if ((!eq(sol, null) && gt(elem(sys, 4), 0.004))) {
+      let ax = mul((sub(sx, cx)), px);
+      let ay = mul(mul((sub(sy, cy)), px), ci);
+      let FRS = sol.header[`frames`];
+      let mk = ((f: number, k: number, c: number) => {
+        return elem(SF, add(add(add(mul(f, elem(meta, 1)), elem(meta, 0)), mul(6, k)), c));
+      });
+      for (let k = 0; k < sub(elem(meta, 2), 1); k++) {
+        let b = add(k, 1);
+        let ink = elem(Video.PLANET_INK, Fmt.min(3, k));
+        s.alpha(mul(0.85, elem(sys, 4)));
+        s.stroke_style(ink);
+        s.line_width(2);
+        s.begin_path;
+        for (let f = 0; f < FRS; f++) {
+          let x = add(ax, mul((sub(mk(f, b, 0), elem(sys, 1))), elem(sys, 0)));
+          let y = add(ay, mul((sub(mk(f, b, 1), elem(sys, 2))), elem(sys, 0)));
+          if (eq(f, 0)) {
+            s.move_to(x, sub(0, y));
+          } else {
+            s.line_to(x, sub(0, y));
+          }
+        };
+        s.stroke;
+        s.alpha(elem(sys, 4));
+        let x = add(ax, mul((sub(mk(elem(sys, 3), b, 0), elem(sys, 1))), elem(sys, 0)));
+        let y = add(ay, mul((sub(mk(elem(sys, 3), b, 1), elem(sys, 2))), elem(sys, 0)));
+        s.line_width(2.5);
+        s.begin_path;
+        s.arc(x, sub(0, y), 13, 0, (2 * Math.PI));
+        s.stroke;
+        s.fill_style(`#000000`);
+        s.begin_path;
+        s.arc(x, sub(0, y), 2.5, 0, (2 * Math.PI));
+        s.fill;
+      };
+      s.alpha(1);
+    }
+    if (has_sun) {
+      let x = mul((sub(sx, cx)), px);
+      let y = mul(mul((sub(sy, cy)), px), ci);
+      let big = (lt(shot.from_zoom, 1) ? sub(1, Video.smooth(mul(e, 3))) : 0);
+      s.fill_style(`#ffd23f`);
+      s.begin_path;
+      s.arc(x, sub(0, y), mul(4, (sub(1, big))), 0, (2 * Math.PI));
+      s.fill;
+      if (gt(big, 0)) {
+        s.alpha(big);
+        s.stroke_style(`#e0a526`);
+        s.line_width(3);
+        s.begin_path;
+        s.arc(x, sub(0, y), 26, 0, (2 * Math.PI));
+        s.stroke;
+        s.alpha(1);
+      }
+    }
+    s.restore;
+    let fade = Fmt.max((gt(shot.fade_in, 0) ? sub(1, div(i, (mul(shot.fade_in, Video.FPS)))) : 0), (gt(shot.fade_out, 0) ? sub(1, div((sub(sub(n, 1), i)), (mul(shot.fade_out, Video.FPS)))) : 0));
+    if (gt(fade, 0)) {
+      s.alpha(Fmt.min(1, fade));
+      s.fill_style(Galaxies.BACK);
+      s.fill_rect(0, 0, s.width, s.height);
+      return s.alpha(1);
+    }
+  }
+  static transport(theory: Theory): Picture {
+    let ink = new Ink({  });
+    let lanes = Video.transport_lanes(theory, ink);
+    let n = Math.round((mul(14, Video.FPS)));
+    let pic = new Picture({ id: `video.transport`, what: `G/S.v, Transport: a source carrying a quarter of a step a tick, on a line`, width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ((played: (Played | null)) => {
+      return new Banded({ inner: new Unrolling({ lanes: lanes, ink: ink, per: Video.per_tick(lanes) }), top: Video.STRIP_TOP, tall: Video.STRIP_TALL });
+    }) });
+    pic.on_request = true;
+    return pic;
+  }
+  static transport_lanes(theory: Theory, ink: Ink): Lane[] {
+    ink.every = true;
+    ink.top = 36;
+    let lanes = theory.transport_lanes(ink);
+    for (const l of [...lanes]) {
+      l.says = ``;
+    };
+    ink.centre = Strip.centre_of(lanes);
+    return lanes;
+  }
+  static per_tick(lanes: Lane[]): number {
+    return Math.floor((div(Math.round((mul(14, Video.FPS))), (add(lanes.length, 1)))));
+  }
+  static look(width: number, lane: Lane, ink: Ink): number[] {
+    let seen = false;
+    let lo = 0;
+    let hi = 0;
+    for (const sd of [...lane.sides]) {
+      let to = add(sd.at, sd.sign);
+      if (!(seen)) {
+        lo = sd.at;
+        hi = sd.at;
+        seen = true;
+      }
+      lo = Fmt.min(lo, Fmt.min(sd.at, to));
+      hi = Fmt.max(hi, Fmt.max(sd.at, to));
+    };
+    for (const p of [...lane.sources]) {
+      if (!(seen)) {
+        lo = p;
+        hi = p;
+        seen = true;
+      }
+      lo = Fmt.min(lo, sub(p, 1));
+      hi = Fmt.max(hi, add(p, 1));
+    };
+    let ext = add(Fmt.max(sub(ink.centre, lo), sub(hi, ink.centre)), 0.4);
+    let lanew = sub(width, mul(2, Strip.PAD));
+    let cell = div(lanew, (add(mul(2, ext), 1)));
+    let mid = add(Strip.PAD, div(lanew, 2));
+    let src = first(lane.sources);
+    let x0 = add(mid, mul((sub(src, ink.centre)), cell));
+    return [x0, add(add(Video.STRIP_TOP, ink.top), div((sub(Video.STRIP_TALL, ink.top)), 2)), cell, src, div((sub(Strip.PAD, x0)), cell), div((sub(sub(width, Strip.PAD), x0)), cell)];
+  }
+  static seen(p: number[], yaw: number, pitch: number, ox: number, oy: number, cell: number): number[] {
+    let x1 = sub(mul(elem(p, 0), Math.cos(yaw)), mul(elem(p, 2), Math.sin(yaw)));
+    let z1 = add(mul(elem(p, 0), Math.sin(yaw)), mul(elem(p, 2), Math.cos(yaw)));
+    let y1 = sub(mul(elem(p, 1), Math.cos(pitch)), mul(z1, Math.sin(pitch)));
+    let z2 = add(mul(elem(p, 1), Math.sin(pitch)), mul(z1, Math.cos(pitch)));
+    let f = div(60, (add(60, z2)));
+    return [add(ox, mul(mul(cell, f), x1)), sub(oy, mul(mul(cell, f), y1)), f];
+  }
+  static arrow(s: Surface, x: number, y: number, ux: number, uy: number, cell: number, a: number) {
+    let HEADW = Fmt.max(7, Fmt.min(12, mul(cell, 0.20)));
+    let REACH = mul(cell, 0.25);
+    let BAR = Fmt.max(2.5, Fmt.min(4.5, mul(cell, 0.075)));
+    let BASE = mul(HEADW, 0.45);
+    let TIP = mul(HEADW, 0.55);
+    let LEN = sub(REACH, BASE);
+    let SEEN = sub(TIP, div(BAR, 0.84));
+    s.line_width(BAR);
+    s.stroke_style(`rgba(${Ink.NEUTRAL},${mul(0.32, a)})`);
+    s.begin_path;
+    s.move_to(sub(x, mul(ux, (add(BASE, LEN)))), sub(y, mul(uy, (add(BASE, LEN)))));
+    s.line_to(sub(x, mul(ux, BASE)), sub(y, mul(uy, BASE)));
+    s.stroke;
+    s.stroke_style(`rgba(${Ink.NEUTRAL},${a})`);
+    s.begin_path;
+    s.move_to(x, y);
+    s.line_to(add(x, mul(ux, (add(SEEN, LEN)))), add(y, mul(uy, (add(SEEN, LEN)))));
+    s.stroke;
+    s.fill_style(`rgba(${Ink.NEUTRAL},${mul(0.97, a)})`);
+    s.begin_path;
+    s.move_to(add(x, mul(ux, TIP)), add(y, mul(uy, TIP)));
+    s.line_to(sub(sub(x, mul(ux, BASE)), mul(mul(uy, HEADW), 0.42)), add(sub(y, mul(uy, BASE)), mul(mul(ux, HEADW), 0.42)));
+    s.line_to(add(sub(x, mul(ux, BASE)), mul(mul(uy, HEADW), 0.42)), sub(sub(y, mul(uy, BASE)), mul(mul(ux, HEADW), 0.42)));
+    return s.fill;
+  }
+  static way(k: number, space: number): number[] {
+    let q = Math.floor((div(k, 2)));
+    let o = elem([[1, 0], [1, 1], [0, 1], [sub(0, 1), 1], [sub(0, 1), 0], [sub(0, 1), sub(0, 1)], [0, sub(0, 1)], [1, sub(0, 1)]], k);
+    let b = elem([[0.5, 0.5], [sub(0, 0.5), 0.5], [sub(0, 0.5), sub(0, 0.5)], [0.5, sub(0, 0.5)]], q);
+    let bz = (eq(mod(k, 2), 0) ? 0.5 : sub(0, 0.5));
+    return [add(elem(o, 0), mul((sub(elem(b, 0), elem(o, 0))), space)), add(elem(o, 1), mul((sub(elem(b, 1), elem(o, 1))), space)), mul(bz, space)];
+  }
+  static lattice(s: Surface, lane: Lane, look: number[], grow: number, ticks: number, fade: number, earth: number, ox: number, oy: number, cell: number, rays: number, dense_from: number, far: number) {
+    let plane = Video.smooth(div((sub(grow, 0.25)), 0.3));
+    let space = Video.smooth(div((sub(grow, 0.55)), 0.35));
+    let yaw = mul(0.55, space);
+    let pitch = mul(0.42, space);
+    let src = elem(look, 3);
+    let lo = elem(look, 4);
+    let hi = elem(look, 5);
+    let R = 7;
+    let a = mul(R, plane);
+    let b = mul(R, space);
+    let pt = ((p: number[]) => {
+      return Video.seen(p, yaw, pitch, ox, oy, cell);
+    });
+    let line = ((p: number[], q: number[], al: number) => {
+      if (gt(al, 0.004)) {
+        let P = pt(p);
+        let Q = pt(q);
+        s.stroke_style(`rgba(${Ink.NEUTRAL},${mul(0.16, al)})`);
+        s.line_width(1);
+        s.begin_path;
+        s.move_to(elem(P, 0), elem(P, 1));
+        s.line_to(elem(Q, 0), elem(Q, 1));
+        return s.stroke;
+      }
+    });
+    let dot = ((p: number[], al: number) => {
+      if (gt(al, 0.004)) {
+        let P = pt(p);
+        s.fill_style(`rgba(${Ink.NEUTRAL},${mul(0.6, al)})`);
+        s.begin_path;
+        s.arc(elem(P, 0), elem(P, 1), mul(2.6, elem(P, 2)), 0, (2 * Math.PI));
+        return s.fill;
+      }
+    });
+    let ilo = Math.round((sub(lane.points.reduce(((p: any, q: any) => {
+      return Fmt.min(p, q);
+    }), first(lane.points)), src)));
+    let ihi = Math.round((sub(lane.points.reduce(((p: any, q: any) => {
+      return Fmt.max(p, q);
+    }), first(lane.points)), src)));
+    for (let jj = 0; jj < add(mul(2, R), 1); jj++) {
+      let j = sub(jj, R);
+      for (let ll = 0; ll < add(mul(2, R), 1); ll++) {
+        let l = sub(ll, R);
+        let vis = mul(mul(fade, Fmt.min(1, Fmt.max(0, sub(add(a, 1), Math.abs(j))))), Fmt.min(1, Fmt.max(0, sub(add(b, 1), Math.abs(l)))));
+        if (gt(vis, 0.004)) {
+          line([lo, j, l], [hi, j, l], vis);
+          for (let ii = 0; ii < add(sub(ihi, ilo), 1); ii++) {
+            dot([add(ilo, ii), j, l], vis);
+          };
+          if (((gt(space, 0.01) && lt(j, R)) && lt(l, R))) {
+            for (let ii = 0; ii < sub(ihi, ilo); ii++) {
+              dot([add(add(ilo, ii), 0.5), add(j, 0.5), add(l, 0.5)], mul(vis, space));
+            };
+          }
+        }
+      };
+    };
+    for (let ii = 0; ii < add(sub(ihi, ilo), 1); ii++) {
+      let i = add(ilo, ii);
+      for (let ll = 0; ll < add(mul(2, R), 1); ll++) {
+        let l = sub(ll, R);
+        line([i, sub(0, a), l], [i, a, l], mul(mul(fade, plane), Fmt.min(1, Fmt.max(0, sub(add(b, 1), Math.abs(l))))));
+      };
+      for (let jj = 0; jj < add(mul(2, R), 1); jj++) {
+        let j = sub(jj, R);
+        line([i, j, sub(0, b)], [i, j, b], mul(mul(fade, space), Fmt.min(1, Fmt.max(0, sub(add(a, 1), Math.abs(j))))));
+      };
+    };
+    let T = Math.floor(ticks);
+    let ray = ((k: number, r: number, w: number) => {
+      if (((gt(w, 0.004) && ge(r, 1)) && le(r, far))) {
+        let d = Video.way(k, space);
+        let P = pt([mul(elem(d, 0), r), mul(elem(d, 1), r), mul(elem(d, 2), r)]);
+        let Q = pt([mul(elem(d, 0), (add(r, 0.25))), mul(elem(d, 1), (add(r, 0.25))), mul(elem(d, 2), (add(r, 0.25)))]);
+        let len = Fmt.hypot(sub(elem(Q, 0), elem(P, 0)), sub(elem(Q, 1), elem(P, 1)));
+        if (gt(len, 0.01)) {
+          return Video.arrow(s, elem(P, 0), elem(P, 1), div((sub(elem(Q, 0), elem(P, 0))), len), div((sub(elem(Q, 1), elem(P, 1))), len), mul(len, 4), mul(mul(w, rays), Fmt.min(1, sub(far, r))));
+        }
+      }
+    });
+    for (const sd of [...lane.sides]) {
+      ray((gt(sd.sign, 0) ? 0 : 4), add(Math.abs((sub(sd.at, src))), T), 1);
+    };
+    for (let m = 0; m < T; m++) {
+      let e = add(m, 1);
+      if ((eq(mod(e, 2), 1) || gt(e, dense_from))) {
+        for (let k = 0; k < 8; k++) {
+          ray(k, sub(add(1, T), e), (eq(mod(k, 4), 0) ? 1 : plane));
+        };
+      }
+    };
+    let P = pt([0, 0, 0]);
+    let half = Fmt.max(9, Fmt.min(18, mul(cell, 0.3)));
+    s.fill_style(`rgba(${Ink.SOURCE},${mul(0.14, (sub(1, earth)))})`);
+    s.fill_rect(sub(elem(P, 0), half), sub(elem(P, 1), half), mul(2, half), mul(2, half));
+    s.stroke_style(`rgba(${Ink.SOURCE},${mul(0.9, (sub(1, earth)))})`);
+    s.line_width(1.5);
+    s.stroke_rect(sub(elem(P, 0), half), sub(elem(P, 1), half), mul(2, half), mul(2, half));
+    if (gt(earth, 0)) {
+      s.fill_style(`rgba(${Ink.SOURCE},${earth})`);
+      s.begin_path;
+      s.arc(elem(P, 0), elem(P, 1), add(2.6, mul(7.4, earth)), 0, (2 * Math.PI));
+      return s.fill;
+    }
+  }
+  static source_camera(s: Surface, look: number[], grow: number): number[] {
+    let e = Video.smooth(div(grow, 0.3));
+    return [add(elem(look, 0), mul((sub(div(s.width, 2), elem(look, 0))), e)), add(elem(look, 1), mul((sub(div(s.height, 2), elem(look, 1))), e)), Math.exp((add(Math.log(elem(look, 2)), mul((sub(Math.log(95), Math.log(elem(look, 2)))), e))))];
+  }
+  static to_source(theory: Theory): Picture {
+    let ink = new Ink({  });
+    let lanes = Video.transport_lanes(theory, ink);
+    let n = Math.round((mul(4, Video.FPS)));
+    let pic = new Picture({ id: `video.to-source`, what: `one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)`, width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ((played: (Played | null)) => {
+      return new Growing({ n: n, lane: last(lanes), ink: ink, per: Video.per_tick(lanes) });
+    }) });
+    pic.on_request = true;
+    return pic;
+  }
+  static to_solar(theory: Theory): Picture {
+    let ink = new Ink({  });
+    let lanes = Video.transport_lanes(theory, ink);
+    let sol = theory.solar;
+    let r = sol.record;
+    let at = 0;
+    for (let k = 0; k < r.names.length; k++) {
+      at = (eq(elem(r.names, k), `marks`) ? k : at);
+    };
+    let off = 0;
+    for (let k = 0; k < at; k++) {
+      off = add(off, elem(r.sizes, k));
+    };
+    let n = Math.round((mul(8, Video.FPS)));
+    let pic = new Picture({ id: `video.to-solar`, what: `the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it`, width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ((played: (Played | null)) => {
+      return new Planets({ n: n, lane: last(lanes), ink: ink, per: Video.per_tick(lanes), stamp: r.stamp, off: off, width: r.width, bodies: Math.round((div((sub(elem(r.sizes, at), 1)), 6))) });
+    }) });
+    pic.uses = [`solar.inner`];
+    pic.on_request = true;
+    return pic;
+  }
+  static planets(s: Surface, t: number, lane: Lane, look: number[], ticks: number, film: Measured, off: number, width: number, bodies: number) {
+    let SOLAR = Measured.of(`solar-inner`);
+    if (eq(SOLAR, null)) {
+      fail(`solar-inner is not on disk - run \`npx ray data\` and try again`);
+    }
+    let NAMES = SOLAR.header[`names`];
+    let PER = SOLAR.columns[`period`];
+    let PLANETS = range(NAMES.length).filter(((i: any) => {
+      return gt(elem(PER, i), 0);
+    }));
+    let F = film.columns[`frames`];
+    let FR = film.header[`frames`];
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let fade = sub(1, Video.smooth(div((sub(t, 0.05)), 0.4)));
+    let rays = sub(1, Video.smooth(div((sub(t, 0.45)), 0.35)));
+    let earth = Video.smooth(div((sub(t, 0.3)), 0.3));
+    let e = Video.smooth(div(t, 0.92));
+    let come = Video.smooth(div((sub(t, 0.45)), 0.35));
+    let u = Fmt.min(sub(FR, 1), add(Video.SOLAR_FROM, mul((sub(Video.SOLAR_TO, Video.SOLAR_FROM)), t)));
+    let f0 = Math.floor(u);
+    let f1 = Fmt.min(add(f0, 1), sub(FR, 1));
+    let w = sub(u, f0);
+    let mark = ((f: number, k: number, c: number) => {
+      return elem(F, add(add(add(mul(f, width), off), mul(6, k)), c));
+    });
+    let where = ((k: number) => {
+      return [add(mark(f0, k, 0), mul(w, (sub(mark(f1, k, 0), mark(f0, k, 0))))), add(mark(f0, k, 1), mul(w, (sub(mark(f1, k, 1), mark(f0, k, 1)))))];
+    });
+    let reach = 0;
+    for (let f = 0; f < FR; f++) {
+      for (let k = 0; k < sub(bodies, 1); k++) {
+        reach = Fmt.max(reach, Fmt.hypot(sub(mark(f, add(k, 1), 0), mark(f, 0, 0)), sub(mark(f, add(k, 1), 1), mark(f, 0, 1))));
+      };
+    };
+    let earth_body = 0;
+    for (let k = 0; k < PLANETS.length; k++) {
+      earth_body = (eq(elem(NAMES, elem(PLANETS, k)), `Earth`) ? add(k, 1) : earth_body);
+    };
+    let E = where(earth_body);
+    let O = where(0);
+    let last = mul(2.1, (add(reach, Fmt.hypot(sub(elem(E, 0), elem(O, 0)), sub(elem(E, 1), elem(O, 1))))));
+    let across = Math.exp((add(Math.log((div(last, 180))), mul((sub(Math.log(last), Math.log((div(last, 180))))), e))));
+    let px = div(s.height, across);
+    let cx = elem(E, 0);
+    let cy = elem(E, 1);
+    let X = ((x: number) => {
+      return add(div(s.width, 2), mul((sub(x, cx)), px));
+    });
+    let Y = ((y: number) => {
+      return sub(div(s.height, 2), mul((sub(y, cy)), px));
+    });
+    if ((gt(fade, 0.004) || gt(rays, 0.004))) {
+      Video.lattice(s, lane, look, 1, add(ticks, mul(mul(300, t), t)), fade, earth, X(elem(E, 0)), Y(elem(E, 1)), div(mul(95, (div(last, 180))), across), rays, Math.floor(ticks), add(16, mul(40, Video.smooth(div(t, 0.4)))));
+    }
+    for (let k = 0; k < sub(bodies, 1); k++) {
+      let b = add(k, 1);
+      let ink = elem(Video.PLANET_INK, Fmt.min(3, k));
+      s.alpha(mul(0.85, come));
+      s.stroke_style(ink);
+      s.line_width(2);
+      s.begin_path;
+      for (let f = 0; f < FR; f++) {
+        if (eq(f, 0)) {
+          s.move_to(X(mark(f, b, 0)), Y(mark(f, b, 1)));
+        } else {
+          s.line_to(X(mark(f, b, 0)), Y(mark(f, b, 1)));
+        }
+      };
+      s.stroke;
+      let P = where(b);
+      let x = X(elem(P, 0));
+      let y = Y(elem(P, 1));
+      s.alpha((eq(b, earth_body) ? earth : come));
+      s.stroke_style(ink);
+      s.line_width(2.5);
+      s.begin_path;
+      s.arc(x, y, 13, 0, (2 * Math.PI));
+      s.stroke;
+      s.fill_style((eq(b, earth_body) ? `rgba(${Ink.SOURCE},${sub(1, come)})` : `#000000`));
+      s.begin_path;
+      s.arc(x, y, (eq(b, earth_body) ? add(mul(10, (sub(1, come))), mul(2.5, come)) : 2.5), 0, (2 * Math.PI));
+      s.fill;
+    };
+    s.alpha(come);
+    s.stroke_style(`#e0a526`);
+    s.line_width(3);
+    s.begin_path;
+    s.arc(X(elem(O, 0)), Y(elem(O, 1)), 26, 0, (2 * Math.PI));
+    s.stroke;
+    s.fill_style(`#000000`);
+    s.begin_path;
+    s.arc(X(elem(O, 0)), Y(elem(O, 1)), 3, 0, (2 * Math.PI));
+    s.fill;
+    return s.alpha(1);
+  }
+  static get end(): Picture {
+    let n = Math.round((mul(20, Video.FPS)));
+    let pic = new Picture({ id: `video.end`, what: `the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics`, width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ((played: (Played | null)) => {
+      return new EndCard({ n: n });
+    }) });
+    pic.images = [Video.LOGO];
+    pic.on_request = true;
+    return pic;
+  }
+  static end_card(s: Surface, i: number, n: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    s.alpha(Video.smooth(div(i, Video.FPS)));
+    let w = 1500;
+    s.image(Video.LOGO, div((sub(s.width, w)), 2), 330, w, div(w, 3));
+    s.text_align(`center`);
+    s.fill_style(Galaxies.SEEN);
+    s.font(`600 72px ui-sans-serif, system-ui, sans-serif`);
+    s.fill_text(`Physics Project`, div(s.width, 2), 960);
+    s.fill_style(`#3ddcff`);
+    s.font(`44px ui-sans-serif, system-ui, sans-serif`);
+    s.fill_text(`orbitmines.com/physics`, div(s.width, 2), 1060);
+    return s.alpha(1);
+  }
+  static get montage(): Picture {
+    let pic = Picture.still(`video`, `the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined`, Video.WIDTH, Video.HEIGHT, ((s: Surface) => {
+
+    }));
+    pic.parts = Video.PARTS;
+    pic.on_request = true;
+    return pic;
+  }
+}
+
+export class Shot extends Node {
+  get film_id(): string { return this.read("film_id"); }
+  set film_id(v: string) { this.write("film_id", v); }
+  get seconds(): number { return this.read("seconds"); }
+  set seconds(v: number) { this.write("seconds", v); }
+  get from_zoom(): number { return this.read("from_zoom"); }
+  set from_zoom(v: number) { this.write("from_zoom", v); }
+  get to_zoom(): number { return this.read("to_zoom"); }
+  set to_zoom(v: number) { this.write("to_zoom", v); }
+  get from_sun(): number { return this.read("from_sun"); }
+  set from_sun(v: number) { this.write("from_sun", v); }
+  get to_sun(): number { return this.read("to_sun"); }
+  set to_sun(v: number) { this.write("to_sun", v); }
+  get from_at(): number { return this.read("from_at"); }
+  set from_at(v: number) { this.write("from_at", v); }
+  get to_at(): number { return this.read("to_at"); }
+  set to_at(v: number) { this.write("to_at", v); }
+  get tilt(): number { return this.read("tilt"); }
+  set tilt(v: number) { this.write("tilt", v); }
+  get turn(): number { return this.read("turn"); }
+  set turn(v: number) { this.write("turn", v); }
+  get title(): string { return this.read("title"); }
+  set title(v: string) { this.write("title", v); }
+  get fade_in(): number { return this.read("fade_in"); }
+  set fade_in(v: number) { this.write("fade_in", v); }
+  get fade_out(): number { return this.read("fade_out"); }
+  set fade_out(v: number) { this.write("fade_out", v); }
+  get frames(): number {
+    return Math.round((mul(this.seconds, Video.FPS)));
+  }
+}
+
+export class Sky extends Painter {
+  get shot(): Shot { return this.read("shot"); }
+  set shot(v: Shot) { this.write("shot", v); }
+  get sol(): (Measured | null) { return this.read("sol", () => null); }
+  set sol(v: (Measured | null)) { this.write("sol", v); }
+  get meta(): number[] { return this.read("meta", () => []); }
+  set meta(v: number[]) { this.write("meta", v); }
+  get sol_stamp(): string { return this.read("sol_stamp", () => ``); }
+  set sol_stamp(v: string) { this.write("sol_stamp", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  get film(): (Measured | null) { return this.read("film", () => null); }
+  set film(v: (Measured | null)) { this.write("film", v); }
+  get tracks(): (Measured | null) { return this.read("tracks", () => null); }
+  set tracks(v: (Measured | null)) { this.write("tracks", v); }
+  frame(s: Surface, dt: number) {
+    if (eq(this.film, null)) {
+      this.film = Measured.of(this.shot.film_id);
+      this.tracks = Measured.of(`${this.shot.film_id}.stars`);
+    }
+    if (eq(this.film, null)) {
+      fail(`${this.shot.film_id} is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=${this.shot.film_id} deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts .`);
+    }
+    if ((gt(this.meta.length, 0) && eq(this.sol, null))) {
+      this.sol = Measured.of(`solar.inner.frames`);
+      if (eq(this.sol, null)) {
+        fail(`solar.inner is not recorded - run \`npx ray visuals solar.inner\` first`);
+      }
+      if (!eq(this.sol.header[`stamp`], this.sol_stamp)) {
+        fail(`solar.inner's recording is stale - run \`npx ray visuals solar.inner\` again`);
+      }
+    }
+    Video.sky(s, this.shot, this.film, this.tracks, this.shown_frames, this.sol, this.meta);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Band extends Surface {
+  get inner(): Surface { return this.read("inner"); }
+  set inner(v: Surface) { this.write("inner", v); }
+  fill_style(colour: string) {
+    return this.inner.fill_style(colour);
+  }
+  stroke_style(colour: string) {
+    return this.inner.stroke_style(colour);
+  }
+  line_width(w: number) {
+    return this.inner.line_width(w);
+  }
+  alpha(v: number) {
+    return this.inner.alpha(v);
+  }
+  fill_rect(x: number, y: number, w: number, h: number) {
+    return this.inner.fill_rect(x, y, w, h);
+  }
+  stroke_rect(x: number, y: number, w: number, h: number) {
+    return this.inner.stroke_rect(x, y, w, h);
+  }
+  clear_rect(x: number, y: number, w: number, h: number) {
+    return this.inner.clear_rect(x, y, w, h);
+  }
+  get begin_path() {
+    return this.inner.begin_path;
+  }
+  move_to(x: number, y: number) {
+    return this.inner.move_to(x, y);
+  }
+  line_to(x: number, y: number) {
+    return this.inner.line_to(x, y);
+  }
+  arc(x: number, y: number, r: number, start_at: number, end_at: number) {
+    return this.inner.arc(x, y, r, start_at, end_at);
+  }
+  get stroke() {
+    return this.inner.stroke;
+  }
+  get fill() {
+    return this.inner.fill;
+  }
+  font(name: string) {
+    return this.inner.font(name);
+  }
+  text_align(how: string) {
+    return this.inner.text_align(how);
+  }
+  text_baseline(how: string) {
+    return this.inner.text_baseline(how);
+  }
+  fill_text(t: string, x: number, y: number) {
+    return this.inner.fill_text(t, x, y);
+  }
+  measure(t: string): number {
+    return this.inner.measure(t);
+  }
+  get save() {
+    return this.inner.save;
+  }
+  get restore() {
+    return this.inner.restore;
+  }
+  translate(x: number, y: number) {
+    return this.inner.translate(x, y);
+  }
+  rotate(angle: number) {
+    return this.inner.rotate(angle);
+  }
+  dash(segments: number[]) {
+    return this.inner.dash(segments);
+  }
+  gradient_stroke(x0: number, x1: number, stops: string[], at: number[]) {
+    return this.inner.gradient_stroke(x0, x1, stops, at);
+  }
+  image(src: string, x: number, y: number, w: number, h: number) {
+    return this.inner.image(src, x, y, w, h);
+  }
+}
+
+export class Banded extends Painter {
+  get inner(): Painter { return this.read("inner"); }
+  set inner(v: Painter) { this.write("inner", v); }
+  get top(): number { return this.read("top"); }
+  set top(v: number) { this.write("top", v); }
+  get tall(): number { return this.read("tall"); }
+  set tall(v: number) { this.write("tall", v); }
+  frame(s: Surface, dt: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    s.save;
+    s.translate(0, this.top);
+    this.inner.frame(new Band({ width: s.width, height: this.tall, inner: s }), dt);
+    return s.restore;
+  }
+}
+
+export class Growing extends Painter {
+  get n(): number { return this.read("n"); }
+  set n(v: number) { this.write("n", v); }
+  get lane(): Lane { return this.read("lane"); }
+  set lane(v: Lane) { this.write("lane", v); }
+  get ink(): Ink { return this.read("ink"); }
+  set ink(v: Ink) { this.write("ink", v); }
+  get per(): number { return this.read("per"); }
+  set per(v: number) { this.write("per", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    s.fill_style(Galaxies.BACK);
+    s.fill_rect(0, 0, s.width, s.height);
+    let look = Video.look(s.width, this.lane, this.ink);
+    let grow = div(this.shown_frames, Fmt.max(1, sub(this.n, 1)));
+    let cam = Video.source_camera(s, look, grow);
+    Video.lattice(s, this.lane, look, grow, div(this.shown_frames, this.per), 1, 0, elem(cam, 0), elem(cam, 1), elem(cam, 2), 1, 1000000, 16);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class Planets extends Painter {
+  get n(): number { return this.read("n"); }
+  set n(v: number) { this.write("n", v); }
+  get lane(): Lane { return this.read("lane"); }
+  set lane(v: Lane) { this.write("lane", v); }
+  get ink(): Ink { return this.read("ink"); }
+  set ink(v: Ink) { this.write("ink", v); }
+  get per(): number { return this.read("per"); }
+  set per(v: number) { this.write("per", v); }
+  get stamp(): string { return this.read("stamp"); }
+  set stamp(v: string) { this.write("stamp", v); }
+  get off(): number { return this.read("off"); }
+  set off(v: number) { this.write("off", v); }
+  get width(): number { return this.read("width"); }
+  set width(v: number) { this.write("width", v); }
+  get bodies(): number { return this.read("bodies"); }
+  set bodies(v: number) { this.write("bodies", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  get film(): (Measured | null) { return this.read("film", () => null); }
+  set film(v: (Measured | null)) { this.write("film", v); }
+  frame(s: Surface, dt: number) {
+    if (eq(this.film, null)) {
+      this.film = Measured.of(`solar.inner.frames`);
+    }
+    if (eq(this.film, null)) {
+      fail(`solar.inner is not recorded - run \`npx ray visuals solar.inner\` first`);
+    }
+    if (!eq(this.film.header[`stamp`], this.stamp)) {
+      fail(`solar.inner's recording is stale - run \`npx ray visuals solar.inner\` again`);
+    }
+    let look = Video.look(s.width, this.lane, this.ink);
+    Video.planets(s, div(this.shown_frames, Fmt.max(1, sub(this.n, 1))), this.lane, look, div((add(sub(Math.round((mul(4, Video.FPS))), 1), this.shown_frames)), this.per), this.film, this.off, this.width, this.bodies);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
+export class EndCard extends Painter {
+  get n(): number { return this.read("n"); }
+  set n(v: number) { this.write("n", v); }
+  get shown_frames(): number { return this.read("shown_frames", () => 0); }
+  set shown_frames(v: number) { this.write("shown_frames", v); }
+  frame(s: Surface, dt: number) {
+    Video.end_card(s, this.shown_frames, this.n);
+    this.shown_frames = add(this.shown_frames, 1);
+  }
+}
+
 export const G = new (class G extends Theory {
   name = `G`;
   get lattice(): Geometry {
@@ -15440,6 +16397,9 @@ export const G = new (class G extends Theory {
     let ink = new Ink({  });
     ink.every = true;
     ink.top = 36;
+    return Strip.tell(`rule.transport`, `a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)`, this.transport_lanes(ink), ink);
+  }
+  transport_lanes(ink: Ink): Lane[] {
     let w = Strip.line(this, 21);
     let s = w.add(new Scripted({ at: new Vector({ components: [9] }), plan: [`+-`, ``, ``, ``, `+-`], weight: 4 }));
     s.moves = true;
@@ -15460,7 +16420,7 @@ export const G = new (class G extends Theory {
       now.says = ((went.length === 0) ? emitted : (((emitted.length === 0) ? went : `${went}, ${emitted}`)));
       push(lanes, now);
     };
-    return Strip.tell(`rule.transport`, `a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)`, lanes, ink);
+    return lanes;
   }
   get expansion(): Picture {
     let ink = new Ink({  });

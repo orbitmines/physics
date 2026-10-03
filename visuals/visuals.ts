@@ -7,7 +7,7 @@
  * `globalThis.__measured_save`, which only node installs.
  */
 import * as physics from "../languages/physics.ts/index.ts";
-const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Annulus, Simulation, Formed, Model, Sweep, Measure, Aggregate, Medium, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, BCC8, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
+const { G, World, Vertex, Ray, Boundary, Edge, Source, Geometry, Vector, Random, Rule, Theory, Field, Hole, Bodies, Around, Cell, Beam, Port, Rates, Grid, Solve, Piece, Reference, Setter, Notation, Surface, Measured, Recording, Played, Painter, Still, Pane, Picture, Fmt, Probe, Trial, Orbit, Setup, Body, Panel, Ink, Side, Lane, Strip, Sparc, Law, Galaxies, Annulus, Simulation, Formed, Model, Sweep, Measure, Aggregate, Medium, Sighted, Video, Shot, LINE2, SQUARE4, SQUARE8, CUBIC6, FCC12, CUBIC18, CUBIC26, BCC8, eq, lt, le, gt, ge, add, sub, mul, div, mod, neg, elem, first, last, sum, most, range, filled, many, contains, index_of, instance_of, sorted_by } = physics;
 
 /** bytes and a header, read back as named columns */
 export const read = (bytes: Uint8Array, header: any): any => {
@@ -64,6 +64,51 @@ export const VISUALS: Record<string, () => any> = {
   },
   "galaxy.rar": () => {
   return Galaxies.rar;
+  },
+  "video": () => {
+  return Video.montage;
+  },
+  "video.transport": () => {
+  return Video.transport(G);
+  },
+  "video.to-source": () => {
+  return Video.to_source(G);
+  },
+  "video.to-solar": () => {
+  return Video.to_solar(G);
+  },
+  "video.end": () => {
+  return Video.end;
+  },
+  "video.to-milkyway": () => {
+  return Video.shot_after_solar(G, `video.to-milkyway`, `from the Sun's place out to the whole Milky Way: the film's first stretch, the camera leaving the Sun's star`, new Shot({ film_id: `milkyway`, seconds: 6, from_zoom: 0.002, to_zoom: 60, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.1, tilt: 0, turn: 0, title: `The Milky Way`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.milkyway": () => {
+  return Video.shot(`video.milkyway`, `the Milky Way from its data, every star its own body in the medium, turning`, new Shot({ film_id: `milkyway`, seconds: 6, from_zoom: 60, to_zoom: 60, from_sun: 0, to_sun: 0, from_at: 0.1, to_at: 1, tilt: 0, turn: 0, title: `The Milky Way`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.to-milkyway.measured": () => {
+  return Video.shot_after_solar(G, `video.to-milkyway.measured`, `from the Sun's place out to the whole Milky Way as it is measured today: its bar, its arms and their young stars`, new Shot({ film_id: `milkyway.measured`, seconds: 6, from_zoom: 0.002, to_zoom: 60, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.1, tilt: 0, turn: 0, title: `The Milky Way`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.milkyway.measured": () => {
+  return Video.shot(`video.milkyway.measured`, `the Milky Way as it is measured today, every star its own body in the medium, turning at its own speed`, new Shot({ film_id: `milkyway.measured`, seconds: 6, from_zoom: 60, to_zoom: 60, from_sun: 0, to_sun: 0, from_at: 0.1, to_at: 1, tilt: 0, turn: 0, title: `The Milky Way`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.andromeda": () => {
+  return Video.shot(`video.andromeda`, `Andromeda from its data, seen as we see it: inclined 77 degrees, its long axis at 38`, new Shot({ film_id: `andromeda`, seconds: 6, from_zoom: 125, to_zoom: 125, from_sun: 0, to_sun: 0, from_at: 0, to_at: 1, tilt: 77, turn: 38, title: `Andromeda (M31)`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.to-andromeda": () => {
+  return Video.shot(`video.to-andromeda`, `from the Milky Way out until Andromeda is in the picture too`, new Shot({ film_id: `collision`, seconds: 4, from_zoom: 60, to_zoom: 240, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.03, tilt: 0, turn: 0, title: `The Milky Way and Andromeda`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.collision": () => {
+  return Video.shot(`video.collision`, `the Milky Way and Andromeda, closing at their measured 110 km/s (17 across) from much nearer than today's 785 kpc, then meeting`, new Shot({ film_id: `collision`, seconds: 18, from_zoom: 240, to_zoom: 240, from_sun: 0, to_sun: 0, from_at: 0.03, to_at: 1, tilt: 0, turn: 0, title: `The Milky Way and Andromeda`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.andromeda.measured": () => {
+  return Video.shot(`video.andromeda.measured`, `Andromeda as it is measured today - its young stars and dust off its own ultraviolet and far-infrared light - seen as we see it: inclined 77 degrees, its long axis at 38`, new Shot({ film_id: `andromeda.measured`, seconds: 6, from_zoom: 125, to_zoom: 125, from_sun: 0, to_sun: 0, from_at: 0, to_at: 1, tilt: 77, turn: 38, title: `Andromeda (M31)`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.to-andromeda.measured": () => {
+  return Video.shot(`video.to-andromeda.measured`, `from the Milky Way out until Andromeda is in the picture too`, new Shot({ film_id: `collision.measured`, seconds: 4, from_zoom: 18, to_zoom: 110, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.03, tilt: 0, turn: 0, title: `The Milky Way and Andromeda`, fade_in: 0, fade_out: 0 }));
+  },
+  "video.collision.measured": () => {
+  return Video.shot(`video.collision.measured`, `the Milky Way and Andromeda as measured today, from where the medium brings them 100 kpc apart, at their own speed`, new Shot({ film_id: `collision.measured`, seconds: 18, from_zoom: 110, to_zoom: 110, from_sun: 0, to_sun: 0, from_at: 0.03, to_at: 1, tilt: 0, turn: 0, title: `The Milky Way and Andromeda`, fade_in: 0, fade_out: 0 }));
   },
   "rule.annihilation": () => {
   return G.strip(`rule.annihilation`);

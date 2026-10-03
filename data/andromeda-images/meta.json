@@ -1,0 +1,9 @@
+{
+  "what": "Andromeda (M31) band by band, north up and east left, ANDROMEDA_IMAGE pixels a side over ANDROMEDA_FOV degrees, rows from the bottom",
+  "source": "https://alasky.cds.unistra.fr/hips-image-services/hips2fits",
+  "paper": "unWISE (Lang 2014), GALEX GR6/7 (Bianchi et al. 2017), Herschel SPIRE (Fritz et al. 2012, HELGA), cut out by hips2fits (CDS)",
+  "units": ["old: the survey's own units, 0 where it does not reach", "young: the survey's own units, 0 where it does not reach", "dust: the survey's own units, 0 where it does not reach"],
+  "names": [],
+  "columns": ["old", "young", "dust"],
+  "rows": 262144
+}

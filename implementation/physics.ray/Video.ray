@@ -1,0 +1,872 @@
+/*
+ * THE VIDEO (2560x1440, 60 frames a second): every scene its own visual, so each can be rendered and timed alone,
+ * and a montage that plays them in order. `RAY_FPS=60 RAY_BITRATE=40000000 npx ray visuals <id>`.
+ *
+ * A GALAXY FROM ITS DATA: `Sighted` is what was measured of one - masses in 10^10 suns, lengths in kpc, speeds in
+ * km/s, angles in degrees - and the film lays it in the medium in ONE set of lattice units for every galaxy: the
+ * Milky Way's disc scale length is FILM_RD c-bar (the stable disc's, galaxy.gpu.ts), so a kpc is FILM_RD / 2.6 c-bar
+ * and a galaxy's mass is the Milky Way's (which sets the circling speed the film launches at) times its own share.
+ * A real galaxy circles at ~8e-4 of c; the film's circle at ~0.015 c-bar a tick, some twenty times faster, and the
+ * picture says so (Video.clock_of).
+ */
+Sighted := class < name: String, disc_mass: Real, disc_scale: Real, bulge_mass: Real, bulge_scale: Real, circling: Real, sun: Real, inclination: Real, position_angle: Real, distance: Real, approach: Real, across: Real, source: String {
+  mass (): Real => this.disc_mass + this.bulge_mass
+}
+
+Video := class {
+  static WIDTH = 2560
+  static HEIGHT = 1440
+  static FPS = 60
+  /* the Milky Way's disc scale length in the film, c-bar */
+  static FILM_RD = 6
+  /* km/s over kpc, as radians a Myr */
+  static PER_MYR = 0.0010227
+  static LIGHT = 299792.458
+  /*
+   * Bland-Hawthorn & Gerhard 2016 (ARA&A 54, 529): 5.6e10 suns of stars (4.7-5.7) - as laid, the bar 1.83e10 and the
+   * discs round it 3.77e10 (MW_*, below) - the Sun 8.2 kpc out circling at 238 km/s
+   */
+  static MILKY_WAY = Sighted(name: "Milky Way", disc_mass: 3.77, disc_scale: 2.6, bulge_mass: 1.83, bulge_scale: 0.6, circling: 238, sun: 8.2, inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: "Bland-Hawthorn & Gerhard 2016")
+  /*
+   * Geehan et al. 2006 (MNRAS 366, 996): disc 8.4e10 suns, R_d 5.4 kpc, bulge 3.3e10 within 0.61 kpc; inclination 77
+   * degrees, the major axis at 38 degrees (Walterbos & Kennicutt 1987); 785 kpc away (McConnachie et al. 2005),
+   * coming at us at 110 km/s, 17 km/s across (van der Marel et al. 2012); circling at ~250 km/s (Chemin et al. 2009)
+   */
+  static ANDROMEDA = Sighted(name: "Andromeda (M31)", disc_mass: 8.4, disc_scale: 5.4, bulge_mass: 3.3, bulge_scale: 0.61, circling: 250, sun: 0, inclination: 77, position_angle: 38, distance: 785, approach: 110, across: 17, source: "Geehan et al. 2006, van der Marel et al. 2012")
+  /*
+   * THE MILKY WAY AS IT IS NOW, laid from what is measured of it (RAY_GALAXY milkyway/collision; RAY_LAID=smooth lays
+   * the plain exponential disc and Hernquist bulge instead). Masses in 1e10 suns, lengths in kpc, angles in degrees,
+   * azimuths beta from the Sun's direction about the middle, growing the way the disc turns.
+   * THE BAR, all of it: Sormani et al. 2022 (MNRAS 514, L1, table 1), the analytic fit to the made-to-measure model of
+   * Portail et al. 2017 (star counts and motions of the bulge and the long bar), seen from above (its density summed
+   * over z): MW_BAR1 the X-shaped bulge/bar [rho_1, x_1, y_1, z_1, c_par, c_perp, m, alpha, n, c, x_c, y_c, r_cut],
+   *   rho_1 sech(a^m) [1 + alpha (e^(-a_+^n) + e^(-a_-^n))] e^(-(r / r_cut)^2),
+   *   a = {[(|x|/x_1)^c_perp + (|y|/y_1)^c_perp]^(c_par/c_perp) + (|z|/z_1)^c_par}^(1/c_par),
+   *   a_+- = [((x +- c z)/x_c)^2 + (y/y_c)^2]^(1/2), r^2 = x^2 + y^2 + z^2;
+   * MW_BAR2, MW_BAR3 (the long bar) [rho_i, x_i, y_i, z_i, n_i, c_perp_i, R_out, R_in, n_out, n_in],
+   *   rho_i e^(-a_i^n_i) sech^2(z/z_i) e^(-(R/R_out)^n_out) e^(-(R_in/R)^n_in), a_i = [(|x|/x_i)^c + (|y|/y_i)^c]^(1/c);
+   * their masses 1.28, 0.33, 0.22 (the paper's), the bar's long axis MW_BAR_ANGLE 27 degrees from the Sun's line
+   * (Wegg & Gerhard 2013, the near end on the side the disc turns towards).
+   * THE DISCS round it (the paper's own disc is fitted to the inner Galaxy only, and it says to take another for the
+   * rest): Bland-Hawthorn & Gerhard 2016's thin (R_d 2.6) and thick (R_d 2.0) discs in their 3.5 : 0.6, together the
+   * 5.6 of all the stars less the bar's 1.83, each e^(-R/R_d) e^(-MW_DISC_HOLE / R) - the hole where the bar stands,
+   * Sormani et al.'s R_cut. MW_DISCS [mass, R_d, armed].
+   * THE ARMS, whole: Hou & Han 2014 (A&A 569, A125, table 3), the four-arm logarithmic model fitted to all three
+   * kinds of arm tracer (HII regions, giant molecular clouds, methanol masers) at R_0 8.3 kpc and 239 km/s:
+   * ln(r / R_i) = (theta - theta_i) tan(psi_i), theta from the x axis anticlockwise with the Sun on the y axis (theta 90),
+   * growing against the disc's turn. MW_ARMS [R_i, theta_i, psi_i, theta_end, old]: Norma, Scutum-Centaurus,
+   * Sagittarius-Carina, Perseus - each from its start (near the bar) out to the disc's edge (theta_end 0) - and the
+   * Local Arm, a short segment from near Perseus to near Carina (theta_end 140: their description, not a fit).
+   * Of the old stars (the mass) the thin disc carries the two the old stars trace (old 1; Drimmel 2000, Drimmel &
+   * Spergel 2001), Scutum-Centaurus and Perseus, MW_ARM_CONTRAST 1.32 over between them (K band). The young stars
+   * (MW_YOUNG of the stars' count, next to no mass - the light the picture shows, not the pull) lie along all five.
+   * Width (1 sigma across the arm) 0.336 + 0.036 (R - 8.15) kpc (Reid et al. 2019, ApJ 885, 131).
+   */
+  static MW_BAR1 = [0.316, 0.490, 0.392, 0.229, 1.991, 2.232, 0.873, 0.626, 1.940, 1.342, 0.751, 0.469, 4.370]
+  static MW_BAR2 = [0.050, 5.364, 0.959, 0.611, 3.051, 0.970, 3.190, 0.558, 16.731, 3.196]
+  static MW_BAR3 = [1743.049, 0.478, 0.267, 0.252, 0.980, 1.879, 2.204, 7.607, -27.291, 1.630]
+  static MW_BAR_MASSES = [1.28, 0.33, 0.22]
+  static MW_BAR_ANGLE = 27
+  static MW_DISCS = [[3.22, 2.6, 1], [0.55, 2.0, 0]]
+  static MW_DISC_HOLE = 4.688
+  static MW_ARMS = [[3.27, 38.5, 9.87, 0, 0], [4.29, 189.0, 10.51, 0, 1], [3.58, 215.2, 10.01, 0, 0], [3.98, 320.1, 8.14, 0, 1], [8.16, 50.6, 2.71, 140, 0]]
+  static MW_ARM_WIDTH = [0.336, 0.036, 8.15]
+  static MW_ARM_CONTRAST = 1.32
+  /* an arm fades in from its start over MW_ARM_FADE_IN degrees of azimuth and out past its end over MW_ARM_FADE (1 sigma) - a picture's choice, not a measurement: where an arm begins near the bar is not sharp in the data */
+  static MW_ARM_FADE = 12
+  static MW_ARM_FADE_IN = 45
+  static MW_YOUNG = 0.1
+  /*
+   * MW_CLUSTERS [share, stars, radius kpc]: young stars are born together (Lada & Lada 2003), so half of them are laid
+   * in groups of 50 within ~0.1 kpc of one place on an arm - the knots the pink of their gas marks; how many and how
+   * big is the picture's choice. MW_DUST [inwards kpc, width kpc, share]: the dust lane along each arm's inner edge,
+   * 0.34 kpc inside the arm's middle (Vallee 2014, ApJS 215, 1: hot dust to mid-arm CO, 340 +- 56 pc), its width the
+   * picture's; laid as next-to-massless tracers (MW_DUST[2] of the stars' count) that dim the light where they gather
+   */
+  static MW_CLUSTERS = [0.5, 50, 0.1]
+  static MW_DUST = [0.34, 0.12, 0.1]
+  /*
+   * HOW THEY MOVE, as measured: MW_STIR [sigma_R at the Sun km/s, its radial scale kpc] for the thin disc (35, 14) and the
+   * thick (50, 7.5) - Bland-Hawthorn & Gerhard 2016 (RAVE, Piffl et al. 2014), sigma_R e^(-(R - R_0) / R_sigma), sigma_phi
+   * off the epicycles, the mean circling short of the pull's by the asymmetric drift of that stir - and the young
+   * (10, 14), the massive young stars moving within ~10 km/s of circling (Reid et al. 2019's prior on their own motions).
+   * The bar's stars are launched as before (Toomre's Q): its own orbits are a dynamical model's, not a measurement's.
+   * MW_SUN_MOTION [inwards, ahead] km/s: the Sun's own motion off circling, 11.1 towards the middle (Reid et al. 2019)
+   * and 10.5 ahead (Bland-Hawthorn & Gerhard 2016; 248 in all at 238 circling)
+   */
+  static MW_STIR = [[35, 14], [50, 7.5], [10, 14]]
+  /* over a film drawn as light, its shown stars: [how opaque at most, an old star's size px, a young one's] - the look "B" (the one chosen); a softer one ("D") is [0.55, 1.8, 2.4] */
+  static LIGHT_STARS = [0.95, 2.4, 3.2]
+  /* Andromeda's images (data/andromeda-images, Catalogue.ray): pixels a side, and degrees across */
+  static ANDROMEDA_IMAGE = 512
+  static ANDROMEDA_FOV = 3.2
+  static MW_SUN_MOTION = [11.1, 10.5]
+  static galaxy (name: String): Sighted => name == "andromeda" ? Video.ANDROMEDA : Video.MILKY_WAY
+  /* c-bar a kpc: one scale for every galaxy in the film */
+  static per_kpc (): Real => Video.FILM_RD / Video.MILKY_WAY.disc_scale
+  /* Myr a film tick: the film's turn against the real one at the same place (header clock: [R c-bar, v c-bar a tick, R kpc, v km/s]) */
+  static myr_per_tick (film: Measured): Real => {
+    c := film.header["clock"]
+    (c[1] / c[0]) / (c[3] / c[2] * Video.PER_MYR)
+  }
+  /* how many times faster than a real galaxy (its speed as a share of light's) the film's stars circle */
+  static faster (film: Measured): Real => film.header["clock"][1] / (film.header["clock"][3] / Video.LIGHT)
+  static smooth (t: Real): Real => {
+    u := Fmt.min(1, Fmt.max(0, t))
+    u * u * (3 - 2 * u)
+  }
+}
+
+/*
+ * ONE SHOT OF A GALAXY FILM: the camera eases (in the logarithm of its reach) from one view to another while the film
+ * plays from `from_at` to `to_at` of its length. `from_zoom`/`to_zoom`: how many c-bar the screen's height holds;
+ * `from_sun`/`to_sun`: 1 looks at the Sun's star, 0 at the film's middle; `tilt`/`turn`: the disc as seen from us
+ * (inclination, position angle, degrees); `fade_in`/`fade_out` in seconds
+ */
+Shot := class < film_id: String, seconds: Real, from_zoom: Real, to_zoom: Real, from_sun: Real, to_sun: Real, from_at: Real, to_at: Real, tilt: Real, turn: Real, title: String, fade_in: Real, fade_out: Real {
+  frames (): N => (this.seconds * Video.FPS).round
+}
+
+Video += {
+  /* a galaxy film as a video piece, rendered only when named; its measurement is read when it is painted */
+  static shot (id: String, what: String, shot: Shot): Picture => {
+    pic := Picture(id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: (played: Played?) => Sky(shot: shot))
+    pic.on_request = true
+    pic
+  }
+  /* where solar.inner's recording keeps its bodies: [marks offset in a frame, a frame's width, bodies, the Earth's body] */
+  static solar_meta (theory: Theory): N[] => {
+    r := theory.solar.record
+    at := 0
+    Array.range(r.names.length).for(k => { at = r.names[k] == "marks" ? k : at })
+    off := 0
+    Array.range(at).for(k => { off = off + r.sizes[k] })
+    SOLAR := Measured.of("solar-inner")
+    NAMES := SOLAR.header["names"]
+    PER := SOLAR.columns["period"]
+    PLANETS := Array.range(NAMES.length).filter(i => PER[i] > 0)
+    earth_body := 0
+    Array.range(PLANETS.length).for(k => { earth_body = NAMES[PLANETS[k]] == "Earth" ? k + 1 : earth_body })
+    [off, r.width, ((r.sizes[at] - 1) / 6).round, earth_body]
+  }
+  /* a galaxy shot that opens on video.to-solar's last frame (the inner planets of solar.inner's run round the Earth) and draws back from it */
+  static shot_after_solar (theory: Theory, id: String, what: String, shot: Shot): Picture => {
+    meta := Video.solar_meta(theory)
+    stamp := theory.solar.record.stamp
+    pic := Picture(id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: (played: Played?) => {
+      sky := Sky(shot: shot)
+      sky.meta = meta
+      sky.sol_stamp = stamp
+      sky
+    })
+    pic.uses = ["solar.inner"]
+    pic.on_request = true
+    pic
+  }
+  /*
+   * A GALAXY'S LIGHT, smooth (films with young stars, header young 1): the old stars (the mass) warm where they crowd -
+   * the bar and bulge - and cool and faint out in the disc, the young stars blue-white along the arms, and where the
+   * young crowd most a pink of the gas they light; the dust (header dust) dimming it all where it gathers; each cell's colour added, drawn as one picture smoothed between cells
+   * with a soft glow under it (not as blocks). The colours are the picture's choice; where the stars are is the film's
+   */
+  static light (s: Surface, film: Measured, b0: N, b1: N, w: Real, G: N, span: Real, cx: Real, cy: Real, px: Real, ci: Real, side: Real) => {
+    D := film.columns["density"]
+    Y := film.columns["young"]
+    U := film.columns["dust"]
+    top := 0
+    ytop := 0
+    utop := 0
+    Array.range(G * G).for(c => {
+      top = Fmt.max(top, D[b0 + c] + w * (D[b1 + c] - D[b0 + c]))
+      ytop = Fmt.max(ytop, Y[b0 + c] + w * (Y[b1 + c] - Y[b0 + c]))
+      utop = Fmt.max(utop, U[b0 + c] + w * (U[b1 + c] - U[b0 + c]))
+    })
+    lt := (1 + top).ln
+    rgb := []
+    Array.range(G).for(row => {
+      gy := G - 1 - row
+      Array.range(G).for(gx => {
+        c := gy * G + gx
+        o := Fmt.min(1, (1 + D[b0 + c] + w * (D[b1 + c] - D[b0 + c])).ln / lt)
+        /* the young as their count goes (a square root, not a logarithm): the arms fade outwards with the disc as they do, not lit evenly to the edge */
+        y := Fmt.min(1, ((Y[b0 + c] + w * (Y[b1 + c] - Y[b0 + c])) / ytop).sqrt)
+        /* the old stars: the whole disc lit (not only its crowded middle), white-blue out in it and warm where they crowd */
+        lo := o.sqrt * o
+        hii := Fmt.max(0, (y - 0.7) / 0.3)
+        /* the dust dims what is behind it, most where it gathers most */
+        dim := 1 - 0.7 * Fmt.min(1, ((U[b0 + c] + w * (U[b1 + c] - U[b0 + c])) / utop).sqrt)
+        rgb.push(Fmt.min(255, dim * (lo * (130 + 125 * o) + 95 * y * y + 110 * hii)))
+        rgb.push(Fmt.min(255, dim * (lo * (140 + 85 * o) + 120 * y * y + 25 * hii)))
+        rgb.push(Fmt.min(255, dim * (lo * (175 - 55 * o) + 165 * y * y + 70 * hii)))
+      })
+    })
+    /* the whole grid's box on the screen, the top row the far side */
+    x0 := (0 - span - cx) * px
+    y0 := 0 - (span - cy) * px * ci
+    bw := 2 * span * px
+    bh := 2 * span * px * ci
+    /* the galaxy comes in as the camera draws back far enough to see its cells (smoothed, bigger cells still read) */
+    fade := Fmt.min(1, Fmt.max(0, (90 - side) / 50))
+    s.alpha(0.3 * fade)
+    s.field(rgb, G, G, x0, y0, bw, bh, Fmt.max(2, 2 * side))
+    s.alpha(0.9 * fade)
+    s.field(rgb, G, G, x0, y0, bw, bh, 0)
+    s.alpha(1)
+  }
+  /* the frame of a shot: the film's density, the tracked stars, the Sun, and what it is */
+  static sky (s: Surface, shot: Shot, film: Measured, tracks: Measured?, i: N, sol: Measured?, meta: N[]) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    H := film.header
+    n := shot.frames
+    t := n > 1 ? i / (n - 1) : 0
+    e := Video.smooth(t)
+    FR := H["frames"]
+    u := (shot.from_at + (shot.to_at - shot.from_at) * t) * (FR - 1)
+    f0 := Fmt.min(u.floor, FR - 1)
+    f1 := Fmt.min(f0 + 1, FR - 1)
+    w := u - f0
+    /* from inside the solar system the empty decades go by fast (the zoom eased out, not in and out), so the galaxy is on the screen most of the shot */
+    ez := shot.from_zoom < 1 ? 1 - (1 - Video.smooth(t / 0.6)) * (1 - Video.smooth(t / 0.6)) : e
+    across := (shot.from_zoom.ln + (shot.to_zoom.ln - shot.from_zoom.ln) * ez).exp
+    px := s.height / across
+    /* the Sun's star, where the film keeps one: its place between the two frames */
+    has_sun := tracks != None & tracks.header["sun"] == 0
+    sx := 0
+    sy := 0
+    if has_sun {
+      XY := tracks.columns["xy"]
+      m := tracks.header["shown"]
+      sx = XY[f0 * m * 2] + w * (XY[f1 * m * 2] - XY[f0 * m * 2])
+      sy = XY[f0 * m * 2 + 1] + w * (XY[f1 * m * 2 + 1] - XY[f0 * m * 2 + 1])
+    }
+    /*
+     * the camera: where the Sun's star sits on the screen is eased in PIXELS - from the middle (looking at it) to where
+     * it is at the shot's last scale - so however fast the zoom runs, the Sun never leaves the screen on the way
+     */
+    look := has_sun ? shot.from_sun + (shot.to_sun - shot.from_sun) * e : 0
+    px_end := s.height / shot.to_zoom
+    away := has_sun ? (1 - look) * px_end / px : 0
+    cx := sx * (1 - away)
+    cy := sy * (1 - away)
+    ci := (shot.tilt * Real.PI / 180).cos
+    /*
+     * COMING FROM THE SOLAR SYSTEM (`sol`, solar.inner's recording): the shot opens on the last scene's frame - the
+     * Earth in the middle, the Sun and the planets of the run round it at that scene's last scale - and the system
+     * shrinks with the camera into the Sun's star, which the galaxy's camera keeps under the Sun
+     */
+    SF := sol != None ? sol.columns["frames"] : []
+    sys := [0, 0, 0, 0, 0]
+    if sol != None {
+      FRS := sol.header["frames"]
+      at_f := Fmt.min(FRS - 1, Video.SOLAR_TO)
+      mk := (f: N, k: N, c: N): Real => SF[f * meta[1] + meta[0] + 6 * k + c]
+      reach := 0
+      Array.range(FRS).for(f => { Array.range(meta[2] - 1).for(k => { reach = Fmt.max(reach, Fmt.hypot(mk(f, k + 1, 0) - mk(f, 0, 0), mk(f, k + 1, 1) - mk(f, 0, 1))) }) })
+      eb := meta[3]
+      ex := mk(at_f, eb, 0)
+      ey := mk(at_f, eb, 1)
+      last := 2.1 * (reach + Fmt.hypot(ex - mk(at_f, 0, 0), ey - mk(at_f, 0, 1)))
+      pxs := s.height / last * (shot.from_zoom / across)
+      sun_x := (mk(at_f, 0, 0) - ex) * pxs
+      sun_y := (mk(at_f, 0, 1) - ey) * pxs
+      cx = cx - sun_x / px
+      cy = cy - sun_y / (px * ci)
+      sys = [pxs, mk(at_f, 0, 0), mk(at_f, 0, 1), at_f, 1 - Video.smooth(e / 0.3)]
+    }
+    s.save
+    s.translate(s.width / 2, s.height / 2)
+    s.rotate(0 - shot.turn * Real.PI / 180)
+    /* the density, the two frames either side mixed */
+    G := H["grid"]
+    span := H["span"][0]
+    D := film.columns["density"]
+    cs := 2 * span / G
+    b0 := f0 * G * G
+    b1 := f1 * G * G
+    top := 0
+    Array.range(G * G).for(c => { top = Fmt.max(top, D[b0 + c] + w * (D[b1 + c] - D[b0 + c])) })
+    side := cs * px + 0.6
+    half_w := s.width / 2 + side
+    if H["young"] == 1 {
+      /* films that keep the young stars: their light, drawn smooth (Video.light) */
+      Video.light(s, film, b0, b1, w, G, span, cx, cy, px, ci, side)
+    } else {
+      /* a cell wider than the screen is no picture of anything: the galaxy comes in as the camera draws back far enough to see cells */
+      s.alpha(Fmt.min(1, Fmt.max(0, (24 - side) / 14)))
+      Array.range(G).for(gy => {
+        y := (0 - span + (gy + 0.5) * cs - cy) * px * ci
+        if y.abs < half_w {
+          Array.range(G).for(gx => {
+            c := gy * G + gx
+            v := D[b0 + c] + w * (D[b1 + c] - D[b0 + c])
+            if v > 0 {
+              x := (0 - span + (gx + 0.5) * cs - cx) * px
+              if x.abs < half_w {
+                k := Fmt.min(1, (1 + v).ln / (1 + top).ln)
+                r := (40 + 215 * k * k).round
+                gr := (60 + 190 * k).round
+                b := (110 + 145 * Fmt.min(1, 1.6 * k)).round
+                s.fill_style("rgb({r},{gr},{b})")
+                s.fill_rect(x - side / 2, 0 - y - side * ci / 2, side, side * ci + 0.6)
+              }
+            }
+          })
+        }
+      })
+      s.alpha(1)
+    }
+    /* the tracked stars: points once a c-bar is wide enough to tell them apart */
+    lit := H["young"] == 1
+    if tracks != None & px > (lit ? 6 : 12) {
+      XY := tracks.columns["xy"]
+      m := tracks.header["shown"]
+      tags := tracks.header["tags"]
+      /* over a film drawn as light the stars are what gives it grain: sooner in and brighter */
+      s.alpha(lit ? Fmt.min(Video.LIGHT_STARS[0], (px - 6) / 14) : Fmt.min(0.85, (px - 12) / 40))
+      Array.range(m).for(k => {
+        x := (XY[(f0 * m + k) * 2] + w * (XY[(f1 * m + k) * 2] - XY[(f0 * m + k) * 2]) - cx) * px
+        y := (XY[(f0 * m + k) * 2 + 1] + w * (XY[(f1 * m + k) * 2 + 1] - XY[(f0 * m + k) * 2 + 1]) - cy) * px * ci
+        if x.abs < half_w & y.abs < half_w {
+          tg := tags[k]
+          s.fill_style(tg >= 4 ? "#d4e6ff" : tg == 1 | tg == 3 ? "#ffd9a0" : tg == 2 ? "#ffc7e0" : "#dfe8ff")
+          sz := lit ? (tg >= 4 ? Video.LIGHT_STARS[2] : Video.LIGHT_STARS[1]) : 2.4
+          s.fill_rect(x - sz / 2, 0 - y - sz / 2, sz, sz)
+        }
+      })
+      s.alpha(1)
+    }
+    /* the solar system the last scene ended on, its orbits the paths the run traced, going as it shrinks */
+    if sol != None & sys[4] > 0.004 {
+      /* anchored on the Sun star: the system is where its Sun is */
+      ax := (sx - cx) * px
+      ay := (sy - cy) * px * ci
+      FRS := sol.header["frames"]
+      mk := (f: N, k: N, c: N): Real => SF[f * meta[1] + meta[0] + 6 * k + c]
+      Array.range(meta[2] - 1).for(k => {
+        b := k + 1
+        ink := Video.PLANET_INK[Fmt.min(3, k)]
+        s.alpha(0.85 * sys[4])
+        s.stroke_style(ink)
+        s.line_width(2)
+        s.begin_path
+        Array.range(FRS).for(f => {
+          x := ax + (mk(f, b, 0) - sys[1]) * sys[0]
+          y := ay + (mk(f, b, 1) - sys[2]) * sys[0]
+          if f == 0 { s.move_to(x, 0 - y) } else { s.line_to(x, 0 - y) }
+        })
+        s.stroke
+        s.alpha(sys[4])
+        x := ax + (mk(sys[3], b, 0) - sys[1]) * sys[0]
+        y := ay + (mk(sys[3], b, 1) - sys[2]) * sys[0]
+        s.line_width(2.5)
+        s.begin_path
+        s.arc(x, 0 - y, 13, 0, Real.TAU)
+        s.stroke
+        s.fill_style("#000000")
+        s.begin_path
+        s.arc(x, 0 - y, 2.5, 0, Real.TAU)
+        s.fill
+      })
+      s.alpha(1)
+    }
+    /* the Sun: its star, drawn as the Sun is drawn in the scene before (no text anywhere in the video) */
+    if has_sun {
+      x := (sx - cx) * px
+      y := (sy - cy) * px * ci
+      /* coming from the solar system (a shot that starts inside it), the Sun is first solar.inner's gold ring, and closes to a point */
+      big := shot.from_zoom < 1 ? 1 - Video.smooth(e * 3) : 0
+      s.fill_style("#ffd23f")
+      s.begin_path
+      s.arc(x, 0 - y, 4 * (1 - big), 0, Real.TAU)
+      s.fill
+      if big > 0 {
+        s.alpha(big)
+        s.stroke_style("#e0a526")
+        s.line_width(3)
+        s.begin_path
+        s.arc(x, 0 - y, 26, 0, Real.TAU)
+        s.stroke
+        s.alpha(1)
+      }
+    }
+    s.restore
+    /* the fades, to black */
+    fade := Fmt.max(shot.fade_in > 0 ? 1 - i / (shot.fade_in * Video.FPS) : 0, shot.fade_out > 0 ? 1 - (n - 1 - i) / (shot.fade_out * Video.FPS) : 0)
+    if fade > 0 {
+      s.alpha(Fmt.min(1, fade))
+      s.fill_style(Galaxies.BACK)
+      s.fill_rect(0, 0, s.width, s.height)
+      s.alpha(1)
+    }
+  }
+}
+
+/* a shot, frame by frame; the film is read when it is first painted */
+Sky := class < Painter, shot: Shot {
+  /* where it opens on the solar system: solar.inner's recording, [marks offset, frame width, bodies, the Earth's body] and its stamp */
+  sol: Measured? = None
+  meta: N[] = []
+  sol_stamp: String = ""
+  shown_frames: N = 0
+  film: Measured? = None
+  tracks: Measured? = None
+  frame (s: Surface, dt: Real) => {
+    if this.film == None {
+      this.film = Measured.of(this.shot.film_id)
+      this.tracks = Measured.of("{this.shot.film_id}.stars")
+    }
+    fail("{this.shot.film_id} is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY={this.shot.film_id} deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts .") if this.film == None
+    if this.meta.length > 0 & this.sol == None {
+      this.sol = Measured.of("solar.inner.frames")
+      fail("solar.inner is not recorded - run `npx ray visuals solar.inner` first") if this.sol == None
+      fail("solar.inner's recording is stale - run `npx ray visuals solar.inner` again") if this.sol.header["stamp"] != this.sol_stamp
+    }
+    Video.sky(s, this.shot, this.film, this.tracks, this.shown_frames, this.sol, this.meta)
+    this.shown_frames = this.shown_frames + 1
+  }
+}
+
+/* a band of a larger surface: every operation handed on (the caller has moved the origin), its own width and height - so a picture made for a strip can be laid across the video's frame */
+Band := class < Surface, inner: Surface {
+  fill_style (colour: String) => this.inner.fill_style(colour)
+  stroke_style (colour: String) => this.inner.stroke_style(colour)
+  line_width (w: Real) => this.inner.line_width(w)
+  alpha (v: Real) => this.inner.alpha(v)
+  fill_rect (x: Real, y: Real, w: Real, h: Real) => this.inner.fill_rect(x, y, w, h)
+  stroke_rect (x: Real, y: Real, w: Real, h: Real) => this.inner.stroke_rect(x, y, w, h)
+  clear_rect (x: Real, y: Real, w: Real, h: Real) => this.inner.clear_rect(x, y, w, h)
+  begin_path () => this.inner.begin_path
+  move_to (x: Real, y: Real) => this.inner.move_to(x, y)
+  line_to (x: Real, y: Real) => this.inner.line_to(x, y)
+  arc (x: Real, y: Real, r: Real, start_at: Real, end_at: Real) => this.inner.arc(x, y, r, start_at, end_at)
+  stroke () => this.inner.stroke
+  fill () => this.inner.fill
+  font (name: String) => this.inner.font(name)
+  text_align (how: String) => this.inner.text_align(how)
+  text_baseline (how: String) => this.inner.text_baseline(how)
+  fill_text (t: String, x: Real, y: Real) => this.inner.fill_text(t, x, y)
+  measure (t: String): Real => this.inner.measure(t)
+  save () => this.inner.save
+  restore () => this.inner.restore
+  translate (x: Real, y: Real) => this.inner.translate(x, y)
+  rotate (angle: Real) => this.inner.rotate(angle)
+  dash (segments: Real[]) => this.inner.dash(segments)
+  gradient_stroke (x0: Real, x1: Real, stops: String[], at: Real[]) => this.inner.gradient_stroke(x0, x1, stops, at)
+  image (src: String, x: Real, y: Real, w: Real, h: Real) => this.inner.image(src, x, y, w, h)
+}
+
+/* another painter's frames drawn in a band across the video's frame (no text: the video has none) */
+Banded := class < Painter, inner: Painter, top: Real, tall: Real {
+  frame (s: Surface, dt: Real) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    s.save
+    s.translate(0, this.top)
+    this.inner.frame(Band(width: s.width, height: this.tall, inner: s), dt)
+    s.restore
+  }
+}
+
+Video += {
+  static SOURCE = "74,168,235"
+  /* 0:00-0:14 - G/S.v, Transport, as the rule.transport film draws it, a lane a tick held long enough to read */
+  static transport (theory: Theory): Picture => {
+    ink := Ink()
+    lanes := Video.transport_lanes(theory, ink)
+    n := (14 * Video.FPS).round
+    pic := Picture(id: "video.transport", what: "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: (played: Played?) => Banded(inner: Unrolling(lanes: lanes, ink: ink, per: Video.per_tick(lanes)), top: Video.STRIP_TOP, tall: Video.STRIP_TALL))
+    pic.on_request = true
+    pic
+  }
+  /* where the S.v film's band sits on the video's frame */
+  static STRIP_TOP = 570
+  static STRIP_TALL = 300
+  /* the S.v film's lanes as the video plays them: nothing written over the source */
+  static transport_lanes (theory: Theory, ink: Ink): Lane[] => {
+    ink.every = true
+    ink.top = 36
+    lanes := theory.transport_lanes(ink)
+    lanes.for(l => { l.says = "" })
+    ink.centre = Strip.centre_of(lanes)
+    lanes
+  }
+  /* frames a lane is held in the S.v piece: a tick of the lattice, in every scene that goes on from it */
+  static per_tick (lanes: Lane[]): N => ((14 * Video.FPS).round / (lanes.length + 1)).floor
+  /*
+   * THE LOOK THE S.v FILM ENDS ON, off Strip.paint's own layout (one lane, the window its rays and source span, centred
+   * where the film looks): [the source's x on the screen, the y of the line, pixels a cell, the source's node, the
+   * line's two ends in cells from the source] - so the next scene starts on that very frame
+   */
+  static look (width: Real, lane: Lane, ink: Ink): Real[] => {
+    seen := false
+    lo := 0
+    hi := 0
+    lane.sides.for(sd => {
+      to := sd.at + sd.sign
+      unless seen { lo = sd.at; hi = sd.at; seen = true }
+      lo = Fmt.min(lo, Fmt.min(sd.at, to))
+      hi = Fmt.max(hi, Fmt.max(sd.at, to))
+    })
+    lane.sources.for(p => {
+      unless seen { lo = p; hi = p; seen = true }
+      lo = Fmt.min(lo, p - 1)
+      hi = Fmt.max(hi, p + 1)
+    })
+    ext := Fmt.max(ink.centre - lo, hi - ink.centre) + 0.4
+    lanew := width - 2 * Strip.PAD
+    cell := lanew / (2 * ext + 1)
+    mid := Strip.PAD + lanew / 2
+    src := lane.sources.first
+    x0 := mid + (src - ink.centre) * cell
+    [x0, Video.STRIP_TOP + ink.top + (Video.STRIP_TALL - ink.top) / 2, cell, src, (Strip.PAD - x0) / cell, (width - Strip.PAD - x0) / cell]
+  }
+  /* a point of the lattice (cells from the source) seen by a camera turned by yaw and pitch, the source at ox, oy and `cell` pixels a cell: [x, y, how near] */
+  static seen (p: Real[], yaw: Real, pitch: Real, ox: Real, oy: Real, cell: Real): Real[] => {
+    x1 := p[0] * yaw.cos - p[2] * yaw.sin
+    z1 := p[0] * yaw.sin + p[2] * yaw.cos
+    y1 := p[1] * pitch.cos - z1 * pitch.sin
+    z2 := p[1] * pitch.sin + z1 * pitch.cos
+    f := 60 / (60 + z2)
+    [ox + cell * f * x1, oy - cell * f * y1, f]
+  }
+  /* a ray as the strip draws it - the spent bar behind, the bar in front, the head - at a node, heading along ux, uy (screen), for a cell of `cell` pixels */
+  static arrow (s: Surface, x: Real, y: Real, ux: Real, uy: Real, cell: Real, a: Real) => {
+    HEADW := Fmt.max(7, Fmt.min(12, cell * 0.20))
+    REACH := cell * 0.25
+    BAR := Fmt.max(2.5, Fmt.min(4.5, cell * 0.075))
+    BASE := HEADW * 0.45
+    TIP := HEADW * 0.55
+    LEN := REACH - BASE
+    SEEN := TIP - BAR / 0.84
+    s.line_width(BAR)
+    s.stroke_style("rgba({Ink.NEUTRAL},{0.32 * a})")
+    s.begin_path
+    s.move_to(x - ux * (BASE + LEN), y - uy * (BASE + LEN))
+    s.line_to(x - ux * BASE, y - uy * BASE)
+    s.stroke
+    s.stroke_style("rgba({Ink.NEUTRAL},{a})")
+    s.begin_path
+    s.move_to(x, y)
+    s.line_to(x + ux * (SEEN + LEN), y + uy * (SEEN + LEN))
+    s.stroke
+    s.fill_style("rgba({Ink.NEUTRAL},{0.97 * a})")
+    s.begin_path
+    s.move_to(x + ux * TIP, y + uy * TIP)
+    s.line_to(x - ux * BASE - uy * HEADW * 0.42, y - uy * BASE + ux * HEADW * 0.42)
+    s.line_to(x - ux * BASE + uy * HEADW * 0.42, y - uy * BASE - ux * HEADW * 0.42)
+    s.fill
+  }
+  /* the k-th of a point's eight ways: on the plane SQUARE8's (the axes and the diagonals), in space BCC8's (the eight body diagonals), `space` of the way between */
+  static way (k: N, space: Real): Real[] => {
+    q := (k / 2).floor
+    o := [[1, 0], [1, 1], [0, 1], [0 - 1, 1], [0 - 1, 0], [0 - 1, 0 - 1], [0, 0 - 1], [1, 0 - 1]][k]
+    b := [[0.5, 0.5], [0 - 0.5, 0.5], [0 - 0.5, 0 - 0.5], [0.5, 0 - 0.5]][q]
+    bz := k % 2 == 0 ? 0.5 : 0 - 0.5
+    [o[0] + (b[0] - o[0]) * space, o[1] + (b[1] - o[1]) * space, bz * space]
+  }
+  /*
+   * THE LATTICE ROUND THE ONE SOURCE, in the strip's own ink: at `grow` 0 it is the S.v film's line - its points, its
+   * faint line, the source's square and the rays it left - then the rows either side come in (the plane, eight ways a
+   * point: SQUARE8), then the layers and the body-centred points (space, eight ways a point: BCC8), the camera turning
+   * to show the depth. The rays go on a cell a tick (`ticks`, whole ticks as the film steps them), the source lighting
+   * its ways again every other tick; `fade` takes the whole lattice away and `earth` turns the source's square into a
+   * point (the Earth)
+   */
+  static lattice (s: Surface, lane: Lane, look: Real[], grow: Real, ticks: Real, fade: Real, earth: Real, ox: Real, oy: Real, cell: Real, rays: Real, dense_from: Real, far: Real) => {
+    plane := Video.smooth((grow - 0.25) / 0.3)
+    space := Video.smooth((grow - 0.55) / 0.35)
+    yaw := 0.55 * space
+    pitch := 0.42 * space
+    src := look[3]
+    lo := look[4]
+    hi := look[5]
+    R := 7
+    a := R * plane
+    b := R * space
+    pt := (p: Real[]): Real[] => Video.seen(p, yaw, pitch, ox, oy, cell)
+    line := (p: Real[], q: Real[], al: Real) => {
+      if al > 0.004 {
+        P := pt(p)
+        Q := pt(q)
+        s.stroke_style("rgba({Ink.NEUTRAL},{0.16 * al})")
+        s.line_width(1)
+        s.begin_path
+        s.move_to(P[0], P[1])
+        s.line_to(Q[0], Q[1])
+        s.stroke
+      }
+    }
+    dot := (p: Real[], al: Real) => {
+      if al > 0.004 {
+        P := pt(p)
+        s.fill_style("rgba({Ink.NEUTRAL},{0.6 * al})")
+        s.begin_path
+        s.arc(P[0], P[1], 2.6 * P[2], 0, Real.TAU)
+        s.fill
+      }
+    }
+    ilo := (lane.points.reduce(lane.points.first, (p, q) => Fmt.min(p, q)) - src).round
+    ihi := (lane.points.reduce(lane.points.first, (p, q) => Fmt.max(p, q)) - src).round
+    Array.range(2 * R + 1).for(jj => {
+      j := jj - R
+      Array.range(2 * R + 1).for(ll => {
+        l := ll - R
+        vis := fade * Fmt.min(1, Fmt.max(0, a + 1 - j.abs)) * Fmt.min(1, Fmt.max(0, b + 1 - l.abs))
+        if vis > 0.004 {
+          /* the row, as long as the strip's line, and its points */
+          line([lo, j, l], [hi, j, l], vis)
+          Array.range(ihi - ilo + 1).for(ii => { dot([ilo + ii, j, l], vis) })
+          /* the body-centred points of space */
+          if space > 0.01 & j < R & l < R {
+            Array.range(ihi - ilo).for(ii => { dot([ilo + ii + 0.5, j + 0.5, l + 0.5], vis * space) })
+          }
+        }
+      })
+    })
+    /* across the rows (the plane) and across the layers (space) */
+    Array.range(ihi - ilo + 1).for(ii => {
+      i := ilo + ii
+      Array.range(2 * R + 1).for(ll => {
+        l := ll - R
+        line([i, 0 - a, l], [i, a, l], fade * plane * Fmt.min(1, Fmt.max(0, b + 1 - l.abs)))
+      })
+      Array.range(2 * R + 1).for(jj => {
+        j := jj - R
+        line([i, j, 0 - b], [i, j, b], fade * space * Fmt.min(1, Fmt.max(0, a + 1 - j.abs)))
+      })
+    })
+    /*
+     * the rays: those the film left, a cell further each tick, and the source's own, lit every other tick on the ways
+     * the lattice has - every tick after `dense_from` - out to `far` cells, at `rays` of their strength
+     */
+    T := ticks.floor
+    ray := (k: N, r: Real, w: Real) => {
+      if w > 0.004 & r >= 1 & r <= far {
+        d := Video.way(k, space)
+        P := pt([d[0] * r, d[1] * r, d[2] * r])
+        Q := pt([d[0] * (r + 0.25), d[1] * (r + 0.25), d[2] * (r + 0.25)])
+        len := Fmt.hypot(Q[0] - P[0], Q[1] - P[1])
+        if len > 0.01 { Video.arrow(s, P[0], P[1], (Q[0] - P[0]) / len, (Q[1] - P[1]) / len, len * 4, w * rays * Fmt.min(1, far - r)) }
+      }
+    }
+    lane.sides.for(sd => { ray(sd.sign > 0 ? 0 : 4, (sd.at - src).abs + T, 1) })
+    Array.range(T).for(m => {
+      e := m + 1
+      if e % 2 == 1 | e > dense_from {
+        Array.range(8).for(k => { ray(k, 1 + T - e, k % 4 == 0 ? 1 : plane) })
+      }
+    })
+    /* the source: the film's square, or, as it becomes the Earth, a point */
+    P := pt([0, 0, 0])
+    half := Fmt.max(9, Fmt.min(18, cell * 0.3))
+    s.fill_style("rgba({Ink.SOURCE},{0.14 * (1 - earth)})")
+    s.fill_rect(P[0] - half, P[1] - half, 2 * half, 2 * half)
+    s.stroke_style("rgba({Ink.SOURCE},{0.9 * (1 - earth)})")
+    s.line_width(1.5)
+    s.stroke_rect(P[0] - half, P[1] - half, 2 * half, 2 * half)
+    if earth > 0 {
+      s.fill_style("rgba({Ink.SOURCE},{earth})")
+      s.begin_path
+      s.arc(P[0], P[1], 2.6 + 7.4 * earth, 0, Real.TAU)
+      s.fill
+    }
+  }
+  /* the camera of the one-source scene: from the S.v film's frame (its source, its cell) to the middle of the screen */
+  static source_camera (s: Surface, look: Real[], grow: Real): Real[] => {
+    e := Video.smooth(grow / 0.3)
+    [look[0] + (s.width / 2 - look[0]) * e, look[1] + (s.height / 2 - look[1]) * e, (look[2].ln + (Real.of(95).ln - look[2].ln) * e).exp]
+  }
+  /*
+   * 0:14-0:18 - FROM THE LINE TO SPACE, AROUND ONE SOURCE: it starts on the S.v film's last frame, drawn the same way,
+   * and the lattice grows round the source from there: the plane, then space
+   */
+  static to_source (theory: Theory): Picture => {
+    ink := Ink()
+    lanes := Video.transport_lanes(theory, ink)
+    n := (4 * Video.FPS).round
+    pic := Picture(id: "video.to-source", what: "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: (played: Played?) => Growing(n: n, lane: lanes.last, ink: ink, per: Video.per_tick(lanes)))
+    pic.on_request = true
+    pic
+  }
+  static PLANET_INK = ["#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e"]
+  /*
+   * 0:18-0:26 - THE SOURCE IS THE EARTH: the lattice fades away round the one source, which stays as a point - the
+   * Earth - and the camera draws back until the Sun and the inner planets are round it, the Earth on its own orbit.
+   * EVERY PLACE IS solar.inner's OWN RUN: the bodies where the medium took them (its recording's `marks`, frame by
+   * frame, mixed between two frames), each orbit the path it traced over the whole recording - drawn as solar.inner
+   * draws them (a ring each, the orbits in their colours, the Sun gold). Nothing here is Kepler's
+   */
+  static to_solar (theory: Theory): Picture => {
+    ink := Ink()
+    lanes := Video.transport_lanes(theory, ink)
+    sol := theory.solar
+    r := sol.record
+    at := 0
+    Array.range(r.names.length).for(k => { at = r.names[k] == "marks" ? k : at })
+    off := 0
+    Array.range(at).for(k => { off = off + r.sizes[k] })
+    n := (8 * Video.FPS).round
+    pic := Picture(id: "video.to-solar", what: "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: (played: Played?) => Planets(n: n, lane: lanes.last, ink: ink, per: Video.per_tick(lanes), stamp: r.stamp, off: off, width: r.width, bodies: ((r.sizes[at] - 1) / 6).round))
+    pic.uses = ["solar.inner"]
+    pic.on_request = true
+    pic
+  }
+  /* the stretch of solar.inner's recording the scene plays (frames; its first frames have every planet in a line, at aphelion, as launched) */
+  static SOLAR_FROM = 160
+  static SOLAR_TO = 280
+  static planets (s: Surface, t: Real, lane: Lane, look: Real[], ticks: Real, film: Measured, off: N, width: N, bodies: N) => {
+    SOLAR := Measured.of("solar-inner")
+    fail("solar-inner is not on disk - run `npx ray data` and try again") if SOLAR == None
+    NAMES := SOLAR.header["names"]
+    PER := SOLAR.columns["period"]
+    PLANETS := Array.range(NAMES.length).filter(i => PER[i] > 0)
+    F := film.columns["frames"]
+    FR := film.header["frames"]
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    /*
+     * ONE SHOT, ON THE ONE POINT: the camera stays on the source, which is the Earth, and draws back from the first
+     * frame (eased, so it leaves the last scene's still camera without a jolt); the source streams its rays out every
+     * tick, faster and farther, the lattice under them fading; then the rays fade as the Sun and the planets come in
+     */
+    fade := 1 - Video.smooth((t - 0.05) / 0.4)
+    rays := 1 - Video.smooth((t - 0.45) / 0.35)
+    earth := Video.smooth((t - 0.3) / 0.3)
+    e := Video.smooth(t / 0.92)
+    come := Video.smooth((t - 0.45) / 0.35)
+    u := Fmt.min(FR - 1, Video.SOLAR_FROM + (Video.SOLAR_TO - Video.SOLAR_FROM) * t)
+    f0 := u.floor
+    f1 := Fmt.min(f0 + 1, FR - 1)
+    w := u - f0
+    mark := (f: N, k: N, c: N): Real => F[f * width + off + 6 * k + c]
+    where := (k: N): Real[] => [mark(f0, k, 0) + w * (mark(f1, k, 0) - mark(f0, k, 0)), mark(f0, k, 1) + w * (mark(f1, k, 1) - mark(f0, k, 1))]
+    /* the reach: the farthest any planet went from the Sun over the run */
+    reach := 0
+    Array.range(FR).for(f => { Array.range(bodies - 1).for(k => { reach = Fmt.max(reach, Fmt.hypot(mark(f, k + 1, 0) - mark(f, 0, 0), mark(f, k + 1, 1) - mark(f, 0, 1))) }) })
+    earth_body := 0
+    Array.range(PLANETS.length).for(k => { earth_body = NAMES[PLANETS[k]] == "Earth" ? k + 1 : earth_body })
+    E := where(earth_body)
+    O := where(0)
+    /* the screen's height holds a 180th of the system at first (the last scene's cell) and, at the end, the whole system round the Earth, eased in the logarithm */
+    last := 2.1 * (reach + Fmt.hypot(E[0] - O[0], E[1] - O[1]))
+    across := ((last / 180).ln + (last.ln - (last / 180).ln) * e).exp
+    px := s.height / across
+    cx := E[0]
+    cy := E[1]
+    X := (x: Real): Real => s.width / 2 + (x - cx) * px
+    Y := (y: Real): Real => s.height / 2 - (y - cy) * px
+    /* the lattice and the source's rays, where the last scene left them, the rays streaming out every tick and faster; the cell shrinks with the camera */
+    if fade > 0.004 | rays > 0.004 {
+      Video.lattice(s, lane, look, 1, ticks + 300 * t * t, fade, earth, X(E[0]), Y(E[1]), 95 * (last / 180) / across, rays, ticks.floor, 16 + 40 * Video.smooth(t / 0.4))
+    }
+    /* each planet's orbit - the path it traced over the whole run - and where it is now */
+    Array.range(bodies - 1).for(k => {
+      b := k + 1
+      ink := Video.PLANET_INK[Fmt.min(3, k)]
+      s.alpha(0.85 * come)
+      s.stroke_style(ink)
+      s.line_width(2)
+      s.begin_path
+      Array.range(FR).for(f => {
+        if f == 0 { s.move_to(X(mark(f, b, 0)), Y(mark(f, b, 1))) } else { s.line_to(X(mark(f, b, 0)), Y(mark(f, b, 1))) }
+      })
+      s.stroke
+      P := where(b)
+      x := X(P[0])
+      y := Y(P[1])
+      /* the Earth is the source's point turning into its ring; the others come in with their orbits */
+      s.alpha(b == earth_body ? earth : come)
+      s.stroke_style(ink)
+      s.line_width(2.5)
+      s.begin_path
+      s.arc(x, y, 13, 0, Real.TAU)
+      s.stroke
+      s.fill_style(b == earth_body ? "rgba({Ink.SOURCE},{1 - come})" : "#000000")
+      s.begin_path
+      s.arc(x, y, b == earth_body ? 10 * (1 - come) + 2.5 * come : 2.5, 0, Real.TAU)
+      s.fill
+    })
+    /* the Sun, a gold ring */
+    s.alpha(come)
+    s.stroke_style("#e0a526")
+    s.line_width(3)
+    s.begin_path
+    s.arc(X(O[0]), Y(O[1]), 26, 0, Real.TAU)
+    s.stroke
+    s.fill_style("#000000")
+    s.begin_path
+    s.arc(X(O[0]), Y(O[1]), 3, 0, Real.TAU)
+    s.fill
+    s.alpha(1)
+  }
+  /* 1:00-1:20 - the end card: the OrbitMines logo, the project, and where to find it */
+  static LOGO = "../orbitmines.com/orbitmines.com/public/logo.png"
+  static end (): Picture => {
+    n := (20 * Video.FPS).round
+    pic := Picture(id: "video.end", what: "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: (played: Played?) => EndCard(n: n))
+    pic.images = [Video.LOGO]
+    pic.on_request = true
+    pic
+  }
+  static end_card (s: Surface, i: N, n: N) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    s.alpha(Video.smooth(i / Video.FPS))
+    w := 1500
+    s.image(Video.LOGO, (s.width - w) / 2, 330, w, w / 3)
+    s.text_align("center")
+    s.fill_style(Galaxies.SEEN)
+    s.font("600 72px ui-sans-serif, system-ui, sans-serif")
+    s.fill_text("Physics Project", s.width / 2, 960)
+    s.fill_style("#3ddcff")
+    s.font("44px ui-sans-serif, system-ui, sans-serif")
+    s.fill_text("orbitmines.com/physics", s.width / 2, 1060)
+    s.alpha(1)
+  }
+  /* the whole video: every piece in the user's order, joined by the host (`RAY_FPS=60 npx ray visuals video` after the pieces) */
+  static PARTS = ["video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end"]
+  static montage (): Picture => {
+    pic := Picture.still("video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", Video.WIDTH, Video.HEIGHT, (s: Surface) => { })
+    pic.parts = Video.PARTS
+    pic.on_request = true
+    pic
+  }
+}
+
+/* the lattice growing round one source from the S.v film's last frame, frame by frame */
+Growing := class < Painter, n: N, lane: Lane, ink: Ink, per: N {
+  shown_frames: N = 0
+  frame (s: Surface, dt: Real) => {
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    look := Video.look(s.width, this.lane, this.ink)
+    grow := this.shown_frames / Fmt.max(1, this.n - 1)
+    cam := Video.source_camera(s, look, grow)
+    Video.lattice(s, this.lane, look, grow, this.shown_frames / this.per, 1, 0, cam[0], cam[1], cam[2], 1, 1000000, 16)
+    this.shown_frames = this.shown_frames + 1
+  }
+}
+
+/* the source becoming the Earth among the inner planets of solar.inner's run, frame by frame (going on from Growing's last frame) */
+Planets := class < Painter, n: N, lane: Lane, ink: Ink, per: N, stamp: String, off: N, width: N, bodies: N {
+  shown_frames: N = 0
+  film: Measured? = None
+  frame (s: Surface, dt: Real) => {
+    if this.film == None { this.film = Measured.of("solar.inner.frames") }
+    fail("solar.inner is not recorded - run `npx ray visuals solar.inner` first") if this.film == None
+    fail("solar.inner's recording is stale - run `npx ray visuals solar.inner` again") if this.film.header["stamp"] != this.stamp
+    look := Video.look(s.width, this.lane, this.ink)
+    Video.planets(s, this.shown_frames / Fmt.max(1, this.n - 1), this.lane, look, ((4 * Video.FPS).round - 1 + this.shown_frames) / this.per, this.film, this.off, this.width, this.bodies)
+    this.shown_frames = this.shown_frames + 1
+  }
+}
+
+/* the end card, frame by frame */
+EndCard := class < Painter, n: N {
+  shown_frames: N = 0
+  frame (s: Surface, dt: Real) => {
+    Video.end_card(s, this.shown_frames, this.n)
+    this.shown_frames = this.shown_frames + 1
+  }
+}

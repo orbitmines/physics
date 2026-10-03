@@ -321,6 +321,85 @@ if (Deno.env.get("RAY_ONLY") === "held-disc") {
 }
 
 /*
+ * RAY_ONLY=medium-orbit: THE MILKY WAY AND ANDROMEDA AS WHOLE BODIES, from where they are today (Video.ANDROMEDA:
+ * 785 kpc, 110 km/s in, 17 km/s across) until they are RAY_UNTIL kpc apart (100), in the medium at RAY_PER_KPC
+ * c-bar a kpc (0.05) and at their own speed - a km/s its share of light, the lattice's c-bar a tick. Hundreds of kpc
+ * apart each pulls the other as one body, so where they go is the medium's however coarse; their discs are laid
+ * fresh where this hands over (medium-galaxy RAY_GALAXY=collision RAY_ORBIT=collision.orbit). The mass of 1e10 suns
+ * is the Milky Way film's (visuals/milkyway, mass_unit) carried to this scale as the pull of one body falls: the
+ * film's and this box's lone pull are both measured and printed, and the mass set so a body pulls the same at the
+ * same distance in kpc. Written: visuals/collision.orbit (track: Myr, then x y of each in kpc about the box's middle)
+ */
+if (Deno.env.get("RAY_ONLY") === "medium-orbit") {
+  const webgpu: any = await import(join(repo, "languages", "physics.ts", "src", "webgpu.ts"));
+  const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D, V = physics.Video;
+  const P = Number(Deno.env.get("RAY_PER_KPC") ?? 0.05), UNTIL = Number(Deno.env.get("RAY_UNTIL") ?? 100);
+  const CAP = Number(Deno.env.get("RAY_TICKS") ?? 400000), EVERY = Number(Deno.env.get("RAY_EVERY") ?? 500);
+  const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true, plan: { budget: { duty: Number(Deno.env.get("RAY_DUTY") ?? 0.5) } } };
+  const MW = V.MILKY_WAY, M31 = V.ANDROMEDA;
+  const meta = join(repo, "visuals", Deno.env.get("RAY_UNIT_FROM") ?? "milkyway", "meta.json");
+  if (!existsSync(meta)) throw new Error("no mass scale: run the Milky Way film first (visuals/milkyway, mass_unit)");
+  const film = JSON.parse(readFileSync(meta, "utf8"));
+  if (!(film.mass_unit > 0)) throw new Error("visuals/milkyway keeps no mass_unit - rerun it at its own speed");
+  /* one lone unit body's pull by distance (c-bar), in a box of this medium: the law a mass is carried by */
+  const lonePull = async (rs: number[]) => {
+    const CAL = 121, c = (CAL - 1) / 2;
+    const lone = await webgpu.medium(CAL, A, K, 1, physics.G, DEG, D, { ...how, apart: 1 });
+    const u = new physics.Hole({ x: c, y: c, mx: 1, ways: 1 }); u.tag = 0; u.moves = false; u.px = 0; u.py = 0;
+    lone.add(u);
+    await lone.stand();
+    return (await lone.probe(rs.map(r => [c + r * K, c, 0]))).map((g: number[]) => -g[0]);
+  };
+  const RS = [2, 4, 8, 12, 16];
+  const law = await lonePull(RS);
+  console.log(`\n  a lone unit body pulls, by c-bar: ${RS.map((r, k) => `${r}: ${law[k].toExponential(4)}`).join(", ")}; slope ${RS.slice(1).map((r, k) => (Math.log(law[k + 1] / law[k]) / Math.log(r / RS[k])).toFixed(3)).join(" ")} (Newton in ${D} dimensions: ${-(D - 1)})`);
+  /*
+   * the same body pulls the same at the same kpc: a pull of M f(R c-bar) is M f(R) p c^2/kpc in metres, so with
+   * f ~ R^-s the mass in this box's units is the film's times (p / p_film)^(s - 1), s read off the law at 8 c-bar
+   */
+  const s = -Math.log(law[3] / law[2]) / Math.log(RS[3] / RS[2]);
+  const unit = film.mass_unit * (P / film.per_kpc) ** (s - 1);
+  const mMW = unit * MW.mass, mM31 = unit * M31.mass, MT = mMW + mM31;
+  const span = M31.distance * P, VIEW = Math.ceil(span * 1.3 * K / 2) * 2 + 1, MARGIN = 4, SIDE = VIEW + 2 * MARGIN * K, mid = (SIDE - 1) / 2;
+  console.log(`  1e10 suns weigh ${unit.toExponential(4)} here (the film's ${film.mass_unit.toExponential(4)} at ${film.per_kpc.toFixed(3)} c-bar a kpc, slope ${s.toFixed(3)}); ${P} c-bar a kpc, a tick is ${(3.2616e-3 / P).toFixed(4)} Myr; box ${SIDE} (${(SIDE / K / P).toFixed(0)} kpc)`);
+  const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: 2 });
+  /* about their common middle: the Milky Way at -x, Andromeda at +x, each its share of the gap and of the motion */
+  const fM = mM31 / MT, fW = mMW / MT, dx = M31.distance * P * K;
+  const vin = M31.approach / V.LIGHT, vac = M31.across / V.LIGHT;
+  const bodies = [[mMW, -fM * dx, fM * vin, -fM * vac], [mM31, fW * dx, -fW * vin, fW * vac]].map(([m, x, vx, vy]) => {
+    const h = new physics.Hole({ x: mid + x, y: mid, mx: m, ways: 1 }); h.tag = 0; h.moves = false; h.px = m * vx; h.py = m * vy;
+    w.add(h);
+    return h;
+  });
+  await w.stand();
+  bodies.forEach((h: any) => { h.momentum = new physics.Vector({ components: [h.px, h.py] }); h.moves = true; });
+  w.push();
+  const myr = 3.2616e-3 / P, track: number[] = [], t0 = performance.now();
+  const at = () => bodies.map((h: any) => [(h.x - mid) / K / P, (h.y - mid) / K / P]);
+  const vel = () => bodies.map((h: any) => { const p = h.momentum?.components ?? [h.px, h.py]; return [p[0] / h.mass * V.LIGHT, p[1] / h.mass * V.LIGHT]; });
+  let ticks = 0, sep = M31.distance;
+  for (;;) {
+    await w.sync();
+    const [a, b] = at();
+    sep = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    track.push(ticks * myr, a[0], a[1], b[0], b[1]);
+    const [va, vb] = vel(), rel = Math.hypot(vb[0] - va[0], vb[1] - va[1]);
+    if (ticks % (EVERY * 20) === 0) console.log(`  tick ${ticks} (${(ticks * myr).toFixed(0)} Myr), ${((performance.now() - t0) / 1000).toFixed(0)}s: ${sep.toFixed(1)} kpc apart, closing at ${rel.toFixed(1)} km/s; longest submission ${w.longest.toFixed(1)} ms`);
+    if (sep <= UNTIL || ticks >= CAP) break;
+    for (let t = 0; t < EVERY; t++) await w.tick();
+    ticks += EVERY;
+  }
+  const [a, b] = at(), [va, vb] = vel();
+  const handover = { myr: ticks * myr, sep: [b[0] - a[0], b[1] - a[1]], vel: [vb[0] - va[0], vb[1] - va[1]], mw: [...a, ...va], m31: [...b, ...vb] };
+  console.log(`  ${sep <= UNTIL ? "handed over" : "STOPPED AT THE CAP"} after ${handover.myr.toFixed(0)} Myr: Andromeda at (${handover.sep.map(v => v.toFixed(2)).join(", ")}) kpc from the Milky Way, moving (${handover.vel.map(v => v.toFixed(2)).join(", ")}) km/s`);
+  physics.Measure.save("collision.orbit", ["track"], { track }, {
+    pages: "video.", per_kpc: P, unit, slope: s, law: [RS, law], myr_per_tick: myr, until: UNTIL, handover, masses: [MW.mass, M31.mass],
+    about: "the Milky Way and Andromeda as whole bodies in the medium from today's 785 kpc at their own speed: per row Myr, then x y (kpc about the box's middle) of the Milky Way and of Andromeda",
+  });
+  Deno.exit(0);
+}
+
+/*
  * RAY_ONLY=medium-galaxy: A GALAXY IN THE MEDIUM ITSELF, FILMED (Galaxies.medium, visual galaxy.medium). RAY_STARS stars
  * (exponential surface density, scale RAY_RD c-bar) laid at rest in a RAY_SIDE view, every star its own body and every
  * step local (how.local); the field let stand with them held (Medium.stand), and each star launched circling at the
@@ -336,8 +415,19 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const A = 96, K = 3, DEG = Math.round(deg), D = physics.G.lattice.D;
   const VIEW = Number(Deno.env.get("RAY_SIDE") ?? 361), STARS = Number(Deno.env.get("RAY_STARS") ?? 100000);
   const MARGIN = Number(Deno.env.get("RAY_MARGIN") ?? 2), SIDE = VIEW + 2 * MARGIN * 3;
-  const RD = Number(Deno.env.get("RAY_RD") ?? 6), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.015), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
-  const FRAMES = Number(Deno.env.get("RAY_FRAMES") ?? 120), TPF = Number(Deno.env.get("RAY_TPF") ?? 40), GRID = 128;
+  /* RAY_PER_KPC: the galaxies' c-bar a kpc (default Video.per_kpc, the Milky Way's R_d FILM_RD c-bar); the Milky Way's R_d follows it */
+  const PER_KPC = Number(Deno.env.get("RAY_PER_KPC") ?? physics.Video.per_kpc);
+  const RD = Number(Deno.env.get("RAY_RD") ?? (Deno.env.get("RAY_GALAXY") ? physics.Video.MILKY_WAY.disc_scale * PER_KPC : 6)), SPEED = Number(Deno.env.get("RAY_SPEED") ?? 0.015), SIGMA = Number(Deno.env.get("RAY_SIGMA") ?? 0.05);
+  const FRAMES = Number(Deno.env.get("RAY_FRAMES") ?? 120), TPF = Number(Deno.env.get("RAY_TPF") ?? 40);
+  /*
+   * RAY_GALAXY=milkyway|andromeda|collision: galaxies laid from their data (Video.ray `Sighted`), in one set of lattice
+   * units (the Milky Way's R_d is Video.FILM_RD c-bar), each an exponential disc and a Hernquist bulge seen face on, and
+   * written to visuals/<RAY_OUT, default the name>. RAY_GRID cells across the density; RAY_SHOWN stars' own tracks kept
+   * beside it (<out>.stars), the first of them the Sun's star. RAY_APART: the collision's separation in c-bar.
+   */
+  const GAL = Deno.env.get("RAY_GALAXY") ?? "";
+  const OUT = Deno.env.get("RAY_OUT") ?? (GAL || "galaxy.medium");
+  const GRID = Number(Deno.env.get("RAY_GRID") ?? 128), SHOWN = Number(Deno.env.get("RAY_SHOWN") ?? (GAL ? 20000 : 0));
   /* RAY_DUTY: the share of the time the device may be busy (the rest is the screen's; pieces stay <= 30 ms either way) */
   const how = { local: true, slots: Number(Deno.env.get("RAY_SLOTS") ?? 4), paced: true, plan: { budget: { duty: Number(Deno.env.get("RAY_DUTY") ?? 0.5) } } };
   const mid = (SIDE - 1) / 2, span = (VIEW - 1) / 2 / K - 2;
@@ -347,31 +437,366 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
   const t0 = performance.now();
   /* what one body of unit mass pulls with, a little out, in a small box of the same medium: the scale the mass is set by */
   const CAL = 121, cmid = (CAL - 1) / 2, rcal = 8;
-  const lone = await webgpu.medium(CAL, A, K, 1, physics.G, DEG, D, { ...how, apart: 1 });
-  const unit = new physics.Hole({ x: cmid, y: cmid, mx: 1, ways: 1 }); unit.tag = 0; unit.moves = false; unit.px = 0; unit.py = 0;
-  lone.add(unit);
-  await lone.stand();
-  const p1 = -(await lone.probe([[cmid + rcal * K, cmid, 0]]))[0][0];
+  /* (a dry run touches no device: the pull it would measure is only a scale for the masses, which a layout does not need) */
+  let p1 = 2.446e-4;
+  if (Deno.env.get("RAY_DRY") !== "1") {
+    const lone = await webgpu.medium(CAL, A, K, 1, physics.G, DEG, D, { ...how, apart: 1 });
+    const unit = new physics.Hole({ x: cmid, y: cmid, mx: 1, ways: 1 }); unit.tag = 0; unit.moves = false; unit.px = 0; unit.py = 0;
+    lone.add(unit);
+    await lone.stand();
+    p1 = -(await lone.probe([[cmid + rcal * K, cmid, 0]]))[0][0];
+  }
   /* an exponential disc holds 0.264 of itself within one scale length; that much pulls about as one body there */
   const pRD = p1 * (rcal / RD) ** (D - 1);
-  const MASS = SPEED * SPEED / RD / (0.264 * pRD), m = MASS / STARS;
+  /* the Milky Way (or the plain disc) weighs what circles near SPEED at its R_d; every other galaxy its data's share of that */
+  const MASS0 = SPEED * SPEED / RD / (0.264 * pRD);
+  const V = physics.Video, perKpc = GAL ? PER_KPC : 1;
+  const sighted: any[] = GAL === "collision" ? [V.MILKY_WAY, V.ANDROMEDA] : GAL === "andromeda" ? [V.ANDROMEDA] : GAL ? [V.MILKY_WAY] : [];
+  const MT = sighted.reduce((n, s) => n + s.mass, 0);
+  const APART = Number(Deno.env.get("RAY_APART") ?? 110);
+  /*
+   * RAY_ORBIT=collision.orbit: the pair laid where the medium-orbit run handed them over - Andromeda's place and motion
+   * from the Milky Way's (kpc, km/s) - about their common middle, each its share by mass. Otherwise APART c-bar on x,
+   * moving as they are seen today
+   */
+  const ORBIT = Deno.env.get("RAY_ORBIT") ?? "";
+  const handover = ORBIT ? JSON.parse(readFileSync(join(repo, "visuals", ORBIT, "meta.json"), "utf8")).handover : null;
+  if (ORBIT && !handover) throw new Error(`visuals/${ORBIT} keeps no handover - run RAY_ONLY=medium-orbit first`);
+  const gap = handover ? [handover.sep[0] * perKpc, handover.sep[1] * perKpc] : [APART, 0];
+  /* each galaxy: where its middle is (cells), its scale length and bulge (c-bar), its stars and its mass */
+  const galaxies = sighted.length ? sighted.map((s: any, i: number) => {
+    const off = sighted.length === 2 ? (i === 0 ? -1 : 1) * (sighted[1 - i].mass / MT) : 0;
+    return { s, cx: mid + off * gap[0] * K, cy: mid + off * gap[1] * K, rd: s.disc_scale * perKpc, bs: s.bulge_scale * perKpc, bulge: s.bulge_mass / s.mass, share: s.mass / MT, mass: MASS0 * s.mass / V.MILKY_WAY.mass };
+  }) : [{ s: null, cx: mid, cy: mid, rd: RD, bs: 0, bulge: 0, share: 1, mass: MASS0 }];
+  let MASS = galaxies.reduce((n, g) => n + g.mass, 0);
+  const m = MASS / STARS;
   console.log(`\n  a galaxy in the medium: ${STARS} stars, R_d ${RD} c-bar, view ${VIEW} in a box ${SIDE} (a margin of ${MARGIN} c-bar; K ${K}, DEG ${DEG}); a unit mass pulls ${p1.toExponential(3)} at ${rcal} c-bar, so the disc weighs ${MASS.toExponential(3)} (${m.toExponential(3)} a star) to circle near ${SPEED} c-bar a tick`);
+  if (GAL) console.log(`  from their data (${OUT}): ${galaxies.map(g => `${g.s.name} R_d ${g.rd.toFixed(2)} c-bar, bulge ${(100 * g.bulge).toFixed(0)}% within ${g.bs.toFixed(2)}, ${(100 * g.share).toFixed(0)}% of the stars, middle at ${((g.cx - mid) / K).toFixed(1)} c-bar`).join("; ")}; a kpc is ${perKpc.toFixed(3)} c-bar`);
   /* the disc, seeded so a run is the run again: radius off R e^(-R/RD), angle uniform */
   /* mulberry32, in whole 32-bit steps: the float LCG it replaces lost bits past 2^53 and gave 10917 distinct draws in two million - a million stars stood on some five thousand places */
   let seed = 2026 >>> 0; const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let z = seed; z = Math.imul(z ^ (z >>> 15), z | 1); z ^= z + Math.imul(z ^ (z >>> 7), z | 61); return (((z ^ (z >>> 14)) >>> 0) + 0.5) / 4294967296; };
   const gauss = () => Math.sqrt(-2 * Math.log(rnd())) * Math.cos(2 * Math.PI * rnd());
-  const w = await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS });
-  for (let s = 0; s < STARS; s++) {
-    /* drawn again where it falls past the cut (RAY_CUT scale lengths, and never past the view): a disc cut there, not a ring of every star beyond it at the view's edge */
-    let r = -RD * Math.log(rnd() * rnd());
-    while (r > CUT) r = -RD * Math.log(rnd() * rnd());
-    const th = 2 * Math.PI * rnd();
-    const h = new physics.Hole({ x: mid + r * K * Math.cos(th), y: mid + r * K * Math.sin(th), mx: m, ways: 1 });
-    h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
-    w.add(h);
+  const LAID = Deno.env.get("RAY_LAID") ?? "measured";
+  const MEASURED = LAID !== "smooth" && galaxies.some(g => g.s && g.s.name === V.MILKY_WAY.name);
+  /* the young stars come on top of RAY_STARS: their share of the Milky Way's count (Video.MW_YOUNG) */
+  const MWI = galaxies.findIndex(g => g.s && g.s.name === V.MILKY_WAY.name);
+  /*
+   * ANDROMEDA AS IT IS SEEN (data/andromeda-images: `npx ray data andromeda-images`): its old stars its measured disc
+   * and bulge as before, its young stars and its dust laid off its own ultraviolet and 250-micron light, turned face on
+   */
+  const M31I = galaxies.findIndex(g => g.s && g.s.name === V.ANDROMEDA.name);
+  const M31_IMG = all["andromeda-images"];
+  const M31_LIT = LAID !== "smooth" && M31I >= 0 && !!M31_IMG;
+  if (LAID !== "smooth" && M31I >= 0 && !M31_IMG) throw new Error("no data/andromeda-images: run `npx ray data andromeda-images` first (or RAY_LAID=smooth)");
+  /* the young and the dust each galaxy lays on top of RAY_STARS: their share of its count */
+  const youngOf = (gi: number) => (MEASURED && gi === MWI) || (M31_LIT && gi === M31I) ? Math.round(STARS * galaxies[gi].share * V.MW_YOUNG) : 0;
+  const dustOf = (gi: number) => (MEASURED && gi === MWI) || (M31_LIT && gi === M31I) ? Math.round(STARS * galaxies[gi].share * V.MW_DUST[2]) : 0;
+  const YOUNG_N = galaxies.reduce((n, _, gi) => n + youngOf(gi), 0);
+  /* and the dust along the arms' inner edges (Video.MW_DUST), as many again of next to no mass */
+  const DUST_N = galaxies.reduce((n, _, gi) => n + dustOf(gi), 0);
+  /* RAY_DRY=1: only lay the stars (no device) and write where they stand as one frame - to look at a layout while the device is busy */
+  const DRY = Deno.env.get("RAY_DRY") === "1";
+  const w: any = DRY ? { holes: [] as any[], add(h: any) { this.holes.push(h); } } : await webgpu.medium(SIDE, A, K, 1, physics.G, DEG, D, { ...how, apart: STARS + YOUNG_N + DUST_N });
+  /* which galaxy each star is, whether it is the bulge's (or the bar's), and whether it is one of the young (light, next to no mass) */
+  const whose: number[] = [], inBulge: number[] = [], young: number[] = [], thick: number[] = [];
+  let laid = 0;
+  /*
+   * THE MILKY WAY AS IT IS NOW (Video.MW_*, RAY_LAID=smooth for the plain disc): the bar as Sormani et al. 2022 fit it
+   * (its density summed over z on a fine grid, stars drawn cell by cell), the discs round it with the bar's hole, the
+   * thin disc in the two arms the old stars trace, and the young stars along every arm the masers trace - each its share
+   * of the stars by mass, placed in kpc about the middle, beta measured from the Sun's direction (RAY_SUN_ANGLE) the way
+   * the disc turns (the launch turns it anticlockwise, so beta adds to the picture's angle)
+   */
+  const SUN_ANGLE = Number(Deno.env.get("RAY_SUN_ANGLE") ?? 180) * Math.PI / 180, DEGR = Math.PI / 180;
+  const sech = (u: number) => 2 / (Math.exp(u) + Math.exp(-u));
+  const bar1 = (x: number, y: number, z: number) => {
+    const [r1, x1, y1, z1, cpa, cpe, mm, al, nn, cc, xc, yc, rc] = V.MW_BAR1;
+    const a = Math.pow(Math.pow(Math.pow(Math.abs(x) / x1, cpe) + Math.pow(Math.abs(y) / y1, cpe), cpa / cpe) + Math.pow(Math.abs(z) / z1, cpa), 1 / cpa);
+    const ap = Math.hypot((x + cc * z) / xc, y / yc), am = Math.hypot((x - cc * z) / xc, y / yc);
+    return r1 * sech(Math.pow(a, mm)) * (1 + al * (Math.exp(-Math.pow(ap, nn)) + Math.exp(-Math.pow(am, nn)))) * Math.exp(-(x * x + y * y + z * z) / (rc * rc));
+  };
+  const barI = (P: number[]) => (x: number, y: number, z: number) => {
+    const [ri, xi, yi, zi, ni, ci, rout, rin, nout, nin] = P, R = Math.max(1e-6, Math.hypot(x, y));
+    const a = Math.pow(Math.pow(Math.abs(x) / xi, ci) + Math.pow(Math.abs(y) / yi, ci), 1 / ci);
+    return ri * Math.exp(-Math.pow(a, ni)) * sech(z / zi) ** 2 * Math.exp(-Math.pow(R / rout, nout)) * Math.exp(-Math.pow(rin / R, nin));
+  };
+  const bars = [bar1, barI(V.MW_BAR2), barI(V.MW_BAR3)];
+  /* the bar from above: each part's density summed over z (both sides, z = 3 kpc (k/48)^2), on a 0.025 kpc grid 12 kpc across */
+  const BG = 480, BH = 6, BC = 2 * BH / BG;
+  const barGrid = () => {
+    const Z = 48, zs = Array.from({ length: Z + 1 }, (_, k) => 3 * (k / Z) ** 2);
+    const sigma = bars.map(() => new Float64Array(BG * BG)), mass = bars.map(() => 0);
+    for (let iy = 0; iy < BG; iy++) for (let ix = 0; ix < BG; ix++) {
+      const x = -BH + (ix + 0.5) * BC, y = -BH + (iy + 0.5) * BC;
+      bars.forEach((rho, b) => {
+        let sum = 0;
+        for (let k = 0; k < Z; k++) sum += (zs[k + 1] - zs[k]) * (rho(x, y, zs[k]) + rho(x, y, zs[k + 1])) / 2;
+        sigma[b][iy * BG + ix] = 2 * sum;
+        mass[b] += 2 * sum * BC * BC;
+      });
+    }
+    return { sigma, mass };
+  };
+  const layMilkyWay = (n: number, ny: number, nd: number, cutKpc: number, put: (xk: number, yk: number, kind: number) => void) => {
+    const discs: number[][] = V.MW_DISCS, arms: number[][] = V.MW_ARMS, [w0, w1, wR] = V.MW_ARM_WIDTH, A = V.MW_ARM_CONTRAST - 1, HOLE = V.MW_DISC_HOLE;
+    const { sigma, mass } = barGrid();
+    console.log(`  the bar from above (Sormani et al. 2022): its parts weigh ${mass.map(x => x.toFixed(3)).join(", ")} (the paper: ${V.MW_BAR_MASSES.join(", ")}) x 1e10 suns within 6 kpc`);
+    const parts = [...V.MW_BAR_MASSES, ...discs.map(d => d[0])], total = parts.reduce((a: number, b: number) => a + b, 0);
+    /* how much of the arms a point stands in: the sum over the arms of exp(-d^2 / 2 w^2), d across the arm, each arm only over where it is laid */
+    /* shift: the arm read that many kpc further out (the dust, inside it, is where R + shift is on the arm); width: its own (0: Reid's) */
+    const inArms = (R: number, th: number, old: boolean, shift = 0, width = 0) => {
+      /* Hou & Han's azimuth: from their x axis anticlockwise, the Sun at 90, growing against the turn - the picture's beta (with the turn) the other way */
+      const theta = 90 - (th - SUN_ANGLE) / DEGR;
+      let sum = 0;
+      for (const [ri, ti, psiDeg, end, traced] of arms) {
+        if (old && !traced) continue;
+        const tp = Math.tan(psiDeg * DEGR), cp = Math.cos(psiDeg * DEGR);
+        let best = 0;
+        for (let k = -2; k <= 4; k++) {
+          const t = theta + 360 * k;
+          /* before its start the arm fades in (Video.MW_ARM_FADE_IN degrees), past its end out (MW_ARM_FADE) */
+          const out = Math.max(Math.max(0, ti - t) / V.MW_ARM_FADE_IN, end > 0 ? Math.max(0, t - end) / V.MW_ARM_FADE : 0);
+          if (out > 3) continue;
+          const ra = ri * Math.exp((t - ti) * DEGR * tp);
+          if (ra > cutKpc + 3) continue;
+          const d = Math.abs(R + shift - ra) * cp, wd = width > 0 ? width : w0 + w1 * (ra - wR);
+          best = Math.max(best, Math.exp(-d * d / (2 * wd * wd) - out * out / 2));
+        }
+        sum += best;
+      }
+      return sum;
+    };
+    const turned = (x: number, y: number, t: number) => [x * Math.cos(t) - y * Math.sin(t), x * Math.sin(t) + y * Math.cos(t)];
+    /* a disc's radius off e^(-R/R_d) e^(-HOLE/R) (R dR), within the cut */
+    const discR = (rd: number) => { for (;;) { const R = -rd * Math.log(rnd() * rnd()); if (R <= cutKpc && rnd() < Math.exp(-HOLE / R)) return R; } };
+    let placed = 0;
+    parts.forEach((pm: number, part: number) => {
+      const count = part === parts.length - 1 ? n - placed : Math.round(n * pm / total);
+      if (part < bars.length) {
+        /* drawn cell by cell off the summed density, anywhere within its cell, then turned to the bar's angle */
+        const cdf = new Float64Array(BG * BG); let acc = 0;
+        sigma[part].forEach((v, c) => { acc += v; cdf[c] = acc; });
+        for (let s = 0; s < count; s++) {
+          const u = rnd() * acc; let lo = 0, hi = BG * BG - 1;
+          while (lo < hi) { const mid_ = (lo + hi) >> 1; if (cdf[mid_] < u) lo = mid_ + 1; else hi = mid_; }
+          const x = -BH + (lo % BG + rnd()) * BC, y = -BH + (Math.floor(lo / BG) + rnd()) * BC, [tx, ty] = turned(x, y, SUN_ANGLE + V.MW_BAR_ANGLE * DEGR);
+          put(tx, ty, 1);
+        }
+      } else {
+        const [, rd, armed] = discs[part - bars.length];
+        for (let s = 0; s < count; s++) {
+          for (;;) {
+            const R = discR(rd), th = 2 * Math.PI * rnd();
+            /* the old stars' arms: the density 1 + A (sum over the arms), A the contrast less one; never more than two arms at a place */
+            if (armed && rnd() * (1 + 2 * A) > 1 + A * inArms(R, th, true)) continue;
+            put(R * Math.cos(th), R * Math.sin(th), armed ? 0 : 3);
+            break;
+          }
+        }
+      }
+      placed += count;
+    });
+    /* a place on the arms: the thin disc's own spread, kept only in the arms (the sum, at most one) - shifted and narrowed for the dust */
+    const rdThin = discs.find(d => d[2])![1];
+    const onArms = (shift = 0, width = 0) => { for (;;) { const R = discR(rdThin), th = 2 * Math.PI * rnd(); if (rnd() <= Math.min(1, inArms(R, th, false, shift, width))) return [R * Math.cos(th), R * Math.sin(th)]; } };
+    /* the young: MW_CLUSTERS[0] of them born in groups round one place, the rest spread along the arms */
+    const [share, per, rad] = V.MW_CLUSTERS;
+    for (let s = 0; s < ny;) {
+      const [x, y] = onArms();
+      const group = rnd() < share ? Math.min(per, ny - s) : 1;
+      for (let k = 0; k < group; k++, s++) group > 1 ? put(x + rad * gauss(), y + rad * gauss(), 2) : put(x, y, 2);
+    }
+    /* the dust: on each arm's inner edge, MW_DUST[0] kpc inside its middle */
+    for (let s = 0; s < nd; s++) { const [x, y] = onArms(V.MW_DUST[0], V.MW_DUST[1]); put(x, y, 4); }
+  };
+  /*
+   * A BAND OF ANDROMEDA'S LIGHT AS STARS: each pixel's light over the sky round it (the median past 30 kpc, the sky's
+   * own glow and our Galaxy's cirrus) is how likely a star is there; M32 and NGC 205 (its satellites, not its disc) left
+   * out; each star placed anywhere in its pixel, then turned face on - along the major axis (position angle east of
+   * north) as it is, across it stretched by 1 / cos(inclination), the near side (north-west) up. Seen so the disc turns
+   * clockwise (its north-east side recedes): g.spin -1
+   */
+  /*
+   * OUR OWN STARS IN FRONT OF IT, found in the old stars' band: a point more than 30 times the median of the 9 x 9 round
+   * it, masked to a radius growing with how bright it is (1.5 + 2 log10 of that, pixels; at most 10) - their halos
+   * reach far past the point in the ultraviolet - and each masked pixel given the light round it (the median of the
+   * nearest unmasked ring holding at least eight), so what was behind the star is the galaxy's, not a hole
+   */
+  let starMask: Uint8Array | null = null;
+  const foreground = (P: number) => {
+    if (starMask) return starMask;
+    const old = new Float32Array(M31_IMG.bytes.buffer, M31_IMG.bytes.byteOffset, P * P), mask = new Uint8Array(P * P), win: number[] = [];
+    let found = 0;
+    for (let iy = 4; iy < P - 4; iy++) for (let ix = 4; ix < P - 4; ix++) {
+      const c = old[iy * P + ix];
+      win.length = 0;
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) win.push(old[(iy + dy) * P + ix + dx]);
+      win.sort((p_, q) => p_ - q);
+      const med = Math.max(1e-9, win[40]);
+      if (c > 30 * med && c >= win[80]) {
+        found++;
+        const r = Math.min(10, 1.5 + 2 * Math.log10(c / med));
+        for (let dy = -Math.ceil(r); dy <= Math.ceil(r); dy++) for (let dx = -Math.ceil(r); dx <= Math.ceil(r); dx++) {
+          const x = ix + dx, y = iy + dy;
+          if (x >= 0 && y >= 0 && x < P && y < P && dx * dx + dy * dy <= r * r) mask[y * P + x] = 1;
+        }
+      }
+    }
+    console.log(`  Andromeda's images: ${found} of our own stars in front of it masked out`);
+    return (starMask = mask);
+  };
+  const layFromImage = (g: any, gi: number, band: number, count: number, kind: number, cutKpc: number) => {
+    const P = V.ANDROMEDA_IMAGE, fov = V.ANDROMEDA_FOV, M = V.ANDROMEDA, fg = foreground(P);
+    const raw = new Float32Array(M31_IMG.bytes.buffer, M31_IMG.bytes.byteOffset + band * P * P * 4, P * P);
+    /* stars in the way (ours, in front of it) are points, a galaxy's light is not: each pixel at most three times the median of the 5 x 5 round it */
+    const img = new Float32Array(P * P), win: number[] = [];
+    for (let iy = 0; iy < P; iy++) for (let ix = 0; ix < P; ix++) {
+      win.length = 0;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const x = ix + dx, y = iy + dy; if (x >= 0 && y >= 0 && x < P && y < P) win.push(raw[y * P + x]); }
+      win.sort((p_, q) => p_ - q);
+      img[iy * P + ix] = Math.min(raw[iy * P + ix], 3 * Math.max(0, win[win.length >> 1]));
+    }
+    const filled = new Float32Array(img);
+    for (let iy = 0; iy < P; iy++) for (let ix = 0; ix < P; ix++) {
+      if (!fg[iy * P + ix]) continue;
+      for (let r = 1; r <= 24; r++) {
+        win.length = 0;
+        for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+          const x = ix + dx, y = iy + dy;
+          if (x >= 0 && y >= 0 && x < P && y < P && !fg[y * P + x]) win.push(img[y * P + x]);
+        }
+        if (win.length >= 8) { win.sort((p_, q) => p_ - q); filled[iy * P + ix] = win[win.length >> 1]; break; }
+      }
+    }
+    img.set(filled);
+    const pix = fov * Math.PI / 180 * M.distance / P, pa = M.position_angle * DEGR, ci = Math.cos(M.inclination * DEGR);
+    const maj = [-Math.sin(pa), Math.cos(pa)], mnr = [Math.cos(pa), Math.sin(pa)];
+    const face = (x: number, y: number) => [x * maj[0] + y * maj[1], (x * mnr[0] + y * mnr[1]) / ci];
+    /* the satellites, from M31's middle: M32 0.47' west, 24.2' south; NGC 205 26.7' west, 25.0' north (arcmin -> kpc) */
+    const am = M.distance * Math.PI / 180 / 60, sats = [[0.47 * am, -24.2 * am, 2 * am], [26.7 * am, 25.0 * am, 7 * am]];
+    const sky: number[] = [];
+    for (let iy = 0; iy < P; iy++) for (let ix = 0; ix < P; ix++) {
+      const [u, v] = face((ix + 0.5 - P / 2) * pix, (iy + 0.5 - P / 2) * pix);
+      if (Math.hypot(u, v) > 30) sky.push(img[iy * P + ix]);
+    }
+    sky.sort((a, b) => a - b);
+    /* the sky's level and its scatter (median absolute deviation): light counts only above the level and twice the scatter */
+    const bg0 = sky.length ? sky[Math.floor(sky.length / 2)] : 0;
+    const dev = sky.map(v => Math.abs(v - bg0)).sort((a, b) => a - b), bg = bg0 + 2 * 1.4826 * (dev.length ? dev[dev.length >> 1] : 0);
+    const cdf = new Float64Array(P * P); let acc = 0;
+    for (let iy = 0; iy < P; iy++) for (let ix = 0; ix < P; ix++) {
+      const x = (ix + 0.5 - P / 2) * pix, y = (iy + 0.5 - P / 2) * pix, [u, v] = face(x, y);
+      const off = Math.hypot(u, v) > cutKpc || sats.some(([sx, sy, sr]) => Math.hypot(x - sx, y - sy) < sr);
+      acc += off ? 0 : Math.max(0, img[iy * P + ix] - bg);
+      cdf[iy * P + ix] = acc;
+    }
+    for (let s = 0; s < count; s++) {
+      const r = rnd() * acc; let lo = 0, hi = P * P - 1;
+      while (lo < hi) { const mid_ = (lo + hi) >> 1; if (cdf[mid_] < r) lo = mid_ + 1; else hi = mid_; }
+      const [u, v] = face((lo % P + rnd() - P / 2) * pix, (Math.floor(lo / P) + rnd() - P / 2) * pix);
+      const h = new physics.Hole({ x: g.cx + u * perKpc * K, y: g.cy + v * perKpc * K, mx: m * 1e-4, ways: 1 });
+      h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
+      w.add(h);
+      whose.push(gi); inBulge.push(0); young.push(kind); thick.push(0);
+    }
+  };
+  galaxies.forEach((g: any) => { g.spin = M31_LIT && g.s && g.s.name === V.ANDROMEDA.name ? -1 : 1; });
+  galaxies.forEach((g, gi) => {
+    const n = gi === galaxies.length - 1 ? STARS - laid : Math.round(STARS * g.share), nb = Math.round(n * g.bulge);
+    const cut = Math.min(Number(Deno.env.get("RAY_CUT") ?? 4) * g.rd, span - 1);
+    if (MEASURED && gi === MWI) {
+      layMilkyWay(n, youngOf(gi), dustOf(gi), cut / perKpc, (xk, yk, kind) => {
+        /* a young star weighs a ten-thousandth of an old one: it is there to be seen, not to pull */
+        const h = new physics.Hole({ x: g.cx + xk * perKpc * K, y: g.cy + yk * perKpc * K, mx: kind === 2 || kind === 4 ? m * 1e-4 : m, ways: 1 });
+        h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
+        w.add(h);
+        whose.push(gi); inBulge.push(kind === 1 ? 1 : 0); young.push(kind === 2 ? 1 : kind === 4 ? 2 : 0); thick.push(kind === 3 ? 1 : 0);
+      });
+      const nbar = inBulge.reduce((a, b, k) => a + (whose[k] === gi ? b : 0), 0);
+      console.log(`  the Milky Way laid as measured: ${n} stars (${nbar} in the bar at ${V.MW_BAR_ANGLE} degrees to the Sun's line), the thin disc in Scutum-Centaurus and Perseus at ${V.MW_ARM_CONTRAST} over between them, and ${YOUNG_N} young along all five (Hou & Han 2014); cut at ${(cut / perKpc).toFixed(1)} kpc`);
+      laid += n;
+      return;
+    }
+    for (let s = 0; s < n; s++) {
+      /* drawn again where it falls past the cut (RAY_CUT scale lengths, and never past the view): a disc cut there, not a ring of every star beyond it at the view's edge */
+      let r = 0;
+      if (s < nb) {
+        /* a Hernquist bulge, seen face on: r = a sqrt(u) / (1 - sqrt(u)), then its projection on the disc's plane */
+        do { const q = Math.sqrt(rnd()), c = 2 * rnd() - 1; r = g.bs * q / (1 - q) * Math.sqrt(1 - c * c); } while (r > cut);
+      } else {
+        r = -g.rd * Math.log(rnd() * rnd());
+        while (r > cut) r = -g.rd * Math.log(rnd() * rnd());
+      }
+      const th = 2 * Math.PI * rnd();
+      const h = new physics.Hole({ x: g.cx + r * K * Math.cos(th), y: g.cy + r * K * Math.sin(th), mx: m, ways: 1 });
+      h.tag = 0; h.moves = false; h.px = 0; h.py = 0;
+      w.add(h);
+      whose.push(gi); inBulge.push(s < nb ? 1 : 0); young.push(0); thick.push(0);
+    }
+    if (M31_LIT && gi === M31I) {
+      layFromImage(g, gi, 1, youngOf(gi), 1, cut / perKpc);
+      layFromImage(g, gi, 2, dustOf(gi), 2, cut / perKpc);
+      console.log(`  Andromeda's young (${youngOf(gi)}) and dust (${dustOf(gi)}) laid off its far-ultraviolet and 250-micron light (data/andromeda-images), turned face on from ${V.ANDROMEDA.inclination} degrees; it turns clockwise, as it is seen to`);
+    }
+    laid += n;
+  });
+  if (DRY) {
+    const layers = [new Float32Array(GRID * GRID), new Float32Array(GRID * GRID), new Float32Array(GRID * GRID)];
+    w.holes.forEach((h: any, s: number) => {
+      const gx = Math.floor(((h.x - mid) / K / span + 1) / 2 * GRID), gy = Math.floor(((h.y - mid) / K / span + 1) / 2 * GRID);
+      if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) layers[young[s]][gy * GRID + gx] += 1;
+    });
+    physics.Measure.save(OUT, ["density", "young", "dust"], { density: [...layers[0]], young: [...layers[1]], dust: [...layers[2]] }, { dry: 1, grid: GRID, span: [span], frames: 1, young: 1, about: "where the stars were laid, no device (RAY_DRY)" });
+    console.log(`  laid only (RAY_DRY): visuals/${OUT}`);
+    Deno.exit(0);
   }
   await w.stand();
-  const pulls = await w.leans();
+  let pulls = await w.leans();
+  /*
+   * AT THEIR OWN SPEED (RAY_GALAXY runs): one mass scale, set so the Milky Way's star at the Sun's distance is pulled
+   * round at the Sun's measured 238 km/s - as a share of light, which the lattice carries a c-bar a tick. Everything
+   * else (the rest of the curve, Andromeda's speeds off its mass, the pair's pull) is then the medium's. The pull the
+   * medium gives at the Sun's place is read off the stood field, the masses scaled by (wanted / read)^2, and the field
+   * stood again, until it is within RAY_TOL (0.5%). A run without the Milky Way takes its mass scale from the
+   * Milky Way's film (visuals/<RAY_UNIT_FROM, milkyway>, header mass_unit). RAY_REAL=0: the old launch at RAY_SPEED
+   */
+  const REAL = GAL !== "" && Deno.env.get("RAY_REAL") !== "0";
+  /* the masses as laid, a share of light at the Sun's place, and the mass of 1e10 suns in the film's units */
+  let massUnit = MASS0 / V.MILKY_WAY.mass;
+  const rescale = async (by: number) => {
+    w.holes.forEach((h: any) => { h.mx = h.mx * by; });
+    galaxies.forEach(g => { g.mass *= by; });
+    MASS *= by;
+    massUnit *= by;
+    await w.stand();
+    pulls = await w.leans();
+  };
+  if (REAL && GAL !== "andromeda") {
+    const g = galaxies[0], R0 = V.MILKY_WAY.sun * perKpc, want = V.MILKY_WAY.circling / V.LIGHT, TOL = Number(Deno.env.get("RAY_TOL") ?? 0.005);
+    for (let pass = 0; pass < 6; pass++) {
+      /* the pull round the Milky Way's middle on its disc stars within half a c-bar of the Sun's ring */
+      let gs = 0, gn = 0;
+      w.holes.forEach((h: any, s: number) => {
+        if (whose[s] !== 0 || inBulge[s] || young[s]) return;
+        const dx = (h.x - g.cx) / K, dy = (h.y - g.cy) / K, R = Math.hypot(dx, dy);
+        if (Math.abs(R - R0) > 0.5) return;
+        gs += -(pulls[s][0] * dx + pulls[s][1] * dy) / R; gn++;
+      });
+      const v = Math.sqrt(Math.max(0, gs / gn) * R0);
+      console.log(`  the mass scale, pass ${pass}: at the Sun's ${R0.toFixed(2)} c-bar (${gn} stars) the medium pulls round at ${v.toExponential(4)} c (${(v * V.LIGHT).toFixed(1)} km/s), wanted ${want.toExponential(4)} (${V.MILKY_WAY.circling} km/s)`);
+      if (Math.abs(v / want - 1) < TOL) break;
+      if (!(v > 0)) throw new Error("the medium pulls nothing round at the Sun's place - nothing to set the mass scale by");
+      await rescale((want / v) ** 2);
+    }
+  } else if (REAL) {
+    const from = Deno.env.get("RAY_UNIT_FROM") ?? "milkyway", meta = join(repo, "visuals", from, "meta.json");
+    if (!existsSync(meta)) throw new Error(`no mass scale: run the Milky Way first (visuals/${from}, header mass_unit)`);
+    const unit = JSON.parse(readFileSync(meta, "utf8")).mass_unit;
+    if (!(unit > 0)) throw new Error(`visuals/${from} keeps no mass_unit - rerun it with this driver`);
+    console.log(`  the mass scale from visuals/${from}: 1e10 suns weigh ${unit.toExponential(4)}`);
+    await rescale(unit / massUnit);
+  }
   /*
    * EACH STAR LAUNCHED CIRCLING at what the medium pulls it with where it stands, and stirred just enough that the disc
    * holds (RAY_Q, Toomre's Q; 0: a flat spread of RAY_SIGMA of the circling speed, as the first films were). A disc
@@ -380,63 +805,127 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
    * off how that falls (kappa^2 = d(v^2)/dR / R + 2 v^2 / R^2), the surface density off the stars' own count, and G off
    * the lone unit mass's pull (p1 rcal^(D-1), as the mass was set). The radial stir sigma_R = Q 3.36 G Sigma / kappa,
    * across it sigma_R kappa / 2 Omega, and the mean circling less the asymmetric drift the stir holds up
-   * (v_phi^2 = v^2 + sigma_R^2 (1 - kappa^2 / 4 Omega^2 - 2 R / R_d)). Then the whole disc is set at rest - its
-   * momentum taken off every star alike - so a drift later is the medium's and not the draw's
+   * (v_phi^2 = v^2 + sigma_R^2 (1 - kappa^2 / 4 Omega^2 - 2 R / R_d)). Then each galaxy is set at rest - its
+   * momentum taken off its every star alike - so a drift later is the medium's and not the draw's; a collision then
+   * gives each its share of the pair's measured approach
    */
   const Q = Number(Deno.env.get("RAY_Q") ?? 1.2), GEFF = p1 * rcal ** (D - 1), DR = 0.5, RINGS = Math.ceil(span / DR) + 1;
-  const ringG = new Float64Array(RINGS), ringN = new Float64Array(RINGS), ringM = new Float64Array(RINGS);
-  w.holes.forEach((h: any, s: number) => {
-    const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
-    if (R <= 0) return;
-    const k = Math.min(RINGS - 1, Math.floor(R / DR));
-    ringG[k] += -(pulls[s][0] * dx + pulls[s][1] * dy) / R; ringN[k]++; ringM[k] += h.mass;
-  });
   const at = (k: number) => (k + 0.5) * DR;
-  const v2 = Array.from({ length: RINGS }, (_, k) => ringN[k] ? Math.max(0, ringG[k] / ringN[k] * at(k)) : NaN);
-  /* rings too thin to say anything take their neighbours' */
-  for (let k = 0; k < RINGS; k++) if (!(ringN[k] >= 20)) { let j = k; while (j > 0 && !(ringN[j] >= 20)) j--; v2[k] = ringN[j] >= 20 ? v2[j] * at(j) / at(k) : NaN; }
-  /* and those at the very middle, before any ring says enough, turn as a solid body up to the first that does */
-  const first = v2.findIndex((x, k) => ringN[k] >= 20 && Number.isFinite(x));
-  for (let k = 0; k < first; k++) v2[k] = v2[first] * (at(k) / at(first)) ** 2;
-  const sigmaSurf = Array.from({ length: RINGS }, (_, k) => ringM[k] / (Math.PI * ((k + 1) ** 2 - k ** 2) * DR * DR));
-  /* the slope over two c-bar either side (a ring's own is noise), and never less than the circling's own rate - a fall past Kepler's is the count's noise, not the pull's */
-  const kappa2 = Array.from({ length: RINGS }, (_, k) => {
-    const lo = Math.max(0, k - 4), hi = Math.min(RINGS - 1, k + 4);
-    const d = (v2[hi] - v2[lo]) / (at(hi) - at(lo)), om2 = v2[k] / (at(k) * at(k));
-    return Math.max(om2, d / at(k) + 2 * om2);
-  });
-  const stir = (R: number) => {
-    const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), kap = Math.sqrt(kappa2[k]);
-    /* where the pull stood holds nothing (none, or outwards), nothing circles and nothing is stirred */
-    if (!(om2 > 0) || !(kap > 0)) return { sR: 0, sP: 0, vphi: 0, q: NaN, v: 0 };
-    /* and no stir past half the circling, where the disc thins out to a few stars a ring */
-    const sR = Q > 0 ? Math.min(0.5 * Math.sqrt(v2[k]), Q * 3.36 * GEFF * sigmaSurf[k] / kap) : SIGMA * Math.sqrt(v2[k]);
-    const sP = Q > 0 ? sR * kap / (2 * Math.sqrt(om2)) : sR;
-    const vphi = Q > 0 ? Math.sqrt(Math.max(0, v2[k] + DRIFT * sR * sR * (1 - kappa2[k] / (4 * om2) - 2 * R / RD))) : Math.sqrt(v2[k]);
-    return { sR, sP, vphi, q: sR * kap / (3.36 * GEFF * sigmaSurf[k]), v: Math.sqrt(v2[k]) };
+  const launch = (gi: number) => {
+    const g = galaxies[gi];
+    const ringG = new Float64Array(RINGS), ringN = new Float64Array(RINGS), ringM = new Float64Array(RINGS);
+    w.holes.forEach((h: any, s: number) => {
+      if (whose[s] !== gi) return;
+      const dx = (h.x - g.cx) / K, dy = (h.y - g.cy) / K, R = Math.hypot(dx, dy);
+      if (R <= 0) return;
+      const k = Math.min(RINGS - 1, Math.floor(R / DR));
+      ringG[k] += -(pulls[s][0] * dx + pulls[s][1] * dy) / R; ringN[k]++; ringM[k] += h.mass;
+    });
+    const v2 = Array.from({ length: RINGS }, (_, k) => ringN[k] ? Math.max(0, ringG[k] / ringN[k] * at(k)) : NaN);
+    /* rings too thin to say anything take their neighbours' */
+    for (let k = 0; k < RINGS; k++) if (!(ringN[k] >= 20)) { let j = k; while (j > 0 && !(ringN[j] >= 20)) j--; v2[k] = ringN[j] >= 20 ? v2[j] * at(j) / at(k) : NaN; }
+    /* and those at the very middle, before any ring says enough, turn as a solid body up to the first that does */
+    const first = v2.findIndex((x, k) => ringN[k] >= 20 && Number.isFinite(x));
+    for (let k = 0; k < first; k++) v2[k] = v2[first] * (at(k) / at(first)) ** 2;
+    const sigmaSurf = Array.from({ length: RINGS }, (_, k) => ringM[k] / (Math.PI * ((k + 1) ** 2 - k ** 2) * DR * DR));
+    /* the slope over two c-bar either side (a ring's own is noise), and never less than the circling's own rate - a fall past Kepler's is the count's noise, not the pull's */
+    const kappa2 = Array.from({ length: RINGS }, (_, k) => {
+      const lo = Math.max(0, k - 4), hi = Math.min(RINGS - 1, k + 4);
+      const d = (v2[hi] - v2[lo]) / (at(hi) - at(lo)), om2 = v2[k] / (at(k) * at(k));
+      return Math.max(om2, d / at(k) + 2 * om2);
+    });
+    const stir = (R: number) => {
+      const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), kap = Math.sqrt(kappa2[k]);
+      /* where the pull stood holds nothing (none, or outwards), nothing circles and nothing is stirred */
+      if (!(om2 > 0) || !(kap > 0)) return { sR: 0, sP: 0, vphi: 0, q: NaN, v: 0 };
+      /* and no stir past half the circling, where the disc thins out to a few stars a ring */
+      const sR = Q > 0 ? Math.min(0.5 * Math.sqrt(v2[k]), Q * 3.36 * GEFF * sigmaSurf[k] / kap) : SIGMA * Math.sqrt(v2[k]);
+      const sP = Q > 0 ? sR * kap / (2 * Math.sqrt(om2)) : sR;
+      const vphi = Q > 0 ? Math.sqrt(Math.max(0, v2[k] + DRIFT * sR * sR * (1 - kappa2[k] / (4 * om2) - 2 * R / g.rd))) : Math.sqrt(v2[k]);
+      return { sR, sP, vphi, q: sR * kap / (3.36 * GEFF * sigmaSurf[k]), v: Math.sqrt(v2[k]) };
+    };
+    console.log(`  the launch${g.s ? ` of ${g.s.name}` : ""}, ${Q > 0 ? `stirred to Toomre's Q ${Q}` : `a flat spread of ${SIGMA} of the circling`}: ${[1, 2, 3].map(n => { const st = stir(n * g.rd); return `at ${n} R_d circling ${st.v.toFixed(4)}, radial stir ${st.sR.toFixed(4)} (Q ${st.q.toFixed(2)})`; }).join("; ")}`);
+    let vsum = 0, vn = 0, mx = 0, my = 0, mt = 0;
+    w.holes.forEach((h: any, s: number) => {
+      if (whose[s] !== gi) return;
+      const dx = (h.x - g.cx) / K, dy = (h.y - g.cy) / K, R = Math.hypot(dx, dy);
+      if (R <= 0) return;
+      let st = stir(R);
+      if (Math.abs(R - g.rd) < 1) { vsum += st.v; vn++; }
+      /* the Milky Way laid as measured: its discs' and young stars' stir as measured (Video.MW_STIR), the bar's as before */
+      if (((MEASURED && gi === MWI && !inBulge[s]) || young[s]) && st.v > 0) {
+        const [s0, rs] = V.MW_STIR[young[s] ? 2 : thick[s] ? 1 : 0], rd = V.MW_DISCS[thick[s] ? 1 : 0][1], Rk = R / perKpc;
+        const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), sR = s0 / V.LIGHT * Math.exp(-(Rk - V.MILKY_WAY.sun) / rs);
+        const sP = sR * Math.sqrt(kappa2[k]) / (2 * Math.sqrt(om2));
+        st = { ...st, sR, sP, vphi: Math.sqrt(Math.max(0, v2[k] + sR * sR * (1 - kappa2[k] / (4 * om2) - Rk / rd - 2 * Rk / rs))) };
+      }
+      const vr = st.sR * gauss(), vp = ((g as any).spin ?? 1) * (st.vphi + st.sP * gauss());
+      const vx = (vr * dx - vp * dy) / R, vy = (vr * dy + vp * dx) / R;
+      h.px = h.mass * vx; h.py = h.mass * vy;
+      mx += h.px; my += h.py; mt += h.mass;
+    });
+    w.holes.forEach((h: any, s: number) => {
+      if (whose[s] !== gi) return;
+      /* RAY_BULK: the whole disc then set moving along x at this speed (c-bar a tick) - does a moving galaxy speed itself up? */
+    h.px -= h.mass * mx / mt - h.mass * Number(Deno.env.get("RAY_BULK") ?? 0); h.py -= h.mass * my / mt;
+    });
+    return { speed: vn ? vsum / vn : 0, stir };
   };
-  console.log(`  the launch, ${Q > 0 ? `stirred to Toomre's Q ${Q}` : `a flat spread of ${SIGMA} of the circling`}: ${[1, 2, 3].map(n => { const st = stir(n * RD); return `at ${n} R_d circling ${st.v.toFixed(4)}, radial stir ${st.sR.toFixed(4)} (Q ${st.q.toFixed(2)})`; }).join("; ")}`);
-  let vsum = 0, vn = 0, mx = 0, my = 0, mt = 0;
+  const launched = galaxies.map((_, gi) => launch(gi));
+  const speedRD = launched[0].speed;
+  /* THE SUN: the Milky Way's star nearest 8.2 kpc out at RAY_SUN_ANGLE (degrees, 180: left of the middle), its track kept first */
+  let sunStar = -1, sunInfo: number[] = [];
+  if (GAL && GAL !== "andromeda") {
+    const R0 = V.MILKY_WAY.sun * perKpc, a0 = Number(Deno.env.get("RAY_SUN_ANGLE") ?? 180) * Math.PI / 180, g = galaxies[0];
+    const sx = g.cx + R0 * K * Math.cos(a0), sy = g.cy + R0 * K * Math.sin(a0);
+    let best = Infinity;
+    w.holes.forEach((h: any, s: number) => { if (whose[s] === 0 && !inBulge[s] && !young[s]) { const d = Math.hypot(h.x - sx, h.y - sy); if (d < best) { best = d; sunStar = s; } } });
+    sunInfo = [R0, launched[0].stir(R0).vphi, a0];
+    /* laid as measured, the Sun's star goes as the Sun does: the pull's circling there, 10.5 km/s ahead and 11.1 inwards (Video.MW_SUN_MOTION) */
+    if (MEASURED && sunStar >= 0) {
+      const h = w.holes[sunStar], dx = (h.x - g.cx) / K, dy = (h.y - g.cy) / K, R = Math.hypot(dx, dy);
+      const vp = launched[0].stir(R).v + V.MW_SUN_MOTION[1] / V.LIGHT, vr = -V.MW_SUN_MOTION[0] / V.LIGHT;
+      h.px = h.mass * (vr * dx - vp * dy) / R; h.py = h.mass * (vr * dy + vp * dx) / R;
+      sunInfo[1] = vp;
+    }
+    console.log(`  the Sun: star ${sunStar}, ${(best / K).toFixed(2)} c-bar from ${R0.toFixed(2)} c-bar out, circling at ${sunInfo[1].toFixed(4)} c-bar a tick`);
+  }
+  /* THE CLOCK: the first galaxy's film circling against its measured one - at the Sun for the Milky Way, at 2.2 R_d (the disc's peak) otherwise: [R c-bar, v c-bar a tick, R kpc, v km/s] */
+  let clock: number[] = [];
+  if (GAL) {
+    const g = galaxies[0], Rk = sunInfo.length ? g.s.sun : 2.2 * g.s.disc_scale;
+    clock = [Rk * perKpc, sunInfo.length ? sunInfo[1] : launched[0].stir(Rk * perKpc).vphi, Rk, g.s.circling];
+  }
+  /* A COLLISION: the pair's measured motion (approach along the line between them, and across it), in the film's speed a km/s - the Sun's circling over its measured 238 - shared by mass */
+  let kms = 0;
+  if (GAL === "collision") {
+    /* at their own speed a km/s is its share of light; otherwise the film's: the Sun's circling over its measured 238 */
+    kms = REAL ? 1 / V.LIGHT : sunInfo[1] / V.MILKY_WAY.circling;
+    const M31 = V.ANDROMEDA, vrx = (handover ? handover.vel[0] : -M31.approach) * kms, vry = (handover ? handover.vel[1] : M31.across) * kms;
+    galaxies.forEach((g, gi) => {
+      const f = gi === 0 ? -galaxies[1].share : galaxies[0].share;
+      w.holes.forEach((h: any, s: number) => { if (whose[s] === gi) { h.px += h.mass * f * vrx; h.py += h.mass * f * vry; } });
+    });
+    if (handover) console.log(`  from the orbit run (visuals/${ORBIT}, ${handover.myr.toFixed(0)} Myr after today): Andromeda at (${handover.sep.map((v: number) => v.toFixed(1)).join(", ")}) kpc from the Milky Way, moving (${handover.vel.map((v: number) => v.toFixed(1)).join(", ")}) km/s (${(Math.hypot(vrx, vry)).toExponential(4)} c-bar a tick)`);
+    else console.log(`  approaching at ${M31.approach} km/s (${(M31.approach * kms).toFixed(5)} c-bar a tick), ${M31.across} km/s across, from ${APART} c-bar (${(APART / perKpc).toFixed(0)} kpc; today ${M31.distance} kpc)`);
+  }
   w.holes.forEach((h: any) => {
-    const dx = (h.x - mid) / K, dy = (h.y - mid) / K, R = Math.hypot(dx, dy);
-    if (R <= 0) return;
-    const st = stir(R);
-    if (Math.abs(R - RD) < 1) { vsum += st.v; vn++; }
-    const vr = st.sR * gauss(), vp = st.vphi + st.sP * gauss();
-    const vx = (vr * dx - vp * dy) / R, vy = (vr * dy + vp * dx) / R;
-    h.px = h.mass * vx; h.py = h.mass * vy;
-    mx += h.px; my += h.py; mt += h.mass;
-  });
-  w.holes.forEach((h: any) => {
-    h.px -= h.mass * mx / mt; h.py -= h.mass * my / mt;
     h.momentum = new physics.Vector({ components: [h.px, h.py] });
     h.moves = true;
   });
   w.push();
-  const speedRD = vn ? vsum / vn : 0;
+  /* the stars whose own tracks are kept: the Sun's first, then every so many */
+  const shown: number[] = [];
+  if (SHOWN > 0) {
+    if (sunStar >= 0) shown.push(sunStar);
+    /* over every star laid, the young among them (not the dust: it is no point of light) */
+    const ALL = w.holes.length;
+    for (let k = 0; shown.length < Math.min(SHOWN, ALL); k++) { const s = Math.floor(k * ALL / SHOWN); if (s >= ALL) break; if (s !== sunStar && young[s] !== 2) shown.push(s); }
+  }
+  const xy: number[] = [];
   console.log(`  launched: at R_d they circle at ${speedRD.toFixed(4)} c-bar a tick (the field stood in ${((performance.now() - t0) / 1000).toFixed(0)}s)`);
   /* star counts on a GRID x GRID face-on picture, span c-bar either side of the box's middle */
-  const density: number[] = [], ticks: number[] = [], departed: number[] = [];
+  const density: number[] = [], youngDensity: number[] = [], dustDensity: number[] = [], ticks: number[] = [], departed: number[] = [];
   /* what a closed system keeps: its momentum (zero, launched about the middle) and its turn about the middle - and its motion's own energy, and how spread its stars are, frame by frame */
   const momentum: number[] = [], turn: number[] = [], motion: number[] = [], half: number[] = [], holding: number[] = [];
   /*
@@ -444,7 +933,8 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
    * again a few times (so a star flung out, or a clump passing, does not drag it) - and every frame drawn about it
    * (RAY_CAMERA=fixed: about the box's middle, as the first films were). Its path is kept with the film
    */
-  const FOLLOW = (Deno.env.get("RAY_CAMERA") ?? "follow") !== "fixed";
+  /* a collision is watched about the pair's common middle (the box's), which stays put: its momentum is nought */
+  const FOLLOW = (Deno.env.get("RAY_CAMERA") ?? (GAL === "collision" ? "fixed" : "follow")) !== "fixed";
   let camX = mid, camY = mid;
   const camera: number[] = [];
   const shoot = async () => {
@@ -458,12 +948,16 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
       }
     }
     camera.push((camX - mid) / K, (camY - mid) / K);
-    const grid = new Float32Array(GRID * GRID);
-    for (const h of w.holes) {
+    /* the stars counted on the picture's cells - the young apart, they are the light and not the mass */
+    const grid = new Float32Array(GRID * GRID), yg = new Float32Array(YOUNG_N ? GRID * GRID : 0), dg = new Float32Array(DUST_N ? GRID * GRID : 0);
+    w.holes.forEach((h: any, s: number) => {
       const gx = Math.floor(((h.x - camX) / K / span + 1) / 2 * GRID), gy = Math.floor(((h.y - camY) / K / span + 1) / 2 * GRID);
-      if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) grid[gy * GRID + gx] += 1;
-    }
+      if (gx >= 0 && gx < GRID && gy >= 0 && gy < GRID) (young[s] === 1 ? yg : young[s] === 2 ? dg : grid)[gy * GRID + gx] += 1;
+    });
     for (const v of grid) density.push(v);
+    for (const v of yg) youngDensity.push(v);
+    for (const v of dg) dustDensity.push(v);
+    for (const s of shown) { const h = w.holes[s]; xy.push((h.x - camX) / K, (h.y - camY) / K); }
     ticks.push(w.t);
     let px = 0, py = 0, lz = 0, ke = 0, pabs = 0;
     const rs: number[] = [];
@@ -496,12 +990,23 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     await shoot();
     if (f % Number(Deno.env.get("RAY_LOG") ?? 10) === 0) console.log(`  frame ${f}/${FRAMES}, tick ${w.t}, ${((performance.now() - t0) / 1000).toFixed(0)}s, longest submission ${w.longest.toFixed(1)} ms (${w.longest_was.slice(0, 120)}); ${(100 * departed[departed.length - 1]).toFixed(2)}% of the mass has left the box; net momentum ${(100 * momentum[momentum.length - 1]).toFixed(3)}% of the stars' own, turn ${(turn[turn.length - 1] / turn[0]).toFixed(4)} of the first, energy of motion ${(motion[motion.length - 1] / motion[0]).toFixed(3)} of the first, half the stars within ${half[half.length - 1].toFixed(1)} c-bar, the pull holds ${holding[holding.length - 1].toFixed(3)} of their circling`);
   }
-  physics.Measure.save("galaxy.medium", ["density"], { density }, {
-    names: ["a disc in the medium"], mass: [MASS], scale: [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
+  if (shown.length) physics.Measure.save(`${OUT}.stars`, ["xy"], { xy }, {
+    shown: shown.length, frames: FRAMES, sun: sunStar >= 0 ? 0 : -1, pages: "video.",
+    tags: shown.map(s => young[s] ? 4 + whose[s] : 2 * whose[s] + inBulge[s]),
+    about: "the tracks of some of the stars of the film beside it: x, y (c-bar from the camera) of each shown star, frame after frame; tag 2 x galaxy + (1 in the bulge); the first is the Sun's where sun is 0",
+  });
+  physics.Measure.save(OUT, YOUNG_N ? ["density", "young", "dust"] : ["density"], YOUNG_N ? { density, young: youngDensity, dust: dustDensity } : { density }, {
+    young: YOUNG_N ? 1 : 0, young_stars: YOUNG_N, dust_tracers: DUST_N,
+    ...(GAL ? {
+      galaxy: GAL, pages: "video.", per_kpc: perKpc, real: REAL, mass_unit: massUnit, sun: sunInfo, clock, kms, apart: Math.hypot(gap[0], gap[1]), orbit: ORBIT ? { from: ORBIT, ...handover } : null,
+      middles: galaxies.map(g => [(g.cx - mid) / K, (g.cy - mid) / K]), scales: galaxies.map(g => g.rd),
+      sighted: galaxies.map(g => g.s.name), speeds: launched.map(l => l.speed),
+    } : {}),
+    names: GAL ? galaxies.map(g => g.s.name) : ["a disc in the medium"], mass: GAL ? galaxies.map(g => g.mass) : [MASS], scale: GAL ? galaxies.map(g => g.rd) : [RD], span: [span], stars: STARS, frames: FRAMES, grid: GRID, ticks,
     deg: DEG, side: SIDE, view: VIEW, margin: MARGIN, departed, momentum, turn, motion, half, holding, camera, follow: FOLLOW, speed: speedRD, sigma: SIGMA, tpf: TPF,
     about: "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame",
   });
-  console.log(`  written to visuals/galaxy.medium (${((performance.now() - t0) / 1000).toFixed(0)}s); draw it: npx ray visuals galaxy.medium`);
+  console.log(`  written to visuals/${OUT} (${((performance.now() - t0) / 1000).toFixed(0)}s); draw it: npx ray visuals ${GAL ? `video.${GAL}` : OUT}`);
   Deno.exit(0);
 }
 

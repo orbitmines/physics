@@ -294,6 +294,26 @@ Borrowed := class {
     c
   }
 
+  /*
+   * WHAT ANDROMEDA LOOKS LIKE, band by band (the film lays its young stars and its dust off these; Video.ray): cut out
+   * round M31 by hips2fits, Video.ANDROMEDA_IMAGE pixels a side over Video.ANDROMEDA_FOV degrees, north up and east left, rows from
+   * the bottom - its old stars at 3.4 microns (unWISE W1), its young at 1528 Angstrom (GALEX far ultraviolet), its dust
+   * at 250 microns (Herschel SPIRE). Seen as we see it, 77 degrees from face on; the film turns it face on
+   */
+  static ANDROMEDA_BANDS = ["old", "young", "dust"]
+  static ANDROMEDA_SURVEYS = ["CDS/P/unWISE/W1", "CDS/P/GALEXGR6_7/FUV", "ESAVO/P/HERSCHEL/SPIRE-250"]
+  data "andromeda-images" () => {
+    c := Catalogue(id: "andromeda-images", what: "Andromeda (M31) band by band, north up and east left, ANDROMEDA_IMAGE pixels a side over ANDROMEDA_FOV degrees, rows from the bottom", source: Borrowed.HIPS, paper: "unWISE (Lang 2014), GALEX GR6/7 (Bianchi et al. 2017), Herschel SPIRE (Fritz et al. 2012, HELGA), cut out by hips2fits (CDS)")
+    P := Video.ANDROMEDA_IMAGE
+    c.units = Borrowed.ANDROMEDA_BANDS.map(b => "{b}: the survey's own units, 0 where it does not reach")
+    Array.range(Borrowed.ANDROMEDA_SURVEYS.length).for(k => {
+      url := "{Borrowed.HIPS}?hips={Borrowed.url_encoded(Borrowed.ANDROMEDA_SURVEYS[k])}&width={P}&height={P}&fov={Video.ANDROMEDA_FOV}&object=M31&format=fits"
+      px := Catalogue.fits(url, "image-M31-{Borrowed.ANDROMEDA_BANDS[k]}.fits")
+      c.column(Borrowed.ANDROMEDA_BANDS[k], px.length == P * P + 2 ? px.drop(2).map(v => Fmt.finite(v) ? v : 0) : Array.filled(P * P, 0))
+    })
+    c
+  }
+
   /* the baryonic Tully-Fisher sample, with the authors' own baryonic masses */
   data "sparc-btfr" () => {
     names := Borrowed.galaxy_names

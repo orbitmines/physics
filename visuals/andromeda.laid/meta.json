@@ -1,0 +1,18 @@
+{
+  "what": "andromeda.laid",
+  "columns": [
+    "density",
+    "young",
+    "dust"
+  ],
+  "rows": 262144,
+  "measured": "2026-10-02T21:11:08.917Z",
+  "dry": 1,
+  "grid": 512,
+  "span": [
+    58
+  ],
+  "frames": 1,
+  "young": 1,
+  "about": "where the stars were laid, no device (RAY_DRY)"
+}

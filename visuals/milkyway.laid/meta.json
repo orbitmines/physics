@@ -1,0 +1,94 @@
+{
+  "what": "milkyway.laid",
+  "columns": [
+    "density",
+    "young"
+  ],
+  "rows": 262144,
+  "measured": "2026-10-02T19:47:19.117Z",
+  "young": 1,
+  "young_stars": 100000,
+  "galaxy": "milkyway",
+  "pages": "video.",
+  "per_kpc": 2.3076923076923075,
+  "real": true,
+  "mass_unit": 0.0001480135977416059,
+  "sun": [
+    18.92307692307692,
+    0.0008289101830470002,
+    3.141592653589793
+  ],
+  "clock": [
+    18.92307692307692,
+    0.0008289101830470002,
+    8.2,
+    238
+  ],
+  "kms": 0,
+  "apart": 110,
+  "orbit": null,
+  "middles": [
+    [
+      0,
+      0
+    ]
+  ],
+  "scales": [
+    6
+  ],
+  "sighted": [
+    "Milky Way"
+  ],
+  "speeds": [
+    0.0008521181574433204
+  ],
+  "names": [
+    "Milky Way"
+  ],
+  "mass": [
+    0.0008288761473529929
+  ],
+  "scale": [
+    6
+  ],
+  "span": [
+    38
+  ],
+  "stars": 1000000,
+  "frames": 1,
+  "grid": 512,
+  "ticks": [
+    174
+  ],
+  "deg": 8,
+  "side": 253,
+  "view": 241,
+  "margin": 2,
+  "departed": [
+    0
+  ],
+  "momentum": [
+    1.8814465796715233e-7
+  ],
+  "turn": [
+    0.000007141711379718735
+  ],
+  "motion": [
+    2.6703128980750144e-10
+  ],
+  "half": [
+    11.326626983335705
+  ],
+  "holding": [
+    1.0715626645174439
+  ],
+  "camera": [
+    0.03548948366033736,
+    -0.017110294046612278
+  ],
+  "follow": true,
+  "speed": 0.0008521181574433204,
+  "sigma": 0.05,
+  "tpf": 40,
+  "about": "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame"
+}

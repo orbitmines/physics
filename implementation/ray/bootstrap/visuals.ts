@@ -30,8 +30,10 @@ const repo = resolve(here, "..", "..", "..");
 const require = createRequire(import.meta.url);
 const OUT = join(repo, "visuals");
 
-/** the rate a film is written at, and the dt each frame is told it took */
-const FPS = 24;
+/** the rate a film is written at, and the dt each frame is told it took (RAY_FPS=60 for the video) */
+const FPS = Number(process.env.RAY_FPS ?? 24);
+/** the encoder's bits a second (RAY_BITRATE; 2 Mb/s default, ~40e6 for a 2560x1440 upload) */
+const BITRATE = Number(process.env.RAY_BITRATE ?? 2_000_000);
 const safe = (id: string) => id.replace(/[^\w.-]/g, "_");
 const pad = (s: string, n: number) => s.padEnd(n);
 
@@ -185,7 +187,7 @@ function data(dir: string, all: Baked, only: string[]): string {
  * implementation, on a 2D context. A zero-argument Ray method is emitted as a getter, so `s.stroke`
  * is a property read here.
  */
-const page = (code: string, id: string, w: number, h: number) => `<!doctype html>
+const page = (code: string, id: string, w: number, h: number, images: Record<string, string> = {}) => `<!doctype html>
 <meta charset="utf-8">
 <title>${id}</title>
 <style>html,body{margin:0;background:#08090d}canvas{display:block}</style>
@@ -219,6 +221,21 @@ class CanvasSurface extends Surface {
   translate(x, y) { this.ctx.translate(x, y); return null; }
   rotate(a) { this.ctx.rotate(a); return null; }
   dash(segments) { this.ctx.setLineDash(segments); return null; }
+  image(src, x, y, w, h) { const im = globalThis.__images[src]; if (!im) throw new Error("no image " + src + " (name it in the Picture's images)"); this.ctx.drawImage(im, x, y, w, h); return null; }
+  field(rgb, cols, rows, x, y, w, h, blur) {
+    const off = this.__field && this.__field.width === cols && this.__field.height === rows ? this.__field : (this.__field = Object.assign(document.createElement("canvas"), { width: cols, height: rows }));
+    const oc = off.getContext("2d"), im = oc.createImageData(cols, rows);
+    for (let c = 0, n = cols * rows; c < n; c++) { im.data[4 * c] = rgb[3 * c]; im.data[4 * c + 1] = rgb[3 * c + 1]; im.data[4 * c + 2] = rgb[3 * c + 2]; im.data[4 * c + 3] = 255; }
+    oc.putImageData(im, 0, 0);
+    this.ctx.save();
+    this.ctx.imageSmoothingEnabled = true; this.ctx.imageSmoothingQuality = "high";
+    /* black is nothing: added onto what is there, so the box's own black does not cover the sky round it */
+    this.ctx.globalCompositeOperation = "lighter";
+    if (blur > 0) this.ctx.filter = "blur(" + blur + "px)";
+    this.ctx.drawImage(off, x, y, w, h);
+    this.ctx.restore();
+    return null;
+  }
   gradient_stroke(x0, x1, stops, at) {
     const g = this.ctx.createLinearGradient(x0, 0, x1, 0);
     stops.forEach((c, i) => g.addColorStop(at[i], c));
@@ -235,8 +252,9 @@ globalThis.__begin = () => { __painter = __v.painter; __painter.start; return tr
 globalThis.__warm = (budgetMs) => __painter.warm(budgetMs);
 
 /* every painted frame, kept as a compressed image until the film is written */
-let __frames = [], __fps = 24, __type = null;
-globalThis.__record = (fps) => {
+let __frames = [], __fps = 24, __type = null, __bitrate = 2000000;
+globalThis.__record = (fps, bitrate) => {
+  if (bitrate) __bitrate = bitrate;
   __type = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(t => MediaRecorder.isTypeSupported(t));
   if (!__type) return false;
   __fps = fps;
@@ -263,7 +281,7 @@ globalThis.__finish = () => new Promise(async res => {
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const __stream = __el.captureStream(0);
   __track = __stream.getVideoTracks()[0];
-  __rec = new MediaRecorder(__stream, { mimeType: __type, videoBitsPerSecond: 2_000_000 });
+  __rec = new MediaRecorder(__stream, { mimeType: __type, videoBitsPerSecond: __bitrate });
   __rec.ondataavailable = e => { if (e.data.size) __chunks.push(e.data); };
   __rec.onstop = async () => {
     const __blob = new Blob(__chunks, { type: __rec.mimeType });
@@ -295,6 +313,9 @@ globalThis.__finish = () => new Promise(async res => {
   __rec.stop();
   __ctx.putImageData(last, 0, 0);
 });
+/* the picture files it draws, decoded before the first frame (Picture.images, carried in as data: URLs) */
+globalThis.__images = {};
+for (const [src, url] of Object.entries(${JSON.stringify(images)})) { const im = new Image(); im.src = url; await im.decode(); globalThis.__images[src] = im; }
 globalThis.__ready = true;
 </script>`;
 
@@ -393,6 +414,26 @@ export async function measure(names: string[]) {
   console.log(`\n  measured in ${((Date.now() - t0) / 1000).toFixed(1)}s\n`);
 }
 
+/*
+ * A MONTAGE (Picture.parts): the parts' own films, already rendered, joined in order into `visuals/<id>/video.mp4`
+ * (H.264, constant RAY_FPS, for an upload) by ffmpeg - the host's encoder, as Chrome's is for a film. A part not
+ * rendered yet is named, not skipped.
+ */
+function montage(id: string, v: any) {
+  const films = v.parts.map((p: string) => join(OUT, safe(p), "animation.webm"));
+  const missing = v.parts.filter((_: string, i: number) => !existsSync(films[i]));
+  if (missing.length) throw new Error(`${id}: render its parts first - RAY_FPS=${FPS} npx ray visuals ${missing.join(" ")}`);
+  const dir = join(OUT, safe(id));
+  mkdirSync(dir, { recursive: true });
+  const list = join(dir, "parts.txt");
+  writeFileSync(list, films.map((f: string) => `file '${f}'`).join("\n") + "\n");
+  const t0 = Date.now();
+  const r = spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", list, "-r", String(FPS), "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-pix_fmt", "yuv420p", "-movflags", "+faststart", join(dir, "video.mp4")], { stdio: "inherit" });
+  if (r.status !== 0) throw new Error(`${id}: ffmpeg could not join the parts (${r.error?.message ?? `exit ${r.status}`})`);
+  writeFileSync(join(dir, "index.html"), `<!doctype html><meta charset="utf-8"><title>${id}</title><body style="margin:0;background:#08090d"><video src="video.mp4" controls style="width:100%"></video>`);
+  console.log(`  ${pad(id, 26)} ${v.parts.length} parts joined -> visuals/${safe(id)}/video.mp4  ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+}
+
 export async function renderVisuals(args: string[]) {
   const ids = args.filter(a => !a.startsWith("--"));
   const stillsOnly = args.includes("--stills");
@@ -422,10 +463,14 @@ export async function renderVisuals(args: string[]) {
 
       const entry = `${work}/${safe(id)}.entry.ts`;
       writeFileSync(entry, `import * as __visuals from ${JSON.stringify(join(OUT, "visuals.ts"))};\nimport * as __physics from ${JSON.stringify(join(repo, "languages", "physics.ts", "index.ts"))};\nglobalThis.VISUALS = __visuals.VISUALS;\nglobalThis.Surface = __physics.Surface;\n`);
-      const needs = Object.keys(all).filter(n => !n.endsWith(".frames") || n === `${id}.frames`);
+      /* A MONTAGE paints nothing of its own: its parts' films, joined in order (each rendered first, at the same size and rate) */
+      if (v.parts?.length) { montage(id, v); continue; }
+      /* a measurement whose header names `pages` (a prefix of visual ids) is carried only into those pages: the video's films are large */
+      const needs = Object.keys(all).filter(n => (!n.endsWith(".frames") || n === `${id}.frames` || (v.uses ?? []).some((u: string) => n === `${u}.frames`)) && (!all[n].header?.pages || id.startsWith(all[n].header.pages)));
       const code = await bundle(entry, data(work, all, needs));
       const file = `${work}/${safe(id)}.html`;
-      writeFileSync(file, page(code, id, v.width, v.height));
+      const images = Object.fromEntries((v.images ?? []).map((p: string) => [p, `data:image/png;base64,${readFileSync(resolve(repo, p)).toString("base64")}`]));
+      writeFileSync(file, page(code, id, v.width, v.height, images));
 
       await client.send("Emulation.setDeviceMetricsOverride", { width: v.width, height: v.height, deviceScaleFactor: 2, mobile: false });
       await client.send("Page.navigate", { url: `file://${file}` });
@@ -465,16 +510,21 @@ export async function renderVisuals(args: string[]) {
         done = await evaluate("globalThis.__warm(400)");
         if (process.stdout.isTTY) process.stdout.write(`\r  ${pad(id, 26)} warming ${(done * 100).toFixed(0)}%   `);
       }
-      const codec = stillsOnly ? null : await evaluate(`globalThis.__record(${FPS})`);
+      const codec = stillsOnly ? null : await evaluate(`globalThis.__record(${FPS}, ${BITRATE})`);
       if (!stillsOnly && !codec) throw new Error(`${id}: this browser has no WebM encoder`);
       /* the film first, then the still: frame() advances the world, and the snapshot is where that leaves it */
       const dt = 1 / FPS, CHUNK = 10;
-      for (let f = 0; f < v.frames; f += CHUNK) {
-        const n = Math.min(CHUNK, v.frames - f);
+      /* RAY_SHOTS=0,120: also keep those frames as they were painted (`frame.<k>.png`), to check a film between its ends */
+      const shots = (process.env.RAY_SHOTS ?? "").split(",").filter(Boolean).map(Number).filter(k => k >= 0 && k < v.frames).sort((a, b) => a - b);
+      for (let f = 0; f < v.frames;) {
+        const due = shots.find(k => k >= f);
+        const n = Math.min(CHUNK, v.frames - f, due === undefined ? CHUNK : due - f + 1);
         if (stillsOnly) for (let i = 0; i < n; i++) await evaluate(`globalThis.__step(${dt})`);
         else await evaluate(`globalThis.__run(${n}, ${dt}, ${FPS}, ${f})`);
+        f += n;
+        if (due === f - 1) await shoot(join(OUT, safe(id), `frame.${due}.png`));
         if (process.stdout.isTTY && Date.now() - t0 > 4000)
-          process.stdout.write(`\r  ${pad(id, 26)} frame ${String(f + n).padStart(4)}/${v.frames}  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+          process.stdout.write(`\r  ${pad(id, 26)} frame ${String(f).padStart(4)}/${v.frames}  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
       }
       if (!stillsOnly) await evaluate("globalThis.__settle()");
       if (process.stdout.isTTY) process.stdout.write("\r" + " ".repeat(64) + "\r");

@@ -1,0 +1,114 @@
+{
+  "what": "milkyway.measured",
+  "columns": [
+    "density",
+    "young",
+    "dust"
+  ],
+  "rows": 196608,
+  "measured": "2026-10-02T20:21:23.289Z",
+  "young": 1,
+  "young_stars": 100000,
+  "dust_tracers": 100000,
+  "galaxy": "milkyway",
+  "pages": "video.",
+  "per_kpc": 2.3076923076923075,
+  "real": true,
+  "mass_unit": 0.0001481313797262935,
+  "sun": [
+    18.92307692307692,
+    0.000828838550068289,
+    3.141592653589793
+  ],
+  "clock": [
+    18.92307692307692,
+    0.000828838550068289,
+    8.2,
+    238
+  ],
+  "kms": 0,
+  "apart": 110,
+  "orbit": null,
+  "middles": [
+    [
+      0,
+      0
+    ]
+  ],
+  "scales": [
+    6
+  ],
+  "sighted": [
+    "Milky Way"
+  ],
+  "speeds": [
+    0.0008499115918916486
+  ],
+  "names": [
+    "Milky Way"
+  ],
+  "mass": [
+    0.0008295357264672435
+  ],
+  "scale": [
+    6
+  ],
+  "span": [
+    38
+  ],
+  "stars": 1000000,
+  "frames": 3,
+  "grid": 256,
+  "ticks": [
+    174,
+    274,
+    374
+  ],
+  "deg": 8,
+  "side": 253,
+  "view": 241,
+  "margin": 2,
+  "departed": [
+    0,
+    0,
+    0
+  ],
+  "momentum": [
+    5.215117625854654e-8,
+    0.00002942537997289783,
+    0.00004670971403215884
+  ],
+  "turn": [
+    0.000007136009147093038,
+    0.000007135991040122448,
+    0.000007135959054412432
+  ],
+  "motion": [
+    2.668113946561208e-10,
+    2.668273927226982e-10,
+    2.6684503601999845e-10
+  ],
+  "half": [
+    11.34585718218827,
+    11.346166956572635,
+    11.345810028322658
+  ],
+  "holding": [
+    1.0563602647274093,
+    1.0583035750978158,
+    1.0565208361688985
+  ],
+  "camera": [
+    0.06326166320126465,
+    0.020681634293126194,
+    0.06357984959624237,
+    0.02021315965156134,
+    0.06373212315009387,
+    0.020136524027440334
+  ],
+  "follow": true,
+  "speed": 0.0008499115918916486,
+  "sigma": 0.05,
+  "tpf": 100,
+  "about": "a disc of stars in the medium itself, every star its own body, every step local (galaxy.gpu.ts RAY_ONLY=medium-galaxy): star counts on grid x grid cells, span c-bar either side of the middle, frame after frame"
+}

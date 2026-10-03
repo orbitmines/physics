@@ -1014,6 +1014,17 @@ Gotchas met writing these (all confirmed the hard way):
 - `Array.range(n).for((i) => { ... })` is emitted as a counted `for` loop (no index array); every other
   `xs.for` spreads its list first. `elem` and `Node.read` in the TypeScript runtime take the common
   case first - that alone halved a field tick.
+- **The video (Video.ray, 2026-09-29).** 2560x1440 at 60 fps, every scene its own `video.*` visual (on request), no
+  text anywhere but the end card. `Sighted` holds a galaxy's data (Milky Way: Bland-Hawthorn & Gerhard 2016; M31:
+  Geehan 2006, van der Marel 2012) and galaxy.gpu.ts `RAY_GALAXY=milkyway|andromeda|collision` lays them in the
+  medium in one set of lattice units (the Milky Way's R_d is `Video.FILM_RD` c-bar). `Shot` + `Sky` play such a film
+  with an eased camera; `Growing` (the lattice round one source, from the S.v film's last frame) and `Planets` (the
+  source becoming the Earth, read off solar.inner's own recording) are the transitions; `EndCard` draws the logo.
+  New in Visual.ray: `Surface.image(src, x, y, w, h)` with `Picture.images` (paths from the repository, carried into
+  the page), `Picture.uses` (other visuals whose recordings it reads), `Picture.parts` (a montage: the host joins the
+  parts' films with ffmpeg into `visuals/<id>/video.mp4`). The recorder takes `RAY_FPS`, `RAY_BITRATE` and
+  `RAY_SHOTS=0,120` (those frames kept as `frame.<k>.png`). A new core class must be added to `Gen.core` (and, to be
+  seen by visuals.ts, to `TypeScript.exports`) or it is not emitted.
 
 ### Tests
 

@@ -142,6 +142,31 @@ G: Theory = class {
   visual "galaxy.rar" () => Galaxies.rar
 
   /*
+   * THE VIDEO (Video.ray, 2560x1440 at 60 frames a second, each piece only when named): the Milky Way and Andromeda
+   * laid from their data in the medium (galaxy.gpu.ts RAY_GALAXY=milkyway|andromeda|collision), and the way in to them
+   */
+  visual "video" () => Video.montage
+  visual "video.transport" () => Video.transport(G)
+  visual "video.to-source" () => Video.to_source(G)
+  visual "video.to-solar" () => Video.to_solar(G)
+  visual "video.end" () => Video.end
+  visual "video.to-milkyway" () => Video.shot_after_solar(G, "video.to-milkyway", "from the Sun's place out to the whole Milky Way: the film's first stretch, the camera leaving the Sun's star", Shot(film_id: "milkyway", seconds: 6, from_zoom: 0.002, to_zoom: 60, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.1, tilt: 0, turn: 0, title: "The Milky Way", fade_in: 0, fade_out: 0))
+  visual "video.milkyway" () => Video.shot("video.milkyway", "the Milky Way from its data, every star its own body in the medium, turning", Shot(film_id: "milkyway", seconds: 6, from_zoom: 60, to_zoom: 60, from_sun: 0, to_sun: 0, from_at: 0.1, to_at: 1, tilt: 0, turn: 0, title: "The Milky Way", fade_in: 0, fade_out: 0))
+  /* the same two scenes from the Milky Way as measured today (its bar, arms and young stars: RAY_GALAXY=milkyway RAY_OUT=milkyway.measured), drawn as light (Video.light) */
+  visual "video.to-milkyway.measured" () => Video.shot_after_solar(G, "video.to-milkyway.measured", "from the Sun's place out to the whole Milky Way as it is measured today: its bar, its arms and their young stars", Shot(film_id: "milkyway.measured", seconds: 6, from_zoom: 0.002, to_zoom: 60, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.1, tilt: 0, turn: 0, title: "The Milky Way", fade_in: 0, fade_out: 0))
+  visual "video.milkyway.measured" () => Video.shot("video.milkyway.measured", "the Milky Way as it is measured today, every star its own body in the medium, turning at its own speed", Shot(film_id: "milkyway.measured", seconds: 6, from_zoom: 60, to_zoom: 60, from_sun: 0, to_sun: 0, from_at: 0.1, to_at: 1, tilt: 0, turn: 0, title: "The Milky Way", fade_in: 0, fade_out: 0))
+  visual "video.andromeda" () => Video.shot("video.andromeda", "Andromeda from its data, seen as we see it: inclined 77 degrees, its long axis at 38", Shot(film_id: "andromeda", seconds: 6, from_zoom: 125, to_zoom: 125, from_sun: 0, to_sun: 0, from_at: 0, to_at: 1, tilt: 77, turn: 38, title: "Andromeda (M31)", fade_in: 0, fade_out: 0))
+  visual "video.to-andromeda" () => Video.shot("video.to-andromeda", "from the Milky Way out until Andromeda is in the picture too", Shot(film_id: "collision", seconds: 4, from_zoom: 60, to_zoom: 240, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.03, tilt: 0, turn: 0, title: "The Milky Way and Andromeda", fade_in: 0, fade_out: 0))
+  visual "video.collision" () => Video.shot("video.collision", "the Milky Way and Andromeda, closing at their measured 110 km/s (17 across) from much nearer than today's 785 kpc, then meeting", Shot(film_id: "collision", seconds: 18, from_zoom: 240, to_zoom: 240, from_sun: 0, to_sun: 0, from_at: 0.03, to_at: 1, tilt: 0, turn: 0, title: "The Milky Way and Andromeda", fade_in: 0, fade_out: 0))
+  /*
+   * the same from the galaxies as measured today (RAY_OUT andromeda.measured; the collision RAY_OUT collision.measured at
+   * RAY_PER_KPC 0.7 from the orbit run's handover, so its zooms are in that film's c-bar: 0.7 a kpc), drawn as light
+   */
+  visual "video.andromeda.measured" () => Video.shot("video.andromeda.measured", "Andromeda as it is measured today - its young stars and dust off its own ultraviolet and far-infrared light - seen as we see it: inclined 77 degrees, its long axis at 38", Shot(film_id: "andromeda.measured", seconds: 6, from_zoom: 125, to_zoom: 125, from_sun: 0, to_sun: 0, from_at: 0, to_at: 1, tilt: 77, turn: 38, title: "Andromeda (M31)", fade_in: 0, fade_out: 0))
+  visual "video.to-andromeda.measured" () => Video.shot("video.to-andromeda.measured", "from the Milky Way out until Andromeda is in the picture too", Shot(film_id: "collision.measured", seconds: 4, from_zoom: 18, to_zoom: 110, from_sun: 1, to_sun: 0, from_at: 0, to_at: 0.03, tilt: 0, turn: 0, title: "The Milky Way and Andromeda", fade_in: 0, fade_out: 0))
+  visual "video.collision.measured" () => Video.shot("video.collision.measured", "the Milky Way and Andromeda as measured today, from where the medium brings them 100 kpc apart, at their own speed", Shot(film_id: "collision.measured", seconds: 18, from_zoom: 110, to_zoom: 110, from_sun: 0, to_sun: 0, from_at: 0.03, to_at: 1, tilt: 0, turn: 0, title: "The Milky Way and Andromeda", fade_in: 0, fade_out: 0))
+
+  /*
    * THE RULES OF THE VACUUM ON A LINE (Strip.ray): each on the smallest world it acts on, before and
    * after, with the rule's own `matches` and `apply` deciding what the after lane shows. Gravity has no
    * polarity, so every ray is drawn neutral: the ink is a choice a later theory makes differently.
@@ -223,6 +248,10 @@ G: Theory = class {
     ink := Ink()
     ink.every = true
     ink.top = 36
+    Strip.tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", this.transport_lanes(ink), ink)
+  }
+  /* the lanes of that film, a tick each (the video plays them too, Video.transport) */
+  transport_lanes (ink: Ink): Lane[] => {
     w := Strip.line(this, 21)
     s := w.add(Scripted(at: Vector(components: [Real.of(9)]), plan: ["+-", "", "", "", "+-"], weight: 4))
     s.moves = true
@@ -242,7 +271,7 @@ G: Theory = class {
       now.says = went.empty ? emitted : (emitted.empty ? went : "{went}, {emitted}")
       lanes.push(now)
     })
-    Strip.tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes, ink)
+    lanes
   }
 
   /*

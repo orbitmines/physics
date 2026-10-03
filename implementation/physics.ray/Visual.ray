@@ -50,6 +50,13 @@ Surface := class < width: N, height: N {
   dash (segments: Real[])
   /* a stroke that fades along x: colour stops at fractions of the way from x0 to x1 */
   gradient_stroke (x0: Real, x1: Real, stops: String[], at: Real[])
+  /* a picture file the Picture named in `images` (a path from the repository), drawn into the box x, y, w, h */
+  image (src: String, x: Real, y: Real, w: Real, h: Real)
+  /*
+   * a picture made of numbers: `rgb` is cols x rows cells of red, green, blue (0-255), the first row the top, drawn into
+   * the box x, y, w, h smoothed between cells (not as blocks), softened by `blur` pixels (0: none)
+   */
+  field (rgb: Real[], cols: N, rows: N, x: Real, y: Real, w: Real, h: Real, blur: Real)
 }
 
 /* columns of numbers and a header - a measurement, a borrowed catalogue, or a recording, read back */
@@ -122,6 +129,12 @@ Picture := class < id: String, what: String, width: N, height: N, frames: N {
   panes: Pane[] = []
   /* rendered only when named (`npx ray visuals <id>`), never with every visual */
   on_request: boolean = false
+  /* picture files it draws (`Surface.image`), paths from the repository: the host loads them before the first frame */
+  images: String[] = []
+  /* a montage: the visuals it plays one after the other, whole (the host joins their films), and nothing painted of its own */
+  parts: String[] = []
+  /* other visuals whose recordings it reads (`Measured.of("<id>.frames")`): the host carries those into its page too */
+  uses: String[] = []
   /* the painter, made fresh per render and handed the frames - off disk where recorded, live where not */
   paint: Program
   played (): Played? => {
