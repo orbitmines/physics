@@ -877,6 +877,86 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     return { speed: vn ? vsum / vn : 0, stir };
   };
   const launched = galaxies.map((_, gi) => launch(gi));
+  /* THE BAR'S STARS ON THE MEDIUM'S OWN ORBITS (Video.MW_ORBITS): found in the field the laid stars stand in, in the frame the bar turns with */
+  if (MEASURED && Deno.env.get("RAY_BAR_ORBITS") !== "0") {
+    const g = galaxies[MWI], [reachKpc, h] = V.MW_ORBITS, [NA, NB] = V.MW_ORBIT_TRIALS, TEMPER = V.MW_ORBIT_TEMPER;
+    const OM = V.MW_PATTERN_SPEED / V.LIGHT / perKpc, reach = reachKpc * perKpc, GN = 2 * Math.ceil((reach + 1) / h) + 1, half = (GN - 1) / 2;
+    /* the pull on a grid over the bar, c-bar about the galaxy's middle, as the medium gives it with every star held */
+    const asks: number[][] = [];
+    for (let j = 0; j < GN; j++) for (let i = 0; i < GN; i++) asks.push([g.cx + (i - half) * h * K, g.cy + (j - half) * h * K, 0]);
+    const got = await w.probe(asks), GX = new Float64Array(GN * GN), GY = new Float64Array(GN * GN);
+    got.forEach((a: number[], k: number) => { GX[k] = a[0]; GY[k] = a[1]; });
+    const pull = (x: number, y: number) => {
+      const fi = x / h + half, fj = y / h + half, i = Math.floor(fi), j = Math.floor(fj);
+      if (i < 0 || j < 0 || i >= GN - 1 || j >= GN - 1) return null;
+      const u = fi - i, v = fj - j, k = j * GN + i;
+      return [(1 - u) * (1 - v) * GX[k] + u * (1 - v) * GX[k + 1] + (1 - u) * v * GX[k + GN] + u * v * GX[k + GN + 1], (1 - u) * (1 - v) * GY[k] + u * (1 - v) * GY[k + 1] + (1 - u) * v * GY[k + GN] + u * v * GY[k + GN + 1]];
+    };
+    /* the probe and the stars' own pull must be one quantity: compare them where the stars stand */
+    let dev = 0, cnt = 0;
+    w.holes.forEach((hh: any, s: number) => { if (whose[s] !== MWI || cnt >= 2000 || s % 97) return; const x = (hh.x - g.cx) / K, y = (hh.y - g.cy) / K; const p = pull(x, y); if (p) { dev += Math.hypot(p[0] - pulls[s][0], p[1] - pulls[s][1]) / Math.max(1e-30, Math.hypot(pulls[s][0], pulls[s][1])); cnt++; } });
+    /* where the laid stars are, against their ring's average: what an orbit should keep to */
+    const DG = 2 * Math.ceil(reach / h), dens = new Float64Array(DG * DG), ring = new Float64Array(DG), ringN = new Float64Array(DG);
+    w.holes.forEach((hh: any, s: number) => { if (whose[s] !== MWI || young[s]) return; const x = (hh.x - g.cx) / K, y = (hh.y - g.cy) / K, i = Math.floor(x / h + DG / 2), j = Math.floor(y / h + DG / 2); if (i >= 0 && j >= 0 && i < DG && j < DG) dens[j * DG + i]++; });
+    for (let j = 0; j < DG; j++) for (let i = 0; i < DG; i++) { const r = Math.floor(Math.hypot(i - DG / 2 + 0.5, j - DG / 2 + 0.5)); if (r < DG) { ring[r] += dens[j * DG + i]; ringN[r]++; } }
+    const lift = (x: number, y: number) => {
+      const i = Math.floor(x / h + DG / 2), j = Math.floor(y / h + DG / 2);
+      if (i < 0 || j < 0 || i >= DG || j >= DG) return -1;
+      const r = Math.floor(Math.hypot(i - DG / 2 + 0.5, j - DG / 2 + 0.5)), avg = r < DG && ringN[r] ? ring[r] / ringN[r] : 0;
+      return avg > 0 ? Math.log((dens[j * DG + i] + 0.5) / (avg + 0.5)) : -1;
+    };
+    /* the circling at a radius off the grid's pull, the ring's average (what a launch is a share of) */
+    const vc = (R: number) => { let s2 = 0, n = 0; for (let k = 0; k < 16; k++) { const t = 2 * Math.PI * k / 16, p = pull(R * Math.cos(t), R * Math.sin(t)); if (p) { s2 += -(p[0] * Math.cos(t) + p[1] * Math.sin(t)); n++; } } return n ? Math.sqrt(Math.max(0, s2 / n * R)) : 0; };
+    /* one trial: from (x, y) at an inertial launch (vt across, vr along the radius), for one turn of the bar in its frame; its mean lift */
+    const TURN = 2 * Math.PI / OM, DT = TURN / 600;
+    const trial = (x0: number, y0: number, vt: number, vr: number) => {
+      const R0 = Math.hypot(x0, y0), ux = x0 / R0, uy = y0 / R0;
+      let x = x0, y = y0, vx = vr * ux - vt * uy + OM * y0, vy = vr * uy + vt * ux - OM * x0, score = 0, n = 0;
+      const acc = (x: number, y: number, vx: number, vy: number) => { const p = pull(x, y); return p ? [p[0] + 2 * OM * vy + OM * OM * x, p[1] - 2 * OM * vx + OM * OM * y] : null; };
+      let a = acc(x, y, vx, vy);
+      for (let st = 0; st < 600 && a; st++) {
+        vx += a[0] * DT / 2; vy += a[1] * DT / 2; x += vx * DT; y += vy * DT;
+        a = acc(x, y, vx, vy);
+        if (!a) return -2;
+        vx += a[0] * DT / 2; vy += a[1] * DT / 2;
+        score += lift(x, y); n++;
+      }
+      return n ? score / n : -2;
+    };
+    /* the trials from places across the bar: radii and angles in the bar's own frame (the picture's, at the launch) */
+    const NR = 24, NT = 48, at = (ir: number) => reach * (ir + 0.5) / NR;
+    const lib: Float64Array[] = [];
+    let tried = 0;
+    const t0b = performance.now();
+    for (let ir = 0; ir < NR; ir++) {
+      const R = at(ir), v = vc(R);
+      for (let it = 0; it < NT; it++) {
+        const t = 2 * Math.PI * (it + 0.5) / NT, sc = new Float64Array(NA * NB);
+        for (let a = 0; a < NA; a++) for (let b = 0; b < NB; b++) { sc[a * NB + b] = trial(R * Math.cos(t), R * Math.sin(t), v * 1.35 * a / (NA - 1), v * (-0.6 + 1.2 * b / (NB - 1))); tried++; }
+        lib.push(sc);
+      }
+    }
+    /* each star within reach takes a launch off the trials nearest its place, drawn by e^(score / TEMPER) */
+    let moved = 0, mx = 0, my = 0, mt = 0, best = 0;
+    w.holes.forEach((hh: any, s: number) => {
+      if (whose[s] !== MWI) return;
+      const x = (hh.x - g.cx) / K, y = (hh.y - g.cy) / K, R = Math.hypot(x, y);
+      if (R >= reach || R <= 0) return;
+      const ir = Math.min(NR - 1, Math.floor(R / reach * NR)), it = (Math.floor(((Math.atan2(y, x) + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) * NT)) % NT;
+      const sc = lib[ir * NT + it], top = Math.max(...sc);
+      let sum = 0; for (const q of sc) sum += Math.exp((q - top) / TEMPER);
+      let pick = rnd() * sum, c = 0;
+      for (; c < sc.length - 1; c++) { pick -= Math.exp((sc[c] - top) / TEMPER); if (pick <= 0) break; }
+      best += top;
+      const a = Math.floor(c / NB), b = c % NB, v = vc(R), vt = v * 1.35 * a / (NA - 1), vr = v * (-0.6 + 1.2 * b / (NB - 1));
+      hh.px = hh.mass * (vr * x / R - vt * y / R); hh.py = hh.mass * (vr * y / R + vt * x / R);
+      moved++;
+    });
+    /* the galaxy at rest again */
+    w.holes.forEach((hh: any, s: number) => { if (whose[s] === MWI) { mx += hh.px; my += hh.py; mt += hh.mass; } });
+    w.holes.forEach((hh: any, s: number) => { if (whose[s] === MWI) { hh.px -= hh.mass * mx / mt; hh.py -= hh.mass * my / mt; } });
+    console.log(`  the bar's stars on the medium's own orbits: ${tried} trial orbits in the frame turning at ${V.MW_PATTERN_SPEED} km/s a kpc (a turn ${(TURN * 3.2616e-3 / perKpc).toFixed(0)} Myr), ${((performance.now() - t0b) / 1000).toFixed(0)}s; ${moved} stars within ${reachKpc} kpc launched on them (mean best lift ${(best / Math.max(1, moved)).toFixed(3)}); the grid's pull against the stars' own: ${(100 * dev / Math.max(1, cnt)).toFixed(2)}% apart`);
+  }
   const speedRD = launched[0].speed;
   /* THE SUN: the Milky Way's star nearest 8.2 kpc out at RAY_SUN_ANGLE (degrees, 180: left of the middle), its track kept first */
   let sunStar = -1, sunInfo: number[] = [];

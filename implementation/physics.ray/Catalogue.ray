@@ -388,9 +388,12 @@ Borrowed := class {
       names.push("M_bar{i}")
       values.push(Borrowed.after(tex, "bar,{i}}}}}=", paper).first)
     })
+    /* and how fast the bar turns, in the model it is fitted to (P17's, km/s a kpc) */
+    names.push("pattern_speed")
+    values.push(Borrowed.after(tex, "P17 model with", paper).first)
     listed := names.join(" ")
-    fail("{paper}: {names.length} parameters read, 42 wanted (39 of table 1 and 3 masses): {listed}") if names.length != 42
-    c := Catalogue(id: "milkyway-bar", what: "the Milky Way's bar: the parameters of Sormani et al.'s analytic fit (their equations 2-9; its disc's too), by name, and M_bar1..3 its three barred parts' masses", source: "https://arxiv.org/abs/{Borrowed.SORMANI} (table 1)", paper: "Sormani, Gerhard, Portail, Vasiliev & Clarke 2022, MNRAS 514, L1")
+    fail("{paper}: {names.length} parameters read, 43 wanted (39 of table 1, 3 masses, the pattern speed): {listed}") if names.length != 43
+    c := Catalogue(id: "milkyway-bar", what: "the Milky Way's bar: the parameters of Sormani et al.'s analytic fit (their equations 2-9; its disc's too), by name, M_bar1..3 its three barred parts' masses, and pattern_speed how fast it turns (km/s a kpc)", source: "https://arxiv.org/abs/{Borrowed.SORMANI} (table 1)", paper: "Sormani, Gerhard, Portail, Vasiliev & Clarke 2022, MNRAS 514, L1")
     c.units = ["value: 1e10 suns a kpc^3 for rho_i, kpc for lengths, 1e10 suns for M_bar, else bare"]
     c.names = names
     c.column("value", values)

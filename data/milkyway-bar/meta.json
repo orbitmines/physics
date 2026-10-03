@@ -1,9 +1,9 @@
 {
-  "what": "the Milky Way's bar: the parameters of Sormani et al.'s analytic fit (their equations 2-9; its disc's too), by name, and M_bar1..3 its three barred parts' masses",
+  "what": "the Milky Way's bar: the parameters of Sormani et al.'s analytic fit (their equations 2-9; its disc's too), by name, M_bar1..3 its three barred parts' masses, and pattern_speed how fast it turns (km/s a kpc)",
   "source": "https://arxiv.org/abs/2204.13114 (table 1)",
   "paper": "Sormani, Gerhard, Portail, Vasiliev & Clarke 2022, MNRAS 514, L1",
   "units": ["value: 1e10 suns a kpc^3 for rho_i, kpc for lengths, 1e10 suns for M_bar, else bare"],
-  "names": ["rho_1", "Sigma_0", "x_1", "R_d", "y_1", "z_d", "z_1", "R_cut", "c_parallel", "n_d", "c_perp", "m_d", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut", "rho_2", "rho_3", "x_2", "x_3", "y_2", "y_3", "z_2", "z_3", "n_2", "n_3", "c_perp,2", "c_perp,3", "R_2,out", "R_3,out", "R_2,in", "R_3,in", "n_2,out", "n_3,out", "n_2,in", "n_3,in", "M_bar1", "M_bar2", "M_bar3"],
+  "names": ["rho_1", "Sigma_0", "x_1", "R_d", "y_1", "z_d", "z_1", "R_cut", "c_parallel", "n_d", "c_perp", "m_d", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut", "rho_2", "rho_3", "x_2", "x_3", "y_2", "y_3", "z_2", "z_3", "n_2", "n_3", "c_perp,2", "c_perp,3", "R_2,out", "R_3,out", "R_2,in", "R_3,in", "n_2,out", "n_3,out", "n_2,in", "n_3,in", "M_bar1", "M_bar2", "M_bar3", "pattern_speed"],
   "columns": ["value"],
-  "rows": 42
+  "rows": 43
 }

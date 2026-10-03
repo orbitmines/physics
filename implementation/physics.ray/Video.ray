@@ -78,6 +78,21 @@ Video := class {
   static MW_BAR3 (): Real[] => Video.mw_bar("3")
   static MW_BAR_MASSES (): Real[] => ["M_bar1", "M_bar2", "M_bar3"].map(n => Video.measured("milkyway-bar", n))
   static MW_BAR_ANGLE (): Real => Video.measured("milkyway-discs", "bar_angle")
+  /* how fast the bar turns, km/s a kpc (data/milkyway-bar: Portail et al. 2017's model, as Sormani et al. 2022 fit it) */
+  static MW_PATTERN_SPEED (): Real => Video.measured("milkyway-bar", "pattern_speed")
+  /*
+   * THE BAR'S STARS ON THE MEDIUM'S OWN ORBITS (galaxy.gpu.ts): their places are the data's, how they move is not
+   * measured - so it is found in the medium. With every star held where it is laid, the medium's pull is read on a grid
+   * over the bar (MW_ORBITS [reach kpc, grid c-bar]) and, in the frame turning with the bar at its pattern speed, trial
+   * orbits are run in it from places across the bar, each with launch speeds of [0, 1.35] of the circling across and
+   * [-0.6, 0.6] of it along the radius (MW_ORBIT_TRIALS [across, along]), for one turn of the bar. An orbit is scored by
+   * how much more of the laid stars than the ring's average lie where it goes (the mean of ln of that, along it): one
+   * that holds the bar up scores high, one that leaves it or crosses it low. Each star within MW_ORBITS[0] then takes,
+   * off the trials from the place nearest its own, a launch drawn with weight e^(score / MW_ORBIT_TEMPER)
+   */
+  static MW_ORBITS = [5.5, 0.25]
+  static MW_ORBIT_TRIALS = [10, 7]
+  static MW_ORBIT_TEMPER = 0.1
   /* all the stars (the bulge region and both discs) less the bar's: what the discs round it hold */
   static mw_discs_mass (): Real => Video.measured("milkyway-discs", "bulge_region_mass") + Video.measured("milkyway-discs", "thin_mass") + Video.measured("milkyway-discs", "thick_mass") - Video.MW_BAR_MASSES.sum
   static MW_DISCS (): Real[][] => {

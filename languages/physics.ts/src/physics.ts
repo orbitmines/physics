@@ -15411,6 +15411,9 @@ export class Video extends Node {
   static PER_MYR = 0.0010227;
   static LIGHT = 299792.458;
   static ANDROMEDA = new Sighted({ name: `Andromeda (M31)`, disc_mass: 8.4, disc_scale: 5.4, bulge_mass: 3.3, bulge_scale: 0.61, circling: 250, sun: 0, inclination: 77, position_angle: 38, distance: 785, approach: 110, across: 17, source: `Geehan et al. 2006, van der Marel et al. 2012` });
+  static MW_ORBITS = [5.5, 0.25];
+  static MW_ORBIT_TRIALS = [10, 7];
+  static MW_ORBIT_TEMPER = 0.1;
   static MW_ARM_END = [0, 0, 0, 0, 140];
   static MW_ARM_OLD = [0, 1, 0, 1, 0];
   static MW_ARM_FADE = 12;
@@ -15468,6 +15471,9 @@ export class Video extends Node {
   }
   static get MW_BAR_ANGLE(): number {
     return Video.measured(`milkyway-discs`, `bar_angle`);
+  }
+  static get MW_PATTERN_SPEED(): number {
+    return Video.measured(`milkyway-bar`, `pattern_speed`);
   }
   static get mw_discs_mass(): number {
     return sub(add(add(Video.measured(`milkyway-discs`, `bulge_region_mass`), Video.measured(`milkyway-discs`, `thin_mass`)), Video.measured(`milkyway-discs`, `thick_mass`)), sum(Video.MW_BAR_MASSES));
