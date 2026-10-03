@@ -3,7 +3,7 @@
 > [!NOTE] This is still a WIP, for progress see the writeup [here](https://physics.orbitmines-com.pages.dev/physics)
 
 <div align="center">
-<img src="./visuals/video.milkyway.measured/snapshot.png" alt="Image" height="200">
+<img src="./visuals/video.milkyway.measured/snapshot.png" alt="Image" height="350">
 </div>
 
 ---
