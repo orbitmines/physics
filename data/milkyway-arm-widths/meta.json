@@ -1,0 +1,9 @@
+{
+  "what": "the arms' width w(R) = w0 + slope (R - R0) (Gaussian 1 sigma across), the Sun's motion towards the Galactic middle U, and the young massive stars' spread about circling",
+  "source": "https://arxiv.org/abs/1910.03357",
+  "paper": "Reid et al. 2019, ApJ 885, 131",
+  "units": ["value: pc for w0, pc a kpc for slope, kpc for R0, km/s for U_sun and young_spread"],
+  "names": ["w0", "slope", "R0", "U_sun", "young_spread"],
+  "columns": ["value"],
+  "rows": 5
+}

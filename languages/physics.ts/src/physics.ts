@@ -15410,28 +15410,16 @@ export class Video extends Node {
   static FILM_RD = 6;
   static PER_MYR = 0.0010227;
   static LIGHT = 299792.458;
-  static MILKY_WAY = new Sighted({ name: `Milky Way`, disc_mass: 3.77, disc_scale: 2.6, bulge_mass: 1.83, bulge_scale: 0.6, circling: 238, sun: 8.2, inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: `Bland-Hawthorn & Gerhard 2016` });
   static ANDROMEDA = new Sighted({ name: `Andromeda (M31)`, disc_mass: 8.4, disc_scale: 5.4, bulge_mass: 3.3, bulge_scale: 0.61, circling: 250, sun: 0, inclination: 77, position_angle: 38, distance: 785, approach: 110, across: 17, source: `Geehan et al. 2006, van der Marel et al. 2012` });
-  static MW_BAR1 = [0.316, 0.490, 0.392, 0.229, 1.991, 2.232, 0.873, 0.626, 1.940, 1.342, 0.751, 0.469, 4.370];
-  static MW_BAR2 = [0.050, 5.364, 0.959, 0.611, 3.051, 0.970, 3.190, 0.558, 16.731, 3.196];
-  static MW_BAR3 = [1743.049, 0.478, 0.267, 0.252, 0.980, 1.879, 2.204, 7.607, (-27.291), 1.630];
-  static MW_BAR_MASSES = [1.28, 0.33, 0.22];
-  static MW_BAR_ANGLE = 27;
-  static MW_DISCS = [[3.22, 2.6, 1], [0.55, 2.0, 0]];
-  static MW_DISC_HOLE = 4.688;
-  static MW_ARMS = [[3.27, 38.5, 9.87, 0, 0], [4.29, 189.0, 10.51, 0, 1], [3.58, 215.2, 10.01, 0, 0], [3.98, 320.1, 8.14, 0, 1], [8.16, 50.6, 2.71, 140, 0]];
-  static MW_ARM_WIDTH = [0.336, 0.036, 8.15];
-  static MW_ARM_CONTRAST = 1.32;
+  static MW_ARM_END = [0, 0, 0, 0, 140];
+  static MW_ARM_OLD = [0, 1, 0, 1, 0];
   static MW_ARM_FADE = 12;
   static MW_ARM_FADE_IN = 45;
   static MW_YOUNG = 0.1;
   static MW_CLUSTERS = [0.5, 50, 0.1];
-  static MW_DUST = [0.34, 0.12, 0.1];
-  static MW_STIR = [[35, 14], [50, 7.5], [10, 14]];
   static LIGHT_STARS = [0.95, 2.4, 3.2];
   static ANDROMEDA_IMAGE = 512;
   static ANDROMEDA_FOV = 3.2;
-  static MW_SUN_MOTION = [11.1, 10.5];
   static SOURCE = `74,168,235`;
   static STRIP_TOP = 570;
   static STRIP_TALL = 300;
@@ -15440,6 +15428,82 @@ export class Video extends Node {
   static SOLAR_TO = 280;
   static LOGO = `../orbitmines.com/orbitmines.com/public/logo.png`;
   static PARTS = [`video.transport`, `video.to-source`, `video.to-solar`, `video.to-milkyway`, `video.milkyway`, `video.to-andromeda`, `video.collision`, `video.end`];
+  static get MILKY_WAY(): Sighted {
+    return new Sighted({ name: `Milky Way`, disc_mass: Video.mw_discs_mass, disc_scale: Video.measured(`milkyway-discs`, `thin_scale`), bulge_mass: sum(Video.MW_BAR_MASSES), bulge_scale: 0.6, circling: Video.measured(`milkyway-discs`, `circling`), sun: Video.measured(`milkyway-discs`, `sun_distance`), inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: `Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)` });
+  }
+  static measured(id: string, name: string): number {
+    let m = Measured.of(id);
+    if (eq(m, null)) {
+      fail(`no data/${id}: run npx ray data ${id}`);
+    }
+    let names = m.header[`names`];
+    let k = first(range(names.length).filter(((i: any) => {
+      return eq(elem(names, i), name);
+    })));
+    if (eq(k, null)) {
+      fail(`data/${id} has no ${JSON.stringify(name)}`);
+    }
+    return elem(m.columns[`value`], k);
+  }
+  static get MW_BAR1(): number[] {
+    return [`rho_1`, `x_1`, `y_1`, `z_1`, `c_parallel`, `c_perp`, `m`, `alpha`, `n`, `c`, `x_c`, `y_c`, `r_cut`].map(((n: any) => {
+      return Video.measured(`milkyway-bar`, n);
+    }));
+  }
+  static mw_bar(i: string): number[] {
+    return [`rho_${i}`, `x_${i}`, `y_${i}`, `z_${i}`, `n_${i}`, `c_perp,${i}`, `R_${i},out`, `R_${i},in`, `n_${i},out`, `n_${i},in`].map(((n: any) => {
+      return Video.measured(`milkyway-bar`, n);
+    }));
+  }
+  static get MW_BAR2(): number[] {
+    return Video.mw_bar(`2`);
+  }
+  static get MW_BAR3(): number[] {
+    return Video.mw_bar(`3`);
+  }
+  static get MW_BAR_MASSES(): number[] {
+    return [`M_bar1`, `M_bar2`, `M_bar3`].map(((n: any) => {
+      return Video.measured(`milkyway-bar`, n);
+    }));
+  }
+  static get MW_BAR_ANGLE(): number {
+    return Video.measured(`milkyway-discs`, `bar_angle`);
+  }
+  static get mw_discs_mass(): number {
+    return sub(add(add(Video.measured(`milkyway-discs`, `bulge_region_mass`), Video.measured(`milkyway-discs`, `thin_mass`)), Video.measured(`milkyway-discs`, `thick_mass`)), sum(Video.MW_BAR_MASSES));
+  }
+  static get MW_DISCS(): number[][] {
+    let thin = Video.measured(`milkyway-discs`, `thin_mass`);
+    let thick = Video.measured(`milkyway-discs`, `thick_mass`);
+    return [[div(mul(Video.mw_discs_mass, thin), (add(thin, thick))), Video.measured(`milkyway-discs`, `thin_scale`), 1], [div(mul(Video.mw_discs_mass, thick), (add(thin, thick))), Video.measured(`milkyway-discs`, `thick_scale`), 0]];
+  }
+  static get MW_DISC_HOLE(): number {
+    return Video.measured(`milkyway-bar`, `R_cut`);
+  }
+  static get MW_ARMS(): number[][] {
+    let m = Measured.of(`milkyway-arms`);
+    if (eq(m, null)) {
+      fail(`no data/milkyway-arms: run npx ray data milkyway-arms`);
+    }
+    return range(5).map(((k: any) => {
+      return [elem(m.columns[`R`], k), elem(m.columns[`theta`], k), elem(m.columns[`psi`], k), elem(Video.MW_ARM_END, k), elem(Video.MW_ARM_OLD, k)];
+    }));
+  }
+  static get MW_ARM_WIDTH(): number[] {
+    return [div(Video.measured(`milkyway-arm-widths`, `w0`), 1000), div(Video.measured(`milkyway-arm-widths`, `slope`), 1000), Video.measured(`milkyway-arm-widths`, `R0`)];
+  }
+  static get MW_ARM_CONTRAST(): number {
+    return Video.measured(`milkyway-arm-contrast`, `K`);
+  }
+  static get MW_DUST(): number[] {
+    return [div(Video.measured(`milkyway-dust-lane`, `hot`), 1000), 0.12, 0.1];
+  }
+  static get MW_STIR(): number[][] {
+    return [[Video.measured(`milkyway-discs`, `thin_sigma_R`), Video.measured(`milkyway-discs`, `thin_sigma_scale`)], [Video.measured(`milkyway-discs`, `thick_sigma_R`), Video.measured(`milkyway-discs`, `thick_sigma_scale`)], [Video.measured(`milkyway-arm-widths`, `young_spread`), Video.measured(`milkyway-discs`, `thin_sigma_scale`)]];
+  }
+  static get MW_SUN_MOTION(): number[] {
+    return [Video.measured(`milkyway-arm-widths`, `U_sun`), sub(Video.measured(`milkyway-discs`, `sun_tangential`), Video.measured(`milkyway-discs`, `circling`))];
+  }
   static galaxy(name: string): Sighted {
     return (eq(name, `andromeda`) ? Video.ANDROMEDA : Video.MILKY_WAY);
   }

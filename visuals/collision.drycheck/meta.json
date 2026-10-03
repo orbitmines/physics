@@ -1,16 +1,16 @@
 {
-  "what": "andromeda.laid",
+  "what": "collision.drycheck",
   "columns": [
     "density",
     "young",
     "dust"
   ],
-  "rows": 65536,
-  "measured": "2026-10-03T11:41:22.841Z",
+  "rows": 147456,
+  "measured": "2026-10-03T11:41:36.835Z",
   "dry": 1,
-  "grid": 256,
+  "grid": 384,
   "span": [
-    58
+    62
   ],
   "frames": 1,
   "young": 1,

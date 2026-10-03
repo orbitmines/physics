@@ -1,0 +1,9 @@
+{
+  "what": "the old stars' arm over between-arm ratio in near-infrared surface brightness, J and K",
+  "source": "https://arxiv.org/pdf/astro-ph/0101259",
+  "paper": "Drimmel & Spergel 2001, ApJ 556, 181",
+  "units": ["value: ratio"],
+  "names": ["J", "K"],
+  "columns": ["value"],
+  "rows": 2
+}

@@ -1,0 +1,9 @@
+{
+  "what": "an arm's dust lanes, inside its middle (the CO): the hot dust (the inner edge) and the cold",
+  "source": "https://arxiv.org/pdf/1409.4801",
+  "paper": "Vallee 2014, ApJS 215, 1",
+  "units": ["value: pc inside the arm's middle"],
+  "names": ["hot", "cold"],
+  "columns": ["value"],
+  "rows": 2
+}

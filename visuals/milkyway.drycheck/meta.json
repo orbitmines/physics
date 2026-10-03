@@ -1,16 +1,16 @@
 {
-  "what": "andromeda.laid",
+  "what": "milkyway.drycheck",
   "columns": [
     "density",
     "young",
     "dust"
   ],
   "rows": 65536,
-  "measured": "2026-10-03T11:41:22.841Z",
+  "measured": "2026-10-03T11:41:09.700Z",
   "dry": 1,
   "grid": 256,
   "span": [
-    58
+    38
   ],
   "frames": 1,
   "young": 1,

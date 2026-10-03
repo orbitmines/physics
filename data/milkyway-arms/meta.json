@@ -1,0 +1,9 @@
+{
+  "what": "the Milky Way's arms as logarithmic spirals, ln(r / R) = (theta - theta_0) tan(psi), theta from the x axis anticlockwise, the Sun on the y axis",
+  "source": "https://arxiv.org/abs/1407.7331 (table 3: all three kinds of tracer, R_0 8.3 kpc, four-arm model)",
+  "paper": "Hou & Han 2014, A&A 569, A125",
+  "units": ["R: kpc, the arm's initial radius", "theta: degrees, its start azimuth", "psi: degrees, its pitch angle"],
+  "names": ["Norma", "Scutum-Centaurus", "Sagittarius-Carina", "Perseus", "Local"],
+  "columns": ["R", "theta", "psi"],
+  "rows": 5
+}

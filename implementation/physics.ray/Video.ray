@@ -23,10 +23,11 @@ Video := class {
   static PER_MYR = 0.0010227
   static LIGHT = 299792.458
   /*
-   * Bland-Hawthorn & Gerhard 2016 (ARA&A 54, 529): 5.6e10 suns of stars (4.7-5.7) - as laid, the bar 1.83e10 and the
-   * discs round it 3.77e10 (MW_*, below) - the Sun 8.2 kpc out circling at 238 km/s
+   * Bland-Hawthorn & Gerhard 2016 (ARA&A 54, 529; data/milkyway-discs): its stars the bulge region (1.4-1.7e10 suns,
+   * the middle taken) and the thin and thick discs; as laid, the bar's (Sormani et al. 2022, data/milkyway-bar) and the
+   * discs round it the rest (MW_*, below); the Sun 8.2 kpc out, circling at 238 km/s
    */
-  static MILKY_WAY = Sighted(name: "Milky Way", disc_mass: 3.77, disc_scale: 2.6, bulge_mass: 1.83, bulge_scale: 0.6, circling: 238, sun: 8.2, inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: "Bland-Hawthorn & Gerhard 2016")
+  static MILKY_WAY (): Sighted => Sighted(name: "Milky Way", disc_mass: Video.mw_discs_mass, disc_scale: Video.measured("milkyway-discs", "thin_scale"), bulge_mass: Video.MW_BAR_MASSES.sum, bulge_scale: 0.6, circling: Video.measured("milkyway-discs", "circling"), sun: Video.measured("milkyway-discs", "sun_distance"), inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)")
   /*
    * Geehan et al. 2006 (MNRAS 366, 996): disc 8.4e10 suns, R_d 5.4 kpc, bulge 3.3e10 within 0.61 kpc; inclination 77
    * degrees, the major axis at 38 degrees (Walterbos & Kennicutt 1987); 785 kpc away (McConnachie et al. 2005),
@@ -62,16 +63,40 @@ Video := class {
    * (MW_YOUNG of the stars' count, next to no mass - the light the picture shows, not the pull) lie along all five.
    * Width (1 sigma across the arm) 0.336 + 0.036 (R - 8.15) kpc (Reid et al. 2019, ApJ 885, 131).
    */
-  static MW_BAR1 = [0.316, 0.490, 0.392, 0.229, 1.991, 2.232, 0.873, 0.626, 1.940, 1.342, 0.751, 0.469, 4.370]
-  static MW_BAR2 = [0.050, 5.364, 0.959, 0.611, 3.051, 0.970, 3.190, 0.558, 16.731, 3.196]
-  static MW_BAR3 = [1743.049, 0.478, 0.267, 0.252, 0.980, 1.879, 2.204, 7.607, -27.291, 1.630]
-  static MW_BAR_MASSES = [1.28, 0.33, 0.22]
-  static MW_BAR_ANGLE = 27
-  static MW_DISCS = [[3.22, 2.6, 1], [0.55, 2.0, 0]]
-  static MW_DISC_HOLE = 4.688
-  static MW_ARMS = [[3.27, 38.5, 9.87, 0, 0], [4.29, 189.0, 10.51, 0, 1], [3.58, 215.2, 10.01, 0, 0], [3.98, 320.1, 8.14, 0, 1], [8.16, 50.6, 2.71, 140, 0]]
-  static MW_ARM_WIDTH = [0.336, 0.036, 8.15]
-  static MW_ARM_CONTRAST = 1.32
+  /* one named value of a catalogue in data/ (a column `value` by name: `npx ray data <id>`) */
+  static measured (id: String, name: String): Real => {
+    m := Measured.of(id)
+    fail("no data/{id}: run npx ray data {id}") if m == None
+    names := m.header["names"]
+    k := Array.range(names.length).filter(i => names[i] == name).first
+    fail("data/{id} has no {name.quoted}") if k == None
+    m.columns["value"][k]
+  }
+  static MW_BAR1 (): Real[] => ["rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut"].map(n => Video.measured("milkyway-bar", n))
+  static mw_bar (i: String): Real[] => ["rho_{i}", "x_{i}", "y_{i}", "z_{i}", "n_{i}", "c_perp,{i}", "R_{i},out", "R_{i},in", "n_{i},out", "n_{i},in"].map(n => Video.measured("milkyway-bar", n))
+  static MW_BAR2 (): Real[] => Video.mw_bar("2")
+  static MW_BAR3 (): Real[] => Video.mw_bar("3")
+  static MW_BAR_MASSES (): Real[] => ["M_bar1", "M_bar2", "M_bar3"].map(n => Video.measured("milkyway-bar", n))
+  static MW_BAR_ANGLE (): Real => Video.measured("milkyway-discs", "bar_angle")
+  /* all the stars (the bulge region and both discs) less the bar's: what the discs round it hold */
+  static mw_discs_mass (): Real => Video.measured("milkyway-discs", "bulge_region_mass") + Video.measured("milkyway-discs", "thin_mass") + Video.measured("milkyway-discs", "thick_mass") - Video.MW_BAR_MASSES.sum
+  static MW_DISCS (): Real[][] => {
+    thin := Video.measured("milkyway-discs", "thin_mass")
+    thick := Video.measured("milkyway-discs", "thick_mass")
+    [[Video.mw_discs_mass * thin / (thin + thick), Video.measured("milkyway-discs", "thin_scale"), 1], [Video.mw_discs_mass * thick / (thin + thick), Video.measured("milkyway-discs", "thick_scale"), 0]]
+  }
+  static MW_DISC_HOLE (): Real => Video.measured("milkyway-bar", "R_cut")
+  /* the arms off data/milkyway-arms; where each ends (0: the disc's edge) and which the old stars trace are as said above */
+  static MW_ARM_END = [0, 0, 0, 0, 140]
+  static MW_ARM_OLD = [0, 1, 0, 1, 0]
+  static MW_ARMS (): Real[][] => {
+    m := Measured.of("milkyway-arms")
+    fail("no data/milkyway-arms: run npx ray data milkyway-arms") if m == None
+    Array.range(5).map(k => [m.columns["R"][k], m.columns["theta"][k], m.columns["psi"][k], Video.MW_ARM_END[k], Video.MW_ARM_OLD[k]])
+  }
+  /* [w0, slope, R0] in kpc: data/milkyway-arm-widths (pc there) */
+  static MW_ARM_WIDTH (): Real[] => [Video.measured("milkyway-arm-widths", "w0") / 1000, Video.measured("milkyway-arm-widths", "slope") / 1000, Video.measured("milkyway-arm-widths", "R0")]
+  static MW_ARM_CONTRAST (): Real => Video.measured("milkyway-arm-contrast", "K")
   /* an arm fades in from its start over MW_ARM_FADE_IN degrees of azimuth and out past its end over MW_ARM_FADE (1 sigma) - a picture's choice, not a measurement: where an arm begins near the bar is not sharp in the data */
   static MW_ARM_FADE = 12
   static MW_ARM_FADE_IN = 45
@@ -80,11 +105,12 @@ Video := class {
    * MW_CLUSTERS [share, stars, radius kpc]: young stars are born together (Lada & Lada 2003), so half of them are laid
    * in groups of 50 within ~0.1 kpc of one place on an arm - the knots the pink of their gas marks; how many and how
    * big is the picture's choice. MW_DUST [inwards kpc, width kpc, share]: the dust lane along each arm's inner edge,
-   * 0.34 kpc inside the arm's middle (Vallee 2014, ApJS 215, 1: hot dust to mid-arm CO, 340 +- 56 pc), its width the
+   * inside the arm's middle by the hot dust's offset (Vallee 2014, ApJS 215, 1: 342 pc from the mid-arm CO), its width the
    * picture's; laid as next-to-massless tracers (MW_DUST[2] of the stars' count) that dim the light where they gather
    */
   static MW_CLUSTERS = [0.5, 50, 0.1]
-  static MW_DUST = [0.34, 0.12, 0.1]
+  /* [inwards kpc (data/milkyway-dust-lane, the hot dust, pc there), width kpc, share] */
+  static MW_DUST (): Real[] => [Video.measured("milkyway-dust-lane", "hot") / 1000, 0.12, 0.1]
   /*
    * HOW THEY MOVE, as measured: MW_STIR [sigma_R at the Sun km/s, its radial scale kpc] for the thin disc (35, 14) and the
    * thick (50, 7.5) - Bland-Hawthorn & Gerhard 2016 (RAVE, Piffl et al. 2014), sigma_R e^(-(R - R_0) / R_sigma), sigma_phi
@@ -92,15 +118,16 @@ Video := class {
    * (10, 14), the massive young stars moving within ~10 km/s of circling (Reid et al. 2019's prior on their own motions).
    * The bar's stars are launched as before (Toomre's Q): its own orbits are a dynamical model's, not a measurement's.
    * MW_SUN_MOTION [inwards, ahead] km/s: the Sun's own motion off circling, 11.1 towards the middle (Reid et al. 2019)
-   * and 10.5 ahead (Bland-Hawthorn & Gerhard 2016; 248 in all at 238 circling)
+   * and 10 ahead (Bland-Hawthorn & Gerhard 2016: 248 in all at 238 circling)
    */
-  static MW_STIR = [[35, 14], [50, 7.5], [10, 14]]
+  static MW_STIR (): Real[][] => [[Video.measured("milkyway-discs", "thin_sigma_R"), Video.measured("milkyway-discs", "thin_sigma_scale")], [Video.measured("milkyway-discs", "thick_sigma_R"), Video.measured("milkyway-discs", "thick_sigma_scale")], [Video.measured("milkyway-arm-widths", "young_spread"), Video.measured("milkyway-discs", "thin_sigma_scale")]]
   /* over a film drawn as light, its shown stars: [how opaque at most, an old star's size px, a young one's] - the look "B" (the one chosen); a softer one ("D") is [0.55, 1.8, 2.4] */
   static LIGHT_STARS = [0.95, 2.4, 3.2]
   /* Andromeda's images (data/andromeda-images, Catalogue.ray): pixels a side, and degrees across */
   static ANDROMEDA_IMAGE = 512
   static ANDROMEDA_FOV = 3.2
-  static MW_SUN_MOTION = [11.1, 10.5]
+  /* [inwards (data/milkyway-arm-widths U_sun), ahead of circling (the Sun's 248 less the circling 238, data/milkyway-discs)] */
+  static MW_SUN_MOTION (): Real[] => [Video.measured("milkyway-arm-widths", "U_sun"), Video.measured("milkyway-discs", "sun_tangential") - Video.measured("milkyway-discs", "circling")]
   static galaxy (name: String): Sighted => name == "andromeda" ? Video.ANDROMEDA : Video.MILKY_WAY
   /* c-bar a kpc: one scale for every galaxy in the film */
   static per_kpc (): Real => Video.FILM_RD / Video.MILKY_WAY.disc_scale

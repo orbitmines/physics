@@ -5,7 +5,7 @@
  * `ray check <paths>`       parse only
  * `ray test`                run every `dynamically assert` collected from the loaded projects
  */
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,6 +66,24 @@ function installCatalogue(rt: Runtime) {
       out.push(raw_ * scale + zero);
     }
     return out;
+  };
+  /* a paper's own LaTeX: its arXiv source (a gzipped tar, or one gzipped file) unpacked under data/.raw/<as>/, every .tex in it joined */
+  rt.hosted["Catalogue.arxiv_tex"] = (id, as) => {
+    const dir = resolve(raw, as as string), pack = resolve(raw, `${as}.src`);
+    if (!existsSync(dir) || process.env.RAY_REFETCH) {
+      mkdirSync(dir, { recursive: true });
+      const url = `https://arxiv.org/e-print/${id}`;
+      process.stderr.write(`  GET      ${url} ... `);
+      execFileSync("curl", ["-sSL", "-m", "120", "-A", "orbitmines-physics (research)", "-o", pack, url]);
+      process.stderr.write(`${(statSync(pack).size / 1024).toFixed(0)} kB\n`);
+      try { execFileSync("tar", ["xzf", pack, "-C", dir]); }
+      catch { writeFileSync(resolve(dir, "main.tex"), execFileSync("gunzip", ["-c", pack])); }
+    }
+    const texts: string[] = [];
+    const walk = (d: string) => { for (const f of readdirSync(d).sort()) { const p = resolve(d, f); if (statSync(p).isDirectory()) walk(p); else if (f.endsWith(".tex")) texts.push(readFileSync(p, "utf8")); } };
+    walk(dir);
+    if (!texts.length) throw new RayError(`arXiv ${id}: no .tex in its source`);
+    return texts.join("\n");
   };
   rt.hosted["Catalogue.pdf_text"] = (as) => {
     try { return execFileSync("pdftotext", ["-layout", resolve(raw, as as string), "-"], { encoding: "utf8", maxBuffer: 64 << 20 }); }

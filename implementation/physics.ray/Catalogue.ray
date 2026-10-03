@@ -24,6 +24,8 @@ Catalogue := class < id: String, what: String, source: String, paper: String {
 
   static fetch (url: String, as: String): String
   static pdf_text (as: String): String
+  /* a paper's own LaTeX off arXiv (its source unpacked under data/.raw/<as>/, every .tex joined) */
+  static arxiv_tex (id: String, as: String): String
   static fits (url: String, as: String): Real[]
   static save_f32 (path: String, values: Real[])
   static number (text: String): Real?
@@ -311,6 +313,146 @@ Borrowed := class {
       px := Catalogue.fits(url, "image-M31-{Borrowed.ANDROMEDA_BANDS[k]}.fits")
       c.column(Borrowed.ANDROMEDA_BANDS[k], px.length == P * P + 2 ? px.drop(2).map(v => Fmt.finite(v) ? v : 0) : Array.filled(P * P, 0))
     })
+    c
+  }
+
+  /*
+   * THE MILKY WAY AS MEASURED (the film lays it off these; Video.ray `MW_*`), each read out of its paper - the LaTeX
+   * source off arXiv where its tables are, the PDF's text otherwise. `Borrowed.after`: the numbers that follow a phrase,
+   * failing (naming the paper) when the phrase is not there
+   */
+  static after (text: String, key: String, paper: String): Real[] => {
+    at := text.index_of(key)
+    fail("{paper}: no {key.quoted} in it") if at == None
+    Catalogue.numbers(text.drop(at + key.length))
+  }
+  /* the one line holding every phrase */
+  static line_with (text: String, keys: String[], paper: String): String => {
+    l := text.lines.filter(l => keys.filter(k => !l.contains(k)).empty).first
+    fail("{paper}: no line with {keys.map(k => k.quoted).join(", ")}") if l == None
+    l
+  }
+  /* a LaTeX cell's name, its markup gone: $R_{2,\rm out}$ -> R_2,out */
+  static bare (cell: String): String => String(chars: cell.chars.filter(c => c != 92 & c != 36 & c != 123 & c != 125 & c != 32)).replace("rm", "")
+  static HOU_HAN = "1407.7331"
+  static SORMANI = "2204.13114"
+  static BLAND_HAWTHORN = "1602.07702"
+  static REID = "1910.03357"
+  static DRIMMEL = "https://arxiv.org/pdf/astro-ph/0101259"
+  static VALLEE = "https://arxiv.org/pdf/1409.4801"
+
+  /* Hou & Han 2014 table 3: the four-arm logarithmic spirals fitted to all three kinds of tracer at R_0 8.3 kpc - its last four-arm row */
+  data "milkyway-arms" () => {
+    paper := "Hou & Han 2014 (arXiv {Borrowed.HOU_HAN})"
+    lines := Catalogue.arxiv_tex(Borrowed.HOU_HAN, "houhan2014").lines
+    rows := Array.range(lines.length).filter(i => lines[i].contains("4-arm model&"))
+    fail("{paper}: {rows.length} four-arm rows in table 3, four wanted") if rows.length != 4
+    head := Array.range(rows[3]).filter(i => lines[i].contains("R_0=8.3") & lines[i].contains("Fitting of models to HII regions")).length
+    fail("{paper}: the last four-arm row is not under R_0 8.3") if head != 1
+    row := lines[rows[3]]
+    rest := row.drop(row.index_of("&"))
+    more := lines[rows[3] + 1]
+    xs := Catalogue.numbers("{rest} {more}")
+    fail("{paper}: the row gave {xs.length} numbers, sixteen wanted") if xs.length < 16
+    c := Catalogue(id: "milkyway-arms", what: "the Milky Way's arms as logarithmic spirals, ln(r / R) = (theta - theta_0) tan(psi), theta from the x axis anticlockwise, the Sun on the y axis", source: "https://arxiv.org/abs/{Borrowed.HOU_HAN} (table 3: all three kinds of tracer, R_0 8.3 kpc, four-arm model)", paper: "Hou & Han 2014, A&A 569, A125")
+    c.units = ["R: kpc, the arm's initial radius", "theta: degrees, its start azimuth", "psi: degrees, its pitch angle"]
+    c.names = ["Norma", "Scutum-Centaurus", "Sagittarius-Carina", "Perseus", "Local"]
+    c.column("R", Array.range(5).map(k => xs[3 * k]))
+    c.column("theta", Array.range(5).map(k => xs[3 * k + 1]))
+    c.column("psi", Array.range(5).map(k => xs[3 * k + 2]))
+    c
+  }
+
+  /* Sormani et al. 2022 table 1: the analytic bar fitted to Portail et al. 2017's made-to-measure model, and its parts' masses */
+  data "milkyway-bar" () => {
+    paper := "Sormani et al. 2022 (arXiv {Borrowed.SORMANI})"
+    tex := Catalogue.arxiv_tex(Borrowed.SORMANI, "sormani2022")
+    body := tex.drop(tex.index_of("Barred component 1") ?? 0)
+    body = body.take(body.index_of("end{{tabular}}") ?? body.length)
+    names := []
+    values := []
+    body.lines.filter(l => l.contains("&")).for(l => {
+      cells := l.split("&")
+      [0, 3].for(k => {
+        if cells.length > k + 1 {
+          v := Catalogue.numbers(cells[k + 1])
+          /* the parts' headings (Barred component 1, ...) are no parameters */
+          if !v.empty & !Borrowed.bare(cells[k]).empty & !Borrowed.bare(cells[k]).contains("component") {
+            names.push(Borrowed.bare(cells[k]))
+            values.push(v.first)
+          }
+        }
+      })
+    })
+    ["1", "2", "3"].for(i => {
+      names.push("M_bar{i}")
+      values.push(Borrowed.after(tex, "bar,{i}}}}}=", paper).first)
+    })
+    listed := names.join(" ")
+    fail("{paper}: {names.length} parameters read, 42 wanted (39 of table 1 and 3 masses): {listed}") if names.length != 42
+    c := Catalogue(id: "milkyway-bar", what: "the Milky Way's bar: the parameters of Sormani et al.'s analytic fit (their equations 2-9; its disc's too), by name, and M_bar1..3 its three barred parts' masses", source: "https://arxiv.org/abs/{Borrowed.SORMANI} (table 1)", paper: "Sormani, Gerhard, Portail, Vasiliev & Clarke 2022, MNRAS 514, L1")
+    c.units = ["value: 1e10 suns a kpc^3 for rho_i, kpc for lengths, 1e10 suns for M_bar, else bare"]
+    c.names = names
+    c.column("value", values)
+    c
+  }
+
+  /* Bland-Hawthorn & Gerhard 2016, the review's margin values: the discs, the bulge region, how the stars move, the Sun */
+  data "milkyway-discs" () => {
+    paper := "Bland-Hawthorn & Gerhard 2016 (arXiv {Borrowed.BLAND_HAWTHORN})"
+    tex := Catalogue.arxiv_tex(Borrowed.BLAND_HAWTHORN, "blandhawthorn2016")
+    /* a margin entry's value, in 1e10 suns where it is a mass (`x 10^{n}`) */
+    entry := (says: String): Real => {
+      l := Borrowed.line_with(tex, ["entry{{", says], paper)
+      v := Borrowed.after(l, "}}{{", paper).first
+      l.contains("10^{{") ? v * (10.0).pow(Borrowed.after(l, "10^{{", paper).first - 10) : v
+    }
+    bulge := Borrowed.after(Borrowed.line_with(tex, ["entry{{", "stellar mass in"], paper), "}}{{", paper)
+    spread := Borrowed.after(Borrowed.line_with(tex, ["estimates of", "RsigthinR"], paper), "estimates of", paper)
+    c := Catalogue(id: "milkyway-discs", what: "the Milky Way's discs, bulge region and how they move, as the review gives them", source: "https://arxiv.org/abs/{Borrowed.BLAND_HAWTHORN} (margin notes)", paper: "Bland-Hawthorn & Gerhard 2016, ARA&A 54, 529")
+    c.units = ["value: 1e10 suns for masses, kpc for lengths, km/s for speeds, degrees for the bar's angle"]
+    c.names = ["thin_mass", "thin_scale", "thick_mass", "thick_scale", "bulge_region_mass", "bar_angle", "thin_sigma_R", "thin_sigma_scale", "thick_sigma_R", "thick_sigma_scale", "circling", "sun_tangential", "sun_distance"]
+    c.column("value", [entry("thin disk stellar mass"), entry("thin disk radial scalelength"), entry("thick disk stellar mass"), entry("thick disk radial scalelength"), (bulge[0] + bulge[1]) / 2 * (10.0).pow(bulge[2] - 10), entry("b/p bulge bar angle"), entry("old thin disk radial velocity dispersion"), spread[0], entry("thick disk radial velocity dispersion"), spread[1], entry("circular rotation velocity at the Sun"), entry("total tangential velocity"), entry("distance from Galactic Center")])
+    c
+  }
+
+  /* Reid et al. 2019: how wide the arms are, the Sun's motion towards the middle, and how far the young massive stars stray from circling */
+  data "milkyway-arm-widths" () => {
+    paper := "Reid et al. 2019 (arXiv {Borrowed.REID})"
+    tex := Catalogue.arxiv_tex(Borrowed.REID, "reid2019")
+    w := Borrowed.after(tex, "widen with Galactocentric radius as", paper)
+    sun := Catalogue.numbers(Borrowed.line_with(tex, ["W = ", "and for the average"], paper))
+    stray := Catalogue.numbers(Borrowed.line_with(tex, ["for the masing stars of"], paper))
+    c := Catalogue(id: "milkyway-arm-widths", what: "the arms' width w(R) = w0 + slope (R - R0) (Gaussian 1 sigma across), the Sun's motion towards the Galactic middle U, and the young massive stars' spread about circling", source: "https://arxiv.org/abs/{Borrowed.REID}", paper: "Reid et al. 2019, ApJ 885, 131")
+    c.units = ["value: pc for w0, pc a kpc for slope, kpc for R0, km/s for U_sun and young_spread"]
+    c.names = ["w0", "slope", "R0", "U_sun", "young_spread"]
+    c.column("value", [w[0], w[1], w[2], sun[0], stray[1]])
+    c
+  }
+
+  /* Drimmel & Spergel 2001: the arm over between-arm ratio of the old stars' near-infrared light, K band */
+  data "milkyway-arm-contrast" () => {
+    paper := "Drimmel & Spergel 2001"
+    Catalogue.fetch(Borrowed.DRIMMEL, "drimmel2001.pdf")
+    l := Borrowed.line_with(Catalogue.pdf_text("drimmel2001.pdf"), ["for J and K respectively"], paper)
+    xs := Catalogue.numbers(l.take(l.index_of("for J and K respectively")))
+    c := Catalogue(id: "milkyway-arm-contrast", what: "the old stars' arm over between-arm ratio in near-infrared surface brightness, J and K", source: Borrowed.DRIMMEL, paper: "Drimmel & Spergel 2001, ApJ 556, 181")
+    c.units = ["value: ratio"]
+    c.names = ["J", "K"]
+    c.column("value", xs.drop(xs.length - 2))
+    c
+  }
+
+  /* Vallee 2014: across an arm, how far inside its middle (the CO) the hot dust lane lies */
+  data "milkyway-dust-lane" () => {
+    paper := "Vallee 2014"
+    Catalogue.fetch(Borrowed.VALLEE, "vallee2014.pdf")
+    hot := Borrowed.after(Catalogue.pdf_text("vallee2014.pdf"), "the hot dust at", paper).first
+    cold := Borrowed.after(Catalogue.pdf_text("vallee2014.pdf"), "the cold dust at", paper).first
+    c := Catalogue(id: "milkyway-dust-lane", what: "an arm's dust lanes, inside its middle (the CO): the hot dust (the inner edge) and the cold", source: Borrowed.VALLEE, paper: "Vallee 2014, ApJS 215, 1")
+    c.units = ["value: pc inside the arm's middle"]
+    c.names = ["hot", "cold"]
+    c.column("value", [hot, cold])
     c
   }
 

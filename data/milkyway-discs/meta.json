@@ -1,0 +1,9 @@
+{
+  "what": "the Milky Way's discs, bulge region and how they move, as the review gives them",
+  "source": "https://arxiv.org/abs/1602.07702 (margin notes)",
+  "paper": "Bland-Hawthorn & Gerhard 2016, ARA&A 54, 529",
+  "units": ["value: 1e10 suns for masses, kpc for lengths, km/s for speeds, degrees for the bar's angle"],
+  "names": ["thin_mass", "thin_scale", "thick_mass", "thick_scale", "bulge_region_mass", "bar_angle", "thin_sigma_R", "thin_sigma_scale", "thick_sigma_R", "thick_sigma_scale", "circling", "sun_tangential", "sun_distance"],
+  "columns": ["value"],
+  "rows": 13
+}

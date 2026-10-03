@@ -509,8 +509,9 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
    */
   const SUN_ANGLE = Number(Deno.env.get("RAY_SUN_ANGLE") ?? 180) * Math.PI / 180, DEGR = Math.PI / 180;
   const sech = (u: number) => 2 / (Math.exp(u) + Math.exp(-u));
+  const BAR1: number[] = MEASURED ? V.MW_BAR1 : [];
   const bar1 = (x: number, y: number, z: number) => {
-    const [r1, x1, y1, z1, cpa, cpe, mm, al, nn, cc, xc, yc, rc] = V.MW_BAR1;
+    const [r1, x1, y1, z1, cpa, cpe, mm, al, nn, cc, xc, yc, rc] = BAR1;
     const a = Math.pow(Math.pow(Math.pow(Math.abs(x) / x1, cpe) + Math.pow(Math.abs(y) / y1, cpe), cpa / cpe) + Math.pow(Math.abs(z) / z1, cpa), 1 / cpa);
     const ap = Math.hypot((x + cc * z) / xc, y / yc), am = Math.hypot((x - cc * z) / xc, y / yc);
     return r1 * sech(Math.pow(a, mm)) * (1 + al * (Math.exp(-Math.pow(ap, nn)) + Math.exp(-Math.pow(am, nn)))) * Math.exp(-(x * x + y * y + z * z) / (rc * rc));
@@ -520,7 +521,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     const a = Math.pow(Math.pow(Math.abs(x) / xi, ci) + Math.pow(Math.abs(y) / yi, ci), 1 / ci);
     return ri * Math.exp(-Math.pow(a, ni)) * sech(z / zi) ** 2 * Math.exp(-Math.pow(R / rout, nout)) * Math.exp(-Math.pow(rin / R, nin));
   };
-  const bars = [bar1, barI(V.MW_BAR2), barI(V.MW_BAR3)];
+  const bars = MEASURED ? [bar1, barI(V.MW_BAR2), barI(V.MW_BAR3)] : [];
   /* the bar from above: each part's density summed over z (both sides, z = 3 kpc (k/48)^2), on a 0.025 kpc grid 12 kpc across */
   const BG = 480, BH = 6, BC = 2 * BH / BG;
   const barGrid = () => {
@@ -542,6 +543,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
     const { sigma, mass } = barGrid();
     console.log(`  the bar from above (Sormani et al. 2022): its parts weigh ${mass.map(x => x.toFixed(3)).join(", ")} (the paper: ${V.MW_BAR_MASSES.join(", ")}) x 1e10 suns within 6 kpc`);
     const parts = [...V.MW_BAR_MASSES, ...discs.map(d => d[0])], total = parts.reduce((a: number, b: number) => a + b, 0);
+    const BAR_ANGLE = V.MW_BAR_ANGLE;
     /* how much of the arms a point stands in: the sum over the arms of exp(-d^2 / 2 w^2), d across the arm, each arm only over where it is laid */
     /* shift: the arm read that many kpc further out (the dust, inside it, is where R + shift is on the arm); width: its own (0: Reid's) */
     const inArms = (R: number, th: number, old: boolean, shift = 0, width = 0) => {
@@ -579,7 +581,7 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
         for (let s = 0; s < count; s++) {
           const u = rnd() * acc; let lo = 0, hi = BG * BG - 1;
           while (lo < hi) { const mid_ = (lo + hi) >> 1; if (cdf[mid_] < u) lo = mid_ + 1; else hi = mid_; }
-          const x = -BH + (lo % BG + rnd()) * BC, y = -BH + (Math.floor(lo / BG) + rnd()) * BC, [tx, ty] = turned(x, y, SUN_ANGLE + V.MW_BAR_ANGLE * DEGR);
+          const x = -BH + (lo % BG + rnd()) * BC, y = -BH + (Math.floor(lo / BG) + rnd()) * BC, [tx, ty] = turned(x, y, SUN_ANGLE + BAR_ANGLE * DEGR);
           put(tx, ty, 1);
         }
       } else {
@@ -607,7 +609,8 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
       for (let k = 0; k < group; k++, s++) group > 1 ? put(x + rad * gauss(), y + rad * gauss(), 2) : put(x, y, 2);
     }
     /* the dust: on each arm's inner edge, MW_DUST[0] kpc inside its middle */
-    for (let s = 0; s < nd; s++) { const [x, y] = onArms(V.MW_DUST[0], V.MW_DUST[1]); put(x, y, 4); }
+    const [dIn, dWide] = V.MW_DUST;
+    for (let s = 0; s < nd; s++) { const [x, y] = onArms(dIn, dWide); put(x, y, 4); }
   };
   /*
    * A BAND OF ANDROMEDA'S LIGHT AS STARS: each pixel's light over the sky round it (the median past 30 kpc, the sky's
@@ -811,6 +814,8 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
    */
   const Q = Number(Deno.env.get("RAY_Q") ?? 1.2), GEFF = p1 * rcal ** (D - 1), DR = 0.5, RINGS = Math.ceil(span / DR) + 1;
   const at = (k: number) => (k + 0.5) * DR;
+  /* read once (data/: each is a lookup), not for every star */
+  const MW_STIR_ = V.MW_STIR, MW_DISCS_ = V.MW_DISCS, MW_R0_ = V.MILKY_WAY.sun;
   const launch = (gi: number) => {
     const g = galaxies[gi];
     const ringG = new Float64Array(RINGS), ringN = new Float64Array(RINGS), ringM = new Float64Array(RINGS);
@@ -854,8 +859,8 @@ if (Deno.env.get("RAY_ONLY") === "medium-galaxy") {
       if (Math.abs(R - g.rd) < 1) { vsum += st.v; vn++; }
       /* the Milky Way laid as measured: its discs' and young stars' stir as measured (Video.MW_STIR), the bar's as before */
       if (((MEASURED && gi === MWI && !inBulge[s]) || young[s]) && st.v > 0) {
-        const [s0, rs] = V.MW_STIR[young[s] ? 2 : thick[s] ? 1 : 0], rd = V.MW_DISCS[thick[s] ? 1 : 0][1], Rk = R / perKpc;
-        const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), sR = s0 / V.LIGHT * Math.exp(-(Rk - V.MILKY_WAY.sun) / rs);
+        const [s0, rs] = MW_STIR_[young[s] ? 2 : thick[s] ? 1 : 0], rd = MW_DISCS_[thick[s] ? 1 : 0][1], Rk = R / perKpc;
+        const k = Math.min(RINGS - 1, Math.floor(R / DR)), om2 = v2[k] / (R * R), sR = s0 / V.LIGHT * Math.exp(-(Rk - MW_R0_) / rs);
         const sP = sR * Math.sqrt(kappa2[k]) / (2 * Math.sqrt(om2));
         st = { ...st, sR, sP, vphi: Math.sqrt(Math.max(0, v2[k] + sR * sR * (1 - kappa2[k] / (4 * om2) - Rk / rd - 2 * Rk / rs))) };
       }
