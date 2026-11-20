@@ -805,6 +805,7 @@ ray_method "stands" (of_0 : String) : Expr
 ray_method "all" (kind_0 : String) : (RList Fact)
 ray_getter "nodes" : (RList Step)
 ray_method "add" (st_0 : Step) : Bool
+ray_field "known_" : object
 end Store
 
 namespace Inference
@@ -968,6 +969,7 @@ ray_getter "closure" : Store
 ray_method "missing" (s_0 : Store) : (RList String)
 ray_static "behind" (s_0 : Store) (about_0 : String) : (RList Step)
 ray_getter "line_steps" : (RList Step)
+ray_getter "left_operators" : (RList String)
 ray_getter "line_text" : String
 ray_static "POPULATION" : Expr
 ray_getter "isotropic_population" : Step
@@ -1022,6 +1024,7 @@ ray_method "rule_named" (name_0 : String) : Value
 ray_static "is_rule_name" (via_0 : String) : Bool
 ray_getter "proof" : Proof
 ray_method "chain" (s_0 : Store) : Keyed
+ray_static "names_kept" (s_0 : Store) (at__0 : String) : Keyed
 end Prover
 
 namespace Inferences
@@ -1091,7 +1094,7 @@ ray_static "in_three" : Inference
 ray_static "can_it_push" : Inference
 ray_static "receding" : Inference
 ray_static "shortfall" : Inference
-ray_static "waiting" : Inference
+ray_static "keeping" : Inference
 ray_static "transporting" : Inference
 end Inferences
 

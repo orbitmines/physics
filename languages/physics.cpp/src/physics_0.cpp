@@ -105,7 +105,10 @@ static void C_Ray(Cls& c) {
     auto to_0 = cell(); to_0->v = get(self, S<"turns">());
     if (truthy(eq(to_0->v, null))) {
       get(get(self, S<"leaving">()), S<"grow">());
-      call(self, S<"hand">(), { self });
+      auto made_0 = cell(); made_0->v = get(self, S<"steps">());
+      if (truthy((!eq(made_0->v, null)))) {
+        call(self, S<"hand">(), { made_0->v });
+      }
       return null;
     }
     auto here_0 = cell(); here_0->v = get(self, S<"vertex">());

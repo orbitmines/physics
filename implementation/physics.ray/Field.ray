@@ -533,7 +533,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
   /*
    * THE TRANSPORT TERM IS THE RULE'S OWN DRAW, RUN: a ray at a cell goes straight on - the same heading at
    * the cell one step along it - with weight one, or across a folded way with the weight that way was
-   * folded, keeping its heading; where there is no room ahead it makes the room and waits. Every cell
+   * folded, keeping its heading; where there is no room ahead it makes the room and steps into it. Every cell
    * gathers its own: from the cell one step back along its heading what was kept straight on, and from
    * each cell one step back across a way what was turned along that way toward here.
    */
@@ -609,7 +609,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
 
   /*
    * THE BOX IS A WINDOW. The world the rules are written for has no edge - a ray with no room ahead
-   * makes the room and waits (`leaving.grow`); the line integrates a box of it, and what steps past the
+   * makes the room and steps into it (`leaving.grow`); the line integrates a box of it, and what steps past the
    * box is in the world beyond, which is not integrated. So a ray stepping out is gone from here, not
    * held at the edge, and the ray it would have met across the box's edge is taken to be the mirror of
    * the one here (`meet`): held, or unmet, an outbound ray stands out of phase with everything and

@@ -161,7 +161,7 @@ ray_impl_static "powers" (n_0 : String) (degree_0 : Float) : String := do
 ray_impl_getter "symbol" : String := do
   let population_0 ← IO.mkRef ("n" : String)
   if ωtruthy (← ωget self "outside") then
-    if true then return ("" ++ (← ωtoStr (← ωget self "gate")) ++ "l.\\bar{m}" : String)
+    if true then return (← ωtern (ωtruthy (← dot! (← ωget self "gate") rempty ())) (do pure ("l.\\bar{m}" : String)) (do pure ("" ++ (← ωtoStr (← ωget self "gate")) ++ " l.\\bar{m}" : String)))
     pure ()
   if ωtruthy (← ωget self "settles") then
     if true then return ("\\partial_{t}" ++ (← ωtoStr (← population_0.get)) ++ "" : String)
@@ -172,8 +172,8 @@ ray_impl_getter "symbol" : String := do
   let rate_0 ← IO.mkRef (← ωorElse (← ωget self "rate") (do pure ("" : String)))
   let room_0 ← IO.mkRef (← ωget self "gate")
   let pw_0 ← IO.mkRef (← call! (← cls% TermInfo) "powers" ((← population_0.get), (← ωget self "degree")))
-  let gap_0 ← IO.mkRef (← ωtern (ωtruthy ((← ωandV (← ωandV (ωnotV (← dot! (← rate_0.get) rempty ())) (do pure (← dot! (← room_0.get) rempty ()))) (do pure (ωnotV (← dot! (← pw_0.get) rempty ())))))) (do pure (" " : String)) (do pure ("" : String)))
-  if true then return ("" ++ (← ωtoStr (← rate_0.get)) ++ "" ++ (← ωtoStr (← room_0.get)) ++ "" ++ (← ωtoStr (← gap_0.get)) ++ "" ++ (← ωtoStr (← pw_0.get)) ++ "" : String)
+  let gap_0 ← IO.mkRef (← ωtern (ωtruthy ((← ωandV (ωnotV (← dot! (← rate_0.get) rempty ())) (do pure (ωnotV ((← ωandV (← dot! (← room_0.get) rempty ()) (do pure (← dot! (← pw_0.get) rempty ()))))))))) (do pure (" " : String)) (do pure ("" : String)))
+  if true then return ("" ++ (← ωtoStr (← rate_0.get)) ++ "" ++ (← ωtoStr (← gap_0.get)) ++ "" ++ (← ωtoStr (← room_0.get)) ++ "" ++ (← ωtoStr (← pw_0.get)) ++ "" : String)
   return ωnull
 end TermInfo
 

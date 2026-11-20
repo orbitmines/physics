@@ -114,7 +114,10 @@ enum C_Ray {
       var to_0: V = V.null; to_0 = try get(this_, "turns")
       if truthy(V.b(try eq(to_0, V.null))) {
         try get(try get(this_, "leaving"), "grow")
-        try call(this_, "hand", [this_])
+        var made_0: V = V.null; made_0 = try get(this_, "steps")
+        if truthy(V.b(!(try eq(made_0, V.null)))) {
+          try call(this_, "hand", [made_0])
+        }
         return V.null
       }
       var here_0: V = V.null; here_0 = try get(this_, "vertex")
@@ -5897,6 +5900,7 @@ enum C_Store {
       return V.b(true)
       return V.null
     })
+    c.field("known_", { (this_: V) throws -> V in return makeNode() })
   }
 }
 
@@ -6392,7 +6396,7 @@ enum C_TermInfo {
     c.getter("symbol", { (this_: V, a1: [V]) throws -> V in
       var population_0: V = V.null; population_0 = V.s(cat("n"))
       if truthy(try get(this_, "outside")) {
-        return V.s(cat("", try str(try get(this_, "gate")), "l.\\bar{m}"))
+        return try sel(truthy(try m_empty(try get(this_, "gate"))), V.s(cat("l.\\bar{m}")), V.s(cat("", try str(try get(this_, "gate")), " l.\\bar{m}")))
       }
       if truthy(try get(this_, "settles")) {
         return V.s(cat("\\partial_{t}", try str(population_0), ""))
@@ -6403,8 +6407,8 @@ enum C_TermInfo {
       var rate_0: V = V.null; rate_0 = try orElse(try get(this_, "rate"), V.s(cat("")))
       var room_0: V = V.null; room_0 = try get(this_, "gate")
       var pw_0: V = V.null; pw_0 = try call((try K("TermInfo")), "powers", [population_0, try get(this_, "degree")])
-      var gap_0: V = V.null; gap_0 = try sel(truthy((try and_(try and_(not(try m_empty(rate_0)), try m_empty(room_0)), not(try m_empty(pw_0))))), V.s(cat(" ")), V.s(cat("")))
-      return V.s(cat("", try str(rate_0), "", try str(room_0), "", try str(gap_0), "", try str(pw_0), ""))
+      var gap_0: V = V.null; gap_0 = try sel(truthy((try and_(not(try m_empty(rate_0)), not((try and_(try m_empty(room_0), try m_empty(pw_0))))))), V.s(cat(" ")), V.s(cat("")))
+      return V.s(cat("", try str(rate_0), "", try str(gap_0), "", try str(room_0), "", try str(pw_0), ""))
       return V.null
     })
   }
@@ -6424,7 +6428,7 @@ enum C_Prover {
       return V.null
     })
     c.getter("infos", { (this_: V, a1: [V]) throws -> V in
-      return try m_map(try get(try get(this_, "equation"), "terms"), V.fn({ (a3: [V]) throws -> V in
+      return try m_map(try get(try get(this_, "theory"), "terms_read"), V.fn({ (a3: [V]) throws -> V in
         var t_2: V = arg(a3, 0);
         return try makeNamed("TermInfo", [kw("term", t_2)])
         return V.null
@@ -6586,7 +6590,7 @@ enum C_Prover {
           try m_push(out_0, made_1)
         }
         if truthy(try and_(try and_(V.b(try eq(try get(t_1, "rays"), V.s(cat("0")))), try gt(try get(t_1, "space_net"), 0.0)), try get(t_1, "carries"))) {
-          var w_1: V = V.null; w_1 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("what the waiting makes")), body_1]), try elem(try get(t_1, "rules"), 0.0), list(), V.s(cat("", try str(nm_1), " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is ", try str(try call((try K("Expr")), "show", [body_1])), "")), list(V.s(cat("no rays, ", try str(try call((try K("Expr")), "show", [try get(t_1, "space_count")])), " of space")), V.s(cat("the waiting makes ", try str(try call((try K("Expr")), "show", [body_1])), "")))])
+          var w_1: V = V.null; w_1 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("what the frontier makes")), body_1]), try elem(try get(t_1, "rules"), 0.0), list(), V.s(cat("", try str(nm_1), " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is ", try str(try call((try K("Expr")), "show", [body_1])), "")), list(V.s(cat("no rays, ", try str(try call((try K("Expr")), "show", [try get(t_1, "space_count")])), " of space")), V.s(cat("the frontier makes ", try str(try call((try K("Expr")), "show", [body_1])), "")))])
           try set(w_1, "rule", try elem(try get(t_1, "rules"), 0.0))
           try m_push(out_0, w_1)
         }
@@ -6668,7 +6672,7 @@ enum C_Prover {
             return try get(t_2, "share")
             return V.null
           }))])])
-          var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("what share of a step advances")), advancing_0]), try elem(try get(moving_0, "rules"), 0.0), list(), V.s(cat("the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines")), list()])
+          var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("what share of a step advances")), advancing_0]), try elem(try get(moving_0, "rules"), 0.0), list(), V.s(cat("the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines")), list()])
           try set(st_0, "rule", try elem(try get(moving_0, "rules"), 0.0))
           try m_push(out_0, st_0)
         }
@@ -6920,15 +6924,7 @@ enum C_Prover {
         return V.b(try eq(try get(t_2, "side"), V.s(cat("right"))))
         return V.null
       }))
-      var lhs_0: V = V.null; lhs_0 = try m_join(try m_map(try filt(infos_0, V.fn({ (a4: [V]) throws -> V in
-        var t_3: V = arg(a4, 0);
-        return V.b(try eq(try get(t_3, "side"), V.s(cat("left"))))
-        return V.null
-      })), V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return try orElse(try get(t_2, "operator"), try get(t_2, "symbol"))
-        return V.null
-      })), V.s(cat(" + ")))
+      var lhs_0: V = V.null; lhs_0 = try m_join(try get(this_, "left_operators"), V.s(cat(" + ")))
       var equation_0: V = V.null; equation_0 = try get(this_, "equation")
       try m_push(out_0, try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("", try str(lhs_0), "n")), try call((try K("Expr")), "simplify", [try call((try K("Expr")), "add", [try m_map(rhs_0, V.fn({ (a3: [V]) throws -> V in
         var t_2: V = arg(a3, 0);
@@ -6948,9 +6944,8 @@ enum C_Prover {
       return out_0
       return V.null
     })
-    c.getter("line_text", { (this_: V, a1: [V]) throws -> V in
-      var infos_0: V = V.null; infos_0 = try get(this_, "infos")
-      var left_0: V = V.null; left_0 = try filt(infos_0, V.fn({ (a3: [V]) throws -> V in
+    c.getter("left_operators", { (this_: V, a1: [V]) throws -> V in
+      var left_0: V = V.null; left_0 = try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
         var t_2: V = arg(a3, 0);
         return V.b(try eq(try get(t_2, "side"), V.s(cat("left"))))
         return V.null
@@ -6964,6 +6959,20 @@ enum C_Prover {
         return V.b(!(try eq(try get(t_2, "operator"), V.s(cat("\\partial_{t}")))))
         return V.null
       })))
+      return try m_reduce(try m_map(left_0, V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return try orElse(try get(t_3, "operator"), try get(t_3, "symbol"))
+        return V.null
+      })), list(), V.fn({ (a3: [V]) throws -> V in
+        var o_2: V = arg(a3, 0); var x_2: V = arg(a3, 1);
+        return try sel(truthy(try m_contains(o_2, x_2)), o_2, try m_push(o_2, x_2))
+        return V.null
+      }))
+      return V.null
+    })
+    c.getter("line_text", { (this_: V, a1: [V]) throws -> V in
+      var infos_0: V = V.null; infos_0 = try get(this_, "infos")
+      var left_0: V = V.null; left_0 = try get(this_, "left_operators")
       var right_0: V = V.null; right_0 = try filt(infos_0, V.fn({ (a3: [V]) throws -> V in
         var t_2: V = arg(a3, 0);
         return try and_(V.b(try eq(try get(t_2, "side"), V.s(cat("right")))), (try or_(try m_empty(try get(t_2, "rules")), V.b(!(try eq(try get(t_2, "rays"), V.s(cat("0"))))))))
@@ -6978,11 +6987,7 @@ enum C_Prover {
         return try m_empty(try get(t_2, "rules"))
         return V.null
       })))
-      var lhs_0: V = V.null; lhs_0 = try sel(truthy(try m_empty(left_0)), V.s(cat("n")), V.s(cat("(", try str(try m_join(try m_map(left_0, V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return try orElse(try get(t_2, "operator"), try get(t_2, "symbol"))
-        return V.null
-      })), (try Physics.plus))), ")n")))
+      var lhs_0: V = V.null; lhs_0 = try sel(truthy(try m_empty(left_0)), V.s(cat("n")), V.s(cat("(", try str(try m_join(left_0, (try Physics.plus))), ")n")))
       var rhs_0: V = V.null; rhs_0 = V.s(cat(""))
       do {
         var i1: Double = 0
@@ -6990,7 +6995,10 @@ enum C_Prover {
           var i_1: V = V.num(i1)
           var t_1: V = V.null; t_1 = try elem(right_0, i_1)
           var piece_1: V = V.null; piece_1 = try sel(truthy(V.b(try eq(i_1, 0.0))), (try sel(truthy(V.b(try eq(try get(t_1, "sign"), try neg(1.0)))), V.s(cat("-")), V.s(cat("")))), (try sel(truthy(V.b(try eq(try get(t_1, "sign"), try neg(1.0)))), V.s(cat(" - ")), V.s(cat(" + ")))))
-          rhs_0 = V.s(cat("", try str(rhs_0), "", try str(piece_1), "", try str(try get(t_1, "symbol")), ""))
+          var n_1: V = V.null; n_1 = try get(t_1, "ray_count")
+          var size_1: V = V.null; size_1 = try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [try get(t_1, "sign")]), n_1)])])])
+          var times_1: V = V.null; times_1 = try sel(truthy(V.b(try eq(size_1, V.s(cat("1"))))), V.s(cat("")), V.s(cat("", try str(size_1), "·")))
+          rhs_0 = V.s(cat("", try str(rhs_0), "", try str(piece_1), "", try str(times_1), "", try str(try get(t_1, "symbol")), ""))
           i1 += 1
         }
       }
@@ -7025,25 +7033,8 @@ enum C_Prover {
     })
     c.method("operators_on", { (this_: V, a1: [V]) throws -> V in
       var name_0: V = arg(a1, 0);
-      var left_0: V = V.null; left_0 = try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return V.b(try eq(try get(t_2, "side"), V.s(cat("left"))))
-        return V.null
-      }))
-      left_0 = try m_concat(try filt(left_0, V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return V.b(try eq(try get(t_2, "operator"), V.s(cat("\\partial_{t}"))))
-        return V.null
-      })), try filt(left_0, V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return V.b(!(try eq(try get(t_2, "operator"), V.s(cat("\\partial_{t}")))))
-        return V.null
-      })))
-      return try sel(truthy(try m_empty(left_0)), name_0, V.s(cat("(", try str(try m_join(try m_map(left_0, V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return try orElse(try get(t_2, "operator"), try get(t_2, "symbol"))
-        return V.null
-      })), (try Physics.plus))), ")", try str(name_0), "")))
+      var left_0: V = V.null; left_0 = try get(this_, "left_operators")
+      return try sel(truthy(try m_empty(left_0)), name_0, V.s(cat("(", try str(try m_join(left_0, (try Physics.plus))), ")", try str(name_0), "")))
       return V.null
     })
     c.method("line_filled", { (this_: V, a1: [V]) throws -> V in
@@ -7187,13 +7178,9 @@ enum C_Prover {
       }))
       var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "collected", [try call((try K("Expr")), "add", [list(try get(try get(filled_0, "fact"), "to"), try call((try K("Expr")), "add", [weighed_terms_0]))])])
       var rho_0: V = V.null; rho_0 = try call((try K("Expr")), "show", [try get((try K("Prover")), "POPULATION")])
-      var ops_0: V = V.null; ops_0 = try m_join(try m_map(try filt(try get(this_, "infos"), V.fn({ (a4: [V]) throws -> V in
-        var t_3: V = arg(a4, 0);
-        return try and_(V.b(try eq(try get(t_3, "side"), V.s(cat("left")))), V.b(!(try eq(try get(t_3, "operator"), V.s(cat("\\partial_{t}"))))))
-        return V.null
-      })), V.fn({ (a3: [V]) throws -> V in
-        var t_2: V = arg(a3, 0);
-        return try orElse(try get(t_2, "operator"), try get(t_2, "symbol"))
+      var ops_0: V = V.null; ops_0 = try m_join(try filt(try get(this_, "left_operators"), V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return V.b(!(try eq(x_2, V.s(cat("\\partial_{t}")))))
         return V.null
       })), (try Physics.plus))
       var weighed_0: V = V.null; weighed_0 = try sel(truthy((try and_(V.b(try eq(try get(k_0, "kind"), V.s(cat("num")))), V.b(try eq(try get(k_0, "value"), 1.0))))), V.s(cat("n_{f}")), V.s(cat("", try str(try call((try K("Expr")), "show", [k_0])), "·n_{f}")))
@@ -7540,7 +7527,7 @@ enum C_Prover {
     })
     c.statik("annotate", { (this_: V, a1: [V]) throws -> V in
       var e_0: V = arg(a1, 0); var s_0: V = arg(a1, 1); var at_0: V = arg(a1, 2); var of_0: V = arg(a1, 3);
-      var known_0: V = V.null; known_0 = try call((try K("Prover")), "names_known", [s_0, at_0])
+      var known_0: V = V.null; known_0 = try call((try K("Prover")), "names_kept", [s_0, at_0])
       var out_0: V = V.null; out_0 = list()
       var seen_0: V = V.null; seen_0 = makeNode()
       var whole_0: V = V.null; whole_0 = try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [e_0])])
@@ -7574,7 +7561,7 @@ enum C_Prover {
     c.statik("standing_for", { (this_: V, a1: [V]) throws -> V in
       var e_0: V = arg(a1, 0); var s_0: V = arg(a1, 1); var of_0: V = arg(a1, 2);
       var facts_0: V = V.null; facts_0 = try call((try K("Prover")), "by_name", [s_0])
-      var known_0: V = V.null; known_0 = try call((try K("Prover")), "names_known", [s_0, V.s(cat("R"))])
+      var known_0: V = V.null; known_0 = try call((try K("Prover")), "names_kept", [s_0, V.s(cat("R"))])
       var cite_0: V = V.null; cite_0 = V.fn({ (a2: [V]) throws -> V in
         var x_1: V = arg(a2, 0); var self_1: V = arg(a2, 1); var d_1: V = arg(a2, 2);
         if truthy(try gt(d_1, 0.0)) {
@@ -7895,6 +7882,15 @@ enum C_Prover {
       return out_0
       return V.null
     })
+    c.statik("names_kept", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1);
+      var k_0: V = V.null; k_0 = V.s(cat("", try str(try get(s_0, "version")), "|", try str(at_0), ""))
+      if truthy(V.b(try eq(try elem(try get(s_0, "known_"), k_0), V.null))) {
+        try setAt(try get(s_0, "known_"), k_0, try call((try K("Prover")), "names_known", [s_0, at_0]))
+      }
+      return try elem(try get(s_0, "known_"), k_0)
+      return V.null
+    })
   }
 }
 
@@ -8053,7 +8049,7 @@ enum C_Inferences {
       return V.null
     })
     c.statik("RULES", { (this_: V, a1: [V]) throws -> V in
-      return try m_concat(try m_concat(list(try get((try K("Inferences")), "room_balance"), try get((try K("Inferences")), "ehrhart"), try get((try K("Inferences")), "counting"), try get((try K("Inferences")), "reaching"), try get((try K("Inferences")), "mass_of"), try get((try K("Inferences")), "saturating"), try get((try K("Inferences")), "spreading"), try get((try K("Inferences")), "screening"), try get((try K("Inferences")), "refracting"), try get((try K("Inferences")), "accumulating"), try get((try K("Inferences")), "substituting"), try get((try K("Inferences")), "metric_of"), try get((try K("Inferences")), "relativity"), try get((try K("Inferences")), "schwarzschild"), try get((try K("Inferences")), "shadow"), try get((try K("Inferences")), "balancing"), try get((try K("Inferences")), "unbiased"), try get((try K("Inferences")), "free_path"), try get((try K("Inferences")), "summing"), try get((try K("Inferences")), "horizon"), try get((try K("Inferences")), "bending"), try get((try K("Inferences")), "crossing"), try get((try K("Inferences")), "near_field"), try get((try K("Inferences")), "shadowing"), try get((try K("Inferences")), "receiving"), try get((try K("Inferences")), "moved"), try get((try K("Inferences")), "receding"), try get((try K("Inferences")), "shortfall"), try get((try K("Inferences")), "waiting"), try get((try K("Inferences")), "transporting"), try get((try K("Inferences")), "assembling"), try get((try K("Inferences")), "channelling"), try get((try K("Inferences")), "closing"), try get((try K("Inferences")), "arrangement"), try get((try K("Inferences")), "scale_crossed"), try get((try K("Inferences")), "orbiting"), try get((try K("Inferences")), "curve_ends"), try get((try K("Inferences")), "curves_of_each"), try get((try K("Inferences")), "crowding_of_arrivals"), try get((try K("Inferences")), "making_rate"), try get((try K("Inferences")), "hubble_rate"), try get((try K("Inferences")), "expansion_scale"), try get((try K("Inferences")), "coincidence"), try get((try K("Inferences")), "crowding"), try get((try K("Inferences")), "at_that_density"), try get((try K("Inferences")), "in_motion")), try m_map(try get((try K("Inferences")), "IN_FULL"), V.fn({ (a3: [V]) throws -> V in
+      return try m_concat(try m_concat(list(try get((try K("Inferences")), "room_balance"), try get((try K("Inferences")), "ehrhart"), try get((try K("Inferences")), "counting"), try get((try K("Inferences")), "reaching"), try get((try K("Inferences")), "mass_of"), try get((try K("Inferences")), "saturating"), try get((try K("Inferences")), "spreading"), try get((try K("Inferences")), "screening"), try get((try K("Inferences")), "refracting"), try get((try K("Inferences")), "accumulating"), try get((try K("Inferences")), "substituting"), try get((try K("Inferences")), "metric_of"), try get((try K("Inferences")), "relativity"), try get((try K("Inferences")), "schwarzschild"), try get((try K("Inferences")), "shadow"), try get((try K("Inferences")), "balancing"), try get((try K("Inferences")), "unbiased"), try get((try K("Inferences")), "free_path"), try get((try K("Inferences")), "summing"), try get((try K("Inferences")), "horizon"), try get((try K("Inferences")), "bending"), try get((try K("Inferences")), "crossing"), try get((try K("Inferences")), "near_field"), try get((try K("Inferences")), "shadowing"), try get((try K("Inferences")), "receiving"), try get((try K("Inferences")), "moved"), try get((try K("Inferences")), "receding"), try get((try K("Inferences")), "shortfall"), try get((try K("Inferences")), "keeping"), try get((try K("Inferences")), "transporting"), try get((try K("Inferences")), "assembling"), try get((try K("Inferences")), "channelling"), try get((try K("Inferences")), "closing"), try get((try K("Inferences")), "arrangement"), try get((try K("Inferences")), "scale_crossed"), try get((try K("Inferences")), "orbiting"), try get((try K("Inferences")), "curve_ends"), try get((try K("Inferences")), "curves_of_each"), try get((try K("Inferences")), "crowding_of_arrivals"), try get((try K("Inferences")), "making_rate"), try get((try K("Inferences")), "hubble_rate"), try get((try K("Inferences")), "expansion_scale"), try get((try K("Inferences")), "coincidence"), try get((try K("Inferences")), "crowding"), try get((try K("Inferences")), "at_that_density"), try get((try K("Inferences")), "in_motion")), try m_map(try get((try K("Inferences")), "IN_FULL"), V.fn({ (a3: [V]) throws -> V in
         var of_2: V = arg(a3, 0);
         return try call((try K("Inferences")), "writing_out", [of_2])
         return V.null
@@ -8603,13 +8599,13 @@ enum C_Inferences {
       return V.null
     })
     c.statik("making_rate", { (this_: V, a1: [V]) throws -> V in
-      return try makeNamed("Inference", [kw("name", V.s(cat("the room the line does not supply, which the waiting has to make"))), kw("because", V.s(cat("the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any"))), kw("fire", V.fn({ (a3: [V]) throws -> V in
+      return try makeNamed("Inference", [kw("name", V.s(cat("the room the line does not supply, which the frontier has to make"))), kw("because", V.s(cat("the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any"))), kw("fire", V.fn({ (a3: [V]) throws -> V in
         var s_2: V = arg(a3, 0);
-        var waits_2: V = V.null; waits_2 = try call(s_2, "fact", [V.s(cat("is")), V.s(cat("what the waiting makes"))])
-        if truthy(try or_(V.b(try eq(waits_2, V.null)), try call(s_2, "has", [V.s(cat("is")), V.s(cat("the rate space is made"))]))) {
+        var made_2: V = V.null; made_2 = try call(s_2, "fact", [V.s(cat("is")), V.s(cat("what the frontier makes"))])
+        if truthy(try or_(V.b(try eq(made_2, V.null)), try call(s_2, "has", [V.s(cat("is")), V.s(cat("the rate space is made"))]))) {
           return list()
         }
-        return list(try call((try K("Inferences")), "step", [V.s(cat("the rate space is made")), try get(waits_2, "to"), V.s(cat("the room the line does not supply, which the waiting has to make")), list(try get(waits_2, "key")), V.s(cat("MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling")), list(V.s(cat("the space line carries a term with no rays in it: the waiting")), V.s(cat("a ray that cannot step makes the room instead, and that is space at ", try str(try call((try K("Expr")), "show", [try get(waits_2, "to")])), "")), V.s(cat("the rate space is made = ", try str(try call((try K("Expr")), "show", [try get(waits_2, "to")])), "")))]))
+        return list(try call((try K("Inferences")), "step", [V.s(cat("the rate space is made")), try get(made_2, "to"), V.s(cat("the room the line does not supply, which the frontier has to make")), list(try get(made_2, "key")), V.s(cat("MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling")), list(V.s(cat("the space line carries a term with no rays in it: the frontier")), V.s(cat("a ray with no room ahead makes it and steps into it, and that is space at ", try str(try call((try K("Expr")), "show", [try get(made_2, "to")])), "")), V.s(cat("the rate space is made = ", try str(try call((try K("Expr")), "show", [try get(made_2, "to")])), "")))]))
         return V.null
       }))])
       return V.null
@@ -8681,7 +8677,7 @@ enum C_Inferences {
         var via_2: V = V.null; via_2 = V.s(cat("the density where a body is, which is not the density of empty space"))
         var upon_2: V = V.null; upon_2 = list(try get(made_2, "key"), try get(took_2, "key"), try get(puts_2, "key"))
         var a0_2: V = V.null; a0_2 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("\\sigma"))]), try call((try K("Expr")), "simplify", [total_2]))])])
-        return list(try call((try K("Inferences")), "step", [V.s(cat("\\rho at R")), root_2, via_2, upon_2, V.s(cat("the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly")), list(V.s(cat("the body's carriers where the far one stands: n = ", try str(try call((try K("Expr")), "show", [n_2])), "")), V.s(cat("the population where the body stands: \\rho + n")), V.s(cat("", try str(try call((try K("Expr")), "show", [try get(mkC_2, "to")])), "·", try str(try call((try K("Expr")), "show", [making_with_body_2])), " + ", try str(try call((try K("Expr")), "show", [try get(tkC_2, "to")])), "·F·", try str(try call((try K("Expr")), "show", [with_body_2])), " = 0")), V.s(cat("\\rho at R = ", try str(try call((try K("Expr")), "show", [root_2])), "")))]), try call((try K("Inferences")), "step", [V.s(cat("the population at R")), try call((try K("Expr")), "simplify", [total_2]), via_2, upon_2, V.s(cat("what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter")), list(V.s(cat("the vacuum's settled share there: \\rho at R")), V.s(cat("the body's carriers there: ", try str(try call((try K("Expr")), "show", [n_2])), "")), V.s(cat("the population at R = ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [total_2])])), "")))]), try call((try K("Inferences")), "step", [V.s(cat("a_{0} at R")), a0_2, via_2, upon_2, V.s(cat("the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer")), list(V.s(cat("the space line's waiting term: \\sigma n, degree one in the population")), V.s(cat("a_{0} at R = \\sigma·(the population at R) = ", try str(try call((try K("Expr")), "show", [a0_2])), "")))]))
+        return list(try call((try K("Inferences")), "step", [V.s(cat("\\rho at R")), root_2, via_2, upon_2, V.s(cat("the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly")), list(V.s(cat("the body's carriers where the far one stands: n = ", try str(try call((try K("Expr")), "show", [n_2])), "")), V.s(cat("the population where the body stands: \\rho + n")), V.s(cat("", try str(try call((try K("Expr")), "show", [try get(mkC_2, "to")])), "·", try str(try call((try K("Expr")), "show", [making_with_body_2])), " + ", try str(try call((try K("Expr")), "show", [try get(tkC_2, "to")])), "·F·", try str(try call((try K("Expr")), "show", [with_body_2])), " = 0")), V.s(cat("\\rho at R = ", try str(try call((try K("Expr")), "show", [root_2])), "")))]), try call((try K("Inferences")), "step", [V.s(cat("the population at R")), try call((try K("Expr")), "simplify", [total_2]), via_2, upon_2, V.s(cat("what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter")), list(V.s(cat("the vacuum's settled share there: \\rho at R")), V.s(cat("the body's carriers there: ", try str(try call((try K("Expr")), "show", [n_2])), "")), V.s(cat("the population at R = ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [total_2])])), "")))]), try call((try K("Inferences")), "step", [V.s(cat("a_{0} at R")), a0_2, via_2, upon_2, V.s(cat("the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer")), list(V.s(cat("the space line's frontier term: \\sigma n, degree one in the population")), V.s(cat("a_{0} at R = \\sigma·(the population at R) = ", try str(try call((try K("Expr")), "show", [a0_2])), "")))]))
         return V.null
       }))])
       return V.null
@@ -9107,7 +9103,7 @@ enum C_Inferences {
       }))])
       return V.null
     })
-    c.statik("waiting", { (this_: V, a1: [V]) throws -> V in
+    c.statik("keeping", { (this_: V, a1: [V]) throws -> V in
       return try makeNamed("Inference", [kw("name", V.s(cat("how fast a carrier goes, which is the share of its step that was straight"))), kw("because", V.s(cat("`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it"))), kw("fire", V.fn({ (a3: [V]) throws -> V in
         var s_2: V = arg(a3, 0);
         var nf_2: V = V.null; nf_2 = try call(s_2, "fact", [V.s(cat("is")), V.s(cat("n_{f}"))])
@@ -9122,7 +9118,7 @@ enum C_Inferences {
         }
         try m_push(parts_2, try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "field", [V.s(cat("n_{f}"))]))]), try neg(1.0)]))
         var got_2: V = V.null; got_2 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [parts_2])])
-        return list(try call((try K("Inferences")), "step", [V.s(cat("v")), got_2, V.s(cat("how fast a carrier goes, which is the share of its step that was straight")), list(try get(nf_2, "key"), try get(c_2, "key")), V.s(cat("MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier")), list(V.s(cat("turns: 1 way straight on against folds[d] ways out along d")), V.s(cat("so a ray keeps its heading with 1/(1 + n_{f})")), V.s(cat("v = \\bar{c}/(1 + n_{f}) = ", try str(try call((try K("Expr")), "show", [got_2])), "")), V.s(cat("n_{f} small: v -> one cell a tick, and the carrier streams")), V.s(cat("n_{f} large: v -> \\bar{c}/n_{f}, and it does not")))]))
+        return list(try call((try K("Inferences")), "step", [V.s(cat("v")), got_2, V.s(cat("how fast a carrier goes, which is the share of its step that was straight")), list(try get(nf_2, "key"), try get(c_2, "key")), V.s(cat("MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier")), list(V.s(cat("turns: 1 way straight on against folds[d] ways out along d")), V.s(cat("so a ray keeps its heading with 1/(1 + n_{f})")), V.s(cat("v = \\bar{c}/(1 + n_{f}) = ", try str(try call((try K("Expr")), "show", [got_2])), "")), V.s(cat("n_{f} small: v -> one cell a tick, and the carrier streams")), V.s(cat("n_{f} large: v -> \\bar{c}/n_{f}, and it does not")))]))
         return V.null
       }))])
       return V.null
@@ -21330,7 +21326,7 @@ enum C_G {
       return V.null
     }))]) })
     c.staticField("theorem vacuum.settled", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.settled")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"))), kw("about", V.s(cat("\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"))), kw("also", V.s(cat("\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"))), kw("leads", V.s(cat("THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."))), kw("then", V.s(cat("AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"))), kw("about", V.s(cat("\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"))), kw("also", V.s(cat("\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"))), kw("leads", V.s(cat("THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."))), kw("then", V.s(cat("AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record.")))])
       return V.null
     }))]) })
     c.staticField("theorem vacuum.worth", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.worth")), kw("body", V.fn({ (a1: [V]) throws -> V in

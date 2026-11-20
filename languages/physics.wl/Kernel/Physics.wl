@@ -637,7 +637,9 @@ DefineClass[Ray, "Ray", Iterable, Function[{klass},
     env0["to"] = self["turns"];
     If[truthy[eq[env0["to"], Null]],
       self["leaving"]["grow"];
-      self["hand", self];
+      env0["made"] = self["steps"];
+      If[truthy[(!eq[env0["made"], Null])],
+        self["hand", env0["made"]]];
       Throw[Null, ret]];
     env0["here"] = self["vertex"];
     env0["there"] = env0["to"]["vertex"];
@@ -3697,7 +3699,8 @@ DefineClass[Store, "Store", Node, Function[{klass},
     setAt[self["steps"], env0["k"], env0["st"]];
     mPush[self["keys"], env0["k"]];
     self["version" -> add[self["version"], 1.]];
-    Throw[True, ret]]]]];
+    Throw[True, ret]]];
+  field[klass, "known_", dfn[Node[{}]]]]];
 
 DefineClass[Inference, "Inference", Node, Function[{klass},
   field[klass, "name"];
@@ -3953,7 +3956,7 @@ DefineClass[TermInfo, "TermInfo", Node, Function[{klass},
   getter[klass, "symbol", mfn[1,
     env0["population"] = "n";
     If[truthy[self["outside"]],
-      Throw["" <> str[self["gate"]] <> "l.\\bar{m}", ret]];
+      Throw[If[truthy[mEmpty[self["gate"]]], "l.\\bar{m}", "" <> str[self["gate"]] <> " l.\\bar{m}"], ret]];
     If[truthy[self["settles"]],
       Throw["\\partial_{t}" <> str[env0["population"]] <> "", ret]];
     If[truthy[self["transport"]],
@@ -3961,8 +3964,8 @@ DefineClass[TermInfo, "TermInfo", Node, Function[{klass},
     env0["rate"] = orElse[self["rate"], ""];
     env0["room"] = self["gate"];
     env0["pw"] = TermInfo["powers", env0["population"], self["degree"]];
-    env0["gap"] = If[truthy[(andV[andV[not[mEmpty[env0["rate"]]], mEmpty[env0["room"]]], not[mEmpty[env0["pw"]]]])], " ", ""];
-    Throw["" <> str[env0["rate"]] <> "" <> str[env0["room"]] <> "" <> str[env0["gap"]] <> "" <> str[env0["pw"]] <> "", ret]]]]];
+    env0["gap"] = If[truthy[(andV[not[mEmpty[env0["rate"]]], not[(andV[mEmpty[env0["room"]], mEmpty[env0["pw"]]])]])], " ", ""];
+    Throw["" <> str[env0["rate"]] <> "" <> str[env0["gap"]] <> "" <> str[env0["room"]] <> "" <> str[env0["pw"]] <> "", ret]]]]];
 
 DefineClass[Prover, "Prover", Node, Function[{klass},
   field[klass, "theory"];
@@ -3973,7 +3976,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
   getter[klass, "equation", mfn[1,
     Throw[self["theory"]["equation"], ret]]];
   getter[klass, "infos", mfn[1,
-    Throw[mMap[self["equation"]["terms"], lfn[3, { env2["t"] = arg[args3, 0] };
+    Throw[mMap[self["theory"]["terms_read"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[TermInfo[{ "term" -> env2["t"] }], ret]]], ret]]];
   getter[klass, "acting", mfn[1,
     Throw[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
@@ -4070,7 +4073,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
         env1["made"]["rule" -> elem[env1["t"]["rules"], 0.]];
         mPush[env0["out"], env1["made"]]];
       If[truthy[andV[andV[eq[env1["t"]["rays"], "0"], gt[env1["t"]["space_net"], 0.]], env1["t"]["carries"]]],
-        env1["w"] = Step["of", Fact["stands", "what the waiting makes", env1["body"]], elem[env1["t"]["rules"], 0.], list[], "" <> str[env1["nm"]] <> " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " <> str[Expr["show", env1["body"]]] <> "", list["no rays, " <> str[Expr["show", env1["t"]["space_count"]]] <> " of space", "the waiting makes " <> str[Expr["show", env1["body"]]] <> ""]];
+        env1["w"] = Step["of", Fact["stands", "what the frontier makes", env1["body"]], elem[env1["t"]["rules"], 0.], list[], "" <> str[env1["nm"]] <> " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " <> str[Expr["show", env1["body"]]] <> "", list["no rays, " <> str[Expr["show", env1["t"]["space_count"]]] <> " of space", "the frontier makes " <> str[Expr["show", env1["body"]]] <> ""]];
         env1["w"]["rule" -> elem[env1["t"]["rules"], 0.]];
         mPush[env0["out"], env1["w"]]];
       Do[loopScope[2, env2["pair"] = iter2;
@@ -4121,7 +4124,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
         env0["advancing"] = Expr["simplify", Expr["add", mMap[filt[env0["carrying"], lfn[4, { env3["t"] = arg[args4, 0] };
           Throw[(!eq[env3["t"]["share"], Null]), ret]]], lfn[3, { env2["t"] = arg[args3, 0] };
           Throw[env2["t"]["share"], ret]]]]];
-        env0["st"] = Step["of", Fact["stands", "what share of a step advances", env0["advancing"]], elem[env0["moving"]["rules"], 0.], list[], "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list[]];
+        env0["st"] = Step["of", Fact["stands", "what share of a step advances", env0["advancing"]], elem[env0["moving"]["rules"], 0.], list[], "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list[]];
         env0["st"]["rule" -> elem[env0["moving"]["rules"], 0.]];
         mPush[env0["out"], env0["st"]]];
       env0["c"] = Step["of", Fact["stands", "\\bar{c}", Expr["num", 1.]], elem[env0["moving"]["rules"], 0.], list[], "every active ray goes ONE CELL along its own exit in one tick, which is what the streaming term says - so a step is one cell, and that is the only length the lattice has to measure anything else against", list[]];
@@ -4276,9 +4279,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
       mPush[env0["out"], env1["st"]]], {iter1, items[env0["infos"]]}];
     env0["rhs"] = filt[env0["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[eq[env2["t"]["side"], "right"], ret]]];
-    env0["lhs"] = mJoin[mMap[filt[env0["infos"], lfn[4, { env3["t"] = arg[args4, 0] };
-      Throw[eq[env3["t"]["side"], "left"], ret]]], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[orElse[env2["t"]["operator"], env2["t"]["symbol"]], ret]]], " + "];
+    env0["lhs"] = mJoin[self["left_operators"], " + "];
     env0["equation"] = self["equation"];
     mPush[env0["out"], Step["of", Fact["stands", "" <> str[env0["lhs"]] <> "n", Expr["simplify", Expr["add", mMap[env0["rhs"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[Expr["mul", list[Expr["num", env2["t"]["sign"]], Expr["sym", env2["t"]["symbol"]]]], ret]]]]]], "and the terms add", mMap[env0["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
@@ -4287,25 +4288,32 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
       env2["by"] = If[truthy[mEmpty[env2["t"]["rules"]]], "not a rule", mJoin[env2["t"]["rules"], global["sep2"]]];
       Throw["" <> str[env2["sign"]] <> " " <> str[env2["t"]["symbol"]] <> "   (" <> str[env2["by"]] <> ")", ret]]], list[self["line_text"], self["space_text"]]]]];
     Throw[env0["out"], ret]]];
-  getter[klass, "line_text", mfn[1,
-    env0["infos"] = self["infos"];
-    env0["left"] = filt[env0["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+  getter[klass, "left_operators", mfn[1,
+    env0["left"] = filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[eq[env2["t"]["side"], "left"], ret]]];
     env0["left"] = mConcat[filt[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[eq[env2["t"]["operator"], "\\partial_{t}"], ret]]], filt[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[(!eq[env2["t"]["operator"], "\\partial_{t}"]), ret]]]];
+    Throw[mReduce[mMap[env0["left"], lfn[4, { env3["t"] = arg[args4, 0] };
+      Throw[orElse[env3["t"]["operator"], env3["t"]["symbol"]], ret]]], list[], lfn[3, { env2["o"] = arg[args3, 0], env2["x"] = arg[args3, 1] };
+      Throw[If[truthy[mContains[env2["o"], env2["x"]]], env2["o"], mPush[env2["o"], env2["x"]]], ret]]], ret]]];
+  getter[klass, "line_text", mfn[1,
+    env0["infos"] = self["infos"];
+    env0["left"] = self["left_operators"];
     env0["right"] = filt[env0["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[andV[eq[env2["t"]["side"], "right"], (orV[mEmpty[env2["t"]["rules"]], (!eq[env2["t"]["rays"], "0"])])], ret]]];
     env0["right"] = mConcat[filt[env0["right"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[not[mEmpty[env2["t"]["rules"]]], ret]]], filt[env0["right"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[mEmpty[env2["t"]["rules"]], ret]]]];
-    env0["lhs"] = If[truthy[mEmpty[env0["left"]]], "n", "(" <> str[mJoin[mMap[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[orElse[env2["t"]["operator"], env2["t"]["symbol"]], ret]]], global["plus"]]] <> ")n"];
+    env0["lhs"] = If[truthy[mEmpty[env0["left"]]], "n", "(" <> str[mJoin[env0["left"], global["plus"]]] <> ")n"];
     env0["rhs"] = "";
     Do[loopScope[1, env1["i"] = iter1;
       env1["t"] = elem[env0["right"], env1["i"]];
       env1["piece"] = If[truthy[eq[env1["i"], 0.]], (If[truthy[eq[env1["t"]["sign"], neg[1.]]], "-", ""]), (If[truthy[eq[env1["t"]["sign"], neg[1.]]], " - ", " + "])];
-      env0["rhs"] = "" <> str[env0["rhs"]] <> "" <> str[env1["piece"]] <> "" <> str[env1["t"]["symbol"]] <> ""], {iter1, 0., num[len[env0["right"]]] - 1.}];
+      env1["n"] = env1["t"]["ray_count"];
+      env1["size"] = Expr["show", Expr["simplify", Expr["mul", list[Expr["num", env1["t"]["sign"]], env1["n"]]]]];
+      env1["times"] = If[truthy[eq[env1["size"], "1"]], "", "" <> str[env1["size"]] <> "·"];
+      env0["rhs"] = "" <> str[env0["rhs"]] <> "" <> str[env1["piece"]] <> "" <> str[env1["times"]] <> "" <> str[env1["t"]["symbol"]] <> ""], {iter1, 0., num[len[env0["right"]]] - 1.}];
     If[truthy[mEmpty[env0["right"]]],
       env0["rhs"] = "0"];
     Throw["" <> str[env0["lhs"]] <> " = " <> str[env0["rhs"]] <> "", ret]]];
@@ -4320,13 +4328,8 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
   method[klass, "filled_term", mfn[1, { env0["t"] = arg[args1, 0], env0["fill"] = arg[args1, 1] };
     Throw[Prover["neat", Expr["replace", Expr["evaluate", env0["t"]["expr"], env0["fill"]], "n", Prover["POPULATION"]]], ret]]];
   method[klass, "operators_on", mfn[1, { env0["name"] = arg[args1, 0] };
-    env0["left"] = filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[eq[env2["t"]["side"], "left"], ret]]];
-    env0["left"] = mConcat[filt[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[eq[env2["t"]["operator"], "\\partial_{t}"], ret]]], filt[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[(!eq[env2["t"]["operator"], "\\partial_{t}"]), ret]]]];
-    Throw[If[truthy[mEmpty[env0["left"]]], env0["name"], "(" <> str[mJoin[mMap[env0["left"], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[orElse[env2["t"]["operator"], env2["t"]["symbol"]], ret]]], global["plus"]]] <> ")" <> str[env0["name"]] <> ""], ret]]];
+    env0["left"] = self["left_operators"];
+    Throw[If[truthy[mEmpty[env0["left"]]], env0["name"], "(" <> str[mJoin[env0["left"], global["plus"]]] <> ")" <> str[env0["name"]] <> ""], ret]]];
   method[klass, "line_filled", mfn[1, { env0["s"] = arg[args1, 0] };
     env0["fill"] = Prover["settled", env0["s"]];
     env0["infos"] = self["infos"];
@@ -4391,9 +4394,8 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
       Throw[Prover["neat", Expr["mul", list[env0["k"], env2["t"]]]], ret]]];
     env0["rhs"] = Expr["collected", Expr["add", list[env0["filled"]["fact"]["to"], Expr["add", env0["weighed_terms"]]]]];
     env0["rho"] = Expr["show", Prover["POPULATION"]];
-    env0["ops"] = mJoin[mMap[filt[self["infos"], lfn[4, { env3["t"] = arg[args4, 0] };
-      Throw[andV[eq[env3["t"]["side"], "left"], (!eq[env3["t"]["operator"], "\\partial_{t}"])], ret]]], lfn[3, { env2["t"] = arg[args3, 0] };
-      Throw[orElse[env2["t"]["operator"], env2["t"]["symbol"]], ret]]], global["plus"]];
+    env0["ops"] = mJoin[filt[self["left_operators"], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw[(!eq[env2["x"], "\\partial_{t}"]), ret]]], global["plus"]];
     env0["weighed"] = If[truthy[(andV[eq[env0["k"]["kind"], "num"], eq[env0["k"]["value"], 1.]])], "n_{f}", "" <> str[Expr["show", env0["k"]]] <> "·n_{f}"];
     env0["lhs"] = If[truthy[mEmpty[env0["ops"]]], "\\partial_{t}\\paren{" <> str[env0["rho"]] <> " + " <> str[env0["weighed"]] <> "}", "\\partial_{t}\\paren{" <> str[env0["rho"]] <> " + " <> str[env0["weighed"]] <> "} + \\paren{" <> str[env0["ops"]] <> "}" <> str[env0["rho"]] <> ""];
     Throw[Step["of", Fact["stands", env0["lhs"], env0["rhs"]], "the population's line and the record's added", list[env0["filled"]["fact"]["key"], env0["folds"]["fact"]["key"]], "ANNIHILATION takes rays and writes a fold - " <> str[Expr["show", env0["k"]]] <> " rays a fold, which is the weight the record carries against the population; CREATION takes a fold off and lights every exit. So the vacuum's taking stands on the population's line and, weighed so, on the record's with the opposite sign, and adding the two cancels it exactly - the same count written twice. What is left moves rays-plus-record: the transport carries the rays, a body puts its mass in, and CREATION at a point that held fewer folds than it lights exits makes rays with nothing consumed - which on an expanding world is where the space grows. That last term is kept as it is: at a small scale the record differs from place to place and the sum is not conserved. It is the one term a settled aggregate loses", list["" <> str[env0["filled"]["fact"]["of"]] <> " = " <> str[Expr["show", env0["filled"]["fact"]["to"]]] <> "", "" <> str[env0["folds"]["fact"]["of"]] <> " = " <> str[Expr["show", env0["folds"]["fact"]["to"]]] <> "", "a meeting: " <> str[Expr["show", env0["k"]]] <> " rays in, one fold out - so the record counts " <> str[Expr["show", env0["k"]]] <> " to one", "added: the taking cancels, the making does not - a creation lights every exit whether or not it held a fold", "" <> str[env0["lhs"]] <> " = " <> str[Expr["show", env0["rhs"]]] <> ""]], ret]]];
@@ -4605,7 +4607,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
         env0["out"]["set", env1["n"]["fact"]["of"], list[env1["n"]["fact"]["to"], env1["n"]["because"]]]]], {iter1, items[env0["s"]["nodes"]]}];
     Throw[env0["out"], ret]]];
   statik[klass, "annotate", mfn[1, { env0["e"] = arg[args1, 0], env0["s"] = arg[args1, 1], env0["at"] = arg[args1, 2], env0["of"] = arg[args1, 3] };
-    env0["known"] = Prover["names_known", env0["s"], env0["at"]];
+    env0["known"] = Prover["names_kept", env0["s"], env0["at"]];
     env0["out"] = list[];
     env0["seen"] = Node[{}];
     env0["whole"] = Expr["show", Expr["simplify", env0["e"]]];
@@ -4625,7 +4627,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     Throw[env0["out"], ret]]];
   statik[klass, "standing_for", mfn[1, { env0["e"] = arg[args1, 0], env0["s"] = arg[args1, 1], env0["of"] = arg[args1, 2] };
     env0["facts"] = Prover["by_name", env0["s"]];
-    env0["known"] = Prover["names_known", env0["s"], "R"];
+    env0["known"] = Prover["names_kept", env0["s"], "R"];
     env0["cite"] = lfn[2, { env1["x"] = arg[args2, 0], env1["self"] = arg[args2, 1], env1["d"] = arg[args2, 2] };
       If[truthy[gt[env1["d"], 0.]],
         env1["k"] = Expr["show", Expr["simplify", env1["x"]]];
@@ -4830,7 +4832,12 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     Do[loopScope[1, env1["i"] = iter1;
       If[truthy[(!eq[elem[env0["steps"], env1["i"]], Null])],
         env0["out"]["set", elem[env0["roles"], env1["i"]], elem[env0["steps"], env1["i"]]]]], {iter1, 0., num[len[env0["roles"]]] - 1.}];
-    Throw[env0["out"], ret]]]]];
+    Throw[env0["out"], ret]]];
+  statik[klass, "names_kept", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
+    env0["k"] = "" <> str[env0["s"]["version"]] <> "|" <> str[env0["at"]] <> "";
+    If[truthy[eq[elem[env0["s"]["known_"], env0["k"]], Null]],
+      setAt[env0["s"]["known_"], env0["k"], Prover["names_known", env0["s"], env0["at"]]]];
+    Throw[elem[env0["s"]["known_"], env0["k"]], ret]]]]];
 
 DefineClass[Inferences, "Inferences", Node, Function[{klass},
   staticField[klass, "IN_FULL", dfn[list["\\bar{m}", "F_{g}", "F_{g} as one equation", "g_{N}", "v^{2}", "v^{2} as one equation", "v^{2} with the mass gathered", "v^{2} with the mass scattered", "v^{2} with the mass gathered as one equation", "v^{2} with the mass scattered as one equation", "v^{2} where the arrival dominates", "v^{2} where the scale dominates"]]];
@@ -4906,7 +4913,7 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
     Throw[Inferences["everywhere", lfn[3, { env2["x"] = arg[args3, 0] };
       Throw[Inferences["clear_root", env2["x"]], ret]], env0["e"]], ret]]];
   statik[klass, "RULES", mfn[1,
-    Throw[mConcat[mConcat[list[Inferences["room_balance"], Inferences["ehrhart"], Inferences["counting"], Inferences["reaching"], Inferences["mass_of"], Inferences["saturating"], Inferences["spreading"], Inferences["screening"], Inferences["refracting"], Inferences["accumulating"], Inferences["substituting"], Inferences["metric_of"], Inferences["relativity"], Inferences["schwarzschild"], Inferences["shadow"], Inferences["balancing"], Inferences["unbiased"], Inferences["free_path"], Inferences["summing"], Inferences["horizon"], Inferences["bending"], Inferences["crossing"], Inferences["near_field"], Inferences["shadowing"], Inferences["receiving"], Inferences["moved"], Inferences["receding"], Inferences["shortfall"], Inferences["waiting"], Inferences["transporting"], Inferences["assembling"], Inferences["channelling"], Inferences["closing"], Inferences["arrangement"], Inferences["scale_crossed"], Inferences["orbiting"], Inferences["curve_ends"], Inferences["curves_of_each"], Inferences["crowding_of_arrivals"], Inferences["making_rate"], Inferences["hubble_rate"], Inferences["expansion_scale"], Inferences["coincidence"], Inferences["crowding"], Inferences["at_that_density"], Inferences["in_motion"]], mMap[Inferences["IN_FULL"], lfn[3, { env2["of"] = arg[args3, 0] };
+    Throw[mConcat[mConcat[list[Inferences["room_balance"], Inferences["ehrhart"], Inferences["counting"], Inferences["reaching"], Inferences["mass_of"], Inferences["saturating"], Inferences["spreading"], Inferences["screening"], Inferences["refracting"], Inferences["accumulating"], Inferences["substituting"], Inferences["metric_of"], Inferences["relativity"], Inferences["schwarzschild"], Inferences["shadow"], Inferences["balancing"], Inferences["unbiased"], Inferences["free_path"], Inferences["summing"], Inferences["horizon"], Inferences["bending"], Inferences["crossing"], Inferences["near_field"], Inferences["shadowing"], Inferences["receiving"], Inferences["moved"], Inferences["receding"], Inferences["shortfall"], Inferences["keeping"], Inferences["transporting"], Inferences["assembling"], Inferences["channelling"], Inferences["closing"], Inferences["arrangement"], Inferences["scale_crossed"], Inferences["orbiting"], Inferences["curve_ends"], Inferences["curves_of_each"], Inferences["crowding_of_arrivals"], Inferences["making_rate"], Inferences["hubble_rate"], Inferences["expansion_scale"], Inferences["coincidence"], Inferences["crowding"], Inferences["at_that_density"], Inferences["in_motion"]], mMap[Inferences["IN_FULL"], lfn[3, { env2["of"] = arg[args3, 0] };
       Throw[Inferences["writing_out", env2["of"]], ret]]]], list[Inferences["can_it_push"], Inferences["in_three"]]], ret]]];
   statik[klass, "spreading", mfn[1,
     Throw[Inference[{ "name" -> "spreading", "because" -> "count what crosses a shell in a tick: the sites on it, times what is at each, times how many of those step outward - and MOVEMENT neither makes nor destroys, so that count is the same at every distance", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
@@ -5247,11 +5254,11 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
       env2["at3"][str["D"] -> 3.];
       Throw[list[Inferences["step", "\\bar{r}", Expr["call", "m.distance", Expr["field", "m'"]], env2["via"], list[env2["puts"]["key"], env2["open"]["key"]], "the separation is what the pair has and neither body does - and it is not `R`, which in `massOf` is a body's own thickness. Two lengths that never met until a law was written with a mass in it", list["\\bar{r} = m.distance\\paren{m'}"]], Inferences["step", "T_{vac}", env2["Tvac"], env2["via"], list[env2["vac"]["key"], env2["puts"]["key"], env2["open"]["key"], env2["mine"]["\\bar{r}"]], "the vacuum's channel with its two bodies and the shell divided out - a SCREENED transport, which is what is left of a shortfall that spread and was damped. The damping is a power and not an exponential because a carrier takes whole steps and on each one is either destroyed or not, and `L` is where damping balances dilution", list["the vacuum's channel = " <> str[Expr["show", env2["vac"]["to"]]] <> "", "over the two bodies, " <> str[Expr["show", env2["bodies"]]] <> ", and over the shell they share:", "T_{vac} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = " <> str[Expr["show", env2["Tvac"]]] <> ""]], Inferences["step", "T_{met}", env2["Tmet"], env2["via"], list[env2["meet"]["key"], env2["puts"]["key"], env2["open"]["key"], env2["mine"]["\\bar{r}"]], "the meetings' channel the same way - the interference term of the two bodies' own radiation, which is why it needs BOTH to be shining where the vacuum's needs only one to be open. It carries a different power of the separation, and the crossover between the two is what turns a rotation curve over", list["the meetings' channel = " <> str[Expr["show", env2["meet"]["to"]]] <> "", "over the same two bodies and the same shell:", "T_{met} = the channel over its bodies over \\bar{r}^{-\\paren{D - 1}} = " <> str[Expr["show", env2["Tmet"]]] <> ""]], Inferences["step", "g_{N} in bodies and transport", env2["gN"], env2["via"], list[env2["mine"]["T_{vac}"], env2["mine"]["T_{met}"], env2["puts"]["key"], env2["open"]["key"], env2["mine"]["\\bar{r}"]], "the same arrival, told apart. TWO BODIES AND THE DISTANCE BETWEEN THEM STAND IN FRONT, and at three dimensions that front is `m m'/\\bar{r}^{2}` - Newton's, arrived at rather than assumed. What is left is a bracket of two transports, and the model is entirely in the bracket. THE TWO ARE NOT THE SAME KIND OF COUPLING: `T_{vac}` carries the near body's shortfall per unit of its mass, which SATURATES because a body deeper than a mean free path shadows itself, and `T_{met}` does not. That difference is the whole of what separates a body felt as its face from one felt as its bulk", list["\\bar{m} = " <> str[Expr["show", env2["puts"]["to"]]] <> "", "\\bar{m}' = " <> str[Expr["show", env2["open"]["to"]]] <> "", "g_{N} = " <> str[Expr["show", env2["gN"]]] <> ""]], Inferences["step", "F_{g} in bodies and transport", env2["law"], env2["via"], list[env2["mine"]["g_{N} in bodies and transport"]], "and what is felt is that, enhanced by the mismatch measured against the acceleration it produces - which is why `g` stands on both sides and why the bracket names the recursion rather than printing a second `g`", list["F_{g} = " <> str[Expr["show", env2["law"]]] <> ""]], Inferences["step", "g_{N} at D = 3 in bodies and transport", Expr["mul", list[env2["front"][3.], env2["carried_at"][3.]]], env2["via"], list[env2["mine"]["g_{N} in bodies and transport"]], "the arrival between two bodies in three dimensions: their two masses over the square of what separates them, times what the medium carries between them", list["g_{N} = " <> str[Expr["show", env2["gN"]]] <> "", "D = 3"]], Inferences["step", "F_{g} at D = 3 as one equation", Expr["mul", list[env2["front"][3.], env2["carried_at"][3.], env2["enhanced"]]], env2["via"], list[env2["mine"]["g_{N} at D = 3 in bodies and transport"]], "and what is felt: Newton's two masses over the square of the separation, times a bracket of two transports, times the mismatch measured against the acceleration it produces. EVERY PART OF THE MODEL IS IN THE BRACKET - the front is a count of the places three-dimensional space has at a distance, and nothing was fitted to make it an inverse square", list["F_{g} = " <> str[Expr["show", env2["law"]]] <> "", "D = 3"]], Inferences["step", "T_{vac} at D = 3", Expr["deep_factored", Expr["evaluate", env2["Tvac"], env2["at3"]]], env2["via"], list[env2["mine"]["T_{vac}"]], "the screened transport in three dimensions", list["T_{vac} = " <> str[Expr["show", env2["Tvac"]]] <> "", "D = 3"]], Inferences["step", "T_{met} at D = 3", Expr["deep_factored", Expr["evaluate", env2["Tmet"], env2["at3"]]], env2["via"], list[env2["mine"]["T_{met}"]], "the exchange transport in three dimensions", list["T_{met} = " <> str[Expr["show", env2["Tmet"]]] <> "", "D = 3"]]], ret]] }], ret]]];
   statik[klass, "making_rate", mfn[1,
-    Throw[Inference[{ "name" -> "the room the line does not supply, which the waiting has to make", "because" -> "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
-      env2["waits"] = env2["s"]["fact", "is", "what the waiting makes"];
-      If[truthy[orV[eq[env2["waits"], Null], env2["s"]["has", "is", "the rate space is made"]]],
+    Throw[Inference[{ "name" -> "the room the line does not supply, which the frontier has to make", "because" -> "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
+      env2["made"] = env2["s"]["fact", "is", "what the frontier makes"];
+      If[truthy[orV[eq[env2["made"], Null], env2["s"]["has", "is", "the rate space is made"]]],
         Throw[list[], ret]];
-      Throw[list[Inferences["step", "the rate space is made", env2["waits"]["to"], "the room the line does not supply, which the waiting has to make", list[env2["waits"]["key"]], "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", list["the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at " <> str[Expr["show", env2["waits"]["to"]]] <> "", "the rate space is made = " <> str[Expr["show", env2["waits"]["to"]]] <> ""]]], ret]] }], ret]]];
+      Throw[list[Inferences["step", "the rate space is made", env2["made"]["to"], "the room the line does not supply, which the frontier has to make", list[env2["made"]["key"]], "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", list["the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at " <> str[Expr["show", env2["made"]["to"]]] <> "", "the rate space is made = " <> str[Expr["show", env2["made"]["to"]]] <> ""]]], ret]] }], ret]]];
   statik[klass, "hubble_rate", mfn[1,
     Throw[Inference[{ "name" -> "the rate the whole of it expands at", "because" -> "the room between two things grows at a_{0} a point a tick and there are as many points as there is distance, so what that comes to per unit distance is a rate on its own", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
       env2["rec"] = env2["s"]["fact", "is", "the space line nets"];
@@ -5299,7 +5306,7 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
       env2["via"] = "the density where a body is, which is not the density of empty space";
       env2["upon"] = list[env2["made"]["key"], env2["took"]["key"], env2["puts"]["key"]];
       env2["a0"] = Expr["simplify", Expr["mul", list[Expr["field", "\\sigma"], Expr["simplify", env2["total"]]]]];
-      Throw[list[Inferences["step", "\\rho at R", env2["root"], env2["via"], env2["upon"], "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", list["the body's carriers where the far one stands: n = " <> str[Expr["show", env2["n"]]] <> "", "the population where the body stands: \\rho + n", "" <> str[Expr["show", env2["mkC"]["to"]]] <> "·" <> str[Expr["show", env2["making_with_body"]]] <> " + " <> str[Expr["show", env2["tkC"]["to"]]] <> "·F·" <> str[Expr["show", env2["with_body"]]] <> " = 0", "\\rho at R = " <> str[Expr["show", env2["root"]]] <> ""]], Inferences["step", "the population at R", Expr["simplify", env2["total"]], env2["via"], env2["upon"], "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter", list["the vacuum's settled share there: \\rho at R", "the body's carriers there: " <> str[Expr["show", env2["n"]]] <> "", "the population at R = " <> str[Expr["show", Expr["simplify", env2["total"]]]] <> ""]], Inferences["step", "a_{0} at R", env2["a0"], env2["via"], env2["upon"], "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", list["the space line's waiting term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " <> str[Expr["show", env2["a0"]]] <> ""]]], ret]] }], ret]]];
+      Throw[list[Inferences["step", "\\rho at R", env2["root"], env2["via"], env2["upon"], "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", list["the body's carriers where the far one stands: n = " <> str[Expr["show", env2["n"]]] <> "", "the population where the body stands: \\rho + n", "" <> str[Expr["show", env2["mkC"]["to"]]] <> "·" <> str[Expr["show", env2["making_with_body"]]] <> " + " <> str[Expr["show", env2["tkC"]["to"]]] <> "·F·" <> str[Expr["show", env2["with_body"]]] <> " = 0", "\\rho at R = " <> str[Expr["show", env2["root"]]] <> ""]], Inferences["step", "the population at R", Expr["simplify", env2["total"]], env2["via"], env2["upon"], "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter", list["the vacuum's settled share there: \\rho at R", "the body's carriers there: " <> str[Expr["show", env2["n"]]] <> "", "the population at R = " <> str[Expr["show", Expr["simplify", env2["total"]]]] <> ""]], Inferences["step", "a_{0} at R", env2["a0"], env2["via"], env2["upon"], "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", list["the space line's frontier term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " <> str[Expr["show", env2["a0"]]] <> ""]]], ret]] }], ret]]];
   statik[klass, "at_that_density", mfn[1,
     Throw[Inference[{ "name" -> "and the law read at the density that is actually there", "because" -> "the law is written in the density, and which density it is was settled by the balance - so where the balance gives a different root, the law reads it", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
       env2["gN"] = env2["s"]["fact", "is", "g_{N}"];
@@ -5563,7 +5570,7 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
         Throw[list[], ret]];
       env2["totalled"] = Expr["simplify", Expr["neg", Expr["replace", env2["F"], "r", Inferences["rbar"]]]];
       Throw[list[Inferences["step", "the deficit in recession", env2["totalled"], "and a body makes less of it, so they are carried apart more slowly", list[env2["rec"]["key"], env2["per"]["key"], env2["puts"]["key"]], "the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line - integrated by the algebra over whatever profile the transport gave, not over a power assumed in advance - that is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen", list["recession = " <> str[Expr["show", env2["rec"]["to"]]] <> "", "the shortfall at each point is the body's own, carried: " <> str[Expr["show", env2["profile"]]] <> "", "far out that comes to " <> str[Expr["show", env2["far"]]] <> "", "\\int of that dr = " <> str[Expr["show", env2["F"]]] <> "", "the deficit in recession = " <> str[Expr["show", env2["totalled"]]] <> ""]]], ret]] }], ret]]];
-  statik[klass, "waiting", mfn[1,
+  statik[klass, "keeping", mfn[1,
     Throw[Inference[{ "name" -> "how fast a carrier goes, which is the share of its step that was straight", "because" -> "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
       env2["nf"] = env2["s"]["fact", "is", "n_{f}"];
       env2["c"] = env2["s"]["fact", "is", "\\bar{c}"];
@@ -5575,7 +5582,7 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
         mPush[env2["parts"], env2["gate"]["to"]]];
       mPush[env2["parts"], Expr["pown", Expr["add", list[Expr["num", 1.], Expr["field", "n_{f}"]]], neg[1.]]];
       env2["got"] = Expr["simplify", Expr["mul", env2["parts"]]];
-      Throw[list[Inferences["step", "v", env2["got"], "how fast a carrier goes, which is the share of its step that was straight", list[env2["nf"]["key"], env2["c"]["key"]], "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier", list["turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " <> str[Expr["show", env2["got"]]] <> "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"]]], ret]] }], ret]]];
+      Throw[list[Inferences["step", "v", env2["got"], "how fast a carrier goes, which is the share of its step that was straight", list[env2["nf"]["key"], env2["c"]["key"]], "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier", list["turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " <> str[Expr["show", env2["got"]]] <> "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"]]], ret]] }], ret]]];
   statik[klass, "transporting", mfn[1,
     Throw[Inference[{ "name" -> "what crosses a shell is the room times what is at each site times how fast it goes", "because" -> "a flux is how much crosses per tick - the sites there are, times what is at each, times how fast it moves through - and conserved, that fixes the density", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
       env2["shell"] = env2["s"]["fact", "grows", "shell"];
@@ -12538,7 +12545,7 @@ DefineClass[G, "G", Theory, Function[{klass},
   staticField[klass, "theorem vacuum.balance", dfn[Theorem[{ "id" -> "vacuum.balance", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?", "about" -> "l.balance" }], ret]] }]]];
   staticField[klass, "theorem vacuum.settled", dfn[Theorem[{ "id" -> "vacuum.settled", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", "about" -> "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", "also" -> "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", "leads" -> "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", "then" -> "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent." }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", "about" -> "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", "also" -> "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", "leads" -> "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", "then" -> "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record." }], ret]] }]]];
   staticField[klass, "theorem vacuum.worth", dfn[Theorem[{ "id" -> "vacuum.worth", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "the equation is written against a record S. What IS that, at a local - and where does it come from?", "about" -> "S_{l} \\aside{rays' worth}" }], ret]] }]]];
   staticField[klass, "theorem vacuum.record", dfn[Theorem[{ "id" -> "vacuum.record", "body" -> lfn[1,

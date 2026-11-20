@@ -1066,7 +1066,29 @@ export class Runtime {
     return new Closure(found.params, found.body, recv.cls.env, recv, name, [], found.loc);
   }
 
+  /**
+   * RAY_PROF=1: inclusive wall time and calls per Ray method, printed on exit - the interpreter's own profile,
+   * since a V8 profile of it is all `callMethod`. Recursion is counted once, at its outermost call
+   */
+  static PROF = process.env.RAY_PROF ? new Map<string, { ms: number; calls: number; depth: number }>() : undefined;
+  static {
+    if (Runtime.PROF) process.on("exit", () => {
+      const rows = [...Runtime.PROF!.entries()].sort((x, y) => y[1].ms - x[1].ms).slice(0, Number(process.env.RAY_PROF) > 1 ? Number(process.env.RAY_PROF) : 60);
+      process.stderr.write("RAY_PROF inclusive ms / calls / method\n" + rows.map(([k, v]) => `${v.ms.toFixed(0).padStart(10)} ${String(v.calls).padStart(10)}  ${k}`).join("\n") + "\n");
+    });
+  }
   call(f: Value, args: { name?: string; value: Value }[], env: Env, loc: Loc, self?: Value): Value {
+    if (!Runtime.PROF || !(f instanceof Closure)) return this.callRaw(f, args, env, loc, self);
+    const owner = f.self instanceof RayClass ? f.self.name : (f.self instanceof RayObject ? f.self.cls.name : "");
+    const key = `${owner}.${f.name}`;
+    let row = Runtime.PROF.get(key);
+    if (!row) Runtime.PROF.set(key, row = { ms: 0, calls: 0, depth: 0 });
+    row.calls++;
+    if (row.depth++ > 0) { try { return this.callRaw(f, args, env, loc, self); } finally { row.depth--; } }
+    const t0 = performance.now();
+    try { return this.callRaw(f, args, env, loc, self); } finally { row.depth--; row.ms += performance.now() - t0; }
+  }
+  callRaw(f: Value, args: { name?: string; value: Value }[], env: Env, loc: Loc, self?: Value): Value {
     if (f instanceof Many) return this.collapse(f.items.map(x => this.call(x, args, env, loc, self)));
     if (f instanceof NativeFn) return f.fn(...args.map(a => a.value));
     if (f instanceof RayClass) return this.instantiate(f, args, env, loc, true);

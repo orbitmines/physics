@@ -226,14 +226,17 @@ TermInfo := class < term: EquationTerm {
   static powers (n: String, degree: N): String => degree == 0 ? "" : (degree == 1 ? n : (degree == 2 ? "{n}\\tilde{{{n}}}" : "{n}^{{{degree}}}"))
   symbol (): String => {
     population := "n"
-    return "{this.gate}l.\\bar{{m}}" if this.outside
+    if this.outside {
+      return this.gate.empty ? "l.\\bar{{m}}" : "{this.gate} l.\\bar{{m}}"
+    }
     return "\\partial_{{t}}{population}" if this.settles
     return "{this.operator}{population}" if this.transport
     rate := this.rate ?? ""
     room := this.gate
     pw := TermInfo.powers(population, this.degree)
-    gap := (!rate.empty & room.empty & !pw.empty) ? " " : ""
-    "{rate}{room}{gap}{pw}"
+    /* a rate is a command (\\nu, \\sigma): whatever follows it is set off, or the two run together into one */
+    gap := (!rate.empty & !(room.empty & pw.empty)) ? " " : ""
+    "{rate}{gap}{room}{pw}"
   }
 }
 
@@ -244,7 +247,8 @@ Prover := class < theory: Theory {
   record_line: Step? = None
   store: Store = Store()
   equation (): Equation => this.theory.equation
-  infos (): TermInfo[] => this.equation.terms.map(t => TermInfo(term: t))
+  /* the theory's own equation, spelled so the read-once optimization (Optimizations.ray) finds it: the rules are read once per theory, not once per step */
+  infos (): TermInfo[] => this.theory.equation.terms.map(t => TermInfo(term: t))
   /* the terms a premise is read off: a rule's, on the right, with a rate */
   acting (): TermInfo[] => this.infos.filter(t => t.side != "left" & !t.rules.empty & t.rate != None)
 
@@ -387,11 +391,11 @@ Prover := class < theory: Theory {
         made.rule = t.rules[0]
         out.push(made)
       }
-      /* the waiting: a carrier handing itself on while it grows the world - a branch that grows without carrying is not a ray waiting */
+      /* the frontier: a carrier growing the world by the point it steps into - a branch that grows without carrying is not a ray making room */
       if t.rays == "0" & t.space_net > 0 & t.carries {
-        w := Step.of(Fact.stands("what the waiting makes", body), t.rules[0], [],
-          "{nm} hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is {Expr.show(body)}",
-          ["no rays, {Expr.show(t.space_count)} of space", "the waiting makes {Expr.show(body)}"])
+        w := Step.of(Fact.stands("what the frontier makes", body), t.rules[0], [],
+          "{nm} grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is {Expr.show(body)}",
+          ["no rays, {Expr.show(t.space_count)} of space", "the frontier makes {Expr.show(body)}"])
         w.rule = t.rules[0]
         out.push(w)
       }
@@ -462,7 +466,7 @@ Prover := class < theory: Theory {
       if moving.share != None {
         advancing := Expr.simplify(Expr.add(carrying.filter(t => t.share != None).map(t => t.share)))
         st := Step.of(Fact.stands("what share of a step advances", advancing), moving.rules[0], [],
-          "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
+          "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
         st.rule = moving.rules[0]
         out.push(st)
       }
@@ -642,7 +646,7 @@ Prover := class < theory: Theory {
       out.push(st)
     })
     rhs := infos.filter(t => t.side == "right")
-    lhs := infos.filter(t => t.side == "left").map(t => t.operator ?? t.symbol).join(" + ")
+    lhs := this.left_operators.join(" + ")
     equation := this.equation
     out.push(Step.of(Fact.stands("{lhs}n", Expr.simplify(Expr.add(rhs.map(t => Expr.mul([Expr.num(t.sign), Expr.sym(t.symbol)]))))), "and the terms add", infos.map(t => Fact.key_of("is", t.symbol)),
       "the rules do not consult one another - each fires on its own matches once a tick - so what they do to the population adds, and the line is what they come to rather than a description of them. A theory with a rule taken out writes one term fewer here without anything else changing",
@@ -654,18 +658,27 @@ Prover := class < theory: Theory {
     out
   }
   /* the line and the space line, as the old continuum wrote them */
+  /* the left of the line, each operator once: the time derivative first, then transport - two branches of one rule that both carry are one streaming term, not two */
+  left_operators (): String[] => {
+    left := this.infos.filter(t => t.side == "left")
+    left = left.filter(t => t.operator == "\\partial_{{t}}").concat(left.filter(t => t.operator != "\\partial_{{t}}"))
+    left.map(t => t.operator ?? t.symbol).reduce([], (o, x) => o.contains(x) ? o : o.push(x))
+  }
   line_text (): String => {
     infos := this.infos
-    left := infos.filter(t => t.side == "left")
-    left = left.filter(t => t.operator == "\\partial_{{t}}").concat(left.filter(t => t.operator != "\\partial_{{t}}"))
+    left := this.left_operators
     right := infos.filter(t => t.side == "right" & (t.rules.empty | t.rays != "0"))
     right = right.filter(t => !t.rules.empty).concat(right.filter(t => t.rules.empty))
-    lhs := left.empty ? "n" : "({left.map(t => t.operator ?? t.symbol).join(plus)})n"
+    lhs := left.empty ? "n" : "({left.join(plus)})n"
     rhs := ""
     Array.range(right.length).for(i => {
       t := right[i]
       piece := i == 0 ? (t.sign == -1 ? "-" : "") : (t.sign == -1 ? " - " : " + ")
-      rhs = "{rhs}{piece}{t.symbol}"
+      /* times the rays one firing puts in or takes out, as the line's own sum is written - a meeting takes two, a creation lights DEG */
+      n := t.ray_count
+      size := Expr.show(Expr.simplify(Expr.mul([Expr.num(t.sign), n])))
+      times := size == "1" ? "" : "{size}·"
+      rhs = "{rhs}{piece}{times}{t.symbol}"
     })
     rhs = "0" if right.empty
     "{lhs} = {rhs}"
@@ -685,9 +698,8 @@ Prover := class < theory: Theory {
   filled_term (t: TermInfo, fill: {}): Expr => Prover.neat(Expr.replace(Expr.evaluate(t.expr, fill), "n", Prover.POPULATION))
   /* the left of the line: the time derivative first, then transport, applied to a name */
   operators_on (name: String): String => {
-    left := this.infos.filter(t => t.side == "left")
-    left = left.filter(t => t.operator == "\\partial_{{t}}").concat(left.filter(t => t.operator != "\\partial_{{t}}"))
-    left.empty ? name : "({left.map(t => t.operator ?? t.symbol).join(plus)}){name}"
+    left := this.left_operators
+    left.empty ? name : "({left.join(plus)}){name}"
   }
   /* the line with every constant the closure settled filled in, as the headline of any law is: a rate is one per match per tick, the facing factor is what isotropy leaves - each a fact of its own, cited here so a reader sees where it came from */
   line_filled (s: Store): Step => {
@@ -780,7 +792,7 @@ Prover := class < theory: Theory {
     weighed_terms := (folds.fact.to.kind == "add" ? folds.fact.to.of : [folds.fact.to]).map(t => Prover.neat(Expr.mul([k, t])))
     rhs := Expr.collected(Expr.add([filled.fact.to, Expr.add(weighed_terms)]))
     rho := Expr.show(Prover.POPULATION)
-    ops := this.infos.filter(t => t.side == "left" & t.operator != "\\partial_{{t}}").map(t => t.operator ?? t.symbol).join(plus)
+    ops := this.left_operators.filter(x => x != "\\partial_{{t}}").join(plus)
     weighed := (k.kind == "num" & k.value == 1) ? "n_{{f}}" : "{Expr.show(k)}·n_{{f}}"
     lhs := ops.empty ? "\\partial_{{t}}\\paren{{{rho} + {weighed}}}" : "\\partial_{{t}}\\paren{{{rho} + {weighed}}} + \\paren{{{ops}}}{rho}"
     Step.of(Fact.stands(lhs, rhs), "the population's line and the record's added", [filled.fact.key, folds.fact.key],

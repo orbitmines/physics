@@ -79,15 +79,16 @@ Theorems := class {
   /* the markup, flattened for a README */
   static flat (s: String): String => {
     out := s
-    /* \bar{x} -> x̄, ^{x} -> ^(x), _{x} -> _x, [[ref]] -> its short name */
+    /* \bar{x} -> x̄, ^{x} -> ^(x), _{x} -> _x but _{l + v} -> _(l + v) - a subscript of more than one term keeps its grouping, or f_{l + v} reads f_l + v - [[ref]] -> its short name */
     out = Theorems.unwrap(out, "\\bar{{", "", "̄")
     out = Theorems.unwrap(out, "^{{", "^(", ")")
-    out = Theorems.unwrap(out, "_{{", "_", "")
+    out = Theorems.unwrap(out, "_{{", "_", "", "_(", ")")
     Notation.REFERENCES.for(r => { out = out.replace("[[{r.key}]]", r.short) })
     out
   }
   /* every `head{...}` with no inner braces rewritten as before + inner + after */
-  static unwrap (s: String, head: String, before: String, after: String): String => {
+  /* an inner with a space in it is more than one term, and takes `wide_before` and `wide_after` when they are given */
+  static unwrap (s: String, head: String, before: String, after: String, wide_before: String? = None, wide_after: String = ""): String => {
     out := s
     guard := 0
     while out.contains(head) & guard < 200 {
@@ -97,7 +98,9 @@ Theorems := class {
       k := rest.index_of("{{")
       return out if j == None
       return out if k != None & k < j
-      out = "{out.take(i)}{before}{rest.take(j)}{after}{rest.drop(j + 1)}"
+      inner := rest.take(j)
+      wide := wide_before != None & inner.contains(" ")
+      out = wide ? "{out.take(i)}{wide_before}{inner}{wide_after}{rest.drop(j + 1)}" : "{out.take(i)}{before}{inner}{after}{rest.drop(j + 1)}"
       guard = guard + 1
     }
     out

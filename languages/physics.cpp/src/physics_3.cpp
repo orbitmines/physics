@@ -304,6 +304,7 @@ static void C_Store(Cls& c) {
     return true;
     return null;
   });
+  c.field("known_", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
 }
 static const bool R_Store = define_class("Store", "Node", &C_Store);
 
@@ -772,7 +773,7 @@ static void C_TermInfo(Cls& c) {
   c.getter("symbol", [](Value self, const Args& a1) -> Value {
     auto population_0 = cell(); population_0->v = "n";
     if (truthy(get(self, S<"outside">()))) {
-      return "" + str(get(self, S<"gate">())) + "l.\\bar{m}";
+      return (truthy(m_empty(get(self, S<"gate">()))) ? Value("l.\\bar{m}") : Value("" + str(get(self, S<"gate">())) + " l.\\bar{m}"));
     }
     if (truthy(get(self, S<"settles">()))) {
       return "\\partial_{t}" + str(population_0->v) + "";
@@ -783,8 +784,8 @@ static void C_TermInfo(Cls& c) {
     auto rate_0 = cell(); rate_0->v = orElse(get(self, S<"rate">()), [&]() -> Value { return ""; });
     auto room_0 = cell(); room_0->v = get(self, S<"gate">());
     auto pw_0 = cell(); pw_0->v = call(K(S<"TermInfo">()), S<"powers">(), { population_0->v, get(self, S<"degree">()) });
-    auto gap_0 = cell(); gap_0->v = (truthy(((truthy((truthy((!truthy(m_empty(rate_0->v)))) && truthy(m_empty(room_0->v)))) && truthy((!truthy(m_empty(pw_0->v))))))) ? Value(" ") : Value(""));
-    return "" + str(rate_0->v) + "" + str(room_0->v) + "" + str(gap_0->v) + "" + str(pw_0->v) + "";
+    auto gap_0 = cell(); gap_0->v = (truthy(((truthy((!truthy(m_empty(rate_0->v)))) && truthy((!truthy(((truthy(m_empty(room_0->v)) && truthy(m_empty(pw_0->v)))))))))) ? Value(" ") : Value(""));
+    return "" + str(rate_0->v) + "" + str(gap_0->v) + "" + str(room_0->v) + "" + str(pw_0->v) + "";
     return null;
   });
 }

@@ -51,3 +51,20 @@ Theory += {
     Theory.TERMS[this.name]
   }
 }
+
+/*
+ * the names a proof's lines are annotated with are opened once per store, not once per theorem: a store only
+ * grows (`Store.add`), so what it knew at a version it knows at that version every time it is asked
+ */
+force { known := Prover.names_known(s, at) } => { known := Prover.names_kept(s, at) }
+force { known := Prover.names_known(s, "R") } => { known := Prover.names_kept(s, "R") }
+Store += {
+  known_: {} = { }
+}
+Prover += {
+  static names_kept (s: Store, at: String): Keyed => {
+    k := "{s.version}|{at}"
+    s.known_[k] = Prover.names_known(s, at) if s.known_[k] == None
+    s.known_[k]
+  }
+}

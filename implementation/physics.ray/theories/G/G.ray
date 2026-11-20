@@ -48,10 +48,12 @@ Ray += {
    */
   MOVE () => {
     to := this.turns
+    /* nowhere to step: on an expanding world it makes the room and steps into it, the same tick - a ray never waits */
+    /* and on a world that does not grow it steps off the edge - handed nowhere, SETTLE leaves it dark */
     if to == None {
-      /* nowhere to step: on an expanding world it makes the room and waits a tick */
       this.leaving.grow
-      this.hand(this)
+      made := this.steps
+      this.hand(made) if made != None
       return
     }
     here := this.vertex
@@ -84,8 +86,8 @@ G: Theory = class {
   rule /4 "Arrival" (x: Ray) => x.SETTLE
 
   /*
-   * a source absorbs what arrived and writes its own charge onto the space around it. What it
-   * lights is the NEIGHBOUR's ray on the same heading, so a body cannot catch its own light.
+   * a source lights what it chooses to. What it lights is the NEIGHBOUR's ray on the same heading, so a
+   * body cannot catch its own light, and each ray it lights recoils on it (its momentum takes the ray's heading off).
    */
   rule /S.1 "Emission" (x: 1 Boundary{emits & vertex.source.spare}) => {
     s := x.vertex.source
@@ -107,15 +109,14 @@ G: Theory = class {
    *
    * VIEW 20 is the furthest the panel shows and MARGIN 8 what a body needs to get out of sight; the pair
    * sit GAP 20 apart, where the two fields overlap where they are strongest. A body is one place, joined
-   * on by WAYS 2000 connections, announcing itself at the ceiling MX 1 so the effect is the plainest the
-   * rules allow. TICKS 2 a frame spans the medium's own period (every point splits, then every one of
-   * them annihilates) so the parity divides out, and the film is RUN 150 frames of it.
+   * on by WAYS connections and announcing itself at MX - a realistic, rare announcer (see `pair`). A frame
+   * spans TICKS, an even number so the medium's own period (every point splits, then every one of them
+   * annihilates) divides out, and the film is RUN frames of it - both set per film in `pair`.
    */
   visual "gravity.rain" () => G.pair("gravity.rain", "held", "two bodies held where they are: what each sends out, streamed one c-bar a tick and bent by the record the other leaves, and on the right where space is destroyed by one body's rays against the other's - the equation's meeting term on the two, the pair term the force law is a product for")
   /* the probe behind the pair: the same two bodies put down at rest, twelve c-bar apart, and left - do they close, and how fast; short and small, so it answers in a minute */
   visual "gravity.rest" () => G.pair("gravity.rest", "rest", "the probe behind the pair: two bodies put down at rest twelve c-bar apart and let go - each pulled at the rate the other's record rises toward it, which the recorder prints against the derivation's own number")
-  /* the same two bodies thrown past each other and bent by `turns` - at V0 0.3 c-bar, missing by IMPACT 6 apiece */
-  /* the same two bodies flying past each other at HALF OF C-BAR, opposite ways, missing by PASS_GAP: the record each leaves trails behind it, and the pull the other feels points at where it WAS when the rays left - the lag of the field, seen */
+  /* the same two bodies flying past each other at V_PASS, opposite ways, on lines PASS_GAP apart: the record each leaves trails behind it, and the pull the other feels points at where it WAS when the rays left - the lag of the field, seen */
   visual "gravity.pass" () => G.pair("gravity.pass", "passing", "two bodies flying past each other, opposite ways, at about the speed they would circle at: each is pulled toward the record the other leaves, and both are flung round each other and out on new headings")
   visual "gravity.pull" () => G.pair("gravity.pull", "thrown", "two bodies circling their middle at the speed the derivation gives them - the record each leaves at the other, its slope there, and a circle of half their separation - launched with it and left to the medium, so the orbit moves when the derivation does")
 
@@ -625,7 +626,7 @@ G: Theory = class {
   theorem "vacuum.following" () => Asked(asks: "a difference taken following something - what does one step of the lattice come to, and what is followed?", about: "\\Delta_{{v}}f")
   theorem "vacuum.lean" () => Asked(asks: "the record bends a heading. Along what, and how fast?", about: "a")
   theorem "vacuum.balance" () => Asked(asks: "the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?", about: "l.balance")
-  theorem "vacuum.settled" () => Asked(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", also: "\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.")
+  theorem "vacuum.settled" () => Asked(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{{\\hat{{d}}}}\\rho_{{l}} + a·\\nabla S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", also: "\\Delta_{{t}}S_{{l}} \\aside{{at}} \\rho_{{\\infty}}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record.")
   theorem "vacuum.worth" () => Asked(asks: "the equation is written against a record S. What IS that, at a local - and where does it come from?", about: "S_{{l}} \\aside{{rays' worth}}")
   theorem "vacuum.record" () => Asked(asks: "the record every mass leaves at a local, in rays' worth - what writes it, what clears it, and what does it come to far from every body?", about: "\\Delta_{{t}}S_{{l}}", also: "S_{{l}}", leads: "THE RECORD'S OWN LINE - written by the meetings, cleared by creation at its own rate times how much there is to clear. This is what the record does at any local, near a body or far, and it is exact.", then: "AND WHAT IT SETTLES TO FAR FROM EVERY BODY, where the vacuum along every path is the settled one: the sum over the locals of what every mass sent here, each read at its own time. Inside a free path of a body the line above has to be run instead.")
   theorem "gravity.bent" () => Asked(asks: "the record's slope turns the vacuum's own rays toward a mass. Read off the settled line, what does that bending add to what a body feels - and does it reach far?", about: "g \\aside{{bent}}", also: "a·\\nabla S_{{l}}")

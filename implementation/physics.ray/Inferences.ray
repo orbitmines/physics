@@ -60,7 +60,7 @@ Inferences := class {
     Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening,
     Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow,
     Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field,
-    Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting,
+    Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting,
     Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends,
     Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding,
     Inferences.at_that_density, Inferences.in_motion
@@ -603,14 +603,14 @@ Inferences := class {
       ]
     })
 
-  static making_rate (): Inference => Inference(name: "the room the line does not supply, which the waiting has to make",
-    because: "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any",
+  static making_rate (): Inference => Inference(name: "the room the line does not supply, which the frontier has to make",
+    because: "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any",
     fire: (s: Store) => {
-      waits := s.fact("is", "what the waiting makes")
-      return [] if waits == None | s.has("is", "the rate space is made")
-      [Inferences.step("the rate space is made", waits.to, "the room the line does not supply, which the waiting has to make", [waits.key],
-        "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling",
-        ["the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at {Expr.show(waits.to)}", "the rate space is made = {Expr.show(waits.to)}"])]
+      made := s.fact("is", "what the frontier makes")
+      return [] if made == None | s.has("is", "the rate space is made")
+      [Inferences.step("the rate space is made", made.to, "the room the line does not supply, which the frontier has to make", [made.key],
+        "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling",
+        ["the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at {Expr.show(made.to)}", "the rate space is made = {Expr.show(made.to)}"])]
     })
 
   static hubble_rate (): Inference => Inference(name: "the rate the whole of it expands at",
@@ -682,11 +682,11 @@ Inferences := class {
           "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly",
           ["the body's carriers where the far one stands: n = {Expr.show(n)}", "the population where the body stands: \\rho + n", "{Expr.show(mkC.to)}·{Expr.show(making_with_body)} + {Expr.show(tkC.to)}·F·{Expr.show(with_body)} = 0", "\\rho at R = {Expr.show(root)}"]),
         Inferences.step("the population at R", Expr.simplify(total), via, upon,
-          "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter",
+          "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter",
           ["the vacuum's settled share there: \\rho at R", "the body's carriers there: {Expr.show(n)}", "the population at R = {Expr.show(Expr.simplify(total))}"]),
         Inferences.step("a_{{0}} at R", a0, via, upon,
-          "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer",
-          ["the space line's waiting term: \\sigma n, degree one in the population", "a_{{0}} at R = \\sigma·(the population at R) = {Expr.show(a0)}"])
+          "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer",
+          ["the space line's frontier term: \\sigma n, degree one in the population", "a_{{0}} at R = \\sigma·(the population at R) = {Expr.show(a0)}"])
       ]
     })
 
@@ -1069,7 +1069,7 @@ Inferences := class {
         ["recession = {Expr.show(rec.to)}", "the shortfall at each point is the body's own, carried: {Expr.show(profile)}", "far out that comes to {Expr.show(far)}", "\\int of that dr = {Expr.show(F)}", "the deficit in recession = {Expr.show(totalled)}"])]
     })
 
-  static waiting (): Inference => Inference(name: "how fast a carrier goes, which is the share of its step that was straight",
+  static keeping (): Inference => Inference(name: "how fast a carrier goes, which is the share of its step that was straight",
     because: "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it",
     fire: (s: Store) => {
       nf := s.fact("is", "n_{{f}}")
@@ -1081,7 +1081,7 @@ Inferences := class {
       parts.push(Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{{f}}")]), -1))
       got := Expr.simplify(Expr.mul(parts))
       [Inferences.step("v", got, "how fast a carrier goes, which is the share of its step that was straight", [nf.key, c.key],
-        "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{{f}} folds sends it straight with 1/(1 + n_{{f}}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier",
+        "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{{f}} folds sends it straight with 1/(1 + n_{{f}}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier",
         ["turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{{f}})", "v = \\bar{{c}}/(1 + n_{{f}}) = {Expr.show(got)}", "n_{{f}} small: v -> one cell a tick, and the carrier streams", "n_{{f}} large: v -> \\bar{{c}}/n_{{f}}, and it does not"])]
     })
 

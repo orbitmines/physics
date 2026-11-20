@@ -106,7 +106,10 @@ Ray <- ray_class("Ray", Iterable, function(cl) {
     to <- self$turns
     if (truthy(eq(to, NULL))) {
       self$leaving$grow
-      self$hand(self)
+      made <- self$steps
+      if (truthy((!eq(made, NULL)))) {
+        self$hand(made)
+      }
       return(NULL)
     }
     here <- self$vertex
@@ -5167,6 +5170,7 @@ Store <- ray_class("Store", Node, function(cl) {
     return(TRUE)
     NULL
   })
+  field(cl, "known_", function() Node$new())
 })
 
 Inference <- ray_class("Inference", Node, function(cl) {
@@ -5596,7 +5600,7 @@ TermInfo <- ray_class("TermInfo", Node, function(cl) {
   getter(cl, "symbol", function() {
     population <- "n"
     if (truthy(self$outside)) {
-      return("" %+% text_of(self$gate) %+% "l.\\bar{m}")
+      return((if (truthy(m_empty(self$gate))) "l.\\bar{m}" else "" %+% text_of(self$gate) %+% " l.\\bar{m}"))
     }
     if (truthy(self$settles)) {
       return("\\partial_{t}" %+% text_of(population) %+% "")
@@ -5607,8 +5611,8 @@ TermInfo <- ray_class("TermInfo", Node, function(cl) {
     rate <- or_else(self$rate, "")
     room <- self$gate
     pw <- TermInfo$powers(population, self$degree)
-    gap <- (if (truthy(((if (truthy(.x <- (if (truthy(.x <- (!truthy(m_empty(rate))))) m_empty(room) else .x))) (!truthy(m_empty(pw))) else .x)))) " " else "")
-    return("" %+% text_of(rate) %+% "" %+% text_of(room) %+% "" %+% text_of(gap) %+% "" %+% text_of(pw) %+% "")
+    gap <- (if (truthy(((if (truthy(.x <- (!truthy(m_empty(rate))))) (!truthy(((if (truthy(.x <- m_empty(room))) m_empty(pw) else .x)))) else .x)))) " " else "")
+    return("" %+% text_of(rate) %+% "" %+% text_of(gap) %+% "" %+% text_of(room) %+% "" %+% text_of(pw) %+% "")
     NULL
   })
 })
@@ -5624,7 +5628,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     NULL
   })
   getter(cl, "infos", function() {
-    return(m_map(self$equation$terms, function(t = NULL, ...) {
+    return(m_map(self$theory$terms_read, function(t = NULL, ...) {
       return(TermInfo$new(term = t))
       NULL
     }))
@@ -5773,7 +5777,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
         m_push(out, made)
       }
       if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(t$rays, "0"))) gt(t$space_net, 0) else .x))) t$carries else .x))) {
-        w <- Step$of(Fact$stands("what the waiting makes", body), elem(t$rules, 0), lst(), "" %+% text_of(nm) %+% " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " %+% text_of(Expr$show(body)) %+% "", lst("no rays, " %+% text_of(Expr$show(t$space_count)) %+% " of space", "the waiting makes " %+% text_of(Expr$show(body)) %+% ""))
+        w <- Step$of(Fact$stands("what the frontier makes", body), elem(t$rules, 0), lst(), "" %+% text_of(nm) %+% " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " %+% text_of(Expr$show(body)) %+% "", lst("no rays, " %+% text_of(Expr$show(t$space_count)) %+% " of space", "the frontier makes " %+% text_of(Expr$show(body)) %+% ""))
         .set(w, "rule", elem(t$rules, 0))
         m_push(out, w)
       }
@@ -5851,7 +5855,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
           return(t$share)
           NULL
         })))
-        st <- Step$of(Fact$stands("what share of a step advances", advancing), elem(moving$rules, 0), lst(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", lst())
+        st <- Step$of(Fact$stands("what share of a step advances", advancing), elem(moving$rules, 0), lst(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", lst())
         .set(st, "rule", elem(moving$rules, 0))
         m_push(out, st)
       }
@@ -6089,13 +6093,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
       return(eq(t$side, "right"))
       NULL
     })
-    lhs <- m_join(m_map(filt(infos, function(t = NULL, ...) {
-      return(eq(t$side, "left"))
-      NULL
-    }), function(t = NULL, ...) {
-      return(or_else(t$operator, t$symbol))
-      NULL
-    }), " + ")
+    lhs <- m_join(self$left_operators, " + ")
     equation <- self$equation
     m_push(out, Step$of(Fact$stands("" %+% text_of(lhs) %+% "n", Expr$simplify(Expr$add(m_map(rhs, function(t = NULL, ...) {
       return(Expr$mul(lst(Expr$num(t$sign), Expr$sym(t$symbol))))
@@ -6112,9 +6110,8 @@ Prover <- ray_class("Prover", Node, function(cl) {
     return(out)
     NULL
   })
-  getter(cl, "line_text", function() {
-    infos <- self$infos
-    left <- filt(infos, function(t = NULL, ...) {
+  getter(cl, "left_operators", function() {
+    left <- filt(self$infos, function(t = NULL, ...) {
       return(eq(t$side, "left"))
       NULL
     })
@@ -6125,6 +6122,18 @@ Prover <- ray_class("Prover", Node, function(cl) {
       return((!eq(t$operator, "\\partial_{t}")))
       NULL
     })))
+    return(m_reduce(m_map(left, function(t = NULL, ...) {
+      return(or_else(t$operator, t$symbol))
+      NULL
+    }), lst(), function(o = NULL, x = NULL, ...) {
+      return((if (truthy(m_contains(o, x))) o else m_push(o, x)))
+      NULL
+    }))
+    NULL
+  })
+  getter(cl, "line_text", function() {
+    infos <- self$infos
+    left <- self$left_operators
     right <- filt(infos, function(t = NULL, ...) {
       return((if (truthy(.x <- eq(t$side, "right"))) ((if (truthy(.x <- m_empty(t$rules))) .x else (!eq(t$rays, "0")))) else .x))
       NULL
@@ -6136,15 +6145,15 @@ Prover <- ray_class("Prover", Node, function(cl) {
       return(m_empty(t$rules))
       NULL
     })))
-    lhs <- (if (truthy(m_empty(left))) "n" else "(" %+% text_of(m_join(m_map(left, function(t = NULL, ...) {
-      return(or_else(t$operator, t$symbol))
-      NULL
-    }), g_plus())) %+% ")n")
+    lhs <- (if (truthy(m_empty(left))) "n" else "(" %+% text_of(m_join(left, g_plus())) %+% ")n")
     rhs <- ""
     .r <- for_range(len(right), function(i) {
       t <- elem(right, i)
       piece <- (if (truthy(eq(i, 0))) ((if (truthy(eq(t$sign, neg(1)))) "-" else "")) else ((if (truthy(eq(t$sign, neg(1)))) " - " else " + ")))
-      .w("rhs", "" %+% text_of(rhs) %+% "" %+% text_of(piece) %+% "" %+% text_of(t$symbol) %+% "")
+      n <- t$ray_count
+      size <- Expr$show(Expr$simplify(Expr$mul(lst(Expr$num(t$sign), n))))
+      times <- (if (truthy(eq(size, "1"))) "" else "" %+% text_of(size) %+% "·")
+      .w("rhs", "" %+% text_of(rhs) %+% "" %+% text_of(piece) %+% "" %+% text_of(times) %+% "" %+% text_of(t$symbol) %+% "")
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -6175,21 +6184,8 @@ Prover <- ray_class("Prover", Node, function(cl) {
     NULL
   })
   method(cl, "operators_on", function(name = NULL, ...) {
-    left <- filt(self$infos, function(t = NULL, ...) {
-      return(eq(t$side, "left"))
-      NULL
-    })
-    .w("left", m_concat(filt(left, function(t = NULL, ...) {
-      return(eq(t$operator, "\\partial_{t}"))
-      NULL
-    }), filt(left, function(t = NULL, ...) {
-      return((!eq(t$operator, "\\partial_{t}")))
-      NULL
-    })))
-    return((if (truthy(m_empty(left))) name else "(" %+% text_of(m_join(m_map(left, function(t = NULL, ...) {
-      return(or_else(t$operator, t$symbol))
-      NULL
-    }), g_plus())) %+% ")" %+% text_of(name) %+% ""))
+    left <- self$left_operators
+    return((if (truthy(m_empty(left))) name else "(" %+% text_of(m_join(left, g_plus())) %+% ")" %+% text_of(name) %+% ""))
     NULL
   })
   method(cl, "line_filled", function(s = NULL, ...) {
@@ -6310,11 +6306,8 @@ Prover <- ray_class("Prover", Node, function(cl) {
     })
     rhs <- Expr$collected(Expr$add(lst(filled$fact$to, Expr$add(weighed_terms))))
     rho <- Expr$show(Prover$POPULATION)
-    ops <- m_join(m_map(filt(self$infos, function(t = NULL, ...) {
-      return((if (truthy(.x <- eq(t$side, "left"))) (!eq(t$operator, "\\partial_{t}")) else .x))
-      NULL
-    }), function(t = NULL, ...) {
-      return(or_else(t$operator, t$symbol))
+    ops <- m_join(filt(self$left_operators, function(x = NULL, ...) {
+      return((!eq(x, "\\partial_{t}")))
       NULL
     }), g_plus())
     weighed <- (if (truthy(((if (truthy(.x <- eq(k$kind, "num"))) eq(k$value, 1) else .x)))) "n_{f}" else "" %+% text_of(Expr$show(k)) %+% "·n_{f}")
@@ -6627,7 +6620,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     NULL
   })
   statik(cl, "annotate", function(e = NULL, s = NULL, at = NULL, of = NULL, ...) {
-    known <- Prover$names_known(s, at)
+    known <- Prover$names_kept(s, at)
     out <- lst()
     seen <- Node$new()
     whole <- Expr$show(Expr$simplify(e))
@@ -6660,7 +6653,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
   })
   statik(cl, "standing_for", function(e = NULL, s = NULL, of = NULL, ...) {
     facts <- Prover$by_name(s)
-    known <- Prover$names_known(s, "R")
+    known <- Prover$names_kept(s, "R")
     cite <- function(x = NULL, v_self = NULL, d = NULL, ...) {
       if (truthy(gt(d, 0))) {
         k <- Expr$show(Expr$simplify(x))
@@ -6963,6 +6956,14 @@ Prover <- ray_class("Prover", Node, function(cl) {
     return(out)
     NULL
   })
+  statik(cl, "names_kept", function(s = NULL, at = NULL, ...) {
+    k <- "" %+% text_of(s$version) %+% "|" %+% text_of(at) %+% ""
+    if (truthy(eq(elem(s$known_, k), NULL))) {
+      set_at(s$known_, k, Prover$names_known(s, at))
+    }
+    return(elem(s$known_, k))
+    NULL
+  })
 })
 
 Inferences <- ray_class("Inferences", Node, function(cl) {
@@ -7094,7 +7095,7 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     NULL
   })
   static_getter(cl, "RULES", function() {
-    return(m_concat(m_concat(lst(Inferences$room_balance, Inferences$ehrhart, Inferences$counting, Inferences$reaching, Inferences$mass_of, Inferences$saturating, Inferences$spreading, Inferences$screening, Inferences$refracting, Inferences$accumulating, Inferences$substituting, Inferences$metric_of, Inferences$relativity, Inferences$schwarzschild, Inferences$shadow, Inferences$balancing, Inferences$unbiased, Inferences$free_path, Inferences$summing, Inferences$horizon, Inferences$bending, Inferences$crossing, Inferences$near_field, Inferences$shadowing, Inferences$receiving, Inferences$moved, Inferences$receding, Inferences$shortfall, Inferences$waiting, Inferences$transporting, Inferences$assembling, Inferences$channelling, Inferences$closing, Inferences$arrangement, Inferences$scale_crossed, Inferences$orbiting, Inferences$curve_ends, Inferences$curves_of_each, Inferences$crowding_of_arrivals, Inferences$making_rate, Inferences$hubble_rate, Inferences$expansion_scale, Inferences$coincidence, Inferences$crowding, Inferences$at_that_density, Inferences$in_motion), m_map(Inferences$IN_FULL, function(of = NULL, ...) {
+    return(m_concat(m_concat(lst(Inferences$room_balance, Inferences$ehrhart, Inferences$counting, Inferences$reaching, Inferences$mass_of, Inferences$saturating, Inferences$spreading, Inferences$screening, Inferences$refracting, Inferences$accumulating, Inferences$substituting, Inferences$metric_of, Inferences$relativity, Inferences$schwarzschild, Inferences$shadow, Inferences$balancing, Inferences$unbiased, Inferences$free_path, Inferences$summing, Inferences$horizon, Inferences$bending, Inferences$crossing, Inferences$near_field, Inferences$shadowing, Inferences$receiving, Inferences$moved, Inferences$receding, Inferences$shortfall, Inferences$keeping, Inferences$transporting, Inferences$assembling, Inferences$channelling, Inferences$closing, Inferences$arrangement, Inferences$scale_crossed, Inferences$orbiting, Inferences$curve_ends, Inferences$curves_of_each, Inferences$crowding_of_arrivals, Inferences$making_rate, Inferences$hubble_rate, Inferences$expansion_scale, Inferences$coincidence, Inferences$crowding, Inferences$at_that_density, Inferences$in_motion), m_map(Inferences$IN_FULL, function(of = NULL, ...) {
       return(Inferences$writing_out(of))
       NULL
     })), lst(Inferences$can_it_push, Inferences$in_three)))
@@ -7614,12 +7615,12 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     NULL
   })
   static_getter(cl, "making_rate", function() {
-    return(Inference$new(name = "the room the line does not supply, which the waiting has to make", because = "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any", fire = function(s = NULL, ...) {
-      waits <- s$fact("is", "what the waiting makes")
-      if (truthy((if (truthy(.x <- eq(waits, NULL))) .x else s$has("is", "the rate space is made")))) {
+    return(Inference$new(name = "the room the line does not supply, which the frontier has to make", because = "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any", fire = function(s = NULL, ...) {
+      made <- s$fact("is", "what the frontier makes")
+      if (truthy((if (truthy(.x <- eq(made, NULL))) .x else s$has("is", "the rate space is made")))) {
         return(lst())
       }
-      return(lst(Inferences$step("the rate space is made", waits$to, "the room the line does not supply, which the waiting has to make", lst(waits$key), "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", lst("the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at " %+% text_of(Expr$show(waits$to)) %+% "", "the rate space is made = " %+% text_of(Expr$show(waits$to)) %+% ""))))
+      return(lst(Inferences$step("the rate space is made", made$to, "the room the line does not supply, which the frontier has to make", lst(made$key), "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", lst("the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at " %+% text_of(Expr$show(made$to)) %+% "", "the rate space is made = " %+% text_of(Expr$show(made$to)) %+% ""))))
       NULL
     }))
     NULL
@@ -7687,7 +7688,7 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
       via <- "the density where a body is, which is not the density of empty space"
       upon <- lst(made$key, took$key, puts$key)
       a0 <- Expr$simplify(Expr$mul(lst(Expr$field("\\sigma"), Expr$simplify(total))))
-      return(lst(Inferences$step("\\rho at R", root, via, upon, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", lst("the body's carriers where the far one stands: n = " %+% text_of(Expr$show(n)) %+% "", "the population where the body stands: \\rho + n", "" %+% text_of(Expr$show(mkC$to)) %+% "·" %+% text_of(Expr$show(making_with_body)) %+% " + " %+% text_of(Expr$show(tkC$to)) %+% "·F·" %+% text_of(Expr$show(with_body)) %+% " = 0", "\\rho at R = " %+% text_of(Expr$show(root)) %+% "")), Inferences$step("the population at R", Expr$simplify(total), via, upon, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter", lst("the vacuum's settled share there: \\rho at R", "the body's carriers there: " %+% text_of(Expr$show(n)) %+% "", "the population at R = " %+% text_of(Expr$show(Expr$simplify(total))) %+% "")), Inferences$step("a_{0} at R", a0, via, upon, "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", lst("the space line's waiting term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " %+% text_of(Expr$show(a0)) %+% ""))))
+      return(lst(Inferences$step("\\rho at R", root, via, upon, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", lst("the body's carriers where the far one stands: n = " %+% text_of(Expr$show(n)) %+% "", "the population where the body stands: \\rho + n", "" %+% text_of(Expr$show(mkC$to)) %+% "·" %+% text_of(Expr$show(making_with_body)) %+% " + " %+% text_of(Expr$show(tkC$to)) %+% "·F·" %+% text_of(Expr$show(with_body)) %+% " = 0", "\\rho at R = " %+% text_of(Expr$show(root)) %+% "")), Inferences$step("the population at R", Expr$simplify(total), via, upon, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter", lst("the vacuum's settled share there: \\rho at R", "the body's carriers there: " %+% text_of(Expr$show(n)) %+% "", "the population at R = " %+% text_of(Expr$show(Expr$simplify(total))) %+% "")), Inferences$step("a_{0} at R", a0, via, upon, "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", lst("the space line's frontier term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " %+% text_of(Expr$show(a0)) %+% ""))))
       NULL
     }))
     NULL
@@ -8092,7 +8093,7 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     }))
     NULL
   })
-  static_getter(cl, "waiting", function() {
+  static_getter(cl, "keeping", function() {
     return(Inference$new(name = "how fast a carrier goes, which is the share of its step that was straight", because = "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it", fire = function(s = NULL, ...) {
       nf <- s$fact("is", "n_{f}")
       c <- s$fact("is", "\\bar{c}")
@@ -8106,7 +8107,7 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
       }
       m_push(parts, Expr$pown(Expr$add(lst(Expr$num(1), Expr$field("n_{f}"))), neg(1)))
       got <- Expr$simplify(Expr$mul(parts))
-      return(lst(Inferences$step("v", got, "how fast a carrier goes, which is the share of its step that was straight", lst(nf$key, c$key), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier", lst("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " %+% text_of(Expr$show(got)) %+% "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"))))
+      return(lst(Inferences$step("v", got, "how fast a carrier goes, which is the share of its step that was straight", lst(nf$key, c$key), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier", lst("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " %+% text_of(Expr$show(got)) %+% "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"))))
       NULL
     }))
     NULL
@@ -18654,7 +18655,7 @@ GTheory <- ray_class("G", Theory, function(cl) {
     NULL
   }))
   static_field(cl, "theorem vacuum.settled", function() Theorem$new(`id` = "vacuum.settled", `body` = function(...) {
-    return(Asked$new(asks = "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about = "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", also = "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", leads = "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then = "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent."))
+    return(Asked$new(asks = "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about = "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", also = "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", leads = "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then = "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record."))
     NULL
   }))
   static_field(cl, "theorem vacuum.worth", function() Theorem$new(`id` = "vacuum.worth", `body` = function(...) {

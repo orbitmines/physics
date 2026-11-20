@@ -151,7 +151,12 @@ func init() {
       _ = to_0
       if Truthy(Eq(to_0, nil)) {
         Get(Get(self, "leaving"), "grow")
-        Call(self, "hand", []any{ self })
+        var made_0 any
+        made_0 = Get(self, "steps")
+        _ = made_0
+        if Truthy(!Eq(made_0, nil)) {
+          Call(self, "hand", []any{ made_0 })
+        }
         if true {
           return nil
         }
@@ -8535,6 +8540,7 @@ func init() {
       }
       return nil
     })
+    c.Field("known_", func(self any) any { return Make(Node) })
   })
 }
 
@@ -9251,7 +9257,7 @@ func init() {
       _ = population_0
       if Truthy(Get(self, "outside")) {
         if true {
-          return "" + Str(Get(self, "gate")) + "l.\\bar{m}"
+          return Tern(Truthy(M_empty(Get(self, "gate"))), func() any { return "l.\\bar{m}" }, func() any { return "" + Str(Get(self, "gate")) + " l.\\bar{m}" })
         }
       }
       if Truthy(Get(self, "settles")) {
@@ -9274,10 +9280,10 @@ func init() {
       pw_0 = Call(K("TermInfo"), "powers", []any{ population_0, Get(self, "degree") })
       _ = pw_0
       var gap_0 any
-      gap_0 = Tern(Truthy(((Truthy((Truthy(Not(M_empty(rate_0))) && Truthy(M_empty(room_0)))) && Truthy(Not(M_empty(pw_0)))))), func() any { return " " }, func() any { return "" })
+      gap_0 = Tern(Truthy(((Truthy(Not(M_empty(rate_0))) && Truthy(Not(((Truthy(M_empty(room_0)) && Truthy(M_empty(pw_0))))))))), func() any { return " " }, func() any { return "" })
       _ = gap_0
       if true {
-        return "" + Str(rate_0) + "" + Str(room_0) + "" + Str(gap_0) + "" + Str(pw_0) + ""
+        return "" + Str(rate_0) + "" + Str(gap_0) + "" + Str(room_0) + "" + Str(pw_0) + ""
       }
       return nil
     })
@@ -9301,7 +9307,7 @@ func init() {
     })
     c.Getter("infos", func(self any, a1 []any) any {
       if true {
-        return M_map(Get(Get(self, "equation"), "terms"), Fn(func(a3 []any) any {
+        return M_map(Get(Get(self, "theory"), "terms_read"), Fn(func(a3 []any) any {
         var t_2 any = Arg(a3, 0); _ = t_2;
         if true {
           return Make("TermInfo", []any{ Kw("term", t_2) }...)
@@ -9581,7 +9587,7 @@ func init() {
         }
         if Truthy((Truthy((Truthy(Eq(Get(t_1, "rays"), "0")) && Truthy(Gt(Get(t_1, "space_net"), 0.0)))) && Truthy(Get(t_1, "carries")))) {
           var w_1 any
-          w_1 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "what the waiting makes", body_1 }), Elem(Get(t_1, "rules"), 0.0), Lst(), "" + Str(nm_1) + " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " + Str(Call(K("Expr"), "show", []any{ body_1 })) + "", Lst("no rays, " + Str(Call(K("Expr"), "show", []any{ Get(t_1, "space_count") })) + " of space", "the waiting makes " + Str(Call(K("Expr"), "show", []any{ body_1 })) + "") })
+          w_1 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "what the frontier makes", body_1 }), Elem(Get(t_1, "rules"), 0.0), Lst(), "" + Str(nm_1) + " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " + Str(Call(K("Expr"), "show", []any{ body_1 })) + "", Lst("no rays, " + Str(Call(K("Expr"), "show", []any{ Get(t_1, "space_count") })) + " of space", "the frontier makes " + Str(Call(K("Expr"), "show", []any{ body_1 })) + "") })
           _ = w_1
           Set(w_1, "rule", Elem(Get(t_1, "rules"), 0.0))
           M_push(out_0, w_1)
@@ -9714,7 +9720,7 @@ func init() {
           })) }) })
           _ = advancing_0
           var st_0 any
-          st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "what share of a step advances", advancing_0 }), Elem(Get(moving_0, "rules"), 0.0), Lst(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", Lst() })
+          st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "what share of a step advances", advancing_0 }), Elem(Get(moving_0, "rules"), 0.0), Lst(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", Lst() })
           _ = st_0
           Set(st_0, "rule", Elem(Get(moving_0, "rules"), 0.0))
           M_push(out_0, st_0)
@@ -10117,19 +10123,7 @@ func init() {
       }))
       _ = rhs_0
       var lhs_0 any
-      lhs_0 = M_join(M_map(Filt(infos_0, Fn(func(a4 []any) any {
-        var t_3 any = Arg(a4, 0); _ = t_3;
-        if true {
-          return Eq(Get(t_3, "side"), "left")
-        }
-        return nil
-      })), Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return OrElse(Get(t_2, "operator"), func() any { return Get(t_2, "symbol") })
-        }
-        return nil
-      })), " + ")
+      lhs_0 = M_join(Get(self, "left_operators"), " + ")
       _ = lhs_0
       var equation_0 any
       equation_0 = Get(self, "equation")
@@ -10164,12 +10158,9 @@ func init() {
       }
       return nil
     })
-    c.Getter("line_text", func(self any, a1 []any) any {
-      var infos_0 any
-      infos_0 = Get(self, "infos")
-      _ = infos_0
+    c.Getter("left_operators", func(self any, a1 []any) any {
       var left_0 any
-      left_0 = Filt(infos_0, Fn(func(a3 []any) any {
+      left_0 = Filt(Get(self, "infos"), Fn(func(a3 []any) any {
         var t_2 any = Arg(a3, 0); _ = t_2;
         if true {
           return Eq(Get(t_2, "side"), "left")
@@ -10190,6 +10181,30 @@ func init() {
         }
         return nil
       })))
+      if true {
+        return M_reduce(M_map(left_0, Fn(func(a4 []any) any {
+        var t_3 any = Arg(a4, 0); _ = t_3;
+        if true {
+          return OrElse(Get(t_3, "operator"), func() any { return Get(t_3, "symbol") })
+        }
+        return nil
+      })), Lst(), Fn(func(a3 []any) any {
+        var o_2 any = Arg(a3, 0); _ = o_2; var x_2 any = Arg(a3, 1); _ = x_2;
+        if true {
+          return Tern(Truthy(M_contains(o_2, x_2)), func() any { return o_2 }, func() any { return M_push(o_2, x_2) })
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Getter("line_text", func(self any, a1 []any) any {
+      var infos_0 any
+      infos_0 = Get(self, "infos")
+      _ = infos_0
+      var left_0 any
+      left_0 = Get(self, "left_operators")
+      _ = left_0
       var right_0 any
       right_0 = Filt(infos_0, Fn(func(a3 []any) any {
         var t_2 any = Arg(a3, 0); _ = t_2;
@@ -10213,13 +10228,7 @@ func init() {
         return nil
       })))
       var lhs_0 any
-      lhs_0 = Tern(Truthy(M_empty(left_0)), func() any { return "n" }, func() any { return "(" + Str(M_join(M_map(left_0, Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return OrElse(Get(t_2, "operator"), func() any { return Get(t_2, "symbol") })
-        }
-        return nil
-      })), Def_plus())) + ")n" })
+      lhs_0 = Tern(Truthy(M_empty(left_0)), func() any { return "n" }, func() any { return "(" + Str(M_join(left_0, Def_plus())) + ")n" })
       _ = lhs_0
       var rhs_0 any
       rhs_0 = ""
@@ -10233,7 +10242,16 @@ func init() {
         var piece_1 any
         piece_1 = Tern(Truthy(Eq(i_1, 0.0)), func() any { return (Tern(Truthy(Eq(Get(t_1, "sign"), Neg(1.0))), func() any { return "-" }, func() any { return "" })) }, func() any { return (Tern(Truthy(Eq(Get(t_1, "sign"), Neg(1.0))), func() any { return " - " }, func() any { return " + " })) })
         _ = piece_1
-        rhs_0 = "" + Str(rhs_0) + "" + Str(piece_1) + "" + Str(Get(t_1, "symbol")) + ""
+        var n_1 any
+        n_1 = Get(t_1, "ray_count")
+        _ = n_1
+        var size_1 any
+        size_1 = Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Get(t_1, "sign") }), n_1) }) }) })
+        _ = size_1
+        var times_1 any
+        times_1 = Tern(Truthy(Eq(size_1, "1")), func() any { return "" }, func() any { return "" + Str(size_1) + "·" })
+        _ = times_1
+        rhs_0 = "" + Str(rhs_0) + "" + Str(piece_1) + "" + Str(times_1) + "" + Str(Get(t_1, "symbol")) + ""
       }
       if Truthy(M_empty(right_0)) {
         rhs_0 = "0"
@@ -10279,35 +10297,10 @@ func init() {
     c.Method("operators_on", func(self any, a1 []any) any {
       var name_0 any = Arg(a1, 0); _ = name_0;
       var left_0 any
-      left_0 = Filt(Get(self, "infos"), Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return Eq(Get(t_2, "side"), "left")
-        }
-        return nil
-      }))
+      left_0 = Get(self, "left_operators")
       _ = left_0
-      left_0 = M_concat(Filt(left_0, Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return Eq(Get(t_2, "operator"), "\\partial_{t}")
-        }
-        return nil
-      })), Filt(left_0, Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return !Eq(Get(t_2, "operator"), "\\partial_{t}")
-        }
-        return nil
-      })))
       if true {
-        return Tern(Truthy(M_empty(left_0)), func() any { return name_0 }, func() any { return "(" + Str(M_join(M_map(left_0, Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return OrElse(Get(t_2, "operator"), func() any { return Get(t_2, "symbol") })
-        }
-        return nil
-      })), Def_plus())) + ")" + Str(name_0) + "" })
+        return Tern(Truthy(M_empty(left_0)), func() any { return name_0 }, func() any { return "(" + Str(M_join(left_0, Def_plus())) + ")" + Str(name_0) + "" })
       }
       return nil
     })
@@ -10556,16 +10549,10 @@ func init() {
       rho_0 = Call(K("Expr"), "show", []any{ Get(K("Prover"), "POPULATION") })
       _ = rho_0
       var ops_0 any
-      ops_0 = M_join(M_map(Filt(Get(self, "infos"), Fn(func(a4 []any) any {
-        var t_3 any = Arg(a4, 0); _ = t_3;
+      ops_0 = M_join(Filt(Get(self, "left_operators"), Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
         if true {
-          return (Truthy(Eq(Get(t_3, "side"), "left")) && Truthy(!Eq(Get(t_3, "operator"), "\\partial_{t}")))
-        }
-        return nil
-      })), Fn(func(a3 []any) any {
-        var t_2 any = Arg(a3, 0); _ = t_2;
-        if true {
-          return OrElse(Get(t_2, "operator"), func() any { return Get(t_2, "symbol") })
+          return !Eq(x_2, "\\partial_{t}")
         }
         return nil
       })), Def_plus())
@@ -11193,7 +11180,7 @@ func init() {
     c.Static("annotate", func(self any, a1 []any) any {
       var e_0 any = Arg(a1, 0); _ = e_0; var s_0 any = Arg(a1, 1); _ = s_0; var at_0 any = Arg(a1, 2); _ = at_0; var of_0 any = Arg(a1, 3); _ = of_0;
       var known_0 any
-      known_0 = Call(K("Prover"), "names_known", []any{ s_0, at_0 })
+      known_0 = Call(K("Prover"), "names_kept", []any{ s_0, at_0 })
       _ = known_0
       var out_0 any
       out_0 = Lst()
@@ -11250,7 +11237,7 @@ func init() {
       facts_0 = Call(K("Prover"), "by_name", []any{ s_0 })
       _ = facts_0
       var known_0 any
-      known_0 = Call(K("Prover"), "names_known", []any{ s_0, "R" })
+      known_0 = Call(K("Prover"), "names_kept", []any{ s_0, "R" })
       _ = known_0
       var cite_0 any
       cite_0 = Fn(func(a2 []any) any {
@@ -11824,6 +11811,19 @@ func init() {
       }
       return nil
     })
+    c.Static("names_kept", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var at_0 any = Arg(a1, 1); _ = at_0;
+      var k_0 any
+      k_0 = "" + Str(Get(s_0, "version")) + "|" + Str(at_0) + ""
+      _ = k_0
+      if Truthy(Eq(Elem(Get(s_0, "known_"), k_0), nil)) {
+        SetAt(Get(s_0, "known_"), k_0, Call(K("Prover"), "names_known", []any{ s_0, at_0 }))
+      }
+      if true {
+        return Elem(Get(s_0, "known_"), k_0)
+      }
+      return nil
+    })
   })
 }
 
@@ -12063,7 +12063,7 @@ func init() {
     })
     c.Static("RULES", func(self any, a1 []any) any {
       if true {
-        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "schwarzschild"), Get(K("Inferences"), "shadow"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "waiting"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
+        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "schwarzschild"), Get(K("Inferences"), "shadow"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "keeping"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
         var of_2 any = Arg(a3, 0); _ = of_2;
         if true {
           return Call(K("Inferences"), "writing_out", []any{ of_2 })
@@ -13137,18 +13137,18 @@ func init() {
     })
     c.Static("making_rate", func(self any, a1 []any) any {
       if true {
-        return Make("Inference", []any{ Kw("name", "the room the line does not supply, which the waiting has to make"), Kw("because", "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any"), Kw("fire", Fn(func(a3 []any) any {
+        return Make("Inference", []any{ Kw("name", "the room the line does not supply, which the frontier has to make"), Kw("because", "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any"), Kw("fire", Fn(func(a3 []any) any {
         var s_2 any = Arg(a3, 0); _ = s_2;
-        var waits_2 any
-        waits_2 = Call(s_2, "fact", []any{ "is", "what the waiting makes" })
-        _ = waits_2
-        if Truthy((Truthy(Eq(waits_2, nil)) || Truthy(Call(s_2, "has", []any{ "is", "the rate space is made" })))) {
+        var made_2 any
+        made_2 = Call(s_2, "fact", []any{ "is", "what the frontier makes" })
+        _ = made_2
+        if Truthy((Truthy(Eq(made_2, nil)) || Truthy(Call(s_2, "has", []any{ "is", "the rate space is made" })))) {
           if true {
             return Lst()
           }
         }
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "the rate space is made", Get(waits_2, "to"), "the room the line does not supply, which the waiting has to make", Lst(Get(waits_2, "key")), "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", Lst("the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at " + Str(Call(K("Expr"), "show", []any{ Get(waits_2, "to") })) + "", "the rate space is made = " + Str(Call(K("Expr"), "show", []any{ Get(waits_2, "to") })) + "") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "the rate space is made", Get(made_2, "to"), "the room the line does not supply, which the frontier has to make", Lst(Get(made_2, "key")), "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", Lst("the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at " + Str(Call(K("Expr"), "show", []any{ Get(made_2, "to") })) + "", "the rate space is made = " + Str(Call(K("Expr"), "show", []any{ Get(made_2, "to") })) + "") }))
         }
         return nil
       })) }...)
@@ -13298,7 +13298,7 @@ func init() {
         a0_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "\\sigma" }), Call(K("Expr"), "simplify", []any{ total_2 })) }) })
         _ = a0_2
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "\\rho at R", root_2, via_2, upon_2, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", Lst("the body's carriers where the far one stands: n = " + Str(Call(K("Expr"), "show", []any{ n_2 })) + "", "the population where the body stands: \\rho + n", "" + Str(Call(K("Expr"), "show", []any{ Get(mkC_2, "to") })) + "·" + Str(Call(K("Expr"), "show", []any{ making_with_body_2 })) + " + " + Str(Call(K("Expr"), "show", []any{ Get(tkC_2, "to") })) + "·F·" + Str(Call(K("Expr"), "show", []any{ with_body_2 })) + " = 0", "\\rho at R = " + Str(Call(K("Expr"), "show", []any{ root_2 })) + "") }), Call(K("Inferences"), "step", []any{ "the population at R", Call(K("Expr"), "simplify", []any{ total_2 }), via_2, upon_2, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter", Lst("the vacuum's settled share there: \\rho at R", "the body's carriers there: " + Str(Call(K("Expr"), "show", []any{ n_2 })) + "", "the population at R = " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ total_2 }) })) + "") }), Call(K("Inferences"), "step", []any{ "a_{0} at R", a0_2, via_2, upon_2, "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", Lst("the space line's waiting term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " + Str(Call(K("Expr"), "show", []any{ a0_2 })) + "") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "\\rho at R", root_2, via_2, upon_2, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", Lst("the body's carriers where the far one stands: n = " + Str(Call(K("Expr"), "show", []any{ n_2 })) + "", "the population where the body stands: \\rho + n", "" + Str(Call(K("Expr"), "show", []any{ Get(mkC_2, "to") })) + "·" + Str(Call(K("Expr"), "show", []any{ making_with_body_2 })) + " + " + Str(Call(K("Expr"), "show", []any{ Get(tkC_2, "to") })) + "·F·" + Str(Call(K("Expr"), "show", []any{ with_body_2 })) + " = 0", "\\rho at R = " + Str(Call(K("Expr"), "show", []any{ root_2 })) + "") }), Call(K("Inferences"), "step", []any{ "the population at R", Call(K("Expr"), "simplify", []any{ total_2 }), via_2, upon_2, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter", Lst("the vacuum's settled share there: \\rho at R", "the body's carriers there: " + Str(Call(K("Expr"), "show", []any{ n_2 })) + "", "the population at R = " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ total_2 }) })) + "") }), Call(K("Inferences"), "step", []any{ "a_{0} at R", a0_2, via_2, upon_2, "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", Lst("the space line's frontier term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " + Str(Call(K("Expr"), "show", []any{ a0_2 })) + "") }))
         }
         return nil
       })) }...)
@@ -14091,7 +14091,7 @@ func init() {
       }
       return nil
     })
-    c.Static("waiting", func(self any, a1 []any) any {
+    c.Static("keeping", func(self any, a1 []any) any {
       if true {
         return Make("Inference", []any{ Kw("name", "how fast a carrier goes, which is the share of its step that was straight"), Kw("because", "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it"), Kw("fire", Fn(func(a3 []any) any {
         var s_2 any = Arg(a3, 0); _ = s_2;
@@ -14120,7 +14120,7 @@ func init() {
         got_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ parts_2 }) })
         _ = got_2
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "v", got_2, "how fast a carrier goes, which is the share of its step that was straight", Lst(Get(nf_2, "key"), Get(c__2, "key")), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier", Lst("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " + Str(Call(K("Expr"), "show", []any{ got_2 })) + "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "v", got_2, "how fast a carrier goes, which is the share of its step that was straight", Lst(Get(nf_2, "key"), Get(c__2, "key")), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier", Lst("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " + Str(Call(K("Expr"), "show", []any{ got_2 })) + "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not") }))
         }
         return nil
       })) }...)
@@ -32024,7 +32024,7 @@ func init() {
     c.StaticField("theorem vacuum.settled", func(self any) any {
       return Make(Theorem, Kw("id", "vacuum.settled"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), Kw("about", "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), Kw("also", "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), Kw("leads", "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), Kw("then", "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.") }...)
+          return Make("Asked", []any{ Kw("asks", "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), Kw("about", "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), Kw("also", "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), Kw("leads", "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), Kw("then", "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record.") }...)
         }
         return nil
       })))

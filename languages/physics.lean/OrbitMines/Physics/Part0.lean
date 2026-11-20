@@ -88,7 +88,10 @@ ray_impl_getter "MOVE" : Value := do
   let to_0 ← IO.mkRef (← ωget self "turns")
   if ωtruthy (ωisNull (← to_0.get)) then
     (← ωget (← ωget self "leaving") "grow") |> ωsink
-    (← call! self "hand" (self)) |> ωsink
+    let made_0 ← IO.mkRef (← ωget self "steps")
+    if ωtruthy (!ωisNull (← made_0.get)) then
+      (← call! self "hand" ((← made_0.get))) |> ωsink
+      pure ()
     if true then return ωnull
     pure ()
   let here_0 ← IO.mkRef (← ωget self "vertex")

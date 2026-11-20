@@ -20,7 +20,7 @@ static void C_Prover(Cls& c) {
     return null;
   });
   c.getter("infos", [](Value self, const Args& a1) -> Value {
-    return m_map(get(get(self, S<"equation">()), S<"terms">()), fn([=](const Args& a3) -> Value {
+    return m_map(get(get(self, S<"theory">()), S<"terms_read">()), fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
       return make(S<"TermInfo">(), { kw(S<"term">(), t_2->v) });
       return null;
@@ -182,7 +182,7 @@ static void C_Prover(Cls& c) {
         m_push(out_0->v, made_1->v);
       }
       if (truthy((truthy((truthy(eq(get(t_1->v, S<"rays">()), "0")) && truthy(gt(get(t_1->v, S<"space_net">()), 0.0)))) && truthy(get(t_1->v, S<"carries">()))))) {
-        auto w_1 = cell(); w_1->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "what the waiting makes", body_1->v }), elem(get(t_1->v, S<"rules">()), 0.0), list({  }), "" + str(nm_1->v) + " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " + str(call(K(S<"Expr">()), S<"show">(), { body_1->v })) + "", list({ "no rays, " + str(call(K(S<"Expr">()), S<"show">(), { get(t_1->v, S<"space_count">()) })) + " of space", "the waiting makes " + str(call(K(S<"Expr">()), S<"show">(), { body_1->v })) + "" }) });
+        auto w_1 = cell(); w_1->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "what the frontier makes", body_1->v }), elem(get(t_1->v, S<"rules">()), 0.0), list({  }), "" + str(nm_1->v) + " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " + str(call(K(S<"Expr">()), S<"show">(), { body_1->v })) + "", list({ "no rays, " + str(call(K(S<"Expr">()), S<"show">(), { get(t_1->v, S<"space_count">()) })) + " of space", "the frontier makes " + str(call(K(S<"Expr">()), S<"show">(), { body_1->v })) + "" }) });
         set(w_1->v, S<"rule">(), elem(get(t_1->v, S<"rules">()), 0.0));
         m_push(out_0->v, w_1->v);
       }
@@ -264,7 +264,7 @@ static void C_Prover(Cls& c) {
           return get(t_2->v, S<"share">());
           return null;
         })) }) });
-        auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "what share of a step advances", advancing_0->v }), elem(get(moving_0->v, S<"rules">()), 0.0), list({  }), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list({  }) });
+        auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "what share of a step advances", advancing_0->v }), elem(get(moving_0->v, S<"rules">()), 0.0), list({  }), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list({  }) });
         set(st_0->v, S<"rule">(), elem(get(moving_0->v, S<"rules">()), 0.0));
         m_push(out_0->v, st_0->v);
       }
@@ -512,15 +512,7 @@ static void C_Prover(Cls& c) {
       return eq(get(t_2->v, S<"side">()), "right");
       return null;
     }));
-    auto lhs_0 = cell(); lhs_0->v = m_join(m_map(filt(infos_0->v, fn([=](const Args& a4) -> Value {
-      auto t_3 = cell(arg(a4, 0));
-      return eq(get(t_3->v, S<"side">()), "left");
-      return null;
-    })), fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return orElse(get(t_2->v, S<"operator">()), [&]() -> Value { return get(t_2->v, S<"symbol">()); });
-      return null;
-    })), " + ");
+    auto lhs_0 = cell(); lhs_0->v = m_join(get(self, S<"left_operators">()), " + ");
     auto equation_0 = cell(); equation_0->v = get(self, S<"equation">());
     m_push(out_0->v, call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "" + str(lhs_0->v) + "n", call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"add">(), { m_map(rhs_0->v, fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
@@ -540,9 +532,8 @@ static void C_Prover(Cls& c) {
     return out_0->v;
     return null;
   });
-  c.getter("line_text", [](Value self, const Args& a1) -> Value {
-    auto infos_0 = cell(); infos_0->v = get(self, S<"infos">());
-    auto left_0 = cell(); left_0->v = filt(infos_0->v, fn([=](const Args& a3) -> Value {
+  c.getter("left_operators", [](Value self, const Args& a1) -> Value {
+    auto left_0 = cell(); left_0->v = filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
       return eq(get(t_2->v, S<"side">()), "left");
       return null;
@@ -556,6 +547,20 @@ static void C_Prover(Cls& c) {
       return (!eq(get(t_2->v, S<"operator">()), "\\partial_{t}"));
       return null;
     })));
+    return m_reduce(m_map(left_0->v, fn([=](const Args& a4) -> Value {
+      auto t_3 = cell(arg(a4, 0));
+      return orElse(get(t_3->v, S<"operator">()), [&]() -> Value { return get(t_3->v, S<"symbol">()); });
+      return null;
+    })), list({  }), fn([=](const Args& a3) -> Value {
+      auto o_2 = cell(arg(a3, 0)); auto x_2 = cell(arg(a3, 1));
+      return (truthy(m_contains(o_2->v, x_2->v)) ? Value(o_2->v) : Value(m_push(o_2->v, x_2->v)));
+      return null;
+    }));
+    return null;
+  });
+  c.getter("line_text", [](Value self, const Args& a1) -> Value {
+    auto infos_0 = cell(); infos_0->v = get(self, S<"infos">());
+    auto left_0 = cell(); left_0->v = get(self, S<"left_operators">());
     auto right_0 = cell(); right_0->v = filt(infos_0->v, fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
       return (truthy(eq(get(t_2->v, S<"side">()), "right")) && truthy(((truthy(m_empty(get(t_2->v, S<"rules">()))) || truthy((!eq(get(t_2->v, S<"rays">()), "0")))))));
@@ -570,17 +575,16 @@ static void C_Prover(Cls& c) {
       return m_empty(get(t_2->v, S<"rules">()));
       return null;
     })));
-    auto lhs_0 = cell(); lhs_0->v = (truthy(m_empty(left_0->v)) ? Value("n") : Value("(" + str(m_join(m_map(left_0->v, fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return orElse(get(t_2->v, S<"operator">()), [&]() -> Value { return get(t_2->v, S<"symbol">()); });
-      return null;
-    })), global(S<"plus">()))) + ")n"));
+    auto lhs_0 = cell(); lhs_0->v = (truthy(m_empty(left_0->v)) ? Value("n") : Value("(" + str(m_join(left_0->v, global(S<"plus">()))) + ")n"));
     auto rhs_0 = cell(); rhs_0->v = "";
     for (double i1 = 0, n1 = num(len(right_0->v)); i1 < n1; i1++) {
       auto i_1 = cell(i1);
       auto t_1 = cell(); t_1->v = elem(right_0->v, i_1->v);
       auto piece_1 = cell(); piece_1->v = (truthy(eq(i_1->v, 0.0)) ? Value(((truthy(eq(get(t_1->v, S<"sign">()), neg(1.0))) ? Value("-") : Value("")))) : Value(((truthy(eq(get(t_1->v, S<"sign">()), neg(1.0))) ? Value(" - ") : Value(" + ")))));
-      rhs_0->v = "" + str(rhs_0->v) + "" + str(piece_1->v) + "" + str(get(t_1->v, S<"symbol">())) + "";
+      auto n_1 = cell(); n_1->v = get(t_1->v, S<"ray_count">());
+      auto size_1 = cell(); size_1->v = call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { get(t_1->v, S<"sign">()) }), n_1->v }) }) }) });
+      auto times_1 = cell(); times_1->v = (truthy(eq(size_1->v, "1")) ? Value("") : Value("" + str(size_1->v) + "·"));
+      rhs_0->v = "" + str(rhs_0->v) + "" + str(piece_1->v) + "" + str(times_1->v) + "" + str(get(t_1->v, S<"symbol">())) + "";
     };
     if (truthy(m_empty(right_0->v))) {
       rhs_0->v = "0";
@@ -613,25 +617,8 @@ static void C_Prover(Cls& c) {
   });
   c.method("operators_on", [](Value self, const Args& a1) -> Value {
     auto name_0 = cell(arg(a1, 0));
-    auto left_0 = cell(); left_0->v = filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return eq(get(t_2->v, S<"side">()), "left");
-      return null;
-    }));
-    left_0->v = m_concat(filt(left_0->v, fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return eq(get(t_2->v, S<"operator">()), "\\partial_{t}");
-      return null;
-    })), filt(left_0->v, fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return (!eq(get(t_2->v, S<"operator">()), "\\partial_{t}"));
-      return null;
-    })));
-    return (truthy(m_empty(left_0->v)) ? Value(name_0->v) : Value("(" + str(m_join(m_map(left_0->v, fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return orElse(get(t_2->v, S<"operator">()), [&]() -> Value { return get(t_2->v, S<"symbol">()); });
-      return null;
-    })), global(S<"plus">()))) + ")" + str(name_0->v) + ""));
+    auto left_0 = cell(); left_0->v = get(self, S<"left_operators">());
+    return (truthy(m_empty(left_0->v)) ? Value(name_0->v) : Value("(" + str(m_join(left_0->v, global(S<"plus">()))) + ")" + str(name_0->v) + ""));
     return null;
   });
   c.method("line_filled", [](Value self, const Args& a1) -> Value {
@@ -775,13 +762,9 @@ static void C_Prover(Cls& c) {
     }));
     auto rhs_0 = cell(); rhs_0->v = call(K(S<"Expr">()), S<"collected">(), { call(K(S<"Expr">()), S<"add">(), { list({ get(get(filled_0->v, S<"fact">()), S<"to">()), call(K(S<"Expr">()), S<"add">(), { weighed_terms_0->v }) }) }) });
     auto rho_0 = cell(); rho_0->v = call(K(S<"Expr">()), S<"show">(), { get(K(S<"Prover">()), S<"POPULATION">()) });
-    auto ops_0 = cell(); ops_0->v = m_join(m_map(filt(get(self, S<"infos">()), fn([=](const Args& a4) -> Value {
-      auto t_3 = cell(arg(a4, 0));
-      return (truthy(eq(get(t_3->v, S<"side">()), "left")) && truthy((!eq(get(t_3->v, S<"operator">()), "\\partial_{t}"))));
-      return null;
-    })), fn([=](const Args& a3) -> Value {
-      auto t_2 = cell(arg(a3, 0));
-      return orElse(get(t_2->v, S<"operator">()), [&]() -> Value { return get(t_2->v, S<"symbol">()); });
+    auto ops_0 = cell(); ops_0->v = m_join(filt(get(self, S<"left_operators">()), fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return (!eq(x_2->v, "\\partial_{t}"));
       return null;
     })), global(S<"plus">()));
     auto weighed_0 = cell(); weighed_0->v = (truthy(((truthy(eq(get(k_0->v, S<"kind">()), "num")) && truthy(eq(get(k_0->v, S<"value">()), 1.0))))) ? Value("n_{f}") : Value("" + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + "·n_{f}"));
@@ -1124,7 +1107,7 @@ static void C_Prover(Cls& c) {
   });
   c.statik("annotate", [](Value self, const Args& a1) -> Value {
     auto e_0 = cell(arg(a1, 0)); auto s_0 = cell(arg(a1, 1)); auto at_0 = cell(arg(a1, 2)); auto of_0 = cell(arg(a1, 3));
-    auto known_0 = cell(); known_0->v = call(K(S<"Prover">()), S<"names_known">(), { s_0->v, at_0->v });
+    auto known_0 = cell(); known_0->v = call(K(S<"Prover">()), S<"names_kept">(), { s_0->v, at_0->v });
     auto out_0 = cell(); out_0->v = list({  });
     auto seen_0 = cell(); seen_0->v = make(S<"Node">(), { });
     auto whole_0 = cell(); whole_0->v = call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"simplify">(), { e_0->v }) });
@@ -1158,7 +1141,7 @@ static void C_Prover(Cls& c) {
   c.statik("standing_for", [](Value self, const Args& a1) -> Value {
     auto e_0 = cell(arg(a1, 0)); auto s_0 = cell(arg(a1, 1)); auto of_0 = cell(arg(a1, 2));
     auto facts_0 = cell(); facts_0->v = call(K(S<"Prover">()), S<"by_name">(), { s_0->v });
-    auto known_0 = cell(); known_0->v = call(K(S<"Prover">()), S<"names_known">(), { s_0->v, "R" });
+    auto known_0 = cell(); known_0->v = call(K(S<"Prover">()), S<"names_kept">(), { s_0->v, "R" });
     auto cite_0 = cell(); cite_0->v = fn([=](const Args& a2) -> Value {
       auto x_1 = cell(arg(a2, 0)); auto self__1 = cell(arg(a2, 1)); auto d_1 = cell(arg(a2, 2));
       if (truthy(gt(d_1->v, 0.0))) {
@@ -1473,6 +1456,15 @@ static void C_Prover(Cls& c) {
       }
     };
     return out_0->v;
+    return null;
+  });
+  c.statik("names_kept", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1));
+    auto k_0 = cell(); k_0->v = "" + str(get(s_0->v, S<"version">())) + "|" + str(at_0->v) + "";
+    if (truthy(eq(elem(get(s_0->v, S<"known_">()), k_0->v), null))) {
+      setAt(get(s_0->v, S<"known_">()), k_0->v, call(K(S<"Prover">()), S<"names_known">(), { s_0->v, at_0->v }));
+    }
+    return elem(get(s_0->v, S<"known_">()), k_0->v);
     return null;
   });
 }

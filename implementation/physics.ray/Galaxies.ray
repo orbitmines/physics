@@ -449,7 +449,7 @@ Galaxies := class {
       }
     })
 
-    /* Newton, if nothing ever waited for room - cut where the frame is */
+    /* Newton, if no room were ever made - cut where the frame is */
     s.stroke_style(Galaxies.NEWT)
     s.line_width(1.5)
     s.dash([6, 5])

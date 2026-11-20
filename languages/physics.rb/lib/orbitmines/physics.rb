@@ -339,7 +339,10 @@ class Ray < Iterable
     to = self.turns
     if Ops.eq(to, nil)
       self.leaving.grow
-      self.hand(self)
+      made = self.steps
+      if !Ops.eq(made, nil)
+        self.hand(made)
+      end
       return
     end
     here = self.vertex
@@ -5485,6 +5488,11 @@ class Store < Node
     self.version = Ops.add(self.version, 1)
     return true
   end
+  def known_(*args_)
+    @known_ = (Node.new) unless instance_variable_defined?(:@known_)
+    args_.empty? ? @known_ : @known_.(*args_)
+  end
+  attr_writer :known_
   __exposed
 end
 
@@ -6042,7 +6050,7 @@ class TermInfo < Node
   def symbol
     population = "n"
     if self.outside
-      return "#{self.gate}l.\\bar{m}"
+      return (Ops.m_empty(self.gate) ? "l.\\bar{m}" : "#{self.gate} l.\\bar{m}")
     end
     if self.settles
       return "\\partial_{t}#{population}"
@@ -6053,8 +6061,8 @@ class TermInfo < Node
     rate = Ops.or_else(self.rate) { "" }
     room = self.gate
     pw = TermInfo.powers(population, self.degree)
-    gap = ((((!(Ops.m_empty(rate)) && Ops.m_empty(room)) && !(Ops.m_empty(pw)))) ? " " : "")
-    return "#{rate}#{room}#{gap}#{pw}"
+    gap = (((!(Ops.m_empty(rate)) && !(((Ops.m_empty(room) && Ops.m_empty(pw)))))) ? " " : "")
+    return "#{rate}#{gap}#{room}#{pw}"
   end
   __exposed
 end
@@ -6090,7 +6098,7 @@ class Prover < Node
     return self.theory.equation
   end
   def infos
-    return Ops.m_map(self.equation.terms, ->(t) {
+    return Ops.m_map(self.theory.terms_read, ->(t) {
       return TermInfo.new(term: t)
     })
   end
@@ -6215,7 +6223,7 @@ class Prover < Node
         Ops.m_push(out, made)
       end
       if ((Ops.eq(t.rays, "0") && Ops.gt(t.space_net, 0)) && t.carries)
-        w = Step.of(Fact.stands("what the waiting makes", body), Ops.elem(t.rules, 0), [], "#{nm} hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is #{Expr.show(body)}", ["no rays, #{Expr.show(t.space_count)} of space", "the waiting makes #{Expr.show(body)}"])
+        w = Step.of(Fact.stands("what the frontier makes", body), Ops.elem(t.rules, 0), [], "#{nm} grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is #{Expr.show(body)}", ["no rays, #{Expr.show(t.space_count)} of space", "the frontier makes #{Expr.show(body)}"])
         w.rule = Ops.elem(t.rules, 0)
         Ops.m_push(out, w)
       end
@@ -6282,7 +6290,7 @@ class Prover < Node
         }), ->(t) {
           return t.share
         })))
-        st = Step.of(Fact.stands("what share of a step advances", advancing), Ops.elem(moving.rules, 0), [], "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
+        st = Step.of(Fact.stands("what share of a step advances", advancing), Ops.elem(moving.rules, 0), [], "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", [])
         st.rule = Ops.elem(moving.rules, 0)
         Ops.m_push(out, st)
       end
@@ -6483,11 +6491,7 @@ class Prover < Node
     rhs = Ops.filt(infos, ->(t) {
       return Ops.eq(t.side, "right")
     })
-    lhs = Ops.m_join(Ops.m_map(Ops.filt(infos, ->(t) {
-      return Ops.eq(t.side, "left")
-    }), ->(t) {
-      return Ops.or_else(t.operator) { t.symbol }
-    }), " + ")
+    lhs = Ops.m_join(self.left_operators, " + ")
     equation = self.equation
     Ops.m_push(out, Step.of(Fact.stands("#{lhs}n", Expr.simplify(Expr.add(Ops.m_map(rhs, ->(t) {
       return Expr.mul([Expr.num(t.sign), Expr.sym(t.symbol)])
@@ -6500,9 +6504,8 @@ class Prover < Node
     }), [self.line_text, self.space_text])))
     return out
   end
-  def line_text
-    infos = self.infos
-    left = Ops.filt(infos, ->(t) {
+  def left_operators
+    left = Ops.filt(self.infos, ->(t) {
       return Ops.eq(t.side, "left")
     })
     left = Ops.m_concat(Ops.filt(left, ->(t) {
@@ -6510,6 +6513,15 @@ class Prover < Node
     }), Ops.filt(left, ->(t) {
       return !Ops.eq(t.operator, "\\partial_{t}")
     }))
+    return Ops.m_reduce(Ops.m_map(left, ->(t) {
+      return Ops.or_else(t.operator) { t.symbol }
+    }), [], ->(o, x) {
+      return (Ops.m_contains(o, x) ? o : Ops.m_push(o, x))
+    })
+  end
+  def line_text
+    infos = self.infos
+    left = self.left_operators
     right = Ops.filt(infos, ->(t) {
       return (Ops.eq(t.side, "right") && ((Ops.m_empty(t.rules) || !Ops.eq(t.rays, "0"))))
     })
@@ -6518,14 +6530,15 @@ class Prover < Node
     }), Ops.filt(right, ->(t) {
       return Ops.m_empty(t.rules)
     }))
-    lhs = (Ops.m_empty(left) ? "n" : "(#{Ops.m_join(Ops.m_map(left, ->(t) {
-      return Ops.or_else(t.operator) { t.symbol }
-    }), Physics.plus)})n")
+    lhs = (Ops.m_empty(left) ? "n" : "(#{Ops.m_join(left, Physics.plus)})n")
     rhs = ""
     right.length.times do |i|
       t = Ops.elem(right, i)
       piece = (Ops.eq(i, 0) ? ((Ops.eq(t.sign, (-1)) ? "-" : "")) : ((Ops.eq(t.sign, (-1)) ? " - " : " + ")))
-      rhs = "#{rhs}#{piece}#{t.symbol}"
+      n = t.ray_count
+      size = Expr.show(Expr.simplify(Expr.mul([Expr.num(t.sign), n])))
+      times = (Ops.eq(size, "1") ? "" : "#{size}·")
+      rhs = "#{rhs}#{piece}#{times}#{t.symbol}"
     end
     if Ops.m_empty(right)
       rhs = "0"
@@ -6548,17 +6561,8 @@ class Prover < Node
     return Prover.neat(Expr.replace(Expr.evaluate(t.expr, fill), "n", Prover.POPULATION))
   end
   def operators_on(name)
-    left = Ops.filt(self.infos, ->(t) {
-      return Ops.eq(t.side, "left")
-    })
-    left = Ops.m_concat(Ops.filt(left, ->(t) {
-      return Ops.eq(t.operator, "\\partial_{t}")
-    }), Ops.filt(left, ->(t) {
-      return !Ops.eq(t.operator, "\\partial_{t}")
-    }))
-    return (Ops.m_empty(left) ? name : "(#{Ops.m_join(Ops.m_map(left, ->(t) {
-      return Ops.or_else(t.operator) { t.symbol }
-    }), Physics.plus)})#{name}")
+    left = self.left_operators
+    return (Ops.m_empty(left) ? name : "(#{Ops.m_join(left, Physics.plus)})#{name}")
   end
   def line_filled(s)
     fill = Prover.settled(s)
@@ -6652,10 +6656,8 @@ class Prover < Node
     })
     rhs = Expr.collected(Expr.add([filled.fact.to, Expr.add(weighed_terms)]))
     rho = Expr.show(Prover.POPULATION)
-    ops = Ops.m_join(Ops.m_map(Ops.filt(self.infos, ->(t) {
-      return (Ops.eq(t.side, "left") && !Ops.eq(t.operator, "\\partial_{t}"))
-    }), ->(t) {
-      return Ops.or_else(t.operator) { t.symbol }
+    ops = Ops.m_join(Ops.filt(self.left_operators, ->(x) {
+      return !Ops.eq(x, "\\partial_{t}")
     }), Physics.plus)
     weighed = (((Ops.eq(k.kind, "num") && Ops.eq(k.value, 1))) ? "n_{f}" : "#{Expr.show(k)}·n_{f}")
     lhs = (Ops.m_empty(ops) ? "\\partial_{t}\\paren{#{rho} + #{weighed}}" : "\\partial_{t}\\paren{#{rho} + #{weighed}} + \\paren{#{ops}}#{rho}")
@@ -6915,7 +6917,7 @@ class Prover < Node
     return out
   end
   def self.annotate(e, s, at, of)
-    known = Prover.names_known(s, at)
+    known = Prover.names_kept(s, at)
     out = []
     seen = Node.new
     whole = Expr.show(Expr.simplify(e))
@@ -6944,7 +6946,7 @@ class Prover < Node
   end
   def self.standing_for(e, s, of)
     facts = Prover.by_name(s)
-    known = Prover.names_known(s, "R")
+    known = Prover.names_kept(s, "R")
     cite = ->(x, _self, d) {
       if Ops.gt(d, 0)
         k = Expr.show(Expr.simplify(x))
@@ -7213,6 +7215,13 @@ class Prover < Node
     end
     return out
   end
+  def self.names_kept(s, at)
+    k = "#{s.version}|#{at}"
+    if Ops.eq(Ops.elem(s.known_, k), nil)
+      Ops.set_at(s.known_, k, Prover.names_known(s, at))
+    end
+    return Ops.elem(s.known_, k)
+  end
   __exposed
 end
 
@@ -7327,7 +7336,7 @@ class Inferences < Node
     }, e)
   end
   def self.RULES
-    return Ops.m_concat(Ops.m_concat([Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.waiting, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion], Ops.m_map(Inferences.IN_FULL, ->(of) {
+    return Ops.m_concat(Ops.m_concat([Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion], Ops.m_map(Inferences.IN_FULL, ->(of) {
       return Inferences.writing_out(of)
     })), [Inferences.can_it_push, Inferences.in_three])
   end
@@ -7774,12 +7783,12 @@ class Inferences < Node
     })
   end
   def self.making_rate
-    return Inference.new(name: "the room the line does not supply, which the waiting has to make", because: "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any", fire: ->(s) {
-      waits = s.fact("is", "what the waiting makes")
-      if (Ops.eq(waits, nil) || s.has("is", "the rate space is made"))
+    return Inference.new(name: "the room the line does not supply, which the frontier has to make", because: "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any", fire: ->(s) {
+      made = s.fact("is", "what the frontier makes")
+      if (Ops.eq(made, nil) || s.has("is", "the rate space is made"))
         return []
       end
-      return [Inferences.step("the rate space is made", waits.to, "the room the line does not supply, which the waiting has to make", [waits.key], "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", ["the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at #{Expr.show(waits.to)}", "the rate space is made = #{Expr.show(waits.to)}"])]
+      return [Inferences.step("the rate space is made", made.to, "the room the line does not supply, which the frontier has to make", [made.key], "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", ["the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at #{Expr.show(made.to)}", "the rate space is made = #{Expr.show(made.to)}"])]
     })
   end
   def self.hubble_rate
@@ -7839,7 +7848,7 @@ class Inferences < Node
       via = "the density where a body is, which is not the density of empty space"
       upon = [made.key, took.key, puts.key]
       a0 = Expr.simplify(Expr.mul([Expr.field("\\sigma"), Expr.simplify(total)]))
-      return [Inferences.step("\\rho at R", root, via, upon, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", ["the body's carriers where the far one stands: n = #{Expr.show(n)}", "the population where the body stands: \\rho + n", "#{Expr.show(mkC.to)}·#{Expr.show(making_with_body)} + #{Expr.show(tkC.to)}·F·#{Expr.show(with_body)} = 0", "\\rho at R = #{Expr.show(root)}"]), Inferences.step("the population at R", Expr.simplify(total), via, upon, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter", ["the vacuum's settled share there: \\rho at R", "the body's carriers there: #{Expr.show(n)}", "the population at R = #{Expr.show(Expr.simplify(total))}"]), Inferences.step("a_{0} at R", a0, via, upon, "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", ["the space line's waiting term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = #{Expr.show(a0)}"])]
+      return [Inferences.step("\\rho at R", root, via, upon, "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", ["the body's carriers where the far one stands: n = #{Expr.show(n)}", "the population where the body stands: \\rho + n", "#{Expr.show(mkC.to)}·#{Expr.show(making_with_body)} + #{Expr.show(tkC.to)}·F·#{Expr.show(with_body)} = 0", "\\rho at R = #{Expr.show(root)}"]), Inferences.step("the population at R", Expr.simplify(total), via, upon, "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter", ["the vacuum's settled share there: \\rho at R", "the body's carriers there: #{Expr.show(n)}", "the population at R = #{Expr.show(Expr.simplify(total))}"]), Inferences.step("a_{0} at R", a0, via, upon, "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", ["the space line's frontier term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = #{Expr.show(a0)}"])]
     })
   end
   def self.at_that_density
@@ -8187,7 +8196,7 @@ class Inferences < Node
       return [Inferences.step("the deficit in recession", totalled, "and a body makes less of it, so they are carried apart more slowly", [rec.key, per.key, puts.key], "the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line - integrated by the algebra over whatever profile the transport gave, not over a power assumed in advance - that is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen", ["recession = #{Expr.show(rec.to)}", "the shortfall at each point is the body's own, carried: #{Expr.show(profile)}", "far out that comes to #{Expr.show(far)}", "\\int of that dr = #{Expr.show(_F)}", "the deficit in recession = #{Expr.show(totalled)}"])]
     })
   end
-  def self.waiting
+  def self.keeping
     return Inference.new(name: "how fast a carrier goes, which is the share of its step that was straight", because: "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it", fire: ->(s) {
       nf = s.fact("is", "n_{f}")
       c = s.fact("is", "\\bar{c}")
@@ -8201,7 +8210,7 @@ class Inferences < Node
       end
       Ops.m_push(parts, Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{f}")]), (-1)))
       got = Expr.simplify(Expr.mul(parts))
-      return [Inferences.step("v", got, "how fast a carrier goes, which is the share of its step that was straight", [nf.key, c.key], "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier", ["turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = #{Expr.show(got)}", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"])]
+      return [Inferences.step("v", got, "how fast a carrier goes, which is the share of its step that was straight", [nf.key, c.key], "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier", ["turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = #{Expr.show(got)}", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not"])]
     })
   end
   def self.transporting
@@ -19458,7 +19467,7 @@ class GTheory < Theory
     return Asked.new(asks: "the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?", about: "l.balance")
   })
   THEOREM_vacuum_settled = Theorem.new(id: "vacuum.settled", body: -> {
-    return Asked.new(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", also: "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.")
+    return Asked.new(asks: "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?", about: "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}", also: "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}", leads: "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly.", then: "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record.")
   })
   THEOREM_vacuum_worth = Theorem.new(id: "vacuum.worth", body: -> {
     return Asked.new(asks: "the equation is written against a record S. What IS that, at a local - and where does it come from?", about: "S_{l} \\aside{rays' worth}")

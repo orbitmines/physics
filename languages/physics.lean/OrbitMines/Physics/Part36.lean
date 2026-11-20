@@ -56,6 +56,8 @@ ray_impl_method "add" (st_0 : Step) : Bool := do
   (ωsetter self "version") (← ωadd (← ωget self "version") (1 : Float))
   if true then return true
   return ωnull
+ray_impl_field "known_" : object := do
+  return (← RMap.new)
 end Store
 
 

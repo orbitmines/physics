@@ -22,7 +22,7 @@ ray_impl_getter "equation" : Equation := do
   if true then return (← ωget (← ωget self "theory") "equation")
   return ωnull
 ray_impl_getter "infos" : (RList TermInfo) := do
-  if true then return (← dot! (← ωget (← ωget self "equation") "terms") rmap ((fn! [t_2] do
+  if true then return (← dot! (← ωget (← ωget self "theory") "terms_read") rmap ((fn! [t_2] do
     if true then return (← new! TermInfo («term» := (← t_2.get)))
     return ωnull)))
   return ωnull
@@ -154,7 +154,7 @@ ray_impl_getter "premises" : (RList Step) := do
       (← dot! (← out_0.get) rpush ((← made_1.get))) |> ωsink
       pure ()
     if ωtruthy (← ωandV (← ωandV (← ωeqv (← ωget (← t_1.get) "rays") ("0" : String)) (do pure (← ωgt (← ωget (← t_1.get) "space_net") (0 : Float)))) (do pure (← ωget (← t_1.get) "carries"))) then
-      let w_1 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("what the waiting makes" : String), (← body_1.get))), (← ωelem (← ωget (← t_1.get) "rules") (0 : Float)), (← ωlst #[]), ("" ++ (← ωtoStr (← nm_1.get)) ++ " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← body_1.get)))) ++ "" : String), (← ωlst #[("no rays, " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← t_1.get) "space_count")))) ++ " of space" : String), ("the waiting makes " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← body_1.get)))) ++ "" : String)])))
+      let w_1 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("what the frontier makes" : String), (← body_1.get))), (← ωelem (← ωget (← t_1.get) "rules") (0 : Float)), (← ωlst #[]), ("" ++ (← ωtoStr (← nm_1.get)) ++ " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← body_1.get)))) ++ "" : String), (← ωlst #[("no rays, " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← t_1.get) "space_count")))) ++ " of space" : String), ("the frontier makes " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← body_1.get)))) ++ "" : String)])))
       (ωsetter (← w_1.get) "rule") (← ωelem (← ωget (← t_1.get) "rules") (0 : Float))
       (← dot! (← out_0.get) rpush ((← w_1.get))) |> ωsink
       pure ()
@@ -224,7 +224,7 @@ ray_impl_getter "premises" : (RList Step) := do
         return ωnull))) rmap ((fn! [t_2] do
         if true then return (← ωget (← t_2.get) "share")
         return ωnull)))))))
-      let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("what share of a step advances" : String), (← advancing_0.get))), (← ωelem (← ωget (← moving_0.get) "rules") (0 : Float)), (← ωlst #[]), ("the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines" : String), (← ωlst #[])))
+      let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("what share of a step advances" : String), (← advancing_0.get))), (← ωelem (← ωget (← moving_0.get) "rules") (0 : Float)), (← ωlst #[]), ("the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines" : String), (← ωlst #[])))
       (ωsetter (← st_0.get) "rule") (← ωelem (← ωget (← moving_0.get) "rules") (0 : Float))
       (← dot! (← out_0.get) rpush ((← st_0.get))) |> ωsink
       pure ()
@@ -444,11 +444,7 @@ ray_impl_getter "line_steps" : (RList Step) := do
   let rhs_0 ← IO.mkRef (← dot! (← infos_0.get) rfilter ((fn! [t_2] do
     if true then return (← ωeqv (← ωget (← t_2.get) "side") ("right" : String))
     return ωnull)))
-  let lhs_0 ← IO.mkRef (← dot! (← dot! (← dot! (← infos_0.get) rfilter ((fn! [t_3] do
-    if true then return (← ωeqv (← ωget (← t_3.get) "side") ("left" : String))
-    return ωnull))) rmap ((fn! [t_2] do
-    if true then return (← ωorElse (← ωget (← t_2.get) "operator") (do pure (← ωget (← t_2.get) "symbol")))
-    return ωnull))) rjoin ((" + " : String)))
+  let lhs_0 ← IO.mkRef (← dot! (← ωget self "left_operators") rjoin ((" + " : String)))
   let equation_0 ← IO.mkRef (← ωget self "equation")
   (← dot! (← out_0.get) rpush ((← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("" ++ (← ωtoStr (← lhs_0.get)) ++ "n" : String), (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "add" ((← dot! (← rhs_0.get) rmap ((fn! [t_2] do
     if true then return (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← ωget (← t_2.get) "sign"))), (← call! (← cls% Expr) "sym" ((← ωget (← t_2.get) "symbol")))])))
@@ -461,9 +457,8 @@ ray_impl_getter "line_steps" : (RList Step) := do
     return ωnull))) rconcat ((← ωlst #[(← ωget self "line_text"), (← ωget self "space_text")]))))))) |> ωsink
   if true then return (← out_0.get)
   return ωnull
-ray_impl_getter "line_text" : String := do
-  let infos_0 ← IO.mkRef (← ωget self "infos")
-  let left_0 ← IO.mkRef (← dot! (← infos_0.get) rfilter ((fn! [t_2] do
+ray_impl_getter "left_operators" : (RList String) := do
+  let left_0 ← IO.mkRef (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
     if true then return (← ωeqv (← ωget (← t_2.get) "side") ("left" : String))
     return ωnull)))
   (← ωwr left_0 (← dot! (← dot! (← left_0.get) rfilter ((fn! [t_2] do
@@ -471,6 +466,15 @@ ray_impl_getter "line_text" : String := do
     return ωnull))) rconcat ((← dot! (← left_0.get) rfilter ((fn! [t_2] do
     if true then return (← ωnev (← ωget (← t_2.get) "operator") ("\\partial_{t}" : String))
     return ωnull)))))) |> ωsink
+  if true then return (← dot! (← dot! (← left_0.get) rmap ((fn! [t_3] do
+    if true then return (← ωorElse (← ωget (← t_3.get) "operator") (do pure (← ωget (← t_3.get) "symbol")))
+    return ωnull))) rreduce ((← ωlst #[]), (fn! [o_2 x_2] do
+    if true then return (← ωtern (ωtruthy (← dot! (← o_2.get) rcontains ((← x_2.get)))) (do pure (← o_2.get)) (do pure (← dot! (← o_2.get) rpush ((← x_2.get)))))
+    return ωnull)))
+  return ωnull
+ray_impl_getter "line_text" : String := do
+  let infos_0 ← IO.mkRef (← ωget self "infos")
+  let left_0 ← IO.mkRef (← ωget self "left_operators")
   let right_0 ← IO.mkRef (← dot! (← infos_0.get) rfilter ((fn! [t_2] do
     if true then return (← ωandV (← ωeqv (← ωget (← t_2.get) "side") ("right" : String)) (do pure ((← ωorV (← dot! (← ωget (← t_2.get) "rules") rempty ()) (do pure (← ωnev (← ωget (← t_2.get) "rays") ("0" : String)))))))
     return ωnull)))
@@ -479,15 +483,16 @@ ray_impl_getter "line_text" : String := do
     return ωnull))) rconcat ((← dot! (← right_0.get) rfilter ((fn! [t_2] do
     if true then return (← dot! (← ωget (← t_2.get) "rules") rempty ())
     return ωnull)))))) |> ωsink
-  let lhs_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← left_0.get) rempty ())) (do pure ("n" : String)) (do pure ("(" ++ (← ωtoStr (← dot! (← dot! (← left_0.get) rmap ((fn! [t_2] do
-    if true then return (← ωorElse (← ωget (← t_2.get) "operator") (do pure (← ωget (← t_2.get) "symbol")))
-    return ωnull))) rjoin ((← ωglobal_plus)))) ++ ")n" : String)))
+  let lhs_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← left_0.get) rempty ())) (do pure ("n" : String)) (do pure ("(" ++ (← ωtoStr (← dot! (← left_0.get) rjoin ((← ωglobal_plus)))) ++ ")n" : String)))
   let rhs_0 ← IO.mkRef ("" : String)
   for i1 in [0:ωrangeN (← dot! (← right_0.get) rlength ())] do
     let i_1 ← IO.mkRef (ωnatF i1)
     let t_1 ← IO.mkRef (← ωelem (← right_0.get) (← i_1.get))
     let piece_1 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← i_1.get) (0 : Float))) (do pure ((← ωtern (ωtruthy (← ωeqv (← ωget (← t_1.get) "sign") (← ωneg (1 : Float)))) (do pure ("-" : String)) (do pure ("" : String))))) (do pure ((← ωtern (ωtruthy (← ωeqv (← ωget (← t_1.get) "sign") (← ωneg (1 : Float)))) (do pure (" - " : String)) (do pure (" + " : String))))))
-    (← ωwr rhs_0 ("" ++ (← ωtoStr (← rhs_0.get)) ++ "" ++ (← ωtoStr (← piece_1.get)) ++ "" ++ (← ωtoStr (← ωget (← t_1.get) "symbol")) ++ "" : String)) |> ωsink
+    let n_1 ← IO.mkRef (← ωget (← t_1.get) "ray_count")
+    let size_1 ← IO.mkRef (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← ωget (← t_1.get) "sign"))), (← n_1.get)])))))))
+    let times_1 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← size_1.get) ("1" : String))) (do pure ("" : String)) (do pure ("" ++ (← ωtoStr (← size_1.get)) ++ "·" : String)))
+    (← ωwr rhs_0 ("" ++ (← ωtoStr (← rhs_0.get)) ++ "" ++ (← ωtoStr (← piece_1.get)) ++ "" ++ (← ωtoStr (← times_1.get)) ++ "" ++ (← ωtoStr (← ωget (← t_1.get) "symbol")) ++ "" : String)) |> ωsink
     pure ()
   Value.null |> ωsink
   if ωtruthy (← dot! (← right_0.get) rempty ()) then
@@ -511,17 +516,8 @@ ray_impl_method "filled_term" (t_0 : TermInfo) (fill_0 : object) : Expr := do
   if true then return (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "evaluate" ((← ωget (← t_0.get) "expr"), (← fill_0.get))), ("n" : String), (← ωget (← cls% Prover) "POPULATION")))))
   return ωnull
 ray_impl_method "operators_on" (name_0 : String) : String := do
-  let left_0 ← IO.mkRef (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
-    if true then return (← ωeqv (← ωget (← t_2.get) "side") ("left" : String))
-    return ωnull)))
-  (← ωwr left_0 (← dot! (← dot! (← left_0.get) rfilter ((fn! [t_2] do
-    if true then return (← ωeqv (← ωget (← t_2.get) "operator") ("\\partial_{t}" : String))
-    return ωnull))) rconcat ((← dot! (← left_0.get) rfilter ((fn! [t_2] do
-    if true then return (← ωnev (← ωget (← t_2.get) "operator") ("\\partial_{t}" : String))
-    return ωnull)))))) |> ωsink
-  if true then return (← ωtern (ωtruthy (← dot! (← left_0.get) rempty ())) (do pure (← name_0.get)) (do pure ("(" ++ (← ωtoStr (← dot! (← dot! (← left_0.get) rmap ((fn! [t_2] do
-    if true then return (← ωorElse (← ωget (← t_2.get) "operator") (do pure (← ωget (← t_2.get) "symbol")))
-    return ωnull))) rjoin ((← ωglobal_plus)))) ++ ")" ++ (← ωtoStr (← name_0.get)) ++ "" : String)))
+  let left_0 ← IO.mkRef (← ωget self "left_operators")
+  if true then return (← ωtern (ωtruthy (← dot! (← left_0.get) rempty ())) (do pure (← name_0.get)) (do pure ("(" ++ (← ωtoStr (← dot! (← left_0.get) rjoin ((← ωglobal_plus)))) ++ ")" ++ (← ωtoStr (← name_0.get)) ++ "" : String)))
   return ωnull
 ray_impl_method "line_filled" (s_0 : Store) : Step := do
   let fill_0 ← IO.mkRef (← call! (← cls% Prover) "settled" ((← s_0.get)))
@@ -618,10 +614,8 @@ ray_impl_method "general" (filled_0 : Step) (folds_0 : Step) : Step := do
     return ωnull)))
   let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "collected" ((← call! (← cls% Expr) "add" ((← ωlst #[(← ωget (← ωget (← filled_0.get) "fact") "to"), (← call! (← cls% Expr) "add" ((← weighed_terms_0.get)))])))))
   let rho_0 ← IO.mkRef (← call! (← cls% Expr) "show" ((← ωget (← cls% Prover) "POPULATION")))
-  let ops_0 ← IO.mkRef (← dot! (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_3] do
-    if true then return (← ωandV (← ωeqv (← ωget (← t_3.get) "side") ("left" : String)) (do pure (← ωnev (← ωget (← t_3.get) "operator") ("\\partial_{t}" : String))))
-    return ωnull))) rmap ((fn! [t_2] do
-    if true then return (← ωorElse (← ωget (← t_2.get) "operator") (do pure (← ωget (← t_2.get) "symbol")))
+  let ops_0 ← IO.mkRef (← dot! (← dot! (← ωget self "left_operators") rfilter ((fn! [x_2] do
+    if true then return (← ωnev (← x_2.get) ("\\partial_{t}" : String))
     return ωnull))) rjoin ((← ωglobal_plus)))
   let weighed_0 ← IO.mkRef (← ωtern (ωtruthy ((← ωandV (← ωeqv (← ωget (← k_0.get) "kind") ("num" : String)) (do pure (← ωeqv (← ωget (← k_0.get) "value") (1 : Float)))))) (do pure ("n_{f}" : String)) (do pure ("" ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← k_0.get)))) ++ "·n_{f}" : String)))
   let lhs_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← ops_0.get) rempty ())) (do pure ("\\partial_{t}\\paren{" ++ (← ωtoStr (← rho_0.get)) ++ " + " ++ (← ωtoStr (← weighed_0.get)) ++ "}" : String)) (do pure ("\\partial_{t}\\paren{" ++ (← ωtoStr (← rho_0.get)) ++ " + " ++ (← ωtoStr (← weighed_0.get)) ++ "} + \\paren{" ++ (← ωtoStr (← ops_0.get)) ++ "}" ++ (← ωtoStr (← rho_0.get)) ++ "" : String)))
@@ -899,7 +893,7 @@ ray_impl_static "by_name" (s_0 : Store) : Keyed := do
   if true then return (← out_0.get)
   return ωnull
 ray_impl_static "annotate" (e_0 : Expr) (s_0 : Store) (at__0 : String) (of_0 : String) : (RList Part) := do
-  let known_0 ← IO.mkRef (← call! (← cls% Prover) "names_known" ((← s_0.get), (← at__0.get)))
+  let known_0 ← IO.mkRef (← call! (← cls% Prover) "names_kept" ((← s_0.get), (← at__0.get)))
   let out_0 ← IO.mkRef (← ωlst #[])
   let seen_0 ← IO.mkRef (← RMap.new)
   let whole_0 ← IO.mkRef (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "simplify" ((← e_0.get)))))
@@ -933,7 +927,7 @@ ray_impl_static "annotate" (e_0 : Expr) (s_0 : Store) (at__0 : String) (of_0 : S
   return ωnull
 ray_impl_static "standing_for" (e_0 : Expr) (s_0 : Store) (of_0 : String) : (RList Standing) := do
   let facts_0 ← IO.mkRef (← call! (← cls% Prover) "by_name" ((← s_0.get)))
-  let known_0 ← IO.mkRef (← call! (← cls% Prover) "names_known" ((← s_0.get), ("R" : String)))
+  let known_0 ← IO.mkRef (← call! (← cls% Prover) "names_kept" ((← s_0.get), ("R" : String)))
   let cite_0 ← IO.mkRef ωnull
   cite_0.set (fn! [(x : Expr) (self_ : String) (d : Float)] do
       if ωtruthy (← ωgt d (0 : Float)) then
@@ -1221,6 +1215,13 @@ ray_impl_method "chain" (s_0 : Store) : Keyed := do
     pure ()
   Value.null |> ωsink
   if true then return (← out_0.get)
+  return ωnull
+ray_impl_static "names_kept" (s_0 : Store) (at__0 : String) : Keyed := do
+  let k_0 ← IO.mkRef ("" ++ (← ωtoStr (← ωget (← s_0.get) "version")) ++ "|" ++ (← ωtoStr (← at__0.get)) ++ "" : String)
+  if ωtruthy (ωisNull (← ωelem (← ωget (← s_0.get) "known_") (← k_0.get))) then
+    (ωatSetter (← ωget (← s_0.get) "known_") (← k_0.get)) (← call! (← cls% Prover) "names_known" ((← s_0.get), (← at__0.get)))
+    pure ()
+  if true then return (← ωelem (← ωget (← s_0.get) "known_") (← k_0.get))
   return ωnull
 end Prover
 

@@ -101,7 +101,10 @@ end
     to_0 = turns(self)
     if truthy((to_0 == nothing))
       grow(leaving(self))
-      hand(self, self)
+      made_0 = steps(self)
+      if truthy((made_0 != nothing))
+        hand(self, made_0)
+      end
       return nothing
     end
     here_0 = vertex(self)
@@ -4390,6 +4393,7 @@ end
     self.version = (version(self) + 1.0)
     return true
   end
+  @field known_::object = Node()
 end
 
 @class Inference <: Node begin
@@ -4741,7 +4745,7 @@ end
   function symbol(self::__class__)
     population_0 = Base.string(j"n")
     if truthy(outside(self))
-      return Base.string(j"", str(gate(self)), j"l.\\bar{m}")
+      return (truthy(empty(gate(self))) ? (Base.string(j"l.\\bar{m}")) : (Base.string(j"", str(gate(self)), j" l.\\bar{m}")))
     end
     if truthy(settles(self))
       return Base.string(j"\\partial_{t}", str(population_0), j"")
@@ -4752,8 +4756,8 @@ end
     rate_0 = (let q_ = rate(self); q_ === nothing ? (Base.string(j"")) : q_ end)
     room_0 = gate(self)
     pw_0 = powers(TermInfo, population_0, degree(self))
-    gap_0 = (truthy(((truthy((truthy(!(empty(rate_0))) && truthy(empty(room_0)))) && truthy(!(empty(pw_0)))))) ? (Base.string(j" ")) : (Base.string(j"")))
-    return Base.string(j"", str(rate_0), j"", str(room_0), j"", str(gap_0), j"", str(pw_0), j"")
+    gap_0 = (truthy(((truthy(!(empty(rate_0))) && truthy(!(((truthy(empty(room_0)) && truthy(empty(pw_0))))))))) ? (Base.string(j" ")) : (Base.string(j"")))
+    return Base.string(j"", str(rate_0), j"", str(gap_0), j"", str(room_0), j"", str(pw_0), j"")
   end
 end
 
@@ -4767,7 +4771,7 @@ end
     return equation(theory(self))
   end
   function infos(self::__class__)
-    return map(terms(equation(self)), (function (t_2 = nothing, _...)
+    return map(terms_read(theory(self)), (function (t_2 = nothing, _...)
       return TermInfo(term = t_2)
     end))
   end
@@ -4892,7 +4896,7 @@ end
         push(out_0, made_1)
       end
       if truthy((truthy((truthy((rays(t_1) == Base.string(j"0"))) && truthy((space_net(t_1) > 0.0)))) && truthy(carries(t_1))))
-        w_1 = of(Step, stands(Fact, Base.string(j"what the waiting makes"), body_1), getat(rules(t_1), 0.0), Any[], Base.string(j"", str(nm_1), j" hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is ", str(show(Expr, body_1)), j""), Any[Base.string(j"no rays, ", str(show(Expr, space_count(t_1))), j" of space"), Base.string(j"the waiting makes ", str(show(Expr, body_1)), j"")])
+        w_1 = of(Step, stands(Fact, Base.string(j"what the frontier makes"), body_1), getat(rules(t_1), 0.0), Any[], Base.string(j"", str(nm_1), j" grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is ", str(show(Expr, body_1)), j""), Any[Base.string(j"no rays, ", str(show(Expr, space_count(t_1))), j" of space"), Base.string(j"the frontier makes ", str(show(Expr, body_1)), j"")])
         w_1.rule = getat(rules(t_1), 0.0)
         push(out_0, w_1)
       end
@@ -4959,7 +4963,7 @@ end
         end)), (function (t_2 = nothing, _...)
           return share(t_2)
         end))))
-        st_0 = of(Step, stands(Fact, Base.string(j"what share of a step advances"), advancing_0), getat(rules(moving_0), 0.0), Any[], Base.string(j"the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines"), Any[])
+        st_0 = of(Step, stands(Fact, Base.string(j"what share of a step advances"), advancing_0), getat(rules(moving_0), 0.0), Any[], Base.string(j"the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines"), Any[])
         st_0.rule = getat(rules(moving_0), 0.0)
         push(out_0, st_0)
       end
@@ -5161,11 +5165,7 @@ end
     rhs_0 = filter(infos_0, (function (t_2 = nothing, _...)
       return (side(t_2) == Base.string(j"right"))
     end))
-    lhs_0 = join(map(filter(infos_0, (function (t_3 = nothing, _...)
-      return (side(t_3) == Base.string(j"left"))
-    end)), (function (t_2 = nothing, _...)
-      return (let q_ = operator(t_2); q_ === nothing ? (symbol(t_2)) : q_ end)
-    end)), Base.string(j" + "))
+    lhs_0 = join(left_operators(self), Base.string(j" + "))
     equation_0 = equation(self)
     push(out_0, of(Step, stands(Fact, Base.string(j"", str(lhs_0), j"n"), simplify(Expr, add(Expr, map(rhs_0, (function (t_2 = nothing, _...)
       return mul(Expr, Any[num(Expr, sign(t_2)), sym(Expr, symbol(t_2))])
@@ -5178,9 +5178,8 @@ end
     end)), Any[line_text(self), space_text(self)])))
     return out_0
   end
-  function line_text(self::__class__)
-    infos_0 = infos(self)
-    left_0 = filter(infos_0, (function (t_2 = nothing, _...)
+  function left_operators(self::__class__)
+    left_0 = filter(infos(self), (function (t_2 = nothing, _...)
       return (side(t_2) == Base.string(j"left"))
     end))
     left_0 = concat(filter(left_0, (function (t_2 = nothing, _...)
@@ -5188,6 +5187,15 @@ end
     end)), filter(left_0, (function (t_2 = nothing, _...)
       return (operator(t_2) != Base.string(j"\\partial_{t}"))
     end)))
+    return reduce(map(left_0, (function (t_3 = nothing, _...)
+      return (let q_ = operator(t_3); q_ === nothing ? (symbol(t_3)) : q_ end)
+    end)), Any[], (function (o_2 = nothing, x_2 = nothing, _...)
+      return (truthy(contains(o_2, x_2)) ? (o_2) : (push(o_2, x_2)))
+    end))
+  end
+  function line_text(self::__class__)
+    infos_0 = infos(self)
+    left_0 = left_operators(self)
     right_0 = filter(infos_0, (function (t_2 = nothing, _...)
       return (truthy((side(t_2) == Base.string(j"right"))) && truthy(((truthy(empty(rules(t_2))) || truthy((rays(t_2) != Base.string(j"0")))))))
     end))
@@ -5196,15 +5204,16 @@ end
     end)), filter(right_0, (function (t_2 = nothing, _...)
       return empty(rules(t_2))
     end)))
-    lhs_0 = (truthy(empty(left_0)) ? (Base.string(j"n")) : (Base.string(j"(", str(join(map(left_0, (function (t_2 = nothing, _...)
-      return (let q_ = operator(t_2); q_ === nothing ? (symbol(t_2)) : q_ end)
-    end)), g_plus())), j")n")))
+    lhs_0 = (truthy(empty(left_0)) ? (Base.string(j"n")) : (Base.string(j"(", str(join(left_0, g_plus())), j")n")))
     rhs_0 = Base.string(j"")
     for i1 in 0:(ceil(Int, Rt.num(length(right_0))) - 1)
       i_1 = Float64(i1)
       t_1 = getat(right_0, i_1)
       piece_1 = (truthy((i_1 == 0.0)) ? (((truthy((sign(t_1) == (-1.0))) ? (Base.string(j"-")) : (Base.string(j""))))) : (((truthy((sign(t_1) == (-1.0))) ? (Base.string(j" - ")) : (Base.string(j" + "))))))
-      rhs_0 = Base.string(j"", str(rhs_0), j"", str(piece_1), j"", str(symbol(t_1)), j"")
+      n_1 = ray_count(t_1)
+      size_1 = show(Expr, simplify(Expr, mul(Expr, Any[num(Expr, sign(t_1)), n_1])))
+      times_1 = (truthy((size_1 == Base.string(j"1"))) ? (Base.string(j"")) : (Base.string(j"", str(size_1), j"·")))
+      rhs_0 = Base.string(j"", str(rhs_0), j"", str(piece_1), j"", str(times_1), j"", str(symbol(t_1)), j"")
     end
     if truthy(empty(right_0))
       rhs_0 = Base.string(j"0")
@@ -5227,17 +5236,8 @@ end
     return neat(Prover, replace(Expr, evaluate(Expr, expr(t_0), fill_0), Base.string(j"n"), POPULATION(Prover)))
   end
   function operators_on(self::__class__, name_0 = nothing, _...)
-    left_0 = filter(infos(self), (function (t_2 = nothing, _...)
-      return (side(t_2) == Base.string(j"left"))
-    end))
-    left_0 = concat(filter(left_0, (function (t_2 = nothing, _...)
-      return (operator(t_2) == Base.string(j"\\partial_{t}"))
-    end)), filter(left_0, (function (t_2 = nothing, _...)
-      return (operator(t_2) != Base.string(j"\\partial_{t}"))
-    end)))
-    return (truthy(empty(left_0)) ? (name_0) : (Base.string(j"(", str(join(map(left_0, (function (t_2 = nothing, _...)
-      return (let q_ = operator(t_2); q_ === nothing ? (symbol(t_2)) : q_ end)
-    end)), g_plus())), j")", str(name_0), j"")))
+    left_0 = left_operators(self)
+    return (truthy(empty(left_0)) ? (name_0) : (Base.string(j"(", str(join(left_0, g_plus())), j")", str(name_0), j"")))
   end
   function line_filled(self::__class__, s_0 = nothing, _...)
     fill_0 = settled(Prover, s_0)
@@ -5331,10 +5331,8 @@ end
     end))
     rhs_0 = collected(Expr, add(Expr, Any[to(fact(filled_0)), add(Expr, weighed_terms_0)]))
     rho_0 = show(Expr, POPULATION(Prover))
-    ops_0 = join(map(filter(infos(self), (function (t_3 = nothing, _...)
-      return (truthy((side(t_3) == Base.string(j"left"))) && truthy((operator(t_3) != Base.string(j"\\partial_{t}"))))
-    end)), (function (t_2 = nothing, _...)
-      return (let q_ = operator(t_2); q_ === nothing ? (symbol(t_2)) : q_ end)
+    ops_0 = join(filter(left_operators(self), (function (x_2 = nothing, _...)
+      return (x_2 != Base.string(j"\\partial_{t}"))
     end)), g_plus())
     weighed_0 = (truthy(((truthy((kind(k_0) == Base.string(j"num"))) && truthy((value(k_0) == 1.0))))) ? (Base.string(j"n_{f}")) : (Base.string(j"", str(show(Expr, k_0)), j"·n_{f}")))
     lhs_0 = (truthy(empty(ops_0)) ? (Base.string(j"\\partial_{t}\\paren{", str(rho_0), j" + ", str(weighed_0), j"}")) : (Base.string(j"\\partial_{t}\\paren{", str(rho_0), j" + ", str(weighed_0), j"} + \\paren{", str(ops_0), j"}", str(rho_0), j"")))
@@ -5595,7 +5593,7 @@ end
     return out_0
   end
   function annotate(self::Type{<:__class__}, e_0 = nothing, s_0 = nothing, at_0 = nothing, of_0 = nothing, _...)
-    known_0 = names_known(Prover, s_0, at_0)
+    known_0 = names_kept(Prover, s_0, at_0)
     out_0 = Any[]
     seen_0 = Node()
     whole_0 = show(Expr, simplify(Expr, e_0))
@@ -5624,7 +5622,7 @@ end
   end
   function standing_for(self::Type{<:__class__}, e_0 = nothing, s_0 = nothing, of_0 = nothing, _...)
     facts_0 = by_name(Prover, s_0)
-    known_0 = names_known(Prover, s_0, Base.string(j"R"))
+    known_0 = names_kept(Prover, s_0, Base.string(j"R"))
     cite_0 = (function (x_1 = nothing, self__1 = nothing, d_1 = nothing, _...)
       if truthy((d_1 > 0.0))
         k_1 = show(Expr, simplify(Expr, x_1))
@@ -5894,6 +5892,13 @@ end
     end
     return out_0
   end
+  function names_kept(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, _...)
+    k_0 = Base.string(j"", str(version(s_0)), j"|", str(at_0), j"")
+    if truthy((getat(known_(s_0), k_0) == nothing))
+      setat!(known_(s_0), k_0, names_known(Prover, s_0, at_0))
+    end
+    return getat(known_(s_0), k_0)
+  end
 end
 
 @class Inferences <: Node begin
@@ -6003,7 +6008,7 @@ end
     end), e_0)
   end
   function RULES(self::Type{<:__class__})
-    return concat(concat(Any[room_balance(Inferences), ehrhart(Inferences), counting(Inferences), reaching(Inferences), mass_of(Inferences), saturating(Inferences), spreading(Inferences), screening(Inferences), refracting(Inferences), accumulating(Inferences), substituting(Inferences), metric_of(Inferences), relativity(Inferences), schwarzschild(Inferences), shadow(Inferences), balancing(Inferences), unbiased(Inferences), free_path(Inferences), summing(Inferences), horizon(Inferences), bending(Inferences), crossing(Inferences), near_field(Inferences), shadowing(Inferences), receiving(Inferences), moved(Inferences), receding(Inferences), shortfall(Inferences), waiting(Inferences), transporting(Inferences), assembling(Inferences), channelling(Inferences), closing(Inferences), arrangement(Inferences), scale_crossed(Inferences), orbiting(Inferences), curve_ends(Inferences), curves_of_each(Inferences), crowding_of_arrivals(Inferences), making_rate(Inferences), hubble_rate(Inferences), expansion_scale(Inferences), coincidence(Inferences), crowding(Inferences), at_that_density(Inferences), in_motion(Inferences)], map(IN_FULL(Inferences), (function (of_2 = nothing, _...)
+    return concat(concat(Any[room_balance(Inferences), ehrhart(Inferences), counting(Inferences), reaching(Inferences), mass_of(Inferences), saturating(Inferences), spreading(Inferences), screening(Inferences), refracting(Inferences), accumulating(Inferences), substituting(Inferences), metric_of(Inferences), relativity(Inferences), schwarzschild(Inferences), shadow(Inferences), balancing(Inferences), unbiased(Inferences), free_path(Inferences), summing(Inferences), horizon(Inferences), bending(Inferences), crossing(Inferences), near_field(Inferences), shadowing(Inferences), receiving(Inferences), moved(Inferences), receding(Inferences), shortfall(Inferences), keeping(Inferences), transporting(Inferences), assembling(Inferences), channelling(Inferences), closing(Inferences), arrangement(Inferences), scale_crossed(Inferences), orbiting(Inferences), curve_ends(Inferences), curves_of_each(Inferences), crowding_of_arrivals(Inferences), making_rate(Inferences), hubble_rate(Inferences), expansion_scale(Inferences), coincidence(Inferences), crowding(Inferences), at_that_density(Inferences), in_motion(Inferences)], map(IN_FULL(Inferences), (function (of_2 = nothing, _...)
       return writing_out(Inferences, of_2)
     end))), Any[can_it_push(Inferences), in_three(Inferences)])
   end
@@ -6450,12 +6455,12 @@ end
     end))
   end
   function making_rate(self::Type{<:__class__})
-    return Inference(name = Base.string(j"the room the line does not supply, which the waiting has to make"), because = Base.string(j"the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any"), fire = (function (s_2 = nothing, _...)
-      waits_2 = fact(s_2, Base.string(j"is"), Base.string(j"what the waiting makes"))
-      if truthy((truthy((waits_2 == nothing)) || truthy(has(s_2, Base.string(j"is"), Base.string(j"the rate space is made")))))
+    return Inference(name = Base.string(j"the room the line does not supply, which the frontier has to make"), because = Base.string(j"the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any"), fire = (function (s_2 = nothing, _...)
+      made_2 = fact(s_2, Base.string(j"is"), Base.string(j"what the frontier makes"))
+      if truthy((truthy((made_2 == nothing)) || truthy(has(s_2, Base.string(j"is"), Base.string(j"the rate space is made")))))
         return Any[]
       end
-      return Any[step(Inferences, Base.string(j"the rate space is made"), to(waits_2), Base.string(j"the room the line does not supply, which the waiting has to make"), Any[key(waits_2)], Base.string(j"MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"), Any[Base.string(j"the space line carries a term with no rays in it: the waiting"), Base.string(j"a ray that cannot step makes the room instead, and that is space at ", str(show(Expr, to(waits_2))), j""), Base.string(j"the rate space is made = ", str(show(Expr, to(waits_2))), j"")])]
+      return Any[step(Inferences, Base.string(j"the rate space is made"), to(made_2), Base.string(j"the room the line does not supply, which the frontier has to make"), Any[key(made_2)], Base.string(j"MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"), Any[Base.string(j"the space line carries a term with no rays in it: the frontier"), Base.string(j"a ray with no room ahead makes it and steps into it, and that is space at ", str(show(Expr, to(made_2))), j""), Base.string(j"the rate space is made = ", str(show(Expr, to(made_2))), j"")])]
     end))
   end
   function hubble_rate(self::Type{<:__class__})
@@ -6515,7 +6520,7 @@ end
       via_2 = Base.string(j"the density where a body is, which is not the density of empty space")
       upon_2 = Any[key(made_2), key(took_2), key(puts_2)]
       a0_2 = simplify(Expr, mul(Expr, Any[field(Expr, Base.string(j"\\sigma")), simplify(Expr, total_2)]))
-      return Any[step(Inferences, Base.string(j"\\rho at R"), root_2, via_2, upon_2, Base.string(j"the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly"), Any[Base.string(j"the body's carriers where the far one stands: n = ", str(show(Expr, n_2)), j""), Base.string(j"the population where the body stands: \\rho + n"), Base.string(j"", str(show(Expr, to(mkC_2))), j"·", str(show(Expr, making_with_body_2)), j" + ", str(show(Expr, to(tkC_2))), j"·F·", str(show(Expr, with_body_2)), j" = 0"), Base.string(j"\\rho at R = ", str(show(Expr, root_2)), j"")]), step(Inferences, Base.string(j"the population at R"), simplify(Expr, total_2), via_2, upon_2, Base.string(j"what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter"), Any[Base.string(j"the vacuum's settled share there: \\rho at R"), Base.string(j"the body's carriers there: ", str(show(Expr, n_2)), j""), Base.string(j"the population at R = ", str(show(Expr, simplify(Expr, total_2))), j"")]), step(Inferences, Base.string(j"a_{0} at R"), a0_2, via_2, upon_2, Base.string(j"the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer"), Any[Base.string(j"the space line's waiting term: \\sigma n, degree one in the population"), Base.string(j"a_{0} at R = \\sigma·(the population at R) = ", str(show(Expr, a0_2)), j"")])]
+      return Any[step(Inferences, Base.string(j"\\rho at R"), root_2, via_2, upon_2, Base.string(j"the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly"), Any[Base.string(j"the body's carriers where the far one stands: n = ", str(show(Expr, n_2)), j""), Base.string(j"the population where the body stands: \\rho + n"), Base.string(j"", str(show(Expr, to(mkC_2))), j"·", str(show(Expr, making_with_body_2)), j" + ", str(show(Expr, to(tkC_2))), j"·F·", str(show(Expr, with_body_2)), j" = 0"), Base.string(j"\\rho at R = ", str(show(Expr, root_2)), j"")]), step(Inferences, Base.string(j"the population at R"), simplify(Expr, total_2), via_2, upon_2, Base.string(j"what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter"), Any[Base.string(j"the vacuum's settled share there: \\rho at R"), Base.string(j"the body's carriers there: ", str(show(Expr, n_2)), j""), Base.string(j"the population at R = ", str(show(Expr, simplify(Expr, total_2))), j"")]), step(Inferences, Base.string(j"a_{0} at R"), a0_2, via_2, upon_2, Base.string(j"the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer"), Any[Base.string(j"the space line's frontier term: \\sigma n, degree one in the population"), Base.string(j"a_{0} at R = \\sigma·(the population at R) = ", str(show(Expr, a0_2)), j"")])]
     end))
   end
   function at_that_density(self::Type{<:__class__})
@@ -6863,7 +6868,7 @@ end
       return Any[step(Inferences, Base.string(j"the deficit in recession"), totalled_2, Base.string(j"and a body makes less of it, so they are carried apart more slowly"), Any[key(rec_2), key(per_2), key(puts_2)], Base.string(j"the room between two bodies grows at the making rate times how many points there are, and a body has reduced that rate at every one of them. Summed along the line - integrated by the algebra over whatever profile the transport gave, not over a power assumed in advance - that is the deficit in how fast they are carried apart, and it is what an attraction IS in a model whose gravity is an expansion that did not happen"), Any[Base.string(j"recession = ", str(show(Expr, to(rec_2))), j""), Base.string(j"the shortfall at each point is the body's own, carried: ", str(show(Expr, profile_2)), j""), Base.string(j"far out that comes to ", str(show(Expr, far_2)), j""), Base.string(j"\\int of that dr = ", str(show(Expr, F_2)), j""), Base.string(j"the deficit in recession = ", str(show(Expr, totalled_2)), j"")])]
     end))
   end
-  function waiting(self::Type{<:__class__})
+  function keeping(self::Type{<:__class__})
     return Inference(name = Base.string(j"how fast a carrier goes, which is the share of its step that was straight"), because = Base.string(j"`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it"), fire = (function (s_2 = nothing, _...)
       nf_2 = fact(s_2, Base.string(j"is"), Base.string(j"n_{f}"))
       c_2 = fact(s_2, Base.string(j"is"), Base.string(j"\\bar{c}"))
@@ -6877,7 +6882,7 @@ end
       end
       push(parts_2, pown(Expr, add(Expr, Any[num(Expr, 1.0), field(Expr, Base.string(j"n_{f}"))]), (-1.0)))
       got_2 = simplify(Expr, mul(Expr, parts_2))
-      return Any[step(Inferences, Base.string(j"v"), got_2, Base.string(j"how fast a carrier goes, which is the share of its step that was straight"), Any[key(nf_2), key(c_2)], Base.string(j"MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier"), Any[Base.string(j"turns: 1 way straight on against folds[d] ways out along d"), Base.string(j"so a ray keeps its heading with 1/(1 + n_{f})"), Base.string(j"v = \\bar{c}/(1 + n_{f}) = ", str(show(Expr, got_2)), j""), Base.string(j"n_{f} small: v -> one cell a tick, and the carrier streams"), Base.string(j"n_{f} large: v -> \\bar{c}/n_{f}, and it does not")])]
+      return Any[step(Inferences, Base.string(j"v"), got_2, Base.string(j"how fast a carrier goes, which is the share of its step that was straight"), Any[key(nf_2), key(c_2)], Base.string(j"MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier"), Any[Base.string(j"turns: 1 way straight on against folds[d] ways out along d"), Base.string(j"so a ray keeps its heading with 1/(1 + n_{f})"), Base.string(j"v = \\bar{c}/(1 + n_{f}) = ", str(show(Expr, got_2)), j""), Base.string(j"n_{f} small: v -> one cell a tick, and the carrier streams"), Base.string(j"n_{f} large: v -> \\bar{c}/n_{f}, and it does not")])]
     end))
   end
   function transporting(self::Type{<:__class__})
@@ -16045,7 +16050,7 @@ end
     return Asked(asks = Base.string(j"the vacuum makes and takes at once. What does the difference come to at a local, and which way does it push?"), about = Base.string(j"l.balance"))
   end))
   @theorem Theorem(id = j"vacuum.settled", body = (function (_...)
-    return Asked(asks = Base.string(j"and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), about = Base.string(j"\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), also = Base.string(j"\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), leads = Base.string(j"THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), then = Base.string(j"AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent."))
+    return Asked(asks = Base.string(j"and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), about = Base.string(j"\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), also = Base.string(j"\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), leads = Base.string(j"THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), then = Base.string(j"AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record."))
   end))
   @theorem Theorem(id = j"vacuum.worth", body = (function (_...)
     return Asked(asks = Base.string(j"the equation is written against a record S. What IS that, at a local - and where does it come from?"), about = Base.string(j"S_{l} \\aside{rays' worth}"))

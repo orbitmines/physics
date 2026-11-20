@@ -323,7 +323,10 @@ pub mod c_Ray {
       let to_0 = cell(&Value::Null); wr(&to_0, &get(&self_, "turns"));
       if truthy(&eq(&rd(&to_0), &Value::Null)) {
         get(&get(&self_, "leaving"), "grow");
-        call(&self_, "hand", args![self_]);
+        let made_0 = cell(&Value::Null); wr(&made_0, &get(&self_, "steps"));
+        if truthy(&(!eq(&rd(&made_0), &Value::Null))) {
+          call(&self_, "hand", args![rd(&made_0)]);
+        }
         return Value::Null;
       }
       let here_0 = cell(&Value::Null); wr(&here_0, &get(&self_, "vertex"));
@@ -7392,6 +7395,7 @@ pub mod c_Store {
     c.method("all", m_all::f);//<
     c.getter("nodes", g_nodes::f);//<
     c.method("add", m_add::f);//<
+    c.field("known_", |self_: &Value| -> Value { own(&node()) });//<
   }
 }
 
@@ -8079,7 +8083,7 @@ pub mod c_TermInfo {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
       let population_0 = cell(&Value::Null); wr(&population_0, &sv!["n"]);
       if truthy(&get(&self_, "outside")) {
-        return own(&sv!["", &tos(&get(&self_, "gate")), "l.\\bar{m}"]);
+        return own(&(if truthy(&m_empty(&get(&self_, "gate"))) { own(&sv!["l.\\bar{m}"]) } else { own(&sv!["", &tos(&get(&self_, "gate")), " l.\\bar{m}"]) }));
       }
       if truthy(&get(&self_, "settles")) {
         return own(&sv!["\\partial_{t}", &tos(&rd(&population_0)), ""]);
@@ -8090,8 +8094,8 @@ pub mod c_TermInfo {
       let rate_0 = cell(&Value::Null); wr(&rate_0, &or_else(&get(&self_, "rate"), || own(&sv![""])));
       let room_0 = cell(&Value::Null); wr(&room_0, &get(&self_, "gate"));
       let pw_0 = cell(&Value::Null); wr(&pw_0, &call(&k!("TermInfo"), "powers", args![rd(&population_0), get(&self_, "degree")]));
-      let gap_0 = cell(&Value::Null); wr(&gap_0, &(if truthy(&((truthy(&(truthy(&(!truthy(&m_empty(&rd(&rate_0))))) && truthy(&m_empty(&rd(&room_0))))) && truthy(&(!truthy(&m_empty(&rd(&pw_0)))))))) { own(&sv![" "]) } else { own(&sv![""]) }));
-      return own(&sv!["", &tos(&rd(&rate_0)), "", &tos(&rd(&room_0)), "", &tos(&rd(&gap_0)), "", &tos(&rd(&pw_0)), ""]);
+      let gap_0 = cell(&Value::Null); wr(&gap_0, &(if truthy(&((truthy(&(!truthy(&m_empty(&rd(&rate_0))))) && truthy(&(!truthy(&((truthy(&m_empty(&rd(&room_0))) && truthy(&m_empty(&rd(&pw_0))))))))))) { own(&sv![" "]) } else { own(&sv![""]) }));
+      return own(&sv!["", &tos(&rd(&rate_0)), "", &tos(&rd(&gap_0)), "", &tos(&rd(&room_0)), "", &tos(&rd(&pw_0)), ""]);
       Value::Null
     }
   }
@@ -8152,7 +8156,7 @@ pub mod c_Prover {
   pub mod g_infos {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&m_map(&get(&get(&self_, "equation"), "terms"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      return own(&m_map(&get(&get(&self_, "theory"), "terms_read"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let t_2 = cell(&arg(a3, 0));
         return own(&make_k(&k!("TermInfo"), args![kw("term", &rd(&t_2))]));
@@ -8342,7 +8346,7 @@ pub mod c_Prover {
           m_push(&rd(&out_0), args![rd(&made_1)]);
         }
         if truthy(&(truthy(&(truthy(&eq(&get(&rd(&t_1), "rays"), &sv!["0"])) && truthy(&gt(&get(&rd(&t_1), "space_net"), &0.0)))) && truthy(&get(&rd(&t_1), "carries")))) {
-          let w_1 = cell(&Value::Null); wr(&w_1, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["what the waiting makes"], rd(&body_1)]), elem(&get(&rd(&t_1), "rules"), &0.0), list![], sv!["", &tos(&rd(&nm_1)), " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is ", &tos(&call(&k!("Expr"), "show", args![rd(&body_1)])), ""], list![sv!["no rays, ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&t_1), "space_count")])), " of space"], sv!["the waiting makes ", &tos(&call(&k!("Expr"), "show", args![rd(&body_1)])), ""]]]));
+          let w_1 = cell(&Value::Null); wr(&w_1, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["what the frontier makes"], rd(&body_1)]), elem(&get(&rd(&t_1), "rules"), &0.0), list![], sv!["", &tos(&rd(&nm_1)), " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is ", &tos(&call(&k!("Expr"), "show", args![rd(&body_1)])), ""], list![sv!["no rays, ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&t_1), "space_count")])), " of space"], sv!["the frontier makes ", &tos(&call(&k!("Expr"), "show", args![rd(&body_1)])), ""]]]));
           set(&rd(&w_1), "rule", &elem(&get(&rd(&t_1), "rules"), &0.0));
           m_push(&rd(&out_0), args![rd(&w_1)]);
         }
@@ -8431,7 +8435,7 @@ pub mod c_Prover {
             return own(&get(&rd(&t_2), "share"));
             Value::Null
           }) }])])]));
-          let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["what share of a step advances"], rd(&advancing_0)]), elem(&get(&rd(&moving_0), "rules"), &0.0), list![], sv!["the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines"], list![]]));
+          let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["what share of a step advances"], rd(&advancing_0)]), elem(&get(&rd(&moving_0), "rules"), &0.0), list![], sv!["the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines"], list![]]));
           set(&rd(&st_0), "rule", &elem(&get(&rd(&moving_0), "rules"), &0.0));
           m_push(&rd(&out_0), args![rd(&st_0)]);
         }
@@ -8717,17 +8721,7 @@ pub mod c_Prover {
         return own(&eq(&get(&rd(&t_2), "side"), &sv!["right"]));
         Value::Null
       }) }));
-      let lhs_0 = cell(&Value::Null); wr(&lhs_0, &m_join(&m_map(&filt(&rd(&infos_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_3 = cell(&arg(a4, 0));
-        return own(&eq(&get(&rd(&t_3), "side"), &sv!["left"]));
-        Value::Null
-      }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&or_else(&get(&rd(&t_2), "operator"), || own(&get(&rd(&t_2), "symbol"))));
-        Value::Null
-      }) }]), args![sv![" + "]]));
+      let lhs_0 = cell(&Value::Null); wr(&lhs_0, &m_join(&get(&self_, "left_operators"), args![sv![" + "]]));
       let equation_0 = cell(&Value::Null); wr(&equation_0, &get(&self_, "equation"));
       m_push(&rd(&out_0), args![call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["", &tos(&rd(&lhs_0)), "n"], call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "add", args![m_map(&rd(&rhs_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
@@ -8751,11 +8745,10 @@ pub mod c_Prover {
       Value::Null
     }
   }
-  pub mod g_line_text {
+  pub mod g_left_operators {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let infos_0 = cell(&Value::Null); wr(&infos_0, &get(&self_, "infos"));
-      let left_0 = cell(&Value::Null); wr(&left_0, &filt(&rd(&infos_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      let left_0 = cell(&Value::Null); wr(&left_0, &filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let t_2 = cell(&arg(a3, 0));
         return own(&eq(&get(&rd(&t_2), "side"), &sv!["left"]));
@@ -8772,6 +8765,25 @@ pub mod c_Prover {
         return own(&(!eq(&get(&rd(&t_2), "operator"), &sv!["\\partial_{t}"])));
         Value::Null
       }) })]));
+      return own(&m_reduce(&m_map(&rd(&left_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_3 = cell(&arg(a4, 0));
+        return own(&or_else(&get(&rd(&t_3), "operator"), || own(&get(&rd(&t_3), "symbol"))));
+        Value::Null
+      }) }]), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let o_2 = cell(&arg(a3, 0)); let x_2 = cell(&arg(a3, 1));
+        return own(&(if truthy(&m_contains(&rd(&o_2), args![rd(&x_2)])) { own(&rd(&o_2)) } else { own(&m_push(&rd(&o_2), args![rd(&x_2)])) }));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod g_line_text {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let infos_0 = cell(&Value::Null); wr(&infos_0, &get(&self_, "infos"));
+      let left_0 = cell(&Value::Null); wr(&left_0, &get(&self_, "left_operators"));
       let right_0 = cell(&Value::Null); wr(&right_0, &filt(&rd(&infos_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let t_2 = cell(&arg(a3, 0));
@@ -8789,18 +8801,16 @@ pub mod c_Prover {
         return own(&m_empty(&get(&rd(&t_2), "rules")));
         Value::Null
       }) })]));
-      let lhs_0 = cell(&Value::Null); wr(&lhs_0, &(if truthy(&m_empty(&rd(&left_0))) { own(&sv!["n"]) } else { own(&sv!["(", &tos(&m_join(&m_map(&rd(&left_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&or_else(&get(&rd(&t_2), "operator"), || own(&get(&rd(&t_2), "symbol"))));
-        Value::Null
-      }) }]), args![glob("plus")])), ")n"]) }));
+      let lhs_0 = cell(&Value::Null); wr(&lhs_0, &(if truthy(&m_empty(&rd(&left_0))) { own(&sv!["n"]) } else { own(&sv!["(", &tos(&m_join(&rd(&left_0), args![glob("plus")])), ")n"]) }));
       let rhs_0 = cell(&Value::Null); wr(&rhs_0, &sv![""]);
       for i1 in 0..(num(&len(&rd(&right_0))).ceil() as i64) {
         let i_1 = cell(&(i1 as f64));
         let t_1 = cell(&Value::Null); wr(&t_1, &elem(&rd(&right_0), &rd(&i_1)));
         let piece_1 = cell(&Value::Null); wr(&piece_1, &(if truthy(&eq(&rd(&i_1), &0.0)) { own(&((if truthy(&eq(&get(&rd(&t_1), "sign"), &neg(&1.0))) { own(&sv!["-"]) } else { own(&sv![""]) }))) } else { own(&((if truthy(&eq(&get(&rd(&t_1), "sign"), &neg(&1.0))) { own(&sv![" - "]) } else { own(&sv![" + "]) }))) }));
-        wr(&rhs_0, &sv!["", &tos(&rd(&rhs_0)), "", &tos(&rd(&piece_1)), "", &tos(&get(&rd(&t_1), "symbol")), ""]);
+        let n_1 = cell(&Value::Null); wr(&n_1, &get(&rd(&t_1), "ray_count"));
+        let size_1 = cell(&Value::Null); wr(&size_1, &call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![get(&rd(&t_1), "sign")]), rd(&n_1)]])])]));
+        let times_1 = cell(&Value::Null); wr(&times_1, &(if truthy(&eq(&rd(&size_1), &sv!["1"])) { own(&sv![""]) } else { own(&sv!["", &tos(&rd(&size_1)), "·"]) }));
+        wr(&rhs_0, &sv!["", &tos(&rd(&rhs_0)), "", &tos(&rd(&piece_1)), "", &tos(&rd(&times_1)), "", &tos(&get(&rd(&t_1), "symbol")), ""]);
       };
       if truthy(&m_empty(&rd(&right_0))) {
         wr(&rhs_0, &sv!["0"]);
@@ -8851,29 +8861,8 @@ pub mod c_Prover {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let name_0 = cell(&arg(a1, 0));
-      let left_0 = cell(&Value::Null); wr(&left_0, &filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&eq(&get(&rd(&t_2), "side"), &sv!["left"]));
-        Value::Null
-      }) }));
-      wr(&left_0, &m_concat(&filt(&rd(&left_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&eq(&get(&rd(&t_2), "operator"), &sv!["\\partial_{t}"]));
-        Value::Null
-      }) }), args![filt(&rd(&left_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&(!eq(&get(&rd(&t_2), "operator"), &sv!["\\partial_{t}"])));
-        Value::Null
-      }) })]));
-      return own(&(if truthy(&m_empty(&rd(&left_0))) { own(&rd(&name_0)) } else { own(&sv!["(", &tos(&m_join(&m_map(&rd(&left_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&or_else(&get(&rd(&t_2), "operator"), || own(&get(&rd(&t_2), "symbol"))));
-        Value::Null
-      }) }]), args![glob("plus")])), ")", &tos(&rd(&name_0)), ""]) }));
+      let left_0 = cell(&Value::Null); wr(&left_0, &get(&self_, "left_operators"));
+      return own(&(if truthy(&m_empty(&rd(&left_0))) { own(&rd(&name_0)) } else { own(&sv!["(", &tos(&m_join(&rd(&left_0), args![glob("plus")])), ")", &tos(&rd(&name_0)), ""]) }));
       Value::Null
     }
   }
@@ -9056,17 +9045,12 @@ pub mod c_Prover {
       }) }]));
       let rhs_0 = cell(&Value::Null); wr(&rhs_0, &call(&k!("Expr"), "collected", args![call(&k!("Expr"), "add", args![list![get(&get(&rd(&filled_0), "fact"), "to"), call(&k!("Expr"), "add", args![rd(&weighed_terms_0)])]])]));
       let rho_0 = cell(&Value::Null); wr(&rho_0, &call(&k!("Expr"), "show", args![get(&k!("Prover"), "POPULATION")]));
-      let ops_0 = cell(&Value::Null); wr(&ops_0, &m_join(&m_map(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+      let ops_0 = cell(&Value::Null); wr(&ops_0, &m_join(&filt(&get(&self_, "left_operators"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let t_3 = cell(&arg(a4, 0));
-        return own(&(truthy(&eq(&get(&rd(&t_3), "side"), &sv!["left"])) && truthy(&(!eq(&get(&rd(&t_3), "operator"), &sv!["\\partial_{t}"])))));
+        let x_2 = cell(&arg(a3, 0));
+        return own(&(!eq(&rd(&x_2), &sv!["\\partial_{t}"])));
         Value::Null
-      }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let t_2 = cell(&arg(a3, 0));
-        return own(&or_else(&get(&rd(&t_2), "operator"), || own(&get(&rd(&t_2), "symbol"))));
-        Value::Null
-      }) }]), args![glob("plus")]));
+      }) }), args![glob("plus")]));
       let weighed_0 = cell(&Value::Null); wr(&weighed_0, &(if truthy(&((truthy(&eq(&get(&rd(&k_0), "kind"), &sv!["num"])) && truthy(&eq(&get(&rd(&k_0), "value"), &1.0))))) { own(&sv!["n_{f}"]) } else { own(&sv!["", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), "·n_{f}"]) }));
       let lhs_0 = cell(&Value::Null); wr(&lhs_0, &(if truthy(&m_empty(&rd(&ops_0))) { own(&sv!["\\partial_{t}\\paren{", &tos(&rd(&rho_0)), " + ", &tos(&rd(&weighed_0)), "}"]) } else { own(&sv!["\\partial_{t}\\paren{", &tos(&rd(&rho_0)), " + ", &tos(&rd(&weighed_0)), "} + \\paren{", &tos(&rd(&ops_0)), "}", &tos(&rd(&rho_0)), ""]) }));
       return own(&call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![rd(&lhs_0), rd(&rhs_0)]), sv!["the population's line and the record's added"], list![get(&get(&rd(&filled_0), "fact"), "key"), get(&get(&rd(&folds_0), "fact"), "key")], sv!["ANNIHILATION takes rays and writes a fold - ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " rays a fold, which is the weight the record carries against the population; CREATION takes a fold off and lights every exit. So the vacuum's taking stands on the population's line and, weighed so, on the record's with the opposite sign, and adding the two cancels it exactly - the same count written twice. What is left moves rays-plus-record: the transport carries the rays, a body puts its mass in, and CREATION at a point that held fewer folds than it lights exits makes rays with nothing consumed - which on an expanding world is where the space grows. That last term is kept as it is: at a small scale the record differs from place to place and the sum is not conserved. It is the one term a settled aggregate loses"], list![sv!["", &tos(&get(&get(&rd(&filled_0), "fact"), "of")), " = ", &tos(&call(&k!("Expr"), "show", args![get(&get(&rd(&filled_0), "fact"), "to")])), ""], sv!["", &tos(&get(&get(&rd(&folds_0), "fact"), "of")), " = ", &tos(&call(&k!("Expr"), "show", args![get(&get(&rd(&folds_0), "fact"), "to")])), ""], sv!["a meeting: ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " rays in, one fold out - so the record counts ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " to one"], sv!["added: the taking cancels, the making does not - a creation lights every exit whether or not it held a fold"], sv!["", &tos(&rd(&lhs_0)), " = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]]));
@@ -9504,7 +9488,7 @@ pub mod c_Prover {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let e_0 = cell(&arg(a1, 0)); let s_0 = cell(&arg(a1, 1)); let at_0 = cell(&arg(a1, 2)); let of_0 = cell(&arg(a1, 3));
-      let known_0 = cell(&Value::Null); wr(&known_0, &call(&k!("Prover"), "names_known", args![rd(&s_0), rd(&at_0)]));
+      let known_0 = cell(&Value::Null); wr(&known_0, &call(&k!("Prover"), "names_kept", args![rd(&s_0), rd(&at_0)]));
       let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
       let seen_0 = cell(&Value::Null); wr(&seen_0, &node());
       let whole_0 = cell(&Value::Null); wr(&whole_0, &call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![rd(&e_0)])]));
@@ -9542,7 +9526,7 @@ pub mod c_Prover {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let e_0 = cell(&arg(a1, 0)); let s_0 = cell(&arg(a1, 1)); let of_0 = cell(&arg(a1, 2));
       let facts_0 = cell(&Value::Null); wr(&facts_0, &call(&k!("Prover"), "by_name", args![rd(&s_0)]));
-      let known_0 = cell(&Value::Null); wr(&known_0, &call(&k!("Prover"), "names_known", args![rd(&s_0), sv!["R"]]));
+      let known_0 = cell(&Value::Null); wr(&known_0, &call(&k!("Prover"), "names_kept", args![rd(&s_0), sv!["R"]]));
       let cite_0 = cell(&Value::Null); wr(&cite_0, &{ let self_: Value = self_.clone(); cl!(known_0, cite_0); fnv(move |a2: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let x_1 = cell(&arg(a2, 0)); let self__1 = cell(&arg(a2, 1)); let d_1 = cell(&arg(a2, 2));
@@ -9897,6 +9881,18 @@ pub mod c_Prover {
       Value::Null
     }
   }
+  pub mod s_names_kept {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let at_0 = cell(&arg(a1, 1));
+      let k_0 = cell(&Value::Null); wr(&k_0, &sv!["", &tos(&get(&rd(&s_0), "version")), "|", &tos(&rd(&at_0)), ""]);
+      if truthy(&eq(&elem(&get(&rd(&s_0), "known_"), &rd(&k_0)), &Value::Null)) {
+        set_at(&get(&rd(&s_0), "known_"), &rd(&k_0), &call(&k!("Prover"), "names_known", args![rd(&s_0), rd(&at_0)]));
+      }
+      return own(&elem(&get(&rd(&s_0), "known_"), &rd(&k_0)));
+      Value::Null
+    }
+  }
   pub fn define(c: &mut Cls) {
     c.field_none("theory");//<
     c.static_field("PROOFS", |self_: &Value| -> Value { own(&node()) });//<
@@ -9919,6 +9915,7 @@ pub mod c_Prover {
     c.method("missing", m_missing::f);//<
     c.statik("behind", s_behind::f);//<
     c.getter("line_steps", g_line_steps::f);//<
+    c.getter("left_operators", g_left_operators::f);//<
     c.getter("line_text", g_line_text::f);//<
     c.statik("POPULATION", s_POPULATION::f);//<
     c.getter("isotropic_population", g_isotropic_population::f);//<
@@ -9973,6 +9970,7 @@ pub mod c_Prover {
     c.statik("is_rule_name", s_is_rule_name::f);//<
     c.getter("proof", g_proof::f);//<
     c.method("chain", m_chain::f);//<
+    c.statik("names_kept", s_names_kept::f);//<
   }
 }
 
@@ -10172,7 +10170,7 @@ pub mod c_Inferences {
   pub mod s_RULES {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&m_concat(&m_concat(&list![get(&k!("Inferences"), "room_balance"), get(&k!("Inferences"), "ehrhart"), get(&k!("Inferences"), "counting"), get(&k!("Inferences"), "reaching"), get(&k!("Inferences"), "mass_of"), get(&k!("Inferences"), "saturating"), get(&k!("Inferences"), "spreading"), get(&k!("Inferences"), "screening"), get(&k!("Inferences"), "refracting"), get(&k!("Inferences"), "accumulating"), get(&k!("Inferences"), "substituting"), get(&k!("Inferences"), "metric_of"), get(&k!("Inferences"), "relativity"), get(&k!("Inferences"), "schwarzschild"), get(&k!("Inferences"), "shadow"), get(&k!("Inferences"), "balancing"), get(&k!("Inferences"), "unbiased"), get(&k!("Inferences"), "free_path"), get(&k!("Inferences"), "summing"), get(&k!("Inferences"), "horizon"), get(&k!("Inferences"), "bending"), get(&k!("Inferences"), "crossing"), get(&k!("Inferences"), "near_field"), get(&k!("Inferences"), "shadowing"), get(&k!("Inferences"), "receiving"), get(&k!("Inferences"), "moved"), get(&k!("Inferences"), "receding"), get(&k!("Inferences"), "shortfall"), get(&k!("Inferences"), "waiting"), get(&k!("Inferences"), "transporting"), get(&k!("Inferences"), "assembling"), get(&k!("Inferences"), "channelling"), get(&k!("Inferences"), "closing"), get(&k!("Inferences"), "arrangement"), get(&k!("Inferences"), "scale_crossed"), get(&k!("Inferences"), "orbiting"), get(&k!("Inferences"), "curve_ends"), get(&k!("Inferences"), "curves_of_each"), get(&k!("Inferences"), "crowding_of_arrivals"), get(&k!("Inferences"), "making_rate"), get(&k!("Inferences"), "hubble_rate"), get(&k!("Inferences"), "expansion_scale"), get(&k!("Inferences"), "coincidence"), get(&k!("Inferences"), "crowding"), get(&k!("Inferences"), "at_that_density"), get(&k!("Inferences"), "in_motion")], args![m_map(&get(&k!("Inferences"), "IN_FULL"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      return own(&m_concat(&m_concat(&list![get(&k!("Inferences"), "room_balance"), get(&k!("Inferences"), "ehrhart"), get(&k!("Inferences"), "counting"), get(&k!("Inferences"), "reaching"), get(&k!("Inferences"), "mass_of"), get(&k!("Inferences"), "saturating"), get(&k!("Inferences"), "spreading"), get(&k!("Inferences"), "screening"), get(&k!("Inferences"), "refracting"), get(&k!("Inferences"), "accumulating"), get(&k!("Inferences"), "substituting"), get(&k!("Inferences"), "metric_of"), get(&k!("Inferences"), "relativity"), get(&k!("Inferences"), "schwarzschild"), get(&k!("Inferences"), "shadow"), get(&k!("Inferences"), "balancing"), get(&k!("Inferences"), "unbiased"), get(&k!("Inferences"), "free_path"), get(&k!("Inferences"), "summing"), get(&k!("Inferences"), "horizon"), get(&k!("Inferences"), "bending"), get(&k!("Inferences"), "crossing"), get(&k!("Inferences"), "near_field"), get(&k!("Inferences"), "shadowing"), get(&k!("Inferences"), "receiving"), get(&k!("Inferences"), "moved"), get(&k!("Inferences"), "receding"), get(&k!("Inferences"), "shortfall"), get(&k!("Inferences"), "keeping"), get(&k!("Inferences"), "transporting"), get(&k!("Inferences"), "assembling"), get(&k!("Inferences"), "channelling"), get(&k!("Inferences"), "closing"), get(&k!("Inferences"), "arrangement"), get(&k!("Inferences"), "scale_crossed"), get(&k!("Inferences"), "orbiting"), get(&k!("Inferences"), "curve_ends"), get(&k!("Inferences"), "curves_of_each"), get(&k!("Inferences"), "crowding_of_arrivals"), get(&k!("Inferences"), "making_rate"), get(&k!("Inferences"), "hubble_rate"), get(&k!("Inferences"), "expansion_scale"), get(&k!("Inferences"), "coincidence"), get(&k!("Inferences"), "crowding"), get(&k!("Inferences"), "at_that_density"), get(&k!("Inferences"), "in_motion")], args![m_map(&get(&k!("Inferences"), "IN_FULL"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let of_2 = cell(&arg(a3, 0));
         return own(&call(&k!("Inferences"), "writing_out", args![rd(&of_2)]));
@@ -10833,14 +10831,14 @@ pub mod c_Inferences {
   pub mod s_making_rate {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&make_k(&k!("Inference"), args![kw("name", &sv!["the room the line does not supply, which the waiting has to make"]), kw("because", &sv!["the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any"]), kw("fire", &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      return own(&make_k(&k!("Inference"), args![kw("name", &sv!["the room the line does not supply, which the frontier has to make"]), kw("because", &sv!["the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any"]), kw("fire", &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let s_2 = cell(&arg(a3, 0));
-        let waits_2 = cell(&Value::Null); wr(&waits_2, &call(&rd(&s_2), "fact", args![sv!["is"], sv!["what the waiting makes"]]));
-        if truthy(&(truthy(&eq(&rd(&waits_2), &Value::Null)) || truthy(&call(&rd(&s_2), "has", args![sv!["is"], sv!["the rate space is made"]])))) {
+        let made_2 = cell(&Value::Null); wr(&made_2, &call(&rd(&s_2), "fact", args![sv!["is"], sv!["what the frontier makes"]]));
+        if truthy(&(truthy(&eq(&rd(&made_2), &Value::Null)) || truthy(&call(&rd(&s_2), "has", args![sv!["is"], sv!["the rate space is made"]])))) {
           return own(&list![]);
         }
-        return own(&list![call(&k!("Inferences"), "step", args![sv!["the rate space is made"], get(&rd(&waits_2), "to"), sv!["the room the line does not supply, which the waiting has to make"], list![get(&rd(&waits_2), "key")], sv!["MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"], list![sv!["the space line carries a term with no rays in it: the waiting"], sv!["a ray that cannot step makes the room instead, and that is space at ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&waits_2), "to")])), ""], sv!["the rate space is made = ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&waits_2), "to")])), ""]]])]);
+        return own(&list![call(&k!("Inferences"), "step", args![sv!["the rate space is made"], get(&rd(&made_2), "to"), sv!["the room the line does not supply, which the frontier has to make"], list![get(&rd(&made_2), "key")], sv!["MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling"], list![sv!["the space line carries a term with no rays in it: the frontier"], sv!["a ray with no room ahead makes it and steps into it, and that is space at ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&made_2), "to")])), ""], sv!["the rate space is made = ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&made_2), "to")])), ""]]])]);
         Value::Null
       }) })]));
       Value::Null
@@ -10928,7 +10926,7 @@ pub mod c_Inferences {
         let via_2 = cell(&Value::Null); wr(&via_2, &sv!["the density where a body is, which is not the density of empty space"]);
         let upon_2 = cell(&Value::Null); wr(&upon_2, &list![get(&rd(&made_2), "key"), get(&rd(&took_2), "key"), get(&rd(&puts_2), "key")]);
         let a0_2 = cell(&Value::Null); wr(&a0_2, &call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "field", args![sv!["\\sigma"]]), call(&k!("Expr"), "simplify", args![rd(&total_2)])]])]));
-        return own(&list![call(&k!("Inferences"), "step", args![sv!["\\rho at R"], rd(&root_2), rd(&via_2), rd(&upon_2), sv!["the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly"], list![sv!["the body's carriers where the far one stands: n = ", &tos(&call(&k!("Expr"), "show", args![rd(&n_2)])), ""], sv!["the population where the body stands: \\rho + n"], sv!["", &tos(&call(&k!("Expr"), "show", args![get(&rd(&mkC_2), "to")])), "·", &tos(&call(&k!("Expr"), "show", args![rd(&making_with_body_2)])), " + ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&tkC_2), "to")])), "·F·", &tos(&call(&k!("Expr"), "show", args![rd(&with_body_2)])), " = 0"], sv!["\\rho at R = ", &tos(&call(&k!("Expr"), "show", args![rd(&root_2)])), ""]]]), call(&k!("Inferences"), "step", args![sv!["the population at R"], call(&k!("Expr"), "simplify", args![rd(&total_2)]), rd(&via_2), rd(&upon_2), sv!["what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter"], list![sv!["the vacuum's settled share there: \\rho at R"], sv!["the body's carriers there: ", &tos(&call(&k!("Expr"), "show", args![rd(&n_2)])), ""], sv!["the population at R = ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![rd(&total_2)])])), ""]]]), call(&k!("Inferences"), "step", args![sv!["a_{0} at R"], rd(&a0_2), rd(&via_2), rd(&upon_2), sv!["the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer"], list![sv!["the space line's waiting term: \\sigma n, degree one in the population"], sv!["a_{0} at R = \\sigma·(the population at R) = ", &tos(&call(&k!("Expr"), "show", args![rd(&a0_2)])), ""]]])]);
+        return own(&list![call(&k!("Inferences"), "step", args![sv!["\\rho at R"], rd(&root_2), rd(&via_2), rd(&upon_2), sv!["the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly"], list![sv!["the body's carriers where the far one stands: n = ", &tos(&call(&k!("Expr"), "show", args![rd(&n_2)])), ""], sv!["the population where the body stands: \\rho + n"], sv!["", &tos(&call(&k!("Expr"), "show", args![get(&rd(&mkC_2), "to")])), "·", &tos(&call(&k!("Expr"), "show", args![rd(&making_with_body_2)])), " + ", &tos(&call(&k!("Expr"), "show", args![get(&rd(&tkC_2), "to")])), "·F·", &tos(&call(&k!("Expr"), "show", args![rd(&with_body_2)])), " = 0"], sv!["\\rho at R = ", &tos(&call(&k!("Expr"), "show", args![rd(&root_2)])), ""]]]), call(&k!("Inferences"), "step", args![sv!["the population at R"], call(&k!("Expr"), "simplify", args![rd(&total_2)]), rd(&via_2), rd(&upon_2), sv!["what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter"], list![sv!["the vacuum's settled share there: \\rho at R"], sv!["the body's carriers there: ", &tos(&call(&k!("Expr"), "show", args![rd(&n_2)])), ""], sv!["the population at R = ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![rd(&total_2)])])), ""]]]), call(&k!("Inferences"), "step", args![sv!["a_{0} at R"], rd(&a0_2), rd(&via_2), rd(&upon_2), sv!["the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer"], list![sv!["the space line's frontier term: \\sigma n, degree one in the population"], sv!["a_{0} at R = \\sigma·(the population at R) = ", &tos(&call(&k!("Expr"), "show", args![rd(&a0_2)])), ""]]])]);
         Value::Null
       }) })]));
       Value::Null
@@ -11440,7 +11438,7 @@ pub mod c_Inferences {
       Value::Null
     }
   }
-  pub mod s_waiting {
+  pub mod s_keeping {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
       return own(&make_k(&k!("Inference"), args![kw("name", &sv!["how fast a carrier goes, which is the share of its step that was straight"]), kw("because", &sv!["`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it"]), kw("fire", &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
@@ -11458,7 +11456,7 @@ pub mod c_Inferences {
         }
         m_push(&rd(&parts_2), args![call(&k!("Expr"), "pown", args![call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "num", args![1.0]), call(&k!("Expr"), "field", args![sv!["n_{f}"]])]]), neg(&1.0)])]);
         let got_2 = cell(&Value::Null); wr(&got_2, &call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![rd(&parts_2)])]));
-        return own(&list![call(&k!("Inferences"), "step", args![sv!["v"], rd(&got_2), sv!["how fast a carrier goes, which is the share of its step that was straight"], list![get(&rd(&nf_2), "key"), get(&rd(&c__2), "key")], sv!["MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier"], list![sv!["turns: 1 way straight on against folds[d] ways out along d"], sv!["so a ray keeps its heading with 1/(1 + n_{f})"], sv!["v = \\bar{c}/(1 + n_{f}) = ", &tos(&call(&k!("Expr"), "show", args![rd(&got_2)])), ""], sv!["n_{f} small: v -> one cell a tick, and the carrier streams"], sv!["n_{f} large: v -> \\bar{c}/n_{f}, and it does not"]]])]);
+        return own(&list![call(&k!("Inferences"), "step", args![sv!["v"], rd(&got_2), sv!["how fast a carrier goes, which is the share of its step that was straight"], list![get(&rd(&nf_2), "key"), get(&rd(&c__2), "key")], sv!["MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier"], list![sv!["turns: 1 way straight on against folds[d] ways out along d"], sv!["so a ray keeps its heading with 1/(1 + n_{f})"], sv!["v = \\bar{c}/(1 + n_{f}) = ", &tos(&call(&k!("Expr"), "show", args![rd(&got_2)])), ""], sv!["n_{f} small: v -> one cell a tick, and the carrier streams"], sv!["n_{f} large: v -> \\bar{c}/n_{f}, and it does not"]]])]);
         Value::Null
       }) })]));
       Value::Null
@@ -11550,7 +11548,7 @@ pub mod c_Inferences {
     c.statik("can_it_push", s_can_it_push::f);//<
     c.statik("receding", s_receding::f);//<
     c.statik("shortfall", s_shortfall::f);//<
-    c.statik("waiting", s_waiting::f);//<
+    c.statik("keeping", s_keeping::f);//<
     c.statik("transporting", s_transporting::f);//<
   }
 }
@@ -25174,7 +25172,7 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "vacuum.settled"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"]), kw("about", &sv!["\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"]), kw("also", &sv!["\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"]), kw("leads", &sv!["THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."]), kw("then", &sv!["AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent."])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"]), kw("about", &sv!["\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"]), kw("also", &sv!["\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"]), kw("leads", &sv!["THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."]), kw("then", &sv!["AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record."])]));
     Value::Null
   }) })])
     }

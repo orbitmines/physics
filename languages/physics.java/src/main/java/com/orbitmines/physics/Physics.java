@@ -117,7 +117,10 @@ static final class C_Ray {
       Object[] to_0 = new Object[1]; to_0[0] = get(self, "turns");
       if (truthy(eq(to_0[0], null))) {
         get(get(self, "leaving"), "grow");
-        call(self, "hand", new Object[] { self });
+        Object[] made_0 = new Object[1]; made_0[0] = get(self, "steps");
+        if (truthy(!eq(made_0[0], null))) {
+          call(self, "hand", new Object[] { made_0[0] });
+        }
         if (true) return null;
       }
       Object[] here_0 = new Object[1]; here_0[0] = get(self, "vertex");
@@ -5632,6 +5635,7 @@ static final class C_Store {
       if (true) return true;
       return null;
     });
+    c.field("known_", self -> make(NODE));
   }
 }
 
@@ -6118,7 +6122,7 @@ static final class C_TermInfo {
     c.getter("symbol", (self, a1) -> {
       Object[] population_0 = new Object[1]; population_0[0] = "n";
       if (truthy(get(self, "outside"))) {
-        if (true) return "" + str(get(self, "gate")) + "l.\\bar{m}";
+        if (true) return (truthy(m_empty(get(self, "gate"))) ? (Object) "l.\\bar{m}" : (Object) "" + str(get(self, "gate")) + " l.\\bar{m}");
       }
       if (truthy(get(self, "settles"))) {
         if (true) return "\\partial_{t}" + str(population_0[0]) + "";
@@ -6129,8 +6133,8 @@ static final class C_TermInfo {
       Object[] rate_0 = new Object[1]; rate_0[0] = orElse(get(self, "rate"), () -> "");
       Object[] room_0 = new Object[1]; room_0[0] = get(self, "gate");
       Object[] pw_0 = new Object[1]; pw_0[0] = call(K("TermInfo"), "powers", new Object[] { population_0[0], get(self, "degree") });
-      Object[] gap_0 = new Object[1]; gap_0[0] = (truthy(((truthy((truthy(not(m_empty(rate_0[0]))) && truthy(m_empty(room_0[0])))) && truthy(not(m_empty(pw_0[0])))))) ? (Object) " " : (Object) "");
-      if (true) return "" + str(rate_0[0]) + "" + str(room_0[0]) + "" + str(gap_0[0]) + "" + str(pw_0[0]) + "";
+      Object[] gap_0 = new Object[1]; gap_0[0] = (truthy(((truthy(not(m_empty(rate_0[0]))) && truthy(not(((truthy(m_empty(room_0[0])) && truthy(m_empty(pw_0[0]))))))))) ? (Object) " " : (Object) "");
+      if (true) return "" + str(rate_0[0]) + "" + str(gap_0[0]) + "" + str(room_0[0]) + "" + str(pw_0[0]) + "";
       return null;
     });
   }
@@ -6149,7 +6153,7 @@ static final class C_Prover {
       return null;
     });
     c.getter("infos", (self, a1) -> {
-      if (true) return m_map(get(get(self, "equation"), "terms"), (Fn) (a3) -> {
+      if (true) return m_map(get(get(self, "theory"), "terms_read"), (Fn) (a3) -> {
         Object[] t_2 = { arg(a3, 0) };
         if (true) return make("TermInfo", new Object[] { kw("term", t_2[0]) });
         return null;
@@ -6311,7 +6315,7 @@ static final class C_Prover {
           m_push(out_0[0], made_1[0]);
         }
         if (truthy((truthy((truthy(eq(get(t_1[0], "rays"), "0")) && truthy(gt(get(t_1[0], "space_net"), 0.0)))) && truthy(get(t_1[0], "carries"))))) {
-          Object[] w_1 = new Object[1]; w_1[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "what the waiting makes", body_1[0] }), elem(get(t_1[0], "rules"), 0.0), list(), "" + str(nm_1[0]) + " hands the ray to itself and grows the world - no ray made, destroyed or moved, and a point of space where there was none. That is a carrier standing still to make the room it could not step into, and the rate it does so at is " + str(call(K("Expr"), "show", new Object[] { body_1[0] })) + "", list("no rays, " + str(call(K("Expr"), "show", new Object[] { get(t_1[0], "space_count") })) + " of space", "the waiting makes " + str(call(K("Expr"), "show", new Object[] { body_1[0] })) + "") });
+          Object[] w_1 = new Object[1]; w_1[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "what the frontier makes", body_1[0] }), elem(get(t_1[0], "rules"), 0.0), list(), "" + str(nm_1[0]) + " grows the world by the point a ray steps into - no ray made or destroyed, and a point of space where there was none. That is a carrier making the room it steps into, the same tick, and the rate it does so at is " + str(call(K("Expr"), "show", new Object[] { body_1[0] })) + "", list("no rays, " + str(call(K("Expr"), "show", new Object[] { get(t_1[0], "space_count") })) + " of space", "the frontier makes " + str(call(K("Expr"), "show", new Object[] { body_1[0] })) + "") });
           set(w_1[0], "rule", elem(get(t_1[0], "rules"), 0.0));
           m_push(out_0[0], w_1[0]);
         }
@@ -6393,7 +6397,7 @@ static final class C_Prover {
             if (true) return get(t_2[0], "share");
             return null;
           }) }) });
-          Object[] st_0 = new Object[1]; st_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "what share of a step advances", advancing_0[0] }), elem(get(moving_0[0], "rules"), 0.0), list(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and waits instead. That gate is on the transport, so it is on the speed - and its complement is on the waiting, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list() });
+          Object[] st_0 = new Object[1]; st_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "what share of a step advances", advancing_0[0] }), elem(get(moving_0[0], "rules"), 0.0), list(), "the streaming term is gated: a ray hands over only where the way it drew leads somewhere, and where it does not it makes the room and steps into that instead. That gate is on the transport, so it is on the speed - and its complement is on the making of room, which is the other arm of the same either and the only other thing in these rules that makes space. One share, both lines", list() });
           set(st_0[0], "rule", elem(get(moving_0[0], "rules"), 0.0));
           m_push(out_0[0], st_0[0]);
         }
@@ -6641,15 +6645,7 @@ static final class C_Prover {
         if (true) return eq(get(t_2[0], "side"), "right");
         return null;
       });
-      Object[] lhs_0 = new Object[1]; lhs_0[0] = m_join(m_map(filt(infos_0[0], (Fn) (a4) -> {
-        Object[] t_3 = { arg(a4, 0) };
-        if (true) return eq(get(t_3[0], "side"), "left");
-        return null;
-      }), (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return orElse(get(t_2[0], "operator"), () -> get(t_2[0], "symbol"));
-        return null;
-      }), " + ");
+      Object[] lhs_0 = new Object[1]; lhs_0[0] = m_join(get(self, "left_operators"), " + ");
       Object[] equation_0 = new Object[1]; equation_0[0] = get(self, "equation");
       m_push(out_0[0], call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "" + str(lhs_0[0]) + "n", call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "add", new Object[] { m_map(rhs_0[0], (Fn) (a3) -> {
         Object[] t_2 = { arg(a3, 0) };
@@ -6669,9 +6665,8 @@ static final class C_Prover {
       if (true) return out_0[0];
       return null;
     });
-    c.getter("line_text", (self, a1) -> {
-      Object[] infos_0 = new Object[1]; infos_0[0] = get(self, "infos");
-      Object[] left_0 = new Object[1]; left_0[0] = filt(infos_0[0], (Fn) (a3) -> {
+    c.getter("left_operators", (self, a1) -> {
+      Object[] left_0 = new Object[1]; left_0[0] = filt(get(self, "infos"), (Fn) (a3) -> {
         Object[] t_2 = { arg(a3, 0) };
         if (true) return eq(get(t_2[0], "side"), "left");
         return null;
@@ -6685,6 +6680,20 @@ static final class C_Prover {
         if (true) return !eq(get(t_2[0], "operator"), "\\partial_{t}");
         return null;
       }));
+      if (true) return m_reduce(m_map(left_0[0], (Fn) (a4) -> {
+        Object[] t_3 = { arg(a4, 0) };
+        if (true) return orElse(get(t_3[0], "operator"), () -> get(t_3[0], "symbol"));
+        return null;
+      }), list(), (Fn) (a3) -> {
+        Object[] o_2 = { arg(a3, 0) }; Object[] x_2 = { arg(a3, 1) };
+        if (true) return (truthy(m_contains(o_2[0], x_2[0])) ? (Object) o_2[0] : (Object) m_push(o_2[0], x_2[0]));
+        return null;
+      });
+      return null;
+    });
+    c.getter("line_text", (self, a1) -> {
+      Object[] infos_0 = new Object[1]; infos_0[0] = get(self, "infos");
+      Object[] left_0 = new Object[1]; left_0[0] = get(self, "left_operators");
       Object[] right_0 = new Object[1]; right_0[0] = filt(infos_0[0], (Fn) (a3) -> {
         Object[] t_2 = { arg(a3, 0) };
         if (true) return (truthy(eq(get(t_2[0], "side"), "right")) && truthy(((truthy(m_empty(get(t_2[0], "rules"))) || truthy(!eq(get(t_2[0], "rays"), "0"))))));
@@ -6699,17 +6708,16 @@ static final class C_Prover {
         if (true) return m_empty(get(t_2[0], "rules"));
         return null;
       }));
-      Object[] lhs_0 = new Object[1]; lhs_0[0] = (truthy(m_empty(left_0[0])) ? (Object) "n" : (Object) "(" + str(m_join(m_map(left_0[0], (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return orElse(get(t_2[0], "operator"), () -> get(t_2[0], "symbol"));
-        return null;
-      }), plus())) + ")n");
+      Object[] lhs_0 = new Object[1]; lhs_0[0] = (truthy(m_empty(left_0[0])) ? (Object) "n" : (Object) "(" + str(m_join(left_0[0], plus())) + ")n");
       Object[] rhs_0 = new Object[1]; rhs_0[0] = "";
       for (double i1 = 0; i1 < num(len(right_0[0])); i1++) {
         Object[] i_1 = { i1 };
         Object[] t_1 = new Object[1]; t_1[0] = elem(right_0[0], i_1[0]);
         Object[] piece_1 = new Object[1]; piece_1[0] = (truthy(eq(i_1[0], 0.0)) ? (Object) ((truthy(eq(get(t_1[0], "sign"), neg(1.0))) ? (Object) "-" : (Object) "")) : (Object) ((truthy(eq(get(t_1[0], "sign"), neg(1.0))) ? (Object) " - " : (Object) " + ")));
-        rhs_0[0] = "" + str(rhs_0[0]) + "" + str(piece_1[0]) + "" + str(get(t_1[0], "symbol")) + "";
+        Object[] n_1 = new Object[1]; n_1[0] = get(t_1[0], "ray_count");
+        Object[] size_1 = new Object[1]; size_1[0] = call(K("Expr"), "show", new Object[] { call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "num", new Object[] { get(t_1[0], "sign") }), n_1[0]) }) }) });
+        Object[] times_1 = new Object[1]; times_1[0] = (truthy(eq(size_1[0], "1")) ? (Object) "" : (Object) "" + str(size_1[0]) + "·");
+        rhs_0[0] = "" + str(rhs_0[0]) + "" + str(piece_1[0]) + "" + str(times_1[0]) + "" + str(get(t_1[0], "symbol")) + "";
       };
       if (truthy(m_empty(right_0[0]))) {
         rhs_0[0] = "0";
@@ -6742,25 +6750,8 @@ static final class C_Prover {
     });
     c.method("operators_on", (self, a1) -> {
       Object[] name_0 = { arg(a1, 0) };
-      Object[] left_0 = new Object[1]; left_0[0] = filt(get(self, "infos"), (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return eq(get(t_2[0], "side"), "left");
-        return null;
-      });
-      left_0[0] = m_concat(filt(left_0[0], (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return eq(get(t_2[0], "operator"), "\\partial_{t}");
-        return null;
-      }), filt(left_0[0], (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return !eq(get(t_2[0], "operator"), "\\partial_{t}");
-        return null;
-      }));
-      if (true) return (truthy(m_empty(left_0[0])) ? (Object) name_0[0] : (Object) "(" + str(m_join(m_map(left_0[0], (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return orElse(get(t_2[0], "operator"), () -> get(t_2[0], "symbol"));
-        return null;
-      }), plus())) + ")" + str(name_0[0]) + "");
+      Object[] left_0 = new Object[1]; left_0[0] = get(self, "left_operators");
+      if (true) return (truthy(m_empty(left_0[0])) ? (Object) name_0[0] : (Object) "(" + str(m_join(left_0[0], plus())) + ")" + str(name_0[0]) + "");
       return null;
     });
     c.method("line_filled", (self, a1) -> {
@@ -6904,13 +6895,9 @@ static final class C_Prover {
       });
       Object[] rhs_0 = new Object[1]; rhs_0[0] = call(K("Expr"), "collected", new Object[] { call(K("Expr"), "add", new Object[] { list(get(get(filled_0[0], "fact"), "to"), call(K("Expr"), "add", new Object[] { weighed_terms_0[0] })) }) });
       Object[] rho_0 = new Object[1]; rho_0[0] = call(K("Expr"), "show", new Object[] { get(K("Prover"), "POPULATION") });
-      Object[] ops_0 = new Object[1]; ops_0[0] = m_join(m_map(filt(get(self, "infos"), (Fn) (a4) -> {
-        Object[] t_3 = { arg(a4, 0) };
-        if (true) return (truthy(eq(get(t_3[0], "side"), "left")) && truthy(!eq(get(t_3[0], "operator"), "\\partial_{t}")));
-        return null;
-      }), (Fn) (a3) -> {
-        Object[] t_2 = { arg(a3, 0) };
-        if (true) return orElse(get(t_2[0], "operator"), () -> get(t_2[0], "symbol"));
+      Object[] ops_0 = new Object[1]; ops_0[0] = m_join(filt(get(self, "left_operators"), (Fn) (a3) -> {
+        Object[] x_2 = { arg(a3, 0) };
+        if (true) return !eq(x_2[0], "\\partial_{t}");
         return null;
       }), plus());
       Object[] weighed_0 = new Object[1]; weighed_0[0] = (truthy(((truthy(eq(get(k_0[0], "kind"), "num")) && truthy(eq(get(k_0[0], "value"), 1.0))))) ? (Object) "n_{f}" : (Object) "" + str(call(K("Expr"), "show", new Object[] { k_0[0] })) + "·n_{f}");
@@ -7253,7 +7240,7 @@ static final class C_Prover {
     });
     c.statik("annotate", (self, a1) -> {
       Object[] e_0 = { arg(a1, 0) }; Object[] s_0 = { arg(a1, 1) }; Object[] at_0 = { arg(a1, 2) }; Object[] of_0 = { arg(a1, 3) };
-      Object[] known_0 = new Object[1]; known_0[0] = call(K("Prover"), "names_known", new Object[] { s_0[0], at_0[0] });
+      Object[] known_0 = new Object[1]; known_0[0] = call(K("Prover"), "names_kept", new Object[] { s_0[0], at_0[0] });
       Object[] out_0 = new Object[1]; out_0[0] = list();
       Object[] seen_0 = new Object[1]; seen_0[0] = make(NODE);
       Object[] whole_0 = new Object[1]; whole_0[0] = call(K("Expr"), "show", new Object[] { call(K("Expr"), "simplify", new Object[] { e_0[0] }) });
@@ -7287,7 +7274,7 @@ static final class C_Prover {
     c.statik("standing_for", (self, a1) -> {
       Object[] e_0 = { arg(a1, 0) }; Object[] s_0 = { arg(a1, 1) }; Object[] of_0 = { arg(a1, 2) };
       Object[] facts_0 = new Object[1]; facts_0[0] = call(K("Prover"), "by_name", new Object[] { s_0[0] });
-      Object[] known_0 = new Object[1]; known_0[0] = call(K("Prover"), "names_known", new Object[] { s_0[0], "R" });
+      Object[] known_0 = new Object[1]; known_0[0] = call(K("Prover"), "names_kept", new Object[] { s_0[0], "R" });
       Object[] cite_0 = new Object[1]; cite_0[0] = (Fn) (a2) -> {
         Object[] x_1 = { arg(a2, 0) }; Object[] self__1 = { arg(a2, 1) }; Object[] d_1 = { arg(a2, 2) };
         if (truthy(gt(d_1[0], 0.0))) {
@@ -7604,6 +7591,15 @@ static final class C_Prover {
       if (true) return out_0[0];
       return null;
     });
+    c.statik("names_kept", (self, a1) -> {
+      Object[] s_0 = { arg(a1, 0) }; Object[] at_0 = { arg(a1, 1) };
+      Object[] k_0 = new Object[1]; k_0[0] = "" + str(get(s_0[0], "version")) + "|" + str(at_0[0]) + "";
+      if (truthy(eq(elem(get(s_0[0], "known_"), k_0[0]), null))) {
+        setAt(get(s_0[0], "known_"), k_0[0], call(K("Prover"), "names_known", new Object[] { s_0[0], at_0[0] }));
+      }
+      if (true) return elem(get(s_0[0], "known_"), k_0[0]);
+      return null;
+    });
   }
 }
 
@@ -7753,7 +7749,7 @@ static final class C_Inferences {
       return null;
     });
     c.statik("RULES", (self, a1) -> {
-      if (true) return m_concat(m_concat(list(get(K("Inferences"), "room_balance"), get(K("Inferences"), "ehrhart"), get(K("Inferences"), "counting"), get(K("Inferences"), "reaching"), get(K("Inferences"), "mass_of"), get(K("Inferences"), "saturating"), get(K("Inferences"), "spreading"), get(K("Inferences"), "screening"), get(K("Inferences"), "refracting"), get(K("Inferences"), "accumulating"), get(K("Inferences"), "substituting"), get(K("Inferences"), "metric_of"), get(K("Inferences"), "relativity"), get(K("Inferences"), "schwarzschild"), get(K("Inferences"), "shadow"), get(K("Inferences"), "balancing"), get(K("Inferences"), "unbiased"), get(K("Inferences"), "free_path"), get(K("Inferences"), "summing"), get(K("Inferences"), "horizon"), get(K("Inferences"), "bending"), get(K("Inferences"), "crossing"), get(K("Inferences"), "near_field"), get(K("Inferences"), "shadowing"), get(K("Inferences"), "receiving"), get(K("Inferences"), "moved"), get(K("Inferences"), "receding"), get(K("Inferences"), "shortfall"), get(K("Inferences"), "waiting"), get(K("Inferences"), "transporting"), get(K("Inferences"), "assembling"), get(K("Inferences"), "channelling"), get(K("Inferences"), "closing"), get(K("Inferences"), "arrangement"), get(K("Inferences"), "scale_crossed"), get(K("Inferences"), "orbiting"), get(K("Inferences"), "curve_ends"), get(K("Inferences"), "curves_of_each"), get(K("Inferences"), "crowding_of_arrivals"), get(K("Inferences"), "making_rate"), get(K("Inferences"), "hubble_rate"), get(K("Inferences"), "expansion_scale"), get(K("Inferences"), "coincidence"), get(K("Inferences"), "crowding"), get(K("Inferences"), "at_that_density"), get(K("Inferences"), "in_motion")), m_map(get(K("Inferences"), "IN_FULL"), (Fn) (a3) -> {
+      if (true) return m_concat(m_concat(list(get(K("Inferences"), "room_balance"), get(K("Inferences"), "ehrhart"), get(K("Inferences"), "counting"), get(K("Inferences"), "reaching"), get(K("Inferences"), "mass_of"), get(K("Inferences"), "saturating"), get(K("Inferences"), "spreading"), get(K("Inferences"), "screening"), get(K("Inferences"), "refracting"), get(K("Inferences"), "accumulating"), get(K("Inferences"), "substituting"), get(K("Inferences"), "metric_of"), get(K("Inferences"), "relativity"), get(K("Inferences"), "schwarzschild"), get(K("Inferences"), "shadow"), get(K("Inferences"), "balancing"), get(K("Inferences"), "unbiased"), get(K("Inferences"), "free_path"), get(K("Inferences"), "summing"), get(K("Inferences"), "horizon"), get(K("Inferences"), "bending"), get(K("Inferences"), "crossing"), get(K("Inferences"), "near_field"), get(K("Inferences"), "shadowing"), get(K("Inferences"), "receiving"), get(K("Inferences"), "moved"), get(K("Inferences"), "receding"), get(K("Inferences"), "shortfall"), get(K("Inferences"), "keeping"), get(K("Inferences"), "transporting"), get(K("Inferences"), "assembling"), get(K("Inferences"), "channelling"), get(K("Inferences"), "closing"), get(K("Inferences"), "arrangement"), get(K("Inferences"), "scale_crossed"), get(K("Inferences"), "orbiting"), get(K("Inferences"), "curve_ends"), get(K("Inferences"), "curves_of_each"), get(K("Inferences"), "crowding_of_arrivals"), get(K("Inferences"), "making_rate"), get(K("Inferences"), "hubble_rate"), get(K("Inferences"), "expansion_scale"), get(K("Inferences"), "coincidence"), get(K("Inferences"), "crowding"), get(K("Inferences"), "at_that_density"), get(K("Inferences"), "in_motion")), m_map(get(K("Inferences"), "IN_FULL"), (Fn) (a3) -> {
         Object[] of_2 = { arg(a3, 0) };
         if (true) return call(K("Inferences"), "writing_out", new Object[] { of_2[0] });
         return null;
@@ -8303,13 +8299,13 @@ static final class C_Inferences {
       return null;
     });
     c.statik("making_rate", (self, a1) -> {
-      if (true) return make("Inference", new Object[] { kw("name", "the room the line does not supply, which the waiting has to make"), kw("because", "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a waiting ray has to make - which is the one other thing in these rules that makes any"), kw("fire", (Fn) (a3) -> {
+      if (true) return make("Inference", new Object[] { kw("name", "the room the line does not supply, which the frontier has to make"), kw("because", "the space line takes at every meeting and makes at every free point, and what it leaves unsupplied is what a ray at the frontier has to make - which is the one other thing in these rules that makes any"), kw("fire", (Fn) (a3) -> {
         Object[] s_2 = { arg(a3, 0) };
-        Object[] waits_2 = new Object[1]; waits_2[0] = call(s_2[0], "fact", new Object[] { "is", "what the waiting makes" });
-        if (truthy((truthy(eq(waits_2[0], null)) || truthy(call(s_2[0], "has", new Object[] { "is", "the rate space is made" }))))) {
+        Object[] made_2 = new Object[1]; made_2[0] = call(s_2[0], "fact", new Object[] { "is", "what the frontier makes" });
+        if (truthy((truthy(eq(made_2[0], null)) || truthy(call(s_2[0], "has", new Object[] { "is", "the rate space is made" }))))) {
           if (true) return list();
         }
-        if (true) return list(call(K("Inferences"), "step", new Object[] { "the rate space is made", get(waits_2[0], "to"), "the room the line does not supply, which the waiting has to make", list(get(waits_2[0], "key")), "MOVEMENT sends a ray with nowhere to step to waitForRoom, which hands it back to itself and grows the world by a point - no ray made, destroyed or moved, and space where there was none. Nothing else in these rules has that shape, so that term IS the waiting, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", list("the space line carries a term with no rays in it: the waiting", "a ray that cannot step makes the room instead, and that is space at " + str(call(K("Expr"), "show", new Object[] { get(waits_2[0], "to") })) + "", "the rate space is made = " + str(call(K("Expr"), "show", new Object[] { get(waits_2[0], "to") })) + "") }));
+        if (true) return list(call(K("Inferences"), "step", new Object[] { "the rate space is made", get(made_2[0], "to"), "the room the line does not supply, which the frontier has to make", list(get(made_2[0], "key")), "MOVEMENT has a ray with nowhere to step grow the world by a point and step into it, the same tick - no ray made or destroyed, and space where there was none. Nothing else in these rules has that shape, so that term IS the frontier, and its rate is the rate a ray tries to step times the chance its way out is taken. NOTHING IS FITTED HERE: it is one term of the space line read off as it stands, and it is the only scale in this theory that is not a count of the tiling", list("the space line carries a term with no rays in it: the frontier", "a ray with no room ahead makes it and steps into it, and that is space at " + str(call(K("Expr"), "show", new Object[] { get(made_2[0], "to") })) + "", "the rate space is made = " + str(call(K("Expr"), "show", new Object[] { get(made_2[0], "to") })) + "") }));
         return null;
       }) });
       return null;
@@ -8381,7 +8377,7 @@ static final class C_Inferences {
         Object[] via_2 = new Object[1]; via_2[0] = "the density where a body is, which is not the density of empty space";
         Object[] upon_2 = new Object[1]; upon_2[0] = list(get(made_2[0], "key"), get(took_2[0], "key"), get(puts_2[0], "key"));
         Object[] a0_2 = new Object[1]; a0_2[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "field", new Object[] { "\\sigma" }), call(K("Expr"), "simplify", new Object[] { total_2[0] })) }) });
-        if (true) return list(call(K("Inferences"), "step", new Object[] { "\\rho at R", root_2[0], via_2[0], upon_2[0], "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", list("the body's carriers where the far one stands: n = " + str(call(K("Expr"), "show", new Object[] { n_2[0] })) + "", "the population where the body stands: \\rho + n", "" + str(call(K("Expr"), "show", new Object[] { get(mkC_2[0], "to") })) + "·" + str(call(K("Expr"), "show", new Object[] { making_with_body_2[0] })) + " + " + str(call(K("Expr"), "show", new Object[] { get(tkC_2[0], "to") })) + "·F·" + str(call(K("Expr"), "show", new Object[] { with_body_2[0] })) + " = 0", "\\rho at R = " + str(call(K("Expr"), "show", new Object[] { root_2[0] })) + "") }), call(K("Inferences"), "step", new Object[] { "the population at R", call(K("Expr"), "simplify", new Object[] { total_2[0] }), via_2[0], upon_2[0], "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the waiting see, and they are not the same number near matter", list("the vacuum's settled share there: \\rho at R", "the body's carriers there: " + str(call(K("Expr"), "show", new Object[] { n_2[0] })) + "", "the population at R = " + str(call(K("Expr"), "show", new Object[] { call(K("Expr"), "simplify", new Object[] { total_2[0] }) })) + "") }), call(K("Inferences"), "step", new Object[] { "a_{0} at R", a0_2[0], via_2[0], upon_2[0], "the space line's waiting term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", list("the space line's waiting term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " + str(call(K("Expr"), "show", new Object[] { a0_2[0] })) + "") }));
+        if (true) return list(call(K("Inferences"), "step", new Object[] { "\\rho at R", root_2[0], via_2[0], upon_2[0], "the empty-space density is the root of the making against the taking, and it was derived under a condition it is then used outside of: it holds where the line is about the vacuum and NOT about a source. Near a body there is a source. The meeting rule never asks which body a ray belongs to, so the body's own carriers are taken against as readily as the vacuum's and the balance gains a cross piece - AND IT IS THE SAME BALANCE otherwise, read off the same terms with the same counts, so a change in what a rule does moves both together. Far out the body's carriers are nothing and it returns the empty-space root exactly", list("the body's carriers where the far one stands: n = " + str(call(K("Expr"), "show", new Object[] { n_2[0] })) + "", "the population where the body stands: \\rho + n", "" + str(call(K("Expr"), "show", new Object[] { get(mkC_2[0], "to") })) + "·" + str(call(K("Expr"), "show", new Object[] { making_with_body_2[0] })) + " + " + str(call(K("Expr"), "show", new Object[] { get(tkC_2[0], "to") })) + "·F·" + str(call(K("Expr"), "show", new Object[] { with_body_2[0] })) + " = 0", "\\rho at R = " + str(call(K("Expr"), "show", new Object[] { root_2[0] })) + "") }), call(K("Inferences"), "step", new Object[] { "the population at R", call(K("Expr"), "simplify", new Object[] { total_2[0] }), via_2[0], upon_2[0], "what is at a place near a body is the vacuum's settled share and the body's own carriers together - MOVEMENT moves a lit ray whoever lit it, so the line's population is every ray there. The vacuum's share is what the BALANCE solves for, because that is what the making and the taking act on; the POPULATION is what the transport and the frontier see, and they are not the same number near matter", list("the vacuum's settled share there: \\rho at R", "the body's carriers there: " + str(call(K("Expr"), "show", new Object[] { n_2[0] })) + "", "the population at R = " + str(call(K("Expr"), "show", new Object[] { call(K("Expr"), "simplify", new Object[] { total_2[0] }) })) + "") }), call(K("Inferences"), "step", new Object[] { "a_{0} at R", a0_2[0], via_2[0], upon_2[0], "the space line's frontier term is \\sigma times the population, and near a body the population is the vacuum's share plus the body's carriers. So the scale the transport turns over at is NOT the vacuum's own everywhere: it falls where a body suppresses the splitting and rises where the body's own carriers outnumber what it suppressed, and which of those wins is a question about the body rather than an assumption about the answer", list("the space line's frontier term: \\sigma n, degree one in the population", "a_{0} at R = \\sigma·(the population at R) = " + str(call(K("Expr"), "show", new Object[] { a0_2[0] })) + "") }));
         return null;
       }) });
       return null;
@@ -8807,7 +8803,7 @@ static final class C_Inferences {
       }) });
       return null;
     });
-    c.statik("waiting", (self, a1) -> {
+    c.statik("keeping", (self, a1) -> {
       if (true) return make("Inference", new Object[] { kw("name", "how fast a carrier goes, which is the share of its step that was straight"), kw("because", "`turns` draws one way straight on against the ways each direction was folded, so what carries a ray outward is the share of the draw that did not turn it"), kw("fire", (Fn) (a3) -> {
         Object[] s_2 = { arg(a3, 0) };
         Object[] nf_2 = new Object[1]; nf_2[0] = call(s_2[0], "fact", new Object[] { "is", "n_{f}" });
@@ -8822,7 +8818,7 @@ static final class C_Inferences {
         }
         m_push(parts_2[0], call(K("Expr"), "pown", new Object[] { call(K("Expr"), "add", new Object[] { list(call(K("Expr"), "num", new Object[] { 1.0 }), call(K("Expr"), "field", new Object[] { "n_{f}" })) }), neg(1.0) }));
         Object[] got_2 = new Object[1]; got_2[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { parts_2[0] }) });
-        if (true) return list(call(K("Inferences"), "step", new Object[] { "v", got_2[0], "how fast a carrier goes, which is the share of its step that was straight", list(get(nf_2[0], "key"), get(c__2[0], "key")), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the waiting, which happens only where there is no cell at all and so only at the frontier", list("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " + str(call(K("Expr"), "show", new Object[] { got_2[0] })) + "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not") }));
+        if (true) return list(call(K("Inferences"), "step", new Object[] { "v", got_2[0], "how fast a carrier goes, which is the share of its step that was straight", list(get(nf_2[0], "key"), get(c__2[0], "key")), "MOVEMENT does not simply move a ray one cell: it draws where the ray goes, one way straight on against the ways each direction was folded. A place that has swallowed n_{f} folds sends it straight with 1/(1 + n_{f}) and turns it otherwise, so what advances it OUTWARD is that share. It is statistical and it is local, and it applies wherever the vacuum has met itself - which is everywhere, unlike the making of room, which happens only where there is no cell at all and so only at the frontier", list("turns: 1 way straight on against folds[d] ways out along d", "so a ray keeps its heading with 1/(1 + n_{f})", "v = \\bar{c}/(1 + n_{f}) = " + str(call(K("Expr"), "show", new Object[] { got_2[0] })) + "", "n_{f} small: v -> one cell a tick, and the carrier streams", "n_{f} large: v -> \\bar{c}/n_{f}, and it does not") }));
         return null;
       }) });
       return null;
@@ -19866,7 +19862,7 @@ static final class C_G {
       return null;
     })));
     c.staticField("theorem vacuum.settled", self -> make(Theorem, kw("id", "vacuum.settled"), kw("body", (Fn) (a1) -> {
-      if (true) return make("Asked", new Object[] { kw("asks", "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), kw("about", "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), kw("also", "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), kw("leads", "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), kw("then", "AND THE RECORD THERE: creation clears whatever stands above the settled record at its own rate, so far from every body what stands above it is what the masses sent.") });
+      if (true) return make("Asked", new Object[] { kw("asks", "and where the vacuum has settled, so that the near-field terms do not matter - what is left of the line?"), kw("about", "\\Delta_{\\hat{d}}\\rho_{l} + a·\\nabla S_{l} \\aside{at} \\rho_{\\infty}"), kw("also", "\\Delta_{t}S_{l} \\aside{at} \\rho_{\\infty}"), kw("leads", "THE FAR FIELD: streaming plus bending equals the mass standing here. The vacuum's own balance is gone from the line, because at the settled density the making pays for the taking exactly."), kw("then", "AND THE RECORD THERE, with nothing sent: creation clears whatever stands above the settled record at its own rate, so it relaxes to DEG. What the masses sent stands above DEG only through their own rays' meetings - the density above the settled one, which this line has set aside - and that part is the sum over the locals of vacuum.record.") });
       return null;
     })));
     c.staticField("theorem vacuum.worth", self -> make(Theorem, kw("id", "vacuum.worth"), kw("body", (Fn) (a1) -> {
