@@ -41,3 +41,13 @@ World += {
 
 /* the live points are kept, not filtered out of everything ever made */
 suggest { this.vertices.filter(v => v.alive) } => { this.living }
+
+/* a theory's equation is read off its rules once: its terms are the same every time a tick asks for them */
+force { this.theory.equation.terms } => { this.theory.terms_read }
+Theory += {
+  static TERMS = { }
+  terms_read (): Array => {
+    Theory.TERMS[this.name] = this.equation.terms if Theory.TERMS[this.name] == None
+    Theory.TERMS[this.name]
+  }
+}

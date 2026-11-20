@@ -24,6 +24,12 @@ ray_impl_field "panes" : (RList Pane) := do
   return (← ωlst #[])
 ray_impl_field "on_request" : Bool := do
   return false
+ray_impl_field "images" : (RList String) := do
+  return (← ωlst #[])
+ray_impl_field "parts" : (RList String) := do
+  return (← ωlst #[])
+ray_impl_field "uses" : (RList String) := do
+  return (← ωlst #[])
 ray_impl_field "paint" : Value := do
   return ωnull
 ray_impl_getter "played" : Played := do

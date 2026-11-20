@@ -127,6 +127,15 @@ pub(crate) fn load() {
   cls("Shaded", "Node", c_Shaded::define);
   cls("Sweep", "Node", c_Sweep::define);
   cls("Measure", "Node", c_Measure::define);
+  cls("Sighted", "Node", c_Sighted::define);
+  cls("Video", "Node", c_Video::define);
+  cls("Shot", "Node", c_Shot::define);
+  cls("Sky", "Painter", c_Sky::define);
+  cls("Band", "Surface", c_Band::define);
+  cls("Banded", "Painter", c_Banded::define);
+  cls("Growing", "Painter", c_Growing::define);
+  cls("Planets", "Painter", c_Planets::define);
+  cls("EndCard", "Painter", c_EndCard::define);
   cls("G", "Theory", c_G::define);
   theory("G");
   equation_G();
@@ -800,16 +809,29 @@ pub mod c_Vertex {
 
 pub mod c_Vector {
   use crate::rt::*;
+  pub mod m_zipped {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let b_0 = cell(&arg(a1, 0)); let f_0 = cell(&arg(a1, 1));
+      return own(&make_k(&k!("Vector"), args![kw("components", &m_map(&rng(&len(&get(&self_, "components"))), args![{ let self_: Value = self_.clone(); cl!(f_0, b_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&invoke(&rd(&f_0), args![elem(&get(&self_, "components"), &rd(&i_2)), elem(&get(&rd(&b_0), "components"), &rd(&i_2))]));
+        Value::Null
+      }) }]))]));
+      Value::Null
+    }
+  }
   pub mod m_plus {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let b_0 = cell(&arg(a1, 0));
-      return own(&make_k(&k!("Vector"), args![kw("components", &m_map(&rng(&len(&get(&self_, "components"))), args![{ let self_: Value = self_.clone(); cl!(b_0); fnv(move |a3: &[&Value]| -> Value {
+      return own(&call(&self_, "zipped", args![rd(&b_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let i_2 = cell(&arg(a3, 0));
-        return own(&add(&elem(&get(&self_, "components"), &rd(&i_2)), &elem(&get(&rd(&b_0), "components"), &rd(&i_2))));
+        let x_2 = cell(&arg(a3, 0)); let y_2 = cell(&arg(a3, 1));
+        return own(&add(&rd(&x_2), &rd(&y_2)));
         Value::Null
-      }) }]))]));
+      }) }]));
       Value::Null
     }
   }
@@ -817,12 +839,12 @@ pub mod c_Vector {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let b_0 = cell(&arg(a1, 0));
-      return own(&make_k(&k!("Vector"), args![kw("components", &m_map(&rng(&len(&get(&self_, "components"))), args![{ let self_: Value = self_.clone(); cl!(b_0); fnv(move |a3: &[&Value]| -> Value {
+      return own(&call(&self_, "zipped", args![rd(&b_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let i_2 = cell(&arg(a3, 0));
-        return own(&sub(&elem(&get(&self_, "components"), &rd(&i_2)), &elem(&get(&rd(&b_0), "components"), &rd(&i_2))));
+        let x_2 = cell(&arg(a3, 0)); let y_2 = cell(&arg(a3, 1));
+        return own(&sub(&rd(&x_2), &rd(&y_2)));
         Value::Null
-      }) }]))]));
+      }) }]));
       Value::Null
     }
   }
@@ -843,12 +865,12 @@ pub mod c_Vector {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let b_0 = cell(&arg(a1, 0));
-      return own(&m_sum(&m_map(&rng(&len(&get(&self_, "components"))), args![{ let self_: Value = self_.clone(); cl!(b_0); fnv(move |a3: &[&Value]| -> Value {
+      return own(&m_sum(&get(&call(&self_, "zipped", args![rd(&b_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let i_2 = cell(&arg(a3, 0));
-        return own(&mul(&elem(&get(&self_, "components"), &rd(&i_2)), &elem(&get(&rd(&b_0), "components"), &rd(&i_2))));
+        let x_2 = cell(&arg(a3, 0)); let y_2 = cell(&arg(a3, 1));
+        return own(&mul(&rd(&x_2), &rd(&y_2)));
         Value::Null
-      }) }])));
+      }) }]), "components")));
       Value::Null
     }
   }
@@ -906,6 +928,7 @@ pub mod c_Vector {
   }
   pub fn define(c: &mut Cls) {
     c.field_none("components");//<
+    c.method("zipped", m_zipped::f);//<
     c.method("plus", m_plus::f);//<
     c.method("minus", m_minus::f);//<
     c.method("times", m_times::f);//<
@@ -986,16 +1009,17 @@ pub mod c_Geometry {
         return own(&get(&rd(&v_2), "norm"));
         Value::Null
       }) }]));
-      let chosen_0 = cell(&Value::Null); wr(&chosen_0, &list![]);
-      for e1 in items(&rd(&squared_0)) {
-        let s_1 = cell(&e1);
-        for e2 in items(&rd(&all_0)) {
-          let v_2 = cell(&e2);
-          if truthy(&eq(&call(&rd(&v_2), "dot", args![rd(&v_2)]), &rd(&s_1))) {
-            m_push(&rd(&chosen_0), args![rd(&v_2)]);
-          }
-        };
-      };
+      let chosen_0 = cell(&Value::Null); wr(&chosen_0, &m_reduce(&rd(&squared_0), args![list![], { let self_: Value = self_.clone(); cl!(all_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let s_2 = cell(&arg(a3, 1));
+        return own(&m_concat(&rd(&out_2), args![filt(&rd(&all_0), &{ let self_: Value = self_.clone(); cl!(s_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let v_4 = cell(&arg(a5, 0));
+          return own(&eq(&call(&rd(&v_4), "dot", args![rd(&v_4)]), &rd(&s_2)));
+          Value::Null
+        }) })]));
+        Value::Null
+      }) }]));
       let joined_0 = cell(&Value::Null); wr(&joined_0, &m_join(&rd(&squared_0), args![sv!["+"]]));
       return own(&make_k(&k!("Geometry"), args![kw("name", &sv!["shells-", &tos(&rd(&D_0)), "-", &tos(&rd(&joined_0)), ""]), kw("offsets", &rd(&chosen_0))]));
       Value::Null
@@ -1034,26 +1058,34 @@ pub mod c_Geometry {
       Value::Null
     }
   }
+  pub mod s_grid {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let D_0 = cell(&arg(a1, 0)); let low_0 = cell(&arg(a1, 1)); let count_0 = cell(&arg(a1, 2));
+      return own(&m_reduce(&rng(&rd(&D_0)), args![list![make_k(&k!("Vector"), args![kw("components", &list![])])], { let self_: Value = self_.clone(); cl!(count_0, low_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let points_2 = cell(&arg(a3, 0)); let __2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rd(&points_2), args![list![], { let self_: Value = self_.clone(); cl!(count_0, low_0); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let grown_4 = cell(&arg(a5, 0)); let p_4 = cell(&arg(a5, 1));
+          return own(&m_reduce(&rng(&rd(&count_0)), args![rd(&grown_4), { let self_: Value = self_.clone(); cl!(p_4, low_0); fnv(move |a7: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let out_6 = cell(&arg(a7, 0)); let k_6 = cell(&arg(a7, 1));
+            return own(&m_push(&rd(&out_6), args![make_k(&k!("Vector"), args![kw("components", &m_concat(&get(&rd(&p_4), "components"), args![list![add(&rd(&low_0), &rd(&k_6))]]))])]));
+            Value::Null
+          }) }]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
   pub mod s_box {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let D_0 = cell(&arg(a1, 0)); let radius_0 = cell(&arg(a1, 1));
-      let points_0 = cell(&Value::Null); wr(&points_0, &list![make_k(&k!("Vector"), args![kw("components", &list![])])]);
-      let i_0 = cell(&Value::Null); wr(&i_0, &0.0);
-      while truthy(&lt(&rd(&i_0), &rd(&D_0))) {
-        let grown_0 = cell(&Value::Null); wr(&grown_0, &list![]);
-        for e1 in items(&rd(&points_0)) {
-          let p_1 = cell(&e1);
-          let k_1 = cell(&Value::Null); wr(&k_1, &sub(&0.0, &rd(&radius_0)));
-          while truthy(&le(&rd(&k_1), &rd(&radius_0))) {
-            m_push(&rd(&grown_0), args![make_k(&k!("Vector"), args![kw("components", &m_concat(&get(&rd(&p_1), "components"), args![list![rd(&k_1)]]))])]);
-            wr(&k_1, &add(&rd(&k_1), &1.0));
-          }
-        };
-        wr(&points_0, &rd(&grown_0));
-        wr(&i_0, &add(&rd(&i_0), &1.0));
-      }
-      return own(&rd(&points_0));
+      return own(&call(&k!("Geometry"), "grid", args![rd(&D_0), sub(&0.0, &rd(&radius_0)), add(&mul(&2.0, &rd(&radius_0)), &1.0)]));
       Value::Null
     }
   }
@@ -1067,6 +1099,7 @@ pub mod c_Geometry {
     c.method("opposite", m_opposite::f);//<
     c.statik("shells", s_shells::f);//<
     c.statik("nearest", s_nearest::f);//<
+    c.statik("grid", s_grid::f);//<
     c.statik("box", s_box::f);//<
   }
 }
@@ -1238,6 +1271,16 @@ pub mod c_Theory {
       Value::Null
     }
   }
+  pub mod g_terms_read {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      if truthy(&eq(&elem(&get(&k!("Theory"), "TERMS"), &get(&self_, "name")), &Value::Null)) {
+        set_at(&get(&k!("Theory"), "TERMS"), &get(&self_, "name"), &get(&get(&self_, "equation"), "terms"));
+      }
+      return own(&elem(&get(&k!("Theory"), "TERMS"), &get(&self_, "name")));
+      Value::Null
+    }
+  }
   pub mod g_proved {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
@@ -1249,6 +1292,7 @@ pub mod c_Theory {
     }
   }
   pub fn define(c: &mut Cls) {
+    c.static_field("TERMS", |self_: &Value| -> Value { own(&node()) });//<
     c.field_none("name");//<
     c.field("rules", |self_: &Value| -> Value { own(&list![]) });//<
     c.field("visuals", |self_: &Value| -> Value { own(&list![]) });//<
@@ -1259,6 +1303,7 @@ pub mod c_Theory {
     c.getter("equation", g_equation::f);//<
     c.method("field", m_field::f);//<
     c.method("medium", m_medium::f);//<
+    c.getter("terms_read", g_terms_read::f);//<
     c.getter("proved", g_proved::f);//<
   }
 }
@@ -1280,22 +1325,7 @@ pub mod c_World {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let N_0 = cell(&arg(a1, 0));
-      let points_0 = cell(&Value::Null); wr(&points_0, &list![make_k(&k!("Vector"), args![kw("components", &list![])])]);
-      let i_0 = cell(&Value::Null); wr(&i_0, &0.0);
-      while truthy(&lt(&rd(&i_0), &get(&get(&self_, "geometry"), "D"))) {
-        let grown_0 = cell(&Value::Null); wr(&grown_0, &list![]);
-        for e1 in items(&rd(&points_0)) {
-          let p_1 = cell(&e1);
-          let k_1 = cell(&Value::Null); wr(&k_1, &0.0);
-          while truthy(&lt(&rd(&k_1), &rd(&N_0))) {
-            m_push(&rd(&grown_0), args![make_k(&k!("Vector"), args![kw("components", &m_concat(&get(&rd(&p_1), "components"), args![list![rd(&k_1)]]))])]);
-            wr(&k_1, &add(&rd(&k_1), &1.0));
-          }
-        };
-        wr(&points_0, &rd(&grown_0));
-        wr(&i_0, &add(&rd(&i_0), &1.0));
-      }
-      return own(&rd(&points_0));
+      return own(&call(&k!("Geometry"), "grid", args![get(&get(&self_, "geometry"), "D"), 0.0, rd(&N_0)]));
       Value::Null
     }
   }
@@ -1433,14 +1463,17 @@ pub mod c_World {
           Value::Null
         }) }]));
       }
-      let rays_0 = cell(&Value::Null); wr(&rays_0, &list![]);
-      for e1 in items(&get(&self_, "live")) {
-        let v_1 = cell(&e1);
-        for e2 in items(&get(&rd(&v_1), "rays")) {
-          let r_2 = cell(&e2);
-          m_push(&rd(&rays_0), args![rd(&r_2)]);
-        };
-      };
+      let rays_0 = cell(&Value::Null); wr(&rays_0, &m_reduce(&get(&self_, "live"), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let v_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&get(&rd(&v_2), "rays"), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let r_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&r_4)]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       if truthy(&eq(&rd(&kind_0), &sv!["Boundary"])) {
         return own(&m_map(&rd(&rays_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
           let self_: &Value = &self_;
@@ -1450,15 +1483,17 @@ pub mod c_World {
         }) }]));
       }
       if truthy(&eq(&rd(&kind_0), &sv!["Edge"])) {
-        let edges_0 = cell(&Value::Null); wr(&edges_0, &list![]);
-        for e1 in items(&rd(&rays_0)) {
-          let r_1 = cell(&e1);
-          let there_1 = cell(&Value::Null); wr(&there_1, &get(&rd(&r_1), "ahead"));
-          if truthy(&(truthy(&(!eq(&rd(&there_1), &Value::Null))) && truthy(&lt(&get(&get(&rd(&r_1), "vertex"), "ordinal"), &get(&rd(&there_1), "ordinal"))))) {
-            m_push(&rd(&edges_0), args![get(&get(&rd(&r_1), "terminal"), "edge")]);
-          }
-        };
-        return own(&rd(&edges_0));
+        return own(&m_map(&filt(&rd(&rays_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let r_3 = cell(&arg(a4, 0));
+          return own(&(truthy(&(!eq(&get(&rd(&r_3), "ahead"), &Value::Null))) && truthy(&lt(&get(&get(&rd(&r_3), "vertex"), "ordinal"), &get(&get(&rd(&r_3), "ahead"), "ordinal")))));
+          Value::Null
+        }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let r_2 = cell(&arg(a3, 0));
+          return own(&get(&get(&rd(&r_2), "terminal"), "edge"));
+          Value::Null
+        }) }]));
       }
       return own(&list![]);
       Value::Null
@@ -2104,15 +2139,18 @@ pub mod c_Field {
       let y0_0 = cell(&Value::Null); wr(&y0_0, &m_floor(&rd(&py_0)));
       let fx_0 = cell(&Value::Null); wr(&fx_0, &sub(&rd(&px_0), &rd(&x0_0)));
       let fy_0 = cell(&Value::Null); wr(&fy_0, &sub(&rd(&py_0), &rd(&y0_0)));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for e1 in items(&list![list![rd(&x0_0), rd(&y0_0), mul(&(sub(&1.0, &rd(&fx_0))), &(sub(&1.0, &rd(&fy_0))))], list![add(&rd(&x0_0), &1.0), rd(&y0_0), mul(&rd(&fx_0), &(sub(&1.0, &rd(&fy_0))))], list![rd(&x0_0), add(&rd(&y0_0), &1.0), mul(&(sub(&1.0, &rd(&fx_0))), &rd(&fy_0))], list![add(&rd(&x0_0), &1.0), add(&rd(&y0_0), &1.0), mul(&rd(&fx_0), &rd(&fy_0))]]) {
-        let t_1 = cell(&e1);
-        let c__1 = cell(&Value::Null); wr(&c__1, &call(&self_, "at", args![elem(&rd(&t_1), &0.0), elem(&rd(&t_1), &1.0)]));
-        if truthy(&(truthy(&ge(&rd(&c__1), &0.0)) && truthy(&gt(&elem(&rd(&t_1), &2.0), &0.0)))) {
-          m_push(&rd(&out_0), args![list![rd(&c__1), elem(&rd(&t_1), &2.0)]]);
-        }
-      };
-      return own(&rd(&out_0));
+      let corners_0 = cell(&Value::Null); wr(&corners_0, &list![list![rd(&x0_0), rd(&y0_0), mul(&(sub(&1.0, &rd(&fx_0))), &(sub(&1.0, &rd(&fy_0))))], list![add(&rd(&x0_0), &1.0), rd(&y0_0), mul(&rd(&fx_0), &(sub(&1.0, &rd(&fy_0))))], list![rd(&x0_0), add(&rd(&y0_0), &1.0), mul(&(sub(&1.0, &rd(&fx_0))), &rd(&fy_0))], list![add(&rd(&x0_0), &1.0), add(&rd(&y0_0), &1.0), mul(&rd(&fx_0), &rd(&fy_0))]]);
+      return own(&filt(&m_map(&rd(&corners_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_3 = cell(&arg(a4, 0));
+        return own(&list![call(&self_, "at", args![elem(&rd(&t_3), &0.0), elem(&rd(&t_3), &1.0)]), elem(&rd(&t_3), &2.0)]);
+        Value::Null
+      }) }]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&ge(&elem(&rd(&p_2), &0.0), &0.0)) && truthy(&gt(&elem(&rd(&p_2), &1.0), &0.0))));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -2156,7 +2194,7 @@ pub mod c_Field {
   pub mod g_terms {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&get(&get(&get(&self_, "theory"), "equation"), "terms"));
+      return own(&get(&get(&self_, "theory"), "terms_read"));
       Value::Null
     }
   }
@@ -2895,18 +2933,17 @@ pub mod c_Field {
       let x_0 = cell(&Value::Null); wr(&x_0, &call(&self_, "column_of", args![rd(&c__0)]));
       let y_0 = cell(&Value::Null); wr(&y_0, &call(&self_, "row_of", args![rd(&c__0)]));
       let half_0 = cell(&Value::Null); wr(&half_0, &m_floor(&(div(&(sub(&get(&self_, "K"), &1.0)), &2.0))));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "K")).ceil() as i64) {
-        let dy_1 = cell(&(i1 as f64));
-        for i2 in 0..(num(&get(&self_, "K")).ceil() as i64) {
-          let dx_2 = cell(&(i2 as f64));
-          let cell_2 = cell(&Value::Null); wr(&cell_2, &call(&self_, "at", args![add(&sub(&rd(&x_0), &rd(&half_0)), &rd(&dx_2)), add(&sub(&rd(&y_0), &rd(&half_0)), &rd(&dy_1))]));
-          if truthy(&ge(&rd(&cell_2), &0.0)) {
-            m_push(&rd(&out_0), args![rd(&cell_2)]);
-          }
-        };
-      };
-      return own(&rd(&out_0));
+      return own(&filt(&m_map(&rng(&mul(&get(&self_, "K"), &get(&self_, "K"))), args![{ let self_: Value = self_.clone(); cl!(x_0, half_0, y_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&call(&self_, "at", args![add(&sub(&rd(&x_0), &rd(&half_0)), &modulo(&rd(&i_3), &get(&self_, "K"))), add(&sub(&rd(&y_0), &rd(&half_0)), &m_floor(&(div(&rd(&i_3), &get(&self_, "K")))))]));
+        Value::Null
+      }) }]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let cell_2 = cell(&arg(a3, 0));
+        return own(&ge(&rd(&cell_2), &0.0));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -3529,9 +3566,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let t_0 = cell(&arg(a1, 0));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &sv!["text"])]));
-      set(&rd(&p_0), "text", &rd(&t_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &sv!["text"]), kw("text", &rd(&t_0))]));
       Value::Null
     }
   }
@@ -3539,9 +3574,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let kind_0 = cell(&arg(a1, 0)); let of_0 = cell(&arg(a1, 1));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0))]));
-      set(&rd(&p_0), "of", &rd(&of_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0)), kw("of", &rd(&of_0))]));
       Value::Null
     }
   }
@@ -3549,9 +3582,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let t_0 = cell(&arg(a1, 0));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &sv!["words"])]));
-      set(&rd(&p_0), "text", &rd(&t_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &sv!["words"]), kw("text", &rd(&t_0))]));
       Value::Null
     }
   }
@@ -3559,10 +3590,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let kind_0 = cell(&arg(a1, 0)); let lo_0 = cell(&arg(a1, 1)); let hi_0 = cell(&arg(a1, 2));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0))]));
-      set(&rd(&p_0), "lo", &rd(&lo_0));
-      set(&rd(&p_0), "hi", &rd(&hi_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0)), kw("lo", &rd(&lo_0)), kw("hi", &rd(&hi_0))]));
       Value::Null
     }
   }
@@ -3570,10 +3598,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let kind_0 = cell(&arg(a1, 0)); let over_0 = cell(&arg(a1, 1)); let under_0 = cell(&arg(a1, 2));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0))]));
-      set(&rd(&p_0), "over", &rd(&over_0));
-      set(&rd(&p_0), "under", &rd(&under_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &rd(&kind_0)), kw("over", &rd(&over_0)), kw("under", &rd(&under_0))]));
       Value::Null
     }
   }
@@ -3581,9 +3606,7 @@ pub mod c_Piece {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let key_0 = cell(&arg(a1, 0));
-      let p_0 = cell(&Value::Null); wr(&p_0, &make_k(&k!("Piece"), args![kw("kind", &sv!["ref"])]));
-      set(&rd(&p_0), "key", &rd(&key_0));
-      return own(&rd(&p_0));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &sv!["ref"]), kw("key", &rd(&key_0))]));
       Value::Null
     }
   }
@@ -3667,58 +3690,8 @@ pub mod c_Setter {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let kind_0 = cell(&arg(a1, 0)); let c__0 = cell(&arg(a1, 1));
-      if truthy(&eq(&rd(&kind_0), &sv!["var"])) {
-        return own(&sv!["<i>", &tos(&rd(&c__0)), "</i>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["count"])) {
-        return own(&sv!["<b class=\"k\">", &tos(&rd(&c__0)), "</b>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["fn"])) {
-        return own(&sv!["<b class=\"d\">", &tos(&rd(&c__0)), "</b>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["muted"])) {
-        return own(&sv!["<span class=\"mu\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["bar"])) {
-        return own(&sv!["<span class=\"bar\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["hat"])) {
-        return own(&sv!["<span class=\"acc hat\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["tilde"])) {
-        return own(&sv!["<span class=\"acc tld\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["vec"])) {
-        return own(&sv!["<span class=\"acc vec\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["dot"])) {
-        return own(&sv!["<span class=\"acc dot\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["ddot"])) {
-        return own(&sv!["<span class=\"acc ddot\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["bold"])) {
-        return own(&sv!["<b class=\"bf\">", &tos(&rd(&c__0)), "</b>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["cal"])) {
-        return own(&sv!["<span class=\"cal\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["bb"])) {
-        return own(&sv!["<span class=\"bb\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["sqrt"])) {
-        return own(&sv!["<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", &tos(&rd(&c__0)), "</span></span>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["sup"])) {
-        return own(&sv!["<sup>", &tos(&rd(&c__0)), "</sup>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["sub"])) {
-        return own(&sv!["<sub>", &tos(&rd(&c__0)), "</sub>"]);
-      }
-      if truthy(&eq(&rd(&kind_0), &sv!["paren"])) {
-        return own(&sv!["<span class=\"paren\">", &tos(&rd(&c__0)), "</span>"]);
-      }
-      return own(&sv!["<span class=\"", &tos(&rd(&kind_0)), "\">", &tos(&rd(&c__0)), "</span>"]);
+      let i_0 = cell(&Value::Null); wr(&i_0, &m_index_of(&get(&k!("Setter"), "KINDS"), args![rd(&kind_0)]));
+      return own(&(if truthy(&eq(&rd(&i_0), &Value::Null)) { own(&sv!["<span class=\"", &tos(&rd(&kind_0)), "\">", &tos(&rd(&c__0)), "</span>"]) } else { own(&sv!["", &tos(&elem(&get(&k!("Setter"), "OPENS"), &rd(&i_0))), "", &tos(&rd(&c__0)), "", &tos(&elem(&get(&k!("Setter"), "CLOSES"), &rd(&i_0))), ""]) }));
       Value::Null
     }
   }
@@ -3784,6 +3757,9 @@ pub mod c_Setter {
     }
   }
   pub fn define(c: &mut Cls) {
+    c.static_field("KINDS", |self_: &Value| -> Value { own(&list![sv!["var"], sv!["count"], sv!["fn"], sv!["muted"], sv!["bar"], sv!["hat"], sv!["tilde"], sv!["vec"], sv!["dot"], sv!["ddot"], sv!["bold"], sv!["cal"], sv!["bb"], sv!["sqrt"], sv!["sup"], sv!["sub"], sv!["paren"]]) });//<
+    c.static_field("OPENS", |self_: &Value| -> Value { own(&list![sv!["<i>"], sv!["<b class=\"k\">"], sv!["<b class=\"d\">"], sv!["<span class=\"mu\">"], sv!["<span class=\"bar\">"], sv!["<span class=\"acc hat\">"], sv!["<span class=\"acc tld\">"], sv!["<span class=\"acc vec\">"], sv!["<span class=\"acc dot\">"], sv!["<span class=\"acc ddot\">"], sv!["<b class=\"bf\">"], sv!["<span class=\"cal\">"], sv!["<span class=\"bb\">"], sv!["<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">"], sv!["<sup>"], sv!["<sub>"], sv!["<span class=\"paren\">"]]) });//<
+    c.static_field("CLOSES", |self_: &Value| -> Value { own(&list![sv!["</i>"], sv!["</b>"], sv!["</b>"], sv!["</span>"], sv!["</span>"], sv!["</span>"], sv!["</span>"], sv!["</span>"], sv!["</span>"], sv!["</span>"], sv!["</b>"], sv!["</span>"], sv!["</span>"], sv!["</span></span>"], sv!["</sup>"], sv!["</sub>"], sv!["</span>"]]) });//<
     c.method("together", m_together::f);//<
     c.method("text", m_text::f);//<
     c.method("words", m_words::f);//<
@@ -3886,15 +3862,28 @@ pub mod c_Notation {
       Value::Null
     }
   }
+  pub mod s_run {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let at_0 = cell(&arg(a1, 1)); let keep_0 = cell(&arg(a1, 2));
+      let k_0 = cell(&Value::Null); wr(&k_0, &rd(&at_0));
+      while truthy(&(truthy(&lt(&rd(&k_0), &len(&rd(&s_0)))) && truthy(&invoke(&rd(&keep_0), args![elem(&m_chars(&rd(&s_0)), &rd(&k_0))])))) {
+        wr(&k_0, &add(&rd(&k_0), &1.0));
+      }
+      return own(&call(&k!("Notation"), "sub_", args![rd(&s_0), rd(&at_0), rd(&k_0)]));
+      Value::Null
+    }
+  }
   pub mod s_letters {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let s_0 = cell(&arg(a1, 0)); let at_0 = cell(&arg(a1, 1));
-      let k_0 = cell(&Value::Null); wr(&k_0, &rd(&at_0));
-      while truthy(&(truthy(&lt(&rd(&k_0), &len(&rd(&s_0)))) && truthy(&call(&k!("Notation"), "is_letter", args![elem(&m_chars(&rd(&s_0)), &rd(&k_0))])))) {
-        wr(&k_0, &add(&rd(&k_0), &1.0));
-      }
-      return own(&call(&k!("Notation"), "sub_", args![rd(&s_0), rd(&at_0), rd(&k_0)]));
+      return own(&call(&k!("Notation"), "run", args![rd(&s_0), rd(&at_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Notation"), "is_letter", args![rd(&c__2)]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -3902,11 +3891,12 @@ pub mod c_Notation {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let s_0 = cell(&arg(a1, 0)); let at_0 = cell(&arg(a1, 1));
-      let k_0 = cell(&Value::Null); wr(&k_0, &rd(&at_0));
-      while truthy(&(truthy(&lt(&rd(&k_0), &len(&rd(&s_0)))) && truthy(&call(&k!("Notation"), "is_alnum", args![elem(&m_chars(&rd(&s_0)), &rd(&k_0))])))) {
-        wr(&k_0, &add(&rd(&k_0), &1.0));
-      }
-      return own(&call(&k!("Notation"), "sub_", args![rd(&s_0), rd(&at_0), rd(&k_0)]));
+      return own(&call(&k!("Notation"), "run", args![rd(&s_0), rd(&at_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Notation"), "is_alnum", args![rd(&c__2)]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -3970,6 +3960,14 @@ pub mod c_Notation {
       Value::Null
     }
   }
+  pub mod s_scripted {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let base_0 = cell(&arg(a1, 0)); let kind_0 = cell(&arg(a1, 1)); let of_0 = cell(&arg(a1, 2));
+      return own(&make_k(&k!("Piece"), args![kw("kind", &sv!["scripted"]), kw("base", &rd(&base_0)), kw("raised", &(if truthy(&eq(&rd(&kind_0), &sv!["sup"])) { own(&rd(&of_0)) } else { own(&Value::Null) })), kw("lowered", &(if truthy(&eq(&rd(&kind_0), &sv!["sup"])) { own(&Value::Null) } else { own(&rd(&of_0)) }))]));
+      Value::Null
+    }
+  }
   pub mod s_attach {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
@@ -4000,25 +3998,11 @@ pub mod c_Notation {
         } else {
           set(&rd(&tail_0), "text", &rd(&head_0));
         }
-        let s_0 = cell(&Value::Null); wr(&s_0, &make_k(&k!("Piece"), args![kw("kind", &sv!["scripted"])]));
-        set(&rd(&s_0), "base", &call(&k!("Piece"), "text_", args![rd(&last_char_0)]));
-        if truthy(&eq(&rd(&kind_0), &sv!["sup"])) {
-          set(&rd(&s_0), "raised", &rd(&of_0));
-        } else {
-          set(&rd(&s_0), "lowered", &rd(&of_0));
-        }
-        m_push(&rd(&out_0), args![rd(&s_0)]);
+        m_push(&rd(&out_0), args![call(&k!("Notation"), "scripted", args![call(&k!("Piece"), "text_", args![rd(&last_char_0)]), rd(&kind_0), rd(&of_0)])]);
         return own(&Value::Null);
       }
       m_pop(&rd(&out_0));
-      let s_0 = cell(&Value::Null); wr(&s_0, &make_k(&k!("Piece"), args![kw("kind", &sv!["scripted"])]));
-      set(&rd(&s_0), "base", &rd(&tail_0));
-      if truthy(&eq(&rd(&kind_0), &sv!["sup"])) {
-        set(&rd(&s_0), "raised", &rd(&of_0));
-      } else {
-        set(&rd(&s_0), "lowered", &rd(&of_0));
-      }
-      return own(&m_push(&rd(&out_0), args![rd(&s_0)]));
+      return own(&m_push(&rd(&out_0), args![call(&k!("Notation"), "scripted", args![rd(&tail_0), rd(&kind_0), rd(&of_0)])]));
       Value::Null
     }
   }
@@ -4188,25 +4172,28 @@ pub mod c_Notation {
         }
         Value::Null
       }) });
+      let starts_name_0 = cell(&Value::Null); wr(&starts_name_0, &{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__1 = cell(&arg(a2, 0));
+        return own(&(truthy(&call(&k!("Notation"), "is_letter", args![rd(&c__1)])) || truthy(&eq(&rd(&c__1), &95.0))));
+        Value::Null
+      }) });
       let bits_0 = cell(&Value::Null); wr(&bits_0, &list![]);
       let k_0 = cell(&Value::Null); wr(&k_0, &0.0);
       while truthy(&lt(&rd(&k_0), &len(&rd(&s_0)))) {
-        let c__0 = cell(&Value::Null); wr(&c__0, &elem(&m_chars(&rd(&s_0)), &rd(&k_0)));
-        if truthy(&(truthy(&call(&k!("Notation"), "is_letter", args![rd(&c__0)])) || truthy(&eq(&rd(&c__0), &95.0)))) {
-          let j_0 = cell(&Value::Null); wr(&j_0, &rd(&k_0));
-          while truthy(&(truthy(&lt(&rd(&j_0), &len(&rd(&s_0)))) && truthy(&call(&k!("Notation"), "is_name", args![elem(&m_chars(&rd(&s_0)), &rd(&j_0))])))) {
-            wr(&j_0, &add(&rd(&j_0), &1.0));
-          }
-          m_push(&rd(&bits_0), args![call(&k!("Notation"), "sub_", args![rd(&s_0), rd(&k_0), rd(&j_0)])]);
-          wr(&k_0, &rd(&j_0));
-        } else {
-          let j_0 = cell(&Value::Null); wr(&j_0, &rd(&k_0));
-          while truthy(&(truthy(&lt(&rd(&j_0), &len(&rd(&s_0)))) && truthy(&(!truthy(&((truthy(&call(&k!("Notation"), "is_letter", args![elem(&m_chars(&rd(&s_0)), &rd(&j_0))])) || truthy(&eq(&elem(&m_chars(&rd(&s_0)), &rd(&j_0)), &95.0))))))))) {
-            wr(&j_0, &add(&rd(&j_0), &1.0));
-          }
-          m_push(&rd(&bits_0), args![call(&k!("Notation"), "sub_", args![rd(&s_0), rd(&k_0), rd(&j_0)])]);
-          wr(&k_0, &rd(&j_0));
-        }
+        let bit_0 = cell(&Value::Null); wr(&bit_0, &(if truthy(&invoke(&rd(&starts_name_0), args![elem(&m_chars(&rd(&s_0)), &rd(&k_0))])) { own(&call(&k!("Notation"), "run", args![rd(&s_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let c__2 = cell(&arg(a3, 0));
+          return own(&call(&k!("Notation"), "is_name", args![rd(&c__2)]));
+          Value::Null
+        }) }])) } else { own(&call(&k!("Notation"), "run", args![rd(&s_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(starts_name_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let c__2 = cell(&arg(a3, 0));
+          return own(&(!truthy(&invoke(&rd(&starts_name_0), args![rd(&c__2)]))));
+          Value::Null
+        }) }])) }));
+        m_push(&rd(&bits_0), args![rd(&bit_0)]);
+        wr(&k_0, &add(&rd(&k_0), &len(&rd(&bit_0))));
       }
       let i_0 = cell(&Value::Null); wr(&i_0, &0.0);
       while truthy(&lt(&rd(&i_0), &len(&rd(&bits_0)))) {
@@ -4431,11 +4418,13 @@ pub mod c_Notation {
     c.statik("is_name", s_is_name::f);//<
     c.statik("sub_", s_sub_::f);//<
     c.statik("char_at", s_char_at::f);//<
+    c.statik("run", s_run::f);//<
     c.statik("letters", s_letters::f);//<
     c.statik("alnums", s_alnums::f);//<
     c.statik("counted", s_counted::f);//<
     c.statik("braced", s_braced::f);//<
     c.statik("args", s_args::f);//<
+    c.statik("scripted", s_scripted::f);//<
     c.statik("attach", s_attach::f);//<
     c.statik("parse", s_parse::f);//<
     c.statik("plain", s_plain::f);//<
@@ -4504,9 +4493,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let n_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["num"])]));
-      set(&rd(&e_0), "value", &rd(&n_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["num"]), kw("value", &rd(&n_0))]));
       Value::Null
     }
   }
@@ -4514,9 +4501,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let name_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["sym"])]));
-      set(&rd(&e_0), "label", &rd(&name_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["sym"]), kw("label", &rd(&name_0))]));
       Value::Null
     }
   }
@@ -4524,9 +4509,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let name_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["field"])]));
-      set(&rd(&e_0), "label", &rd(&name_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["field"]), kw("label", &rd(&name_0))]));
       Value::Null
     }
   }
@@ -4550,10 +4533,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let base_0 = cell(&arg(a1, 0)); let by_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["pow"])]));
-      set(&rd(&e_0), "base", &rd(&base_0));
-      set(&rd(&e_0), "power", &rd(&by_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["pow"]), kw("base", &rd(&base_0)), kw("power", &rd(&by_0))]));
       Value::Null
     }
   }
@@ -4569,9 +4549,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let x_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["grad"])]));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["grad"]), kw("base", &rd(&x_0))]));
       Value::Null
     }
   }
@@ -4579,9 +4557,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let x_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["log"])]));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["log"]), kw("base", &rd(&x_0))]));
       Value::Null
     }
   }
@@ -4589,9 +4565,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let x_0 = cell(&arg(a1, 0));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["exp"])]));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["exp"]), kw("base", &rd(&x_0))]));
       Value::Null
     }
   }
@@ -4599,10 +4573,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let n_0 = cell(&arg(a1, 0)); let k_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["choose"])]));
-      set(&rd(&e_0), "first_", &rd(&n_0));
-      set(&rd(&e_0), "second_", &rd(&k_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["choose"]), kw("first_", &rd(&n_0)), kw("second_", &rd(&k_0))]));
       Value::Null
     }
   }
@@ -4610,10 +4581,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let s_0 = cell(&arg(a1, 0)); let x_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["gammaInc"])]));
-      set(&rd(&e_0), "first_", &rd(&s_0));
-      set(&rd(&e_0), "second_", &rd(&x_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["gammaInc"]), kw("first_", &rd(&s_0)), kw("second_", &rd(&x_0))]));
       Value::Null
     }
   }
@@ -4621,10 +4589,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let x_0 = cell(&arg(a1, 0)); let name_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["root"])]));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      set(&rd(&e_0), "bound", &rd(&name_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["root"]), kw("base", &rd(&x_0)), kw("bound", &rd(&name_0))]));
       Value::Null
     }
   }
@@ -4632,10 +4597,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let x_0 = cell(&arg(a1, 0)); let name_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["limit"])]));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      set(&rd(&e_0), "bound", &rd(&name_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["limit"]), kw("base", &rd(&x_0)), kw("bound", &rd(&name_0))]));
       Value::Null
     }
   }
@@ -4643,10 +4605,7 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let name_0 = cell(&arg(a1, 0)); let x_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &sv!["call"])]));
-      set(&rd(&e_0), "label", &rd(&name_0));
-      set(&rd(&e_0), "base", &rd(&x_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &sv!["call"]), kw("label", &rd(&name_0)), kw("base", &rd(&x_0))]));
       Value::Null
     }
   }
@@ -4718,6 +4677,22 @@ pub mod c_Expr {
       Value::Null
     }
   }
+  pub mod g_subtrees {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      if truthy(&(truthy(&eq(&get(&self_, "kind"), &sv!["add"])) || truthy(&eq(&get(&self_, "kind"), &sv!["mul"])))) {
+        return own(&get(&self_, "of"));
+      }
+      if truthy(&eq(&get(&self_, "kind"), &sv!["pow"])) {
+        return own(&list![get(&self_, "base"), get(&self_, "power")]);
+      }
+      if truthy(&(truthy(&eq(&get(&self_, "kind"), &sv!["choose"])) || truthy(&eq(&get(&self_, "kind"), &sv!["gammaInc"])))) {
+        return own(&list![get(&self_, "first_"), get(&self_, "second_")]);
+      }
+      return own(&(if truthy(&eq(&get(&self_, "base"), &Value::Null)) { own(&list![]) } else { own(&list![get(&self_, "base")]) }));
+      Value::Null
+    }
+  }
   pub mod g_by_num {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
@@ -4729,21 +4704,17 @@ pub mod c_Expr {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let kind_0 = cell(&arg(a1, 0)); let xs_0 = cell(&arg(a1, 1));
-      let e_0 = cell(&Value::Null); wr(&e_0, &make_k(&k!("Expr"), args![kw("kind", &rd(&kind_0))]));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for e1 in items(&rd(&xs_0)) {
-        let x_1 = cell(&e1);
-        if truthy(&eq(&get(&rd(&x_1), "kind"), &rd(&kind_0))) {
-          for e2 in items(&get(&rd(&x_1), "of")) {
-            let y_2 = cell(&e2);
-            m_push(&rd(&out_0), args![rd(&y_2)]);
-          };
-        } else {
-          m_push(&rd(&out_0), args![rd(&x_1)]);
-        }
-      };
-      set(&rd(&e_0), "of", &rd(&out_0));
-      return own(&rd(&e_0));
+      return own(&make_k(&k!("Expr"), args![kw("kind", &rd(&kind_0)), kw("of", &m_reduce(&rd(&xs_0), args![list![], { let self_: Value = self_.clone(); cl!(kind_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let x_2 = cell(&arg(a3, 1));
+        return own(&(if truthy(&eq(&get(&rd(&x_2), "kind"), &rd(&kind_0))) { own(&m_reduce(&get(&rd(&x_2), "of"), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let y_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&y_4)]));
+          Value::Null
+        }) }])) } else { own(&m_push(&rd(&out_2), args![rd(&x_2)])) }));
+        Value::Null
+      }) }]))]));
       Value::Null
     }
   }
@@ -4803,11 +4774,12 @@ pub mod c_Expr {
         return own(&sub(&m_ln(&(div(&std::f64::consts::PI, &m_sin(&(mul(&std::f64::consts::PI, &rd(&z_0))))))), &call(&k!("Expr"), "lgamma", args![sub(&1.0, &rd(&z_0))])));
       }
       wr(&z_0, &sub(&rd(&z_0), &1.0));
-      let x_0 = cell(&Value::Null); wr(&x_0, &0.99999999999980993);
-      for i1 in 0..(num(&len(&rd(&g_0))).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        wr(&x_0, &add(&rd(&x_0), &div(&elem(&rd(&g_0), &rd(&i_1)), &(add(&add(&rd(&z_0), &rd(&i_1)), &1.0)))));
-      };
+      let x_0 = cell(&Value::Null); wr(&x_0, &m_reduce(&rng(&len(&rd(&g_0))), args![0.99999999999980993, { let self_: Value = self_.clone(); cl!(g_0, z_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0)); let i_2 = cell(&arg(a3, 1));
+        return own(&add(&rd(&x_2), &div(&elem(&rd(&g_0), &rd(&i_2)), &(add(&add(&rd(&z_0), &rd(&i_2)), &1.0)))));
+        Value::Null
+      }) }]));
       let t_0 = cell(&Value::Null); wr(&t_0, &sub(&add(&rd(&z_0), &len(&rd(&g_0))), &0.5));
       return own(&add(&sub(&add(&mul(&0.5, &m_ln(&(mul(&2.0, &std::f64::consts::PI)))), &mul(&(add(&rd(&z_0), &0.5)), &m_ln(&rd(&t_0)))), &rd(&t_0)), &m_ln(&rd(&x_0))));
       Value::Null
@@ -5294,13 +5266,17 @@ pub mod c_Expr {
             call(&rd(&like_0), "set", args![rd(&id_1), list![rd(&body_1), rd(&kk_1)]]);
           }
         };
-        let kept_0 = cell(&Value::Null); wr(&kept_0, &list![]);
-        for e1 in items(&get(&rd(&like_0), "values")) {
-          let v_1 = cell(&e1);
-          if truthy(&(!eq(&elem(&rd(&v_1), &1.0), &0.0))) {
-            m_push(&rd(&kept_0), args![(if truthy(&eq(&elem(&rd(&v_1), &1.0), &1.0)) { own(&elem(&rd(&v_1), &0.0)) } else { own(&call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![elem(&rd(&v_1), &1.0)]), elem(&rd(&v_1), &0.0)]])) })]);
-          }
-        };
+        let kept_0 = cell(&Value::Null); wr(&kept_0, &m_map(&filt(&get(&rd(&like_0), "values"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let v_3 = cell(&arg(a4, 0));
+          return own(&(!eq(&elem(&rd(&v_3), &1.0), &0.0)));
+          Value::Null
+        }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let v_2 = cell(&arg(a3, 0));
+          return own(&(if truthy(&eq(&elem(&rd(&v_2), &1.0), &1.0)) { own(&elem(&rd(&v_2), &0.0)) } else { own(&call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![elem(&rd(&v_2), &1.0)]), elem(&rd(&v_2), &0.0)]])) }));
+          Value::Null
+        }) }]));
         if truthy(&m_empty(&rd(&kept_0))) {
           return own(&call(&k!("Expr"), "num", args![rd(&c__0)]));
         }
@@ -5431,26 +5407,18 @@ pub mod c_Expr {
             }) }]))));
             Value::Null
           }) });
-          let at_0 = cell(&Value::Null); wr(&at_0, &Value::Null);
-          for i1 in 0..(num(&len(&get(&rd(&body_0), "of"))).ceil() as i64) {
-            let i_1 = cell(&(i1 as f64));
-            if truthy(&(truthy(&eq(&rd(&at_0), &Value::Null)) && truthy(&invoke(&rd(&is_minus_0), args![elem(&get(&rd(&body_0), "of"), &rd(&i_1))])))) {
-              wr(&at_0, &rd(&i_1));
-            }
-          };
-          if truthy(&(truthy(&(!eq(&rd(&at_0), &Value::Null))) && truthy(&eq(&len(&filt(&get(&rd(&body_0), "of"), &{ let self_: Value = self_.clone(); cl!(is_minus_0); fnv(move |a3: &[&Value]| -> Value {
+          if truthy(&eq(&len(&filt(&get(&rd(&body_0), "of"), &{ let self_: Value = self_.clone(); cl!(is_minus_0); fnv(move |a3: &[&Value]| -> Value {
             let self_: &Value = &self_;
             let x_2 = cell(&arg(a3, 0));
             return own(&invoke(&rd(&is_minus_0), args![rd(&x_2)]));
             Value::Null
-          }) })), &1.0)))) {
-            let rest_0 = cell(&Value::Null); wr(&rest_0, &list![]);
-            for i1 in 0..(num(&len(&get(&rd(&body_0), "of"))).ceil() as i64) {
-              let i_1 = cell(&(i1 as f64));
-              if truthy(&(!eq(&rd(&i_1), &rd(&at_0)))) {
-                m_push(&rd(&rest_0), args![elem(&get(&rd(&body_0), "of"), &rd(&i_1))]);
-              }
-            };
+          }) })), &1.0)) {
+            let rest_0 = cell(&Value::Null); wr(&rest_0, &filt(&get(&rd(&body_0), "of"), &{ let self_: Value = self_.clone(); cl!(is_minus_0); fnv(move |a3: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let x_2 = cell(&arg(a3, 0));
+              return own(&(!truthy(&invoke(&rd(&is_minus_0), args![rd(&x_2)]))));
+              Value::Null
+            }) }));
             return own(&sv!["\\text{the } ", &tos(&get(&rd(&e_0), "bound")), " \\text{ where } ", &tos(&get(&rd(&e_0), "bound")), " = ", &tos(&call(&k!("Expr"), "show", args![(if truthy(&eq(&len(&rd(&rest_0)), &1.0)) { own(&elem(&rd(&rest_0), &0.0)) } else { own(&call(&k!("Expr"), "add", args![rd(&rest_0)])) })])), ""]);
           }
         }
@@ -5587,15 +5555,18 @@ pub mod c_Expr {
           return own(&invoke(&rd(&negative_0), args![rd(&x_2)]));
           Value::Null
         }) })]));
-        let out_0 = cell(&Value::Null); wr(&out_0, &sv![""]);
-        for i1 in 0..(num(&len(&rd(&ordered_0))).ceil() as i64) {
-          let i_1 = cell(&(i1 as f64));
-          let x_1 = cell(&Value::Null); wr(&x_1, &elem(&rd(&ordered_0), &rd(&i_1)));
-          let t_1 = cell(&Value::Null); wr(&t_1, &(if truthy(&eq(&get(&rd(&x_1), "kind"), &sv!["root"])) { own(&sv!["\\paren{", &tos(&call(&k!("Expr"), "show", args![rd(&x_1)])), "}"]) } else { own(&call(&k!("Expr"), "show", args![rd(&x_1)])) }));
-          let piece_1 = cell(&Value::Null); wr(&piece_1, &(if truthy(&eq(&rd(&i_1), &0.0)) { own(&rd(&t_1)) } else { own(&((if truthy(&m_starts_with(&rd(&t_1), args![sv!["-"]])) { own(&sv![" - ", &tos(&m_drop(&rd(&t_1), args![1.0])), ""]) } else { own(&sv![" + ", &tos(&rd(&t_1)), ""]) }))) }));
-          wr(&out_0, &sv!["", &tos(&rd(&out_0)), "", &tos(&rd(&piece_1)), ""]);
-        };
-        return own(&rd(&out_0));
+        let shown_0 = cell(&Value::Null); wr(&shown_0, &m_map(&rd(&ordered_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let x_2 = cell(&arg(a3, 0));
+          return own(&(if truthy(&eq(&get(&rd(&x_2), "kind"), &sv!["root"])) { own(&sv!["\\paren{", &tos(&call(&k!("Expr"), "show", args![rd(&x_2)])), "}"]) } else { own(&call(&k!("Expr"), "show", args![rd(&x_2)])) }));
+          Value::Null
+        }) }]));
+        return own(&m_join(&m_map(&rng(&len(&rd(&shown_0))), args![{ let self_: Value = self_.clone(); cl!(shown_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let i_2 = cell(&arg(a3, 0));
+          return own(&(if truthy(&eq(&rd(&i_2), &0.0)) { own(&elem(&rd(&shown_0), &rd(&i_2))) } else { own(&((if truthy(&m_starts_with(&elem(&rd(&shown_0), &rd(&i_2)), args![sv!["-"]])) { own(&sv![" - ", &tos(&m_drop(&elem(&rd(&shown_0), &rd(&i_2)), args![1.0])), ""]) } else { own(&sv![" + ", &tos(&elem(&rd(&shown_0), &rd(&i_2))), ""]) }))) }));
+          Value::Null
+        }) }]), args![sv![""]]));
       }
       return own(&sv![""]);
       Value::Null
@@ -5651,14 +5622,17 @@ pub mod c_Expr {
         return own(&call(&k!("Expr"), "add", args![m_map(&rng(&len(&get(&rd(&e_0), "of"))), args![{ let self_: Value = self_.clone(); cl!(e_0, wrt_0); fnv(move |a3: &[&Value]| -> Value {
           let self_: &Value = &self_;
           let i_2 = cell(&arg(a3, 0));
-          let others_2 = cell(&Value::Null); wr(&others_2, &list![]);
-          for i3 in 0..(num(&len(&get(&rd(&e_0), "of"))).ceil() as i64) {
-            let j_3 = cell(&(i3 as f64));
-            if truthy(&(!eq(&rd(&j_3), &rd(&i_2)))) {
-              m_push(&rd(&others_2), args![elem(&get(&rd(&e_0), "of"), &rd(&j_3))]);
-            }
-          };
-          return own(&call(&k!("Expr"), "mul", args![m_concat(&list![call(&k!("Expr"), "d", args![elem(&get(&rd(&e_0), "of"), &rd(&i_2)), rd(&wrt_0)])], args![rd(&others_2)])]));
+          return own(&call(&k!("Expr"), "mul", args![m_concat(&list![call(&k!("Expr"), "d", args![elem(&get(&rd(&e_0), "of"), &rd(&i_2)), rd(&wrt_0)])], args![m_map(&filt(&rng(&len(&get(&rd(&e_0), "of"))), &{ let self_: Value = self_.clone(); cl!(i_2); fnv(move |a6: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let j_5 = cell(&arg(a6, 0));
+            return own(&(!eq(&rd(&j_5), &rd(&i_2))));
+            Value::Null
+          }) }), args![{ let self_: Value = self_.clone(); cl!(e_0); fnv(move |a5: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let j_4 = cell(&arg(a5, 0));
+            return own(&elem(&get(&rd(&e_0), "of"), &rd(&j_4)));
+            Value::Null
+          }) }])])]));
           Value::Null
         }) }])]));
       }
@@ -6020,20 +5994,20 @@ pub mod c_Expr {
         return own(&(if truthy(&eq(&rd(&v_0), &Value::Null)) { own(&get(&k!("Expr"), "NAN")) } else { own(&rd(&v_0)) }));
       }
       if truthy(&eq(&rd(&k_0), &sv!["add"])) {
-        let total__0 = cell(&Value::Null); wr(&total__0, &0.0);
-        for e1 in items(&get(&rd(&e_0), "of")) {
-          let x_1 = cell(&e1);
-          wr(&total__0, &add(&rd(&total__0), &call(&k!("Expr"), "numeric", args![rd(&x_1), rd(&at_0)])));
-        };
-        return own(&rd(&total__0));
+        return own(&m_reduce(&get(&rd(&e_0), "of"), args![0.0, { let self_: Value = self_.clone(); cl!(at_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let total__2 = cell(&arg(a3, 0)); let x_2 = cell(&arg(a3, 1));
+          return own(&add(&rd(&total__2), &call(&k!("Expr"), "numeric", args![rd(&x_2), rd(&at_0)])));
+          Value::Null
+        }) }]));
       }
       if truthy(&eq(&rd(&k_0), &sv!["mul"])) {
-        let prod_0 = cell(&Value::Null); wr(&prod_0, &1.0);
-        for e1 in items(&get(&rd(&e_0), "of")) {
-          let x_1 = cell(&e1);
-          wr(&prod_0, &mul(&rd(&prod_0), &call(&k!("Expr"), "numeric", args![rd(&x_1), rd(&at_0)])));
-        };
-        return own(&rd(&prod_0));
+        return own(&m_reduce(&get(&rd(&e_0), "of"), args![1.0, { let self_: Value = self_.clone(); cl!(at_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let prod_2 = cell(&arg(a3, 0)); let x_2 = cell(&arg(a3, 1));
+          return own(&mul(&rd(&prod_2), &call(&k!("Expr"), "numeric", args![rd(&x_2), rd(&at_0)])));
+          Value::Null
+        }) }]));
       }
       if truthy(&eq(&rd(&k_0), &sv!["pow"])) {
         return own(&power(&call(&k!("Expr"), "numeric", args![get(&rd(&e_0), "base"), rd(&at_0)]), &call(&k!("Expr"), "numeric", args![get(&rd(&e_0), "power"), rd(&at_0)])));
@@ -6122,22 +6096,7 @@ pub mod c_Expr {
       if truthy(&(truthy(&(truthy(&(!truthy(&call(&k!("Expr"), "finite", args![invoke(&rd(&f_0), args![0.5])])))) && truthy(&(!truthy(&call(&k!("Expr"), "finite", args![invoke(&rd(&f_0), args![1.0])])))))) && truthy(&(!truthy(&call(&k!("Expr"), "finite", args![invoke(&rd(&f_0), args![0.1])])))))) {
         return own(&get(&k!("Expr"), "NAN"));
       }
-      let points_0 = cell(&Value::Null); wr(&points_0, &list![]);
-      let i_0 = cell(&Value::Null); wr(&i_0, &1.0);
-      while truthy(&le(&rd(&i_0), &120.0)) {
-        m_push(&rd(&points_0), args![div(&rd(&i_0), &120.0)]);
-        wr(&i_0, &add(&rd(&i_0), &1.0));
-      }
-      let ex_0 = cell(&Value::Null); wr(&ex_0, &0.0);
-      while truthy(&le(&rd(&ex_0), &24.0)) {
-        let k_0 = cell(&Value::Null); wr(&k_0, &1.0);
-        while truthy(&lt(&rd(&k_0), &8.0)) {
-          m_push(&rd(&points_0), args![mul(&(power(&10.0, &(sub(&rd(&ex_0), &12.0)))), &(add(&1.0, &div(&rd(&k_0), &2.0))))]);
-          wr(&k_0, &add(&rd(&k_0), &1.0));
-        }
-        wr(&ex_0, &add(&rd(&ex_0), &1.0));
-      }
-      wr(&points_0, &call(&k!("Expr"), "sorted", args![rd(&points_0)]));
+      let points_0 = cell(&Value::Null); wr(&points_0, &get(&k!("Expr"), "bracket_points"));
       let lo_0 = cell(&Value::Null); wr(&lo_0, &Value::Null);
       let hi_0 = cell(&Value::Null); wr(&hi_0, &Value::Null);
       let px_0 = cell(&Value::Null); wr(&px_0, &elem(&rd(&points_0), &0.0));
@@ -6180,20 +6139,40 @@ pub mod c_Expr {
       Value::Null
     }
   }
+  pub mod s_bracket_points {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let even_0 = cell(&Value::Null); wr(&even_0, &m_map(&rng(&120.0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&div(&(add(&rd(&i_2), &1.0)), &120.0));
+        Value::Null
+      }) }]));
+      let decades_0 = cell(&Value::Null); wr(&decades_0, &m_reduce(&rng(&25.0), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let ex_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rng(&7.0), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(ex_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let k_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![mul(&(power(&10.0, &(sub(&rd(&ex_2), &12.0)))), &(add(&1.0, &div(&(add(&rd(&k_4), &1.0)), &2.0))))]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      return own(&call(&k!("Expr"), "sorted", args![m_concat(&rd(&even_0), args![rd(&decades_0)])]));
+      Value::Null
+    }
+  }
   pub mod s_sorted {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let xs_0 = cell(&arg(a1, 0));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for e1 in items(&rd(&xs_0)) {
-        let x_1 = cell(&e1);
-        let i_1 = cell(&Value::Null); wr(&i_1, &0.0);
-        while truthy(&(truthy(&lt(&rd(&i_1), &len(&rd(&out_0)))) && truthy(&le(&elem(&rd(&out_0), &rd(&i_1)), &rd(&x_1))))) {
-          wr(&i_1, &add(&rd(&i_1), &1.0));
-        }
-        wr(&out_0, &m_concat(&m_concat(&m_take(&rd(&out_0), args![rd(&i_1)]), args![list![rd(&x_1)]]), args![m_drop(&rd(&out_0), args![rd(&i_1)])]));
-      };
-      return own(&rd(&out_0));
+      return own(&m_sorted_by(&rd(&xs_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&rd(&x_2));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -6361,26 +6340,23 @@ pub mod c_Expr {
           let ok_1 = cell(&Value::Null); wr(&ok_1, &true);
           let k_1 = cell(&Value::Null); wr(&k_1, &elem(&rd(&head__1), &1.0));
           if truthy(&(!eq(&rd(&nums_1), &Value::Null))) {
-            let lo_1 = cell(&Value::Null); wr(&lo_1, &elem(&rd(&nums_1), &0.0));
-            let hi_1 = cell(&Value::Null); wr(&hi_1, &elem(&rd(&nums_1), &0.0));
-            for e2 in items(&rd(&nums_1)) {
-              let v_2 = cell(&e2);
-              if truthy(&lt(&rd(&v_2), &rd(&lo_1))) {
-                wr(&lo_1, &rd(&v_2));
-              }
-              if truthy(&gt(&rd(&v_2), &rd(&hi_1))) {
-                wr(&hi_1, &rd(&v_2));
-              }
-            };
-            wr(&ok_1, &eq(&(le(&rd(&lo_1), &0.0)), &(le(&rd(&hi_1), &0.0))));
-            let least_1 = cell(&Value::Null); wr(&least_1, &elem(&rd(&nums_1), &0.0));
-            for e2 in items(&rd(&nums_1)) {
-              let v_2 = cell(&e2);
-              if truthy(&lt(&m_abs(&rd(&v_2)), &m_abs(&rd(&least_1)))) {
-                wr(&least_1, &rd(&v_2));
-              }
-            };
-            wr(&k_1, &call(&k!("Expr"), "num", args![rd(&least_1)]));
+            wr(&ok_1, &(truthy(&m_every(&rd(&nums_1), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let v_3 = cell(&arg(a4, 0));
+              return own(&le(&rd(&v_3), &0.0));
+              Value::Null
+            }) }])) || truthy(&m_every(&rd(&nums_1), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let v_3 = cell(&arg(a4, 0));
+              return own(&gt(&rd(&v_3), &0.0));
+              Value::Null
+            }) }]))));
+            wr(&k_1, &call(&k!("Expr"), "num", args![m_reduce(&rd(&nums_1), args![elem(&rd(&nums_1), &0.0), { let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let least_3 = cell(&arg(a4, 0)); let v_3 = cell(&arg(a4, 1));
+              return own(&(if truthy(&lt(&m_abs(&rd(&v_3)), &m_abs(&rd(&least_3)))) { own(&rd(&v_3)) } else { own(&rd(&least_3)) }));
+              Value::Null
+            }) }])]));
           }
           if truthy(&rd(&ok_1)) {
             m_push(&rd(&common_0), args![list![elem(&rd(&head__1), &0.0), rd(&k_1)]]);
@@ -6697,26 +6673,27 @@ pub mod c_Expr {
         }) }])])]));
       }
       if truthy(&eq(&get(&rd(&t_0), "kind"), &sv!["mul"])) {
-        let parts_0 = cell(&Value::Null); wr(&parts_0, &m_map(&get(&rd(&t_0), "of"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let out_0 = cell(&Value::Null); wr(&out_0, &m_reduce(&m_map(&get(&rd(&t_0), "of"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
           let self_: &Value = &self_;
-          let x_2 = cell(&arg(a3, 0));
-          return own(&call(&k!("Expr"), "expand", args![rd(&x_2)]));
+          let x_3 = cell(&arg(a4, 0));
+          return own(&call(&k!("Expr"), "expand", args![rd(&x_3)]));
+          Value::Null
+        }) }]), args![list![call(&k!("Expr"), "num", args![1.0])], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let out_2 = cell(&arg(a3, 0)); let p_2 = cell(&arg(a3, 1));
+          return own(&m_reduce(&rd(&out_2), args![list![], { let self_: Value = self_.clone(); cl!(p_2); fnv(move |a5: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let next_4 = cell(&arg(a5, 0)); let a_4 = cell(&arg(a5, 1));
+            return own(&m_reduce(&((if truthy(&eq(&get(&rd(&p_2), "kind"), &sv!["add"])) { own(&get(&rd(&p_2), "of")) } else { own(&list![rd(&p_2)]) })), args![rd(&next_4), { let self_: Value = self_.clone(); cl!(a_4); fnv(move |a7: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let n_6 = cell(&arg(a7, 0)); let b_6 = cell(&arg(a7, 1));
+              return own(&m_push(&rd(&n_6), args![call(&k!("Expr"), "mul", args![list![rd(&a_4), rd(&b_6)]])]));
+              Value::Null
+            }) }]));
+            Value::Null
+          }) }]));
           Value::Null
         }) }]));
-        let out_0 = cell(&Value::Null); wr(&out_0, &list![call(&k!("Expr"), "num", args![1.0])]);
-        for e1 in items(&rd(&parts_0)) {
-          let p_1 = cell(&e1);
-          let terms_1 = cell(&Value::Null); wr(&terms_1, &(if truthy(&eq(&get(&rd(&p_1), "kind"), &sv!["add"])) { own(&get(&rd(&p_1), "of")) } else { own(&list![rd(&p_1)]) }));
-          let next_1 = cell(&Value::Null); wr(&next_1, &list![]);
-          for e2 in items(&rd(&out_0)) {
-            let a_2 = cell(&e2);
-            for e3 in items(&rd(&terms_1)) {
-              let b_3 = cell(&e3);
-              m_push(&rd(&next_1), args![call(&k!("Expr"), "mul", args![list![rd(&a_2), rd(&b_3)]])]);
-            };
-          };
-          wr(&out_0, &rd(&next_1));
-        };
         return own(&call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "add", args![rd(&out_0)])]));
       }
       return own(&rd(&t_0));
@@ -6950,6 +6927,7 @@ pub mod c_Expr {
     c.getter("is_zero", g_is_zero::f);//<
     c.getter("is_one", g_is_one::f);//<
     c.getter("named", g_named::f);//<
+    c.getter("subtrees", g_subtrees::f);//<
     c.getter("by_num", g_by_num::f);//<
     c.statik("flatten", s_flatten::f);//<
     c.statik("is_integer", s_is_integer::f);//<
@@ -6981,6 +6959,7 @@ pub mod c_Expr {
     c.statik("to_infinity", s_to_infinity::f);//<
     c.statik("solve_root", s_solve_root::f);//<
     c.statik("solving", s_solving::f);//<
+    c.statik("bracket_points", s_bracket_points::f);//<
     c.statik("sorted", s_sorted::f);//<
     c.statik("integrate", s_integrate::f);//<
     c.statik("factored", s_factored::f);//<
@@ -7032,6 +7011,18 @@ pub mod c_ExprReader {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let s_0 = cell(&arg(a1, 0));
       return own(&eq(&call(&k!("Notation"), "sub_", args![get(&self_, "text"), get(&self_, "at"), add(&get(&self_, "at"), &len(&rd(&s_0)))]), &rd(&s_0)));
+      Value::Null
+    }
+  }
+  pub mod m_take_while {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let keep_0 = cell(&arg(a1, 0));
+      let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
+      while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&invoke(&rd(&keep_0), args![elem(&m_chars(&get(&self_, "text")), &rd(&k_0))])))) {
+        wr(&k_0, &add(&rd(&k_0), &1.0));
+      }
+      return own(&call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]));
       Value::Null
     }
   }
@@ -7107,22 +7098,36 @@ pub mod c_ExprReader {
   pub mod g_word {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
-      while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&((truthy(&call(&k!("Notation"), "is_name", args![elem(&m_chars(&get(&self_, "text")), &rd(&k_0))])) || truthy(&gt(&elem(&m_chars(&get(&self_, "text")), &rd(&k_0)), &127.0))))))) {
-        wr(&k_0, &add(&rd(&k_0), &1.0));
-      }
-      return own(&call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]));
+      return own(&call(&self_, "take_while", args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&(truthy(&call(&k!("Notation"), "is_name", args![rd(&c__2)])) || truthy(&gt(&rd(&c__2), &127.0))));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
   pub mod g_number {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
-      while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&((truthy(&call(&k!("Notation"), "is_digit", args![elem(&m_chars(&get(&self_, "text")), &rd(&k_0))])) || truthy(&eq(&elem(&m_chars(&get(&self_, "text")), &rd(&k_0)), &46.0))))))) {
-        wr(&k_0, &add(&rd(&k_0), &1.0));
-      }
-      return own(&call(&k!("Expr"), "num", args![number(&call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]))]));
+      return own(&call(&k!("Expr"), "num", args![number(&call(&self_, "take_while", args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&(truthy(&call(&k!("Notation"), "is_digit", args![rd(&c__2)])) || truthy(&eq(&rd(&c__2), &46.0))));
+        Value::Null
+      }) }]))]));
+      Value::Null
+    }
+  }
+  pub mod g_quoted {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&self_, "take_while", args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&(!eq(&rd(&c__2), &34.0)));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -7143,11 +7148,7 @@ pub mod c_ExprReader {
       }
       if truthy(&eq(&rd(&c__0), &34.0)) {
         call(&self_, "eat", args![1.0]);
-        let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
-        while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&(!eq(&elem(&m_chars(&get(&self_, "text")), &rd(&k_0)), &34.0))))) {
-          wr(&k_0, &add(&rd(&k_0), &1.0));
-        }
-        let name_0 = cell(&Value::Null); wr(&name_0, &call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]));
+        let name_0 = cell(&Value::Null); wr(&name_0, &quoted(&self_));
         call(&self_, "eat", args![1.0]);
         return own(&call(&k!("Expr"), "field", args![call(&k!("Expr"), "name_of", args![rd(&name_0)])]));
       }
@@ -7159,11 +7160,7 @@ pub mod c_ExprReader {
         call(&self_, "eat", args![1.0]);
         get(&self_, "skip");
         call(&self_, "eat", args![1.0]);
-        let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
-        while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&(!eq(&elem(&m_chars(&get(&self_, "text")), &rd(&k_0)), &34.0))))) {
-          wr(&k_0, &add(&rd(&k_0), &1.0));
-        }
-        let name_0 = cell(&Value::Null); wr(&name_0, &call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]));
+        let name_0 = cell(&Value::Null); wr(&name_0, &quoted(&self_));
         call(&self_, "eat", args![1.0]);
         get(&self_, "skip");
         call(&self_, "eat", args![1.0]);
@@ -7185,11 +7182,7 @@ pub mod c_ExprReader {
       }
       if truthy(&(truthy(&eq(&rd(&name_0), &sv!["s"])) && truthy(&eq(&get(&self_, "peek"), &91.0)))) {
         call(&self_, "eat", args![2.0]);
-        let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "at"));
-        while truthy(&(truthy(&lt(&rd(&k_0), &len(&get(&self_, "text")))) && truthy(&(!eq(&elem(&m_chars(&get(&self_, "text")), &rd(&k_0)), &34.0))))) {
-          wr(&k_0, &add(&rd(&k_0), &1.0));
-        }
-        let key_0 = cell(&Value::Null); wr(&key_0, &call(&self_, "eat", args![sub(&rd(&k_0), &get(&self_, "at"))]));
+        let key_0 = cell(&Value::Null); wr(&key_0, &quoted(&self_));
         call(&self_, "eat", args![2.0]);
         return own(&call(&k!("Expr"), "field", args![call(&k!("Expr"), "name_of", args![rd(&key_0)])]));
       }
@@ -7204,6 +7197,7 @@ pub mod c_ExprReader {
     c.getter("skip", g_skip::f);//<
     c.method("eat", m_eat::f);//<
     c.method("starts", m_starts::f);//<
+    c.method("take_while", m_take_while::f);//<
     c.getter("addition", g_addition::f);//<
     c.getter("product", g_product::f);//<
     c.getter("power", g_power::f);//<
@@ -7211,6 +7205,7 @@ pub mod c_ExprReader {
     c.getter("postfix", g_postfix::f);//<
     c.getter("word", g_word::f);//<
     c.getter("number", g_number::f);//<
+    c.getter("quoted", g_quoted::f);//<
     c.getter("primary", g_primary::f);//<
   }
 }
@@ -8280,25 +8275,29 @@ pub mod c_Prover {
         set(&rd(&sw_0), "derivation", &list![rd(&inner_0)]);
         m_push(&rd(&out_0), args![rd(&sw_0)]);
       }
-      let rates_0 = cell(&Value::Null); wr(&rates_0, &list![]);
-      for e1 in items(&rd(&infos_0)) {
-        let t_1 = cell(&e1);
-        if truthy(&(truthy(&(!eq(&get(&rd(&t_1), "rate"), &Value::Null))) && truthy(&(!truthy(&m_contains(&rd(&rates_0), args![get(&rd(&t_1), "rate")])))))) {
-          m_push(&rd(&rates_0), args![get(&rd(&t_1), "rate")]);
-        }
-      };
+      let rates_0 = cell(&Value::Null); wr(&rates_0, &m_reduce(&filt(&rd(&infos_0), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_3 = cell(&arg(a4, 0));
+        return own(&(!eq(&get(&rd(&t_3), "rate"), &Value::Null)));
+        Value::Null
+      }) }), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let t_2 = cell(&arg(a3, 1));
+        return own(&(if truthy(&m_contains(&rd(&out_2), args![get(&rd(&t_2), "rate")])) { own(&rd(&out_2)) } else { own(&m_push(&rd(&out_2), args![get(&rd(&t_2), "rate")])) }));
+        Value::Null
+      }) }]));
       for e1 in items(&rd(&rates_0)) {
         let name_1 = cell(&e1);
         m_push(&rd(&out_0), args![call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![rd(&name_1), call(&k!("Expr"), "num", args![1.0])]), sv!["the rewrite"], list![], sv!["a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"], list![sv!["", &tos(&rd(&name_1)), " = 1 per match per tick"]]])]);
       };
       for e1 in items(&list![sv!["rays"], sv!["space"], sv!["folds"]]) {
         let ledger_1 = cell(&e1);
-        let parts_1 = cell(&Value::Null); wr(&parts_1, &list![]);
-        for e2 in items(&rd(&acting_0)) {
-          let t_2 = cell(&e2);
-          let c__2 = cell(&Value::Null); wr(&c__2, &(if truthy(&eq(&rd(&ledger_1), &sv!["rays"])) { own(&get(&rd(&t_2), "ray_count")) } else { own(&((if truthy(&eq(&rd(&ledger_1), &sv!["space"])) { own(&get(&rd(&t_2), "space_count")) } else { own(&get(&rd(&t_2), "fold_count")) }))) }));
-          m_push(&rd(&parts_1), args![call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![list![call(&k!("Prover"), "body_of", args![rd(&t_2)]), rd(&c__2)]])])]);
-        };
+        let parts_1 = cell(&Value::Null); wr(&parts_1, &m_map(&rd(&acting_0), args![{ let self_: Value = self_.clone(); cl!(ledger_1); fnv(move |a4: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let t_3 = cell(&arg(a4, 0));
+          return own(&call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![list![call(&k!("Prover"), "body_of", args![rd(&t_3)]), (if truthy(&eq(&rd(&ledger_1), &sv!["rays"])) { own(&get(&rd(&t_3), "ray_count")) } else { own(&((if truthy(&eq(&rd(&ledger_1), &sv!["space"])) { own(&get(&rd(&t_3), "space_count")) } else { own(&get(&rd(&t_3), "fold_count")) }))) })]])]));
+          Value::Null
+        }) }]));
         if !truthy(&m_empty(&rd(&parts_1))) {
           m_push(&rd(&out_0), args![call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["the ", &tos(&rd(&ledger_1)), " line nets"], call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "add", args![rd(&parts_1)])])]), sv!["the line"], list![], sv!["every term of the line does something to the ", &tos(&rd(&ledger_1)), " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted"], m_map(&rd(&acting_0), args![{ let self_: Value = self_.clone(); cl!(ledger_1); fnv(move |a4: &[&Value]| -> Value {
             let self_: &Value = &self_;
@@ -10766,23 +10765,26 @@ pub mod c_Inferences {
           if truthy(&(!eq(&get(&rd(&t_3), "kind"), &sv!["mul"]))) {
             return own(&rd(&t_3));
           }
-          let at_3 = cell(&Value::Null); wr(&at_3, &Value::Null);
-          for i4 in 0..(num(&len(&get(&rd(&t_3), "of"))).ceil() as i64) {
-            let i_4 = cell(&(i4 as f64));
-            if truthy(&(truthy(&eq(&rd(&at_3), &Value::Null)) && truthy(&eq(&get(&elem(&get(&rd(&t_3), "of"), &rd(&i_4)), "kind"), &sv!["add"])))) {
-              wr(&at_3, &rd(&i_4));
-            }
-          };
+          let at_3 = cell(&Value::Null); wr(&at_3, &m_first(&filt(&rng(&len(&get(&rd(&t_3), "of"))), &{ let self_: Value = self_.clone(); cl!(t_3); fnv(move |a6: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let i_5 = cell(&arg(a6, 0));
+            return own(&eq(&get(&elem(&get(&rd(&t_3), "of"), &rd(&i_5)), "kind"), &sv!["add"]));
+            Value::Null
+          }) })));
           if truthy(&eq(&rd(&at_3), &Value::Null)) {
             return own(&rd(&t_3));
           }
-          let rest_3 = cell(&Value::Null); wr(&rest_3, &list![]);
-          for i4 in 0..(num(&len(&get(&rd(&t_3), "of"))).ceil() as i64) {
-            let i_4 = cell(&(i4 as f64));
-            if truthy(&(!eq(&rd(&i_4), &rd(&at_3)))) {
-              m_push(&rd(&rest_3), args![elem(&get(&rd(&t_3), "of"), &rd(&i_4))]);
-            }
-          };
+          let rest_3 = cell(&Value::Null); wr(&rest_3, &m_map(&filt(&rng(&len(&get(&rd(&t_3), "of"))), &{ let self_: Value = self_.clone(); cl!(at_3); fnv(move |a7: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let i_6 = cell(&arg(a7, 0));
+            return own(&(!eq(&rd(&i_6), &rd(&at_3))));
+            Value::Null
+          }) }), args![{ let self_: Value = self_.clone(); cl!(t_3); fnv(move |a6: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let i_5 = cell(&arg(a6, 0));
+            return own(&elem(&get(&rd(&t_3), "of"), &rd(&i_5)));
+            Value::Null
+          }) }]));
           let spread_3 = cell(&Value::Null); wr(&spread_3, &call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "add", args![m_map(&get(&elem(&get(&rd(&t_3), "of"), &rd(&at_3)), "of"), args![{ let self_: Value = self_.clone(); cl!(rest_3); fnv(move |a6: &[&Value]| -> Value {
             let self_: &Value = &self_;
             let x_5 = cell(&arg(a6, 0));
@@ -11831,20 +11833,20 @@ pub mod c_Aggregate {
         return own(&(if truthy(&eq(&rd(&v_0), &Value::Null)) { own(&f64::NAN) } else { own(&rd(&v_0)) }));
       }
       if truthy(&eq(&rd(&k_0), &sv!["add"])) {
-        let total_0 = cell(&Value::Null); wr(&total_0, &0.0);
-        for e1 in items(&get(&rd(&e_0), "of")) {
-          let p_1 = cell(&e1);
-          wr(&total_0, &add(&rd(&total_0), &call(&self_, "value", args![rd(&p_1), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)])));
-        };
-        return own(&rd(&total_0));
+        return own(&m_sum(&m_map(&get(&rd(&e_0), "of"), args![{ let self_: Value = self_.clone(); cl!(at_0, masses_0, Rs_0, skip_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let p_2 = cell(&arg(a3, 0));
+          return own(&call(&self_, "value", args![rd(&p_2), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)]));
+          Value::Null
+        }) }])));
       }
       if truthy(&eq(&rd(&k_0), &sv!["mul"])) {
-        let prod_0 = cell(&Value::Null); wr(&prod_0, &1.0);
-        for e1 in items(&get(&rd(&e_0), "of")) {
-          let p_1 = cell(&e1);
-          wr(&prod_0, &mul(&rd(&prod_0), &call(&self_, "value", args![rd(&p_1), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)])));
-        };
-        return own(&rd(&prod_0));
+        return own(&m_reduce(&get(&rd(&e_0), "of"), args![1.0, { let self_: Value = self_.clone(); cl!(at_0, masses_0, Rs_0, skip_0); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let prod_2 = cell(&arg(a3, 0)); let p_2 = cell(&arg(a3, 1));
+          return own(&mul(&rd(&prod_2), &call(&self_, "value", args![rd(&p_2), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)])));
+          Value::Null
+        }) }]));
       }
       if truthy(&eq(&rd(&k_0), &sv!["pow"])) {
         return own(&power(&call(&self_, "value", args![get(&rd(&e_0), "base"), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)]), &call(&self_, "value", args![get(&rd(&e_0), "power"), rd(&at_0), rd(&masses_0), rd(&Rs_0), rd(&skip_0)])));
@@ -12291,23 +12293,22 @@ pub mod c_Aggregate {
   pub mod g_names {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let out_0 = cell(&Value::Null); wr(&out_0, &m_map(&get(&self_, "per_body"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      return own(&m_reduce(&list![get(&self_, "outer"), get(&self_, "summand"), get(&self_, "shell_expr"), get(&self_, "reach_expr")], args![m_concat(&get(&self_, "per_body"), args![list![sv!["SUM"]]]), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let n_2 = cell(&arg(a3, 0));
-        return own(&rd(&n_2));
+        let out_2 = cell(&arg(a3, 0)); let e_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&filt(&call(&k!("Model"), "unbound", args![rd(&e_2)]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a6: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let n_5 = cell(&arg(a6, 0));
+          return own(&(truthy(&(!eq(&rd(&n_5), &sv!["\\bar{R}"]))) && truthy(&(!truthy(&m_ends_with(&rd(&n_5), args![sv!["\\paren{...}"]]))))));
+          Value::Null
+        }) }), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let n_4 = cell(&arg(a5, 1));
+          return own(&(if truthy(&m_contains(&rd(&o_4), args![rd(&n_4)])) { own(&rd(&o_4)) } else { own(&m_push(&rd(&o_4), args![rd(&n_4)])) }));
+          Value::Null
+        }) }]));
         Value::Null
       }) }]));
-      m_push(&rd(&out_0), args![sv!["SUM"]]);
-      for e1 in items(&list![get(&self_, "outer"), get(&self_, "summand"), get(&self_, "shell_expr"), get(&self_, "reach_expr")]) {
-        let e_1 = cell(&e1);
-        for e2 in items(&call(&k!("Model"), "unbound", args![rd(&e_1)])) {
-          let n_2 = cell(&e2);
-          if truthy(&(truthy(&(truthy(&(!truthy(&m_contains(&rd(&out_0), args![rd(&n_2)])))) && truthy(&(!eq(&rd(&n_2), &sv!["\\bar{R}"]))))) && truthy(&(!truthy(&m_ends_with(&rd(&n_2), args![sv!["\\paren{...}"]])))))) {
-            m_push(&rd(&out_0), args![rd(&n_2)]);
-          }
-        };
-      };
-      return own(&rd(&out_0));
       Value::Null
     }
   }
@@ -12686,7 +12687,7 @@ pub mod c_Medium {
   pub mod g_terms {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&get(&get(&get(&self_, "theory"), "equation"), "terms"));
+      return own(&get(&get(&self_, "theory"), "terms_read"));
       Value::Null
     }
   }
@@ -12907,18 +12908,17 @@ pub mod c_Medium {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let h_0 = cell(&arg(a1, 0));
       let half_0 = cell(&Value::Null); wr(&half_0, &m_floor(&(div(&(sub(&get(&self_, "K"), &1.0)), &2.0))));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "K")).ceil() as i64) {
-        let dy_1 = cell(&(i1 as f64));
-        for i2 in 0..(num(&get(&self_, "K")).ceil() as i64) {
-          let dx_2 = cell(&(i2 as f64));
-          let c__2 = cell(&Value::Null); wr(&c__2, &call(&self_, "at", args![add(&sub(&m_round(&get(&rd(&h_0), "x")), &rd(&half_0)), &rd(&dx_2)), add(&sub(&m_round(&get(&rd(&h_0), "y")), &rd(&half_0)), &rd(&dy_1))]));
-          if truthy(&ge(&rd(&c__2), &0.0)) {
-            m_push(&rd(&out_0), args![rd(&c__2)]);
-          }
-        };
-      };
-      return own(&rd(&out_0));
+      return own(&filt(&m_map(&rng(&mul(&get(&self_, "K"), &get(&self_, "K"))), args![{ let self_: Value = self_.clone(); cl!(h_0, half_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&call(&self_, "at", args![add(&sub(&m_round(&get(&rd(&h_0), "x")), &rd(&half_0)), &modulo(&rd(&i_3), &get(&self_, "K"))), add(&sub(&m_round(&get(&rd(&h_0), "y")), &rd(&half_0)), &m_floor(&(div(&rd(&i_3), &get(&self_, "K")))))]));
+        Value::Null
+      }) }]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&ge(&rd(&c__2), &0.0));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -14838,6 +14838,8 @@ pub mod c_Surface {
     c.method("rotate", |_s: &Value, _a: &[&Value]| -> Value { fail_with("rotate is declared but not defined by anyone") });//<
     c.method("dash", |_s: &Value, _a: &[&Value]| -> Value { fail_with("dash is declared but not defined by anyone") });//<
     c.method("gradient_stroke", |_s: &Value, _a: &[&Value]| -> Value { fail_with("gradient_stroke is declared but not defined by anyone") });//<
+    c.method("image", |_s: &Value, _a: &[&Value]| -> Value { fail_with("image is declared but not defined by anyone") });//<
+    c.method("field", |_s: &Value, _a: &[&Value]| -> Value { fail_with("field is declared but not defined by anyone") });//<
   }
 }
 
@@ -14908,13 +14910,9 @@ pub mod c_Cached {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let frame_at_0 = cell(&arg(a1, 0));
       let out_0 = cell(&Value::Null); wr(&out_0, &node());
-      let all_0 = cell(&Value::Null); wr(&all_0, &get(&get(&get(&self_, "film"), "columns"), &tos(&sv!["frames"])));
-      let width_0 = cell(&Value::Null); wr(&width_0, &m_sum(&get(&self_, "sizes")));
-      let from_at_0 = cell(&Value::Null); wr(&from_at_0, &mul(&rd(&frame_at_0), &rd(&width_0)));
       for i1 in 0..(num(&len(&get(&self_, "names"))).ceil() as i64) {
         let i_1 = cell(&(i1 as f64));
-        set_at(&rd(&out_0), &elem(&get(&self_, "names"), &rd(&i_1)), &m_take(&m_drop(&rd(&all_0), args![rd(&from_at_0)]), args![elem(&get(&self_, "sizes"), &rd(&i_1))]));
-        wr(&from_at_0, &add(&rd(&from_at_0), &elem(&get(&self_, "sizes"), &rd(&i_1))));
+        set_at(&rd(&out_0), &elem(&get(&self_, "names"), &rd(&i_1)), &m_take(&m_drop(&get(&get(&get(&self_, "film"), "columns"), &tos(&sv!["frames"])), args![add(&mul(&rd(&frame_at_0), &m_sum(&get(&self_, "sizes"))), &m_sum(&m_take(&get(&self_, "sizes"), args![rd(&i_1)])))]), args![elem(&get(&self_, "sizes"), &rd(&i_1))]));
       };
       return own(&rd(&out_0));
       Value::Null
@@ -15066,6 +15064,9 @@ pub mod c_Picture {
     c.field("record", |self_: &Value| -> Value { own(&Value::Null) });//<
     c.field("panes", |self_: &Value| -> Value { own(&list![]) });//<
     c.field("on_request", |self_: &Value| -> Value { own(&false) });//<
+    c.field("images", |self_: &Value| -> Value { own(&list![]) });//<
+    c.field("parts", |self_: &Value| -> Value { own(&list![]) });//<
+    c.field("uses", |self_: &Value| -> Value { own(&list![]) });//<
     c.field_none("paint");//<
     c.getter("played", g_played::f);//<
     c.getter("painter", g_painter::f);//<
@@ -15308,15 +15309,24 @@ pub mod c_Setup {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let holes_0 = cell(&arg(a1, 0));
-      let m_0 = cell(&Value::Null); wr(&m_0, &0.0);
-      let x_0 = cell(&Value::Null); wr(&x_0, &0.0);
-      let y_0 = cell(&Value::Null); wr(&y_0, &0.0);
-      for e1 in items(&rd(&holes_0)) {
-        let h_1 = cell(&e1);
-        wr(&m_0, &add(&rd(&m_0), &get(&rd(&h_1), "mass")));
-        wr(&x_0, &add(&rd(&x_0), &mul(&get(&rd(&h_1), "x"), &get(&rd(&h_1), "mass"))));
-        wr(&y_0, &add(&rd(&y_0), &mul(&get(&rd(&h_1), "y"), &get(&rd(&h_1), "mass"))));
-      };
+      let m_0 = cell(&Value::Null); wr(&m_0, &m_sum(&m_map(&rd(&holes_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let h_2 = cell(&arg(a3, 0));
+        return own(&get(&rd(&h_2), "mass"));
+        Value::Null
+      }) }])));
+      let x_0 = cell(&Value::Null); wr(&x_0, &m_sum(&m_map(&rd(&holes_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let h_2 = cell(&arg(a3, 0));
+        return own(&mul(&get(&rd(&h_2), "x"), &get(&rd(&h_2), "mass")));
+        Value::Null
+      }) }])));
+      let y_0 = cell(&Value::Null); wr(&y_0, &m_sum(&m_map(&rd(&holes_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let h_2 = cell(&arg(a3, 0));
+        return own(&mul(&get(&rd(&h_2), "y"), &get(&rd(&h_2), "mass")));
+        Value::Null
+      }) }])));
       return own(&(if truthy(&gt(&rd(&m_0), &0.0)) { own(&list![div(&rd(&x_0), &rd(&m_0)), div(&rd(&y_0), &rd(&m_0))]) } else { own(&list![0.0, 0.0]) }));
       Value::Null
     }
@@ -16033,11 +16043,12 @@ pub mod c_Panel {
           wr(&centre_0, &rd(&k_1));
         }
       };
-      let weight_0 = cell(&Value::Null); wr(&weight_0, &0.0);
-      for i1 in 0..(num(&get(&rd(&p_0), "bodies")).ceil() as i64) {
-        let k_1 = cell(&(i1 as f64));
-        wr(&weight_0, &add(&rd(&weight_0), &elem(&rd(&marks_0), &add(&mul(&rd(&k_1), &6.0), &5.0))));
-      };
+      let weight_0 = cell(&Value::Null); wr(&weight_0, &m_sum(&m_map(&rng(&get(&rd(&p_0), "bodies")), args![{ let self_: Value = self_.clone(); cl!(marks_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&marks_0), &add(&mul(&rd(&k_2), &6.0), &5.0)));
+        Value::Null
+      }) }])));
       let frames_0 = cell(&Value::Null); wr(&frames_0, &div(&len(&elem(&rd(&trail_0), &rd(&centre_0))), &2.0));
       let midx_0 = cell(&Value::Null); wr(&midx_0, &m_map(&rng(&rd(&frames_0)), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
@@ -16456,16 +16467,22 @@ pub mod c_Strip {
         return own(&elem(&get(&get(&rd(&v_2), "at"), "components"), &0.0));
         Value::Null
       }) }]));
-      let sides_0 = cell(&Value::Null); wr(&sides_0, &list![]);
-      for e1 in items(&get(&rd(&w_0), "live")) {
-        let v_1 = cell(&e1);
-        for e2 in items(&get(&rd(&v_1), "rays")) {
-          let r_2 = cell(&e2);
-          if truthy(&get(&rd(&r_2), "active")) {
-            m_push(&rd(&sides_0), args![make_k(&k!("Side"), args![kw("at", &elem(&get(&get(&rd(&v_1), "at"), "components"), &0.0)), kw("sign", &elem(&get(&get(&rd(&r_2), "along"), "components"), &0.0)), kw("ink", &call(&rd(&ink_0), "ink_of", args![rd(&r_2)]))])]);
-          }
-        };
-      };
+      let sides_0 = cell(&Value::Null); wr(&sides_0, &m_reduce(&get(&rd(&w_0), "live"), args![list![], { let self_: Value = self_.clone(); cl!(ink_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let v_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&filt(&get(&rd(&v_2), "rays"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a6: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let r_5 = cell(&arg(a6, 0));
+          return own(&get(&rd(&r_5), "active"));
+          Value::Null
+        }) }), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(v_2, ink_0); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let r_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![make_k(&k!("Side"), args![kw("at", &elem(&get(&get(&rd(&v_2), "at"), "components"), &0.0)), kw("sign", &elem(&get(&get(&rd(&r_4), "along"), "components"), &0.0)), kw("ink", &call(&rd(&ink_0), "ink_of", args![rd(&r_4)]))])]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       let l_0 = cell(&Value::Null); wr(&l_0, &make_k(&k!("Lane"), args![kw("points", &rd(&pts_0)), kw("sides", &rd(&sides_0))]));
       for e1 in items(&get(&rd(&w_0), "sources")) {
         let s_1 = cell(&e1);
@@ -16611,17 +16628,18 @@ pub mod c_Strip {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let lanes_0 = cell(&arg(a1, 0));
-      let xs_0 = cell(&Value::Null); wr(&xs_0, &list![]);
-      for e1 in items(&rd(&lanes_0)) {
-        let l_1 = cell(&e1);
-        for e2 in items(&get(&rd(&l_1), "sources")) {
-          let p_2 = cell(&e2);
-          m_push(&rd(&xs_0), args![rd(&p_2)]);
-        };
-      };
-      if truthy(&m_empty(&rd(&xs_0))) {
-        wr(&xs_0, &get(&m_first(&rd(&lanes_0)), "points"));
-      }
+      let sourced_0 = cell(&Value::Null); wr(&sourced_0, &m_reduce(&rd(&lanes_0), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let l_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&get(&rd(&l_2), "sources"), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let p_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&p_4)]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      let xs_0 = cell(&Value::Null); wr(&xs_0, &(if truthy(&m_empty(&rd(&sourced_0))) { own(&get(&m_first(&rd(&lanes_0)), "points")) } else { own(&rd(&sourced_0)) }));
       if truthy(&m_empty(&rd(&xs_0))) {
         return own(&0.0);
       }
@@ -17068,17 +17086,20 @@ pub mod c_Sparc {
           set_at(&rd(&best_0), &get(&rd(&p_1), "galaxy"), &rd(&p_1));
         }
       };
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
       let names_0 = cell(&Value::Null); wr(&names_0, &get(&k!("Sparc"), "names"));
-      for i1 in 0..(num(&len(&rd(&names_0))).ceil() as i64) {
-        let g_1 = cell(&(i1 as f64));
-        let p_1 = cell(&Value::Null); wr(&p_1, &elem(&rd(&best_0), &rd(&g_1)));
-        if truthy(&(!eq(&rd(&p_1), &Value::Null))) {
-          let q_1 = cell(&Value::Null); wr(&q_1, &make_k(&k!("RarPoint"), args![kw("gbar", &get(&rd(&p_1), "gbar")), kw("gobs", &get(&rd(&p_1), "gobs")), kw("galaxy", &get(&rd(&p_1), "galaxy")), kw("R", &get(&rd(&p_1), "R"))]));
-          set(&rd(&q_1), "name", &elem(&rd(&names_0), &rd(&g_1)));
-          m_push(&rd(&out_0), args![rd(&q_1)]);
-        }
-      };
+      let out_0 = cell(&Value::Null); wr(&out_0, &m_map(&filt(&rng(&len(&rd(&names_0))), &{ let self_: Value = self_.clone(); cl!(best_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_3 = cell(&arg(a4, 0));
+        return own(&(!eq(&elem(&rd(&best_0), &rd(&g_3)), &Value::Null)));
+        Value::Null
+      }) }), args![{ let self_: Value = self_.clone(); cl!(best_0, names_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_2 = cell(&arg(a3, 0));
+        let q_2 = cell(&Value::Null); wr(&q_2, &make_k(&k!("RarPoint"), args![kw("gbar", &get(&elem(&rd(&best_0), &rd(&g_2)), "gbar")), kw("gobs", &get(&elem(&rd(&best_0), &rd(&g_2)), "gobs")), kw("galaxy", &get(&elem(&rd(&best_0), &rd(&g_2)), "galaxy")), kw("R", &get(&elem(&rd(&best_0), &rd(&g_2)), "R"))]));
+        set(&rd(&q_2), "name", &elem(&rd(&names_0), &rd(&g_2)));
+        return own(&rd(&q_2));
+        Value::Null
+      }) }]));
       set(&get(&k!("Sparc"), "CACHE"), &tos(&sv!["flat"]), &rd(&out_0));
       return own(&rd(&out_0));
       Value::Null
@@ -17096,13 +17117,17 @@ pub mod c_Sparc {
       }
       let c__0 = cell(&Value::Null); wr(&c__0, &get(&rd(&t_0), "columns"));
       let names_0 = cell(&Value::Null); wr(&names_0, &get(&get(&rd(&t_0), "header"), &tos(&sv!["names"])));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&rd(&t_0), "rows")).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&gt(&elem(&get(&rd(&c__0), &tos(&sv!["Vf"])), &rd(&i_1)), &0.0)) {
-          m_push(&rd(&out_0), args![make_k(&k!("Btfr"), args![kw("name", &elem(&rd(&names_0), &rd(&i_1))), kw("galaxy", &elem(&get(&rd(&c__0), &tos(&sv!["galaxy"])), &rd(&i_1))), kw("vf", &elem(&get(&rd(&c__0), &tos(&sv!["Vf"])), &rd(&i_1))), kw("err", &elem(&get(&rd(&c__0), &tos(&sv!["e_Vf"])), &rd(&i_1))), kw("mass", &mul(&power(&10.0, &elem(&get(&rd(&c__0), &tos(&sv!["log(Mb)"])), &rd(&i_1))), &get(&k!("Sparc"), "MSUN"))), kw("err_mass", &elem(&get(&rd(&c__0), &tos(&sv!["e_log(Mb)"])), &rd(&i_1)))])]);
-        }
-      };
+      let out_0 = cell(&Value::Null); wr(&out_0, &m_map(&filt(&rng(&get(&rd(&t_0), "rows")), &{ let self_: Value = self_.clone(); cl!(c__0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&gt(&elem(&get(&rd(&c__0), &tos(&sv!["Vf"])), &rd(&i_3)), &0.0));
+        Value::Null
+      }) }), args![{ let self_: Value = self_.clone(); cl!(names_0, c__0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("Btfr"), args![kw("name", &elem(&rd(&names_0), &rd(&i_2))), kw("galaxy", &elem(&get(&rd(&c__0), &tos(&sv!["galaxy"])), &rd(&i_2))), kw("vf", &elem(&get(&rd(&c__0), &tos(&sv!["Vf"])), &rd(&i_2))), kw("err", &elem(&get(&rd(&c__0), &tos(&sv!["e_Vf"])), &rd(&i_2))), kw("mass", &mul(&power(&10.0, &elem(&get(&rd(&c__0), &tos(&sv!["log(Mb)"])), &rd(&i_2))), &get(&k!("Sparc"), "MSUN"))), kw("err_mass", &elem(&get(&rd(&c__0), &tos(&sv!["e_log(Mb)"])), &rd(&i_2)))]));
+        Value::Null
+      }) }]));
       set(&get(&k!("Sparc"), "CACHE"), &tos(&sv!["btfr"]), &rd(&out_0));
       return own(&rd(&out_0));
       Value::Null
@@ -17268,23 +17293,18 @@ pub mod c_Galaxies {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let mask_0 = cell(&arg(a1, 0));
-      if truthy(&eq(&rd(&mask_0), &0.0)) {
-        return own(&get(&k!("Galaxies"), "SEVERAL"));
-      }
-      let r_0 = cell(&Value::Null); wr(&r_0, &0.0);
-      let g_0 = cell(&Value::Null); wr(&g_0, &0.0);
-      let bl_0 = cell(&Value::Null); wr(&bl_0, &0.0);
-      let n_0 = cell(&Value::Null); wr(&n_0, &0.0);
-      for i1 in 0..(num(&len(&get(&k!("Galaxies"), "FREEDOMS"))).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&call(&k!("Galaxies"), "bit", args![rd(&mask_0), rd(&i_1)])) {
-          wr(&r_0, &add(&rd(&r_0), &elem(&elem(&get(&k!("Galaxies"), "TINTS"), &rd(&i_1)), &0.0)));
-          wr(&g_0, &add(&rd(&g_0), &elem(&elem(&get(&k!("Galaxies"), "TINTS"), &rd(&i_1)), &1.0)));
-          wr(&bl_0, &add(&rd(&bl_0), &elem(&elem(&get(&k!("Galaxies"), "TINTS"), &rd(&i_1)), &2.0)));
-          wr(&n_0, &add(&rd(&n_0), &1.0));
-        }
-      };
-      return own(&(if truthy(&gt(&rd(&n_0), &0.0)) { own(&list![div(&rd(&r_0), &rd(&n_0)), div(&rd(&g_0), &rd(&n_0)), div(&rd(&bl_0), &rd(&n_0))]) } else { own(&get(&k!("Galaxies"), "SEVERAL")) }));
+      let on_0 = cell(&Value::Null); wr(&on_0, &call(&k!("Galaxies"), "freedoms_in", args![rd(&mask_0)]));
+      return own(&(if truthy(&(truthy(&eq(&rd(&mask_0), &0.0)) || truthy(&m_empty(&rd(&on_0))))) { own(&get(&k!("Galaxies"), "SEVERAL")) } else { own(&m_map(&list![0.0, 1.0, 2.0], args![{ let self_: Value = self_.clone(); cl!(on_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&div(&m_sum(&m_map(&rd(&on_0), args![{ let self_: Value = self_.clone(); cl!(c__2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let i_4 = cell(&arg(a5, 0));
+          return own(&elem(&elem(&get(&k!("Galaxies"), "TINTS"), &rd(&i_4)), &rd(&c__2)));
+          Value::Null
+        }) }])), &len(&rd(&on_0))));
+        Value::Null
+      }) }])) }));
       Value::Null
     }
   }
@@ -17295,14 +17315,17 @@ pub mod c_Galaxies {
       if truthy(&eq(&rd(&mask_0), &0.0)) {
         return own(&sv!["the source as it starts"]);
       }
-      let parts_0 = cell(&Value::Null); wr(&parts_0, &list![]);
-      for i1 in 0..(num(&len(&get(&k!("Galaxies"), "NAMES_NOW"))).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&call(&k!("Galaxies"), "bit", args![rd(&mask_0), rd(&i_1)])) {
-          m_push(&rd(&parts_0), args![elem(&get(&k!("Galaxies"), "NAMES_NOW"), &rd(&i_1))]);
-        }
-      };
-      let joined_0 = cell(&Value::Null); wr(&joined_0, &m_join(&rd(&parts_0), args![sv![" + "]]));
+      let joined_0 = cell(&Value::Null); wr(&joined_0, &m_join(&m_map(&filt(&rng(&len(&get(&k!("Galaxies"), "NAMES_NOW"))), &{ let self_: Value = self_.clone(); cl!(mask_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&call(&k!("Galaxies"), "bit", args![rd(&mask_0), rd(&i_3)]));
+        Value::Null
+      }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&elem(&get(&k!("Galaxies"), "NAMES_NOW"), &rd(&i_2)));
+        Value::Null
+      }) }]), args![sv![" + "]]));
       return own(&sv!["needs ", &tos(&rd(&joined_0)), ""]);
       Value::Null
     }
@@ -17465,6 +17488,58 @@ pub mod c_Galaxies {
       Value::Null
     }
   }
+  pub mod s_decades {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let X_0 = cell(&arg(a1, 1)); let Y_0 = cell(&arg(a1, 2)); let box__0 = cell(&arg(a1, 3)); let range_0 = cell(&arg(a1, 4)); let under_0 = cell(&arg(a1, 5));
+      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&range_0), &1.0), &elem(&rd(&range_0), &0.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(range_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&add(&elem(&rd(&range_0), &0.0), &rd(&i_3)));
+        Value::Null
+      }) }])) {
+        let l_1 = cell(&e1);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_1)]), elem(&rd(&box__0), &1.0)]);
+        call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_1)]), elem(&rd(&box__0), &3.0)]);
+        get(&rd(&s_0), "stroke");
+        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_1)), ""], invoke(&rd(&X_0), args![rd(&l_1)]), add(&elem(&rd(&box__0), &3.0), &rd(&under_0))]);
+      };
+      call(&rd(&s_0), "text_align", args![sv!["right"]]);
+      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&range_0), &3.0), &elem(&rd(&range_0), &2.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(range_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&add(&elem(&rd(&range_0), &2.0), &rd(&i_3)));
+        Value::Null
+      }) }])) {
+        let l_1 = cell(&e1);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "move_to", args![elem(&rd(&box__0), &0.0), invoke(&rd(&Y_0), args![rd(&l_1)])]);
+        call(&rd(&s_0), "line_to", args![elem(&rd(&box__0), &2.0), invoke(&rd(&Y_0), args![rd(&l_1)])]);
+        get(&rd(&s_0), "stroke");
+        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_1)), ""], sub(&elem(&rd(&box__0), &0.0), &8.0), add(&invoke(&rd(&Y_0), args![rd(&l_1)]), &4.0)]);
+      };
+      Value::Null
+    }
+  }
+  pub mod s_curve {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let X_0 = cell(&arg(a1, 1)); let Y_0 = cell(&arg(a1, 2)); let f_0 = cell(&arg(a1, 3)); let low_0 = cell(&arg(a1, 4)); let high_0 = cell(&arg(a1, 5)); let step_0 = cell(&arg(a1, 6));
+      get(&rd(&s_0), "begin_path");
+      let l_0 = cell(&Value::Null); wr(&l_0, &rd(&low_0));
+      while truthy(&le(&rd(&l_0), &add(&rd(&high_0), &0.000001))) {
+        if truthy(&eq(&rd(&l_0), &rd(&low_0))) {
+          call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![invoke(&rd(&f_0), args![rd(&l_0)])])]);
+        } else {
+          call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![invoke(&rd(&f_0), args![rd(&l_0)])])]);
+        }
+        wr(&l_0, &add(&rd(&l_0), &rd(&step_0)));
+      }
+      return own(&get(&rd(&s_0), "stroke"));
+      Value::Null
+    }
+  }
   pub mod s_along {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
@@ -17587,35 +17662,19 @@ pub mod c_Galaxies {
       call(&rd(&s_0), "line_width", args![1.0]);
       call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "FAINT")]);
       call(&rd(&s_0), "text_align", args![sv!["center"]]);
-      let l_0 = cell(&Value::Null); wr(&l_0, &rd(&XMIN_0));
-      while truthy(&le(&rd(&l_0), &rd(&XMAX_0))) {
-        get(&rd(&s_0), "begin_path");
-        call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), rd(&by0_0)]);
-        call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), rd(&by1_0)]);
-        get(&rd(&s_0), "stroke");
-        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_0)), ""], invoke(&rd(&X_0), args![rd(&l_0)]), add(&rd(&by1_0), &17.0)]);
-        wr(&l_0, &add(&rd(&l_0), &1.0));
-      }
-      call(&rd(&s_0), "text_align", args![sv!["right"]]);
-      wr(&l_0, &rd(&YMIN_0));
-      while truthy(&le(&rd(&l_0), &rd(&YMAX_0))) {
-        get(&rd(&s_0), "begin_path");
-        call(&rd(&s_0), "move_to", args![rd(&bx0_0), invoke(&rd(&Y_0), args![rd(&l_0)])]);
-        call(&rd(&s_0), "line_to", args![rd(&bx1_0), invoke(&rd(&Y_0), args![rd(&l_0)])]);
-        get(&rd(&s_0), "stroke");
-        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_0)), ""], sub(&rd(&bx0_0), &8.0), add(&invoke(&rd(&Y_0), args![rd(&l_0)]), &4.0)]);
-        wr(&l_0, &add(&rd(&l_0), &1.0));
-      }
-      let implied_0 = cell(&Value::Null); wr(&implied_0, &list![]);
-      for e1 in items(&get(&k!("Sparc"), "btfr")) {
-        let g_1 = cell(&e1);
-        let M_1 = cell(&Value::Null); wr(&M_1, &get(&rd(&g_1), "mass"));
-        let v_1 = cell(&Value::Null); wr(&v_1, &mul(&get(&rd(&g_1), "vf"), &1000.0));
-        if truthy(&(truthy(&gt(&rd(&M_1), &0.0)) && truthy(&gt(&rd(&v_1), &0.0)))) {
-          m_push(&rd(&implied_0), args![call(&k!("Fmt"), "log10", args![div(&div(&mul(&mul(&mul(&rd(&v_1), &rd(&v_1)), &rd(&v_1)), &rd(&v_1)), &(mul(&get(&k!("Sparc"), "G_NEWTON"), &rd(&M_1)))), &get(&k!("Galaxies"), "A0_DATA"))])]);
-        }
-      };
-      wr(&implied_0, &call(&k!("Expr"), "sorted", args![rd(&implied_0)]));
+      call(&k!("Galaxies"), "decades", args![rd(&s_0), rd(&X_0), rd(&Y_0), list![rd(&bx0_0), rd(&by0_0), rd(&bx1_0), rd(&by1_0)], list![rd(&XMIN_0), rd(&XMAX_0), rd(&YMIN_0), rd(&YMAX_0)], 17.0]);
+      let implied_0 = cell(&Value::Null); wr(&implied_0, &call(&k!("Expr"), "sorted", args![m_map(&filt(&get(&k!("Sparc"), "btfr"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_3 = cell(&arg(a4, 0));
+        return own(&(truthy(&gt(&get(&rd(&g_3), "mass"), &0.0)) && truthy(&gt(&get(&rd(&g_3), "vf"), &0.0))));
+        Value::Null
+      }) }), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_2 = cell(&arg(a3, 0));
+        let v_2 = cell(&Value::Null); wr(&v_2, &mul(&get(&rd(&g_2), "vf"), &1000.0));
+        return own(&call(&k!("Fmt"), "log10", args![div(&div(&mul(&mul(&mul(&rd(&v_2), &rd(&v_2)), &rd(&v_2)), &rd(&v_2)), &(mul(&get(&k!("Sparc"), "G_NEWTON"), &get(&rd(&g_2), "mass")))), &get(&k!("Galaxies"), "A0_DATA"))]));
+        Value::Null
+      }) }])]));
       let med_0 = cell(&Value::Null); wr(&med_0, &(if truthy(&m_empty(&rd(&implied_0))) { own(&f64::NAN) } else { own(&elem(&rd(&implied_0), &m_floor(&(div(&len(&rd(&implied_0)), &2.0))))) }));
       call(&rd(&s_0), "line_width", args![1.0]);
       for e1 in items(&rd(&implied_0)) {
@@ -17806,33 +17865,23 @@ pub mod c_Galaxies {
       call(&rd(&s_0), "stroke_style", args![get(&k!("Galaxies"), "BTFRC")]);
       call(&rd(&s_0), "line_width", args![1.5]);
       call(&rd(&s_0), "dash", args![list![2.0, 4.0]]);
-      get(&rd(&s_0), "begin_path");
-      wr(&l_0, &rd(&XMIN_0));
-      while truthy(&le(&rd(&l_0), &add(&rd(&XMAX_0), &0.000001))) {
-        if truthy(&eq(&rd(&l_0), &rd(&XMIN_0))) {
-          call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![mul(&0.5, &rd(&l_0))])]);
-        } else {
-          call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![mul(&0.5, &rd(&l_0))])]);
-        }
-        wr(&l_0, &add(&rd(&l_0), &0.05));
-      }
-      get(&rd(&s_0), "stroke");
+      call(&k!("Galaxies"), "curve", args![rd(&s_0), rd(&X_0), rd(&Y_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let l_2 = cell(&arg(a3, 0));
+        return own(&mul(&0.5, &rd(&l_2)));
+        Value::Null
+      }) }, rd(&XMIN_0), rd(&XMAX_0), 0.05]);
       call(&rd(&s_0), "dash", args![list![]]);
       call(&rd(&s_0), "stroke_style", args![get(&k!("Galaxies"), "MODEL")]);
       call(&rd(&s_0), "line_width", args![1.2]);
       call(&rd(&s_0), "alpha", args![0.4]);
       call(&rd(&s_0), "dash", args![list![5.0, 4.0]]);
-      get(&rd(&s_0), "begin_path");
-      wr(&l_0, &rd(&XMIN_0));
-      while truthy(&le(&rd(&l_0), &add(&rd(&XMAX_0), &0.000001))) {
-        if truthy(&eq(&rd(&l_0), &rd(&XMIN_0))) {
-          call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![invoke(&rd(&law_drawn_0), args![rd(&l_0)])])]);
-        } else {
-          call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![invoke(&rd(&law_drawn_0), args![rd(&l_0)])])]);
-        }
-        wr(&l_0, &add(&rd(&l_0), &0.02));
-      }
-      get(&rd(&s_0), "stroke");
+      call(&k!("Galaxies"), "curve", args![rd(&s_0), rd(&X_0), rd(&Y_0), { let self_: Value = self_.clone(); cl!(law_drawn_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let l_2 = cell(&arg(a3, 0));
+        return own(&invoke(&rd(&law_drawn_0), args![rd(&l_2)]));
+        Value::Null
+      }) }, rd(&XMIN_0), rd(&XMAX_0), 0.02]);
       call(&rd(&s_0), "dash", args![list![]]);
       call(&rd(&s_0), "alpha", args![1.0]);
       let landed_0 = cell(&Value::Null); wr(&landed_0, &elem(&rd(&possible_0), &0.0));
@@ -17989,14 +18038,12 @@ pub mod c_Galaxies {
           }
         };
       }
-      let total_0 = cell(&Value::Null); wr(&total_0, &0.0);
-      for e1 in items(&rd(&masks_0)) {
-        let m_1 = cell(&e1);
-        wr(&total_0, &add(&rd(&total_0), &elem(&rd(&tally_0), &rd(&m_1))));
-      };
-      if truthy(&eq(&rd(&total_0), &0.0)) {
-        wr(&total_0, &1.0);
-      }
+      let total_0 = cell(&Value::Null); wr(&total_0, &call(&k!("Fmt"), "max", args![m_reduce(&rd(&masks_0), args![0.0, { let self_: Value = self_.clone(); cl!(tally_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0)); let m_2 = cell(&arg(a3, 1));
+        return own(&add(&rd(&t_2), &elem(&rd(&tally_0), &rd(&m_2))));
+        Value::Null
+      }) }]), 1.0]));
       let counts_0 = cell(&Value::Null); wr(&counts_0, &call(&k!("Expr"), "sorted", args![m_map(&rd(&masks_0), args![{ let self_: Value = self_.clone(); cl!(tally_0); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let m_2 = cell(&arg(a3, 0));
@@ -18087,14 +18134,20 @@ pub mod c_Galaxies {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let m_0 = cell(&arg(a1, 0));
-      let n_0 = cell(&Value::Null); wr(&n_0, &0.0);
-      for i1 in 0..(num(&len(&get(&k!("Galaxies"), "FREEDOMS"))).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&call(&k!("Galaxies"), "bit", args![rd(&m_0), rd(&i_1)])) {
-          wr(&n_0, &add(&rd(&n_0), &1.0));
-        }
-      };
-      return own(&eq(&rd(&n_0), &1.0));
+      return own(&eq(&len(&call(&k!("Galaxies"), "freedoms_in", args![rd(&m_0)])), &1.0));
+      Value::Null
+    }
+  }
+  pub mod s_freedoms_in {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let m_0 = cell(&arg(a1, 0));
+      return own(&filt(&rng(&len(&get(&k!("Galaxies"), "FREEDOMS"))), &{ let self_: Value = self_.clone(); cl!(m_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Galaxies"), "bit", args![rd(&m_0), rd(&i_2)]));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -18267,17 +18320,19 @@ pub mod c_Galaxies {
           wr(&rest_0, &rd(&k_1));
         }
       };
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
-        let k_1 = cell(&(i1 as f64));
-        m_push(&rd(&out_0), args![sub(&sub(&rd(&n_0), &1.0), &rd(&k_1))]);
-      };
-      for i1 in 0..(num(&get(&k!("Galaxies"), "SETTLE")).ceil() as i64) {
-        let k_1 = cell(&(i1 as f64));
-        let f_1 = cell(&Value::Null); wr(&f_1, &div(&(add(&rd(&k_1), &1.0)), &get(&k!("Galaxies"), "SETTLE")));
-        m_push(&rd(&out_0), args![m_round(&(mul(&mul(&mul(&rd(&rest_0), &rd(&f_1)), &rd(&f_1)), &(sub(&3.0, &mul(&2.0, &rd(&f_1)))))))]);
-      };
-      return own(&rd(&out_0));
+      let down_0 = cell(&Value::Null); wr(&down_0, &m_map(&rng(&rd(&n_0)), args![{ let self_: Value = self_.clone(); cl!(n_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&sub(&sub(&rd(&n_0), &1.0), &rd(&k_2)));
+        Value::Null
+      }) }]));
+      return own(&m_concat(&rd(&down_0), args![m_map(&rng(&get(&k!("Galaxies"), "SETTLE")), args![{ let self_: Value = self_.clone(); cl!(rest_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        let f_2 = cell(&Value::Null); wr(&f_2, &div(&(add(&rd(&k_2), &1.0)), &get(&k!("Galaxies"), "SETTLE")));
+        return own(&m_round(&(mul(&mul(&mul(&rd(&rest_0), &rd(&f_2)), &rd(&f_2)), &(sub(&3.0, &mul(&2.0, &rd(&f_2))))))));
+        Value::Null
+      }) }])]));
       Value::Null
     }
   }
@@ -18333,13 +18388,12 @@ pub mod c_Galaxies {
           set(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""]), &add(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""])), || own(&0.0))), &1.0));
         }
       };
-      let ids_0 = cell(&Value::Null); wr(&ids_0, &list![]);
-      for i1 in 0..(num(&len(&get(&k!("Sparc"), "names"))).ceil() as i64) {
-        let g_1 = cell(&(i1 as f64));
-        if truthy(&ge(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""])), || own(&0.0))), &12.0)) {
-          m_push(&rd(&ids_0), args![rd(&g_1)]);
-        }
-      };
+      let ids_0 = cell(&Value::Null); wr(&ids_0, &filt(&rng(&len(&get(&k!("Sparc"), "names"))), &{ let self_: Value = self_.clone(); cl!(counts_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_2 = cell(&arg(a3, 0));
+        return own(&ge(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_2)), ""])), || own(&0.0))), &12.0));
+        Value::Null
+      }) }));
       let tops_0 = cell(&Value::Null); wr(&tops_0, &node());
       for i1 in 0..(num(&get(&rd(&t_0), "rows")).ceil() as i64) {
         let i_1 = cell(&(i1 as f64));
@@ -18352,12 +18406,12 @@ pub mod c_Galaxies {
         return own(&get(&rd(&tops_0), &tos(&sv!["", &tos(&rd(&g_2)), ""])));
         Value::Null
       }) }]));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&rd(&want_0)).ceil() as i64) {
-        let k_1 = cell(&(i1 as f64));
-        m_push(&rd(&out_0), args![elem(&rd(&sorted_0), &m_round(&(div(&mul(&(sub(&len(&rd(&sorted_0)), &1.0)), &rd(&k_1)), &(sub(&rd(&want_0), &1.0))))))]);
-      };
-      return own(&rd(&out_0));
+      return own(&m_map(&rng(&rd(&want_0)), args![{ let self_: Value = self_.clone(); cl!(sorted_0, want_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&sorted_0), &m_round(&(div(&mul(&(sub(&len(&rd(&sorted_0)), &1.0)), &rd(&k_2)), &(sub(&rd(&want_0), &1.0)))))));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -18387,15 +18441,12 @@ pub mod c_Galaxies {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let m_0 = cell(&arg(a1, 0)); let g_0 = cell(&arg(a1, 1));
-      let col_0 = cell(&Value::Null); wr(&col_0, &get(&get(&rd(&m_0), "columns"), &tos(&sv!["galaxy"])));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&rd(&m_0), "rows")).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&eq(&elem(&rd(&col_0), &rd(&i_1)), &rd(&g_0))) {
-          m_push(&rd(&out_0), args![rd(&i_1)]);
-        }
-      };
-      return own(&rd(&out_0));
+      return own(&filt(&rng(&get(&rd(&m_0), "rows")), &{ let self_: Value = self_.clone(); cl!(m_0, g_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&eq(&elem(&get(&get(&rd(&m_0), "columns"), &tos(&sv!["galaxy"])), &rd(&i_2)), &rd(&g_0)));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -19060,25 +19111,7 @@ pub mod c_Galaxies {
       call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "FAINT")]);
       call(&rd(&s_0), "font", args![sv!["11px ui-monospace, monospace"]]);
       call(&rd(&s_0), "text_align", args![sv!["center"]]);
-      let l_0 = cell(&Value::Null); wr(&l_0, &rd(&XMIN_0));
-      while truthy(&le(&rd(&l_0), &rd(&XMAX_0))) {
-        get(&rd(&s_0), "begin_path");
-        call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), rd(&by0_0)]);
-        call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), rd(&by1_0)]);
-        get(&rd(&s_0), "stroke");
-        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_0)), ""], invoke(&rd(&X_0), args![rd(&l_0)]), add(&rd(&by1_0), &16.0)]);
-        wr(&l_0, &add(&rd(&l_0), &1.0));
-      }
-      call(&rd(&s_0), "text_align", args![sv!["right"]]);
-      wr(&l_0, &rd(&YMIN_0));
-      while truthy(&le(&rd(&l_0), &rd(&YMAX_0))) {
-        get(&rd(&s_0), "begin_path");
-        call(&rd(&s_0), "move_to", args![rd(&bx0_0), invoke(&rd(&Y_0), args![rd(&l_0)])]);
-        call(&rd(&s_0), "line_to", args![rd(&bx1_0), invoke(&rd(&Y_0), args![rd(&l_0)])]);
-        get(&rd(&s_0), "stroke");
-        call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_0)), ""], sub(&rd(&bx0_0), &8.0), add(&invoke(&rd(&Y_0), args![rd(&l_0)]), &4.0)]);
-        wr(&l_0, &add(&rd(&l_0), &1.0));
-      }
+      call(&k!("Galaxies"), "decades", args![rd(&s_0), rd(&X_0), rd(&Y_0), list![rd(&bx0_0), rd(&by0_0), rd(&bx1_0), rd(&by1_0)], list![rd(&XMIN_0), rd(&XMAX_0), rd(&YMIN_0), rd(&YMAX_0)], 16.0]);
       let lg_0 = cell(&Value::Null); wr(&lg_0, &{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let v_1 = cell(&arg(a2, 0));
@@ -19119,19 +19152,12 @@ pub mod c_Galaxies {
       let a0_0 = cell(&Value::Null); wr(&a0_0, &get(&get(&rd(&sim_0), "header"), &tos(&sv!["a0"])));
       call(&rd(&s_0), "stroke_style", args![get(&k!("Galaxies"), "MODEL")]);
       call(&rd(&s_0), "line_width", args![2.0]);
-      get(&rd(&s_0), "begin_path");
-      wr(&l_0, &rd(&XMIN_0));
-      while truthy(&le(&rd(&l_0), &add(&rd(&XMAX_0), &0.000001))) {
-        let gN_0 = cell(&Value::Null); wr(&gN_0, &mul(&power(&10.0, &rd(&l_0)), &get(&k!("Galaxies"), "A0_DATA")));
-        let y_0 = cell(&Value::Null); wr(&y_0, &invoke(&rd(&lg_0), args![call(&k!("Law"), "boost", args![rd(&gN_0), rd(&a0_0)])]));
-        if truthy(&eq(&rd(&l_0), &rd(&XMIN_0))) {
-          call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![rd(&y_0)])]);
-        } else {
-          call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![rd(&l_0)]), invoke(&rd(&Y_0), args![rd(&y_0)])]);
-        }
-        wr(&l_0, &add(&rd(&l_0), &0.02));
-      }
-      get(&rd(&s_0), "stroke");
+      call(&k!("Galaxies"), "curve", args![rd(&s_0), rd(&X_0), rd(&Y_0), { let self_: Value = self_.clone(); cl!(lg_0, a0_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let l_2 = cell(&arg(a3, 0));
+        return own(&invoke(&rd(&lg_0), args![call(&k!("Law"), "boost", args![mul(&power(&10.0, &rd(&l_2)), &get(&k!("Galaxies"), "A0_DATA")), rd(&a0_0)])]));
+        Value::Null
+      }) }, rd(&XMIN_0), rd(&XMAX_0), 0.02]);
       call(&rd(&s_0), "stroke_style", args![get(&k!("Galaxies"), "NEWT")]);
       call(&rd(&s_0), "dash", args![list![6.0, 5.0]]);
       get(&rd(&s_0), "begin_path");
@@ -19244,11 +19270,14 @@ pub mod c_Galaxies {
     c.statik("middle", s_middle::f);//<
     c.statik("asks", s_asks::f);//<
     c.statik("medium_at", s_medium_at::f);//<
+    c.statik("decades", s_decades::f);//<
+    c.statik("curve", s_curve::f);//<
     c.statik("along", s_along::f);//<
     c.statik("ceiling_of", s_ceiling_of::f);//<
     c.statik("possible_at", s_possible_at::f);//<
     c.statik("panel", s_panel::f);//<
     c.statik("single", s_single::f);//<
+    c.statik("freedoms_in", s_freedoms_in::f);//<
     c.statik("ratio_at", s_ratio_at::f);//<
     c.statik("shift_at", s_shift_at::f);//<
     c.statik("frame_of", s_frame_of::f);//<
@@ -19495,12 +19524,12 @@ pub mod c_Plan {
   pub mod g_total {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let sum_0 = cell(&Value::Null); wr(&sum_0, &0.0);
-      for e1 in items(&get(&self_, "parts")) {
-        let p_1 = cell(&e1);
-        wr(&sum_0, &add(&rd(&sum_0), &elem(&rd(&p_1), &1.0)));
-      };
-      return own(&rd(&sum_0));
+      return own(&m_sum(&m_map(&get(&self_, "parts"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&p_2), &1.0));
+        Value::Null
+      }) }])));
       Value::Null
     }
   }
@@ -19704,14 +19733,12 @@ pub mod c_Simulation {
           set(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""]), &add(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""])), || own(&0.0))), &1.0));
         }
       };
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&len(&get(&k!("Sparc"), "names"))).ceil() as i64) {
-        let g_1 = cell(&(i1 as f64));
-        if truthy(&ge(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_1)), ""])), || own(&0.0))), &3.0)) {
-          m_push(&rd(&out_0), args![rd(&g_1)]);
-        }
-      };
-      return own(&rd(&out_0));
+      return own(&filt(&rng(&len(&get(&k!("Sparc"), "names"))), &{ let self_: Value = self_.clone(); cl!(counts_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let g_2 = cell(&arg(a3, 0));
+        return own(&ge(&(or_else(&get(&rd(&counts_0), &tos(&sv!["", &tos(&rd(&g_2)), ""])), || own(&0.0))), &3.0));
+        Value::Null
+      }) }));
       Value::Null
     }
   }
@@ -19720,14 +19747,18 @@ pub mod c_Simulation {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let g_0 = cell(&arg(a1, 0));
       let C_0 = cell(&Value::Null); wr(&C_0, &get(&get(&k!("Sparc"), "curves"), "columns"));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&get(&k!("Sparc"), "curves"), "rows")).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        if truthy(&(truthy(&(truthy(&eq(&elem(&get(&rd(&C_0), &tos(&sv!["galaxy"])), &rd(&i_1)), &rd(&g_0))) && truthy(&gt(&elem(&get(&rd(&C_0), &tos(&sv!["R"])), &rd(&i_1)), &0.0)))) && truthy(&gt(&elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_1)), &0.0)))) {
-          m_push(&rd(&out_0), args![list![elem(&get(&rd(&C_0), &tos(&sv!["R"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["e_Vobs"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["Vgas"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["Vdisk"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["Vbul"])), &rd(&i_1)), (if truthy(&call(&k!("Simulation"), "kept", args![rd(&g_0), elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_1)), elem(&get(&rd(&C_0), &tos(&sv!["e_Vobs"])), &rd(&i_1))])) { own(&1.0) } else { own(&0.0) })]]);
-        }
-      };
-      return own(&m_sorted_by(&rd(&out_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+      let mine_0 = cell(&Value::Null); wr(&mine_0, &filt(&rng(&get(&get(&k!("Sparc"), "curves"), "rows")), &{ let self_: Value = self_.clone(); cl!(C_0, g_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(truthy(&eq(&elem(&get(&rd(&C_0), &tos(&sv!["galaxy"])), &rd(&i_2)), &rd(&g_0))) && truthy(&gt(&elem(&get(&rd(&C_0), &tos(&sv!["R"])), &rd(&i_2)), &0.0)))) && truthy(&gt(&elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_2)), &0.0))));
+        Value::Null
+      }) }));
+      return own(&m_sorted_by(&m_map(&rd(&mine_0), args![{ let self_: Value = self_.clone(); cl!(C_0, g_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_3 = cell(&arg(a4, 0));
+        return own(&list![elem(&get(&rd(&C_0), &tos(&sv!["R"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["e_Vobs"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["Vgas"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["Vdisk"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["Vbul"])), &rd(&i_3)), (if truthy(&call(&k!("Simulation"), "kept", args![rd(&g_0), elem(&get(&rd(&C_0), &tos(&sv!["Vobs"])), &rd(&i_3)), elem(&get(&rd(&C_0), &tos(&sv!["e_Vobs"])), &rd(&i_3))])) { own(&1.0) } else { own(&0.0) })]);
+        Value::Null
+      }) }]), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let r_2 = cell(&arg(a3, 0));
         return own(&elem(&rd(&r_2), &0.0));
@@ -19741,13 +19772,12 @@ pub mod c_Simulation {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let rs_0 = cell(&arg(a1, 0));
       let n_0 = cell(&Value::Null); wr(&n_0, &len(&rd(&rs_0)));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![0.0, div(&elem(&elem(&rd(&rs_0), &0.0), &0.0), &2.0)]);
-      for i1 in 0..(num(&sub(&rd(&n_0), &1.0)).ceil() as i64) {
-        let i_1 = cell(&(i1 as f64));
-        m_push(&rd(&out_0), args![div(&(add(&elem(&elem(&rd(&rs_0), &rd(&i_1)), &0.0), &elem(&elem(&rd(&rs_0), &add(&rd(&i_1), &1.0)), &0.0))), &2.0)]);
-      };
-      m_push(&rd(&out_0), args![add(&elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &1.0)), &0.0), &div(&(sub(&elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &1.0)), &0.0), &elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &2.0)), &0.0))), &2.0))]);
-      return own(&rd(&out_0));
+      return own(&m_concat(&m_concat(&list![0.0, div(&elem(&elem(&rd(&rs_0), &0.0), &0.0), &2.0)], args![m_map(&rng(&sub(&rd(&n_0), &1.0)), args![{ let self_: Value = self_.clone(); cl!(rs_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&div(&(add(&elem(&elem(&rd(&rs_0), &rd(&i_2)), &0.0), &elem(&elem(&rd(&rs_0), &add(&rd(&i_2), &1.0)), &0.0))), &2.0));
+        Value::Null
+      }) }])]), args![list![add(&elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &1.0)), &0.0), &div(&(sub(&elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &1.0)), &0.0), &elem(&elem(&rd(&rs_0), &sub(&rd(&n_0), &2.0)), &0.0))), &2.0))]]));
       Value::Null
     }
   }
@@ -20122,12 +20152,12 @@ pub mod c_Simulation {
         let sum_at_1 = cell(&Value::Null); wr(&sum_at_1, &{ let self_: Value = self_.clone(); cl!(n_1); fnv(move |a3: &[&Value]| -> Value {
           let self_: &Value = &self_;
           let row_of_2 = cell(&arg(a3, 0)); let w_2 = cell(&arg(a3, 1));
-          let s_2 = cell(&Value::Null); wr(&s_2, &0.0);
-          for i3 in 0..(num(&rd(&n_1)).ceil() as i64) {
-            let a_3 = cell(&(i3 as f64));
-            wr(&s_2, &add(&rd(&s_2), &mul(&invoke(&rd(&row_of_2), args![rd(&a_3)]), &elem(&rd(&w_2), &rd(&a_3)))));
-          };
-          return own(&rd(&s_2));
+          return own(&m_reduce(&rng(&rd(&n_1)), args![0.0, { let self_: Value = self_.clone(); cl!(row_of_2, w_2); fnv(move |a5: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let s_4 = cell(&arg(a5, 0)); let a_4 = cell(&arg(a5, 1));
+            return own(&add(&rd(&s_4), &mul(&invoke(&rd(&row_of_2), args![rd(&a_4)]), &elem(&rd(&w_2), &rd(&a_4)))));
+            Value::Null
+          }) }]));
           Value::Null
         }) });
         let here_1 = cell(&Value::Null); wr(&here_1, &list![]);
@@ -20163,25 +20193,23 @@ pub mod c_Simulation {
         m_push(&get(&self_, "w_discs"), args![rd(&w_disc_1)]);
         m_push(&get(&self_, "w_gases"), args![rd(&w_gas_1)]);
         m_push(&get(&self_, "repro"), args![(if truthy(&gt(&rd(&top_1), &0.0)) { own(&div(&rd(&worst_1), &rd(&top_1))) } else { own(&0.0) })]);
-        let tab_1 = cell(&Value::Null); wr(&tab_1, &list![]);
-        for i2 in 0..(num(&get(&k!("Simulation"), "TABLE")).ceil() as i64) {
-          let t_2 = cell(&(i2 as f64));
-          let base_2 = cell(&Value::Null); wr(&base_2, &add(&elem(&get(&self_, "tabled_at"), &rd(&j_1)), &mul(&rd(&t_2), &rd(&n_1))));
-          let gd_2 = cell(&Value::Null); wr(&gd_2, &invoke(&rd(&sum_at_1), args![{ let self_: Value = self_.clone(); cl!(pulls_0, base_2); fnv(move |a5: &[&Value]| -> Value {
+        m_push(&get(&self_, "tables"), args![m_map(&rng(&get(&k!("Simulation"), "TABLE")), args![{ let self_: Value = self_.clone(); cl!(j_1, n_1, sum_at_1, pulls_0, w_disc_1, w_gas_1, rs_1); fnv(move |a4: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let t_3 = cell(&arg(a4, 0));
+          let base_3 = cell(&Value::Null); wr(&base_3, &add(&elem(&get(&self_, "tabled_at"), &rd(&j_1)), &mul(&rd(&t_3), &rd(&n_1))));
+          return own(&list![call(&self_, "table_r", args![rd(&j_1), rd(&t_3)]), invoke(&rd(&sum_at_1), args![{ let self_: Value = self_.clone(); cl!(pulls_0, base_3); fnv(move |a6: &[&Value]| -> Value {
             let self_: &Value = &self_;
-            let a_4 = cell(&arg(a5, 0));
-            return own(&elem(&rd(&pulls_0), &add(&rd(&base_2), &rd(&a_4))));
+            let a_5 = cell(&arg(a6, 0));
+            return own(&elem(&rd(&pulls_0), &add(&rd(&base_3), &rd(&a_5))));
             Value::Null
-          }) }, rd(&w_disc_1)]));
-          let gg_2 = cell(&Value::Null); wr(&gg_2, &invoke(&rd(&sum_at_1), args![{ let self_: Value = self_.clone(); cl!(pulls_0, base_2); fnv(move |a5: &[&Value]| -> Value {
+          }) }, rd(&w_disc_1)]), invoke(&rd(&sum_at_1), args![{ let self_: Value = self_.clone(); cl!(pulls_0, base_3); fnv(move |a6: &[&Value]| -> Value {
             let self_: &Value = &self_;
-            let a_4 = cell(&arg(a5, 0));
-            return own(&elem(&rd(&pulls_0), &add(&rd(&base_2), &rd(&a_4))));
+            let a_5 = cell(&arg(a6, 0));
+            return own(&elem(&rd(&pulls_0), &add(&rd(&base_3), &rd(&a_5))));
             Value::Null
-          }) }, rd(&w_gas_1)]));
-          m_push(&rd(&tab_1), args![list![call(&self_, "table_r", args![rd(&j_1), rd(&t_2)]), rd(&gd_2), rd(&gg_2), call(&k!("Simulation"), "bulge_at", args![rd(&rs_1), call(&self_, "table_r", args![rd(&j_1), rd(&t_2)])])]]);
-        };
-        m_push(&get(&self_, "tables"), args![rd(&tab_1)]);
+          }) }, rd(&w_gas_1)]), call(&k!("Simulation"), "bulge_at", args![rd(&rs_1), call(&self_, "table_r", args![rd(&j_1), rd(&t_3)])])]);
+          Value::Null
+        }) }])]);
       };
       Value::Null
     }
@@ -20195,20 +20223,23 @@ pub mod c_Simulation {
         let j_1 = cell(&(i1 as f64));
         let rs_1 = cell(&Value::Null); wr(&rs_1, &elem(&get(&self_, "rows"), &rd(&j_1)));
         let n_1 = cell(&Value::Null); wr(&n_1, &sub(&len(&elem(&get(&self_, "edges"), &rd(&j_1))), &1.0));
-        let here_1 = cell(&Value::Null); wr(&here_1, &list![]);
-        for i2 in 0..(num(&len(&rd(&rs_1))).ceil() as i64) {
-          let i_2 = cell(&(i2 as f64));
-          let sd_2 = cell(&Value::Null); wr(&sd_2, &0.0);
-          let sg_2 = cell(&Value::Null); wr(&sg_2, &0.0);
-          for i3 in 0..(num(&rd(&n_1)).ceil() as i64) {
-            let a_3 = cell(&(i3 as f64));
-            let k_3 = cell(&Value::Null); wr(&k_3, &elem(&rd(&spulls_0), &add(&add(&elem(&get(&self_, "measured_at"), &rd(&j_1)), &mul(&rd(&i_2), &rd(&n_1))), &rd(&a_3))));
-            wr(&sd_2, &add(&rd(&sd_2), &mul(&rd(&k_3), &elem(&elem(&get(&self_, "w_discs"), &rd(&j_1)), &rd(&a_3)))));
-            wr(&sg_2, &add(&rd(&sg_2), &mul(&rd(&k_3), &elem(&elem(&get(&self_, "w_gases"), &rd(&j_1)), &rd(&a_3)))));
-          };
-          m_push(&rd(&here_1), args![list![rd(&sd_2), rd(&sg_2), call(&k!("Simulation"), "bulge_arrives", args![rd(&rs_1), elem(&elem(&rd(&rs_1), &rd(&i_2)), &0.0), elem(&get(&self_, "thick"), &rd(&j_1))])]]);
-        };
-        m_push(&get(&self_, "seen_rows"), args![rd(&here_1)]);
+        let seen_1 = cell(&Value::Null); wr(&seen_1, &{ let self_: Value = self_.clone(); cl!(n_1, spulls_0, j_1); fnv(move |a3: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let i_2 = cell(&arg(a3, 0)); let w_2 = cell(&arg(a3, 1));
+          return own(&m_reduce(&rng(&rd(&n_1)), args![0.0, { let self_: Value = self_.clone(); cl!(spulls_0, j_1, i_2, n_1, w_2); fnv(move |a5: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let s_4 = cell(&arg(a5, 0)); let a_4 = cell(&arg(a5, 1));
+            return own(&add(&rd(&s_4), &mul(&elem(&rd(&spulls_0), &add(&add(&elem(&get(&self_, "measured_at"), &rd(&j_1)), &mul(&rd(&i_2), &rd(&n_1))), &rd(&a_4))), &elem(&rd(&w_2), &rd(&a_4)))));
+            Value::Null
+          }) }]));
+          Value::Null
+        }) });
+        m_push(&get(&self_, "seen_rows"), args![m_map(&rng(&len(&rd(&rs_1))), args![{ let self_: Value = self_.clone(); cl!(seen_1, j_1, rs_1); fnv(move |a4: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let i_3 = cell(&arg(a4, 0));
+          return own(&list![invoke(&rd(&seen_1), args![rd(&i_3), elem(&get(&self_, "w_discs"), &rd(&j_1))]), invoke(&rd(&seen_1), args![rd(&i_3), elem(&get(&self_, "w_gases"), &rd(&j_1))]), call(&k!("Simulation"), "bulge_arrives", args![rd(&rs_1), elem(&elem(&rd(&rs_1), &rd(&i_3)), &0.0), elem(&get(&self_, "thick"), &rd(&j_1))])]);
+          Value::Null
+        }) }])]);
       };
       Value::Null
     }
@@ -20350,32 +20381,50 @@ pub mod c_Simulation {
       Value::Null
     }
   }
+  pub mod s_laid {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let records_0 = cell(&arg(a1, 0));
+      return own(&m_reduce(&rd(&records_0), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let r_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rd(&r_2), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let v_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&v_4)]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
   pub mod g_points {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&len(&get(&self_, "ids"))).ceil() as i64) {
-        let j_1 = cell(&(i1 as f64));
-        for i2 in 0..(num(&len(&elem(&get(&self_, "rows"), &rd(&j_1)))).ceil() as i64) {
-          let i_2 = cell(&(i2 as f64));
-          let p_2 = cell(&Value::Null); wr(&p_2, &elem(&elem(&get(&self_, "at_rows"), &rd(&j_1)), &rd(&i_2)));
-          for e3 in items(&list![rd(&j_1), elem(&elem(&elem(&get(&self_, "rows"), &rd(&j_1)), &rd(&i_2)), &0.0), elem(&rd(&p_2), &0.0), elem(&rd(&p_2), &1.0), elem(&rd(&p_2), &2.0), 0.0]) {
-            let v_3 = cell(&e3);
-            m_push(&rd(&out_0), args![rd(&v_3)]);
-          };
-        };
-      };
-      for i1 in 0..(num(&len(&get(&self_, "ids"))).ceil() as i64) {
-        let j_1 = cell(&(i1 as f64));
-        for e2 in items(&elem(&get(&self_, "tables"), &rd(&j_1))) {
-          let t_2 = cell(&e2);
-          for e3 in items(&list![rd(&j_1), elem(&rd(&t_2), &0.0), elem(&rd(&t_2), &1.0), elem(&rd(&t_2), &2.0), elem(&rd(&t_2), &3.0), 0.0]) {
-            let v_3 = cell(&e3);
-            m_push(&rd(&out_0), args![rd(&v_3)]);
-          };
-        };
-      };
-      return own(&rd(&out_0));
+      let measured_0 = cell(&Value::Null); wr(&measured_0, &m_reduce(&rng(&len(&get(&self_, "ids"))), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let j_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rng(&len(&elem(&get(&self_, "rows"), &rd(&j_2)))), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(j_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let i_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![list![rd(&j_2), elem(&elem(&elem(&get(&self_, "rows"), &rd(&j_2)), &rd(&i_4)), &0.0), elem(&elem(&elem(&get(&self_, "at_rows"), &rd(&j_2)), &rd(&i_4)), &0.0), elem(&elem(&elem(&get(&self_, "at_rows"), &rd(&j_2)), &rd(&i_4)), &1.0), elem(&elem(&elem(&get(&self_, "at_rows"), &rd(&j_2)), &rd(&i_4)), &2.0), 0.0]]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      let tabled_0 = cell(&Value::Null); wr(&tabled_0, &m_reduce(&rng(&len(&get(&self_, "ids"))), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let j_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&elem(&get(&self_, "tables"), &rd(&j_2)), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(j_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let t_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![list![rd(&j_2), elem(&rd(&t_4), &0.0), elem(&rd(&t_4), &1.0), elem(&rd(&t_4), &2.0), elem(&rd(&t_4), &3.0), 0.0]]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
+      return own(&call(&k!("Simulation"), "laid", args![m_concat(&rd(&measured_0), args![rd(&tabled_0)])]));
       Value::Null
     }
   }
@@ -20383,15 +20432,12 @@ pub mod c_Simulation {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let fitted_0 = cell(&arg(a1, 0));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&len(&get(&self_, "ids"))).ceil() as i64) {
-        let j_1 = cell(&(i1 as f64));
-        m_push(&rd(&out_0), args![(if truthy(&rd(&fitted_0)) { own(&elem(&get(&self_, "best_y"), &rd(&j_1))) } else { own(&get(&k!("Sparc"), "YD")) })]);
-        m_push(&rd(&out_0), args![(if truthy(&rd(&fitted_0)) { own(&elem(&get(&self_, "best_b"), &rd(&j_1))) } else { own(&get(&k!("Sparc"), "YB")) })]);
-        m_push(&rd(&out_0), args![get(&self_, "a0")]);
-        m_push(&rd(&out_0), args![0.0]);
-      };
-      return own(&rd(&out_0));
+      return own(&call(&k!("Simulation"), "laid", args![m_map(&rng(&len(&get(&self_, "ids"))), args![{ let self_: Value = self_.clone(); cl!(fitted_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let j_2 = cell(&arg(a3, 0));
+        return own(&list![(if truthy(&rd(&fitted_0)) { own(&elem(&get(&self_, "best_y"), &rd(&j_2))) } else { own(&get(&k!("Sparc"), "YD")) }), (if truthy(&rd(&fitted_0)) { own(&elem(&get(&self_, "best_b"), &rd(&j_2))) } else { own(&get(&k!("Sparc"), "YB")) }), get(&self_, "a0"), 0.0]);
+        Value::Null
+      }) }])]));
       Value::Null
     }
   }
@@ -20469,17 +20515,14 @@ pub mod c_Simulation {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
       let S_0 = cell(&Value::Null); wr(&S_0, &get(&get(&k!("Sparc"), "sample"), "columns"));
       let pts_0 = cell(&Value::Null); wr(&pts_0, &get(&self_, "fit_points"));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&len(&get(&self_, "ids"))).ceil() as i64) {
-        let j_1 = cell(&(i1 as f64));
-        let g_1 = cell(&Value::Null); wr(&g_1, &elem(&get(&self_, "ids"), &rd(&j_1)));
-        let stop_1 = cell(&Value::Null); wr(&stop_1, &(if truthy(&lt(&add(&rd(&j_1), &1.0), &len(&get(&self_, "ids")))) { own(&elem(&get(&self_, "fit_at"), &add(&rd(&j_1), &1.0))) } else { own(&m_floor(&(div(&len(&rd(&pts_0)), &8.0)))) }));
-        for e2 in items(&list![elem(&get(&self_, "fit_at"), &rd(&j_1)), sub(&rd(&stop_1), &elem(&get(&self_, "fit_at"), &rd(&j_1))), elem(&get(&rd(&S_0), &tos(&sv!["D"])), &rd(&g_1)), elem(&get(&rd(&S_0), &tos(&sv!["e_D"])), &rd(&g_1)), elem(&get(&rd(&S_0), &tos(&sv!["Inc"])), &rd(&g_1)), elem(&get(&rd(&S_0), &tos(&sv!["e_Inc"])), &rd(&g_1)), get(&self_, "a0"), (if truthy(&call(&self_, "has_bulge", args![rd(&j_1)])) { own(&1.0) } else { own(&0.0) }), elem(&get(&self_, "centre_y"), &rd(&j_1)), elem(&get(&self_, "centre_b"), &rd(&j_1)), elem(&get(&self_, "centre_d"), &rd(&j_1)), elem(&get(&self_, "centre_i"), &rd(&j_1)), mul(&get(&k!("Simulation"), "STEP_Y"), &get(&self_, "spacing")), mul(&get(&k!("Simulation"), "STEP_D"), &get(&self_, "spacing")), mul(&get(&k!("Simulation"), "STEP_I"), &get(&self_, "spacing")), 0.0]) {
-          let v_2 = cell(&e2);
-          m_push(&rd(&out_0), args![rd(&v_2)]);
-        };
-      };
-      return own(&rd(&out_0));
+      return own(&call(&k!("Simulation"), "laid", args![m_map(&rng(&len(&get(&self_, "ids"))), args![{ let self_: Value = self_.clone(); cl!(pts_0, S_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let j_2 = cell(&arg(a3, 0));
+        let g_2 = cell(&Value::Null); wr(&g_2, &elem(&get(&self_, "ids"), &rd(&j_2)));
+        let stop_2 = cell(&Value::Null); wr(&stop_2, &(if truthy(&lt(&add(&rd(&j_2), &1.0), &len(&get(&self_, "ids")))) { own(&elem(&get(&self_, "fit_at"), &add(&rd(&j_2), &1.0))) } else { own(&m_floor(&(div(&len(&rd(&pts_0)), &8.0)))) }));
+        return own(&list![elem(&get(&self_, "fit_at"), &rd(&j_2)), sub(&rd(&stop_2), &elem(&get(&self_, "fit_at"), &rd(&j_2))), elem(&get(&rd(&S_0), &tos(&sv!["D"])), &rd(&g_2)), elem(&get(&rd(&S_0), &tos(&sv!["e_D"])), &rd(&g_2)), elem(&get(&rd(&S_0), &tos(&sv!["Inc"])), &rd(&g_2)), elem(&get(&rd(&S_0), &tos(&sv!["e_Inc"])), &rd(&g_2)), get(&self_, "a0"), (if truthy(&call(&self_, "has_bulge", args![rd(&j_2)])) { own(&1.0) } else { own(&0.0) }), elem(&get(&self_, "centre_y"), &rd(&j_2)), elem(&get(&self_, "centre_b"), &rd(&j_2)), elem(&get(&self_, "centre_d"), &rd(&j_2)), elem(&get(&self_, "centre_i"), &rd(&j_2)), mul(&get(&k!("Simulation"), "STEP_Y"), &get(&self_, "spacing")), mul(&get(&k!("Simulation"), "STEP_D"), &get(&self_, "spacing")), mul(&get(&k!("Simulation"), "STEP_I"), &get(&self_, "spacing")), 0.0]);
+        Value::Null
+      }) }])]));
       Value::Null
     }
   }
@@ -20668,12 +20711,12 @@ pub mod c_Simulation {
   pub mod g_most_steps {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let m_0 = cell(&Value::Null); wr(&m_0, &0.0);
-      for e1 in items(&get(&self_, "steps")) {
-        let n_1 = cell(&e1);
-        wr(&m_0, &call(&k!("Fmt"), "max", args![rd(&m_0), rd(&n_1)]));
-      };
-      return own(&rd(&m_0));
+      return own(&m_reduce(&get(&self_, "steps"), args![0.0, { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let m_2 = cell(&arg(a3, 0)); let n_2 = cell(&arg(a3, 1));
+        return own(&call(&k!("Fmt"), "max", args![rd(&m_2), rd(&n_2)]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -20719,17 +20762,23 @@ pub mod c_Simulation {
       let per_pixel_0 = cell(&Value::Null); wr(&per_pixel_0, &mul(&mul(&div(&mul(&div(&rd(&fov_0), &rd(&P_0)), &std::f64::consts::PI), &180.0), &rd(&D_0)), &1000.0));
       let light_0 = cell(&Value::Null); wr(&light_0, &get(&get(&rd(&I_0), "columns"), &tos(&sv!["light"])));
       let base_0 = cell(&Value::Null); wr(&base_0, &mul(&mul(&rd(&g_0), &rd(&P_0)), &rd(&P_0)));
-      let edge_0 = cell(&Value::Null); wr(&edge_0, &list![]);
-      for i1 in 0..(num(&rd(&P_0)).ceil() as i64) {
-        let r_1 = cell(&(i1 as f64));
-        for i2 in 0..(num(&rd(&P_0)).ceil() as i64) {
-          let c__2 = cell(&(i2 as f64));
-          if truthy(&(truthy(&(truthy(&(truthy(&lt(&rd(&r_1), &get(&k!("Simulation"), "SKY_EDGE"))) || truthy(&lt(&rd(&c__2), &get(&k!("Simulation"), "SKY_EDGE"))))) || truthy(&ge(&rd(&r_1), &sub(&rd(&P_0), &get(&k!("Simulation"), "SKY_EDGE")))))) || truthy(&ge(&rd(&c__2), &sub(&rd(&P_0), &get(&k!("Simulation"), "SKY_EDGE")))))) {
-            m_push(&rd(&edge_0), args![elem(&rd(&light_0), &add(&add(&rd(&base_0), &mul(&rd(&r_1), &rd(&P_0))), &rd(&c__2)))]);
-          }
-        };
-      };
-      let sky_0 = cell(&Value::Null); wr(&sky_0, &call(&k!("Fmt"), "median", args![rd(&edge_0)]));
+      let on_edge_0 = cell(&Value::Null); wr(&on_edge_0, &{ let self_: Value = self_.clone(); cl!(P_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let r_1 = cell(&arg(a2, 0)); let c__1 = cell(&arg(a2, 1));
+        return own(&(truthy(&(truthy(&(truthy(&lt(&rd(&r_1), &get(&k!("Simulation"), "SKY_EDGE"))) || truthy(&lt(&rd(&c__1), &get(&k!("Simulation"), "SKY_EDGE"))))) || truthy(&ge(&rd(&r_1), &sub(&rd(&P_0), &get(&k!("Simulation"), "SKY_EDGE")))))) || truthy(&ge(&rd(&c__1), &sub(&rd(&P_0), &get(&k!("Simulation"), "SKY_EDGE"))))));
+        Value::Null
+      }) });
+      let sky_0 = cell(&Value::Null); wr(&sky_0, &call(&k!("Fmt"), "median", args![m_map(&filt(&rng(&mul(&rd(&P_0), &rd(&P_0))), &{ let self_: Value = self_.clone(); cl!(on_edge_0, P_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_3 = cell(&arg(a4, 0));
+        return own(&invoke(&rd(&on_edge_0), args![m_floor(&(div(&rd(&k_3), &rd(&P_0)))), modulo(&rd(&k_3), &rd(&P_0))]));
+        Value::Null
+      }) }), args![{ let self_: Value = self_.clone(); cl!(light_0, base_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&light_0), &add(&rd(&base_0), &rd(&k_2))));
+        Value::Null
+      }) }])]));
       let reach_0 = cell(&Value::Null); wr(&reach_0, &elem(&get(&self_, "reach"), &rd(&j_0)));
       let east_0 = cell(&Value::Null); wr(&east_0, &{ let self_: Value = self_.clone(); cl!(P_0, per_pixel_0); fnv(move |a2: &[&Value]| -> Value {
         let self_: &Value = &self_;
@@ -20851,11 +20900,12 @@ pub mod c_Simulation {
           m_push(&get(&self_, "film_angles"), args![f64::NAN]);
           let es_1 = cell(&Value::Null); wr(&es_1, &elem(&get(&self_, "edges"), &rd(&j_1)));
           let rs_1 = cell(&Value::Null); wr(&rs_1, &elem(&get(&self_, "rows"), &rd(&j_1)));
-          let masses_1 = cell(&Value::Null); wr(&masses_1, &list![]);
-          for i2 in 0..(num(&sub(&len(&rd(&es_1)), &1.0)).ceil() as i64) {
-            let a_2 = cell(&(i2 as f64));
-            m_push(&rd(&masses_1), args![list![elem(&rd(&es_1), &rd(&a_2)), elem(&rd(&es_1), &add(&rd(&a_2), &1.0)), add(&mul(&get(&k!("Sparc"), "YD"), &elem(&elem(&get(&self_, "w_discs"), &rd(&j_1)), &rd(&a_2))), &elem(&elem(&get(&self_, "w_gases"), &rd(&j_1)), &rd(&a_2)))]]);
-          };
+          let masses_1 = cell(&Value::Null); wr(&masses_1, &m_map(&rng(&sub(&len(&rd(&es_1)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(es_1, j_1); fnv(move |a4: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let a_3 = cell(&arg(a4, 0));
+            return own(&list![elem(&rd(&es_1), &rd(&a_3)), elem(&rd(&es_1), &add(&rd(&a_3), &1.0)), add(&mul(&get(&k!("Sparc"), "YD"), &elem(&elem(&get(&self_, "w_discs"), &rd(&j_1)), &rd(&a_3))), &elem(&elem(&get(&self_, "w_gases"), &rd(&j_1)), &rd(&a_3)))]);
+            Value::Null
+          }) }]));
           let last_1 = cell(&Value::Null); wr(&last_1, &0.0);
           for i2 in 0..(num(&len(&rd(&rs_1))).ceil() as i64) {
             let i_2 = cell(&(i2 as f64));
@@ -20865,13 +20915,13 @@ pub mod c_Simulation {
               wr(&last_1, &rd(&inside_2));
             }
           };
-          let run_1 = cell(&Value::Null); wr(&run_1, &list![]);
-          let total_1 = cell(&Value::Null); wr(&total_1, &0.0);
-          for e2 in items(&rd(&masses_1)) {
-            let m_2 = cell(&e2);
-            wr(&total_1, &add(&rd(&total_1), &call(&k!("Fmt"), "max", args![elem(&rd(&m_2), &2.0), 0.0])));
-            m_push(&rd(&run_1), args![rd(&total_1)]);
-          };
+          let run_1 = cell(&Value::Null); wr(&run_1, &m_reduce(&rd(&masses_1), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let run_3 = cell(&arg(a4, 0)); let m_3 = cell(&arg(a4, 1));
+            return own(&m_push(&rd(&run_3), args![add(&(or_else(&m_last(&rd(&run_3)), || own(&0.0))), &call(&k!("Fmt"), "max", args![elem(&rd(&m_3), &2.0), 0.0]))]));
+            Value::Null
+          }) }]));
+          let total_1 = cell(&Value::Null); wr(&total_1, &or_else(&m_last(&rd(&run_1)), || own(&0.0)));
           for i2 in 0..(num(&get(&k!("Simulation"), "FILM_STARS")).ceil() as i64) {
             let k_2 = cell(&(i2 as f64));
             let want_2 = cell(&Value::Null); wr(&want_2, &mul(&get(&rd(&rng_0), "next"), &rd(&total_1)));
@@ -20898,16 +20948,17 @@ pub mod c_Simulation {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let felt_table_0 = cell(&arg(a1, 0));
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for e1 in items(&get(&self_, "film_ids")) {
-        let g_1 = cell(&e1);
-        let j_1 = cell(&Value::Null); wr(&j_1, &m_index_of(&get(&self_, "ids"), args![rd(&g_1)]));
-        for i2 in 0..(num(&get(&k!("Simulation"), "TABLE")).ceil() as i64) {
-          let t_2 = cell(&(i2 as f64));
-          m_push(&rd(&out_0), args![elem(&rd(&felt_table_0), &add(&mul(&rd(&j_1), &get(&k!("Simulation"), "TABLE")), &rd(&t_2)))]);
-        };
-      };
-      return own(&rd(&out_0));
+      return own(&m_reduce(&get(&self_, "film_ids"), args![list![], { let self_: Value = self_.clone(); cl!(felt_table_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let g_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rng(&get(&k!("Simulation"), "TABLE")), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(felt_table_0, g_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let t_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![elem(&rd(&felt_table_0), &add(&mul(&m_index_of(&get(&self_, "ids"), args![rd(&g_2)]), &get(&k!("Simulation"), "TABLE")), &rd(&t_4)))]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -20945,12 +20996,12 @@ pub mod c_Simulation {
   pub mod g_most_film_steps {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let m_0 = cell(&Value::Null); wr(&m_0, &0.0);
-      for e1 in items(&get(&self_, "film_steps")) {
-        let n_1 = cell(&e1);
-        wr(&m_0, &call(&k!("Fmt"), "max", args![rd(&m_0), rd(&n_1)]));
-      };
-      return own(&rd(&m_0));
+      return own(&m_reduce(&get(&self_, "film_steps"), args![0.0, { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let m_2 = cell(&arg(a3, 0)); let n_2 = cell(&arg(a3, 1));
+        return own(&call(&k!("Fmt"), "max", args![rd(&m_2), rd(&n_2)]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -20960,11 +21011,12 @@ pub mod c_Simulation {
     let felt0_0 = cell(&arg(a1, 0)); let felt1_0 = cell(&arg(a1, 1)); let stars_0 = cell(&arg(a1, 2)); let frames_0 = cell(&arg(a1, 3));
       let S_0 = cell(&Value::Null); wr(&S_0, &get(&get(&k!("Sparc"), "sample"), "columns"));
       let T_0 = cell(&Value::Null); wr(&T_0, &get(&k!("Simulation"), "TABLE"));
-      let nrows_0 = cell(&Value::Null); wr(&nrows_0, &0.0);
-      for e1 in items(&get(&self_, "rows")) {
-        let rs_1 = cell(&e1);
-        wr(&nrows_0, &add(&rd(&nrows_0), &len(&rd(&rs_1))));
-      };
+      let nrows_0 = cell(&Value::Null); wr(&nrows_0, &m_reduce(&get(&self_, "rows"), args![0.0, { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let n_2 = cell(&arg(a3, 0)); let rs_2 = cell(&arg(a3, 1));
+        return own(&add(&rd(&n_2), &len(&rd(&rs_2))));
+        Value::Null
+      }) }]));
       let cols_0 = cell(&Value::Null); wr(&cols_0, &node());
       let names_0 = cell(&Value::Null); wr(&names_0, &list![sv!["galaxy"], sv!["R"], sv!["Vobs"], sv!["e_Vobs"], sv!["gd"], sv!["gg"], sv!["gb"], sv!["v0"], sv!["v1"], sv!["vs"], sv!["kept"]]);
       for e1 in items(&rd(&names_0)) {
@@ -21412,6 +21464,7 @@ pub mod c_Simulation {
     c.method("lift_test", m_lift_test::f);//<
     c.getter("law_table", g_law_table::f);//<
     c.method("felt", m_felt::f);//<
+    c.statik("laid", s_laid::f);//<
     c.getter("points", g_points::f);//<
     c.method("nuisances", m_nuisances::f);//<
     c.field("best_y", |self_: &Value| -> Value { own(&list![]) });//<
@@ -21551,15 +21604,17 @@ pub mod c_Formed {
   pub mod g_constants {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "discs_n")).ceil() as i64) {
-        let g_1 = cell(&(i1 as f64));
-        for e2 in items(&list![div(&call(&self_, "GM", args![rd(&g_1)]), &get(&k!("Formed"), "N")), call(&self_, "soft", args![rd(&g_1)]), get(&self_, "scale_a0"), get(&k!("Formed"), "DT")]) {
-          let v_2 = cell(&e2);
-          m_push(&rd(&out_0), args![rd(&v_2)]);
-        };
-      };
-      return own(&rd(&out_0));
+      return own(&m_reduce(&rng(&get(&self_, "discs_n")), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let g_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&list![div(&call(&self_, "GM", args![rd(&g_2)]), &get(&k!("Formed"), "N")), call(&self_, "soft", args![rd(&g_2)]), get(&self_, "scale_a0"), get(&k!("Formed"), "DT")], args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let v_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&v_4)]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -21732,17 +21787,22 @@ pub mod c_Formed {
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let frames_0 = cell(&arg(a1, 0));
       let G_0 = cell(&Value::Null); wr(&G_0, &get(&k!("Formed"), "GRID"));
-      let density_0 = cell(&Value::Null); wr(&density_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "discs_n")).ceil() as i64) {
-        let g_1 = cell(&(i1 as f64));
-        for e2 in items(&rd(&frames_0)) {
-          let f_2 = cell(&e2);
-          for i3 in 0..(num(&mul(&rd(&G_0), &rd(&G_0))).ceil() as i64) {
-            let c__3 = cell(&(i3 as f64));
-            m_push(&rd(&density_0), args![elem(&rd(&f_2), &add(&mul(&mul(&rd(&g_1), &rd(&G_0)), &rd(&G_0)), &rd(&c__3)))]);
-          };
-        };
-      };
+      let density_0 = cell(&Value::Null); wr(&density_0, &m_reduce(&rng(&get(&self_, "discs_n")), args![list![], { let self_: Value = self_.clone(); cl!(frames_0, G_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let g_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&rd(&frames_0), args![rd(&out_2), { let self_: Value = self_.clone(); cl!(G_0, g_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let f_4 = cell(&arg(a5, 1));
+          return own(&m_reduce(&rng(&mul(&rd(&G_0), &rd(&G_0))), args![rd(&o_4), { let self_: Value = self_.clone(); cl!(f_4, g_2, G_0); fnv(move |a7: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let oo_6 = cell(&arg(a7, 0)); let c__6 = cell(&arg(a7, 1));
+            return own(&m_push(&rd(&oo_6), args![elem(&rd(&f_4), &add(&mul(&mul(&rd(&g_2), &rd(&G_0)), &rd(&G_0)), &rd(&c__6)))]));
+            Value::Null
+          }) }]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       let cols_0 = cell(&Value::Null); wr(&cols_0, &node());
       set(&rd(&cols_0), &tos(&sv!["density"]), &rd(&density_0));
       let extra_0 = cell(&Value::Null); wr(&extra_0, &node());
@@ -21902,41 +21962,14 @@ pub mod c_Model {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let e_0 = cell(&arg(a1, 0)); let out_0 = cell(&arg(a1, 1));
-      let k_0 = cell(&Value::Null); wr(&k_0, &get(&rd(&e_0), "kind"));
-      if truthy(&(truthy(&eq(&rd(&k_0), &sv!["sym"])) || truthy(&eq(&rd(&k_0), &sv!["field"])))) {
-        if truthy(&(!truthy(&m_contains(&rd(&out_0), args![get(&rd(&e_0), "label")])))) {
-          m_push(&rd(&out_0), args![get(&rd(&e_0), "label")]);
-        }
-      } else {
-        if truthy(&(truthy(&eq(&rd(&k_0), &sv!["add"])) || truthy(&eq(&rd(&k_0), &sv!["mul"])))) {
-          for e1 in items(&get(&rd(&e_0), "of")) {
-            let x_1 = cell(&e1);
-            call(&k!("Model"), "walk_names", args![rd(&x_1), rd(&out_0)]);
-          };
-        } else {
-          if truthy(&eq(&rd(&k_0), &sv!["pow"])) {
-            call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "base"), rd(&out_0)]);
-            return own(&call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "power"), rd(&out_0)]));
-          } else {
-            if truthy(&(truthy(&(truthy(&(truthy(&(truthy(&eq(&rd(&k_0), &sv!["grad"])) || truthy(&eq(&rd(&k_0), &sv!["log"])))) || truthy(&eq(&rd(&k_0), &sv!["exp"])))) || truthy(&eq(&rd(&k_0), &sv!["root"])))) || truthy(&eq(&rd(&k_0), &sv!["limit"])))) {
-              return own(&call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "base"), rd(&out_0)]));
-            } else {
-              if truthy(&(truthy(&eq(&rd(&k_0), &sv!["choose"])) || truthy(&eq(&rd(&k_0), &sv!["gammaInc"])))) {
-                call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "first_"), rd(&out_0)]);
-                return own(&call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "second_"), rd(&out_0)]));
-              } else {
-                if truthy(&eq(&rd(&k_0), &sv!["call"])) {
-                  let called_0 = cell(&Value::Null); wr(&called_0, &sv!["", &tos(&get(&rd(&e_0), "label")), "\\paren{...}"]);
-                  if truthy(&(!truthy(&m_contains(&rd(&out_0), args![rd(&called_0)])))) {
-                    m_push(&rd(&out_0), args![rd(&called_0)]);
-                  }
-                  return own(&call(&k!("Model"), "walk_names", args![get(&rd(&e_0), "base"), rd(&out_0)]));
-                }
-              }
-            }
-          }
-        }
+      let name_0 = cell(&Value::Null); wr(&name_0, &(if truthy(&get(&rd(&e_0), "named")) { own(&get(&rd(&e_0), "label")) } else { own(&((if truthy(&eq(&get(&rd(&e_0), "kind"), &sv!["call"])) { own(&sv!["", &tos(&get(&rd(&e_0), "label")), "\\paren{...}"]) } else { own(&Value::Null) }))) }));
+      if truthy(&(truthy(&(!eq(&rd(&name_0), &Value::Null))) && truthy(&(!truthy(&m_contains(&rd(&out_0), args![rd(&name_0)])))))) {
+        m_push(&rd(&out_0), args![rd(&name_0)]);
       }
+      for e1 in items(&get(&rd(&e_0), "subtrees")) {
+        let x_1 = cell(&e1);
+        call(&k!("Model"), "walk_names", args![rd(&x_1), rd(&out_0)]);
+      };
       Value::Null
     }
   }
@@ -22381,22 +22414,7 @@ pub mod c_Shaded {
   pub mod s_points {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let points_0 = cell(&Value::Null); wr(&points_0, &list![]);
-      let i_0 = cell(&Value::Null); wr(&i_0, &1.0);
-      while truthy(&le(&rd(&i_0), &120.0)) {
-        m_push(&rd(&points_0), args![div(&rd(&i_0), &120.0)]);
-        wr(&i_0, &add(&rd(&i_0), &1.0));
-      }
-      let ex_0 = cell(&Value::Null); wr(&ex_0, &0.0);
-      while truthy(&le(&rd(&ex_0), &24.0)) {
-        let k_0 = cell(&Value::Null); wr(&k_0, &1.0);
-        while truthy(&lt(&rd(&k_0), &8.0)) {
-          m_push(&rd(&points_0), args![mul(&(power(&10.0, &(sub(&rd(&ex_0), &12.0)))), &(add(&1.0, &div(&rd(&k_0), &2.0))))]);
-          wr(&k_0, &add(&rd(&k_0), &1.0));
-        }
-        wr(&ex_0, &add(&rd(&ex_0), &1.0));
-      }
-      return own(&call(&k!("Expr"), "sorted", args![rd(&points_0)]));
+      return own(&get(&k!("Expr"), "bracket_points"));
       Value::Null
     }
   }
@@ -22661,32 +22679,38 @@ pub mod c_Sweep {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let id_0 = cell(&arg(a1, 0)); let grid_0 = cell(&arg(a1, 1)); let need_0 = cell(&arg(a1, 2));
-      let x_0 = cell(&Value::Null); wr(&x_0, &list![]);
-      let y_0 = cell(&Value::Null); wr(&y_0, &list![]);
-      let p_0 = cell(&Value::Null); wr(&p_0, &list![]);
-      let by_0 = cell(&Value::Null); wr(&by_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "YS")).ceil() as i64) {
-        let gy_1 = cell(&(i1 as f64));
-        for i2 in 0..(num(&get(&self_, "XS")).ceil() as i64) {
-          let gx_2 = cell(&(i2 as f64));
-          m_push(&rd(&x_0), args![add(&get(&self_, "X0"), &mul(&rd(&gx_2), &get(&self_, "dx")))]);
-          m_push(&rd(&y_0), args![add(&get(&self_, "Y0"), &mul(&rd(&gy_1), &get(&self_, "dy")))]);
-          m_push(&rd(&p_0), args![elem(&rd(&grid_0), &add(&mul(&rd(&gy_1), &get(&self_, "XS")), &rd(&gx_2)))]);
-          m_push(&rd(&by_0), args![elem(&rd(&need_0), &add(&mul(&rd(&gy_1), &get(&self_, "XS")), &rd(&gx_2)))]);
-        };
-      };
-      let most_0 = cell(&Value::Null); wr(&most_0, &0.0);
-      for e1 in items(&rd(&p_0)) {
-        let v_1 = cell(&e1);
-        if truthy(&gt(&rd(&v_1), &rd(&most_0))) {
-          wr(&most_0, &rd(&v_1));
-        }
-      };
+      let cells_0 = cell(&Value::Null); wr(&cells_0, &rng(&mul(&get(&self_, "YS"), &get(&self_, "XS"))));
       let columns_0 = cell(&Value::Null); wr(&columns_0, &node());
-      set(&rd(&columns_0), &tos(&sv!["x"]), &rd(&x_0));
-      set(&rd(&columns_0), &tos(&sv!["y"]), &rd(&y_0));
-      set(&rd(&columns_0), &tos(&sv!["p"]), &rd(&p_0));
-      set(&rd(&columns_0), &tos(&sv!["by"]), &rd(&by_0));
+      set(&rd(&columns_0), &tos(&sv!["x"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&add(&get(&self_, "X0"), &mul(&(modulo(&rd(&i_2), &get(&self_, "XS"))), &get(&self_, "dx"))));
+        Value::Null
+      }) }]));
+      set(&rd(&columns_0), &tos(&sv!["y"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&add(&get(&self_, "Y0"), &mul(&m_floor(&(div(&rd(&i_2), &get(&self_, "XS")))), &get(&self_, "dy"))));
+        Value::Null
+      }) }]));
+      set(&rd(&columns_0), &tos(&sv!["p"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(grid_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&grid_0), &rd(&i_2)));
+        Value::Null
+      }) }]));
+      set(&rd(&columns_0), &tos(&sv!["by"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(need_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&elem(&rd(&need_0), &rd(&i_2)));
+        Value::Null
+      }) }]));
+      let most_0 = cell(&Value::Null); wr(&most_0, &m_reduce(&get(&rd(&columns_0), &tos(&sv!["p"])), args![0.0, { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let m_2 = cell(&arg(a3, 0)); let v_2 = cell(&arg(a3, 1));
+        return own(&(if truthy(&gt(&rd(&v_2), &rd(&m_2))) { own(&rd(&v_2)) } else { own(&rd(&m_2)) }));
+        Value::Null
+      }) }]));
       let extra_0 = cell(&Value::Null); wr(&extra_0, &node());
       set(&rd(&extra_0), &tos(&sv!["a0"]), &get(&self_, "a0"));
       set(&rd(&extra_0), &tos(&sv!["arrangement"]), &get(&self_, "how"));
@@ -22768,16 +22792,17 @@ pub mod c_Sweep {
   pub mod g_radii {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
-      for i1 in 0..(num(&get(&self_, "RS")).ceil() as i64) {
-        let k_1 = cell(&(i1 as f64));
-        let e_1 = cell(&Value::Null); wr(&e_1, &elem(&get(&self_, "env"), &rd(&k_1)));
-        m_push(&rd(&out_0), args![elem(&get(&self_, "rad"), &rd(&k_1))]);
-        m_push(&rd(&out_0), args![or_else(&get(&rd(&e_1), &tos(&sv!["n_{f}"])), || own(&f64::NAN))]);
-        m_push(&rd(&out_0), args![or_else(&get(&rd(&e_1), &tos(&sv!["\\sigma_{tr}"])), || own(&f64::NAN))]);
-        m_push(&rd(&out_0), args![or_else(&get(&rd(&e_1), &tos(&sv!["L"])), || own(&f64::NAN))]);
-      };
-      return own(&rd(&out_0));
+      return own(&m_reduce(&rng(&get(&self_, "RS")), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let out_2 = cell(&arg(a3, 0)); let k_2 = cell(&arg(a3, 1));
+        return own(&m_reduce(&list![elem(&get(&self_, "rad"), &rd(&k_2)), or_else(&get(&elem(&get(&self_, "env"), &rd(&k_2)), &tos(&sv!["n_{f}"])), || own(&f64::NAN)), or_else(&get(&elem(&get(&self_, "env"), &rd(&k_2)), &tos(&sv!["\\sigma_{tr}"])), || own(&f64::NAN)), or_else(&get(&elem(&get(&self_, "env"), &rd(&k_2)), &tos(&sv!["L"])), || own(&f64::NAN))], args![rd(&out_2), { let self_: Value = self_.clone(); cl!(); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let o_4 = cell(&arg(a5, 0)); let v_4 = cell(&arg(a5, 1));
+          return own(&m_push(&rd(&o_4), args![rd(&v_4)]));
+          Value::Null
+        }) }]));
+        Value::Null
+      }) }]));
       Value::Null
     }
   }
@@ -23048,6 +23073,1526 @@ pub mod c_Measure {
   }
 }
 
+pub mod c_Sighted {
+  use crate::rt::*;
+  pub mod g_mass {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&add(&get(&self_, "disc_mass"), &get(&self_, "bulge_mass")));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("name");//<
+    c.field_none("disc_mass");//<
+    c.field_none("disc_scale");//<
+    c.field_none("bulge_mass");//<
+    c.field_none("bulge_scale");//<
+    c.field_none("circling");//<
+    c.field_none("sun");//<
+    c.field_none("inclination");//<
+    c.field_none("position_angle");//<
+    c.field_none("distance");//<
+    c.field_none("approach");//<
+    c.field_none("across");//<
+    c.field_none("source");//<
+    c.getter("mass", g_mass::f);//<
+  }
+}
+
+pub mod c_Video {
+  use crate::rt::*;
+  pub mod s_MILKY_WAY {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&make_k(&k!("Sighted"), args![kw("name", &sv!["Milky Way"]), kw("disc_mass", &get(&k!("Video"), "mw_discs_mass")), kw("disc_scale", &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_scale"]])), kw("bulge_mass", &m_sum(&get(&k!("Video"), "MW_BAR_MASSES"))), kw("bulge_scale", &0.6), kw("circling", &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["circling"]])), kw("sun", &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["sun_distance"]])), kw("inclination", &0.0), kw("position_angle", &0.0), kw("distance", &0.0), kw("approach", &0.0), kw("across", &0.0), kw("source", &sv!["Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)"])]));
+      Value::Null
+    }
+  }
+  pub mod s_measured {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let id_0 = cell(&arg(a1, 0)); let name_0 = cell(&arg(a1, 1));
+      let m_0 = cell(&Value::Null); wr(&m_0, &call(&k!("Measured"), "of", args![rd(&id_0)]));
+      if truthy(&eq(&rd(&m_0), &Value::Null)) {
+        invoke(&fail, args![sv!["no data/", &tos(&rd(&id_0)), ": run npx ray data ", &tos(&rd(&id_0)), ""]]);
+      }
+      let names_0 = cell(&Value::Null); wr(&names_0, &get(&get(&rd(&m_0), "header"), &tos(&sv!["names"])));
+      let k_0 = cell(&Value::Null); wr(&k_0, &m_first(&filt(&rng(&len(&rd(&names_0))), &{ let self_: Value = self_.clone(); cl!(names_0, name_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&eq(&elem(&rd(&names_0), &rd(&i_2)), &rd(&name_0)));
+        Value::Null
+      }) })));
+      if truthy(&eq(&rd(&k_0), &Value::Null)) {
+        invoke(&fail, args![sv!["data/", &tos(&rd(&id_0)), " has no ", &tos(&quoted(&rd(&name_0))), ""]]);
+      }
+      return own(&elem(&get(&get(&rd(&m_0), "columns"), &tos(&sv!["value"])), &rd(&k_0)));
+      Value::Null
+    }
+  }
+  pub mod s_MW_BAR1 {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&m_map(&list![sv!["rho_1"], sv!["x_1"], sv!["y_1"], sv!["z_1"], sv!["c_parallel"], sv!["c_perp"], sv!["m"], sv!["alpha"], sv!["n"], sv!["c"], sv!["x_c"], sv!["y_c"], sv!["r_cut"]], args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let n_2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Video"), "measured", args![sv!["milkyway-bar"], rd(&n_2)]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod s_mw_bar {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let i_0 = cell(&arg(a1, 0));
+      return own(&m_map(&list![sv!["rho_", &tos(&rd(&i_0)), ""], sv!["x_", &tos(&rd(&i_0)), ""], sv!["y_", &tos(&rd(&i_0)), ""], sv!["z_", &tos(&rd(&i_0)), ""], sv!["n_", &tos(&rd(&i_0)), ""], sv!["c_perp,", &tos(&rd(&i_0)), ""], sv!["R_", &tos(&rd(&i_0)), ",out"], sv!["R_", &tos(&rd(&i_0)), ",in"], sv!["n_", &tos(&rd(&i_0)), ",out"], sv!["n_", &tos(&rd(&i_0)), ",in"]], args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let n_2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Video"), "measured", args![sv!["milkyway-bar"], rd(&n_2)]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_BAR2 {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "mw_bar", args![sv!["2"]]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_BAR3 {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "mw_bar", args![sv!["3"]]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_BAR_MASSES {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&m_map(&list![sv!["M_bar1"], sv!["M_bar2"], sv!["M_bar3"]], args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let n_2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Video"), "measured", args![sv!["milkyway-bar"], rd(&n_2)]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_BAR_ANGLE {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["bar_angle"]]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_PATTERN_SPEED {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "measured", args![sv!["milkyway-bar"], sv!["pattern_speed"]]));
+      Value::Null
+    }
+  }
+  pub mod s_mw_discs_mass {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&sub(&add(&add(&call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["bulge_region_mass"]]), &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_mass"]])), &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thick_mass"]])), &m_sum(&get(&k!("Video"), "MW_BAR_MASSES"))));
+      Value::Null
+    }
+  }
+  pub mod s_MW_DISCS {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let thin_0 = cell(&Value::Null); wr(&thin_0, &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_mass"]]));
+      let thick_0 = cell(&Value::Null); wr(&thick_0, &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thick_mass"]]));
+      return own(&list![list![div(&mul(&get(&k!("Video"), "mw_discs_mass"), &rd(&thin_0)), &(add(&rd(&thin_0), &rd(&thick_0)))), call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_scale"]]), 1.0], list![div(&mul(&get(&k!("Video"), "mw_discs_mass"), &rd(&thick_0)), &(add(&rd(&thin_0), &rd(&thick_0)))), call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thick_scale"]]), 0.0]]);
+      Value::Null
+    }
+  }
+  pub mod s_MW_DISC_HOLE {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "measured", args![sv!["milkyway-bar"], sv!["R_cut"]]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_ARMS {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let m_0 = cell(&Value::Null); wr(&m_0, &call(&k!("Measured"), "of", args![sv!["milkyway-arms"]]));
+      if truthy(&eq(&rd(&m_0), &Value::Null)) {
+        invoke(&fail, args![sv!["no data/milkyway-arms: run npx ray data milkyway-arms"]]);
+      }
+      return own(&m_map(&rng(&5.0), args![{ let self_: Value = self_.clone(); cl!(m_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&list![elem(&get(&get(&rd(&m_0), "columns"), &tos(&sv!["R"])), &rd(&k_2)), elem(&get(&get(&rd(&m_0), "columns"), &tos(&sv!["theta"])), &rd(&k_2)), elem(&get(&get(&rd(&m_0), "columns"), &tos(&sv!["psi"])), &rd(&k_2)), elem(&get(&k!("Video"), "MW_ARM_END"), &rd(&k_2)), elem(&get(&k!("Video"), "MW_ARM_OLD"), &rd(&k_2))]);
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_ARM_WIDTH {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&list![div(&call(&k!("Video"), "measured", args![sv!["milkyway-arm-widths"], sv!["w0"]]), &1000.0), div(&call(&k!("Video"), "measured", args![sv!["milkyway-arm-widths"], sv!["slope"]]), &1000.0), call(&k!("Video"), "measured", args![sv!["milkyway-arm-widths"], sv!["R0"]])]);
+      Value::Null
+    }
+  }
+  pub mod s_MW_ARM_CONTRAST {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&call(&k!("Video"), "measured", args![sv!["milkyway-arm-contrast"], sv!["K"]]));
+      Value::Null
+    }
+  }
+  pub mod s_MW_DUST {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&list![div(&call(&k!("Video"), "measured", args![sv!["milkyway-dust-lane"], sv!["hot"]]), &1000.0), 0.12, 0.1]);
+      Value::Null
+    }
+  }
+  pub mod s_MW_STIR {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&list![list![call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_sigma_R"]]), call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_sigma_scale"]])], list![call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thick_sigma_R"]]), call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thick_sigma_scale"]])], list![call(&k!("Video"), "measured", args![sv!["milkyway-arm-widths"], sv!["young_spread"]]), call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["thin_sigma_scale"]])]]);
+      Value::Null
+    }
+  }
+  pub mod s_MW_SUN_MOTION {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&list![call(&k!("Video"), "measured", args![sv!["milkyway-arm-widths"], sv!["U_sun"]]), sub(&call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["sun_tangential"]]), &call(&k!("Video"), "measured", args![sv!["milkyway-discs"], sv!["circling"]]))]);
+      Value::Null
+    }
+  }
+  pub mod s_galaxy {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let name_0 = cell(&arg(a1, 0));
+      return own(&(if truthy(&eq(&rd(&name_0), &sv!["andromeda"])) { own(&get(&k!("Video"), "ANDROMEDA")) } else { own(&get(&k!("Video"), "MILKY_WAY")) }));
+      Value::Null
+    }
+  }
+  pub mod s_per_kpc {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&div(&get(&k!("Video"), "FILM_RD"), &get(&get(&k!("Video"), "MILKY_WAY"), "disc_scale")));
+      Value::Null
+    }
+  }
+  pub mod s_myr_per_tick {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let film_0 = cell(&arg(a1, 0));
+      let c__0 = cell(&Value::Null); wr(&c__0, &get(&get(&rd(&film_0), "header"), &tos(&sv!["clock"])));
+      return own(&div(&(div(&elem(&rd(&c__0), &1.0), &elem(&rd(&c__0), &0.0))), &(mul(&div(&elem(&rd(&c__0), &3.0), &elem(&rd(&c__0), &2.0)), &get(&k!("Video"), "PER_MYR")))));
+      Value::Null
+    }
+  }
+  pub mod s_faster {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let film_0 = cell(&arg(a1, 0));
+      return own(&div(&elem(&get(&get(&rd(&film_0), "header"), &tos(&sv!["clock"])), &1.0), &(div(&elem(&get(&get(&rd(&film_0), "header"), &tos(&sv!["clock"])), &3.0), &get(&k!("Video"), "LIGHT")))));
+      Value::Null
+    }
+  }
+  pub mod s_smooth {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let t_0 = cell(&arg(a1, 0));
+      let u_0 = cell(&Value::Null); wr(&u_0, &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, rd(&t_0)])]));
+      return own(&mul(&mul(&rd(&u_0), &rd(&u_0)), &(sub(&3.0, &mul(&2.0, &rd(&u_0))))));
+      Value::Null
+    }
+  }
+  pub mod s_shot {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let id_0 = cell(&arg(a1, 0)); let what_0 = cell(&arg(a1, 1)); let shot_0 = cell(&arg(a1, 2));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &rd(&id_0)), kw("what", &rd(&what_0)), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &get(&rd(&shot_0), "frames")), kw("paint", &{ let self_: Value = self_.clone(); cl!(shot_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("Sky"), args![kw("shot", &rd(&shot_0))]));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_solar_meta {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0));
+      let r_0 = cell(&Value::Null); wr(&r_0, &get(&get(&rd(&theory_0), "solar"), "record"));
+      let at_0 = cell(&Value::Null); wr(&at_0, &0.0);
+      for i1 in 0..(num(&len(&get(&rd(&r_0), "names"))).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        wr(&at_0, &(if truthy(&eq(&elem(&get(&rd(&r_0), "names"), &rd(&k_1)), &sv!["marks"])) { own(&rd(&k_1)) } else { own(&rd(&at_0)) }));
+      };
+      let off_0 = cell(&Value::Null); wr(&off_0, &m_sum(&m_take(&get(&rd(&r_0), "sizes"), args![rd(&at_0)])));
+      let SOLAR_0 = cell(&Value::Null); wr(&SOLAR_0, &call(&k!("Measured"), "of", args![sv!["solar-inner"]]));
+      let NAMES_0 = cell(&Value::Null); wr(&NAMES_0, &get(&get(&rd(&SOLAR_0), "header"), &tos(&sv!["names"])));
+      let PER_0 = cell(&Value::Null); wr(&PER_0, &get(&get(&rd(&SOLAR_0), "columns"), &tos(&sv!["period"])));
+      let PLANETS_0 = cell(&Value::Null); wr(&PLANETS_0, &filt(&rng(&len(&rd(&NAMES_0))), &{ let self_: Value = self_.clone(); cl!(PER_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&gt(&elem(&rd(&PER_0), &rd(&i_2)), &0.0));
+        Value::Null
+      }) }));
+      let earth_body_0 = cell(&Value::Null); wr(&earth_body_0, &0.0);
+      for i1 in 0..(num(&len(&rd(&PLANETS_0))).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        wr(&earth_body_0, &(if truthy(&eq(&elem(&rd(&NAMES_0), &elem(&rd(&PLANETS_0), &rd(&k_1))), &sv!["Earth"])) { own(&add(&rd(&k_1), &1.0)) } else { own(&rd(&earth_body_0)) }));
+      };
+      return own(&list![rd(&off_0), get(&rd(&r_0), "width"), m_round(&(div(&(sub(&elem(&get(&rd(&r_0), "sizes"), &rd(&at_0)), &1.0)), &6.0))), rd(&earth_body_0)]);
+      Value::Null
+    }
+  }
+  pub mod s_shot_after_solar {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0)); let id_0 = cell(&arg(a1, 1)); let what_0 = cell(&arg(a1, 2)); let shot_0 = cell(&arg(a1, 3));
+      let meta_0 = cell(&Value::Null); wr(&meta_0, &call(&k!("Video"), "solar_meta", args![rd(&theory_0)]));
+      let stamp_0 = cell(&Value::Null); wr(&stamp_0, &get(&get(&get(&rd(&theory_0), "solar"), "record"), "stamp"));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &rd(&id_0)), kw("what", &rd(&what_0)), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &get(&rd(&shot_0), "frames")), kw("paint", &{ let self_: Value = self_.clone(); cl!(shot_0, meta_0, stamp_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        let sky_2 = cell(&Value::Null); wr(&sky_2, &make_k(&k!("Sky"), args![kw("shot", &rd(&shot_0))]));
+        set(&rd(&sky_2), "meta", &rd(&meta_0));
+        set(&rd(&sky_2), "sol_stamp", &rd(&stamp_0));
+        return own(&rd(&sky_2));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "uses", &list![sv!["solar.inner"]]);
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_light {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let film_0 = cell(&arg(a1, 1)); let b0_0 = cell(&arg(a1, 2)); let b1_0 = cell(&arg(a1, 3)); let w_0 = cell(&arg(a1, 4)); let G_0 = cell(&arg(a1, 5)); let span_0 = cell(&arg(a1, 6)); let cx_0 = cell(&arg(a1, 7)); let cy_0 = cell(&arg(a1, 8)); let px_0 = cell(&arg(a1, 9)); let ci_0 = cell(&arg(a1, 10)); let side_0 = cell(&arg(a1, 11));
+      let D_0 = cell(&Value::Null); wr(&D_0, &get(&get(&rd(&film_0), "columns"), &tos(&sv!["density"])));
+      let Y_0 = cell(&Value::Null); wr(&Y_0, &get(&get(&rd(&film_0), "columns"), &tos(&sv!["young"])));
+      let U_0 = cell(&Value::Null); wr(&U_0, &get(&get(&rd(&film_0), "columns"), &tos(&sv!["dust"])));
+      let top_0 = cell(&Value::Null); wr(&top_0, &0.0);
+      let ytop_0 = cell(&Value::Null); wr(&ytop_0, &0.0);
+      let utop_0 = cell(&Value::Null); wr(&utop_0, &0.0);
+      for i1 in 0..(num(&mul(&rd(&G_0), &rd(&G_0))).ceil() as i64) {
+        let c__1 = cell(&(i1 as f64));
+        wr(&top_0, &call(&k!("Fmt"), "max", args![rd(&top_0), add(&elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__1))), &mul(&rd(&w_0), &(sub(&elem(&rd(&D_0), &add(&rd(&b1_0), &rd(&c__1))), &elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__1)))))))]));
+        wr(&ytop_0, &call(&k!("Fmt"), "max", args![rd(&ytop_0), add(&elem(&rd(&Y_0), &add(&rd(&b0_0), &rd(&c__1))), &mul(&rd(&w_0), &(sub(&elem(&rd(&Y_0), &add(&rd(&b1_0), &rd(&c__1))), &elem(&rd(&Y_0), &add(&rd(&b0_0), &rd(&c__1)))))))]));
+        wr(&utop_0, &call(&k!("Fmt"), "max", args![rd(&utop_0), add(&elem(&rd(&U_0), &add(&rd(&b0_0), &rd(&c__1))), &mul(&rd(&w_0), &(sub(&elem(&rd(&U_0), &add(&rd(&b1_0), &rd(&c__1))), &elem(&rd(&U_0), &add(&rd(&b0_0), &rd(&c__1)))))))]));
+      };
+      let lt_0 = cell(&Value::Null); wr(&lt_0, &m_ln(&(add(&1.0, &rd(&top_0)))));
+      let rgb_0 = cell(&Value::Null); wr(&rgb_0, &list![]);
+      for i1 in 0..(num(&rd(&G_0)).ceil() as i64) {
+        let row_1 = cell(&(i1 as f64));
+        let gy_1 = cell(&Value::Null); wr(&gy_1, &sub(&sub(&rd(&G_0), &1.0), &rd(&row_1)));
+        for i2 in 0..(num(&rd(&G_0)).ceil() as i64) {
+          let gx_2 = cell(&(i2 as f64));
+          let c__2 = cell(&Value::Null); wr(&c__2, &add(&mul(&rd(&gy_1), &rd(&G_0)), &rd(&gx_2)));
+          let o_2 = cell(&Value::Null); wr(&o_2, &call(&k!("Fmt"), "min", args![1.0, div(&m_ln(&(add(&add(&1.0, &elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__2)))), &mul(&rd(&w_0), &(sub(&elem(&rd(&D_0), &add(&rd(&b1_0), &rd(&c__2))), &elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__2))))))))), &rd(&lt_0))]));
+          let y_2 = cell(&Value::Null); wr(&y_2, &call(&k!("Fmt"), "min", args![1.0, m_sqrt(&(div(&(add(&elem(&rd(&Y_0), &add(&rd(&b0_0), &rd(&c__2))), &mul(&rd(&w_0), &(sub(&elem(&rd(&Y_0), &add(&rd(&b1_0), &rd(&c__2))), &elem(&rd(&Y_0), &add(&rd(&b0_0), &rd(&c__2)))))))), &rd(&ytop_0))))]));
+          let lo_2 = cell(&Value::Null); wr(&lo_2, &mul(&m_sqrt(&rd(&o_2)), &rd(&o_2)));
+          let hii_2 = cell(&Value::Null); wr(&hii_2, &call(&k!("Fmt"), "max", args![0.0, div(&(sub(&rd(&y_2), &0.7)), &0.3)]));
+          let dim_2 = cell(&Value::Null); wr(&dim_2, &sub(&1.0, &mul(&0.7, &call(&k!("Fmt"), "min", args![1.0, m_sqrt(&(div(&(add(&elem(&rd(&U_0), &add(&rd(&b0_0), &rd(&c__2))), &mul(&rd(&w_0), &(sub(&elem(&rd(&U_0), &add(&rd(&b1_0), &rd(&c__2))), &elem(&rd(&U_0), &add(&rd(&b0_0), &rd(&c__2)))))))), &rd(&utop_0))))]))));
+          m_push(&rd(&rgb_0), args![call(&k!("Fmt"), "min", args![255.0, mul(&rd(&dim_2), &(add(&add(&mul(&rd(&lo_2), &(add(&130.0, &mul(&125.0, &rd(&o_2))))), &mul(&mul(&95.0, &rd(&y_2)), &rd(&y_2))), &mul(&110.0, &rd(&hii_2)))))])]);
+          m_push(&rd(&rgb_0), args![call(&k!("Fmt"), "min", args![255.0, mul(&rd(&dim_2), &(add(&add(&mul(&rd(&lo_2), &(add(&140.0, &mul(&85.0, &rd(&o_2))))), &mul(&mul(&120.0, &rd(&y_2)), &rd(&y_2))), &mul(&25.0, &rd(&hii_2)))))])]);
+          m_push(&rd(&rgb_0), args![call(&k!("Fmt"), "min", args![255.0, mul(&rd(&dim_2), &(add(&add(&mul(&rd(&lo_2), &(sub(&175.0, &mul(&55.0, &rd(&o_2))))), &mul(&mul(&165.0, &rd(&y_2)), &rd(&y_2))), &mul(&70.0, &rd(&hii_2)))))])]);
+        };
+      };
+      let x0_0 = cell(&Value::Null); wr(&x0_0, &mul(&(sub(&sub(&0.0, &rd(&span_0)), &rd(&cx_0))), &rd(&px_0)));
+      let y0_0 = cell(&Value::Null); wr(&y0_0, &sub(&0.0, &mul(&mul(&(sub(&rd(&span_0), &rd(&cy_0))), &rd(&px_0)), &rd(&ci_0))));
+      let bw_0 = cell(&Value::Null); wr(&bw_0, &mul(&mul(&2.0, &rd(&span_0)), &rd(&px_0)));
+      let bh_0 = cell(&Value::Null); wr(&bh_0, &mul(&mul(&mul(&2.0, &rd(&span_0)), &rd(&px_0)), &rd(&ci_0)));
+      let fade_0 = cell(&Value::Null); wr(&fade_0, &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, div(&(sub(&90.0, &rd(&side_0))), &50.0)])]));
+      call(&rd(&s_0), "alpha", args![mul(&0.3, &rd(&fade_0))]);
+      call(&rd(&s_0), "field", args![rd(&rgb_0), rd(&G_0), rd(&G_0), rd(&x0_0), rd(&y0_0), rd(&bw_0), rd(&bh_0), call(&k!("Fmt"), "max", args![2.0, mul(&2.0, &rd(&side_0))])]);
+      call(&rd(&s_0), "alpha", args![mul(&0.9, &rd(&fade_0))]);
+      call(&rd(&s_0), "field", args![rd(&rgb_0), rd(&G_0), rd(&G_0), rd(&x0_0), rd(&y0_0), rd(&bw_0), rd(&bh_0), 0.0]);
+      return own(&call(&rd(&s_0), "alpha", args![1.0]));
+      Value::Null
+    }
+  }
+  pub mod s_sky {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let shot_0 = cell(&arg(a1, 1)); let film_0 = cell(&arg(a1, 2)); let tracks_0 = cell(&arg(a1, 3)); let i_0 = cell(&arg(a1, 4)); let sol_0 = cell(&arg(a1, 5)); let meta_0 = cell(&arg(a1, 6));
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+      call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+      let H_0 = cell(&Value::Null); wr(&H_0, &get(&rd(&film_0), "header"));
+      let n_0 = cell(&Value::Null); wr(&n_0, &get(&rd(&shot_0), "frames"));
+      let t_0 = cell(&Value::Null); wr(&t_0, &(if truthy(&gt(&rd(&n_0), &1.0)) { own(&div(&rd(&i_0), &(sub(&rd(&n_0), &1.0)))) } else { own(&0.0) }));
+      let e_0 = cell(&Value::Null); wr(&e_0, &call(&k!("Video"), "smooth", args![rd(&t_0)]));
+      let FR_0 = cell(&Value::Null); wr(&FR_0, &get(&rd(&H_0), &tos(&sv!["frames"])));
+      let u_0 = cell(&Value::Null); wr(&u_0, &mul(&(add(&get(&rd(&shot_0), "from_at"), &mul(&(sub(&get(&rd(&shot_0), "to_at"), &get(&rd(&shot_0), "from_at"))), &rd(&t_0)))), &(sub(&rd(&FR_0), &1.0))));
+      let f0_0 = cell(&Value::Null); wr(&f0_0, &call(&k!("Fmt"), "min", args![m_floor(&rd(&u_0)), sub(&rd(&FR_0), &1.0)]));
+      let f1_0 = cell(&Value::Null); wr(&f1_0, &call(&k!("Fmt"), "min", args![add(&rd(&f0_0), &1.0), sub(&rd(&FR_0), &1.0)]));
+      let w_0 = cell(&Value::Null); wr(&w_0, &sub(&rd(&u_0), &rd(&f0_0)));
+      let ez_0 = cell(&Value::Null); wr(&ez_0, &(if truthy(&lt(&get(&rd(&shot_0), "from_zoom"), &1.0)) { own(&sub(&1.0, &mul(&(sub(&1.0, &call(&k!("Video"), "smooth", args![div(&rd(&t_0), &0.6)]))), &(sub(&1.0, &call(&k!("Video"), "smooth", args![div(&rd(&t_0), &0.6)])))))) } else { own(&rd(&e_0)) }));
+      let across_0 = cell(&Value::Null); wr(&across_0, &m_exp(&(add(&m_ln(&get(&rd(&shot_0), "from_zoom")), &mul(&(sub(&m_ln(&get(&rd(&shot_0), "to_zoom")), &m_ln(&get(&rd(&shot_0), "from_zoom")))), &rd(&ez_0))))));
+      let px_0 = cell(&Value::Null); wr(&px_0, &div(&get(&rd(&s_0), "height"), &rd(&across_0)));
+      let has_sun_0 = cell(&Value::Null); wr(&has_sun_0, &(truthy(&(!eq(&rd(&tracks_0), &Value::Null))) && truthy(&eq(&get(&get(&rd(&tracks_0), "header"), &tos(&sv!["sun"])), &0.0))));
+      let sx_0 = cell(&Value::Null); wr(&sx_0, &0.0);
+      let sy_0 = cell(&Value::Null); wr(&sy_0, &0.0);
+      if truthy(&rd(&has_sun_0)) {
+        let XY_0 = cell(&Value::Null); wr(&XY_0, &get(&get(&rd(&tracks_0), "columns"), &tos(&sv!["xy"])));
+        let m_0 = cell(&Value::Null); wr(&m_0, &get(&get(&rd(&tracks_0), "header"), &tos(&sv!["shown"])));
+        wr(&sx_0, &add(&elem(&rd(&XY_0), &mul(&mul(&rd(&f0_0), &rd(&m_0)), &2.0)), &mul(&rd(&w_0), &(sub(&elem(&rd(&XY_0), &mul(&mul(&rd(&f1_0), &rd(&m_0)), &2.0)), &elem(&rd(&XY_0), &mul(&mul(&rd(&f0_0), &rd(&m_0)), &2.0)))))));
+        wr(&sy_0, &add(&elem(&rd(&XY_0), &add(&mul(&mul(&rd(&f0_0), &rd(&m_0)), &2.0), &1.0)), &mul(&rd(&w_0), &(sub(&elem(&rd(&XY_0), &add(&mul(&mul(&rd(&f1_0), &rd(&m_0)), &2.0), &1.0)), &elem(&rd(&XY_0), &add(&mul(&mul(&rd(&f0_0), &rd(&m_0)), &2.0), &1.0)))))));
+      }
+      let look_0 = cell(&Value::Null); wr(&look_0, &(if truthy(&rd(&has_sun_0)) { own(&add(&get(&rd(&shot_0), "from_sun"), &mul(&(sub(&get(&rd(&shot_0), "to_sun"), &get(&rd(&shot_0), "from_sun"))), &rd(&e_0)))) } else { own(&0.0) }));
+      let px_end_0 = cell(&Value::Null); wr(&px_end_0, &div(&get(&rd(&s_0), "height"), &get(&rd(&shot_0), "to_zoom")));
+      let away_0 = cell(&Value::Null); wr(&away_0, &(if truthy(&rd(&has_sun_0)) { own(&div(&mul(&(sub(&1.0, &rd(&look_0))), &rd(&px_end_0)), &rd(&px_0))) } else { own(&0.0) }));
+      let cx_0 = cell(&Value::Null); wr(&cx_0, &mul(&rd(&sx_0), &(sub(&1.0, &rd(&away_0)))));
+      let cy_0 = cell(&Value::Null); wr(&cy_0, &mul(&rd(&sy_0), &(sub(&1.0, &rd(&away_0)))));
+      let ci_0 = cell(&Value::Null); wr(&ci_0, &m_cos(&(div(&mul(&get(&rd(&shot_0), "tilt"), &std::f64::consts::PI), &180.0))));
+      let SF_0 = cell(&Value::Null); wr(&SF_0, &(if truthy(&(!eq(&rd(&sol_0), &Value::Null))) { own(&get(&get(&rd(&sol_0), "columns"), &tos(&sv!["frames"]))) } else { own(&list![]) }));
+      let sys_0 = cell(&Value::Null); wr(&sys_0, &list![0.0, 0.0, 0.0, 0.0, 0.0]);
+      if truthy(&(!eq(&rd(&sol_0), &Value::Null))) {
+        let FRS_0 = cell(&Value::Null); wr(&FRS_0, &get(&get(&rd(&sol_0), "header"), &tos(&sv!["frames"])));
+        let at_f_0 = cell(&Value::Null); wr(&at_f_0, &call(&k!("Fmt"), "min", args![sub(&rd(&FRS_0), &1.0), get(&k!("Video"), "SOLAR_TO")]));
+        let mk_0 = cell(&Value::Null); wr(&mk_0, &{ let self_: Value = self_.clone(); cl!(SF_0, meta_0); fnv(move |a2: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let f_1 = cell(&arg(a2, 0)); let k_1 = cell(&arg(a2, 1)); let c__1 = cell(&arg(a2, 2));
+          return own(&elem(&rd(&SF_0), &add(&add(&add(&mul(&rd(&f_1), &elem(&rd(&meta_0), &1.0)), &elem(&rd(&meta_0), &0.0)), &mul(&6.0, &rd(&k_1))), &rd(&c__1))));
+          Value::Null
+        }) });
+        let reach_0 = cell(&Value::Null); wr(&reach_0, &0.0);
+        for i1 in 0..(num(&rd(&FRS_0)).ceil() as i64) {
+          let f_1 = cell(&(i1 as f64));
+          for i2 in 0..(num(&sub(&elem(&rd(&meta_0), &2.0), &1.0)).ceil() as i64) {
+            let k_2 = cell(&(i2 as f64));
+            wr(&reach_0, &call(&k!("Fmt"), "max", args![rd(&reach_0), call(&k!("Fmt"), "hypot", args![sub(&invoke(&rd(&mk_0), args![rd(&f_1), add(&rd(&k_2), &1.0), 0.0]), &invoke(&rd(&mk_0), args![rd(&f_1), 0.0, 0.0])), sub(&invoke(&rd(&mk_0), args![rd(&f_1), add(&rd(&k_2), &1.0), 1.0]), &invoke(&rd(&mk_0), args![rd(&f_1), 0.0, 1.0]))])]));
+          };
+        };
+        let eb_0 = cell(&Value::Null); wr(&eb_0, &elem(&rd(&meta_0), &3.0));
+        let ex_0 = cell(&Value::Null); wr(&ex_0, &invoke(&rd(&mk_0), args![rd(&at_f_0), rd(&eb_0), 0.0]));
+        let ey_0 = cell(&Value::Null); wr(&ey_0, &invoke(&rd(&mk_0), args![rd(&at_f_0), rd(&eb_0), 1.0]));
+        let last_0 = cell(&Value::Null); wr(&last_0, &mul(&2.1, &(add(&rd(&reach_0), &call(&k!("Fmt"), "hypot", args![sub(&rd(&ex_0), &invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 0.0])), sub(&rd(&ey_0), &invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 1.0]))])))));
+        let pxs_0 = cell(&Value::Null); wr(&pxs_0, &mul(&div(&get(&rd(&s_0), "height"), &rd(&last_0)), &(div(&get(&rd(&shot_0), "from_zoom"), &rd(&across_0)))));
+        let sun_x_0 = cell(&Value::Null); wr(&sun_x_0, &mul(&(sub(&invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 0.0]), &rd(&ex_0))), &rd(&pxs_0)));
+        let sun_y_0 = cell(&Value::Null); wr(&sun_y_0, &mul(&(sub(&invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 1.0]), &rd(&ey_0))), &rd(&pxs_0)));
+        wr(&cx_0, &sub(&rd(&cx_0), &div(&rd(&sun_x_0), &rd(&px_0))));
+        wr(&cy_0, &sub(&rd(&cy_0), &div(&rd(&sun_y_0), &(mul(&rd(&px_0), &rd(&ci_0))))));
+        wr(&sys_0, &list![rd(&pxs_0), invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 0.0]), invoke(&rd(&mk_0), args![rd(&at_f_0), 0.0, 1.0]), rd(&at_f_0), sub(&1.0, &call(&k!("Video"), "smooth", args![div(&rd(&e_0), &0.3)]))]);
+      }
+      get(&rd(&s_0), "save");
+      call(&rd(&s_0), "translate", args![div(&get(&rd(&s_0), "width"), &2.0), div(&get(&rd(&s_0), "height"), &2.0)]);
+      call(&rd(&s_0), "rotate", args![sub(&0.0, &div(&mul(&get(&rd(&shot_0), "turn"), &std::f64::consts::PI), &180.0))]);
+      let G_0 = cell(&Value::Null); wr(&G_0, &get(&rd(&H_0), &tos(&sv!["grid"])));
+      let span_0 = cell(&Value::Null); wr(&span_0, &elem(&get(&rd(&H_0), &tos(&sv!["span"])), &0.0));
+      let D_0 = cell(&Value::Null); wr(&D_0, &get(&get(&rd(&film_0), "columns"), &tos(&sv!["density"])));
+      let cs_0 = cell(&Value::Null); wr(&cs_0, &div(&mul(&2.0, &rd(&span_0)), &rd(&G_0)));
+      let b0_0 = cell(&Value::Null); wr(&b0_0, &mul(&mul(&rd(&f0_0), &rd(&G_0)), &rd(&G_0)));
+      let b1_0 = cell(&Value::Null); wr(&b1_0, &mul(&mul(&rd(&f1_0), &rd(&G_0)), &rd(&G_0)));
+      let top_0 = cell(&Value::Null); wr(&top_0, &0.0);
+      for i1 in 0..(num(&mul(&rd(&G_0), &rd(&G_0))).ceil() as i64) {
+        let c__1 = cell(&(i1 as f64));
+        wr(&top_0, &call(&k!("Fmt"), "max", args![rd(&top_0), add(&elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__1))), &mul(&rd(&w_0), &(sub(&elem(&rd(&D_0), &add(&rd(&b1_0), &rd(&c__1))), &elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__1)))))))]));
+      };
+      let side_0 = cell(&Value::Null); wr(&side_0, &add(&mul(&rd(&cs_0), &rd(&px_0)), &0.6));
+      let half_w_0 = cell(&Value::Null); wr(&half_w_0, &add(&div(&get(&rd(&s_0), "width"), &2.0), &rd(&side_0)));
+      if truthy(&eq(&get(&rd(&H_0), &tos(&sv!["young"])), &1.0)) {
+        call(&k!("Video"), "light", args![rd(&s_0), rd(&film_0), rd(&b0_0), rd(&b1_0), rd(&w_0), rd(&G_0), rd(&span_0), rd(&cx_0), rd(&cy_0), rd(&px_0), rd(&ci_0), rd(&side_0)]);
+      } else {
+        call(&rd(&s_0), "alpha", args![call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, div(&(sub(&24.0, &rd(&side_0))), &14.0)])])]);
+        for i1 in 0..(num(&rd(&G_0)).ceil() as i64) {
+          let gy_1 = cell(&(i1 as f64));
+          let y_1 = cell(&Value::Null); wr(&y_1, &mul(&mul(&(sub(&add(&sub(&0.0, &rd(&span_0)), &mul(&(add(&rd(&gy_1), &0.5)), &rd(&cs_0))), &rd(&cy_0))), &rd(&px_0)), &rd(&ci_0)));
+          if truthy(&lt(&m_abs(&rd(&y_1)), &rd(&half_w_0))) {
+            for i2 in 0..(num(&rd(&G_0)).ceil() as i64) {
+              let gx_2 = cell(&(i2 as f64));
+              let c__2 = cell(&Value::Null); wr(&c__2, &add(&mul(&rd(&gy_1), &rd(&G_0)), &rd(&gx_2)));
+              let v_2 = cell(&Value::Null); wr(&v_2, &add(&elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__2))), &mul(&rd(&w_0), &(sub(&elem(&rd(&D_0), &add(&rd(&b1_0), &rd(&c__2))), &elem(&rd(&D_0), &add(&rd(&b0_0), &rd(&c__2))))))));
+              if truthy(&gt(&rd(&v_2), &0.0)) {
+                let x_2 = cell(&Value::Null); wr(&x_2, &mul(&(sub(&add(&sub(&0.0, &rd(&span_0)), &mul(&(add(&rd(&gx_2), &0.5)), &rd(&cs_0))), &rd(&cx_0))), &rd(&px_0)));
+                if truthy(&lt(&m_abs(&rd(&x_2)), &rd(&half_w_0))) {
+                  let k_2 = cell(&Value::Null); wr(&k_2, &call(&k!("Fmt"), "min", args![1.0, div(&m_ln(&(add(&1.0, &rd(&v_2)))), &m_ln(&(add(&1.0, &rd(&top_0)))))]));
+                  let r_2 = cell(&Value::Null); wr(&r_2, &m_round(&(add(&40.0, &mul(&mul(&215.0, &rd(&k_2)), &rd(&k_2))))));
+                  let gr_2 = cell(&Value::Null); wr(&gr_2, &m_round(&(add(&60.0, &mul(&190.0, &rd(&k_2))))));
+                  let b_2 = cell(&Value::Null); wr(&b_2, &m_round(&(add(&110.0, &mul(&145.0, &call(&k!("Fmt"), "min", args![1.0, mul(&1.6, &rd(&k_2))]))))));
+                  call(&rd(&s_0), "fill_style", args![sv!["rgb(", &tos(&rd(&r_2)), ",", &tos(&rd(&gr_2)), ",", &tos(&rd(&b_2)), ")"]]);
+                  call(&rd(&s_0), "fill_rect", args![sub(&rd(&x_2), &div(&rd(&side_0), &2.0)), sub(&sub(&0.0, &rd(&y_1)), &div(&mul(&rd(&side_0), &rd(&ci_0)), &2.0)), rd(&side_0), add(&mul(&rd(&side_0), &rd(&ci_0)), &0.6)]);
+                }
+              }
+            };
+          }
+        };
+        call(&rd(&s_0), "alpha", args![1.0]);
+      }
+      let lit_0 = cell(&Value::Null); wr(&lit_0, &eq(&get(&rd(&H_0), &tos(&sv!["young"])), &1.0));
+      if truthy(&(truthy(&(!eq(&rd(&tracks_0), &Value::Null))) && truthy(&gt(&rd(&px_0), &((if truthy(&rd(&lit_0)) { own(&6.0) } else { own(&12.0) })))))) {
+        let XY_0 = cell(&Value::Null); wr(&XY_0, &get(&get(&rd(&tracks_0), "columns"), &tos(&sv!["xy"])));
+        let m_0 = cell(&Value::Null); wr(&m_0, &get(&get(&rd(&tracks_0), "header"), &tos(&sv!["shown"])));
+        let tags_0 = cell(&Value::Null); wr(&tags_0, &get(&get(&rd(&tracks_0), "header"), &tos(&sv!["tags"])));
+        call(&rd(&s_0), "alpha", args![(if truthy(&rd(&lit_0)) { own(&call(&k!("Fmt"), "min", args![elem(&get(&k!("Video"), "LIGHT_STARS"), &0.0), div(&(sub(&rd(&px_0), &6.0)), &14.0)])) } else { own(&call(&k!("Fmt"), "min", args![0.85, div(&(sub(&rd(&px_0), &12.0)), &40.0)])) })]);
+        for i1 in 0..(num(&rd(&m_0)).ceil() as i64) {
+          let k_1 = cell(&(i1 as f64));
+          let x_1 = cell(&Value::Null); wr(&x_1, &mul(&(sub(&add(&elem(&rd(&XY_0), &mul(&(add(&mul(&rd(&f0_0), &rd(&m_0)), &rd(&k_1))), &2.0)), &mul(&rd(&w_0), &(sub(&elem(&rd(&XY_0), &mul(&(add(&mul(&rd(&f1_0), &rd(&m_0)), &rd(&k_1))), &2.0)), &elem(&rd(&XY_0), &mul(&(add(&mul(&rd(&f0_0), &rd(&m_0)), &rd(&k_1))), &2.0)))))), &rd(&cx_0))), &rd(&px_0)));
+          let y_1 = cell(&Value::Null); wr(&y_1, &mul(&mul(&(sub(&add(&elem(&rd(&XY_0), &add(&mul(&(add(&mul(&rd(&f0_0), &rd(&m_0)), &rd(&k_1))), &2.0), &1.0)), &mul(&rd(&w_0), &(sub(&elem(&rd(&XY_0), &add(&mul(&(add(&mul(&rd(&f1_0), &rd(&m_0)), &rd(&k_1))), &2.0), &1.0)), &elem(&rd(&XY_0), &add(&mul(&(add(&mul(&rd(&f0_0), &rd(&m_0)), &rd(&k_1))), &2.0), &1.0)))))), &rd(&cy_0))), &rd(&px_0)), &rd(&ci_0)));
+          if truthy(&(truthy(&lt(&m_abs(&rd(&x_1)), &rd(&half_w_0))) && truthy(&lt(&m_abs(&rd(&y_1)), &rd(&half_w_0))))) {
+            let tg_1 = cell(&Value::Null); wr(&tg_1, &elem(&rd(&tags_0), &rd(&k_1)));
+            call(&rd(&s_0), "fill_style", args![(if truthy(&ge(&rd(&tg_1), &4.0)) { own(&sv!["#d4e6ff"]) } else { own(&(if truthy(&(truthy(&eq(&rd(&tg_1), &1.0)) || truthy(&eq(&rd(&tg_1), &3.0)))) { own(&sv!["#ffd9a0"]) } else { own(&(if truthy(&eq(&rd(&tg_1), &2.0)) { own(&sv!["#ffc7e0"]) } else { own(&sv!["#dfe8ff"]) })) })) })]);
+            let sz_1 = cell(&Value::Null); wr(&sz_1, &(if truthy(&rd(&lit_0)) { own(&((if truthy(&ge(&rd(&tg_1), &4.0)) { own(&elem(&get(&k!("Video"), "LIGHT_STARS"), &2.0)) } else { own(&elem(&get(&k!("Video"), "LIGHT_STARS"), &1.0)) }))) } else { own(&2.4) }));
+            call(&rd(&s_0), "fill_rect", args![sub(&rd(&x_1), &div(&rd(&sz_1), &2.0)), sub(&sub(&0.0, &rd(&y_1)), &div(&rd(&sz_1), &2.0)), rd(&sz_1), rd(&sz_1)]);
+          }
+        };
+        call(&rd(&s_0), "alpha", args![1.0]);
+      }
+      if truthy(&(truthy(&(!eq(&rd(&sol_0), &Value::Null))) && truthy(&gt(&elem(&rd(&sys_0), &4.0), &0.004)))) {
+        let ax_0 = cell(&Value::Null); wr(&ax_0, &mul(&(sub(&rd(&sx_0), &rd(&cx_0))), &rd(&px_0)));
+        let ay_0 = cell(&Value::Null); wr(&ay_0, &mul(&mul(&(sub(&rd(&sy_0), &rd(&cy_0))), &rd(&px_0)), &rd(&ci_0)));
+        let FRS_0 = cell(&Value::Null); wr(&FRS_0, &get(&get(&rd(&sol_0), "header"), &tos(&sv!["frames"])));
+        let mk_0 = cell(&Value::Null); wr(&mk_0, &{ let self_: Value = self_.clone(); cl!(SF_0, meta_0); fnv(move |a2: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let f_1 = cell(&arg(a2, 0)); let k_1 = cell(&arg(a2, 1)); let c__1 = cell(&arg(a2, 2));
+          return own(&elem(&rd(&SF_0), &add(&add(&add(&mul(&rd(&f_1), &elem(&rd(&meta_0), &1.0)), &elem(&rd(&meta_0), &0.0)), &mul(&6.0, &rd(&k_1))), &rd(&c__1))));
+          Value::Null
+        }) });
+        for i1 in 0..(num(&sub(&elem(&rd(&meta_0), &2.0), &1.0)).ceil() as i64) {
+          let k_1 = cell(&(i1 as f64));
+          let b_1 = cell(&Value::Null); wr(&b_1, &add(&rd(&k_1), &1.0));
+          let ink_1 = cell(&Value::Null); wr(&ink_1, &elem(&get(&k!("Video"), "PLANET_INK"), &call(&k!("Fmt"), "min", args![3.0, rd(&k_1)])));
+          call(&rd(&s_0), "alpha", args![mul(&0.85, &elem(&rd(&sys_0), &4.0))]);
+          call(&rd(&s_0), "stroke_style", args![rd(&ink_1)]);
+          call(&rd(&s_0), "line_width", args![2.0]);
+          get(&rd(&s_0), "begin_path");
+          for i2 in 0..(num(&rd(&FRS_0)).ceil() as i64) {
+            let f_2 = cell(&(i2 as f64));
+            let x_2 = cell(&Value::Null); wr(&x_2, &add(&rd(&ax_0), &mul(&(sub(&invoke(&rd(&mk_0), args![rd(&f_2), rd(&b_1), 0.0]), &elem(&rd(&sys_0), &1.0))), &elem(&rd(&sys_0), &0.0))));
+            let y_2 = cell(&Value::Null); wr(&y_2, &add(&rd(&ay_0), &mul(&(sub(&invoke(&rd(&mk_0), args![rd(&f_2), rd(&b_1), 1.0]), &elem(&rd(&sys_0), &2.0))), &elem(&rd(&sys_0), &0.0))));
+            if truthy(&eq(&rd(&f_2), &0.0)) {
+              call(&rd(&s_0), "move_to", args![rd(&x_2), sub(&0.0, &rd(&y_2))]);
+            } else {
+              call(&rd(&s_0), "line_to", args![rd(&x_2), sub(&0.0, &rd(&y_2))]);
+            }
+          };
+          get(&rd(&s_0), "stroke");
+          call(&rd(&s_0), "alpha", args![elem(&rd(&sys_0), &4.0)]);
+          let x_1 = cell(&Value::Null); wr(&x_1, &add(&rd(&ax_0), &mul(&(sub(&invoke(&rd(&mk_0), args![elem(&rd(&sys_0), &3.0), rd(&b_1), 0.0]), &elem(&rd(&sys_0), &1.0))), &elem(&rd(&sys_0), &0.0))));
+          let y_1 = cell(&Value::Null); wr(&y_1, &add(&rd(&ay_0), &mul(&(sub(&invoke(&rd(&mk_0), args![elem(&rd(&sys_0), &3.0), rd(&b_1), 1.0]), &elem(&rd(&sys_0), &2.0))), &elem(&rd(&sys_0), &0.0))));
+          call(&rd(&s_0), "line_width", args![2.5]);
+          get(&rd(&s_0), "begin_path");
+          call(&rd(&s_0), "arc", args![rd(&x_1), sub(&0.0, &rd(&y_1)), 13.0, 0.0, (2.0 * std::f64::consts::PI)]);
+          get(&rd(&s_0), "stroke");
+          call(&rd(&s_0), "fill_style", args![sv!["#000000"]]);
+          get(&rd(&s_0), "begin_path");
+          call(&rd(&s_0), "arc", args![rd(&x_1), sub(&0.0, &rd(&y_1)), 2.5, 0.0, (2.0 * std::f64::consts::PI)]);
+          get(&rd(&s_0), "fill");
+        };
+        call(&rd(&s_0), "alpha", args![1.0]);
+      }
+      if truthy(&rd(&has_sun_0)) {
+        let x_0 = cell(&Value::Null); wr(&x_0, &mul(&(sub(&rd(&sx_0), &rd(&cx_0))), &rd(&px_0)));
+        let y_0 = cell(&Value::Null); wr(&y_0, &mul(&mul(&(sub(&rd(&sy_0), &rd(&cy_0))), &rd(&px_0)), &rd(&ci_0)));
+        let big_0 = cell(&Value::Null); wr(&big_0, &(if truthy(&lt(&get(&rd(&shot_0), "from_zoom"), &1.0)) { own(&sub(&1.0, &call(&k!("Video"), "smooth", args![mul(&rd(&e_0), &3.0)]))) } else { own(&0.0) }));
+        call(&rd(&s_0), "fill_style", args![sv!["#ffd23f"]]);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "arc", args![rd(&x_0), sub(&0.0, &rd(&y_0)), mul(&4.0, &(sub(&1.0, &rd(&big_0)))), 0.0, (2.0 * std::f64::consts::PI)]);
+        get(&rd(&s_0), "fill");
+        if truthy(&gt(&rd(&big_0), &0.0)) {
+          call(&rd(&s_0), "alpha", args![rd(&big_0)]);
+          call(&rd(&s_0), "stroke_style", args![sv!["#e0a526"]]);
+          call(&rd(&s_0), "line_width", args![3.0]);
+          get(&rd(&s_0), "begin_path");
+          call(&rd(&s_0), "arc", args![rd(&x_0), sub(&0.0, &rd(&y_0)), 26.0, 0.0, (2.0 * std::f64::consts::PI)]);
+          get(&rd(&s_0), "stroke");
+          call(&rd(&s_0), "alpha", args![1.0]);
+        }
+      }
+      get(&rd(&s_0), "restore");
+      let fade_0 = cell(&Value::Null); wr(&fade_0, &call(&k!("Fmt"), "max", args![(if truthy(&gt(&get(&rd(&shot_0), "fade_in"), &0.0)) { own(&sub(&1.0, &div(&rd(&i_0), &(mul(&get(&rd(&shot_0), "fade_in"), &get(&k!("Video"), "FPS")))))) } else { own(&0.0) }), (if truthy(&gt(&get(&rd(&shot_0), "fade_out"), &0.0)) { own(&sub(&1.0, &div(&(sub(&sub(&rd(&n_0), &1.0), &rd(&i_0))), &(mul(&get(&rd(&shot_0), "fade_out"), &get(&k!("Video"), "FPS")))))) } else { own(&0.0) })]));
+      if truthy(&gt(&rd(&fade_0), &0.0)) {
+        call(&rd(&s_0), "alpha", args![call(&k!("Fmt"), "min", args![1.0, rd(&fade_0)])]);
+        call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+        call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+        return own(&call(&rd(&s_0), "alpha", args![1.0]));
+      }
+      Value::Null
+    }
+  }
+  pub mod s_transport {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0));
+      let ink_0 = cell(&Value::Null); wr(&ink_0, &make_k(&k!("Ink"), args![]));
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &call(&k!("Video"), "transport_lanes", args![rd(&theory_0), rd(&ink_0)]));
+      let n_0 = cell(&Value::Null); wr(&n_0, &m_round(&(mul(&14.0, &get(&k!("Video"), "FPS")))));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &sv!["video.transport"]), kw("what", &sv!["G/S.v, Transport: a source carrying a quarter of a step a tick, on a line"]), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &rd(&n_0)), kw("paint", &{ let self_: Value = self_.clone(); cl!(lanes_0, ink_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("Banded"), args![kw("inner", &make_k(&k!("Unrolling"), args![kw("lanes", &rd(&lanes_0)), kw("ink", &rd(&ink_0)), kw("per", &call(&k!("Video"), "per_tick", args![rd(&lanes_0)]))])), kw("top", &get(&k!("Video"), "STRIP_TOP")), kw("tall", &get(&k!("Video"), "STRIP_TALL"))]));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_transport_lanes {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0)); let ink_0 = cell(&arg(a1, 1));
+      set(&rd(&ink_0), "every", &true);
+      set(&rd(&ink_0), "top", &36.0);
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &call(&rd(&theory_0), "transport_lanes", args![rd(&ink_0)]));
+      for e1 in items(&rd(&lanes_0)) {
+        let l_1 = cell(&e1);
+        set(&rd(&l_1), "says", &sv![""]);
+      };
+      set(&rd(&ink_0), "centre", &call(&k!("Strip"), "centre_of", args![rd(&lanes_0)]));
+      return own(&rd(&lanes_0));
+      Value::Null
+    }
+  }
+  pub mod s_per_tick {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let lanes_0 = cell(&arg(a1, 0));
+      return own(&m_floor(&(div(&m_round(&(mul(&14.0, &get(&k!("Video"), "FPS")))), &(add(&len(&rd(&lanes_0)), &1.0))))));
+      Value::Null
+    }
+  }
+  pub mod s_look {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let width_0 = cell(&arg(a1, 0)); let lane_0 = cell(&arg(a1, 1)); let ink_0 = cell(&arg(a1, 2));
+      let seen_0 = cell(&Value::Null); wr(&seen_0, &false);
+      let lo_0 = cell(&Value::Null); wr(&lo_0, &0.0);
+      let hi_0 = cell(&Value::Null); wr(&hi_0, &0.0);
+      for e1 in items(&get(&rd(&lane_0), "sides")) {
+        let sd_1 = cell(&e1);
+        let to_1 = cell(&Value::Null); wr(&to_1, &add(&get(&rd(&sd_1), "at"), &get(&rd(&sd_1), "sign")));
+        if !truthy(&rd(&seen_0)) {
+          wr(&lo_0, &get(&rd(&sd_1), "at"));
+          wr(&hi_0, &get(&rd(&sd_1), "at"));
+          wr(&seen_0, &true);
+        }
+        wr(&lo_0, &call(&k!("Fmt"), "min", args![rd(&lo_0), call(&k!("Fmt"), "min", args![get(&rd(&sd_1), "at"), rd(&to_1)])]));
+        wr(&hi_0, &call(&k!("Fmt"), "max", args![rd(&hi_0), call(&k!("Fmt"), "max", args![get(&rd(&sd_1), "at"), rd(&to_1)])]));
+      };
+      for e1 in items(&get(&rd(&lane_0), "sources")) {
+        let p_1 = cell(&e1);
+        if !truthy(&rd(&seen_0)) {
+          wr(&lo_0, &rd(&p_1));
+          wr(&hi_0, &rd(&p_1));
+          wr(&seen_0, &true);
+        }
+        wr(&lo_0, &call(&k!("Fmt"), "min", args![rd(&lo_0), sub(&rd(&p_1), &1.0)]));
+        wr(&hi_0, &call(&k!("Fmt"), "max", args![rd(&hi_0), add(&rd(&p_1), &1.0)]));
+      };
+      let ext_0 = cell(&Value::Null); wr(&ext_0, &add(&call(&k!("Fmt"), "max", args![sub(&get(&rd(&ink_0), "centre"), &rd(&lo_0)), sub(&rd(&hi_0), &get(&rd(&ink_0), "centre"))]), &0.4));
+      let lanew_0 = cell(&Value::Null); wr(&lanew_0, &sub(&rd(&width_0), &mul(&2.0, &get(&k!("Strip"), "PAD"))));
+      let cell_0 = cell(&Value::Null); wr(&cell_0, &div(&rd(&lanew_0), &(add(&mul(&2.0, &rd(&ext_0)), &1.0))));
+      let mid_0 = cell(&Value::Null); wr(&mid_0, &add(&get(&k!("Strip"), "PAD"), &div(&rd(&lanew_0), &2.0)));
+      let src_0 = cell(&Value::Null); wr(&src_0, &m_first(&get(&rd(&lane_0), "sources")));
+      let x0_0 = cell(&Value::Null); wr(&x0_0, &add(&rd(&mid_0), &mul(&(sub(&rd(&src_0), &get(&rd(&ink_0), "centre"))), &rd(&cell_0))));
+      return own(&list![rd(&x0_0), add(&add(&get(&k!("Video"), "STRIP_TOP"), &get(&rd(&ink_0), "top")), &div(&(sub(&get(&k!("Video"), "STRIP_TALL"), &get(&rd(&ink_0), "top"))), &2.0)), rd(&cell_0), rd(&src_0), div(&(sub(&get(&k!("Strip"), "PAD"), &rd(&x0_0))), &rd(&cell_0)), div(&(sub(&sub(&rd(&width_0), &get(&k!("Strip"), "PAD")), &rd(&x0_0))), &rd(&cell_0))]);
+      Value::Null
+    }
+  }
+  pub mod s_seen {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let p_0 = cell(&arg(a1, 0)); let yaw_0 = cell(&arg(a1, 1)); let pitch_0 = cell(&arg(a1, 2)); let ox_0 = cell(&arg(a1, 3)); let oy_0 = cell(&arg(a1, 4)); let cell_0 = cell(&arg(a1, 5));
+      let x1_0 = cell(&Value::Null); wr(&x1_0, &sub(&mul(&elem(&rd(&p_0), &0.0), &m_cos(&rd(&yaw_0))), &mul(&elem(&rd(&p_0), &2.0), &m_sin(&rd(&yaw_0)))));
+      let z1_0 = cell(&Value::Null); wr(&z1_0, &add(&mul(&elem(&rd(&p_0), &0.0), &m_sin(&rd(&yaw_0))), &mul(&elem(&rd(&p_0), &2.0), &m_cos(&rd(&yaw_0)))));
+      let y1_0 = cell(&Value::Null); wr(&y1_0, &sub(&mul(&elem(&rd(&p_0), &1.0), &m_cos(&rd(&pitch_0))), &mul(&rd(&z1_0), &m_sin(&rd(&pitch_0)))));
+      let z2_0 = cell(&Value::Null); wr(&z2_0, &add(&mul(&elem(&rd(&p_0), &1.0), &m_sin(&rd(&pitch_0))), &mul(&rd(&z1_0), &m_cos(&rd(&pitch_0)))));
+      let f_0 = cell(&Value::Null); wr(&f_0, &div(&60.0, &(add(&60.0, &rd(&z2_0)))));
+      return own(&list![add(&rd(&ox_0), &mul(&mul(&rd(&cell_0), &rd(&f_0)), &rd(&x1_0))), sub(&rd(&oy_0), &mul(&mul(&rd(&cell_0), &rd(&f_0)), &rd(&y1_0))), rd(&f_0)]);
+      Value::Null
+    }
+  }
+  pub mod s_arrow {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let x_0 = cell(&arg(a1, 1)); let y_0 = cell(&arg(a1, 2)); let ux_0 = cell(&arg(a1, 3)); let uy_0 = cell(&arg(a1, 4)); let cell_0 = cell(&arg(a1, 5)); let a_0 = cell(&arg(a1, 6));
+      let HEADW_0 = cell(&Value::Null); wr(&HEADW_0, &call(&k!("Fmt"), "max", args![7.0, call(&k!("Fmt"), "min", args![12.0, mul(&rd(&cell_0), &0.20)])]));
+      let REACH_0 = cell(&Value::Null); wr(&REACH_0, &mul(&rd(&cell_0), &0.25));
+      let BAR_0 = cell(&Value::Null); wr(&BAR_0, &call(&k!("Fmt"), "max", args![2.5, call(&k!("Fmt"), "min", args![4.5, mul(&rd(&cell_0), &0.075)])]));
+      let BASE_0 = cell(&Value::Null); wr(&BASE_0, &mul(&rd(&HEADW_0), &0.45));
+      let TIP_0 = cell(&Value::Null); wr(&TIP_0, &mul(&rd(&HEADW_0), &0.55));
+      let LEN_0 = cell(&Value::Null); wr(&LEN_0, &sub(&rd(&REACH_0), &rd(&BASE_0)));
+      let SEEN_0 = cell(&Value::Null); wr(&SEEN_0, &sub(&rd(&TIP_0), &div(&rd(&BAR_0), &0.84)));
+      call(&rd(&s_0), "line_width", args![rd(&BAR_0)]);
+      call(&rd(&s_0), "stroke_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "NEUTRAL")), ",", &tos(&mul(&0.32, &rd(&a_0))), ")"]]);
+      get(&rd(&s_0), "begin_path");
+      call(&rd(&s_0), "move_to", args![sub(&rd(&x_0), &mul(&rd(&ux_0), &(add(&rd(&BASE_0), &rd(&LEN_0))))), sub(&rd(&y_0), &mul(&rd(&uy_0), &(add(&rd(&BASE_0), &rd(&LEN_0)))))]);
+      call(&rd(&s_0), "line_to", args![sub(&rd(&x_0), &mul(&rd(&ux_0), &rd(&BASE_0))), sub(&rd(&y_0), &mul(&rd(&uy_0), &rd(&BASE_0)))]);
+      get(&rd(&s_0), "stroke");
+      call(&rd(&s_0), "stroke_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "NEUTRAL")), ",", &tos(&rd(&a_0)), ")"]]);
+      get(&rd(&s_0), "begin_path");
+      call(&rd(&s_0), "move_to", args![rd(&x_0), rd(&y_0)]);
+      call(&rd(&s_0), "line_to", args![add(&rd(&x_0), &mul(&rd(&ux_0), &(add(&rd(&SEEN_0), &rd(&LEN_0))))), add(&rd(&y_0), &mul(&rd(&uy_0), &(add(&rd(&SEEN_0), &rd(&LEN_0)))))]);
+      get(&rd(&s_0), "stroke");
+      call(&rd(&s_0), "fill_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "NEUTRAL")), ",", &tos(&mul(&0.97, &rd(&a_0))), ")"]]);
+      get(&rd(&s_0), "begin_path");
+      call(&rd(&s_0), "move_to", args![add(&rd(&x_0), &mul(&rd(&ux_0), &rd(&TIP_0))), add(&rd(&y_0), &mul(&rd(&uy_0), &rd(&TIP_0)))]);
+      call(&rd(&s_0), "line_to", args![sub(&sub(&rd(&x_0), &mul(&rd(&ux_0), &rd(&BASE_0))), &mul(&mul(&rd(&uy_0), &rd(&HEADW_0)), &0.42)), add(&sub(&rd(&y_0), &mul(&rd(&uy_0), &rd(&BASE_0))), &mul(&mul(&rd(&ux_0), &rd(&HEADW_0)), &0.42))]);
+      call(&rd(&s_0), "line_to", args![add(&sub(&rd(&x_0), &mul(&rd(&ux_0), &rd(&BASE_0))), &mul(&mul(&rd(&uy_0), &rd(&HEADW_0)), &0.42)), sub(&sub(&rd(&y_0), &mul(&rd(&uy_0), &rd(&BASE_0))), &mul(&mul(&rd(&ux_0), &rd(&HEADW_0)), &0.42))]);
+      return own(&get(&rd(&s_0), "fill"));
+      Value::Null
+    }
+  }
+  pub mod s_way {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let k_0 = cell(&arg(a1, 0)); let space_0 = cell(&arg(a1, 1));
+      let q_0 = cell(&Value::Null); wr(&q_0, &m_floor(&(div(&rd(&k_0), &2.0))));
+      let o_0 = cell(&Value::Null); wr(&o_0, &elem(&list![list![1.0, 0.0], list![1.0, 1.0], list![0.0, 1.0], list![sub(&0.0, &1.0), 1.0], list![sub(&0.0, &1.0), 0.0], list![sub(&0.0, &1.0), sub(&0.0, &1.0)], list![0.0, sub(&0.0, &1.0)], list![1.0, sub(&0.0, &1.0)]], &rd(&k_0)));
+      let b_0 = cell(&Value::Null); wr(&b_0, &elem(&list![list![0.5, 0.5], list![sub(&0.0, &0.5), 0.5], list![sub(&0.0, &0.5), sub(&0.0, &0.5)], list![0.5, sub(&0.0, &0.5)]], &rd(&q_0)));
+      let bz_0 = cell(&Value::Null); wr(&bz_0, &(if truthy(&eq(&modulo(&rd(&k_0), &2.0), &0.0)) { own(&0.5) } else { own(&sub(&0.0, &0.5)) }));
+      return own(&list![add(&elem(&rd(&o_0), &0.0), &mul(&(sub(&elem(&rd(&b_0), &0.0), &elem(&rd(&o_0), &0.0))), &rd(&space_0))), add(&elem(&rd(&o_0), &1.0), &mul(&(sub(&elem(&rd(&b_0), &1.0), &elem(&rd(&o_0), &1.0))), &rd(&space_0))), mul(&rd(&bz_0), &rd(&space_0))]);
+      Value::Null
+    }
+  }
+  pub mod s_lattice {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let lane_0 = cell(&arg(a1, 1)); let look_0 = cell(&arg(a1, 2)); let grow_0 = cell(&arg(a1, 3)); let ticks_0 = cell(&arg(a1, 4)); let fade_0 = cell(&arg(a1, 5)); let earth_0 = cell(&arg(a1, 6)); let ox_0 = cell(&arg(a1, 7)); let oy_0 = cell(&arg(a1, 8)); let cell_0 = cell(&arg(a1, 9)); let rays_0 = cell(&arg(a1, 10)); let dense_from_0 = cell(&arg(a1, 11)); let far_0 = cell(&arg(a1, 12));
+      let plane_0 = cell(&Value::Null); wr(&plane_0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&grow_0), &0.25)), &0.3)]));
+      let space_0 = cell(&Value::Null); wr(&space_0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&grow_0), &0.55)), &0.35)]));
+      let yaw_0 = cell(&Value::Null); wr(&yaw_0, &mul(&0.55, &rd(&space_0)));
+      let pitch_0 = cell(&Value::Null); wr(&pitch_0, &mul(&0.42, &rd(&space_0)));
+      let src_0 = cell(&Value::Null); wr(&src_0, &elem(&rd(&look_0), &3.0));
+      let lo_0 = cell(&Value::Null); wr(&lo_0, &elem(&rd(&look_0), &4.0));
+      let hi_0 = cell(&Value::Null); wr(&hi_0, &elem(&rd(&look_0), &5.0));
+      let R_0 = cell(&Value::Null); wr(&R_0, &7.0);
+      let a_0 = cell(&Value::Null); wr(&a_0, &mul(&rd(&R_0), &rd(&plane_0)));
+      let b_0 = cell(&Value::Null); wr(&b_0, &mul(&rd(&R_0), &rd(&space_0)));
+      let pt_0 = cell(&Value::Null); wr(&pt_0, &{ let self_: Value = self_.clone(); cl!(yaw_0, pitch_0, ox_0, oy_0, cell_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_1 = cell(&arg(a2, 0));
+        return own(&call(&k!("Video"), "seen", args![rd(&p_1), rd(&yaw_0), rd(&pitch_0), rd(&ox_0), rd(&oy_0), rd(&cell_0)]));
+        Value::Null
+      }) });
+      let line_0 = cell(&Value::Null); wr(&line_0, &{ let self_: Value = self_.clone(); cl!(pt_0, s_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_1 = cell(&arg(a2, 0)); let q_1 = cell(&arg(a2, 1)); let al_1 = cell(&arg(a2, 2));
+        if truthy(&gt(&rd(&al_1), &0.004)) {
+          let P_1 = cell(&Value::Null); wr(&P_1, &invoke(&rd(&pt_0), args![rd(&p_1)]));
+          let Q_1 = cell(&Value::Null); wr(&Q_1, &invoke(&rd(&pt_0), args![rd(&q_1)]));
+          call(&rd(&s_0), "stroke_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "NEUTRAL")), ",", &tos(&mul(&0.16, &rd(&al_1))), ")"]]);
+          call(&rd(&s_0), "line_width", args![1.0]);
+          get(&rd(&s_0), "begin_path");
+          call(&rd(&s_0), "move_to", args![elem(&rd(&P_1), &0.0), elem(&rd(&P_1), &1.0)]);
+          call(&rd(&s_0), "line_to", args![elem(&rd(&Q_1), &0.0), elem(&rd(&Q_1), &1.0)]);
+          return own(&get(&rd(&s_0), "stroke"));
+        }
+        Value::Null
+      }) });
+      let dot_0 = cell(&Value::Null); wr(&dot_0, &{ let self_: Value = self_.clone(); cl!(pt_0, s_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_1 = cell(&arg(a2, 0)); let al_1 = cell(&arg(a2, 1));
+        if truthy(&gt(&rd(&al_1), &0.004)) {
+          let P_1 = cell(&Value::Null); wr(&P_1, &invoke(&rd(&pt_0), args![rd(&p_1)]));
+          call(&rd(&s_0), "fill_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "NEUTRAL")), ",", &tos(&mul(&0.6, &rd(&al_1))), ")"]]);
+          get(&rd(&s_0), "begin_path");
+          call(&rd(&s_0), "arc", args![elem(&rd(&P_1), &0.0), elem(&rd(&P_1), &1.0), mul(&2.6, &elem(&rd(&P_1), &2.0)), 0.0, (2.0 * std::f64::consts::PI)]);
+          return own(&get(&rd(&s_0), "fill"));
+        }
+        Value::Null
+      }) });
+      let ilo_0 = cell(&Value::Null); wr(&ilo_0, &m_round(&(sub(&m_reduce(&get(&rd(&lane_0), "points"), args![m_first(&get(&rd(&lane_0), "points")), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_2 = cell(&arg(a3, 0)); let q_2 = cell(&arg(a3, 1));
+        return own(&call(&k!("Fmt"), "min", args![rd(&p_2), rd(&q_2)]));
+        Value::Null
+      }) }]), &rd(&src_0)))));
+      let ihi_0 = cell(&Value::Null); wr(&ihi_0, &m_round(&(sub(&m_reduce(&get(&rd(&lane_0), "points"), args![m_first(&get(&rd(&lane_0), "points")), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let p_2 = cell(&arg(a3, 0)); let q_2 = cell(&arg(a3, 1));
+        return own(&call(&k!("Fmt"), "max", args![rd(&p_2), rd(&q_2)]));
+        Value::Null
+      }) }]), &rd(&src_0)))));
+      for i1 in 0..(num(&add(&mul(&2.0, &rd(&R_0)), &1.0)).ceil() as i64) {
+        let jj_1 = cell(&(i1 as f64));
+        let j_1 = cell(&Value::Null); wr(&j_1, &sub(&rd(&jj_1), &rd(&R_0)));
+        for i2 in 0..(num(&add(&mul(&2.0, &rd(&R_0)), &1.0)).ceil() as i64) {
+          let ll_2 = cell(&(i2 as f64));
+          let l_2 = cell(&Value::Null); wr(&l_2, &sub(&rd(&ll_2), &rd(&R_0)));
+          let vis_2 = cell(&Value::Null); wr(&vis_2, &mul(&mul(&rd(&fade_0), &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, sub(&add(&rd(&a_0), &1.0), &m_abs(&rd(&j_1)))])])), &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, sub(&add(&rd(&b_0), &1.0), &m_abs(&rd(&l_2)))])])));
+          if truthy(&gt(&rd(&vis_2), &0.004)) {
+            invoke(&rd(&line_0), args![list![rd(&lo_0), rd(&j_1), rd(&l_2)], list![rd(&hi_0), rd(&j_1), rd(&l_2)], rd(&vis_2)]);
+            for i3 in 0..(num(&add(&sub(&rd(&ihi_0), &rd(&ilo_0)), &1.0)).ceil() as i64) {
+              let ii_3 = cell(&(i3 as f64));
+              invoke(&rd(&dot_0), args![list![add(&rd(&ilo_0), &rd(&ii_3)), rd(&j_1), rd(&l_2)], rd(&vis_2)]);
+            };
+            if truthy(&(truthy(&(truthy(&gt(&rd(&space_0), &0.01)) && truthy(&lt(&rd(&j_1), &rd(&R_0))))) && truthy(&lt(&rd(&l_2), &rd(&R_0))))) {
+              for i3 in 0..(num(&sub(&rd(&ihi_0), &rd(&ilo_0))).ceil() as i64) {
+                let ii_3 = cell(&(i3 as f64));
+                invoke(&rd(&dot_0), args![list![add(&add(&rd(&ilo_0), &rd(&ii_3)), &0.5), add(&rd(&j_1), &0.5), add(&rd(&l_2), &0.5)], mul(&rd(&vis_2), &rd(&space_0))]);
+              };
+            }
+          }
+        };
+      };
+      for i1 in 0..(num(&add(&sub(&rd(&ihi_0), &rd(&ilo_0)), &1.0)).ceil() as i64) {
+        let ii_1 = cell(&(i1 as f64));
+        let i_1 = cell(&Value::Null); wr(&i_1, &add(&rd(&ilo_0), &rd(&ii_1)));
+        for i2 in 0..(num(&add(&mul(&2.0, &rd(&R_0)), &1.0)).ceil() as i64) {
+          let ll_2 = cell(&(i2 as f64));
+          let l_2 = cell(&Value::Null); wr(&l_2, &sub(&rd(&ll_2), &rd(&R_0)));
+          invoke(&rd(&line_0), args![list![rd(&i_1), sub(&0.0, &rd(&a_0)), rd(&l_2)], list![rd(&i_1), rd(&a_0), rd(&l_2)], mul(&mul(&rd(&fade_0), &rd(&plane_0)), &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, sub(&add(&rd(&b_0), &1.0), &m_abs(&rd(&l_2)))])]))]);
+        };
+        for i2 in 0..(num(&add(&mul(&2.0, &rd(&R_0)), &1.0)).ceil() as i64) {
+          let jj_2 = cell(&(i2 as f64));
+          let j_2 = cell(&Value::Null); wr(&j_2, &sub(&rd(&jj_2), &rd(&R_0)));
+          invoke(&rd(&line_0), args![list![rd(&i_1), rd(&j_2), sub(&0.0, &rd(&b_0))], list![rd(&i_1), rd(&j_2), rd(&b_0)], mul(&mul(&rd(&fade_0), &rd(&space_0)), &call(&k!("Fmt"), "min", args![1.0, call(&k!("Fmt"), "max", args![0.0, sub(&add(&rd(&a_0), &1.0), &m_abs(&rd(&j_2)))])]))]);
+        };
+      };
+      let T_0 = cell(&Value::Null); wr(&T_0, &m_floor(&rd(&ticks_0)));
+      let ray_0 = cell(&Value::Null); wr(&ray_0, &{ let self_: Value = self_.clone(); cl!(far_0, space_0, pt_0, s_0, rays_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_1 = cell(&arg(a2, 0)); let r_1 = cell(&arg(a2, 1)); let w_1 = cell(&arg(a2, 2));
+        if truthy(&(truthy(&(truthy(&gt(&rd(&w_1), &0.004)) && truthy(&ge(&rd(&r_1), &1.0)))) && truthy(&le(&rd(&r_1), &rd(&far_0))))) {
+          let d_1 = cell(&Value::Null); wr(&d_1, &call(&k!("Video"), "way", args![rd(&k_1), rd(&space_0)]));
+          let P_1 = cell(&Value::Null); wr(&P_1, &invoke(&rd(&pt_0), args![list![mul(&elem(&rd(&d_1), &0.0), &rd(&r_1)), mul(&elem(&rd(&d_1), &1.0), &rd(&r_1)), mul(&elem(&rd(&d_1), &2.0), &rd(&r_1))]]));
+          let Q_1 = cell(&Value::Null); wr(&Q_1, &invoke(&rd(&pt_0), args![list![mul(&elem(&rd(&d_1), &0.0), &(add(&rd(&r_1), &0.25))), mul(&elem(&rd(&d_1), &1.0), &(add(&rd(&r_1), &0.25))), mul(&elem(&rd(&d_1), &2.0), &(add(&rd(&r_1), &0.25)))]]));
+          let len_1 = cell(&Value::Null); wr(&len_1, &call(&k!("Fmt"), "hypot", args![sub(&elem(&rd(&Q_1), &0.0), &elem(&rd(&P_1), &0.0)), sub(&elem(&rd(&Q_1), &1.0), &elem(&rd(&P_1), &1.0))]));
+          if truthy(&gt(&rd(&len_1), &0.01)) {
+            return own(&call(&k!("Video"), "arrow", args![rd(&s_0), elem(&rd(&P_1), &0.0), elem(&rd(&P_1), &1.0), div(&(sub(&elem(&rd(&Q_1), &0.0), &elem(&rd(&P_1), &0.0))), &rd(&len_1)), div(&(sub(&elem(&rd(&Q_1), &1.0), &elem(&rd(&P_1), &1.0))), &rd(&len_1)), mul(&rd(&len_1), &4.0), mul(&mul(&rd(&w_1), &rd(&rays_0)), &call(&k!("Fmt"), "min", args![1.0, sub(&rd(&far_0), &rd(&r_1))]))]));
+          }
+        }
+        Value::Null
+      }) });
+      for e1 in items(&get(&rd(&lane_0), "sides")) {
+        let sd_1 = cell(&e1);
+        invoke(&rd(&ray_0), args![(if truthy(&gt(&get(&rd(&sd_1), "sign"), &0.0)) { own(&0.0) } else { own(&4.0) }), add(&m_abs(&(sub(&get(&rd(&sd_1), "at"), &rd(&src_0)))), &rd(&T_0)), 1.0]);
+      };
+      for i1 in 0..(num(&rd(&T_0)).ceil() as i64) {
+        let m_1 = cell(&(i1 as f64));
+        let e_1 = cell(&Value::Null); wr(&e_1, &add(&rd(&m_1), &1.0));
+        if truthy(&(truthy(&eq(&modulo(&rd(&e_1), &2.0), &1.0)) || truthy(&gt(&rd(&e_1), &rd(&dense_from_0))))) {
+          for i2 in 0..(num(&8.0).ceil() as i64) {
+            let k_2 = cell(&(i2 as f64));
+            invoke(&rd(&ray_0), args![rd(&k_2), sub(&add(&1.0, &rd(&T_0)), &rd(&e_1)), (if truthy(&eq(&modulo(&rd(&k_2), &4.0), &0.0)) { own(&1.0) } else { own(&rd(&plane_0)) })]);
+          };
+        }
+      };
+      let P_0 = cell(&Value::Null); wr(&P_0, &invoke(&rd(&pt_0), args![list![0.0, 0.0, 0.0]]));
+      let half_0 = cell(&Value::Null); wr(&half_0, &call(&k!("Fmt"), "max", args![9.0, call(&k!("Fmt"), "min", args![18.0, mul(&rd(&cell_0), &0.3)])]));
+      call(&rd(&s_0), "fill_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "SOURCE")), ",", &tos(&mul(&0.14, &(sub(&1.0, &rd(&earth_0))))), ")"]]);
+      call(&rd(&s_0), "fill_rect", args![sub(&elem(&rd(&P_0), &0.0), &rd(&half_0)), sub(&elem(&rd(&P_0), &1.0), &rd(&half_0)), mul(&2.0, &rd(&half_0)), mul(&2.0, &rd(&half_0))]);
+      call(&rd(&s_0), "stroke_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "SOURCE")), ",", &tos(&mul(&0.9, &(sub(&1.0, &rd(&earth_0))))), ")"]]);
+      call(&rd(&s_0), "line_width", args![1.5]);
+      call(&rd(&s_0), "stroke_rect", args![sub(&elem(&rd(&P_0), &0.0), &rd(&half_0)), sub(&elem(&rd(&P_0), &1.0), &rd(&half_0)), mul(&2.0, &rd(&half_0)), mul(&2.0, &rd(&half_0))]);
+      if truthy(&gt(&rd(&earth_0), &0.0)) {
+        call(&rd(&s_0), "fill_style", args![sv!["rgba(", &tos(&get(&k!("Ink"), "SOURCE")), ",", &tos(&rd(&earth_0)), ")"]]);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "arc", args![elem(&rd(&P_0), &0.0), elem(&rd(&P_0), &1.0), add(&2.6, &mul(&7.4, &rd(&earth_0))), 0.0, (2.0 * std::f64::consts::PI)]);
+        return own(&get(&rd(&s_0), "fill"));
+      }
+      Value::Null
+    }
+  }
+  pub mod s_source_camera {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let look_0 = cell(&arg(a1, 1)); let grow_0 = cell(&arg(a1, 2));
+      let e_0 = cell(&Value::Null); wr(&e_0, &call(&k!("Video"), "smooth", args![div(&rd(&grow_0), &0.3)]));
+      return own(&list![add(&elem(&rd(&look_0), &0.0), &mul(&(sub(&div(&get(&rd(&s_0), "width"), &2.0), &elem(&rd(&look_0), &0.0))), &rd(&e_0))), add(&elem(&rd(&look_0), &1.0), &mul(&(sub(&div(&get(&rd(&s_0), "height"), &2.0), &elem(&rd(&look_0), &1.0))), &rd(&e_0))), m_exp(&(add(&m_ln(&elem(&rd(&look_0), &2.0)), &mul(&(sub(&m_ln(&95.0), &m_ln(&elem(&rd(&look_0), &2.0)))), &rd(&e_0)))))]);
+      Value::Null
+    }
+  }
+  pub mod s_to_source {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0));
+      let ink_0 = cell(&Value::Null); wr(&ink_0, &make_k(&k!("Ink"), args![]));
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &call(&k!("Video"), "transport_lanes", args![rd(&theory_0), rd(&ink_0)]));
+      let n_0 = cell(&Value::Null); wr(&n_0, &m_round(&(mul(&4.0, &get(&k!("Video"), "FPS")))));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &sv!["video.to-source"]), kw("what", &sv!["one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)"]), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &rd(&n_0)), kw("paint", &{ let self_: Value = self_.clone(); cl!(n_0, lanes_0, ink_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("Growing"), args![kw("n", &rd(&n_0)), kw("lane", &m_last(&rd(&lanes_0))), kw("ink", &rd(&ink_0)), kw("per", &call(&k!("Video"), "per_tick", args![rd(&lanes_0)]))]));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_to_solar {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let theory_0 = cell(&arg(a1, 0));
+      let ink_0 = cell(&Value::Null); wr(&ink_0, &make_k(&k!("Ink"), args![]));
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &call(&k!("Video"), "transport_lanes", args![rd(&theory_0), rd(&ink_0)]));
+      let sol_0 = cell(&Value::Null); wr(&sol_0, &get(&rd(&theory_0), "solar"));
+      let r_0 = cell(&Value::Null); wr(&r_0, &get(&rd(&sol_0), "record"));
+      let at_0 = cell(&Value::Null); wr(&at_0, &0.0);
+      for i1 in 0..(num(&len(&get(&rd(&r_0), "names"))).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        wr(&at_0, &(if truthy(&eq(&elem(&get(&rd(&r_0), "names"), &rd(&k_1)), &sv!["marks"])) { own(&rd(&k_1)) } else { own(&rd(&at_0)) }));
+      };
+      let off_0 = cell(&Value::Null); wr(&off_0, &m_sum(&m_take(&get(&rd(&r_0), "sizes"), args![rd(&at_0)])));
+      let n_0 = cell(&Value::Null); wr(&n_0, &m_round(&(mul(&8.0, &get(&k!("Video"), "FPS")))));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &sv!["video.to-solar"]), kw("what", &sv!["the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it"]), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &rd(&n_0)), kw("paint", &{ let self_: Value = self_.clone(); cl!(n_0, lanes_0, ink_0, r_0, off_0, at_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("Planets"), args![kw("n", &rd(&n_0)), kw("lane", &m_last(&rd(&lanes_0))), kw("ink", &rd(&ink_0)), kw("per", &call(&k!("Video"), "per_tick", args![rd(&lanes_0)])), kw("stamp", &get(&rd(&r_0), "stamp")), kw("off", &rd(&off_0)), kw("width", &get(&rd(&r_0), "width")), kw("bodies", &m_round(&(div(&(sub(&elem(&get(&rd(&r_0), "sizes"), &rd(&at_0)), &1.0)), &6.0))))]));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "uses", &list![sv!["solar.inner"]]);
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_planets {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let t_0 = cell(&arg(a1, 1)); let lane_0 = cell(&arg(a1, 2)); let look_0 = cell(&arg(a1, 3)); let ticks_0 = cell(&arg(a1, 4)); let film_0 = cell(&arg(a1, 5)); let off_0 = cell(&arg(a1, 6)); let width_0 = cell(&arg(a1, 7)); let bodies_0 = cell(&arg(a1, 8));
+      let SOLAR_0 = cell(&Value::Null); wr(&SOLAR_0, &call(&k!("Measured"), "of", args![sv!["solar-inner"]]));
+      if truthy(&eq(&rd(&SOLAR_0), &Value::Null)) {
+        invoke(&fail, args![sv!["solar-inner is not on disk - run `npx ray data` and try again"]]);
+      }
+      let NAMES_0 = cell(&Value::Null); wr(&NAMES_0, &get(&get(&rd(&SOLAR_0), "header"), &tos(&sv!["names"])));
+      let PER_0 = cell(&Value::Null); wr(&PER_0, &get(&get(&rd(&SOLAR_0), "columns"), &tos(&sv!["period"])));
+      let PLANETS_0 = cell(&Value::Null); wr(&PLANETS_0, &filt(&rng(&len(&rd(&NAMES_0))), &{ let self_: Value = self_.clone(); cl!(PER_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&gt(&elem(&rd(&PER_0), &rd(&i_2)), &0.0));
+        Value::Null
+      }) }));
+      let F_0 = cell(&Value::Null); wr(&F_0, &get(&get(&rd(&film_0), "columns"), &tos(&sv!["frames"])));
+      let FR_0 = cell(&Value::Null); wr(&FR_0, &get(&get(&rd(&film_0), "header"), &tos(&sv!["frames"])));
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+      call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+      let fade_0 = cell(&Value::Null); wr(&fade_0, &sub(&1.0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&t_0), &0.05)), &0.4)])));
+      let rays_0 = cell(&Value::Null); wr(&rays_0, &sub(&1.0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&t_0), &0.45)), &0.35)])));
+      let earth_0 = cell(&Value::Null); wr(&earth_0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&t_0), &0.3)), &0.3)]));
+      let e_0 = cell(&Value::Null); wr(&e_0, &call(&k!("Video"), "smooth", args![div(&rd(&t_0), &0.92)]));
+      let come_0 = cell(&Value::Null); wr(&come_0, &call(&k!("Video"), "smooth", args![div(&(sub(&rd(&t_0), &0.45)), &0.35)]));
+      let u_0 = cell(&Value::Null); wr(&u_0, &call(&k!("Fmt"), "min", args![sub(&rd(&FR_0), &1.0), add(&get(&k!("Video"), "SOLAR_FROM"), &mul(&(sub(&get(&k!("Video"), "SOLAR_TO"), &get(&k!("Video"), "SOLAR_FROM"))), &rd(&t_0)))]));
+      let f0_0 = cell(&Value::Null); wr(&f0_0, &m_floor(&rd(&u_0)));
+      let f1_0 = cell(&Value::Null); wr(&f1_0, &call(&k!("Fmt"), "min", args![add(&rd(&f0_0), &1.0), sub(&rd(&FR_0), &1.0)]));
+      let w_0 = cell(&Value::Null); wr(&w_0, &sub(&rd(&u_0), &rd(&f0_0)));
+      let mark_0 = cell(&Value::Null); wr(&mark_0, &{ let self_: Value = self_.clone(); cl!(F_0, width_0, off_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let f_1 = cell(&arg(a2, 0)); let k_1 = cell(&arg(a2, 1)); let c__1 = cell(&arg(a2, 2));
+        return own(&elem(&rd(&F_0), &add(&add(&add(&mul(&rd(&f_1), &rd(&width_0)), &rd(&off_0)), &mul(&6.0, &rd(&k_1))), &rd(&c__1))));
+        Value::Null
+      }) });
+      let where__0 = cell(&Value::Null); wr(&where__0, &{ let self_: Value = self_.clone(); cl!(mark_0, f0_0, w_0, f1_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_1 = cell(&arg(a2, 0));
+        return own(&list![add(&invoke(&rd(&mark_0), args![rd(&f0_0), rd(&k_1), 0.0]), &mul(&rd(&w_0), &(sub(&invoke(&rd(&mark_0), args![rd(&f1_0), rd(&k_1), 0.0]), &invoke(&rd(&mark_0), args![rd(&f0_0), rd(&k_1), 0.0]))))), add(&invoke(&rd(&mark_0), args![rd(&f0_0), rd(&k_1), 1.0]), &mul(&rd(&w_0), &(sub(&invoke(&rd(&mark_0), args![rd(&f1_0), rd(&k_1), 1.0]), &invoke(&rd(&mark_0), args![rd(&f0_0), rd(&k_1), 1.0])))))]);
+        Value::Null
+      }) });
+      let reach_0 = cell(&Value::Null); wr(&reach_0, &0.0);
+      for i1 in 0..(num(&rd(&FR_0)).ceil() as i64) {
+        let f_1 = cell(&(i1 as f64));
+        for i2 in 0..(num(&sub(&rd(&bodies_0), &1.0)).ceil() as i64) {
+          let k_2 = cell(&(i2 as f64));
+          wr(&reach_0, &call(&k!("Fmt"), "max", args![rd(&reach_0), call(&k!("Fmt"), "hypot", args![sub(&invoke(&rd(&mark_0), args![rd(&f_1), add(&rd(&k_2), &1.0), 0.0]), &invoke(&rd(&mark_0), args![rd(&f_1), 0.0, 0.0])), sub(&invoke(&rd(&mark_0), args![rd(&f_1), add(&rd(&k_2), &1.0), 1.0]), &invoke(&rd(&mark_0), args![rd(&f_1), 0.0, 1.0]))])]));
+        };
+      };
+      let earth_body_0 = cell(&Value::Null); wr(&earth_body_0, &0.0);
+      for i1 in 0..(num(&len(&rd(&PLANETS_0))).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        wr(&earth_body_0, &(if truthy(&eq(&elem(&rd(&NAMES_0), &elem(&rd(&PLANETS_0), &rd(&k_1))), &sv!["Earth"])) { own(&add(&rd(&k_1), &1.0)) } else { own(&rd(&earth_body_0)) }));
+      };
+      let E_0 = cell(&Value::Null); wr(&E_0, &invoke(&rd(&where__0), args![rd(&earth_body_0)]));
+      let O_0 = cell(&Value::Null); wr(&O_0, &invoke(&rd(&where__0), args![0.0]));
+      let last_0 = cell(&Value::Null); wr(&last_0, &mul(&2.1, &(add(&rd(&reach_0), &call(&k!("Fmt"), "hypot", args![sub(&elem(&rd(&E_0), &0.0), &elem(&rd(&O_0), &0.0)), sub(&elem(&rd(&E_0), &1.0), &elem(&rd(&O_0), &1.0))])))));
+      let across_0 = cell(&Value::Null); wr(&across_0, &m_exp(&(add(&m_ln(&(div(&rd(&last_0), &180.0))), &mul(&(sub(&m_ln(&rd(&last_0)), &m_ln(&(div(&rd(&last_0), &180.0))))), &rd(&e_0))))));
+      let px_0 = cell(&Value::Null); wr(&px_0, &div(&get(&rd(&s_0), "height"), &rd(&across_0)));
+      let cx_0 = cell(&Value::Null); wr(&cx_0, &elem(&rd(&E_0), &0.0));
+      let cy_0 = cell(&Value::Null); wr(&cy_0, &elem(&rd(&E_0), &1.0));
+      let X_0 = cell(&Value::Null); wr(&X_0, &{ let self_: Value = self_.clone(); cl!(s_0, cx_0, px_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_1 = cell(&arg(a2, 0));
+        return own(&add(&div(&get(&rd(&s_0), "width"), &2.0), &mul(&(sub(&rd(&x_1), &rd(&cx_0))), &rd(&px_0))));
+        Value::Null
+      }) });
+      let Y_0 = cell(&Value::Null); wr(&Y_0, &{ let self_: Value = self_.clone(); cl!(s_0, cy_0, px_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let y_1 = cell(&arg(a2, 0));
+        return own(&sub(&div(&get(&rd(&s_0), "height"), &2.0), &mul(&(sub(&rd(&y_1), &rd(&cy_0))), &rd(&px_0))));
+        Value::Null
+      }) });
+      if truthy(&(truthy(&gt(&rd(&fade_0), &0.004)) || truthy(&gt(&rd(&rays_0), &0.004)))) {
+        call(&k!("Video"), "lattice", args![rd(&s_0), rd(&lane_0), rd(&look_0), 1.0, add(&rd(&ticks_0), &mul(&mul(&300.0, &rd(&t_0)), &rd(&t_0))), rd(&fade_0), rd(&earth_0), invoke(&rd(&X_0), args![elem(&rd(&E_0), &0.0)]), invoke(&rd(&Y_0), args![elem(&rd(&E_0), &1.0)]), div(&mul(&95.0, &(div(&rd(&last_0), &180.0))), &rd(&across_0)), rd(&rays_0), m_floor(&rd(&ticks_0)), add(&16.0, &mul(&40.0, &call(&k!("Video"), "smooth", args![div(&rd(&t_0), &0.4)])))]);
+      }
+      for i1 in 0..(num(&sub(&rd(&bodies_0), &1.0)).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let b_1 = cell(&Value::Null); wr(&b_1, &add(&rd(&k_1), &1.0));
+        let ink_1 = cell(&Value::Null); wr(&ink_1, &elem(&get(&k!("Video"), "PLANET_INK"), &call(&k!("Fmt"), "min", args![3.0, rd(&k_1)])));
+        call(&rd(&s_0), "alpha", args![mul(&0.85, &rd(&come_0))]);
+        call(&rd(&s_0), "stroke_style", args![rd(&ink_1)]);
+        call(&rd(&s_0), "line_width", args![2.0]);
+        get(&rd(&s_0), "begin_path");
+        for i2 in 0..(num(&rd(&FR_0)).ceil() as i64) {
+          let f_2 = cell(&(i2 as f64));
+          if truthy(&eq(&rd(&f_2), &0.0)) {
+            call(&rd(&s_0), "move_to", args![invoke(&rd(&X_0), args![invoke(&rd(&mark_0), args![rd(&f_2), rd(&b_1), 0.0])]), invoke(&rd(&Y_0), args![invoke(&rd(&mark_0), args![rd(&f_2), rd(&b_1), 1.0])])]);
+          } else {
+            call(&rd(&s_0), "line_to", args![invoke(&rd(&X_0), args![invoke(&rd(&mark_0), args![rd(&f_2), rd(&b_1), 0.0])]), invoke(&rd(&Y_0), args![invoke(&rd(&mark_0), args![rd(&f_2), rd(&b_1), 1.0])])]);
+          }
+        };
+        get(&rd(&s_0), "stroke");
+        let P_1 = cell(&Value::Null); wr(&P_1, &invoke(&rd(&where__0), args![rd(&b_1)]));
+        let x_1 = cell(&Value::Null); wr(&x_1, &invoke(&rd(&X_0), args![elem(&rd(&P_1), &0.0)]));
+        let y_1 = cell(&Value::Null); wr(&y_1, &invoke(&rd(&Y_0), args![elem(&rd(&P_1), &1.0)]));
+        call(&rd(&s_0), "alpha", args![(if truthy(&eq(&rd(&b_1), &rd(&earth_body_0))) { own(&rd(&earth_0)) } else { own(&rd(&come_0)) })]);
+        call(&rd(&s_0), "stroke_style", args![rd(&ink_1)]);
+        call(&rd(&s_0), "line_width", args![2.5]);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "arc", args![rd(&x_1), rd(&y_1), 13.0, 0.0, (2.0 * std::f64::consts::PI)]);
+        get(&rd(&s_0), "stroke");
+        call(&rd(&s_0), "fill_style", args![(if truthy(&eq(&rd(&b_1), &rd(&earth_body_0))) { own(&sv!["rgba(", &tos(&get(&k!("Ink"), "SOURCE")), ",", &tos(&sub(&1.0, &rd(&come_0))), ")"]) } else { own(&sv!["#000000"]) })]);
+        get(&rd(&s_0), "begin_path");
+        call(&rd(&s_0), "arc", args![rd(&x_1), rd(&y_1), (if truthy(&eq(&rd(&b_1), &rd(&earth_body_0))) { own(&add(&mul(&10.0, &(sub(&1.0, &rd(&come_0)))), &mul(&2.5, &rd(&come_0)))) } else { own(&2.5) }), 0.0, (2.0 * std::f64::consts::PI)]);
+        get(&rd(&s_0), "fill");
+      };
+      call(&rd(&s_0), "alpha", args![rd(&come_0)]);
+      call(&rd(&s_0), "stroke_style", args![sv!["#e0a526"]]);
+      call(&rd(&s_0), "line_width", args![3.0]);
+      get(&rd(&s_0), "begin_path");
+      call(&rd(&s_0), "arc", args![invoke(&rd(&X_0), args![elem(&rd(&O_0), &0.0)]), invoke(&rd(&Y_0), args![elem(&rd(&O_0), &1.0)]), 26.0, 0.0, (2.0 * std::f64::consts::PI)]);
+      get(&rd(&s_0), "stroke");
+      call(&rd(&s_0), "fill_style", args![sv!["#000000"]]);
+      get(&rd(&s_0), "begin_path");
+      call(&rd(&s_0), "arc", args![invoke(&rd(&X_0), args![elem(&rd(&O_0), &0.0)]), invoke(&rd(&Y_0), args![elem(&rd(&O_0), &1.0)]), 3.0, 0.0, (2.0 * std::f64::consts::PI)]);
+      get(&rd(&s_0), "fill");
+      return own(&call(&rd(&s_0), "alpha", args![1.0]));
+      Value::Null
+    }
+  }
+  pub mod s_end {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let n_0 = cell(&Value::Null); wr(&n_0, &m_round(&(mul(&20.0, &get(&k!("Video"), "FPS")))));
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &make_k(&k!("Picture"), args![kw("id", &sv!["video.end"]), kw("what", &sv!["the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics"]), kw("width", &get(&k!("Video"), "WIDTH")), kw("height", &get(&k!("Video"), "HEIGHT")), kw("frames", &rd(&n_0)), kw("paint", &{ let self_: Value = self_.clone(); cl!(n_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let played_2 = cell(&arg(a3, 0));
+        return own(&make_k(&k!("EndCard"), args![kw("n", &rd(&n_0))]));
+        Value::Null
+      }) })]));
+      set(&rd(&pic_0), "images", &list![get(&k!("Video"), "LOGO")]);
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub mod s_end_card {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let i_0 = cell(&arg(a1, 1)); let n_0 = cell(&arg(a1, 2));
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+      call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+      call(&rd(&s_0), "alpha", args![call(&k!("Video"), "smooth", args![div(&rd(&i_0), &get(&k!("Video"), "FPS"))])]);
+      let w_0 = cell(&Value::Null); wr(&w_0, &1500.0);
+      call(&rd(&s_0), "image", args![get(&k!("Video"), "LOGO"), div(&(sub(&get(&rd(&s_0), "width"), &rd(&w_0))), &2.0), 330.0, rd(&w_0), div(&rd(&w_0), &3.0)]);
+      call(&rd(&s_0), "text_align", args![sv!["center"]]);
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "SEEN")]);
+      call(&rd(&s_0), "font", args![sv!["600 72px ui-sans-serif, system-ui, sans-serif"]]);
+      call(&rd(&s_0), "fill_text", args![sv!["Physics Project"], div(&get(&rd(&s_0), "width"), &2.0), 960.0]);
+      call(&rd(&s_0), "fill_style", args![sv!["#3ddcff"]]);
+      call(&rd(&s_0), "font", args![sv!["44px ui-sans-serif, system-ui, sans-serif"]]);
+      call(&rd(&s_0), "fill_text", args![sv!["orbitmines.com/physics"], div(&get(&rd(&s_0), "width"), &2.0), 1060.0]);
+      return own(&call(&rd(&s_0), "alpha", args![1.0]));
+      Value::Null
+    }
+  }
+  pub mod s_montage {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let pic_0 = cell(&Value::Null); wr(&pic_0, &call(&k!("Picture"), "still", args![sv!["video"], sv!["the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined"], get(&k!("Video"), "WIDTH"), get(&k!("Video"), "HEIGHT"), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let s_2 = cell(&arg(a3, 0));
+
+        Value::Null
+      }) }]));
+      set(&rd(&pic_0), "parts", &get(&k!("Video"), "PARTS"));
+      set(&rd(&pic_0), "on_request", &true);
+      return own(&rd(&pic_0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.static_field("WIDTH", |self_: &Value| -> Value { own(&2560.0) });//<
+    c.static_field("HEIGHT", |self_: &Value| -> Value { own(&1440.0) });//<
+    c.static_field("FPS", |self_: &Value| -> Value { own(&60.0) });//<
+    c.static_field("FILM_RD", |self_: &Value| -> Value { own(&6.0) });//<
+    c.static_field("PER_MYR", |self_: &Value| -> Value { own(&0.0010227) });//<
+    c.static_field("LIGHT", |self_: &Value| -> Value { own(&299792.458) });//<
+    c.static_field("ANDROMEDA", |self_: &Value| -> Value { own(&make_k(&k!("Sighted"), args![kw("name", &sv!["Andromeda (M31)"]), kw("disc_mass", &8.4), kw("disc_scale", &5.4), kw("bulge_mass", &3.3), kw("bulge_scale", &0.61), kw("circling", &250.0), kw("sun", &0.0), kw("inclination", &77.0), kw("position_angle", &38.0), kw("distance", &785.0), kw("approach", &110.0), kw("across", &17.0), kw("source", &sv!["Geehan et al. 2006, van der Marel et al. 2012"])])) });//<
+    c.static_field("MW_ORBITS", |self_: &Value| -> Value { own(&list![5.5, 0.25]) });//<
+    c.static_field("MW_ORBIT_TRIALS", |self_: &Value| -> Value { own(&list![10.0, 7.0]) });//<
+    c.static_field("MW_ORBIT_TEMPER", |self_: &Value| -> Value { own(&0.1) });//<
+    c.static_field("MW_ARM_END", |self_: &Value| -> Value { own(&list![0.0, 0.0, 0.0, 0.0, 140.0]) });//<
+    c.static_field("MW_ARM_OLD", |self_: &Value| -> Value { own(&list![0.0, 1.0, 0.0, 1.0, 0.0]) });//<
+    c.static_field("MW_ARM_FADE", |self_: &Value| -> Value { own(&12.0) });//<
+    c.static_field("MW_ARM_FADE_IN", |self_: &Value| -> Value { own(&45.0) });//<
+    c.static_field("MW_YOUNG", |self_: &Value| -> Value { own(&0.1) });//<
+    c.static_field("MW_CLUSTERS", |self_: &Value| -> Value { own(&list![0.5, 50.0, 0.1]) });//<
+    c.static_field("LIGHT_STARS", |self_: &Value| -> Value { own(&list![0.95, 2.4, 3.2]) });//<
+    c.static_field("ANDROMEDA_IMAGE", |self_: &Value| -> Value { own(&512.0) });//<
+    c.static_field("ANDROMEDA_FOV", |self_: &Value| -> Value { own(&3.2) });//<
+    c.static_field("SOURCE", |self_: &Value| -> Value { own(&sv!["74,168,235"]) });//<
+    c.static_field("STRIP_TOP", |self_: &Value| -> Value { own(&570.0) });//<
+    c.static_field("STRIP_TALL", |self_: &Value| -> Value { own(&300.0) });//<
+    c.static_field("PLANET_INK", |self_: &Value| -> Value { own(&list![sv!["#9a9a9a"], sv!["#e8d3a0"], sv!["#4a90e2"], sv!["#c1440e"]]) });//<
+    c.static_field("SOLAR_FROM", |self_: &Value| -> Value { own(&160.0) });//<
+    c.static_field("SOLAR_TO", |self_: &Value| -> Value { own(&280.0) });//<
+    c.static_field("LOGO", |self_: &Value| -> Value { own(&sv!["../orbitmines.com/orbitmines.com/public/logo.png"]) });//<
+    c.static_field("PARTS", |self_: &Value| -> Value { own(&list![sv!["video.transport"], sv!["video.to-source"], sv!["video.to-solar"], sv!["video.to-milkyway"], sv!["video.milkyway"], sv!["video.to-andromeda"], sv!["video.collision"], sv!["video.end"]]) });//<
+    c.statik("MILKY_WAY", s_MILKY_WAY::f);//<
+    c.statik("measured", s_measured::f);//<
+    c.statik("MW_BAR1", s_MW_BAR1::f);//<
+    c.statik("mw_bar", s_mw_bar::f);//<
+    c.statik("MW_BAR2", s_MW_BAR2::f);//<
+    c.statik("MW_BAR3", s_MW_BAR3::f);//<
+    c.statik("MW_BAR_MASSES", s_MW_BAR_MASSES::f);//<
+    c.statik("MW_BAR_ANGLE", s_MW_BAR_ANGLE::f);//<
+    c.statik("MW_PATTERN_SPEED", s_MW_PATTERN_SPEED::f);//<
+    c.statik("mw_discs_mass", s_mw_discs_mass::f);//<
+    c.statik("MW_DISCS", s_MW_DISCS::f);//<
+    c.statik("MW_DISC_HOLE", s_MW_DISC_HOLE::f);//<
+    c.statik("MW_ARMS", s_MW_ARMS::f);//<
+    c.statik("MW_ARM_WIDTH", s_MW_ARM_WIDTH::f);//<
+    c.statik("MW_ARM_CONTRAST", s_MW_ARM_CONTRAST::f);//<
+    c.statik("MW_DUST", s_MW_DUST::f);//<
+    c.statik("MW_STIR", s_MW_STIR::f);//<
+    c.statik("MW_SUN_MOTION", s_MW_SUN_MOTION::f);//<
+    c.statik("galaxy", s_galaxy::f);//<
+    c.statik("per_kpc", s_per_kpc::f);//<
+    c.statik("myr_per_tick", s_myr_per_tick::f);//<
+    c.statik("faster", s_faster::f);//<
+    c.statik("smooth", s_smooth::f);//<
+    c.statik("shot", s_shot::f);//<
+    c.statik("solar_meta", s_solar_meta::f);//<
+    c.statik("shot_after_solar", s_shot_after_solar::f);//<
+    c.statik("light", s_light::f);//<
+    c.statik("sky", s_sky::f);//<
+    c.statik("transport", s_transport::f);//<
+    c.statik("transport_lanes", s_transport_lanes::f);//<
+    c.statik("per_tick", s_per_tick::f);//<
+    c.statik("look", s_look::f);//<
+    c.statik("seen", s_seen::f);//<
+    c.statik("arrow", s_arrow::f);//<
+    c.statik("way", s_way::f);//<
+    c.statik("lattice", s_lattice::f);//<
+    c.statik("source_camera", s_source_camera::f);//<
+    c.statik("to_source", s_to_source::f);//<
+    c.statik("to_solar", s_to_solar::f);//<
+    c.statik("planets", s_planets::f);//<
+    c.statik("end", s_end::f);//<
+    c.statik("end_card", s_end_card::f);//<
+    c.statik("montage", s_montage::f);//<
+  }
+}
+
+pub mod c_Shot {
+  use crate::rt::*;
+  pub mod g_frames {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&m_round(&(mul(&get(&self_, "seconds"), &get(&k!("Video"), "FPS")))));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("film_id");//<
+    c.field_none("seconds");//<
+    c.field_none("from_zoom");//<
+    c.field_none("to_zoom");//<
+    c.field_none("from_sun");//<
+    c.field_none("to_sun");//<
+    c.field_none("from_at");//<
+    c.field_none("to_at");//<
+    c.field_none("tilt");//<
+    c.field_none("turn");//<
+    c.field_none("title");//<
+    c.field_none("fade_in");//<
+    c.field_none("fade_out");//<
+    c.getter("frames", g_frames::f);//<
+  }
+}
+
+pub mod c_Sky {
+  use crate::rt::*;
+  pub mod m_frame {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let dt_0 = cell(&arg(a1, 1));
+      if truthy(&eq(&get(&self_, "film"), &Value::Null)) {
+        set(&self_, "film", &call(&k!("Measured"), "of", args![get(&get(&self_, "shot"), "film_id")]));
+        set(&self_, "tracks", &call(&k!("Measured"), "of", args![sv!["", &tos(&get(&get(&self_, "shot"), "film_id")), ".stars"]]));
+      }
+      if truthy(&eq(&get(&self_, "film"), &Value::Null)) {
+        invoke(&fail, args![sv!["", &tos(&get(&get(&self_, "shot"), "film_id")), " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=", &tos(&get(&get(&self_, "shot"), "film_id")), " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ."]]);
+      }
+      if truthy(&(truthy(&gt(&len(&get(&self_, "meta")), &0.0)) && truthy(&eq(&get(&self_, "sol"), &Value::Null)))) {
+        set(&self_, "sol", &call(&k!("Measured"), "of", args![sv!["solar.inner.frames"]]));
+        if truthy(&eq(&get(&self_, "sol"), &Value::Null)) {
+          invoke(&fail, args![sv!["solar.inner is not recorded - run `npx ray visuals solar.inner` first"]]);
+        }
+        if truthy(&(!eq(&get(&get(&get(&self_, "sol"), "header"), &tos(&sv!["stamp"])), &get(&self_, "sol_stamp")))) {
+          invoke(&fail, args![sv!["solar.inner's recording is stale - run `npx ray visuals solar.inner` again"]]);
+        }
+      }
+      call(&k!("Video"), "sky", args![rd(&s_0), get(&self_, "shot"), get(&self_, "film"), get(&self_, "tracks"), get(&self_, "shown_frames"), get(&self_, "sol"), get(&self_, "meta")]);
+      set(&self_, "shown_frames", &add(&get(&self_, "shown_frames"), &1.0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("shot");//<
+    c.field("sol", |self_: &Value| -> Value { own(&Value::Null) });//<
+    c.field("meta", |self_: &Value| -> Value { own(&list![]) });//<
+    c.field("sol_stamp", |self_: &Value| -> Value { own(&sv![""]) });//<
+    c.field("shown_frames", |self_: &Value| -> Value { own(&0.0) });//<
+    c.field("film", |self_: &Value| -> Value { own(&Value::Null) });//<
+    c.field("tracks", |self_: &Value| -> Value { own(&Value::Null) });//<
+    c.method("frame", m_frame::f);//<
+  }
+}
+
+pub mod c_Band {
+  use crate::rt::*;
+  pub mod m_fill_style {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let colour_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "fill_style", args![rd(&colour_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_stroke_style {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let colour_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "stroke_style", args![rd(&colour_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_line_width {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let w_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "line_width", args![rd(&w_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_alpha {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let v_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "alpha", args![rd(&v_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_fill_rect {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1)); let w_0 = cell(&arg(a1, 2)); let h_0 = cell(&arg(a1, 3));
+      return own(&call(&get(&self_, "inner"), "fill_rect", args![rd(&x_0), rd(&y_0), rd(&w_0), rd(&h_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_stroke_rect {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1)); let w_0 = cell(&arg(a1, 2)); let h_0 = cell(&arg(a1, 3));
+      return own(&call(&get(&self_, "inner"), "stroke_rect", args![rd(&x_0), rd(&y_0), rd(&w_0), rd(&h_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_clear_rect {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1)); let w_0 = cell(&arg(a1, 2)); let h_0 = cell(&arg(a1, 3));
+      return own(&call(&get(&self_, "inner"), "clear_rect", args![rd(&x_0), rd(&y_0), rd(&w_0), rd(&h_0)]));
+      Value::Null
+    }
+  }
+  pub mod g_begin_path {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&get(&get(&self_, "inner"), "begin_path"));
+      Value::Null
+    }
+  }
+  pub mod m_move_to {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1));
+      return own(&call(&get(&self_, "inner"), "move_to", args![rd(&x_0), rd(&y_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_line_to {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1));
+      return own(&call(&get(&self_, "inner"), "line_to", args![rd(&x_0), rd(&y_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_arc {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1)); let r_0 = cell(&arg(a1, 2)); let start_at_0 = cell(&arg(a1, 3)); let end_at_0 = cell(&arg(a1, 4));
+      return own(&call(&get(&self_, "inner"), "arc", args![rd(&x_0), rd(&y_0), rd(&r_0), rd(&start_at_0), rd(&end_at_0)]));
+      Value::Null
+    }
+  }
+  pub mod g_stroke {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&get(&get(&self_, "inner"), "stroke"));
+      Value::Null
+    }
+  }
+  pub mod g_fill {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&get(&get(&self_, "inner"), "fill"));
+      Value::Null
+    }
+  }
+  pub mod m_font {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let name_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "font", args![rd(&name_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_text_align {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let how_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "text_align", args![rd(&how_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_text_baseline {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let how_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "text_baseline", args![rd(&how_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_fill_text {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let t_0 = cell(&arg(a1, 0)); let x_0 = cell(&arg(a1, 1)); let y_0 = cell(&arg(a1, 2));
+      return own(&call(&get(&self_, "inner"), "fill_text", args![rd(&t_0), rd(&x_0), rd(&y_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_measure {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let t_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "measure", args![rd(&t_0)]));
+      Value::Null
+    }
+  }
+  pub mod g_save {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&get(&get(&self_, "inner"), "save"));
+      Value::Null
+    }
+  }
+  pub mod g_restore {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&get(&get(&self_, "inner"), "restore"));
+      Value::Null
+    }
+  }
+  pub mod m_translate {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0)); let y_0 = cell(&arg(a1, 1));
+      return own(&call(&get(&self_, "inner"), "translate", args![rd(&x_0), rd(&y_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_rotate {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let angle_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "rotate", args![rd(&angle_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_dash {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let segments_0 = cell(&arg(a1, 0));
+      return own(&call(&get(&self_, "inner"), "dash", args![rd(&segments_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_gradient_stroke {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x0_0 = cell(&arg(a1, 0)); let x1_0 = cell(&arg(a1, 1)); let stops_0 = cell(&arg(a1, 2)); let at_0 = cell(&arg(a1, 3));
+      return own(&call(&get(&self_, "inner"), "gradient_stroke", args![rd(&x0_0), rd(&x1_0), rd(&stops_0), rd(&at_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_image {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let src_0 = cell(&arg(a1, 0)); let x_0 = cell(&arg(a1, 1)); let y_0 = cell(&arg(a1, 2)); let w_0 = cell(&arg(a1, 3)); let h_0 = cell(&arg(a1, 4));
+      return own(&call(&get(&self_, "inner"), "image", args![rd(&src_0), rd(&x_0), rd(&y_0), rd(&w_0), rd(&h_0)]));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("inner");//<
+    c.method("fill_style", m_fill_style::f);//<
+    c.method("stroke_style", m_stroke_style::f);//<
+    c.method("line_width", m_line_width::f);//<
+    c.method("alpha", m_alpha::f);//<
+    c.method("fill_rect", m_fill_rect::f);//<
+    c.method("stroke_rect", m_stroke_rect::f);//<
+    c.method("clear_rect", m_clear_rect::f);//<
+    c.getter("begin_path", g_begin_path::f);//<
+    c.method("move_to", m_move_to::f);//<
+    c.method("line_to", m_line_to::f);//<
+    c.method("arc", m_arc::f);//<
+    c.getter("stroke", g_stroke::f);//<
+    c.getter("fill", g_fill::f);//<
+    c.method("font", m_font::f);//<
+    c.method("text_align", m_text_align::f);//<
+    c.method("text_baseline", m_text_baseline::f);//<
+    c.method("fill_text", m_fill_text::f);//<
+    c.method("measure", m_measure::f);//<
+    c.getter("save", g_save::f);//<
+    c.getter("restore", g_restore::f);//<
+    c.method("translate", m_translate::f);//<
+    c.method("rotate", m_rotate::f);//<
+    c.method("dash", m_dash::f);//<
+    c.method("gradient_stroke", m_gradient_stroke::f);//<
+    c.method("image", m_image::f);//<
+  }
+}
+
+pub mod c_Banded {
+  use crate::rt::*;
+  pub mod m_frame {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let dt_0 = cell(&arg(a1, 1));
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+      call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+      get(&rd(&s_0), "save");
+      call(&rd(&s_0), "translate", args![0.0, get(&self_, "top")]);
+      call(&get(&self_, "inner"), "frame", args![make_k(&k!("Band"), args![kw("width", &get(&rd(&s_0), "width")), kw("height", &get(&self_, "tall")), kw("inner", &rd(&s_0))]), rd(&dt_0)]);
+      return own(&get(&rd(&s_0), "restore"));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("inner");//<
+    c.field_none("top");//<
+    c.field_none("tall");//<
+    c.method("frame", m_frame::f);//<
+  }
+}
+
+pub mod c_Growing {
+  use crate::rt::*;
+  pub mod m_frame {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let dt_0 = cell(&arg(a1, 1));
+      call(&rd(&s_0), "fill_style", args![get(&k!("Galaxies"), "BACK")]);
+      call(&rd(&s_0), "fill_rect", args![0.0, 0.0, get(&rd(&s_0), "width"), get(&rd(&s_0), "height")]);
+      let look_0 = cell(&Value::Null); wr(&look_0, &call(&k!("Video"), "look", args![get(&rd(&s_0), "width"), get(&self_, "lane"), get(&self_, "ink")]));
+      let grow_0 = cell(&Value::Null); wr(&grow_0, &div(&get(&self_, "shown_frames"), &call(&k!("Fmt"), "max", args![1.0, sub(&get(&self_, "n"), &1.0)])));
+      let cam_0 = cell(&Value::Null); wr(&cam_0, &call(&k!("Video"), "source_camera", args![rd(&s_0), rd(&look_0), rd(&grow_0)]));
+      call(&k!("Video"), "lattice", args![rd(&s_0), get(&self_, "lane"), rd(&look_0), rd(&grow_0), div(&get(&self_, "shown_frames"), &get(&self_, "per")), 1.0, 0.0, elem(&rd(&cam_0), &0.0), elem(&rd(&cam_0), &1.0), elem(&rd(&cam_0), &2.0), 1.0, 1000000.0, 16.0]);
+      set(&self_, "shown_frames", &add(&get(&self_, "shown_frames"), &1.0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("n");//<
+    c.field_none("lane");//<
+    c.field_none("ink");//<
+    c.field_none("per");//<
+    c.field("shown_frames", |self_: &Value| -> Value { own(&0.0) });//<
+    c.method("frame", m_frame::f);//<
+  }
+}
+
+pub mod c_Planets {
+  use crate::rt::*;
+  pub mod m_frame {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let dt_0 = cell(&arg(a1, 1));
+      if truthy(&eq(&get(&self_, "film"), &Value::Null)) {
+        set(&self_, "film", &call(&k!("Measured"), "of", args![sv!["solar.inner.frames"]]));
+      }
+      if truthy(&eq(&get(&self_, "film"), &Value::Null)) {
+        invoke(&fail, args![sv!["solar.inner is not recorded - run `npx ray visuals solar.inner` first"]]);
+      }
+      if truthy(&(!eq(&get(&get(&get(&self_, "film"), "header"), &tos(&sv!["stamp"])), &get(&self_, "stamp")))) {
+        invoke(&fail, args![sv!["solar.inner's recording is stale - run `npx ray visuals solar.inner` again"]]);
+      }
+      let look_0 = cell(&Value::Null); wr(&look_0, &call(&k!("Video"), "look", args![get(&rd(&s_0), "width"), get(&self_, "lane"), get(&self_, "ink")]));
+      call(&k!("Video"), "planets", args![rd(&s_0), div(&get(&self_, "shown_frames"), &call(&k!("Fmt"), "max", args![1.0, sub(&get(&self_, "n"), &1.0)])), get(&self_, "lane"), rd(&look_0), div(&(add(&sub(&m_round(&(mul(&4.0, &get(&k!("Video"), "FPS")))), &1.0), &get(&self_, "shown_frames"))), &get(&self_, "per")), get(&self_, "film"), get(&self_, "off"), get(&self_, "width"), get(&self_, "bodies")]);
+      set(&self_, "shown_frames", &add(&get(&self_, "shown_frames"), &1.0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("n");//<
+    c.field_none("lane");//<
+    c.field_none("ink");//<
+    c.field_none("per");//<
+    c.field_none("stamp");//<
+    c.field_none("off");//<
+    c.field_none("width");//<
+    c.field_none("bodies");//<
+    c.field("shown_frames", |self_: &Value| -> Value { own(&0.0) });//<
+    c.field("film", |self_: &Value| -> Value { own(&Value::Null) });//<
+    c.method("frame", m_frame::f);//<
+  }
+}
+
+pub mod c_EndCard {
+  use crate::rt::*;
+  pub mod m_frame {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let dt_0 = cell(&arg(a1, 1));
+      call(&k!("Video"), "end_card", args![rd(&s_0), get(&self_, "shown_frames"), get(&self_, "n")]);
+      set(&self_, "shown_frames", &add(&get(&self_, "shown_frames"), &1.0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.field_none("n");//<
+    c.field("shown_frames", |self_: &Value| -> Value { own(&0.0) });//<
+    c.method("frame", m_frame::f);//<
+  }
+}
+
 pub mod c_G {
   use crate::rt::*;
   pub mod g_lattice {
@@ -23161,13 +24706,14 @@ pub mod c_G {
       set(&rd(&ink_0), "every", &true);
       let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Strip"), "line", args![self_, 10.0]));
       call(&k!("Strip"), "light", args![rd(&w_0), 0.0, 1.0]);
-      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]);
-      for i1 in 0..(num(&8.0).ceil() as i64) {
-        let t_1 = cell(&(i1 as f64));
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &m_concat(&list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])], args![m_map(&rng(&8.0), args![{ let self_: Value = self_.clone(); cl!(w_0, ink_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
         call(&k!("Strip"), "begin", args![rd(&w_0)]);
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/c"], sv!["/4"]]]);
-        m_push(&rd(&lanes_0), args![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]);
-      };
+        return own(&call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
+        Value::Null
+      }) }])]));
       return own(&call(&k!("Strip"), "tell", args![sv!["rule.movement"], sv!["every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)"], rd(&lanes_0), rd(&ink_0)]));
       Value::Null
     }
@@ -23180,17 +24726,18 @@ pub mod c_G {
       set(&rd(&ink_0), "top", &36.0);
       let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Strip"), "line", args![self_, 17.0]));
       call(&rd(&w_0), "add", args![make_k(&k!("Scripted"), args![kw("at", &make_k(&k!("Vector"), args![kw("components", &list![8.0])])), kw("plan", &list![sv![""], sv!["+"], sv!["-"], sv![""], sv!["+-"], sv![""], sv!["+"], sv!["-"]]), kw("weight", &1.0)])]);
-      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]);
-      for i1 in 0..(num(&8.0).ceil() as i64) {
-        let t_1 = cell(&(i1 as f64));
+      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &m_concat(&list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])], args![m_map(&rng(&8.0), args![{ let self_: Value = self_.clone(); cl!(w_0, ink_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
         call(&k!("Strip"), "begin", args![rd(&w_0)]);
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/c"], sv!["/4"]]]);
-        let moved_1 = cell(&Value::Null); wr(&moved_1, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
+        let moved_2 = cell(&Value::Null); wr(&moved_2, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/S.1"]]]);
-        let now_1 = cell(&Value::Null); wr(&now_1, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
-        set(&rd(&now_1), "says", &call(&k!("Strip"), "emitting", args![rd(&moved_1), rd(&now_1)]));
-        m_push(&rd(&lanes_0), args![rd(&now_1)]);
-      };
+        let now_2 = cell(&Value::Null); wr(&now_2, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
+        set(&rd(&now_2), "says", &call(&k!("Strip"), "emitting", args![rd(&moved_2), rd(&now_2)]));
+        return own(&rd(&now_2));
+        Value::Null
+      }) }])]));
       return own(&call(&k!("Strip"), "tell", args![sv!["rule.emission"], sv!["a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)"], rd(&lanes_0), rd(&ink_0)]));
       Value::Null
     }
@@ -23201,28 +24748,33 @@ pub mod c_G {
       let ink_0 = cell(&Value::Null); wr(&ink_0, &make_k(&k!("Ink"), args![]));
       set(&rd(&ink_0), "every", &true);
       set(&rd(&ink_0), "top", &36.0);
+      return own(&call(&k!("Strip"), "tell", args![sv!["rule.transport"], sv!["a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)"], call(&self_, "transport_lanes", args![rd(&ink_0)]), rd(&ink_0)]));
+      Value::Null
+    }
+  }
+  pub mod m_transport_lanes {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let ink_0 = cell(&arg(a1, 0));
       let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Strip"), "line", args![self_, 21.0]));
       let s_0 = cell(&Value::Null); wr(&s_0, &call(&rd(&w_0), "add", args![make_k(&k!("Scripted"), args![kw("at", &make_k(&k!("Vector"), args![kw("components", &list![9.0])])), kw("plan", &list![sv!["+-"], sv![""], sv![""], sv![""], sv!["+-"]]), kw("weight", &4.0)])]));
       set(&rd(&s_0), "moves", &true);
       set(&rd(&s_0), "momentum", &make_k(&k!("Vector"), args![kw("components", &list![1.0])]));
-      let lanes_0 = cell(&Value::Null); wr(&lanes_0, &list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]);
-      for i1 in 0..(num(&9.0).ceil() as i64) {
-        let t_1 = cell(&(i1 as f64));
+      return own(&m_concat(&list![call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])], args![m_map(&rng(&9.0), args![{ let self_: Value = self_.clone(); cl!(w_0, ink_0, s_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
         call(&k!("Strip"), "begin", args![rd(&w_0)]);
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/c"], sv!["/4"]]]);
-        let moved_1 = cell(&Value::Null); wr(&moved_1, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
+        let moved_2 = cell(&Value::Null); wr(&moved_2, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/S.1"]]]);
-        let emitted_1 = cell(&Value::Null); wr(&emitted_1, &call(&k!("Strip"), "emitting", args![rd(&moved_1), call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]));
+        let emitted_2 = cell(&Value::Null); wr(&emitted_2, &call(&k!("Strip"), "emitting", args![rd(&moved_2), call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)])]));
         call(&k!("Strip"), "run", args![rd(&w_0), list![sv!["/S.v"]]]);
-        let now_1 = cell(&Value::Null); wr(&now_1, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
-        let went_1 = cell(&Value::Null); wr(&went_1, &sv![""]);
-        if truthy(&get(&rd(&s_0), "stepped")) {
-          wr(&went_1, &(if truthy(&gt(&elem(&get(&call(&get(&rd(&w_0), "geometry"), "V", args![get(&rd(&s_0), "moved_along")]), "components"), &0.0), &0.0)) { own(&sv!["steps right"]) } else { own(&sv!["steps left"]) }));
-        }
-        set(&rd(&now_1), "says", &(if truthy(&m_empty(&rd(&went_1))) { own(&rd(&emitted_1)) } else { own(&((if truthy(&m_empty(&rd(&emitted_1))) { own(&rd(&went_1)) } else { own(&sv!["", &tos(&rd(&went_1)), ", ", &tos(&rd(&emitted_1)), ""]) }))) }));
-        m_push(&rd(&lanes_0), args![rd(&now_1)]);
-      };
-      return own(&call(&k!("Strip"), "tell", args![sv!["rule.transport"], sv!["a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)"], rd(&lanes_0), rd(&ink_0)]));
+        let now_2 = cell(&Value::Null); wr(&now_2, &call(&k!("Strip"), "lane", args![rd(&w_0), rd(&ink_0)]));
+        let went_2 = cell(&Value::Null); wr(&went_2, &(if truthy(&(!truthy(&get(&rd(&s_0), "stepped")))) { own(&sv![""]) } else { own(&((if truthy(&gt(&elem(&get(&call(&get(&rd(&w_0), "geometry"), "V", args![get(&rd(&s_0), "moved_along")]), "components"), &0.0), &0.0)) { own(&sv!["steps right"]) } else { own(&sv!["steps left"]) }))) }));
+        set(&rd(&now_2), "says", &(if truthy(&m_empty(&rd(&went_2))) { own(&rd(&emitted_2)) } else { own(&((if truthy(&m_empty(&rd(&emitted_2))) { own(&rd(&went_2)) } else { own(&sv!["", &tos(&rd(&went_2)), ", ", &tos(&rd(&emitted_2)), ""]) }))) }));
+        return own(&rd(&now_2));
+        Value::Null
+      }) }])]));
       Value::Null
     }
   }
@@ -23488,21 +25040,21 @@ pub mod c_G {
         let setup_2 = cell(&arg(a3, 0));
         let sun_2 = cell(&Value::Null); wr(&sun_2, &make_k(&k!("Body"), args![kw("x", &0.0), kw("y", &0.0), kw("mx", &invoke(&rd(&pulse_0), args![0.0])), kw("ways", &invoke(&rd(&ways_0), args![0.0]))]));
         set(&rd(&sun_2), "tag", &1.0);
-        let out_2 = cell(&Value::Null); wr(&out_2, &list![rd(&sun_2)]);
-        for i3 in 0..(num(&len(&rd(&PLANETS_0))).ceil() as i64) {
-          let k_3 = cell(&(i3 as f64));
-          let i_3 = cell(&Value::Null); wr(&i_3, &elem(&rd(&PLANETS_0), &rd(&k_3)));
-          let b__3 = cell(&Value::Null); wr(&b__3, &make_k(&k!("Body"), args![kw("x", &invoke(&rd(&cells_0), args![mul(&elem(&rd(&AX_0), &rd(&i_3)), &(add(&1.0, &elem(&rd(&EC_0), &rd(&i_3)))))])), kw("y", &0.0), kw("mx", &invoke(&rd(&pulse_0), args![rd(&i_3)])), kw("ways", &invoke(&rd(&ways_0), args![rd(&i_3)]))]));
-          set(&rd(&b__3), "tag", &add(&2.0, &rd(&k_3)));
-          set(&rd(&b__3), "moves", &true);
-          let v_3 = cell(&Value::Null); wr(&v_3, &(if truthy(&(truthy(&gt(&len(&get(&rd(&setup_2), "found")), &rd(&k_3))) && truthy(&call(&k!("Fmt"), "finite", args![elem(&elem(&get(&rd(&setup_2), "found"), &rd(&k_3)), &1.0)])))) { own(&elem(&elem(&get(&rd(&setup_2), "found"), &rd(&k_3)), &1.0)) } else { own(&0.0) }));
-          set(&rd(&b__3), "py", &sub(&0.0, &mul(&mul(&rd(&v_3), &invoke(&rd(&pulse_0), args![rd(&i_3)])), &invoke(&rd(&ways_0), args![rd(&i_3)]))));
-          set(&rd(&b__3), "launch", &sv!["orbit"]);
-          set(&rd(&b__3), "ecc", &elem(&rd(&EC_0), &rd(&i_3)));
-          set(&rd(&b__3), "py", &sub(&0.0, &1.0));
-          m_push(&rd(&out_2), args![rd(&b__3)]);
-        };
-        return own(&rd(&out_2));
+        return own(&m_concat(&list![rd(&sun_2)], args![m_map(&rng(&len(&rd(&PLANETS_0))), args![{ let self_: Value = self_.clone(); cl!(PLANETS_0, cells_0, AX_0, EC_0, pulse_0, ways_0, setup_2); fnv(move |a5: &[&Value]| -> Value {
+          let self_: &Value = &self_;
+          let k_4 = cell(&arg(a5, 0));
+          let i_4 = cell(&Value::Null); wr(&i_4, &elem(&rd(&PLANETS_0), &rd(&k_4)));
+          let b__4 = cell(&Value::Null); wr(&b__4, &make_k(&k!("Body"), args![kw("x", &invoke(&rd(&cells_0), args![mul(&elem(&rd(&AX_0), &rd(&i_4)), &(add(&1.0, &elem(&rd(&EC_0), &rd(&i_4)))))])), kw("y", &0.0), kw("mx", &invoke(&rd(&pulse_0), args![rd(&i_4)])), kw("ways", &invoke(&rd(&ways_0), args![rd(&i_4)]))]));
+          set(&rd(&b__4), "tag", &add(&2.0, &rd(&k_4)));
+          set(&rd(&b__4), "moves", &true);
+          let v_4 = cell(&Value::Null); wr(&v_4, &(if truthy(&(truthy(&gt(&len(&get(&rd(&setup_2), "found")), &rd(&k_4))) && truthy(&call(&k!("Fmt"), "finite", args![elem(&elem(&get(&rd(&setup_2), "found"), &rd(&k_4)), &1.0)])))) { own(&elem(&elem(&get(&rd(&setup_2), "found"), &rd(&k_4)), &1.0)) } else { own(&0.0) }));
+          set(&rd(&b__4), "py", &sub(&0.0, &mul(&mul(&rd(&v_4), &invoke(&rd(&pulse_0), args![rd(&i_4)])), &invoke(&rd(&ways_0), args![rd(&i_4)]))));
+          set(&rd(&b__4), "launch", &sv!["orbit"]);
+          set(&rd(&b__4), "ecc", &elem(&rd(&EC_0), &rd(&i_4)));
+          set(&rd(&b__4), "py", &sub(&0.0, &1.0));
+          return own(&rd(&b__4));
+          Value::Null
+        }) }])]));
         Value::Null
       }) })]));
       let BURN_0 = cell(&Value::Null); wr(&BURN_0, &mul(&2.0, &(add(&rd(&VIEW_0), &rd(&MARGIN_0)))));
@@ -24176,6 +25728,7 @@ pub mod c_G {
     c.getter("movement_film", g_movement_film::f);//<
     c.getter("emission_film", g_emission_film::f);//<
     c.getter("transport_film", g_transport_film::f);//<
+    c.method("transport_lanes", m_transport_lanes::f);//<
     c.getter("expansion", g_expansion::f);//<
     c.getter("shadow", g_shadow::f);//<
     c.method("pair", m_pair::f);//<

@@ -82,19 +82,22 @@ ray_impl_static "sub_" (s_0 : String) (a_0 : Float) (b_0 : Float) : String := do
 ray_impl_static "char_at" (s_0 : String) (i_0 : Float) : Char := do
   if true then return (← ωtern (ωtruthy (← ωlt (← i_0.get) (← dot! (← s_0.get) rlength ()))) (do pure (← ωelem (← dot! (← s_0.get) rchars ()) (← i_0.get))) (do pure (0 : Float)))
   return ωnull
-ray_impl_static "letters" (s_0 : String) (at__0 : Float) : String := do
+ray_impl_static "run" (s_0 : String) (at__0 : Float) (keep_0 : Value) : String := do
   let k_0 ← IO.mkRef (← at__0.get)
-  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← s_0.get) rlength ())) (do pure (← call! (← cls% Notation) "is_letter" ((← ωelem (← dot! (← s_0.get) rchars ()) (← k_0.get)))))) do
+  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← s_0.get) rlength ())) (do pure (← app! (← keep_0.get) ((← ωelem (← dot! (← s_0.get) rchars ()) (← k_0.get)))))) do
     (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
     pure ()
   if true then return (← call! (← cls% Notation) "sub_" ((← s_0.get), (← at__0.get), (← k_0.get)))
   return ωnull
+ray_impl_static "letters" (s_0 : String) (at__0 : Float) : String := do
+  if true then return (← call! (← cls% Notation) "run" ((← s_0.get), (← at__0.get), (fn! [c_2] do
+    if true then return (← call! (← cls% Notation) "is_letter" ((← c_2.get)))
+    return ωnull)))
+  return ωnull
 ray_impl_static "alnums" (s_0 : String) (at__0 : Float) : String := do
-  let k_0 ← IO.mkRef (← at__0.get)
-  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← s_0.get) rlength ())) (do pure (← call! (← cls% Notation) "is_alnum" ((← ωelem (← dot! (← s_0.get) rchars ()) (← k_0.get)))))) do
-    (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← call! (← cls% Notation) "sub_" ((← s_0.get), (← at__0.get), (← k_0.get)))
+  if true then return (← call! (← cls% Notation) "run" ((← s_0.get), (← at__0.get), (fn! [c_2] do
+    if true then return (← call! (← cls% Notation) "is_alnum" ((← c_2.get)))
+    return ωnull)))
   return ωnull
 ray_impl_static "counted" (w_0 : String) : Piece := do
   let of_0 ← IO.mkRef (← call! (← cls% Piece) "wrap" (("count" : String), (← ωlst #[(← call! (← cls% Piece) "text_" ((← w_0.get)))])))
@@ -141,6 +144,9 @@ ray_impl_static "args" (src_0 : String) (at__0 : Float) (n_0 : Float) (between_0
     pure ()
   if true then return (← new! Args («got» := (← got_0.get), «end» := (← k_0.get)))
   return ωnull
+ray_impl_static "scripted" (base_0 : Piece) (kind_0 : String) (of_0 : (RList Piece)) : Piece := do
+  if true then return (← new! Piece («kind» := ("scripted" : String), «base» := (← base_0.get), «raised» := (← ωtern (ωtruthy (← ωeqv (← kind_0.get) ("sup" : String))) (do pure (← of_0.get)) (do pure ωnull)), «lowered» := (← ωtern (ωtruthy (← ωeqv (← kind_0.get) ("sup" : String))) (do pure ωnull) (do pure (← of_0.get)))))
+  return ωnull
 ray_impl_static "attach" (out_0 : (RList Piece)) (kind_0 : String) (of_0 : (RList Piece)) : Value := do
   if ωtruthy (← dot! (← out_0.get) rempty ()) then
     (← dot! (← out_0.get) rpush ((← call! (← cls% Piece) "wrap" ((← kind_0.get), (← of_0.get))))) |> ωsink
@@ -170,27 +176,11 @@ ray_impl_static "attach" (out_0 : (RList Piece)) (kind_0 : String) (of_0 : (RLis
     else
       (ωsetter (← tail_0.get) "text") (← head_0.get)
       pure ()
-    let s_0 ← IO.mkRef (← new! Piece («kind» := ("scripted" : String)))
-    (ωsetter (← s_0.get) "base") (← call! (← cls% Piece) "text_" ((← last_char_0.get)))
-    if ωtruthy (← ωeqv (← kind_0.get) ("sup" : String)) then
-      (ωsetter (← s_0.get) "raised") (← of_0.get)
-      pure ()
-    else
-      (ωsetter (← s_0.get) "lowered") (← of_0.get)
-      pure ()
-    (← dot! (← out_0.get) rpush ((← s_0.get))) |> ωsink
+    (← dot! (← out_0.get) rpush ((← call! (← cls% Notation) "scripted" ((← call! (← cls% Piece) "text_" ((← last_char_0.get))), (← kind_0.get), (← of_0.get))))) |> ωsink
     if true then return ωnull
     pure ()
   (← dot! (← out_0.get) rpop ()) |> ωsink
-  let s_0 ← IO.mkRef (← new! Piece («kind» := ("scripted" : String)))
-  (ωsetter (← s_0.get) "base") (← tail_0.get)
-  if ωtruthy (← ωeqv (← kind_0.get) ("sup" : String)) then
-    (ωsetter (← s_0.get) "raised") (← of_0.get)
-    pure ()
-  else
-    (ωsetter (← s_0.get) "lowered") (← of_0.get)
-    pure ()
-  if true then return (← dot! (← out_0.get) rpush ((← s_0.get)))
+  if true then return (← dot! (← out_0.get) rpush ((← call! (← cls% Notation) "scripted" ((← tail_0.get), (← kind_0.get), (← of_0.get)))))
   return ωnull
 ray_impl_static "parse" (src_0 : String) : (RList Piece) := do
   let out_0 ← IO.mkRef (← ωlst #[])
@@ -348,26 +338,20 @@ ray_impl_static "plain" (s_0 : String) : (RList Piece) := do
         (← ωwr buf_0 ("" : String)) |> ωsink
         pure ()
       return ωnull)
+  let starts_name_0 ← IO.mkRef ωnull
+  starts_name_0.set (fn! [(c : Char)] do
+      if true then return (← ωorV (← call! (← cls% Notation) "is_letter" (c)) (do pure (← ωeqv c (95 : Float))))
+      return ωnull)
   let bits_0 ← IO.mkRef (← ωlst #[])
   let k_0 ← IO.mkRef (0 : Float)
   while ωtruthy (← ωlt (← k_0.get) (← dot! (← s_0.get) rlength ())) do
-    let c_0 ← IO.mkRef (← ωelem (← dot! (← s_0.get) rchars ()) (← k_0.get))
-    if ωtruthy (← ωorV (← call! (← cls% Notation) "is_letter" ((← c_0.get))) (do pure (← ωeqv (← c_0.get) (95 : Float)))) then
-      let j_0 ← IO.mkRef (← k_0.get)
-      while ωtruthy (← ωandV (← ωlt (← j_0.get) (← dot! (← s_0.get) rlength ())) (do pure (← call! (← cls% Notation) "is_name" ((← ωelem (← dot! (← s_0.get) rchars ()) (← j_0.get)))))) do
-        (← ωwr j_0 (← ωadd (← j_0.get) (1 : Float))) |> ωsink
-        pure ()
-      (← dot! (← bits_0.get) rpush ((← call! (← cls% Notation) "sub_" ((← s_0.get), (← k_0.get), (← j_0.get))))) |> ωsink
-      (← ωwr k_0 (← j_0.get)) |> ωsink
-      pure ()
-    else
-      let j_0 ← IO.mkRef (← k_0.get)
-      while ωtruthy (← ωandV (← ωlt (← j_0.get) (← dot! (← s_0.get) rlength ())) (do pure (ωnotV ((← ωorV (← call! (← cls% Notation) "is_letter" ((← ωelem (← dot! (← s_0.get) rchars ()) (← j_0.get)))) (do pure (← ωeqv (← ωelem (← dot! (← s_0.get) rchars ()) (← j_0.get)) (95 : Float)))))))) do
-        (← ωwr j_0 (← ωadd (← j_0.get) (1 : Float))) |> ωsink
-        pure ()
-      (← dot! (← bits_0.get) rpush ((← call! (← cls% Notation) "sub_" ((← s_0.get), (← k_0.get), (← j_0.get))))) |> ωsink
-      (← ωwr k_0 (← j_0.get)) |> ωsink
-      pure ()
+    let bit_0 ← IO.mkRef (← ωtern (ωtruthy (← app! (← starts_name_0.get) ((← ωelem (← dot! (← s_0.get) rchars ()) (← k_0.get))))) (do pure (← call! (← cls% Notation) "run" ((← s_0.get), (← k_0.get), (fn! [c_2] do
+      if true then return (← call! (← cls% Notation) "is_name" ((← c_2.get)))
+      return ωnull)))) (do pure (← call! (← cls% Notation) "run" ((← s_0.get), (← k_0.get), (fn! [c_2] do
+      if true then return (ωnotV (← app! (← starts_name_0.get) ((← c_2.get))))
+      return ωnull)))))
+    (← dot! (← bits_0.get) rpush ((← bit_0.get))) |> ωsink
+    (← ωwr k_0 (← ωadd (← k_0.get) (← dot! (← bit_0.get) rlength ()))) |> ωsink
     pure ()
   let i_0 ← IO.mkRef (0 : Float)
   while ωtruthy (← ωlt (← i_0.get) (← dot! (← bits_0.get) rlength ())) do

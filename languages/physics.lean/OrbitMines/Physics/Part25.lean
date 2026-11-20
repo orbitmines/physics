@@ -31,36 +31,22 @@ ray_impl_field "lowered" : (RList Piece) := do
 ray_impl_field "key" : String := do
   return ("" : String)
 ray_impl_static "text_" (t_0 : String) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := ("text" : String)))
-  (ωsetter (← p_0.get) "text") (← t_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := ("text" : String), «text» := (← t_0.get)))
   return ωnull
 ray_impl_static "wrap" (kind_0 : String) (of_0 : (RList Piece)) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := (← kind_0.get)))
-  (ωsetter (← p_0.get) "of") (← of_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := (← kind_0.get), «of» := (← of_0.get)))
   return ωnull
 ray_impl_static "words" (t_0 : String) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := ("words" : String)))
-  (ωsetter (← p_0.get) "text") (← t_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := ("words" : String), «text» := (← t_0.get)))
   return ωnull
 ray_impl_static "big" (kind_0 : String) (lo_0 : (RList Piece)) (hi_0 : (RList Piece)) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := (← kind_0.get)))
-  (ωsetter (← p_0.get) "lo") (← lo_0.get)
-  (ωsetter (← p_0.get) "hi") (← hi_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := (← kind_0.get), «lo» := (← lo_0.get), «hi» := (← hi_0.get)))
   return ωnull
 ray_impl_static "stacked" (kind_0 : String) (over_0 : (RList Piece)) (under_0 : (RList Piece)) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := (← kind_0.get)))
-  (ωsetter (← p_0.get) "over") (← over_0.get)
-  (ωsetter (← p_0.get) "under") (← under_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := (← kind_0.get), «over» := (← over_0.get), «under» := (← under_0.get)))
   return ωnull
 ray_impl_static "cite" (key_0 : String) : Piece := do
-  let p_0 ← IO.mkRef (← new! Piece («kind» := ("ref" : String)))
-  (ωsetter (← p_0.get) "key") (← key_0.get)
-  if true then return (← p_0.get)
+  if true then return (← new! Piece («kind» := ("ref" : String), «key» := (← key_0.get)))
   return ωnull
 end Piece
 

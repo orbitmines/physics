@@ -10,7 +10,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "./parser.ts";
-import { Env, RayError, Runtime } from "./runtime.ts";
+import { Env, RayError, Runtime, type Value } from "./runtime.ts";
 import { findProjects, load } from "./project.ts";
 import { measure, renderVisuals } from "./visuals.ts";
 
@@ -182,35 +182,55 @@ try {
     }
   } else if (cmd === "test") {
     /* every requirement on every fixture of its kind, ticked until its refinement holds - the same cases gen writes */
-    const rt = boot(rest);
+    const rt = boot(rest.filter(a => !a.startsWith("--")));
     const loc = { file: "<test>", line: 0, col: 0 };
     let failed = 0, ran = 0;
     const requirements = rt.requirements() as any[];
     const fixtures = rt.fixtures() as any[];
-    for (const r of requirements) {
-      for (const f of fixtures) {
-        if (!(f.fields.get("kinds") as string[]).includes(r.fields.get("owner") as string)) continue;
-        const label = `${r.fields.get("location")} on ${f.fields.get("name")}`;
-        try {
-          // a fresh fixture per case: the definition, evaluated again
-          const world = rt.call(f.fields.get("definition"), [], rt.global, loc);
-          const filter = r.fields.get("filter");
-          const until = (r.fields.get("until") as number) ?? 8;
-          let guard = 0, held = true;
-          while (filter && !rt.truthy(rt.call(filter, [{ value: world }], rt.global, loc))) {
-            if (++guard > until) { held = false; break; }
-            // a fixture that cannot be ticked is one whose refinement either holds as it stands or never
-            try { rt.callMethod(world, "tick", [], rt.global, loc); } catch { held = false; break; }
-          }
-          // a fixture the refinement never reaches is not one this requirement is about
-          if (!held) { console.log(`skip ${label} (the refinement never held)`); continue; }
-          const ok = rt.truthy(rt.call(r.fields.get("requirement"), [{ value: world }], rt.global, loc));
-          console.log(`${ok ? "ok  " : "FAIL"} ${label}`);
-          if (!ok) failed++;
-        } catch (e: any) { failed++; console.log(`FAIL ${label}: ${e.message}`); }
-        ran++;
+    /*
+     * ONE WORLD PER FIXTURE, walked through its ticks once. At every tick each case still waiting on it is checked:
+     * the first tick its refinement holds (within the `until` ticks it is given) its requirement is read off the world
+     * as it stands - the tick a fresh world per case would have stopped at. A case whose refinement never held by
+     * then is skipped, as is every case still waiting when the world cannot be ticked.
+     */
+    const cases: { r: any; f: any; label: string; line?: string; failed?: boolean }[] = [];
+    /*
+     * a fixture of a kind the packages carry (a World, a Medium) is the generated tests' to run - the same cases,
+     * compiled, in minutes rather than the interpreter's hours; `ray test --all` runs them here too
+     */
+    const all = rest.includes("--all");
+    const gen = rt.classes.get("Gen")!;
+    const emitted = (f: any) => (f.fields.get("kinds") as string[]).some(k => rt.truthy(rt.callMethod(gen, "emits", [{ value: k }], rt.global, loc)));
+    for (const r of requirements) for (const f of fixtures)
+      if ((f.fields.get("kinds") as string[]).includes(r.fields.get("owner") as string) && (all || !emitted(f))) cases.push({ r, f, label: `${r.fields.get("location")} on ${f.fields.get("name")}` });
+    const until = (c: { r: any }) => (c.r.fields.get("until") as number) ?? 8;
+    const report = (c: { line?: string }, line: string) => { c.line = line; console.log(line); };
+    for (const f of fixtures) {
+      let waiting = cases.filter(c => c.f === f);
+      if (!waiting.length) continue;
+      let world: Value;
+      try { world = rt.call(f.fields.get("definition"), [], rt.global, loc); }
+      catch (e: any) { for (const c of waiting) { c.failed = true; report(c, `FAIL ${c.label}: ${e.message}`); } continue; }
+      for (let tick = 0; waiting.length; tick++) {
+        for (const c of waiting.filter(c => tick <= until(c))) {
+          try {
+            const filter = c.r.fields.get("filter") as Value;
+            if (filter && !rt.truthy(rt.call(filter, [{ value: world }], rt.global, loc))) continue;
+            const ok = rt.truthy(rt.call(c.r.fields.get("requirement"), [{ value: world }], rt.global, loc));
+            c.failed = !ok;
+            report(c, `${ok ? "ok  " : "FAIL"} ${c.label}`);
+          } catch (e: any) { c.failed = true; report(c, `FAIL ${c.label}: ${e.message}`); }
+        }
+        // a fixture the refinement never reaches is not one this requirement is about
+        for (const c of waiting.filter(c => !c.line && tick >= until(c))) report(c, `skip ${c.label} (the refinement never held)`);
+        waiting = waiting.filter(c => !c.line);
+        if (!waiting.length) break;
+        // a fixture that cannot be ticked is one whose refinement either holds as it stands or never
+        try { rt.callMethod(world, "tick", [], rt.global, loc); }
+        catch { for (const c of waiting) report(c, `skip ${c.label} (the refinement never held)`); break; }
       }
     }
+    for (const c of cases) { if (c.failed) failed++; if (!c.line!.startsWith("skip")) ran++; }
     console.log(`${ran - failed}/${ran} passed`);
     process.exit(failed ? 1 : 0);
   } else {

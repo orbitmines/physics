@@ -918,6 +918,8 @@ export class Emitter {
     if (h && b.has(h)) {
       let v = b.get(h) as any;
       const isArg = (x: any) => x && typeof x === "object" && !Array.isArray(x) && "value" in x && !("kind" in x);
+      // an argument bound on its own (a hole matched one positional argument) is that argument, as a list of one
+      if (isArg(v) && v.name === undefined) v = [v];
       const oneArg = Array.isArray(v) && v.length === 1 && isArg(v[0]) && v[0].name === undefined;
       // the hole stands as an argument: give it an argument
       if (isArg(node)) return oneArg ? v[0] : (typeof v === "string" ? { ...node, value: { kind: "name", name: v, loc: node.value?.loc } } : Array.isArray(v) ? node : { ...node, value: v });

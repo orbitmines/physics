@@ -158,22 +158,17 @@ Algebra := class {
       }
     }
     take(t.node, 1)
-    above := number == 1 ? [] : [Term.number(number)]
-    below := []
-    Array.range(bases.length).for(i => {
-      p := powers[i]
-      unless p == 0 {
-        base := Term(source: bases[i])
-        f := p.abs == 1 ? base : Term.of(base, Term.number(p.abs), "^")
-        if p > 0 { above.push(f) } else { below.push(f) }
-      }
-    })
-    num := above.empty ? Term.number(1) : above.first
-    above.rest.for(b => { num = Term.of(num, b, "*") }) if !above.empty
+    /* every base that is left, raised to what it carries: above the line where that is positive, below where negative */
+    raised := (i: N) => {
+      base := Term(source: bases[i])
+      powers[i].abs == 1 ? base : Term.of(base, Term.number(powers[i].abs), "^")
+    }
+    left := Array.range(bases.length).filter(i => powers[i] != 0)
+    above := (number == 1 ? [] : [Term.number(number)]).concat(left.filter(i => powers[i] > 0).map(i => raised(i)))
+    below := left.filter(i => powers[i] < 0).map(i => raised(i))
+    num := above.empty ? Term.number(1) : above.rest.reduce(above.first, (n, b) => Term.of(n, b, "*"))
     return num if below.empty
-    den := below.first
-    below.rest.for(b => { den = Term.of(den, b, "*") })
-    Term.of(num, den, "/")
+    Term.of(num, below.rest.reduce(below.first, (d, b) => Term.of(d, b, "*")), "/")
   }
 }
 

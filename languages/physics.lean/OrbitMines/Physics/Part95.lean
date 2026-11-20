@@ -78,22 +78,7 @@ ray_impl_static "helpers" : String := do
   if true then return ("fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }" : String)
   return ωnull
 ray_impl_static "points" : (RList Float) := do
-  let points_0 ← IO.mkRef (← ωlst #[])
-  let i_0 ← IO.mkRef (1 : Float)
-  while ωtruthy (← ωle (← i_0.get) (120 : Float)) do
-    (← dot! (← points_0.get) rpush ((← ωdiv (← i_0.get) (120 : Float)))) |> ωsink
-    (← ωwr i_0 (← ωadd (← i_0.get) (1 : Float))) |> ωsink
-    pure ()
-  let ex_0 ← IO.mkRef (0 : Float)
-  while ωtruthy (← ωle (← ex_0.get) (24 : Float)) do
-    let k_0 ← IO.mkRef (1 : Float)
-    while ωtruthy (← ωlt (← k_0.get) (8 : Float)) do
-      (← dot! (← points_0.get) rpush ((← ωmul ((← ωpow (10 : Float) ((← ωsub (← ex_0.get) (12 : Float))))) ((← ωadd (1 : Float) (← ωdiv (← k_0.get) (2 : Float))))))) |> ωsink
-      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-      pure ()
-    (← ωwr ex_0 (← ωadd (← ex_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← call! (← cls% Expr) "sorted" ((← points_0.get)))
+  if true then return (← ωget (← cls% Expr) "bracket_points")
   return ωnull
 ray_impl_static "solver" (name_0 : String) (f_0 : String) : String := do
   let pts_0 ← IO.mkRef (← ωget (← cls% Shaded) "points")

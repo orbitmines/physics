@@ -103,14 +103,11 @@ ray_impl_getter "premises" : (RList Step) := do
     (ωsetter (← sw_0.get) "derivation") (← ωlst #[(← inner_0.get)])
     (← dot! (← out_0.get) rpush ((← sw_0.get))) |> ωsink
     pure ()
-  let rates_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← infos_0.get)) do
-    let t_1 ← IO.mkRef e1
-    if ωtruthy (← ωandV (!ωisNull (← ωget (← t_1.get) "rate")) (do pure (ωnotV (← dot! (← rates_0.get) rcontains ((← ωget (← t_1.get) "rate")))))) then
-      (← dot! (← rates_0.get) rpush ((← ωget (← t_1.get) "rate"))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
+  let rates_0 ← IO.mkRef (← dot! (← dot! (← infos_0.get) rfilter ((fn! [t_3] do
+    if true then return (!ωisNull (← ωget (← t_3.get) "rate"))
+    return ωnull))) rreduce ((← ωlst #[]), (fn! [out_2 t_2] do
+    if true then return (← ωtern (ωtruthy (← dot! (← out_2.get) rcontains ((← ωget (← t_2.get) "rate")))) (do pure (← out_2.get)) (do pure (← dot! (← out_2.get) rpush ((← ωget (← t_2.get) "rate")))))
+    return ωnull)))
   for e1 in (← ωitems (← rates_0.get)) do
     let name_1 ← IO.mkRef e1
     (← dot! (← out_0.get) rpush ((← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" ((← name_1.get), (← call! (← cls% Expr) "num" ((1 : Float))))), ("the rewrite" : String), (← ωlst #[]), ("a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit" : String), (← ωlst #[("" ++ (← ωtoStr (← name_1.get)) ++ " = 1 per match per tick" : String)]))))) |> ωsink
@@ -118,13 +115,9 @@ ray_impl_getter "premises" : (RList Step) := do
   Value.null |> ωsink
   for e1 in (← ωitems (← ωlst #[("rays" : String), ("space" : String), ("folds" : String)])) do
     let ledger_1 ← IO.mkRef e1
-    let parts_1 ← IO.mkRef (← ωlst #[])
-    for e2 in (← ωitems (← acting_0.get)) do
-      let t_2 ← IO.mkRef e2
-      let c_2 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("rays" : String))) (do pure (← ωget (← t_2.get) "ray_count")) (do pure ((← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("space" : String))) (do pure (← ωget (← t_2.get) "space_count")) (do pure (← ωget (← t_2.get) "fold_count"))))))
-      (← dot! (← parts_1.get) rpush ((← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Prover) "body_of" ((← t_2.get))), (← c_2.get)]))))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
+    let parts_1 ← IO.mkRef (← dot! (← acting_0.get) rmap ((fn! [t_3] do
+      if true then return (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Prover) "body_of" ((← t_3.get))), (← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("rays" : String))) (do pure (← ωget (← t_3.get) "ray_count")) (do pure ((← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("space" : String))) (do pure (← ωget (← t_3.get) "space_count")) (do pure (← ωget (← t_3.get) "fold_count"))))))])))))
+      return ωnull)))
     if !ωtruthy (← dot! (← parts_1.get) rempty ()) then
       (← dot! (← out_0.get) rpush ((← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("the " ++ (← ωtoStr (← ledger_1.get)) ++ " line nets" : String), (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "add" ((← parts_1.get))))))), ("the line" : String), (← ωlst #[]), ("every term of the line does something to the " ++ (← ωtoStr (← ledger_1.get)) ++ " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted" : String), (← dot! (← acting_0.get) rmap ((fn! [t_3] do
         let c_3 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("rays" : String))) (do pure (← ωget (← t_3.get) "ray_count")) (do pure ((← ωtern (ωtruthy (← ωeqv (← ledger_1.get) ("space" : String))) (do pure (← ωget (← t_3.get) "space_count")) (do pure (← ωget (← t_3.get) "fold_count"))))))

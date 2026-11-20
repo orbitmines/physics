@@ -18,16 +18,18 @@ Tests := class {
 
   /* the pairs: every requirement on every fixture of its kind */
   static cases (): Array => {
-    out := []
-    Tests.requirements.for(r => {
-      Tests.fixtures.for(f => { out.push([r, f]) if f.kinds.contains(r.owner) })
-    })
-    out
+    Tests.requirements.reduce([], (out, r) => Tests.fixtures.filter(f => f.kinds.contains(r.owner)).reduce(out, (o, f) => o.push([r, f])))
   }
 
   /* the cases a package can run: those on fixtures of a kind the package carries */
   static write (language: Language, backend: Backend) => {
-    cases := Tests.cases.filter(c => c[1].kinds.some(k => Gen.emits(k)))
-    language.write_tests(cases.map(c => language.test_case(c[0], c[1])).join("\n\n"), Tests.fixtures)
+    language.write_cases(Tests.cases.filter(c => c[1].kinds.some(k => Gen.emits(k))))
+  }
+}
+
+Language += {
+  /* a package's cases, written: one file of them all, unless the language writes a file per fixture to run side by side */
+  write_cases (cases: Array) => {
+    this.write_tests(cases.map(c => this.test_case(c[0], c[1])).join("\n\n"), Tests.fixtures)
   }
 }

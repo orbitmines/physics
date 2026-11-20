@@ -7,10 +7,12 @@
  */
 
 Vector := class < components: Real[] {
-  + (b: Vector): Vector => Vector(components: Array.range(this.components.length).map(i => this.components[i] + b.components[i]))
-  - (b: Vector): Vector => Vector(components: Array.range(this.components.length).map(i => this.components[i] - b.components[i]))
+  /* component by component with b */
+  zipped (b: Vector, f: (x: Real, y: Real): Real): Vector => Vector(components: Array.range(this.components.length).map(i => f(this.components[i], b.components[i])))
+  + (b: Vector): Vector => this.zipped(b, (x, y) => x + y)
+  - (b: Vector): Vector => this.zipped(b, (x, y) => x - y)
   * (k: Real): Vector => Vector(components: this.components.map(c => c * k))
-  dot (b: Vector): Real => Array.range(this.components.length).map(i => this.components[i] * b.components[i]).sum
+  dot (b: Vector): Real => this.zipped(b, (x, y) => x * y).components.sum
   norm (): Real => this.dot(this).sqrt
   unit (): Vector => this.norm == Real.ZERO ? this : this * (Real.ONE / this.norm)
   == (b: Vector): boolean => this.components == b.components
@@ -38,8 +40,7 @@ Geometry := class < name: String, offsets: Vector[] {
   static shells (D: N, squared: N[]): Geometry => {
     radius := squared.map(s => s.sqrt.floor).most(r => r)[0] + 1
     all := Geometry.box(D, radius).filter(v => v.norm > Real.ZERO).sorted_by(v => v.norm)
-    chosen := []
-    squared.for(s => { all.for(v => { chosen.push(v) if v.dot(v) == s }) })
+    chosen := squared.reduce([], (out, s) => out.concat(all.filter(v => v.dot(v) == s)))
     joined := squared.join("+")
     Geometry(name: "shells-{D}-{joined}", offsets: chosen)
   }
@@ -60,37 +61,18 @@ Geometry := class < name: String, offsets: Vector[] {
     Geometry(name: "nearest-{D}-{DEG}", offsets: chosen)
   }
 
+  /* every integer position in [low, low + count)^D: one axis at a time, each point grown along it */
+  static grid (D: N, low: Z, count: N): Vector[] => Array.range(D).reduce([Vector(components: [])], (points, _) => points.reduce([], (grown, p) => Array.range(count).reduce(grown, (out, k) => out.push(Vector(components: p.components.concat([Real.of(low + k)]))))))
   /* every integer offset in [-radius, radius]^D */
-  static box (D: N, radius: N): Vector[] => {
-    points := [Vector(components: [])]
-    i := 0
-    while i < D {
-      grown := []
-      points.for(p => {
-        k := 0 - radius
-        while k <= radius {
-          grown.push(Vector(components: p.components.concat([k])))
-          k = k + 1
-        }
-      })
-      points = grown
-      i = i + 1
-    }
-    points
-  }
+  static box (D: N, radius: N): Vector[] => Geometry.grid(D, 0 - radius, 2 * radius + 1)
 }
 
 Array += {
   /* stable insertion sort by a key - small lists only, which a shell of exits is */
-  sorted_by (key: (x: *): Number): Array => {
-    out := []
-    this.for(x => {
-      i := 0
-      while i < out.length & key(out[i]) <= key(x) { i = i + 1 }
-      out = out.take(i).concat([x]).concat(out.drop(i))
-    })
-    out
-  }
+  sorted_by (key: (x: *): Number): Array => this.reduce([], (out, x) => {
+    i := out.filter(y => key(y) <= key(x)).length
+    out.take(i).concat([x]).concat(out.drop(i))
+  })
 }
 
 /* the named lattices, each a shell or a few of Z^D */

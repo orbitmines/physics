@@ -230,46 +230,32 @@ static void C_Piece(Cls& c) {
   c.field("key", [](const Value& self) -> Value { return ""; });
   c.statik("text_", [](Value self, const Args& a1) -> Value {
     auto t_0 = cell(arg(a1, 0));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), "text") });
-    set(p_0->v, S<"text">(), t_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), "text"), kw(S<"text">(), t_0->v) });
     return null;
   });
   c.statik("wrap", [](Value self, const Args& a1) -> Value {
     auto kind_0 = cell(arg(a1, 0)); auto of_0 = cell(arg(a1, 1));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), kind_0->v) });
-    set(p_0->v, S<"of">(), of_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), kind_0->v), kw(S<"of">(), of_0->v) });
     return null;
   });
   c.statik("words", [](Value self, const Args& a1) -> Value {
     auto t_0 = cell(arg(a1, 0));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), "words") });
-    set(p_0->v, S<"text">(), t_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), "words"), kw(S<"text">(), t_0->v) });
     return null;
   });
   c.statik("big", [](Value self, const Args& a1) -> Value {
     auto kind_0 = cell(arg(a1, 0)); auto lo_0 = cell(arg(a1, 1)); auto hi_0 = cell(arg(a1, 2));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), kind_0->v) });
-    set(p_0->v, S<"lo">(), lo_0->v);
-    set(p_0->v, S<"hi">(), hi_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), kind_0->v), kw(S<"lo">(), lo_0->v), kw(S<"hi">(), hi_0->v) });
     return null;
   });
   c.statik("stacked", [](Value self, const Args& a1) -> Value {
     auto kind_0 = cell(arg(a1, 0)); auto over_0 = cell(arg(a1, 1)); auto under_0 = cell(arg(a1, 2));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), kind_0->v) });
-    set(p_0->v, S<"over">(), over_0->v);
-    set(p_0->v, S<"under">(), under_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), kind_0->v), kw(S<"over">(), over_0->v), kw(S<"under">(), under_0->v) });
     return null;
   });
   c.statik("cite", [](Value self, const Args& a1) -> Value {
     auto key_0 = cell(arg(a1, 0));
-    auto p_0 = cell(); p_0->v = make(S<"Piece">(), { kw(S<"kind">(), "ref") });
-    set(p_0->v, S<"key">(), key_0->v);
-    return p_0->v;
+    return make(S<"Piece">(), { kw(S<"kind">(), "ref"), kw(S<"key">(), key_0->v) });
     return null;
   });
 }
@@ -299,6 +285,9 @@ static void C_Reference(Cls& c) {
 static const bool R_Reference = define_class("Reference", "Node", &C_Reference);
 
 static void C_Setter(Cls& c) {
+  c.staticField("KINDS", [](const Value& self) -> Value { return list({ "var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren" }); });
+  c.staticField("OPENS", [](const Value& self) -> Value { return list({ "<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">" }); });
+  c.staticField("CLOSES", [](const Value& self) -> Value { return list({ "</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>" }); });
   c.method("together", [](Value self, const Args& a1) -> Value {
     auto parts_0 = cell(arg(a1, 0));
     return m_join(parts_0->v, "");
@@ -316,58 +305,8 @@ static void C_Setter(Cls& c) {
   });
   c.method("wrap", [](Value self, const Args& a1) -> Value {
     auto kind_0 = cell(arg(a1, 0)); auto c__0 = cell(arg(a1, 1));
-    if (truthy(eq(kind_0->v, "var"))) {
-      return "<i>" + str(c__0->v) + "</i>";
-    }
-    if (truthy(eq(kind_0->v, "count"))) {
-      return "<b class=\"k\">" + str(c__0->v) + "</b>";
-    }
-    if (truthy(eq(kind_0->v, "fn"))) {
-      return "<b class=\"d\">" + str(c__0->v) + "</b>";
-    }
-    if (truthy(eq(kind_0->v, "muted"))) {
-      return "<span class=\"mu\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "bar"))) {
-      return "<span class=\"bar\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "hat"))) {
-      return "<span class=\"acc hat\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "tilde"))) {
-      return "<span class=\"acc tld\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "vec"))) {
-      return "<span class=\"acc vec\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "dot"))) {
-      return "<span class=\"acc dot\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "ddot"))) {
-      return "<span class=\"acc ddot\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "bold"))) {
-      return "<b class=\"bf\">" + str(c__0->v) + "</b>";
-    }
-    if (truthy(eq(kind_0->v, "cal"))) {
-      return "<span class=\"cal\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "bb"))) {
-      return "<span class=\"bb\">" + str(c__0->v) + "</span>";
-    }
-    if (truthy(eq(kind_0->v, "sqrt"))) {
-      return "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" + str(c__0->v) + "</span></span>";
-    }
-    if (truthy(eq(kind_0->v, "sup"))) {
-      return "<sup>" + str(c__0->v) + "</sup>";
-    }
-    if (truthy(eq(kind_0->v, "sub"))) {
-      return "<sub>" + str(c__0->v) + "</sub>";
-    }
-    if (truthy(eq(kind_0->v, "paren"))) {
-      return "<span class=\"paren\">" + str(c__0->v) + "</span>";
-    }
-    return "<span class=\"" + str(kind_0->v) + "\">" + str(c__0->v) + "</span>";
+    auto i_0 = cell(); i_0->v = m_index_of(get(K(S<"Setter">()), S<"KINDS">()), kind_0->v);
+    return (truthy(eq(i_0->v, null)) ? Value("<span class=\"" + str(kind_0->v) + "\">" + str(c__0->v) + "</span>") : Value("" + str(elem(get(K(S<"Setter">()), S<"OPENS">()), i_0->v)) + "" + str(c__0->v) + "" + str(elem(get(K(S<"Setter">()), S<"CLOSES">()), i_0->v)) + ""));
     return null;
   });
   c.method("big", [](Value self, const Args& a1) -> Value {
@@ -493,22 +432,31 @@ static void C_Notation(Cls& c) {
     return (truthy(lt(i_0->v, len(s_0->v))) ? Value(elem(m_chars(s_0->v), i_0->v)) : Value(0.0));
     return null;
   });
-  c.statik("letters", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1));
+  c.statik("run", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1)); auto keep_0 = cell(arg(a1, 2));
     auto k_0 = cell(); k_0->v = at_0->v;
-    while (truthy((truthy(lt(k_0->v, len(s_0->v))) && truthy(call(K(S<"Notation">()), S<"is_letter">(), { elem(m_chars(s_0->v), k_0->v) }))))) {
+    while (truthy((truthy(lt(k_0->v, len(s_0->v))) && truthy(invoke(keep_0->v, { elem(m_chars(s_0->v), k_0->v) }))))) {
       k_0->v = add(k_0->v, 1.0);
     }
     return call(K(S<"Notation">()), S<"sub_">(), { s_0->v, at_0->v, k_0->v });
     return null;
   });
+  c.statik("letters", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1));
+    return call(K(S<"Notation">()), S<"run">(), { s_0->v, at_0->v, fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return call(K(S<"Notation">()), S<"is_letter">(), { c__2->v });
+      return null;
+    }) });
+    return null;
+  });
   c.statik("alnums", [](Value self, const Args& a1) -> Value {
     auto s_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1));
-    auto k_0 = cell(); k_0->v = at_0->v;
-    while (truthy((truthy(lt(k_0->v, len(s_0->v))) && truthy(call(K(S<"Notation">()), S<"is_alnum">(), { elem(m_chars(s_0->v), k_0->v) }))))) {
-      k_0->v = add(k_0->v, 1.0);
-    }
-    return call(K(S<"Notation">()), S<"sub_">(), { s_0->v, at_0->v, k_0->v });
+    return call(K(S<"Notation">()), S<"run">(), { s_0->v, at_0->v, fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return call(K(S<"Notation">()), S<"is_alnum">(), { c__2->v });
+      return null;
+    }) });
     return null;
   });
   c.statik("counted", [](Value self, const Args& a1) -> Value {
@@ -562,6 +510,11 @@ static void C_Notation(Cls& c) {
     return make(S<"Args">(), { kw(S<"got">(), got_0->v), kw(S<"end">(), k_0->v) });
     return null;
   });
+  c.statik("scripted", [](Value self, const Args& a1) -> Value {
+    auto base_0 = cell(arg(a1, 0)); auto kind_0 = cell(arg(a1, 1)); auto of_0 = cell(arg(a1, 2));
+    return make(S<"Piece">(), { kw(S<"kind">(), "scripted"), kw(S<"base">(), base_0->v), kw(S<"raised">(), (truthy(eq(kind_0->v, "sup")) ? Value(of_0->v) : Value(null))), kw(S<"lowered">(), (truthy(eq(kind_0->v, "sup")) ? Value(null) : Value(of_0->v))) });
+    return null;
+  });
   c.statik("attach", [](Value self, const Args& a1) -> Value {
     auto out_0 = cell(arg(a1, 0)); auto kind_0 = cell(arg(a1, 1)); auto of_0 = cell(arg(a1, 2));
     if (truthy(m_empty(out_0->v))) {
@@ -590,25 +543,11 @@ static void C_Notation(Cls& c) {
       } else {
         set(tail_0->v, S<"text">(), head_0->v);
       }
-      auto s_0 = cell(); s_0->v = make(S<"Piece">(), { kw(S<"kind">(), "scripted") });
-      set(s_0->v, S<"base">(), call(K(S<"Piece">()), S<"text_">(), { last_char_0->v }));
-      if (truthy(eq(kind_0->v, "sup"))) {
-        set(s_0->v, S<"raised">(), of_0->v);
-      } else {
-        set(s_0->v, S<"lowered">(), of_0->v);
-      }
-      m_push(out_0->v, s_0->v);
+      m_push(out_0->v, call(K(S<"Notation">()), S<"scripted">(), { call(K(S<"Piece">()), S<"text_">(), { last_char_0->v }), kind_0->v, of_0->v }));
       return null;
     }
     m_pop(out_0->v);
-    auto s_0 = cell(); s_0->v = make(S<"Piece">(), { kw(S<"kind">(), "scripted") });
-    set(s_0->v, S<"base">(), tail_0->v);
-    if (truthy(eq(kind_0->v, "sup"))) {
-      set(s_0->v, S<"raised">(), of_0->v);
-    } else {
-      set(s_0->v, S<"lowered">(), of_0->v);
-    }
-    return m_push(out_0->v, s_0->v);
+    return m_push(out_0->v, call(K(S<"Notation">()), S<"scripted">(), { tail_0->v, kind_0->v, of_0->v }));
     return null;
   });
   c.statik("parse", [](Value self, const Args& a1) -> Value {
@@ -768,25 +707,25 @@ static void C_Notation(Cls& c) {
       }
       return null;
     });
+    auto starts_name_0 = cell(); starts_name_0->v = fn([=](const Args& a2) -> Value {
+      auto c__1 = cell(arg(a2, 0));
+      return (truthy(call(K(S<"Notation">()), S<"is_letter">(), { c__1->v })) || truthy(eq(c__1->v, 95.0)));
+      return null;
+    });
     auto bits_0 = cell(); bits_0->v = list({  });
     auto k_0 = cell(); k_0->v = 0.0;
     while (truthy(lt(k_0->v, len(s_0->v)))) {
-      auto c__0 = cell(); c__0->v = elem(m_chars(s_0->v), k_0->v);
-      if (truthy((truthy(call(K(S<"Notation">()), S<"is_letter">(), { c__0->v })) || truthy(eq(c__0->v, 95.0))))) {
-        auto j_0 = cell(); j_0->v = k_0->v;
-        while (truthy((truthy(lt(j_0->v, len(s_0->v))) && truthy(call(K(S<"Notation">()), S<"is_name">(), { elem(m_chars(s_0->v), j_0->v) }))))) {
-          j_0->v = add(j_0->v, 1.0);
-        }
-        m_push(bits_0->v, call(K(S<"Notation">()), S<"sub_">(), { s_0->v, k_0->v, j_0->v }));
-        k_0->v = j_0->v;
-      } else {
-        auto j_0 = cell(); j_0->v = k_0->v;
-        while (truthy((truthy(lt(j_0->v, len(s_0->v))) && truthy((!truthy(((truthy(call(K(S<"Notation">()), S<"is_letter">(), { elem(m_chars(s_0->v), j_0->v) })) || truthy(eq(elem(m_chars(s_0->v), j_0->v), 95.0)))))))))) {
-          j_0->v = add(j_0->v, 1.0);
-        }
-        m_push(bits_0->v, call(K(S<"Notation">()), S<"sub_">(), { s_0->v, k_0->v, j_0->v }));
-        k_0->v = j_0->v;
-      }
+      auto bit_0 = cell(); bit_0->v = (truthy(invoke(starts_name_0->v, { elem(m_chars(s_0->v), k_0->v) })) ? Value(call(K(S<"Notation">()), S<"run">(), { s_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+        auto c__2 = cell(arg(a3, 0));
+        return call(K(S<"Notation">()), S<"is_name">(), { c__2->v });
+        return null;
+      }) })) : Value(call(K(S<"Notation">()), S<"run">(), { s_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+        auto c__2 = cell(arg(a3, 0));
+        return (!truthy(invoke(starts_name_0->v, { c__2->v })));
+        return null;
+      }) })));
+      m_push(bits_0->v, bit_0->v);
+      k_0->v = add(k_0->v, len(bit_0->v));
     }
     auto i_0 = cell(); i_0->v = 0.0;
     while (truthy(lt(i_0->v, len(bits_0->v)))) {

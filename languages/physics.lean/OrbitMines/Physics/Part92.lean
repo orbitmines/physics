@@ -93,17 +93,11 @@ ray_impl_getter "seeds" : (RList Float) := do
   if true then return (← out_0.get)
   return ωnull
 ray_impl_getter "constants" : (RList Float) := do
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "discs_n")] do
-    let g_1 ← IO.mkRef (ωnatF i1)
-    for e2 in (← ωitems (← ωlst #[(← ωdiv (← call! self "GM" ((← g_1.get))) (← ωget (← cls% Formed) "N")), (← call! self "soft" ((← g_1.get))), (← ωget self "scale_a0"), (← ωget (← cls% Formed) "DT")])) do
-      let v_2 ← IO.mkRef e2
-      (← dot! (← out_0.get) rpush ((← v_2.get))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← ωrrange (← ωget self "discs_n")) rreduce ((← ωlst #[]), (fn! [out_2 g_2] do
+    if true then return (← dot! (← ωlst #[(← ωdiv (← call! self "GM" ((← g_2.get))) (← ωget (← cls% Formed) "N")), (← call! self "soft" ((← g_2.get))), (← ωget self "scale_a0"), (← ωget (← cls% Formed) "DT")]) rreduce ((← out_2.get), (fn! [o_4 v_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← v_4.get)))
+      return ωnull)))
+    return ωnull)))
   return ωnull
 ray_impl_method "accel_cpu" (state_0 : (RList Float)) (i_0 : Float) : (RList Float) := do
   let g_0 ← IO.mkRef (← dot! ((← ωdiv (← i_0.get) (← ωget (← cls% Formed) "N"))) rfloor ())
@@ -255,20 +249,13 @@ ray_impl_method "binned" (state_0 : (RList Float)) : (RList Float) := do
   return ωnull
 ray_impl_method "save" (frames_0 : (RList Value)) : Value := do
   let G_0 ← IO.mkRef (← ωget (← cls% Formed) "GRID")
-  let density_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "discs_n")] do
-    let g_1 ← IO.mkRef (ωnatF i1)
-    for e2 in (← ωitems (← frames_0.get)) do
-      let f_2 ← IO.mkRef e2
-      for i3 in [0:ωrangeN (← ωmul (← G_0.get) (← G_0.get))] do
-        let c_3 ← IO.mkRef (ωnatF i3)
-        (← dot! (← density_0.get) rpush ((← ωelem (← f_2.get) (← ωadd (← ωmul (← ωmul (← g_1.get) (← G_0.get)) (← G_0.get)) (← c_3.get))))) |> ωsink
-        pure ()
-      Value.null |> ωsink
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let density_0 ← IO.mkRef (← dot! (← ωrrange (← ωget self "discs_n")) rreduce ((← ωlst #[]), (fn! [out_2 g_2] do
+    if true then return (← dot! (← frames_0.get) rreduce ((← out_2.get), (fn! [o_4 f_4] do
+      if true then return (← dot! (← ωrrange (← ωmul (← G_0.get) (← G_0.get))) rreduce ((← o_4.get), (fn! [oo_6 c_6] do
+        if true then return (← dot! (← oo_6.get) rpush ((← ωelem (← f_4.get) (← ωadd (← ωmul (← ωmul (← g_2.get) (← G_0.get)) (← G_0.get)) (← c_6.get)))))
+        return ωnull)))
+      return ωnull)))
+    return ωnull)))
   let cols_0 ← IO.mkRef (← RMap.new)
   (← (ωatSetter (← cols_0.get) ("density" : String)) (← density_0.get)) |> ωsink
   let extra_0 ← IO.mkRef (← RMap.new)

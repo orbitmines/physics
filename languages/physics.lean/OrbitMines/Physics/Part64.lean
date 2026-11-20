@@ -106,16 +106,15 @@ ray_impl_method "coarse" (x_0 : Float) (y_0 : Float) : Float := do
   if true then return (← ωadd (← ωmul (← cy_0.get) (← ωget self "coarse_side")) (← cx_0.get))
   return ωnull
 ray_impl_static "middle" (holes_0 : (RList Hole)) : (RList Float) := do
-  let m_0 ← IO.mkRef (0 : Float)
-  let x_0 ← IO.mkRef (0 : Float)
-  let y_0 ← IO.mkRef (0 : Float)
-  for e1 in (← ωitems (← holes_0.get)) do
-    let h_1 ← IO.mkRef e1
-    (← ωwr m_0 (← ωadd (← m_0.get) (← ωget (← h_1.get) "mass"))) |> ωsink
-    (← ωwr x_0 (← ωadd (← x_0.get) (← ωmul (← ωget (← h_1.get) "x") (← ωget (← h_1.get) "mass")))) |> ωsink
-    (← ωwr y_0 (← ωadd (← y_0.get) (← ωmul (← ωget (← h_1.get) "y") (← ωget (← h_1.get) "mass")))) |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let m_0 ← IO.mkRef (← dot! (← dot! (← holes_0.get) rmap ((fn! [h_2] do
+    if true then return (← ωget (← h_2.get) "mass")
+    return ωnull))) rsum ())
+  let x_0 ← IO.mkRef (← dot! (← dot! (← holes_0.get) rmap ((fn! [h_2] do
+    if true then return (← ωmul (← ωget (← h_2.get) "x") (← ωget (← h_2.get) "mass"))
+    return ωnull))) rsum ())
+  let y_0 ← IO.mkRef (← dot! (← dot! (← holes_0.get) rmap ((fn! [h_2] do
+    if true then return (← ωmul (← ωget (← h_2.get) "y") (← ωget (← h_2.get) "mass"))
+    return ωnull))) rsum ())
   if true then return (← ωtern (ωtruthy (← ωgt (← m_0.get) (0 : Float))) (do pure (← ωlst #[(← ωdiv (← x_0.get) (← m_0.get)), (← ωdiv (← y_0.get) (← m_0.get))])) (do pure (← ωlst #[(0 : Float), (0 : Float)])))
   return ωnull
 ray_impl_static "rest_of" (holes_0 : (RList Hole)) (k_0 : Float) : (RList Float) := do

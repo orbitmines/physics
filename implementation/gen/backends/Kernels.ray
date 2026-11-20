@@ -31,21 +31,19 @@ Kernels := class {
   static IND = "  "
   /* the passes of one tick, in the theory's own rule order: what each rule's terms need, then the rule's pass; a rule about a source is the host's (`|`) */
   static tick_of (theory: Theory, terms: Array): String[] => {
-    passes := ["SNAP", "CLEAR", "SWEEP", "TOTAL"]
-    Array.range(theory.rules.length).for(k => {
-      rule := theory.rules[k]
-      if rule.over == "Boundary" { passes.push("GATHER"); passes.push("|"); passes.push("APPLY") }
-      elsif rule.over == "Source" { }
-      else {
-        ts := terms.filter(t => t.rule != None & t.rule.id == rule.id)
-        if ts.some(t => !t.settles & !t.transport & t.degree == 2) { passes.push("MEET{k}"); passes.push("TAKE") }
-        if ts.some(t => !t.settles & !t.transport & t.degree != 2 & !t.outside) { passes.push("CREATE{k}") }
-        if ts.some(t => t.transport) { passes.push("LOCATE"); passes.push("CARRY"); passes.push("FUNNEL"); passes.push("TAGCARRY@z"); passes.push("TAGFUNNEL@z") }
-      }
-    })
+    rules := Array.range(theory.rules.length).reduce([], (out, k) => out.concat(Kernels.passes_of(theory.rules[k], k, terms)))
     /* the tick's output, all at once: what arrived and everything made; then the world as it stands, for a readback */
-    ["SETTLE", "SNAP", "SWEEP", "ARRIVED"].for(nm => { passes.push(nm) })
-    passes
+    ["SNAP", "CLEAR", "SWEEP", "TOTAL"].concat(rules).concat(["SETTLE", "SNAP", "SWEEP", "ARRIVED"])
+  }
+  /* what one rule's terms need, then the rule's pass */
+  static passes_of (rule: Rule, k: N, terms: Array): String[] => {
+    return ["GATHER", "|", "APPLY"] if rule.over == "Boundary"
+    return [] if rule.over == "Source"
+    ts := terms.filter(t => t.rule != None & t.rule.id == rule.id)
+    meet := ts.some(t => !t.settles & !t.transport & t.degree == 2) ? ["MEET{k}", "TAKE"] : []
+    create := ts.some(t => !t.settles & !t.transport & t.degree != 2 & !t.outside) ? ["CREATE{k}"] : []
+    carry := ts.some(t => t.transport) ? ["LOCATE", "CARRY", "FUNNEL", "TAGCARRY@z", "TAGFUNNEL@z"] : []
+    meet.concat(create).concat(carry)
   }
 
   /* the whole text for a backend: its head, the language's preamble, its declarations, the helpers, the kernels */
@@ -61,13 +59,11 @@ Kernels := class {
     helpers := Kernels.helpers(d)
     terms := Array.range(meets.length).map(k => Kernels.meet_fns(d, k, meets[k])).concat(Array.range(point.length).map(k => Kernels.point_fns(d, k, point[k]))).join("\n\n")
     /* one CREATE and one MEET per rule that has such terms, so each fires once, in its rule's turn */
-    per_rule := []
-    Array.range(theory.rules.length).for(k => {
+    per_rule := Array.range(theory.rules.length).reduce([], (out, k) => {
       rule := theory.rules[k]
       mine := Array.range(meets.length).filter(i => meets[i].rule != None & meets[i].rule.id == rule.id)
-      per_rule.push(Kernels.kernel(d, "MEET{k}", "cells", Kernels.meet(d, mine))) if !mine.empty
       pts := Array.range(point.length).filter(i => point[i].rule != None & point[i].rule.id == rule.id)
-      per_rule.push(Kernels.kernel(d, "CREATE{k}", "cells", Kernels.create(d, point, pts))) if !pts.empty
+      out.concat(mine.empty ? [] : [Kernels.kernel(d, "MEET{k}", "cells", Kernels.meet(d, mine))]).concat(pts.empty ? [] : [Kernels.kernel(d, "CREATE{k}", "cells", Kernels.create(d, point, pts))])
     })
     kernels := [
       Kernels.kernel(d, "SNAP", "cells*A", Kernels.snap(d)),

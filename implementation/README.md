@@ -94,7 +94,7 @@ Machine types by class name: `N`/`Natural` → u32, `Z`/`Integer` → i32, `Real
 | optional | `x?`, `yes?: (): *` |
 | caller-scoped block | `block<local: &caller>()` runs a block in the caller's scope (so `return`/`break` are the caller's) |
 | conditional postfix | `return x if p` |
-| assertion (= a test) | `dynamically assert expr` — a requirement a type must meet; every one becomes a generated test. Tests live in **separate files** that extend the type under test with asserts (`World{ticks == 100} += { dynamically assert ... }`), e.g. `theories/G/tests/*.ray` |
+| assertion (= a test) | `dynamically assert expr` — a requirement a type must meet; every one becomes a generated test. Tests live in **separate files** that extend the type under test with asserts (`World{ticks == 100} += { dynamically assert ... }`), e.g. `theories/G/tests/*.ray`. A test file's top-level definitions are its **fixtures**; give an expensive one its type (`closure: Proof = G.proved`) and it is worked out only when a test asks for it — an untyped one (`closure := G.proved`) runs on every boot of every `ray` command. A fixture is built **once** and walked through its ticks once: at every tick each requirement still waiting on it is checked, and read off the world the first tick its refinement holds - so a requirement must only read what it is given. Fixtures are top-level names, but a bare name resolves local, then member of `this`, then top-level: `standing(...)` in a `Proof` requirement is `Proof.standing` even though medium.ray has a fixture `standing` |
 | calls | dot-method only: `a.fold(b)`, `this.unfold`, `this.leaving.grow` — `()` optional with no args; **no** juxtaposition (`f a, b`), **no** `->` (that is Ray's recursive-structure operator) |
 | loops | `list.for(x => { body })`; `list.map(x => expr)`; `.each.method` broadcasts (`vertex.rays.each.activate`); `recur` = tail self-call (defined via goto, not a primitive) |
 | strings | `"text {x} more"` interpolates any expression; literal braces are `{{` / `}}`; applies to every string literal |
@@ -1030,9 +1030,12 @@ Gotchas met writing these (all confirmed the hard way):
 
 `tests/` is generated: for every `dynamically assert` on a refinement (`World{ticks == 4} += { ... }`)
 and every fixture (a definition in `theories/G/tests/*.ray` whose value is a World), one test per
-language (`tests/ts/G.test.ts` with `node:test`, `tests/py/test_G.py` with `unittest`), which builds
-the fixture, ticks it until the refinement holds, and checks the requirement. `npx ray test` runs the
-same cases in the bootstrap. Requirements are written against the implicit world (`rays > 0`,
+language (a file per fixture, run side by side: `tests/ts/G/<fixture>.test.ts` with `node:test`,
+`tests/py/test_<fixture>.py` with `unittest` via `tests/py/run.py`), which builds
+the fixture, ticks it until the refinement holds, and checks the requirement. `npx ray test` runs, in
+the bootstrap, the cases on fixtures the packages do NOT carry (a `Term`): a World or Medium is the
+generated tests' to run, compiled, since the interpreter takes hours over them; `npx ray test --all`
+runs every case there too. Requirements are written against the implicit world (`rays > 0`,
 `this.N`); the emitter reads them as `it.rays`.
 
 Running: `npx ray gen`, `npm test` (bootstrap + node:test + unittest discover), `npm run test:gpu`

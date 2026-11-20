@@ -258,25 +258,26 @@ Lean: Language = class {
 
   /* a class this package does not carry but a type or a program names (`Equation`): the types and makings of the class modules */
   missing (types: String, parts: String, known: String[]): String[] => {
-    words := []
-    types.split("\n").for(l => {
-      /* past the member's name: what its parameters and its result are */
-      pieces := l.split("\"")
-      if pieces.length >= 3 { words = words.concat(pieces.drop(2).join(" ").replace("(", " ").replace(")", " ").replace(":", " ").replace("=", " ").split(" ")) }
-    })
-    parts.split("new! ").drop(1).for(p => { words.push(p.split(" ").first) })
-    parts.split("cls% ").drop(1).for(p => { words.push(p.split(")").first.split(" ").first) })
+    /* past a member's name: what its parameters and its result are */
+    typed := types.split("\n").map(l => l.split("\"")).filter(pieces => pieces.length >= 3).reduce([], (out, pieces) => out.concat(pieces.drop(2).join(" ").replace("(", " ").replace(")", " ").replace(":", " ").replace("=", " ").split(" ")))
+    made := parts.split("new! ").drop(1).map(p => p.split(" ").first)
+    named := parts.split("cls% ").drop(1).map(p => p.split(")").first.split(" ").first)
     builtin := ["Node", "Float", "Bool", "String", "Value", "RList", "RMap", "IO", "Unit", "Many", "Obj", "Nat", "Cls", "Array"]
-    out := []
-    words.for(w => {
-      c := w.chars
-      upper := c.length > 0 & c[0] >= 65 & c[0] <= 90
-      plain := c.every(k => (k >= 48 & k <= 57) | (k >= 65 & k <= 90) | (k >= 97 & k <= 122) | k == 95)
-      /* a parameter is a local, spelled with the depth of its scope (`D_0`): not a type */
-      local := w.contains("_") & c.length > 0 & c[c.length - 1] >= 48 & c[c.length - 1] <= 57
-      out.push(w) if upper & plain & !local & !known.contains(w) & !builtin.contains(w) & !out.contains(w)
-    })
-    out
+    typed.concat(made).concat(named).filter(w => Lean.type_word(w) & !known.contains(w) & !builtin.contains(w)).reduce([], (out, w) => out.contains(w) ? out : out.push(w))
+  }
+  /* a word that names a type: capitalised and plain - and not a parameter, a local spelled with the depth of its scope (`D_0`) */
+  type_word (w: String): boolean => {
+    c := w.chars
+    upper := c.length > 0 & c[0] >= 65 & c[0] <= 90
+    plain := c.every(k => (k >= 48 & k <= 57) | (k >= 65 & k <= 90) | (k >= 97 & k <= 122) | k == 95)
+    local := w.contains("_") & c.length > 0 & c[c.length - 1] >= 48 & c[c.length - 1] <= 57
+    upper & plain & !local
+  }
+
+  /* a member written twice (a part and a field of the same name): the later one stands */
+  members (body: String[]): String[] => {
+    keys := body.map(l => l.split(" : ").first)
+    Array.range(body.length).filter(i => !keys.drop(i + 1).contains(keys[i])).map(i => body[i])
   }
 
   /*
@@ -289,24 +290,13 @@ Lean: Language = class {
     pieces := code.split("/-@@PIECE@@-/").filter(p => p.trim != "")
     globals := pieces.last
     classes := pieces.take(pieces.length - 1)
-    heads := []
-    types := []
-    parts := []
-    known := ["Iterable", "Ordered"]
-    classes.for(p => {
-      lines := p.split("\n")
-      /* a program's type is a Value where Ray writes one no rule names (`(played: Played?) => Unrolling`) */
-      decl := lines.filter(l => l.starts_with("--@ ")).map(l => l.drop(4).replace("((...args: any[]) => any)", "Value"))
-      /* every class first, so that a member may name a class declared after its own */
-      heads.push(decl.filter(l => l.starts_with("ray_class ")).join("\n"))
-      decl.filter(l => l.starts_with("ray_class ")).for(l => { known.push(l.split(" ")[1]) })
-      body := decl.filter(l => !l.starts_with("ray_class "))
-      /* a member written twice (a part and a field of the same name): the later one stands */
-      keys := body.map(l => l.split(" : ").first)
-      kept := Array.range(body.length).filter(i => !keys.drop(i + 1).contains(keys[i])).map(i => body[i])
-      types.push(kept.join("\n"))
-      parts.push(lines.filter(l => !l.starts_with("--@ ")).join("\n").replace("((...args: any[]) => any)", "Value"))
-    })
+    /* a class's declarations are its lines `--@ `; a program's type is a Value where Ray writes one no rule names (`(played: Played?) => Unrolling`) */
+    decls := classes.map(p => p.split("\n").filter(l => l.starts_with("--@ ")).map(l => l.drop(4).replace("((...args: any[]) => any)", "Value")))
+    /* every class first, so that a member may name a class declared after its own */
+    heads := decls.map(decl => decl.filter(l => l.starts_with("ray_class ")).join("\n"))
+    known := decls.reduce(["Iterable", "Ordered"], (out, decl) => out.concat(decl.filter(l => l.starts_with("ray_class ")).map(l => l.split(" ")[1])))
+    types := decls.map(decl => Lean.members(decl.filter(l => !l.starts_with("ray_class "))).join("\n"))
+    parts := classes.map(p => p.split("\n").filter(l => !l.starts_with("--@ ")).join("\n").replace("((...args: any[]) => any)", "Value"))
     missing := Lean.missing(types.join("\n"), parts.join("\n"), known)
     stubs := missing.map(m => "ray_missing {m}").join("\n")
     classes_ := heads.join("\n")

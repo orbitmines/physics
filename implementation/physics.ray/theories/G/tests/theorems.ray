@@ -2,7 +2,7 @@
  * WHAT THE RULES COME TO: the closure answers the questions, and the answers are what the rules say.
  */
 
-closure := G.proved
+closure: Proof = G.proved
 
 Proof{theory == "G"} += {
   dynamically assert has("vacuum.equation")

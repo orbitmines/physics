@@ -71,23 +71,7 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
   }
 
   /* every integer position in [0, N)^D */
-  positions (N: N): Vector[] => {
-    points := [Vector(components: [])]
-    i := 0
-    while i < this.geometry.D {
-      grown := []
-      points.for(p => {
-        k := 0
-        while k < N {
-          grown.push(Vector(components: p.components.concat([Real.of(k)])))
-          k = k + 1
-        }
-      })
-      points = grown
-      i = i + 1
-    }
-    points
-  }
+  positions (N: N): Vector[] => Geometry.grid(this.geometry.D, 0, N)
 
   /* a point at a position: its rays made, and joined to every neighbour already there - or, where a point already stands there, held by it: space at a place is what stands for it */
   place (at: Vector): Vertex? => {
@@ -139,18 +123,10 @@ World := class < theory: Theory, geometry: Geometry, N: N, seed: N, bound: N {
     return this.sources if kind == "Source"
     /* a point is many rays: `Ray` matches are the Many of each point's rays */
     return this.live.map(v => v.rays#) if kind == "Ray"
-    rays := []
-    this.live.for(v => { v.rays.for(r => { rays.push(r) }) })
+    rays := this.live.reduce([], (out, v) => v.rays.reduce(out, (o, r) => o.push(r)))
     return rays.map(r => r.terminal) if kind == "Boundary"
-    if kind == "Edge" {
-      edges := []
-      /* an edge between two live points, once: seen from the end whose point was made first */
-      rays.for(r => {
-        there := r.ahead
-        edges.push(r.terminal.edge) if there != None & r.vertex.ordinal < there.ordinal
-      })
-      return edges
-    }
+    /* an edge between two live points, once: seen from the end whose point was made first */
+    return rays.filter(r => r.ahead != None & r.vertex.ordinal < r.ahead.ordinal).map(r => r.terminal.edge) if kind == "Edge"
     []
   }
 

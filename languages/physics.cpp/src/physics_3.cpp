@@ -34,6 +34,15 @@ static void C_ExprReader(Cls& c) {
     return eq(call(K(S<"Notation">()), S<"sub_">(), { get(self, S<"text">()), get(self, S<"at">()), add(get(self, S<"at">()), len(s_0->v)) }), s_0->v);
     return null;
   });
+  c.method("take_while", [](Value self, const Args& a1) -> Value {
+    auto keep_0 = cell(arg(a1, 0));
+    auto k_0 = cell(); k_0->v = get(self, S<"at">());
+    while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy(invoke(keep_0->v, { elem(m_chars(get(self, S<"text">())), k_0->v) }))))) {
+      k_0->v = add(k_0->v, 1.0);
+    }
+    return call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+    return null;
+  });
   c.getter("addition", [](Value self, const Args& a1) -> Value {
     auto left_0 = cell(); left_0->v = get(self, S<"product">());
     get(self, S<"skip">());
@@ -89,19 +98,27 @@ static void C_ExprReader(Cls& c) {
     return null;
   });
   c.getter("word", [](Value self, const Args& a1) -> Value {
-    auto k_0 = cell(); k_0->v = get(self, S<"at">());
-    while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy(((truthy(call(K(S<"Notation">()), S<"is_name">(), { elem(m_chars(get(self, S<"text">())), k_0->v) })) || truthy(gt(elem(m_chars(get(self, S<"text">())), k_0->v), 127.0)))))))) {
-      k_0->v = add(k_0->v, 1.0);
-    }
-    return call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+    return call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (truthy(call(K(S<"Notation">()), S<"is_name">(), { c__2->v })) || truthy(gt(c__2->v, 127.0)));
+      return null;
+    }) });
     return null;
   });
   c.getter("number", [](Value self, const Args& a1) -> Value {
-    auto k_0 = cell(); k_0->v = get(self, S<"at">());
-    while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy(((truthy(call(K(S<"Notation">()), S<"is_digit">(), { elem(m_chars(get(self, S<"text">())), k_0->v) })) || truthy(eq(elem(m_chars(get(self, S<"text">())), k_0->v), 46.0)))))))) {
-      k_0->v = add(k_0->v, 1.0);
-    }
-    return call(K(S<"Expr">()), S<"num">(), { number(call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) })) });
+    return call(K(S<"Expr">()), S<"num">(), { number(call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (truthy(call(K(S<"Notation">()), S<"is_digit">(), { c__2->v })) || truthy(eq(c__2->v, 46.0)));
+      return null;
+    }) })) });
+    return null;
+  });
+  c.getter("quoted", [](Value self, const Args& a1) -> Value {
+    return call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (!eq(c__2->v, 34.0));
+      return null;
+    }) });
     return null;
   });
   c.getter("primary", [](Value self, const Args& a1) -> Value {
@@ -119,11 +136,7 @@ static void C_ExprReader(Cls& c) {
     }
     if (truthy(eq(c__0->v, 34.0))) {
       call(self, S<"eat">(), { 1.0 });
-      auto k_0 = cell(); k_0->v = get(self, S<"at">());
-      while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy((!eq(elem(m_chars(get(self, S<"text">())), k_0->v), 34.0)))))) {
-        k_0->v = add(k_0->v, 1.0);
-      }
-      auto name_0 = cell(); name_0->v = call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+      auto name_0 = cell(); name_0->v = quoted(self);
       call(self, S<"eat">(), { 1.0 });
       return call(K(S<"Expr">()), S<"field">(), { call(K(S<"Expr">()), S<"name_of">(), { name_0->v }) });
     }
@@ -135,11 +148,7 @@ static void C_ExprReader(Cls& c) {
       call(self, S<"eat">(), { 1.0 });
       get(self, S<"skip">());
       call(self, S<"eat">(), { 1.0 });
-      auto k_0 = cell(); k_0->v = get(self, S<"at">());
-      while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy((!eq(elem(m_chars(get(self, S<"text">())), k_0->v), 34.0)))))) {
-        k_0->v = add(k_0->v, 1.0);
-      }
-      auto name_0 = cell(); name_0->v = call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+      auto name_0 = cell(); name_0->v = quoted(self);
       call(self, S<"eat">(), { 1.0 });
       get(self, S<"skip">());
       call(self, S<"eat">(), { 1.0 });
@@ -161,11 +170,7 @@ static void C_ExprReader(Cls& c) {
     }
     if (truthy((truthy(eq(name_0->v, "s")) && truthy(eq(get(self, S<"peek">()), 91.0))))) {
       call(self, S<"eat">(), { 2.0 });
-      auto k_0 = cell(); k_0->v = get(self, S<"at">());
-      while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy((!eq(elem(m_chars(get(self, S<"text">())), k_0->v), 34.0)))))) {
-        k_0->v = add(k_0->v, 1.0);
-      }
-      auto key_0 = cell(); key_0->v = call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+      auto key_0 = cell(); key_0->v = quoted(self);
       call(self, S<"eat">(), { 2.0 });
       return call(K(S<"Expr">()), S<"field">(), { call(K(S<"Expr">()), S<"name_of">(), { key_0->v }) });
     }

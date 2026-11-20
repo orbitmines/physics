@@ -253,35 +253,23 @@ ray_impl_method "needs" (grid_0 : (RList Float)) (without_0 : (RList (RList Floa
   if true then return (← need_0.get)
   return ωnull
 ray_impl_method "save" (id_0 : String) (grid_0 : (RList Float)) (need_0 : (RList Float)) : Value := do
-  let x_0 ← IO.mkRef (← ωlst #[])
-  let y_0 ← IO.mkRef (← ωlst #[])
-  let p_0 ← IO.mkRef (← ωlst #[])
-  let by__0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "YS")] do
-    let gy_1 ← IO.mkRef (ωnatF i1)
-    for i2 in [0:ωrangeN (← ωget self "XS")] do
-      let gx_2 ← IO.mkRef (ωnatF i2)
-      (← dot! (← x_0.get) rpush ((← ωadd (← ωget self "X0") (← ωmul (← gx_2.get) (← ωget self "dx"))))) |> ωsink
-      (← dot! (← y_0.get) rpush ((← ωadd (← ωget self "Y0") (← ωmul (← gy_1.get) (← ωget self "dy"))))) |> ωsink
-      (← dot! (← p_0.get) rpush ((← ωelem (← grid_0.get) (← ωadd (← ωmul (← gy_1.get) (← ωget self "XS")) (← gx_2.get))))) |> ωsink
-      (← dot! (← by__0.get) rpush ((← ωelem (← need_0.get) (← ωadd (← ωmul (← gy_1.get) (← ωget self "XS")) (← gx_2.get))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  let most_0 ← IO.mkRef (0 : Float)
-  for e1 in (← ωitems (← p_0.get)) do
-    let v_1 ← IO.mkRef e1
-    if ωtruthy (← ωgt (← v_1.get) (← most_0.get)) then
-      (← ωwr most_0 (← v_1.get)) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
+  let cells_0 ← IO.mkRef (← ωrrange (← ωmul (← ωget self "YS") (← ωget self "XS")))
   let columns_0 ← IO.mkRef (← RMap.new)
-  (← (ωatSetter (← columns_0.get) ("x" : String)) (← x_0.get)) |> ωsink
-  (← (ωatSetter (← columns_0.get) ("y" : String)) (← y_0.get)) |> ωsink
-  (← (ωatSetter (← columns_0.get) ("p" : String)) (← p_0.get)) |> ωsink
-  (← (ωatSetter (← columns_0.get) ("by" : String)) (← by__0.get)) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("x" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωadd (← ωget self "X0") (← ωmul ((← ωmodv (← i_2.get) (← ωget self "XS"))) (← ωget self "dx")))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("y" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωadd (← ωget self "Y0") (← ωmul (← dot! ((← ωdiv (← i_2.get) (← ωget self "XS"))) rfloor ()) (← ωget self "dy")))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("p" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωelem (← grid_0.get) (← i_2.get))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("by" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωelem (← need_0.get) (← i_2.get))
+    return ωnull)))) |> ωsink
+  let most_0 ← IO.mkRef (← dot! (← ωelem (← columns_0.get) ("p" : String)) rreduce ((0 : Float), (fn! [m_2 v_2] do
+    if true then return (← ωtern (ωtruthy (← ωgt (← v_2.get) (← m_2.get))) (do pure (← v_2.get)) (do pure (← m_2.get)))
+    return ωnull)))
   let extra_0 ← IO.mkRef (← RMap.new)
   (← (ωatSetter (← extra_0.get) ("a0" : String)) (← ωget self "a0")) |> ωsink
   (← (ωatSetter (← extra_0.get) ("arrangement" : String)) (← ωget self "how")) |> ωsink
@@ -342,17 +330,11 @@ ray_impl_method "slot" (n_0 : String) : Float := do
   if true then return (← ωtern (ωtruthy (ωisNull (← i_0.get))) (do pure (← ωneg (1 : Float))) (do pure (← i_0.get)))
   return ωnull
 ray_impl_getter "radii" : (RList Float) := do
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "RS")] do
-    let k_1 ← IO.mkRef (ωnatF i1)
-    let e_1 ← IO.mkRef (← ωelem (← ωget self "env") (← k_1.get))
-    (← dot! (← out_0.get) rpush ((← ωelem (← ωget self "rad") (← k_1.get)))) |> ωsink
-    (← dot! (← out_0.get) rpush ((← ωorElse (← ωelem (← e_1.get) ("n_{f}" : String)) (do pure (0.0 / 0.0 : Float))))) |> ωsink
-    (← dot! (← out_0.get) rpush ((← ωorElse (← ωelem (← e_1.get) ("\\sigma_{tr}" : String)) (do pure (0.0 / 0.0 : Float))))) |> ωsink
-    (← dot! (← out_0.get) rpush ((← ωorElse (← ωelem (← e_1.get) ("L" : String)) (do pure (0.0 / 0.0 : Float))))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← ωrrange (← ωget self "RS")) rreduce ((← ωlst #[]), (fn! [out_2 k_2] do
+    if true then return (← dot! (← ωlst #[(← ωelem (← ωget self "rad") (← k_2.get)), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("n_{f}" : String)) (do pure (0.0 / 0.0 : Float))), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("\\sigma_{tr}" : String)) (do pure (0.0 / 0.0 : Float))), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("L" : String)) (do pure (0.0 / 0.0 : Float)))]) rreduce ((← out_2.get), (fn! [o_4 v_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← v_4.get)))
+      return ωnull)))
+    return ωnull)))
   return ωnull
 ray_impl_getter "kernel" : String := do
   let names_0 ← IO.mkRef (← ωget self "names")

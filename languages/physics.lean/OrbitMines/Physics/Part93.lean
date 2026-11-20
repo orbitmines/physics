@@ -76,47 +76,15 @@ ray_impl_static "unbound" (e_0 : Expr) : (RList String) := do
   if true then return (← out_0.get)
   return ωnull
 ray_impl_static "walk_names" (e_0 : Expr) (out_0 : (RList String)) : Value := do
-  let k_0 ← IO.mkRef (← ωget (← e_0.get) "kind")
-  if ωtruthy (← ωorV (← ωeqv (← k_0.get) ("sym" : String)) (do pure (← ωeqv (← k_0.get) ("field" : String)))) then
-    if ωtruthy (ωnotV (← dot! (← out_0.get) rcontains ((← ωget (← e_0.get) "label")))) then
-      (← dot! (← out_0.get) rpush ((← ωget (← e_0.get) "label"))) |> ωsink
-      pure ()
+  let name_0 ← IO.mkRef (← ωtern (ωtruthy (← ωget (← e_0.get) "named")) (do pure (← ωget (← e_0.get) "label")) (do pure ((← ωtern (ωtruthy (← ωeqv (← ωget (← e_0.get) "kind") ("call" : String))) (do pure ("" ++ (← ωtoStr (← ωget (← e_0.get) "label")) ++ "\\paren{...}" : String)) (do pure ωnull)))))
+  if ωtruthy (← ωandV (!ωisNull (← name_0.get)) (do pure (ωnotV (← dot! (← out_0.get) rcontains ((← name_0.get)))))) then
+    (← dot! (← out_0.get) rpush ((← name_0.get))) |> ωsink
     pure ()
-  else
-    if ωtruthy (← ωorV (← ωeqv (← k_0.get) ("add" : String)) (do pure (← ωeqv (← k_0.get) ("mul" : String)))) then
-      for e1 in (← ωitems (← ωget (← e_0.get) "of")) do
-        let x_1 ← IO.mkRef e1
-        (← call! (← cls% Model) "walk_names" ((← x_1.get), (← out_0.get))) |> ωsink
-        pure ()
-      Value.null |> ωsink
-      pure ()
-    else
-      if ωtruthy (← ωeqv (← k_0.get) ("pow" : String)) then
-        (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "base"), (← out_0.get))) |> ωsink
-        if true then return (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "power"), (← out_0.get)))
-        pure ()
-      else
-        if ωtruthy (← ωorV (← ωorV (← ωorV (← ωorV (← ωeqv (← k_0.get) ("grad" : String)) (do pure (← ωeqv (← k_0.get) ("log" : String)))) (do pure (← ωeqv (← k_0.get) ("exp" : String)))) (do pure (← ωeqv (← k_0.get) ("root" : String)))) (do pure (← ωeqv (← k_0.get) ("limit" : String)))) then
-          if true then return (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "base"), (← out_0.get)))
-          pure ()
-        else
-          if ωtruthy (← ωorV (← ωeqv (← k_0.get) ("choose" : String)) (do pure (← ωeqv (← k_0.get) ("gammaInc" : String)))) then
-            (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "first_"), (← out_0.get))) |> ωsink
-            if true then return (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "second_"), (← out_0.get)))
-            pure ()
-          else
-            if ωtruthy (← ωeqv (← k_0.get) ("call" : String)) then
-              let called_0 ← IO.mkRef ("" ++ (← ωtoStr (← ωget (← e_0.get) "label")) ++ "\\paren{...}" : String)
-              if ωtruthy (ωnotV (← dot! (← out_0.get) rcontains ((← called_0.get)))) then
-                (← dot! (← out_0.get) rpush ((← called_0.get))) |> ωsink
-                pure ()
-              if true then return (← call! (← cls% Model) "walk_names" ((← ωget (← e_0.get) "base"), (← out_0.get)))
-              pure ()
-            pure ()
-          pure ()
-        pure ()
-      pure ()
+  for e1 in (← ωitems (← ωget (← e_0.get) "subtrees")) do
+    let x_1 ← IO.mkRef e1
+    (← call! (← cls% Model) "walk_names" ((← x_1.get), (← out_0.get))) |> ωsink
     pure ()
+  Value.null |> ωsink
   return ωnull
 ray_impl_method "resolved" (e_0 : Expr) (env_0 : object) (seen_0 : (RList String)) : Expr := do
   if ωtruthy (← ωgt (← dot! (← seen_0.get) rlength ()) (8 : Float)) then

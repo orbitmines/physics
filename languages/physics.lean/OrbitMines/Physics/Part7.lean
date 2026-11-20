@@ -38,18 +38,11 @@ ray_impl_static "shells" (D_0 : Float) (squared_0 : (RList Float)) : Geometry :=
     return ωnull))) rsorted_by ((fn! [v_2] do
     if true then return (← ωget (← v_2.get) "norm")
     return ωnull)))
-  let chosen_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← squared_0.get)) do
-    let s_1 ← IO.mkRef e1
-    for e2 in (← ωitems (← all_0.get)) do
-      let v_2 ← IO.mkRef e2
-      if ωtruthy (← ωeqv (← call! (← v_2.get) "dot" ((← v_2.get))) (← s_1.get)) then
-        (← dot! (← chosen_0.get) rpush ((← v_2.get))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let chosen_0 ← IO.mkRef (← dot! (← squared_0.get) rreduce ((← ωlst #[]), (fn! [out_2 s_2] do
+    if true then return (← dot! (← out_2.get) rconcat ((← dot! (← all_0.get) rfilter ((fn! [v_4] do
+      if true then return (← ωeqv (← call! (← v_4.get) "dot" ((← v_4.get))) (← s_2.get))
+      return ωnull)))))
+    return ωnull)))
   let joined_0 ← IO.mkRef (← dot! (← squared_0.get) rjoin (("+" : String)))
   if true then return (← new! Geometry («name» := ("shells-" ++ (← ωtoStr (← D_0.get)) ++ "-" ++ (← ωtoStr (← joined_0.get)) ++ "" : String), «offsets» := (← chosen_0.get)))
   return ωnull
@@ -72,24 +65,17 @@ ray_impl_static "nearest" (D_0 : Float) (DEG_0 : Float) : Geometry := do
   if !ωtruthy (← ωeqv (← dot! (← chosen_0.get) rlength ()) (← DEG_0.get)) then throw (IO.userError "(← ωeqv (← dot! (← chosen_0.get) rlength ()) (← DEG_0.get))")
   if true then return (← new! Geometry («name» := ("nearest-" ++ (← ωtoStr (← D_0.get)) ++ "-" ++ (← ωtoStr (← DEG_0.get)) ++ "" : String), «offsets» := (← chosen_0.get)))
   return ωnull
+ray_impl_static "grid" (D_0 : Float) (low_0 : Float) (count_0 : Float) : (RList Vector) := do
+  if true then return (← dot! (← ωrrange (← D_0.get)) rreduce ((← ωlst #[(← new! Vector («components» := (← ωlst #[])))]), (fn! [points_2 __2] do
+    if true then return (← dot! (← points_2.get) rreduce ((← ωlst #[]), (fn! [grown_4 p_4] do
+      if true then return (← dot! (← ωrrange (← count_0.get)) rreduce ((← grown_4.get), (fn! [out_6 k_6] do
+        if true then return (← dot! (← out_6.get) rpush ((← new! Vector («components» := (← dot! (← ωget (← p_4.get) "components") rconcat ((← ωlst #[(← ωadd (← low_0.get) (← k_6.get))])))))))
+        return ωnull)))
+      return ωnull)))
+    return ωnull)))
+  return ωnull
 ray_impl_static "box" (D_0 : Float) (radius_0 : Float) : (RList Vector) := do
-  let points_0 ← IO.mkRef (← ωlst #[(← new! Vector («components» := (← ωlst #[])))])
-  let i_0 ← IO.mkRef (0 : Float)
-  while ωtruthy (← ωlt (← i_0.get) (← D_0.get)) do
-    let grown_0 ← IO.mkRef (← ωlst #[])
-    for e1 in (← ωitems (← points_0.get)) do
-      let p_1 ← IO.mkRef e1
-      let k_1 ← IO.mkRef (← ωsub (0 : Float) (← radius_0.get))
-      while ωtruthy (← ωle (← k_1.get) (← radius_0.get)) do
-        (← dot! (← grown_0.get) rpush ((← new! Vector («components» := (← dot! (← ωget (← p_1.get) "components") rconcat ((← ωlst #[(← k_1.get)]))))))) |> ωsink
-        (← ωwr k_1 (← ωadd (← k_1.get) (1 : Float))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    (← ωwr points_0 (← grown_0.get)) |> ωsink
-    (← ωwr i_0 (← ωadd (← i_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← points_0.get)
+  if true then return (← call! (← cls% Geometry) "grid" ((← D_0.get), (← ωsub (0 : Float) (← radius_0.get)), (← ωadd (← ωmul (2 : Float) (← radius_0.get)) (1 : Float))))
   return ωnull
 end Geometry
 

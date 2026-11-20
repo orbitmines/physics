@@ -9,251 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_Sweeping(Cls& c) {
-  c.field("solved", nullptr);
-  c.field("title", nullptr);
-  c.field("ks", nullptr);
-  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
-  c.method("frame", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
-    auto k_0 = cell(); k_0->v = elem(get(self, S<"ks">()), (truthy(lt(get(self, S<"shown_frames">()), len(get(self, S<"ks">())))) ? Value(get(self, S<"shown_frames">())) : Value(sub(len(get(self, S<"ks">())), 1.0))));
-    auto deg_0 = cell(); deg_0->v = elem(get(get(get(self, S<"solved">()), S<"header">()), Sym(str("degs"))), k_0->v);
-    call(K(S<"Galaxies">()), S<"panel">(), { s_0->v, call(K(S<"Galaxies">()), S<"frame_of">(), { get(self, S<"solved">()), k_0->v }), get(self, S<"title">()), deg_0->v, call(K(S<"Galaxies">()), S<"support_at">(), { get(self, S<"solved">()), k_0->v }), call(K(S<"Galaxies">()), S<"possible_at">(), { deg_0->v }) });
-    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
-    return null;
-  });
-}
-static const bool R_Sweeping = define_class("Sweeping", "Painter", &C_Sweeping);
-
-static void C_Orbiting(Cls& c) {
-  c.field("stars", nullptr);
-  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
-  c.method("frame", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
-    call(K(S<"Galaxies">()), S<"orbit_panel">(), { s_0->v, get(self, S<"stars">()), get(self, S<"shown_frames">()) });
-    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
-    return null;
-  });
-}
-static const bool R_Orbiting = define_class("Orbiting", "Painter", &C_Orbiting);
-
-static void C_Forming(Cls& c) {
-  c.field("formed", nullptr);
-  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
-  c.method("frame", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
-    call(K(S<"Galaxies">()), S<"formed_panel">(), { s_0->v, get(self, S<"formed">()), get(self, S<"shown_frames">()) });
-    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
-    return null;
-  });
-}
-static const bool R_Forming = define_class("Forming", "Painter", &C_Forming);
-
-static void C_HeldDisc(Cls& c) {
-  c.field("formed", nullptr);
-  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
-  c.method("frame", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
-    call(K(S<"Galaxies">()), S<"medium_panel">(), { s_0->v, get(self, S<"formed">()), get(self, S<"shown_frames">()) });
-    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
-    return null;
-  });
-}
-static const bool R_HeldDisc = define_class("HeldDisc", "Painter", &C_HeldDisc);
-
-static void C_Resolution(Cls& c) {
-  c.field("cells", [](const Value& self) -> Value { return 3.0; });
-  c.field("ways", [](const Value& self) -> Value { return 96.0; });
-  c.field("keeps", [](const Value& self) -> Value { return 4.0; });
-  c.field("list", [](const Value& self) -> Value { return 12.0; });
-  c.field("near_list", [](const Value& self) -> Value { return 96.0; });
-  c.field("near_cells", [](const Value& self) -> Value { return 5.0; });
-  c.field("cell_pull", [](const Value& self) -> Value { return true; });
-  c.field("margin", [](const Value& self) -> Value { return 2.0; });
-  c.field("speed", [](const Value& self) -> Value { return 0.25; });
-  c.getter("constants", [](Value self, const Args& a1) -> Value {
-    auto out_0 = cell(); out_0->v = make(S<"Node">(), { });
-    set(out_0->v, Sym(str("MLIST")), get(self, S<"list">()));
-    set(out_0->v, Sym(str("MNEAR")), get(self, S<"near_list">()));
-    set(out_0->v, Sym(str("MCELLPULL")), get(self, S<"cell_pull">()));
-    return out_0->v;
-    return null;
-  });
-}
-static const bool R_Resolution = define_class("Resolution", "Node", &C_Resolution);
-
-static void C_Budget(Cls& c) {
-  c.field("memory", [](const Value& self) -> Value { return 0.0; });
-  c.field("binding", [](const Value& self) -> Value { return 0.0; });
-  c.field("aim_ms", [](const Value& self) -> Value { return 15.0; });
-  c.field("longest_ms", [](const Value& self) -> Value { return 250.0; });
-  c.field("duty", [](const Value& self) -> Value { return 0.5; });
-  c.field("in_flight", [](const Value& self) -> Value { return 2.0; });
-  c.field("host", [](const Value& self) -> Value { return 0.0; });
-  c.field("compact", [](const Value& self) -> Value { return false; });
-}
-static const bool R_Budget = define_class("Budget", "Node", &C_Budget);
-
-static void C_Batching(Cls& c) {
-  c.field("tiles", [](const Value& self) -> Value { return 1.0; });
-  c.field("ticks", [](const Value& self) -> Value { return 1.0; });
-}
-static const bool R_Batching = define_class("Batching", "Node", &C_Batching);
-
-static void C_Output(Cls& c) {
-  c.field("every", [](const Value& self) -> Value { return 0.0; });
-  c.field("grid", [](const Value& self) -> Value { return 128.0; });
-  c.field("sources", [](const Value& self) -> Value { return false; });
-}
-static const bool R_Output = define_class("Output", "Node", &C_Output);
-
-static void C_Plan(Cls& c) {
-  c.field("sources", nullptr);
-  c.field("side", nullptr);
-  c.field("resolution", [](const Value& self) -> Value { return make(S<"Resolution">(), {  }); });
-  c.field("budget", [](const Value& self) -> Value { return make(S<"Budget">(), {  }); });
-  c.field("batching", [](const Value& self) -> Value { return make(S<"Batching">(), {  }); });
-  c.field("output", [](const Value& self) -> Value { return make(S<"Output">(), {  }); });
-  c.getter("box_side", [](Value self, const Args& a1) -> Value {
-    return add(get(self, S<"side">()), mul(mul(2.0, get(get(self, S<"resolution">()), S<"margin">())), get(get(self, S<"resolution">()), S<"cells">())));
-    return null;
-  });
-  c.getter("box_cells", [](Value self, const Args& a1) -> Value {
-    return mul(get(self, S<"box_side">()), get(self, S<"box_side">()));
-    return null;
-  });
-  c.getter("reach", [](Value self, const Args& a1) -> Value {
-    return add(mul(3.0, get(get(self, S<"resolution">()), S<"cells">())), 4.0);
-    return null;
-  });
-  c.getter("tile_side", [](Value self, const Args& a1) -> Value {
-    return add(m_floor((div(sub(add(get(self, S<"box_side">()), get(get(self, S<"batching">()), S<"tiles">())), 1.0), get(get(self, S<"batching">()), S<"tiles">())))), mul(mul(2.0, get(self, S<"reach">())), get(get(self, S<"batching">()), S<"ticks">())));
-    return null;
-  });
-  c.getter("tile_cells", [](Value self, const Args& a1) -> Value {
-    return (truthy(eq(get(get(self, S<"batching">()), S<"tiles">()), 1.0)) ? Value(get(self, S<"box_cells">())) : Value(mul(get(self, S<"tile_side">()), get(self, S<"tile_side">()))));
-    return null;
-  });
-  c.getter("tile_sources", [](Value self, const Args& a1) -> Value {
-    return div(mul(get(self, S<"sources">()), get(self, S<"tile_cells">())), get(self, S<"box_cells">()));
-    return null;
-  });
-  c.getter("parts", [](Value self, const Args& a1) -> Value {
-    auto c__0 = cell(); c__0->v = get(self, S<"tile_cells">());
-    auto s_0 = cell(); s_0->v = get(self, S<"tile_sources">());
-    auto r_0 = cell(); r_0->v = get(self, S<"resolution">());
-    auto held_0 = cell(); held_0->v = mul(mul(c__0->v, (add(add(add(add(add(add(add(add(add(add(mul(mul(get(r_0->v, S<"ways">()), get(r_0->v, S<"keeps">())), 8.0), 1.0), get(r_0->v, S<"ways">())), 12.0), 2.0), 4.0), 4.0), 9.0), get(r_0->v, S<"near_list">())), 1.0), 1.0))), 4.0);
-    auto each_0 = cell(); each_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(0.0) : Value(add(add(add(12.0, 4.0), 2.0), 1.0)));
-    auto ledgers_0 = cell(); ledgers_0->v = mul((add(add(mul(c__0->v, add(add(11.0, 384.0), 2.0)), mul(s_0->v, each_0->v)), mul(mul(4096.0, 64.0), 4.0))), 4.0);
-    auto lists_0 = cell(); lists_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(mul((add(mul(10.0, c__0->v), mul(1024.0, 1024.0))), 4.0)) : Value(mul((add(mul(2.0, c__0->v), s_0->v)), 4.0)));
-    auto base_0 = cell(); base_0->v = list({ list({ "held rays (a box)", held_0->v, true }), list({ "held rays (the other)", held_0->v, true }), list({ "ledgers and sources", ledgers_0->v, true }), list({ "sources by cell", lists_0->v, true }), list({ "planes", mul(mul(3.0, c__0->v), 4.0), true }) });
-    auto shards_0 = cell(); shards_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(filt(m_map(rng(8.0), fn([=](const Args& a4) -> Value {
-      auto k_3 = cell(arg(a4, 0));
-      return call(K(S<"Fmt">()), S<"max">(), { 0.0, call(K(S<"Fmt">()), S<"min">(), { 178956970.0, sub(s_0->v, mul(k_3->v, 178956970.0)) }) });
-      return null;
-    })), fn([=](const Args& a3) -> Value {
-      auto n_2 = cell(arg(a3, 0));
-      return gt(n_2->v, 0.0);
-      return null;
-    }))) : Value(list({  })));
-    return m_concat(base_0->v, m_map(rng(len(shards_0->v)), fn([=](const Args& a3) -> Value {
-      auto k_2 = cell(arg(a3, 0));
-      return list({ "sources (shard " + str(k_2->v) + ")", mul(elem(shards_0->v, k_2->v), 12.0), true });
-      return null;
-    })));
-    return null;
-  });
-  c.getter("total", [](Value self, const Args& a1) -> Value {
-    auto sum_0 = cell(); sum_0->v = 0.0;
-    for (const Value& e1 : Each(get(self, S<"parts">()))) {
-      auto p_1 = cell(e1);
-      sum_0->v = add(sum_0->v, elem(p_1->v, 1.0));
-    };
-    return sum_0->v;
-    return null;
-  });
-  c.getter("per_source", [](Value self, const Args& a1) -> Value {
-    return (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(12.0) : Value(mul(add(add(add(add(12.0, 4.0), 2.0), 1.0), 1.0), 4.0)));
-    return null;
-  });
-  c.method("fits", [](Value self, const Args& a1) -> Value {
-    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
-    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
-    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
-    return (truthy(le(get(self, S<"total">()), cap_0->v)) && truthy(m_every(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
-      auto p_2 = cell(arg(a3, 0));
-      return le(elem(p_2->v, 1.0), one_0->v);
-      return null;
-    }))));
-    return null;
-  });
-  c.method("report", [](Value self, const Args& a1) -> Value {
-    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
-    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
-    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
-    auto over_0 = cell(); over_0->v = " - more than one binding holds (" + str(call(K(S<"Fmt">()), S<"fixed">(), { div(one_0->v, 1048576.0), 0.0 })) + " MiB)";
-    auto lines_0 = cell(); lines_0->v = m_map(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
-      auto p_2 = cell(arg(a3, 0));
-      auto tail_2 = cell(); tail_2->v = (truthy(gt(elem(p_2->v, 1.0), one_0->v)) ? Value(over_0->v) : Value(""));
-      return "  " + str(elem(p_2->v, 0.0)) + ": " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(elem(p_2->v, 1.0), 1048576.0), 0.0 })) + " MiB" + str(tail_2->v) + "";
-      return null;
-    }));
-    auto head_0 = cell(); head_0->v = "" + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"sources">()), 0.0 })) + " sources on a " + str(get(self, S<"side">())) + "-cell view in a " + str(get(self, S<"box_side">())) + "-cell box (" + str(mul(get(get(self, S<"batching">()), S<"tiles">()), get(get(self, S<"batching">()), S<"tiles">()))) + " tile(s), " + str(get(get(self, S<"resolution">()), S<"cells">())) + " cells to a c-bar, " + str(get(get(self, S<"resolution">()), S<"ways">())) + " ways): " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(get(self, S<"total">()), 1073741824.0), 2.0 })) + " GiB of " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(cap_0->v, 1073741824.0), 2.0 })) + " GiB, " + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"per_source">()), 0.0 })) + " bytes a source";
-    auto verdict_0 = cell(); verdict_0->v = (truthy(call(self, S<"fits">(), { memory_0->v, binding_0->v })) ? Value("  fits") : Value("  does not fit"));
-    return m_join(m_concat(m_concat(list({ head_0->v }), lines_0->v), list({ verdict_0->v })), "\n");
-    return null;
-  });
-}
-static const bool R_Plan = define_class("Plan", "Node", &C_Plan);
-
-static void C_Annulus(Cls& c) {
-  c.field("inner", nullptr);
-  c.field("outer", nullptr);
-  c.field("thick", nullptr);
-  c.method("pull", [](Value self, const Args& a1) -> Value {
-    auto r_0 = cell(arg(a1, 0)); auto nsub_0 = cell(arg(a1, 1)); auto nphi_0 = cell(arg(a1, 2));
-    auto total_0 = cell(); total_0->v = 0.0;
-    auto weight_0 = cell(); weight_0->v = 0.0;
-    for (double i1 = 0, n1 = num(nsub_0->v); i1 < n1; i1++) {
-      auto s_1 = cell(i1);
-      auto rs_1 = cell(); rs_1->v = add(get(self, S<"inner">()), div(mul((sub(get(self, S<"outer">()), get(self, S<"inner">()))), (add(s_1->v, 0.5))), nsub_0->v));
-      auto ring_1 = cell(); ring_1->v = 0.0;
-      for (double i2 = 0, n2 = num(nphi_0->v); i2 < n2; i2++) {
-        auto p_2 = cell(i2);
-        auto half_2 = cell(); half_2->v = m_sin((div(div(mul(RAY_PI, (add(p_2->v, 0.5))), nphi_0->v), 2.0)));
-        auto bend_2 = cell(); bend_2->v = mul(mul(2.0, half_2->v), half_2->v);
-        auto d2_2 = cell(); d2_2->v = add(add(mul((sub(r_0->v, rs_1->v)), (sub(r_0->v, rs_1->v))), mul(mul(mul(2.0, r_0->v), rs_1->v), bend_2->v)), mul(get(self, S<"thick">()), get(self, S<"thick">())));
-        ring_1->v = add(ring_1->v, div((add((sub(r_0->v, rs_1->v)), mul(rs_1->v, bend_2->v))), (mul(d2_2->v, m_sqrt(d2_2->v)))));
-      };
-      total_0->v = add(total_0->v, div(mul(rs_1->v, ring_1->v), nphi_0->v));
-      weight_0->v = add(weight_0->v, rs_1->v);
-    };
-    return (truthy(gt(weight_0->v, 0.0)) ? Value(div(total_0->v, weight_0->v)) : Value(0.0));
-    return null;
-  });
-  c.method("arrives", [](Value self, const Args& a1) -> Value {
-    auto r_0 = cell(arg(a1, 0)); auto nsub_0 = cell(arg(a1, 1)); auto nphi_0 = cell(arg(a1, 2));
-    auto total_0 = cell(); total_0->v = 0.0;
-    auto weight_0 = cell(); weight_0->v = 0.0;
-    for (double i1 = 0, n1 = num(nsub_0->v); i1 < n1; i1++) {
-      auto s_1 = cell(i1);
-      auto rs_1 = cell(); rs_1->v = add(get(self, S<"inner">()), div(mul((sub(get(self, S<"outer">()), get(self, S<"inner">()))), (add(s_1->v, 0.5))), nsub_0->v));
-      auto ring_1 = cell(); ring_1->v = 0.0;
-      for (double i2 = 0, n2 = num(nphi_0->v); i2 < n2; i2++) {
-        auto p_2 = cell(i2);
-        auto half_2 = cell(); half_2->v = m_sin((div(div(mul(RAY_PI, (add(p_2->v, 0.5))), nphi_0->v), 2.0)));
-        auto d2_2 = cell(); d2_2->v = add(add(mul((sub(r_0->v, rs_1->v)), (sub(r_0->v, rs_1->v))), mul(mul(mul(mul(4.0, r_0->v), rs_1->v), half_2->v), half_2->v)), mul(get(self, S<"thick">()), get(self, S<"thick">())));
-        ring_1->v = add(ring_1->v, div(1.0, d2_2->v));
-      };
-      total_0->v = add(total_0->v, div(mul(rs_1->v, ring_1->v), nphi_0->v));
-      weight_0->v = add(weight_0->v, rs_1->v);
-    };
-    return (truthy(gt(weight_0->v, 0.0)) ? Value(div(total_0->v, weight_0->v)) : Value(0.0));
-    return null;
-  });
-}
-static const bool R_Annulus = define_class("Annulus", "Node", &C_Annulus);
-
 static void C_Simulation(Cls& c) {
   c.field("deg", nullptr);
   c.staticField("UNIT_G", [](const Value& self) -> Value { return div(mul(get(K(S<"Sparc">()), S<"KMS">()), get(K(S<"Sparc">()), S<"KMS">())), get(K(S<"Sparc">()), S<"KPC">())); });
@@ -348,27 +103,26 @@ static void C_Simulation(Cls& c) {
         set(counts_0->v, Sym(str("" + str(g_1->v) + "")), add((orElse(get(counts_0->v, Sym(str("" + str(g_1->v) + ""))), [&]() -> Value { return 0.0; })), 1.0));
       }
     };
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(len(get(K(S<"Sparc">()), S<"names">()))); i1 < n1; i1++) {
-      auto g_1 = cell(i1);
-      if (truthy(ge((orElse(get(counts_0->v, Sym(str("" + str(g_1->v) + ""))), [&]() -> Value { return 0.0; })), 3.0))) {
-        m_push(out_0->v, g_1->v);
-      }
-    };
-    return out_0->v;
+    return filt(rng(len(get(K(S<"Sparc">()), S<"names">()))), fn([=](const Args& a3) -> Value {
+      auto g_2 = cell(arg(a3, 0));
+      return ge((orElse(get(counts_0->v, Sym(str("" + str(g_2->v) + ""))), [&]() -> Value { return 0.0; })), 3.0);
+      return null;
+    }));
     return null;
   });
   c.statik("rows_of", [](Value self, const Args& a1) -> Value {
     auto g_0 = cell(arg(a1, 0));
     auto C_0 = cell(); C_0->v = get(get(K(S<"Sparc">()), S<"curves">()), S<"columns">());
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(get(K(S<"Sparc">()), S<"curves">()), S<"rows">())); i1 < n1; i1++) {
-      auto i_1 = cell(i1);
-      if (truthy((truthy((truthy(eq(elem(get(C_0->v, Sym(str("galaxy"))), i_1->v), g_0->v)) && truthy(gt(elem(get(C_0->v, Sym(str("R"))), i_1->v), 0.0)))) && truthy(gt(elem(get(C_0->v, Sym(str("Vobs"))), i_1->v), 0.0))))) {
-        m_push(out_0->v, list({ elem(get(C_0->v, Sym(str("R"))), i_1->v), elem(get(C_0->v, Sym(str("Vobs"))), i_1->v), elem(get(C_0->v, Sym(str("e_Vobs"))), i_1->v), elem(get(C_0->v, Sym(str("Vgas"))), i_1->v), elem(get(C_0->v, Sym(str("Vdisk"))), i_1->v), elem(get(C_0->v, Sym(str("Vbul"))), i_1->v), (truthy(call(K(S<"Simulation">()), S<"kept">(), { g_0->v, elem(get(C_0->v, Sym(str("Vobs"))), i_1->v), elem(get(C_0->v, Sym(str("e_Vobs"))), i_1->v) })) ? Value(1.0) : Value(0.0)) }));
-      }
-    };
-    return m_sorted_by(out_0->v, fn([=](const Args& a3) -> Value {
+    auto mine_0 = cell(); mine_0->v = filt(rng(get(get(K(S<"Sparc">()), S<"curves">()), S<"rows">())), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return (truthy((truthy(eq(elem(get(C_0->v, Sym(str("galaxy"))), i_2->v), g_0->v)) && truthy(gt(elem(get(C_0->v, Sym(str("R"))), i_2->v), 0.0)))) && truthy(gt(elem(get(C_0->v, Sym(str("Vobs"))), i_2->v), 0.0)));
+      return null;
+    }));
+    return m_sorted_by(m_map(mine_0->v, fn([=](const Args& a4) -> Value {
+      auto i_3 = cell(arg(a4, 0));
+      return list({ elem(get(C_0->v, Sym(str("R"))), i_3->v), elem(get(C_0->v, Sym(str("Vobs"))), i_3->v), elem(get(C_0->v, Sym(str("e_Vobs"))), i_3->v), elem(get(C_0->v, Sym(str("Vgas"))), i_3->v), elem(get(C_0->v, Sym(str("Vdisk"))), i_3->v), elem(get(C_0->v, Sym(str("Vbul"))), i_3->v), (truthy(call(K(S<"Simulation">()), S<"kept">(), { g_0->v, elem(get(C_0->v, Sym(str("Vobs"))), i_3->v), elem(get(C_0->v, Sym(str("e_Vobs"))), i_3->v) })) ? Value(1.0) : Value(0.0)) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
       auto r_2 = cell(arg(a3, 0));
       return elem(r_2->v, 0.0);
       return null;
@@ -378,13 +132,11 @@ static void C_Simulation(Cls& c) {
   c.statik("edges_of", [](Value self, const Args& a1) -> Value {
     auto rs_0 = cell(arg(a1, 0));
     auto n_0 = cell(); n_0->v = len(rs_0->v);
-    auto out_0 = cell(); out_0->v = list({ 0.0, div(elem(elem(rs_0->v, 0.0), 0.0), 2.0) });
-    for (double i1 = 0, n1 = num(sub(n_0->v, 1.0)); i1 < n1; i1++) {
-      auto i_1 = cell(i1);
-      m_push(out_0->v, div((add(elem(elem(rs_0->v, i_1->v), 0.0), elem(elem(rs_0->v, add(i_1->v, 1.0)), 0.0))), 2.0));
-    };
-    m_push(out_0->v, add(elem(elem(rs_0->v, sub(n_0->v, 1.0)), 0.0), div((sub(elem(elem(rs_0->v, sub(n_0->v, 1.0)), 0.0), elem(elem(rs_0->v, sub(n_0->v, 2.0)), 0.0))), 2.0)));
-    return out_0->v;
+    return m_concat(m_concat(list({ 0.0, div(elem(elem(rs_0->v, 0.0), 0.0), 2.0) }), m_map(rng(sub(n_0->v, 1.0)), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return div((add(elem(elem(rs_0->v, i_2->v), 0.0), elem(elem(rs_0->v, add(i_2->v, 1.0)), 0.0))), 2.0);
+      return null;
+    }))), list({ add(elem(elem(rs_0->v, sub(n_0->v, 1.0)), 0.0), div((sub(elem(elem(rs_0->v, sub(n_0->v, 1.0)), 0.0), elem(elem(rs_0->v, sub(n_0->v, 2.0)), 0.0))), 2.0)) }));
     return null;
   });
   c.statik("bulge_arrives", [](Value self, const Args& a1) -> Value {
@@ -746,12 +498,11 @@ static void C_Simulation(Cls& c) {
       auto w_disc_1 = cell(); w_disc_1->v = call(K(S<"Simulation">()), S<"nnls">(), { K_1->v, want_disc_1->v });
       auto sum_at_1 = cell(); sum_at_1->v = fn([=](const Args& a3) -> Value {
         auto row_of_2 = cell(arg(a3, 0)); auto w_2 = cell(arg(a3, 1));
-        auto s_2 = cell(); s_2->v = 0.0;
-        for (double i3 = 0, n3 = num(n_1->v); i3 < n3; i3++) {
-          auto a_3 = cell(i3);
-          s_2->v = add(s_2->v, mul(invoke(row_of_2->v, { a_3->v }), elem(w_2->v, a_3->v)));
-        };
-        return s_2->v;
+        return m_reduce(rng(n_1->v), 0.0, fn([=](const Args& a5) -> Value {
+          auto s_4 = cell(arg(a5, 0)); auto a_4 = cell(arg(a5, 1));
+          return add(s_4->v, mul(invoke(row_of_2->v, { a_4->v }), elem(w_2->v, a_4->v)));
+          return null;
+        }));
         return null;
       });
       auto here_1 = cell(); here_1->v = list({  });
@@ -784,23 +535,20 @@ static void C_Simulation(Cls& c) {
       m_push(get(self, S<"w_discs">()), w_disc_1->v);
       m_push(get(self, S<"w_gases">()), w_gas_1->v);
       m_push(get(self, S<"repro">()), (truthy(gt(top_1->v, 0.0)) ? Value(div(worst_1->v, top_1->v)) : Value(0.0)));
-      auto tab_1 = cell(); tab_1->v = list({  });
-      for (double i2 = 0, n2 = num(get(K(S<"Simulation">()), S<"TABLE">())); i2 < n2; i2++) {
-        auto t_2 = cell(i2);
-        auto base_2 = cell(); base_2->v = add(elem(get(self, S<"tabled_at">()), j_1->v), mul(t_2->v, n_1->v));
-        auto gd_2 = cell(); gd_2->v = invoke(sum_at_1->v, { fn([=](const Args& a5) -> Value {
-          auto a_4 = cell(arg(a5, 0));
-          return elem(pulls_0->v, add(base_2->v, a_4->v));
+      m_push(get(self, S<"tables">()), m_map(rng(get(K(S<"Simulation">()), S<"TABLE">())), fn([=](const Args& a4) -> Value {
+        auto t_3 = cell(arg(a4, 0));
+        auto base_3 = cell(); base_3->v = add(elem(get(self, S<"tabled_at">()), j_1->v), mul(t_3->v, n_1->v));
+        return list({ call(self, S<"table_r">(), { j_1->v, t_3->v }), invoke(sum_at_1->v, { fn([=](const Args& a6) -> Value {
+          auto a_5 = cell(arg(a6, 0));
+          return elem(pulls_0->v, add(base_3->v, a_5->v));
           return null;
-        }), w_disc_1->v });
-        auto gg_2 = cell(); gg_2->v = invoke(sum_at_1->v, { fn([=](const Args& a5) -> Value {
-          auto a_4 = cell(arg(a5, 0));
-          return elem(pulls_0->v, add(base_2->v, a_4->v));
+        }), w_disc_1->v }), invoke(sum_at_1->v, { fn([=](const Args& a6) -> Value {
+          auto a_5 = cell(arg(a6, 0));
+          return elem(pulls_0->v, add(base_3->v, a_5->v));
           return null;
-        }), w_gas_1->v });
-        m_push(tab_1->v, list({ call(self, S<"table_r">(), { j_1->v, t_2->v }), gd_2->v, gg_2->v, call(K(S<"Simulation">()), S<"bulge_at">(), { rs_1->v, call(self, S<"table_r">(), { j_1->v, t_2->v }) }) }));
-      };
-      m_push(get(self, S<"tables">()), tab_1->v);
+        }), w_gas_1->v }), call(K(S<"Simulation">()), S<"bulge_at">(), { rs_1->v, call(self, S<"table_r">(), { j_1->v, t_3->v }) }) });
+        return null;
+      })));
     };
     return null;
   });
@@ -812,20 +560,20 @@ static void C_Simulation(Cls& c) {
       auto j_1 = cell(i1);
       auto rs_1 = cell(); rs_1->v = elem(get(self, S<"rows">()), j_1->v);
       auto n_1 = cell(); n_1->v = sub(len(elem(get(self, S<"edges">()), j_1->v)), 1.0);
-      auto here_1 = cell(); here_1->v = list({  });
-      for (double i2 = 0, n2 = num(len(rs_1->v)); i2 < n2; i2++) {
-        auto i_2 = cell(i2);
-        auto sd_2 = cell(); sd_2->v = 0.0;
-        auto sg_2 = cell(); sg_2->v = 0.0;
-        for (double i3 = 0, n3 = num(n_1->v); i3 < n3; i3++) {
-          auto a_3 = cell(i3);
-          auto k_3 = cell(); k_3->v = elem(spulls_0->v, add(add(elem(get(self, S<"measured_at">()), j_1->v), mul(i_2->v, n_1->v)), a_3->v));
-          sd_2->v = add(sd_2->v, mul(k_3->v, elem(elem(get(self, S<"w_discs">()), j_1->v), a_3->v)));
-          sg_2->v = add(sg_2->v, mul(k_3->v, elem(elem(get(self, S<"w_gases">()), j_1->v), a_3->v)));
-        };
-        m_push(here_1->v, list({ sd_2->v, sg_2->v, call(K(S<"Simulation">()), S<"bulge_arrives">(), { rs_1->v, elem(elem(rs_1->v, i_2->v), 0.0), elem(get(self, S<"thick">()), j_1->v) }) }));
-      };
-      m_push(get(self, S<"seen_rows">()), here_1->v);
+      auto seen_1 = cell(); seen_1->v = fn([=](const Args& a3) -> Value {
+        auto i_2 = cell(arg(a3, 0)); auto w_2 = cell(arg(a3, 1));
+        return m_reduce(rng(n_1->v), 0.0, fn([=](const Args& a5) -> Value {
+          auto s_4 = cell(arg(a5, 0)); auto a_4 = cell(arg(a5, 1));
+          return add(s_4->v, mul(elem(spulls_0->v, add(add(elem(get(self, S<"measured_at">()), j_1->v), mul(i_2->v, n_1->v)), a_4->v)), elem(w_2->v, a_4->v)));
+          return null;
+        }));
+        return null;
+      });
+      m_push(get(self, S<"seen_rows">()), m_map(rng(len(rs_1->v)), fn([=](const Args& a4) -> Value {
+        auto i_3 = cell(arg(a4, 0));
+        return list({ invoke(seen_1->v, { i_3->v, elem(get(self, S<"w_discs">()), j_1->v) }), invoke(seen_1->v, { i_3->v, elem(get(self, S<"w_gases">()), j_1->v) }), call(K(S<"Simulation">()), S<"bulge_arrives">(), { rs_1->v, elem(elem(rs_1->v, i_3->v), 0.0), elem(get(self, S<"thick">()), j_1->v) }) });
+        return null;
+      })));
     };
     return null;
   });
@@ -936,43 +684,48 @@ static void C_Simulation(Cls& c) {
     return (truthy(gt(gN_0->v, 0.0)) ? Value(call(K(S<"Law">()), S<"boost">(), { gN_0->v, get(self, S<"a0">()) })) : Value(((truthy(lt(gN_0->v, 0.0)) ? Value(sub(0.0, call(K(S<"Law">()), S<"boost">(), { sub(0.0, gN_0->v), get(self, S<"a0">()) }))) : Value(0.0)))));
     return null;
   });
+  c.statik("laid", [](Value self, const Args& a1) -> Value {
+    auto records_0 = cell(arg(a1, 0));
+    return m_reduce(records_0->v, list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto r_2 = cell(arg(a3, 1));
+      return m_reduce(r_2->v, out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto v_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, v_4->v);
+        return null;
+      }));
+      return null;
+    }));
+    return null;
+  });
   c.getter("points", [](Value self, const Args& a1) -> Value {
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
-      auto j_1 = cell(i1);
-      for (double i2 = 0, n2 = num(len(elem(get(self, S<"rows">()), j_1->v))); i2 < n2; i2++) {
-        auto i_2 = cell(i2);
-        auto p_2 = cell(); p_2->v = elem(elem(get(self, S<"at_rows">()), j_1->v), i_2->v);
-        for (const Value& e3 : Each(list({ j_1->v, elem(elem(elem(get(self, S<"rows">()), j_1->v), i_2->v), 0.0), elem(p_2->v, 0.0), elem(p_2->v, 1.0), elem(p_2->v, 2.0), 0.0 }))) {
-          auto v_3 = cell(e3);
-          m_push(out_0->v, v_3->v);
-        };
-      };
-    };
-    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
-      auto j_1 = cell(i1);
-      for (const Value& e2 : Each(elem(get(self, S<"tables">()), j_1->v))) {
-        auto t_2 = cell(e2);
-        for (const Value& e3 : Each(list({ j_1->v, elem(t_2->v, 0.0), elem(t_2->v, 1.0), elem(t_2->v, 2.0), elem(t_2->v, 3.0), 0.0 }))) {
-          auto v_3 = cell(e3);
-          m_push(out_0->v, v_3->v);
-        };
-      };
-    };
-    return out_0->v;
+    auto measured_0 = cell(); measured_0->v = m_reduce(rng(len(get(self, S<"ids">()))), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto j_2 = cell(arg(a3, 1));
+      return m_reduce(rng(len(elem(get(self, S<"rows">()), j_2->v))), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto i_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, list({ j_2->v, elem(elem(elem(get(self, S<"rows">()), j_2->v), i_4->v), 0.0), elem(elem(elem(get(self, S<"at_rows">()), j_2->v), i_4->v), 0.0), elem(elem(elem(get(self, S<"at_rows">()), j_2->v), i_4->v), 1.0), elem(elem(elem(get(self, S<"at_rows">()), j_2->v), i_4->v), 2.0), 0.0 }));
+        return null;
+      }));
+      return null;
+    }));
+    auto tabled_0 = cell(); tabled_0->v = m_reduce(rng(len(get(self, S<"ids">()))), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto j_2 = cell(arg(a3, 1));
+      return m_reduce(elem(get(self, S<"tables">()), j_2->v), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto t_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, list({ j_2->v, elem(t_4->v, 0.0), elem(t_4->v, 1.0), elem(t_4->v, 2.0), elem(t_4->v, 3.0), 0.0 }));
+        return null;
+      }));
+      return null;
+    }));
+    return call(K(S<"Simulation">()), S<"laid">(), { m_concat(measured_0->v, tabled_0->v) });
     return null;
   });
   c.method("nuisances", [](Value self, const Args& a1) -> Value {
     auto fitted_0 = cell(arg(a1, 0));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
-      auto j_1 = cell(i1);
-      m_push(out_0->v, (truthy(fitted_0->v) ? Value(elem(get(self, S<"best_y">()), j_1->v)) : Value(get(K(S<"Sparc">()), S<"YD">()))));
-      m_push(out_0->v, (truthy(fitted_0->v) ? Value(elem(get(self, S<"best_b">()), j_1->v)) : Value(get(K(S<"Sparc">()), S<"YB">()))));
-      m_push(out_0->v, get(self, S<"a0">()));
-      m_push(out_0->v, 0.0);
-    };
-    return out_0->v;
+    return call(K(S<"Simulation">()), S<"laid">(), { m_map(rng(len(get(self, S<"ids">()))), fn([=](const Args& a3) -> Value {
+      auto j_2 = cell(arg(a3, 0));
+      return list({ (truthy(fitted_0->v) ? Value(elem(get(self, S<"best_y">()), j_2->v)) : Value(get(K(S<"Sparc">()), S<"YD">()))), (truthy(fitted_0->v) ? Value(elem(get(self, S<"best_b">()), j_2->v)) : Value(get(K(S<"Sparc">()), S<"YB">()))), get(self, S<"a0">()), 0.0 });
+      return null;
+    })) });
     return null;
   });
   c.field("best_y", [](const Value& self) -> Value { return list({  }); });
@@ -1043,17 +796,13 @@ static void C_Simulation(Cls& c) {
   c.getter("searches", [](Value self, const Args& a1) -> Value {
     auto S_0 = cell(); S_0->v = get(get(K(S<"Sparc">()), S<"sample">()), S<"columns">());
     auto pts_0 = cell(); pts_0->v = get(self, S<"fit_points">());
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
-      auto j_1 = cell(i1);
-      auto g_1 = cell(); g_1->v = elem(get(self, S<"ids">()), j_1->v);
-      auto stop_1 = cell(); stop_1->v = (truthy(lt(add(j_1->v, 1.0), len(get(self, S<"ids">())))) ? Value(elem(get(self, S<"fit_at">()), add(j_1->v, 1.0))) : Value(m_floor((div(len(pts_0->v), 8.0)))));
-      for (const Value& e2 : Each(list({ elem(get(self, S<"fit_at">()), j_1->v), sub(stop_1->v, elem(get(self, S<"fit_at">()), j_1->v)), elem(get(S_0->v, Sym(str("D"))), g_1->v), elem(get(S_0->v, Sym(str("e_D"))), g_1->v), elem(get(S_0->v, Sym(str("Inc"))), g_1->v), elem(get(S_0->v, Sym(str("e_Inc"))), g_1->v), get(self, S<"a0">()), (truthy(call(self, S<"has_bulge">(), { j_1->v })) ? Value(1.0) : Value(0.0)), elem(get(self, S<"centre_y">()), j_1->v), elem(get(self, S<"centre_b">()), j_1->v), elem(get(self, S<"centre_d">()), j_1->v), elem(get(self, S<"centre_i">()), j_1->v), mul(get(K(S<"Simulation">()), S<"STEP_Y">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_D">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_I">()), get(self, S<"spacing">())), 0.0 }))) {
-        auto v_2 = cell(e2);
-        m_push(out_0->v, v_2->v);
-      };
-    };
-    return out_0->v;
+    return call(K(S<"Simulation">()), S<"laid">(), { m_map(rng(len(get(self, S<"ids">()))), fn([=](const Args& a3) -> Value {
+      auto j_2 = cell(arg(a3, 0));
+      auto g_2 = cell(); g_2->v = elem(get(self, S<"ids">()), j_2->v);
+      auto stop_2 = cell(); stop_2->v = (truthy(lt(add(j_2->v, 1.0), len(get(self, S<"ids">())))) ? Value(elem(get(self, S<"fit_at">()), add(j_2->v, 1.0))) : Value(m_floor((div(len(pts_0->v), 8.0)))));
+      return list({ elem(get(self, S<"fit_at">()), j_2->v), sub(stop_2->v, elem(get(self, S<"fit_at">()), j_2->v)), elem(get(S_0->v, Sym(str("D"))), g_2->v), elem(get(S_0->v, Sym(str("e_D"))), g_2->v), elem(get(S_0->v, Sym(str("Inc"))), g_2->v), elem(get(S_0->v, Sym(str("e_Inc"))), g_2->v), get(self, S<"a0">()), (truthy(call(self, S<"has_bulge">(), { j_2->v })) ? Value(1.0) : Value(0.0)), elem(get(self, S<"centre_y">()), j_2->v), elem(get(self, S<"centre_b">()), j_2->v), elem(get(self, S<"centre_d">()), j_2->v), elem(get(self, S<"centre_i">()), j_2->v), mul(get(K(S<"Simulation">()), S<"STEP_Y">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_D">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_I">()), get(self, S<"spacing">())), 0.0 });
+      return null;
+    })) });
     return null;
   });
   c.method("combo", [](Value self, const Args& a1) -> Value {
@@ -1213,12 +962,11 @@ static void C_Simulation(Cls& c) {
     return null;
   });
   c.getter("most_steps", [](Value self, const Args& a1) -> Value {
-    auto m_0 = cell(); m_0->v = 0.0;
-    for (const Value& e1 : Each(get(self, S<"steps">()))) {
-      auto n_1 = cell(e1);
-      m_0->v = call(K(S<"Fmt">()), S<"max">(), { m_0->v, n_1->v });
-    };
-    return m_0->v;
+    return m_reduce(get(self, S<"steps">()), 0.0, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0)); auto n_2 = cell(arg(a3, 1));
+      return call(K(S<"Fmt">()), S<"max">(), { m_2->v, n_2->v });
+      return null;
+    }));
     return null;
   });
   c.field("film_sources", [](const Value& self) -> Value { return list({  }); });
@@ -1256,17 +1004,20 @@ static void C_Simulation(Cls& c) {
     auto per_pixel_0 = cell(); per_pixel_0->v = mul(mul(div(mul(div(fov_0->v, P_0->v), RAY_PI), 180.0), D_0->v), 1000.0);
     auto light_0 = cell(); light_0->v = get(get(I_0->v, S<"columns">()), Sym(str("light")));
     auto base_0 = cell(); base_0->v = mul(mul(g_0->v, P_0->v), P_0->v);
-    auto edge_0 = cell(); edge_0->v = list({  });
-    for (double i1 = 0, n1 = num(P_0->v); i1 < n1; i1++) {
-      auto r_1 = cell(i1);
-      for (double i2 = 0, n2 = num(P_0->v); i2 < n2; i2++) {
-        auto c__2 = cell(i2);
-        if (truthy((truthy((truthy((truthy(lt(r_1->v, get(K(S<"Simulation">()), S<"SKY_EDGE">()))) || truthy(lt(c__2->v, get(K(S<"Simulation">()), S<"SKY_EDGE">()))))) || truthy(ge(r_1->v, sub(P_0->v, get(K(S<"Simulation">()), S<"SKY_EDGE">())))))) || truthy(ge(c__2->v, sub(P_0->v, get(K(S<"Simulation">()), S<"SKY_EDGE">()))))))) {
-          m_push(edge_0->v, elem(light_0->v, add(add(base_0->v, mul(r_1->v, P_0->v)), c__2->v)));
-        }
-      };
-    };
-    auto sky_0 = cell(); sky_0->v = call(K(S<"Fmt">()), S<"median">(), { edge_0->v });
+    auto on_edge_0 = cell(); on_edge_0->v = fn([=](const Args& a2) -> Value {
+      auto r_1 = cell(arg(a2, 0)); auto c__1 = cell(arg(a2, 1));
+      return (truthy((truthy((truthy(lt(r_1->v, get(K(S<"Simulation">()), S<"SKY_EDGE">()))) || truthy(lt(c__1->v, get(K(S<"Simulation">()), S<"SKY_EDGE">()))))) || truthy(ge(r_1->v, sub(P_0->v, get(K(S<"Simulation">()), S<"SKY_EDGE">())))))) || truthy(ge(c__1->v, sub(P_0->v, get(K(S<"Simulation">()), S<"SKY_EDGE">())))));
+      return null;
+    });
+    auto sky_0 = cell(); sky_0->v = call(K(S<"Fmt">()), S<"median">(), { m_map(filt(rng(mul(P_0->v, P_0->v)), fn([=](const Args& a4) -> Value {
+      auto k_3 = cell(arg(a4, 0));
+      return invoke(on_edge_0->v, { m_floor((div(k_3->v, P_0->v))), mod(k_3->v, P_0->v) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return elem(light_0->v, add(base_0->v, k_2->v));
+      return null;
+    })) });
     auto reach_0 = cell(); reach_0->v = elem(get(self, S<"reach">()), j_0->v);
     auto east_0 = cell(); east_0->v = fn([=](const Args& a2) -> Value {
       auto c__1 = cell(arg(a2, 0));
@@ -1381,11 +1132,11 @@ static void C_Simulation(Cls& c) {
         m_push(get(self, S<"film_angles">()), RAY_NAN);
         auto es_1 = cell(); es_1->v = elem(get(self, S<"edges">()), j_1->v);
         auto rs_1 = cell(); rs_1->v = elem(get(self, S<"rows">()), j_1->v);
-        auto masses_1 = cell(); masses_1->v = list({  });
-        for (double i2 = 0, n2 = num(sub(len(es_1->v), 1.0)); i2 < n2; i2++) {
-          auto a_2 = cell(i2);
-          m_push(masses_1->v, list({ elem(es_1->v, a_2->v), elem(es_1->v, add(a_2->v, 1.0)), add(mul(get(K(S<"Sparc">()), S<"YD">()), elem(elem(get(self, S<"w_discs">()), j_1->v), a_2->v)), elem(elem(get(self, S<"w_gases">()), j_1->v), a_2->v)) }));
-        };
+        auto masses_1 = cell(); masses_1->v = m_map(rng(sub(len(es_1->v), 1.0)), fn([=](const Args& a4) -> Value {
+          auto a_3 = cell(arg(a4, 0));
+          return list({ elem(es_1->v, a_3->v), elem(es_1->v, add(a_3->v, 1.0)), add(mul(get(K(S<"Sparc">()), S<"YD">()), elem(elem(get(self, S<"w_discs">()), j_1->v), a_3->v)), elem(elem(get(self, S<"w_gases">()), j_1->v), a_3->v)) });
+          return null;
+        }));
         auto last_1 = cell(); last_1->v = 0.0;
         for (double i2 = 0, n2 = num(len(rs_1->v)); i2 < n2; i2++) {
           auto i_2 = cell(i2);
@@ -1395,13 +1146,12 @@ static void C_Simulation(Cls& c) {
             last_1->v = inside_2->v;
           }
         };
-        auto run_1 = cell(); run_1->v = list({  });
-        auto total_1 = cell(); total_1->v = 0.0;
-        for (const Value& e2 : Each(masses_1->v)) {
-          auto m_2 = cell(e2);
-          total_1->v = add(total_1->v, call(K(S<"Fmt">()), S<"max">(), { elem(m_2->v, 2.0), 0.0 }));
-          m_push(run_1->v, total_1->v);
-        };
+        auto run_1 = cell(); run_1->v = m_reduce(masses_1->v, list({  }), fn([=](const Args& a4) -> Value {
+          auto run_3 = cell(arg(a4, 0)); auto m_3 = cell(arg(a4, 1));
+          return m_push(run_3->v, add((orElse(m_last(run_3->v), [&]() -> Value { return 0.0; })), call(K(S<"Fmt">()), S<"max">(), { elem(m_3->v, 2.0), 0.0 })));
+          return null;
+        }));
+        auto total_1 = cell(); total_1->v = orElse(m_last(run_1->v), [&]() -> Value { return 0.0; });
         for (double i2 = 0, n2 = num(get(K(S<"Simulation">()), S<"FILM_STARS">())); i2 < n2; i2++) {
           auto k_2 = cell(i2);
           auto want_2 = cell(); want_2->v = mul(get(rng_0->v, S<"next">()), total_1->v);
@@ -1425,16 +1175,15 @@ static void C_Simulation(Cls& c) {
   });
   c.method("film_table", [](Value self, const Args& a1) -> Value {
     auto felt_table_0 = cell(arg(a1, 0));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (const Value& e1 : Each(get(self, S<"film_ids">()))) {
-      auto g_1 = cell(e1);
-      auto j_1 = cell(); j_1->v = m_index_of(get(self, S<"ids">()), g_1->v);
-      for (double i2 = 0, n2 = num(get(K(S<"Simulation">()), S<"TABLE">())); i2 < n2; i2++) {
-        auto t_2 = cell(i2);
-        m_push(out_0->v, elem(felt_table_0->v, add(mul(j_1->v, get(K(S<"Simulation">()), S<"TABLE">())), t_2->v)));
-      };
-    };
-    return out_0->v;
+    return m_reduce(get(self, S<"film_ids">()), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto g_2 = cell(arg(a3, 1));
+      return m_reduce(rng(get(K(S<"Simulation">()), S<"TABLE">())), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto t_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, elem(felt_table_0->v, add(mul(m_index_of(get(self, S<"ids">()), g_2->v), get(K(S<"Simulation">()), S<"TABLE">())), t_4->v)));
+        return null;
+      }));
+      return null;
+    }));
     return null;
   });
   c.method("film_runs", [](Value self, const Args& a1) -> Value {
@@ -1466,23 +1215,22 @@ static void C_Simulation(Cls& c) {
     return null;
   });
   c.getter("most_film_steps", [](Value self, const Args& a1) -> Value {
-    auto m_0 = cell(); m_0->v = 0.0;
-    for (const Value& e1 : Each(get(self, S<"film_steps">()))) {
-      auto n_1 = cell(e1);
-      m_0->v = call(K(S<"Fmt">()), S<"max">(), { m_0->v, n_1->v });
-    };
-    return m_0->v;
+    return m_reduce(get(self, S<"film_steps">()), 0.0, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0)); auto n_2 = cell(arg(a3, 1));
+      return call(K(S<"Fmt">()), S<"max">(), { m_2->v, n_2->v });
+      return null;
+    }));
     return null;
   });
   c.method("save", [](Value self, const Args& a1) -> Value {
     auto felt0_0 = cell(arg(a1, 0)); auto felt1_0 = cell(arg(a1, 1)); auto stars_0 = cell(arg(a1, 2)); auto frames_0 = cell(arg(a1, 3));
     auto S_0 = cell(); S_0->v = get(get(K(S<"Sparc">()), S<"sample">()), S<"columns">());
     auto T_0 = cell(); T_0->v = get(K(S<"Simulation">()), S<"TABLE">());
-    auto nrows_0 = cell(); nrows_0->v = 0.0;
-    for (const Value& e1 : Each(get(self, S<"rows">()))) {
-      auto rs_1 = cell(e1);
-      nrows_0->v = add(nrows_0->v, len(rs_1->v));
-    };
+    auto nrows_0 = cell(); nrows_0->v = m_reduce(get(self, S<"rows">()), 0.0, fn([=](const Args& a3) -> Value {
+      auto n_2 = cell(arg(a3, 0)); auto rs_2 = cell(arg(a3, 1));
+      return add(n_2->v, len(rs_2->v));
+      return null;
+    }));
     auto cols_0 = cell(); cols_0->v = make(S<"Node">(), { });
     auto names_0 = cell(); names_0->v = list({ "galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept" });
     for (const Value& e1 : Each(names_0->v)) {
@@ -1863,15 +1611,15 @@ static void C_Formed(Cls& c) {
     return null;
   });
   c.getter("constants", [](Value self, const Args& a1) -> Value {
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"discs_n">())); i1 < n1; i1++) {
-      auto g_1 = cell(i1);
-      for (const Value& e2 : Each(list({ div(call(self, S<"GM">(), { g_1->v }), get(K(S<"Formed">()), S<"N">())), call(self, S<"soft">(), { g_1->v }), get(self, S<"scale_a0">()), get(K(S<"Formed">()), S<"DT">()) }))) {
-        auto v_2 = cell(e2);
-        m_push(out_0->v, v_2->v);
-      };
-    };
-    return out_0->v;
+    return m_reduce(rng(get(self, S<"discs_n">())), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto g_2 = cell(arg(a3, 1));
+      return m_reduce(list({ div(call(self, S<"GM">(), { g_2->v }), get(K(S<"Formed">()), S<"N">())), call(self, S<"soft">(), { g_2->v }), get(self, S<"scale_a0">()), get(K(S<"Formed">()), S<"DT">()) }), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto v_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, v_4->v);
+        return null;
+      }));
+      return null;
+    }));
     return null;
   });
   c.method("accel_cpu", [](Value self, const Args& a1) -> Value {
@@ -2028,17 +1776,19 @@ static void C_Formed(Cls& c) {
   c.method("save", [](Value self, const Args& a1) -> Value {
     auto frames_0 = cell(arg(a1, 0));
     auto G_0 = cell(); G_0->v = get(K(S<"Formed">()), S<"GRID">());
-    auto density_0 = cell(); density_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"discs_n">())); i1 < n1; i1++) {
-      auto g_1 = cell(i1);
-      for (const Value& e2 : Each(frames_0->v)) {
-        auto f_2 = cell(e2);
-        for (double i3 = 0, n3 = num(mul(G_0->v, G_0->v)); i3 < n3; i3++) {
-          auto c__3 = cell(i3);
-          m_push(density_0->v, elem(f_2->v, add(mul(mul(g_1->v, G_0->v), G_0->v), c__3->v)));
-        };
-      };
-    };
+    auto density_0 = cell(); density_0->v = m_reduce(rng(get(self, S<"discs_n">())), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto g_2 = cell(arg(a3, 1));
+      return m_reduce(frames_0->v, out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto f_4 = cell(arg(a5, 1));
+        return m_reduce(rng(mul(G_0->v, G_0->v)), o_4->v, fn([=](const Args& a7) -> Value {
+          auto oo_6 = cell(arg(a7, 0)); auto c__6 = cell(arg(a7, 1));
+          return m_push(oo_6->v, elem(f_4->v, add(mul(mul(g_2->v, G_0->v), G_0->v), c__6->v)));
+          return null;
+        }));
+        return null;
+      }));
+      return null;
+    }));
     auto cols_0 = cell(); cols_0->v = make(S<"Node">(), { });
     set(cols_0->v, Sym(str("density")), density_0->v);
     auto extra_0 = cell(); extra_0->v = make(S<"Node">(), { });
@@ -2150,41 +1900,14 @@ static void C_Model(Cls& c) {
   });
   c.statik("walk_names", [](Value self, const Args& a1) -> Value {
     auto e_0 = cell(arg(a1, 0)); auto out_0 = cell(arg(a1, 1));
-    auto k_0 = cell(); k_0->v = get(e_0->v, S<"kind">());
-    if (truthy((truthy(eq(k_0->v, "sym")) || truthy(eq(k_0->v, "field"))))) {
-      if (truthy((!truthy(m_contains(out_0->v, get(e_0->v, S<"label">())))))) {
-        m_push(out_0->v, get(e_0->v, S<"label">()));
-      }
-    } else {
-      if (truthy((truthy(eq(k_0->v, "add")) || truthy(eq(k_0->v, "mul"))))) {
-        for (const Value& e1 : Each(get(e_0->v, S<"of">()))) {
-          auto x_1 = cell(e1);
-          call(K(S<"Model">()), S<"walk_names">(), { x_1->v, out_0->v });
-        };
-      } else {
-        if (truthy(eq(k_0->v, "pow"))) {
-          call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"base">()), out_0->v });
-          return call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"power">()), out_0->v });
-        } else {
-          if (truthy((truthy((truthy((truthy((truthy(eq(k_0->v, "grad")) || truthy(eq(k_0->v, "log")))) || truthy(eq(k_0->v, "exp")))) || truthy(eq(k_0->v, "root")))) || truthy(eq(k_0->v, "limit"))))) {
-            return call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"base">()), out_0->v });
-          } else {
-            if (truthy((truthy(eq(k_0->v, "choose")) || truthy(eq(k_0->v, "gammaInc"))))) {
-              call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"first_">()), out_0->v });
-              return call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"second_">()), out_0->v });
-            } else {
-              if (truthy(eq(k_0->v, "call"))) {
-                auto called_0 = cell(); called_0->v = "" + str(get(e_0->v, S<"label">())) + "\\paren{...}";
-                if (truthy((!truthy(m_contains(out_0->v, called_0->v))))) {
-                  m_push(out_0->v, called_0->v);
-                }
-                return call(K(S<"Model">()), S<"walk_names">(), { get(e_0->v, S<"base">()), out_0->v });
-              }
-            }
-          }
-        }
-      }
+    auto name_0 = cell(); name_0->v = (truthy(get(e_0->v, S<"named">())) ? Value(get(e_0->v, S<"label">())) : Value(((truthy(eq(get(e_0->v, S<"kind">()), "call")) ? Value("" + str(get(e_0->v, S<"label">())) + "\\paren{...}") : Value(null)))));
+    if (truthy((truthy((!eq(name_0->v, null))) && truthy((!truthy(m_contains(out_0->v, name_0->v))))))) {
+      m_push(out_0->v, name_0->v);
     }
+    for (const Value& e1 : Each(get(e_0->v, S<"subtrees">()))) {
+      auto x_1 = cell(e1);
+      call(K(S<"Model">()), S<"walk_names">(), { x_1->v, out_0->v });
+    };
     return null;
   });
   c.method("resolved", [](Value self, const Args& a1) -> Value {
@@ -2537,22 +2260,7 @@ static void C_Shaded(Cls& c) {
     return null;
   });
   c.statik("points", [](Value self, const Args& a1) -> Value {
-    auto points_0 = cell(); points_0->v = list({  });
-    auto i_0 = cell(); i_0->v = 1.0;
-    while (truthy(le(i_0->v, 120.0))) {
-      m_push(points_0->v, div(i_0->v, 120.0));
-      i_0->v = add(i_0->v, 1.0);
-    }
-    auto ex_0 = cell(); ex_0->v = 0.0;
-    while (truthy(le(ex_0->v, 24.0))) {
-      auto k_0 = cell(); k_0->v = 1.0;
-      while (truthy(lt(k_0->v, 8.0))) {
-        m_push(points_0->v, mul((power(10.0, (sub(ex_0->v, 12.0)))), (add(1.0, div(k_0->v, 2.0)))));
-        k_0->v = add(k_0->v, 1.0);
-      }
-      ex_0->v = add(ex_0->v, 1.0);
-    }
-    return call(K(S<"Expr">()), S<"sorted">(), { points_0->v });
+    return get(K(S<"Expr">()), S<"bracket_points">());
     return null;
   });
   c.statik("solver", [](Value self, const Args& a1) -> Value {
@@ -2807,32 +2515,33 @@ static void C_Sweep(Cls& c) {
   });
   c.method("save", [](Value self, const Args& a1) -> Value {
     auto id_0 = cell(arg(a1, 0)); auto grid_0 = cell(arg(a1, 1)); auto need_0 = cell(arg(a1, 2));
-    auto x_0 = cell(); x_0->v = list({  });
-    auto y_0 = cell(); y_0->v = list({  });
-    auto p_0 = cell(); p_0->v = list({  });
-    auto by_0 = cell(); by_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"YS">())); i1 < n1; i1++) {
-      auto gy_1 = cell(i1);
-      for (double i2 = 0, n2 = num(get(self, S<"XS">())); i2 < n2; i2++) {
-        auto gx_2 = cell(i2);
-        m_push(x_0->v, add(get(self, S<"X0">()), mul(gx_2->v, get(self, S<"dx">()))));
-        m_push(y_0->v, add(get(self, S<"Y0">()), mul(gy_1->v, get(self, S<"dy">()))));
-        m_push(p_0->v, elem(grid_0->v, add(mul(gy_1->v, get(self, S<"XS">())), gx_2->v)));
-        m_push(by_0->v, elem(need_0->v, add(mul(gy_1->v, get(self, S<"XS">())), gx_2->v)));
-      };
-    };
-    auto most_0 = cell(); most_0->v = 0.0;
-    for (const Value& e1 : Each(p_0->v)) {
-      auto v_1 = cell(e1);
-      if (truthy(gt(v_1->v, most_0->v))) {
-        most_0->v = v_1->v;
-      }
-    };
+    auto cells_0 = cell(); cells_0->v = rng(mul(get(self, S<"YS">()), get(self, S<"XS">())));
     auto columns_0 = cell(); columns_0->v = make(S<"Node">(), { });
-    set(columns_0->v, Sym(str("x")), x_0->v);
-    set(columns_0->v, Sym(str("y")), y_0->v);
-    set(columns_0->v, Sym(str("p")), p_0->v);
-    set(columns_0->v, Sym(str("by")), by_0->v);
+    set(columns_0->v, Sym(str("x")), m_map(cells_0->v, fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return add(get(self, S<"X0">()), mul((mod(i_2->v, get(self, S<"XS">()))), get(self, S<"dx">())));
+      return null;
+    })));
+    set(columns_0->v, Sym(str("y")), m_map(cells_0->v, fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return add(get(self, S<"Y0">()), mul(m_floor((div(i_2->v, get(self, S<"XS">())))), get(self, S<"dy">())));
+      return null;
+    })));
+    set(columns_0->v, Sym(str("p")), m_map(cells_0->v, fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return elem(grid_0->v, i_2->v);
+      return null;
+    })));
+    set(columns_0->v, Sym(str("by")), m_map(cells_0->v, fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return elem(need_0->v, i_2->v);
+      return null;
+    })));
+    auto most_0 = cell(); most_0->v = m_reduce(get(columns_0->v, Sym(str("p"))), 0.0, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return (truthy(gt(v_2->v, m_2->v)) ? Value(v_2->v) : Value(m_2->v));
+      return null;
+    }));
     auto extra_0 = cell(); extra_0->v = make(S<"Node">(), { });
     set(extra_0->v, Sym(str("a0")), get(self, S<"a0">()));
     set(extra_0->v, Sym(str("arrangement")), get(self, S<"how">()));
@@ -2898,16 +2607,15 @@ static void C_Sweep(Cls& c) {
     return null;
   });
   c.getter("radii", [](Value self, const Args& a1) -> Value {
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"RS">())); i1 < n1; i1++) {
-      auto k_1 = cell(i1);
-      auto e_1 = cell(); e_1->v = elem(get(self, S<"env">()), k_1->v);
-      m_push(out_0->v, elem(get(self, S<"rad">()), k_1->v));
-      m_push(out_0->v, orElse(get(e_1->v, Sym(str("n_{f}"))), [&]() -> Value { return RAY_NAN; }));
-      m_push(out_0->v, orElse(get(e_1->v, Sym(str("\\sigma_{tr}"))), [&]() -> Value { return RAY_NAN; }));
-      m_push(out_0->v, orElse(get(e_1->v, Sym(str("L"))), [&]() -> Value { return RAY_NAN; }));
-    };
-    return out_0->v;
+    return m_reduce(rng(get(self, S<"RS">())), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto k_2 = cell(arg(a3, 1));
+      return m_reduce(list({ elem(get(self, S<"rad">()), k_2->v), orElse(get(elem(get(self, S<"env">()), k_2->v), Sym(str("n_{f}"))), [&]() -> Value { return RAY_NAN; }), orElse(get(elem(get(self, S<"env">()), k_2->v), Sym(str("\\sigma_{tr}"))), [&]() -> Value { return RAY_NAN; }), orElse(get(elem(get(self, S<"env">()), k_2->v), Sym(str("L"))), [&]() -> Value { return RAY_NAN; }) }), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto v_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, v_4->v);
+        return null;
+      }));
+      return null;
+    }));
     return null;
   });
   c.getter("kernel", [](Value self, const Args& a1) -> Value {
@@ -3087,6 +2795,1182 @@ static void C_Measure(Cls& c) {
 }
 static const bool R_Measure = define_class("Measure", "Node", &C_Measure);
 
+static void C_Sighted(Cls& c) {
+  c.field("name", nullptr);
+  c.field("disc_mass", nullptr);
+  c.field("disc_scale", nullptr);
+  c.field("bulge_mass", nullptr);
+  c.field("bulge_scale", nullptr);
+  c.field("circling", nullptr);
+  c.field("sun", nullptr);
+  c.field("inclination", nullptr);
+  c.field("position_angle", nullptr);
+  c.field("distance", nullptr);
+  c.field("approach", nullptr);
+  c.field("across", nullptr);
+  c.field("source", nullptr);
+  c.getter("mass", [](Value self, const Args& a1) -> Value {
+    return add(get(self, S<"disc_mass">()), get(self, S<"bulge_mass">()));
+    return null;
+  });
+}
+static const bool R_Sighted = define_class("Sighted", "Node", &C_Sighted);
+
+static void C_Video(Cls& c) {
+  c.staticField("WIDTH", [](const Value& self) -> Value { return 2560.0; });
+  c.staticField("HEIGHT", [](const Value& self) -> Value { return 1440.0; });
+  c.staticField("FPS", [](const Value& self) -> Value { return 60.0; });
+  c.staticField("FILM_RD", [](const Value& self) -> Value { return 6.0; });
+  c.staticField("PER_MYR", [](const Value& self) -> Value { return 0.0010227; });
+  c.staticField("LIGHT", [](const Value& self) -> Value { return 299792.458; });
+  c.staticField("ANDROMEDA", [](const Value& self) -> Value { return make(S<"Sighted">(), { kw(S<"name">(), "Andromeda (M31)"), kw(S<"disc_mass">(), 8.4), kw(S<"disc_scale">(), 5.4), kw(S<"bulge_mass">(), 3.3), kw(S<"bulge_scale">(), 0.61), kw(S<"circling">(), 250.0), kw(S<"sun">(), 0.0), kw(S<"inclination">(), 77.0), kw(S<"position_angle">(), 38.0), kw(S<"distance">(), 785.0), kw(S<"approach">(), 110.0), kw(S<"across">(), 17.0), kw(S<"source">(), "Geehan et al. 2006, van der Marel et al. 2012") }); });
+  c.staticField("MW_ORBITS", [](const Value& self) -> Value { return list({ 5.5, 0.25 }); });
+  c.staticField("MW_ORBIT_TRIALS", [](const Value& self) -> Value { return list({ 10.0, 7.0 }); });
+  c.staticField("MW_ORBIT_TEMPER", [](const Value& self) -> Value { return 0.1; });
+  c.staticField("MW_ARM_END", [](const Value& self) -> Value { return list({ 0.0, 0.0, 0.0, 0.0, 140.0 }); });
+  c.staticField("MW_ARM_OLD", [](const Value& self) -> Value { return list({ 0.0, 1.0, 0.0, 1.0, 0.0 }); });
+  c.staticField("MW_ARM_FADE", [](const Value& self) -> Value { return 12.0; });
+  c.staticField("MW_ARM_FADE_IN", [](const Value& self) -> Value { return 45.0; });
+  c.staticField("MW_YOUNG", [](const Value& self) -> Value { return 0.1; });
+  c.staticField("MW_CLUSTERS", [](const Value& self) -> Value { return list({ 0.5, 50.0, 0.1 }); });
+  c.staticField("LIGHT_STARS", [](const Value& self) -> Value { return list({ 0.95, 2.4, 3.2 }); });
+  c.staticField("ANDROMEDA_IMAGE", [](const Value& self) -> Value { return 512.0; });
+  c.staticField("ANDROMEDA_FOV", [](const Value& self) -> Value { return 3.2; });
+  c.staticField("SOURCE", [](const Value& self) -> Value { return "74,168,235"; });
+  c.staticField("STRIP_TOP", [](const Value& self) -> Value { return 570.0; });
+  c.staticField("STRIP_TALL", [](const Value& self) -> Value { return 300.0; });
+  c.staticField("PLANET_INK", [](const Value& self) -> Value { return list({ "#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e" }); });
+  c.staticField("SOLAR_FROM", [](const Value& self) -> Value { return 160.0; });
+  c.staticField("SOLAR_TO", [](const Value& self) -> Value { return 280.0; });
+  c.staticField("LOGO", [](const Value& self) -> Value { return "../orbitmines.com/orbitmines.com/public/logo.png"; });
+  c.staticField("PARTS", [](const Value& self) -> Value { return list({ "video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end" }); });
+  c.statik("MILKY_WAY", [](Value self, const Args& a1) -> Value {
+    return make(S<"Sighted">(), { kw(S<"name">(), "Milky Way"), kw(S<"disc_mass">(), get(K(S<"Video">()), S<"mw_discs_mass">())), kw(S<"disc_scale">(), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_scale" })), kw(S<"bulge_mass">(), m_sum(get(K(S<"Video">()), S<"MW_BAR_MASSES">()))), kw(S<"bulge_scale">(), 0.6), kw(S<"circling">(), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "circling" })), kw(S<"sun">(), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "sun_distance" })), kw(S<"inclination">(), 0.0), kw(S<"position_angle">(), 0.0), kw(S<"distance">(), 0.0), kw(S<"approach">(), 0.0), kw(S<"across">(), 0.0), kw(S<"source">(), "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)") });
+    return null;
+  });
+  c.statik("measured", [](Value self, const Args& a1) -> Value {
+    auto id_0 = cell(arg(a1, 0)); auto name_0 = cell(arg(a1, 1));
+    auto m_0 = cell(); m_0->v = call(K(S<"Measured">()), S<"of">(), { id_0->v });
+    if (truthy(eq(m_0->v, null))) {
+      invoke(fail, { "no data/" + str(id_0->v) + ": run npx ray data " + str(id_0->v) + "" });
+    }
+    auto names_0 = cell(); names_0->v = get(get(m_0->v, S<"header">()), Sym(str("names")));
+    auto k_0 = cell(); k_0->v = m_first(filt(rng(len(names_0->v)), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return eq(elem(names_0->v, i_2->v), name_0->v);
+      return null;
+    })));
+    if (truthy(eq(k_0->v, null))) {
+      invoke(fail, { "data/" + str(id_0->v) + " has no " + str(quoted(name_0->v)) + "" });
+    }
+    return elem(get(get(m_0->v, S<"columns">()), Sym(str("value"))), k_0->v);
+    return null;
+  });
+  c.statik("MW_BAR1", [](Value self, const Args& a1) -> Value {
+    return m_map(list({ "rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut" }), fn([=](const Args& a3) -> Value {
+      auto n_2 = cell(arg(a3, 0));
+      return call(K(S<"Video">()), S<"measured">(), { "milkyway-bar", n_2->v });
+      return null;
+    }));
+    return null;
+  });
+  c.statik("mw_bar", [](Value self, const Args& a1) -> Value {
+    auto i_0 = cell(arg(a1, 0));
+    return m_map(list({ "rho_" + str(i_0->v) + "", "x_" + str(i_0->v) + "", "y_" + str(i_0->v) + "", "z_" + str(i_0->v) + "", "n_" + str(i_0->v) + "", "c_perp," + str(i_0->v) + "", "R_" + str(i_0->v) + ",out", "R_" + str(i_0->v) + ",in", "n_" + str(i_0->v) + ",out", "n_" + str(i_0->v) + ",in" }), fn([=](const Args& a3) -> Value {
+      auto n_2 = cell(arg(a3, 0));
+      return call(K(S<"Video">()), S<"measured">(), { "milkyway-bar", n_2->v });
+      return null;
+    }));
+    return null;
+  });
+  c.statik("MW_BAR2", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"mw_bar">(), { "2" });
+    return null;
+  });
+  c.statik("MW_BAR3", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"mw_bar">(), { "3" });
+    return null;
+  });
+  c.statik("MW_BAR_MASSES", [](Value self, const Args& a1) -> Value {
+    return m_map(list({ "M_bar1", "M_bar2", "M_bar3" }), fn([=](const Args& a3) -> Value {
+      auto n_2 = cell(arg(a3, 0));
+      return call(K(S<"Video">()), S<"measured">(), { "milkyway-bar", n_2->v });
+      return null;
+    }));
+    return null;
+  });
+  c.statik("MW_BAR_ANGLE", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "bar_angle" });
+    return null;
+  });
+  c.statik("MW_PATTERN_SPEED", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"measured">(), { "milkyway-bar", "pattern_speed" });
+    return null;
+  });
+  c.statik("mw_discs_mass", [](Value self, const Args& a1) -> Value {
+    return sub(add(add(call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "bulge_region_mass" }), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_mass" })), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thick_mass" })), m_sum(get(K(S<"Video">()), S<"MW_BAR_MASSES">())));
+    return null;
+  });
+  c.statik("MW_DISCS", [](Value self, const Args& a1) -> Value {
+    auto thin_0 = cell(); thin_0->v = call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_mass" });
+    auto thick_0 = cell(); thick_0->v = call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thick_mass" });
+    return list({ list({ div(mul(get(K(S<"Video">()), S<"mw_discs_mass">()), thin_0->v), (add(thin_0->v, thick_0->v))), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_scale" }), 1.0 }), list({ div(mul(get(K(S<"Video">()), S<"mw_discs_mass">()), thick_0->v), (add(thin_0->v, thick_0->v))), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thick_scale" }), 0.0 }) });
+    return null;
+  });
+  c.statik("MW_DISC_HOLE", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"measured">(), { "milkyway-bar", "R_cut" });
+    return null;
+  });
+  c.statik("MW_ARMS", [](Value self, const Args& a1) -> Value {
+    auto m_0 = cell(); m_0->v = call(K(S<"Measured">()), S<"of">(), { "milkyway-arms" });
+    if (truthy(eq(m_0->v, null))) {
+      invoke(fail, { "no data/milkyway-arms: run npx ray data milkyway-arms" });
+    }
+    return m_map(rng(5.0), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return list({ elem(get(get(m_0->v, S<"columns">()), Sym(str("R"))), k_2->v), elem(get(get(m_0->v, S<"columns">()), Sym(str("theta"))), k_2->v), elem(get(get(m_0->v, S<"columns">()), Sym(str("psi"))), k_2->v), elem(get(K(S<"Video">()), S<"MW_ARM_END">()), k_2->v), elem(get(K(S<"Video">()), S<"MW_ARM_OLD">()), k_2->v) });
+      return null;
+    }));
+    return null;
+  });
+  c.statik("MW_ARM_WIDTH", [](Value self, const Args& a1) -> Value {
+    return list({ div(call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-widths", "w0" }), 1000.0), div(call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-widths", "slope" }), 1000.0), call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-widths", "R0" }) });
+    return null;
+  });
+  c.statik("MW_ARM_CONTRAST", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-contrast", "K" });
+    return null;
+  });
+  c.statik("MW_DUST", [](Value self, const Args& a1) -> Value {
+    return list({ div(call(K(S<"Video">()), S<"measured">(), { "milkyway-dust-lane", "hot" }), 1000.0), 0.12, 0.1 });
+    return null;
+  });
+  c.statik("MW_STIR", [](Value self, const Args& a1) -> Value {
+    return list({ list({ call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_sigma_R" }), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_sigma_scale" }) }), list({ call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thick_sigma_R" }), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thick_sigma_scale" }) }), list({ call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-widths", "young_spread" }), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "thin_sigma_scale" }) }) });
+    return null;
+  });
+  c.statik("MW_SUN_MOTION", [](Value self, const Args& a1) -> Value {
+    return list({ call(K(S<"Video">()), S<"measured">(), { "milkyway-arm-widths", "U_sun" }), sub(call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "sun_tangential" }), call(K(S<"Video">()), S<"measured">(), { "milkyway-discs", "circling" })) });
+    return null;
+  });
+  c.statik("galaxy", [](Value self, const Args& a1) -> Value {
+    auto name_0 = cell(arg(a1, 0));
+    return (truthy(eq(name_0->v, "andromeda")) ? Value(get(K(S<"Video">()), S<"ANDROMEDA">())) : Value(get(K(S<"Video">()), S<"MILKY_WAY">())));
+    return null;
+  });
+  c.statik("per_kpc", [](Value self, const Args& a1) -> Value {
+    return div(get(K(S<"Video">()), S<"FILM_RD">()), get(get(K(S<"Video">()), S<"MILKY_WAY">()), S<"disc_scale">()));
+    return null;
+  });
+  c.statik("myr_per_tick", [](Value self, const Args& a1) -> Value {
+    auto film_0 = cell(arg(a1, 0));
+    auto c__0 = cell(); c__0->v = get(get(film_0->v, S<"header">()), Sym(str("clock")));
+    return div((div(elem(c__0->v, 1.0), elem(c__0->v, 0.0))), (mul(div(elem(c__0->v, 3.0), elem(c__0->v, 2.0)), get(K(S<"Video">()), S<"PER_MYR">()))));
+    return null;
+  });
+  c.statik("faster", [](Value self, const Args& a1) -> Value {
+    auto film_0 = cell(arg(a1, 0));
+    return div(elem(get(get(film_0->v, S<"header">()), Sym(str("clock"))), 1.0), (div(elem(get(get(film_0->v, S<"header">()), Sym(str("clock"))), 3.0), get(K(S<"Video">()), S<"LIGHT">()))));
+    return null;
+  });
+  c.statik("smooth", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0));
+    auto u_0 = cell(); u_0->v = call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, t_0->v }) });
+    return mul(mul(u_0->v, u_0->v), (sub(3.0, mul(2.0, u_0->v))));
+    return null;
+  });
+  c.statik("shot", [](Value self, const Args& a1) -> Value {
+    auto id_0 = cell(arg(a1, 0)); auto what_0 = cell(arg(a1, 1)); auto shot_0 = cell(arg(a1, 2));
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), id_0->v), kw(S<"what">(), what_0->v), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), get(shot_0->v, S<"frames">())), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"Sky">(), { kw(S<"shot">(), shot_0->v) });
+      return null;
+    })) });
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("solar_meta", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0));
+    auto r_0 = cell(); r_0->v = get(get(theory_0->v, S<"solar">()), S<"record">());
+    auto at_0 = cell(); at_0->v = 0.0;
+    for (double i1 = 0, n1 = num(len(get(r_0->v, S<"names">()))); i1 < n1; i1++) {
+      auto k_1 = cell(i1);
+      at_0->v = (truthy(eq(elem(get(r_0->v, S<"names">()), k_1->v), "marks")) ? Value(k_1->v) : Value(at_0->v));
+    };
+    auto off_0 = cell(); off_0->v = m_sum(m_take(get(r_0->v, S<"sizes">()), at_0->v));
+    auto SOLAR_0 = cell(); SOLAR_0->v = call(K(S<"Measured">()), S<"of">(), { "solar-inner" });
+    auto NAMES_0 = cell(); NAMES_0->v = get(get(SOLAR_0->v, S<"header">()), Sym(str("names")));
+    auto PER_0 = cell(); PER_0->v = get(get(SOLAR_0->v, S<"columns">()), Sym(str("period")));
+    auto PLANETS_0 = cell(); PLANETS_0->v = filt(rng(len(NAMES_0->v)), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return gt(elem(PER_0->v, i_2->v), 0.0);
+      return null;
+    }));
+    auto earth_body_0 = cell(); earth_body_0->v = 0.0;
+    for (double i1 = 0, n1 = num(len(PLANETS_0->v)); i1 < n1; i1++) {
+      auto k_1 = cell(i1);
+      earth_body_0->v = (truthy(eq(elem(NAMES_0->v, elem(PLANETS_0->v, k_1->v)), "Earth")) ? Value(add(k_1->v, 1.0)) : Value(earth_body_0->v));
+    };
+    return list({ off_0->v, get(r_0->v, S<"width">()), m_round((div((sub(elem(get(r_0->v, S<"sizes">()), at_0->v), 1.0)), 6.0))), earth_body_0->v });
+    return null;
+  });
+  c.statik("shot_after_solar", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0)); auto id_0 = cell(arg(a1, 1)); auto what_0 = cell(arg(a1, 2)); auto shot_0 = cell(arg(a1, 3));
+    auto meta_0 = cell(); meta_0->v = call(K(S<"Video">()), S<"solar_meta">(), { theory_0->v });
+    auto stamp_0 = cell(); stamp_0->v = get(get(get(theory_0->v, S<"solar">()), S<"record">()), S<"stamp">());
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), id_0->v), kw(S<"what">(), what_0->v), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), get(shot_0->v, S<"frames">())), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      auto sky_2 = cell(); sky_2->v = make(S<"Sky">(), { kw(S<"shot">(), shot_0->v) });
+      set(sky_2->v, S<"meta">(), meta_0->v);
+      set(sky_2->v, S<"sol_stamp">(), stamp_0->v);
+      return sky_2->v;
+      return null;
+    })) });
+    set(pic_0->v, S<"uses">(), list({ "solar.inner" }));
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("light", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto film_0 = cell(arg(a1, 1)); auto b0_0 = cell(arg(a1, 2)); auto b1_0 = cell(arg(a1, 3)); auto w_0 = cell(arg(a1, 4)); auto G_0 = cell(arg(a1, 5)); auto span_0 = cell(arg(a1, 6)); auto cx_0 = cell(arg(a1, 7)); auto cy_0 = cell(arg(a1, 8)); auto px_0 = cell(arg(a1, 9)); auto ci_0 = cell(arg(a1, 10)); auto side_0 = cell(arg(a1, 11));
+    auto D_0 = cell(); D_0->v = get(get(film_0->v, S<"columns">()), Sym(str("density")));
+    auto Y_0 = cell(); Y_0->v = get(get(film_0->v, S<"columns">()), Sym(str("young")));
+    auto U_0 = cell(); U_0->v = get(get(film_0->v, S<"columns">()), Sym(str("dust")));
+    auto top_0 = cell(); top_0->v = 0.0;
+    auto ytop_0 = cell(); ytop_0->v = 0.0;
+    auto utop_0 = cell(); utop_0->v = 0.0;
+    for (double i1 = 0, n1 = num(mul(G_0->v, G_0->v)); i1 < n1; i1++) {
+      auto c__1 = cell(i1);
+      top_0->v = call(K(S<"Fmt">()), S<"max">(), { top_0->v, add(elem(D_0->v, add(b0_0->v, c__1->v)), mul(w_0->v, (sub(elem(D_0->v, add(b1_0->v, c__1->v)), elem(D_0->v, add(b0_0->v, c__1->v)))))) });
+      ytop_0->v = call(K(S<"Fmt">()), S<"max">(), { ytop_0->v, add(elem(Y_0->v, add(b0_0->v, c__1->v)), mul(w_0->v, (sub(elem(Y_0->v, add(b1_0->v, c__1->v)), elem(Y_0->v, add(b0_0->v, c__1->v)))))) });
+      utop_0->v = call(K(S<"Fmt">()), S<"max">(), { utop_0->v, add(elem(U_0->v, add(b0_0->v, c__1->v)), mul(w_0->v, (sub(elem(U_0->v, add(b1_0->v, c__1->v)), elem(U_0->v, add(b0_0->v, c__1->v)))))) });
+    };
+    auto lt_0 = cell(); lt_0->v = m_ln((add(1.0, top_0->v)));
+    auto rgb_0 = cell(); rgb_0->v = list({  });
+    for (double i1 = 0, n1 = num(G_0->v); i1 < n1; i1++) {
+      auto row_1 = cell(i1);
+      auto gy_1 = cell(); gy_1->v = sub(sub(G_0->v, 1.0), row_1->v);
+      for (double i2 = 0, n2 = num(G_0->v); i2 < n2; i2++) {
+        auto gx_2 = cell(i2);
+        auto c__2 = cell(); c__2->v = add(mul(gy_1->v, G_0->v), gx_2->v);
+        auto o_2 = cell(); o_2->v = call(K(S<"Fmt">()), S<"min">(), { 1.0, div(m_ln((add(add(1.0, elem(D_0->v, add(b0_0->v, c__2->v))), mul(w_0->v, (sub(elem(D_0->v, add(b1_0->v, c__2->v)), elem(D_0->v, add(b0_0->v, c__2->v)))))))), lt_0->v) });
+        auto y_2 = cell(); y_2->v = call(K(S<"Fmt">()), S<"min">(), { 1.0, m_sqrt((div((add(elem(Y_0->v, add(b0_0->v, c__2->v)), mul(w_0->v, (sub(elem(Y_0->v, add(b1_0->v, c__2->v)), elem(Y_0->v, add(b0_0->v, c__2->v))))))), ytop_0->v))) });
+        auto lo_2 = cell(); lo_2->v = mul(m_sqrt(o_2->v), o_2->v);
+        auto hii_2 = cell(); hii_2->v = call(K(S<"Fmt">()), S<"max">(), { 0.0, div((sub(y_2->v, 0.7)), 0.3) });
+        auto dim_2 = cell(); dim_2->v = sub(1.0, mul(0.7, call(K(S<"Fmt">()), S<"min">(), { 1.0, m_sqrt((div((add(elem(U_0->v, add(b0_0->v, c__2->v)), mul(w_0->v, (sub(elem(U_0->v, add(b1_0->v, c__2->v)), elem(U_0->v, add(b0_0->v, c__2->v))))))), utop_0->v))) })));
+        m_push(rgb_0->v, call(K(S<"Fmt">()), S<"min">(), { 255.0, mul(dim_2->v, (add(add(mul(lo_2->v, (add(130.0, mul(125.0, o_2->v)))), mul(mul(95.0, y_2->v), y_2->v)), mul(110.0, hii_2->v)))) }));
+        m_push(rgb_0->v, call(K(S<"Fmt">()), S<"min">(), { 255.0, mul(dim_2->v, (add(add(mul(lo_2->v, (add(140.0, mul(85.0, o_2->v)))), mul(mul(120.0, y_2->v), y_2->v)), mul(25.0, hii_2->v)))) }));
+        m_push(rgb_0->v, call(K(S<"Fmt">()), S<"min">(), { 255.0, mul(dim_2->v, (add(add(mul(lo_2->v, (sub(175.0, mul(55.0, o_2->v)))), mul(mul(165.0, y_2->v), y_2->v)), mul(70.0, hii_2->v)))) }));
+      };
+    };
+    auto x0_0 = cell(); x0_0->v = mul((sub(sub(0.0, span_0->v), cx_0->v)), px_0->v);
+    auto y0_0 = cell(); y0_0->v = sub(0.0, mul(mul((sub(span_0->v, cy_0->v)), px_0->v), ci_0->v));
+    auto bw_0 = cell(); bw_0->v = mul(mul(2.0, span_0->v), px_0->v);
+    auto bh_0 = cell(); bh_0->v = mul(mul(mul(2.0, span_0->v), px_0->v), ci_0->v);
+    auto fade_0 = cell(); fade_0->v = call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, div((sub(90.0, side_0->v)), 50.0) }) });
+    call(s_0->v, S<"alpha">(), { mul(0.3, fade_0->v) });
+    call(s_0->v, S<"field">(), { rgb_0->v, G_0->v, G_0->v, x0_0->v, y0_0->v, bw_0->v, bh_0->v, call(K(S<"Fmt">()), S<"max">(), { 2.0, mul(2.0, side_0->v) }) });
+    call(s_0->v, S<"alpha">(), { mul(0.9, fade_0->v) });
+    call(s_0->v, S<"field">(), { rgb_0->v, G_0->v, G_0->v, x0_0->v, y0_0->v, bw_0->v, bh_0->v, 0.0 });
+    return call(s_0->v, S<"alpha">(), { 1.0 });
+    return null;
+  });
+  c.statik("sky", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto shot_0 = cell(arg(a1, 1)); auto film_0 = cell(arg(a1, 2)); auto tracks_0 = cell(arg(a1, 3)); auto i_0 = cell(arg(a1, 4)); auto sol_0 = cell(arg(a1, 5)); auto meta_0 = cell(arg(a1, 6));
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+    call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+    auto H_0 = cell(); H_0->v = get(film_0->v, S<"header">());
+    auto n_0 = cell(); n_0->v = get(shot_0->v, S<"frames">());
+    auto t_0 = cell(); t_0->v = (truthy(gt(n_0->v, 1.0)) ? Value(div(i_0->v, (sub(n_0->v, 1.0)))) : Value(0.0));
+    auto e_0 = cell(); e_0->v = call(K(S<"Video">()), S<"smooth">(), { t_0->v });
+    auto FR_0 = cell(); FR_0->v = get(H_0->v, Sym(str("frames")));
+    auto u_0 = cell(); u_0->v = mul((add(get(shot_0->v, S<"from_at">()), mul((sub(get(shot_0->v, S<"to_at">()), get(shot_0->v, S<"from_at">()))), t_0->v))), (sub(FR_0->v, 1.0)));
+    auto f0_0 = cell(); f0_0->v = call(K(S<"Fmt">()), S<"min">(), { m_floor(u_0->v), sub(FR_0->v, 1.0) });
+    auto f1_0 = cell(); f1_0->v = call(K(S<"Fmt">()), S<"min">(), { add(f0_0->v, 1.0), sub(FR_0->v, 1.0) });
+    auto w_0 = cell(); w_0->v = sub(u_0->v, f0_0->v);
+    auto ez_0 = cell(); ez_0->v = (truthy(lt(get(shot_0->v, S<"from_zoom">()), 1.0)) ? Value(sub(1.0, mul((sub(1.0, call(K(S<"Video">()), S<"smooth">(), { div(t_0->v, 0.6) }))), (sub(1.0, call(K(S<"Video">()), S<"smooth">(), { div(t_0->v, 0.6) })))))) : Value(e_0->v));
+    auto across_0 = cell(); across_0->v = m_exp((add(m_ln(get(shot_0->v, S<"from_zoom">())), mul((sub(m_ln(get(shot_0->v, S<"to_zoom">())), m_ln(get(shot_0->v, S<"from_zoom">())))), ez_0->v))));
+    auto px_0 = cell(); px_0->v = div(get(s_0->v, S<"height">()), across_0->v);
+    auto has_sun_0 = cell(); has_sun_0->v = (truthy((!eq(tracks_0->v, null))) && truthy(eq(get(get(tracks_0->v, S<"header">()), Sym(str("sun"))), 0.0)));
+    auto sx_0 = cell(); sx_0->v = 0.0;
+    auto sy_0 = cell(); sy_0->v = 0.0;
+    if (truthy(has_sun_0->v)) {
+      auto XY_0 = cell(); XY_0->v = get(get(tracks_0->v, S<"columns">()), Sym(str("xy")));
+      auto m_0 = cell(); m_0->v = get(get(tracks_0->v, S<"header">()), Sym(str("shown")));
+      sx_0->v = add(elem(XY_0->v, mul(mul(f0_0->v, m_0->v), 2.0)), mul(w_0->v, (sub(elem(XY_0->v, mul(mul(f1_0->v, m_0->v), 2.0)), elem(XY_0->v, mul(mul(f0_0->v, m_0->v), 2.0))))));
+      sy_0->v = add(elem(XY_0->v, add(mul(mul(f0_0->v, m_0->v), 2.0), 1.0)), mul(w_0->v, (sub(elem(XY_0->v, add(mul(mul(f1_0->v, m_0->v), 2.0), 1.0)), elem(XY_0->v, add(mul(mul(f0_0->v, m_0->v), 2.0), 1.0))))));
+    }
+    auto look_0 = cell(); look_0->v = (truthy(has_sun_0->v) ? Value(add(get(shot_0->v, S<"from_sun">()), mul((sub(get(shot_0->v, S<"to_sun">()), get(shot_0->v, S<"from_sun">()))), e_0->v))) : Value(0.0));
+    auto px_end_0 = cell(); px_end_0->v = div(get(s_0->v, S<"height">()), get(shot_0->v, S<"to_zoom">()));
+    auto away_0 = cell(); away_0->v = (truthy(has_sun_0->v) ? Value(div(mul((sub(1.0, look_0->v)), px_end_0->v), px_0->v)) : Value(0.0));
+    auto cx_0 = cell(); cx_0->v = mul(sx_0->v, (sub(1.0, away_0->v)));
+    auto cy_0 = cell(); cy_0->v = mul(sy_0->v, (sub(1.0, away_0->v)));
+    auto ci_0 = cell(); ci_0->v = m_cos((div(mul(get(shot_0->v, S<"tilt">()), RAY_PI), 180.0)));
+    auto SF_0 = cell(); SF_0->v = (truthy((!eq(sol_0->v, null))) ? Value(get(get(sol_0->v, S<"columns">()), Sym(str("frames")))) : Value(list({  })));
+    auto sys_0 = cell(); sys_0->v = list({ 0.0, 0.0, 0.0, 0.0, 0.0 });
+    if (truthy((!eq(sol_0->v, null)))) {
+      auto FRS_0 = cell(); FRS_0->v = get(get(sol_0->v, S<"header">()), Sym(str("frames")));
+      auto at_f_0 = cell(); at_f_0->v = call(K(S<"Fmt">()), S<"min">(), { sub(FRS_0->v, 1.0), get(K(S<"Video">()), S<"SOLAR_TO">()) });
+      auto mk_0 = cell(); mk_0->v = fn([=](const Args& a2) -> Value {
+        auto f_1 = cell(arg(a2, 0)); auto k_1 = cell(arg(a2, 1)); auto c__1 = cell(arg(a2, 2));
+        return elem(SF_0->v, add(add(add(mul(f_1->v, elem(meta_0->v, 1.0)), elem(meta_0->v, 0.0)), mul(6.0, k_1->v)), c__1->v));
+        return null;
+      });
+      auto reach_0 = cell(); reach_0->v = 0.0;
+      for (double i1 = 0, n1 = num(FRS_0->v); i1 < n1; i1++) {
+        auto f_1 = cell(i1);
+        for (double i2 = 0, n2 = num(sub(elem(meta_0->v, 2.0), 1.0)); i2 < n2; i2++) {
+          auto k_2 = cell(i2);
+          reach_0->v = call(K(S<"Fmt">()), S<"max">(), { reach_0->v, call(K(S<"Fmt">()), S<"hypot">(), { sub(invoke(mk_0->v, { f_1->v, add(k_2->v, 1.0), 0.0 }), invoke(mk_0->v, { f_1->v, 0.0, 0.0 })), sub(invoke(mk_0->v, { f_1->v, add(k_2->v, 1.0), 1.0 }), invoke(mk_0->v, { f_1->v, 0.0, 1.0 })) }) });
+        };
+      };
+      auto eb_0 = cell(); eb_0->v = elem(meta_0->v, 3.0);
+      auto ex_0 = cell(); ex_0->v = invoke(mk_0->v, { at_f_0->v, eb_0->v, 0.0 });
+      auto ey_0 = cell(); ey_0->v = invoke(mk_0->v, { at_f_0->v, eb_0->v, 1.0 });
+      auto last_0 = cell(); last_0->v = mul(2.1, (add(reach_0->v, call(K(S<"Fmt">()), S<"hypot">(), { sub(ex_0->v, invoke(mk_0->v, { at_f_0->v, 0.0, 0.0 })), sub(ey_0->v, invoke(mk_0->v, { at_f_0->v, 0.0, 1.0 })) }))));
+      auto pxs_0 = cell(); pxs_0->v = mul(div(get(s_0->v, S<"height">()), last_0->v), (div(get(shot_0->v, S<"from_zoom">()), across_0->v)));
+      auto sun_x_0 = cell(); sun_x_0->v = mul((sub(invoke(mk_0->v, { at_f_0->v, 0.0, 0.0 }), ex_0->v)), pxs_0->v);
+      auto sun_y_0 = cell(); sun_y_0->v = mul((sub(invoke(mk_0->v, { at_f_0->v, 0.0, 1.0 }), ey_0->v)), pxs_0->v);
+      cx_0->v = sub(cx_0->v, div(sun_x_0->v, px_0->v));
+      cy_0->v = sub(cy_0->v, div(sun_y_0->v, (mul(px_0->v, ci_0->v))));
+      sys_0->v = list({ pxs_0->v, invoke(mk_0->v, { at_f_0->v, 0.0, 0.0 }), invoke(mk_0->v, { at_f_0->v, 0.0, 1.0 }), at_f_0->v, sub(1.0, call(K(S<"Video">()), S<"smooth">(), { div(e_0->v, 0.3) })) });
+    }
+    get(s_0->v, S<"save">());
+    call(s_0->v, S<"translate">(), { div(get(s_0->v, S<"width">()), 2.0), div(get(s_0->v, S<"height">()), 2.0) });
+    call(s_0->v, S<"rotate">(), { sub(0.0, div(mul(get(shot_0->v, S<"turn">()), RAY_PI), 180.0)) });
+    auto G_0 = cell(); G_0->v = get(H_0->v, Sym(str("grid")));
+    auto span_0 = cell(); span_0->v = elem(get(H_0->v, Sym(str("span"))), 0.0);
+    auto D_0 = cell(); D_0->v = get(get(film_0->v, S<"columns">()), Sym(str("density")));
+    auto cs_0 = cell(); cs_0->v = div(mul(2.0, span_0->v), G_0->v);
+    auto b0_0 = cell(); b0_0->v = mul(mul(f0_0->v, G_0->v), G_0->v);
+    auto b1_0 = cell(); b1_0->v = mul(mul(f1_0->v, G_0->v), G_0->v);
+    auto top_0 = cell(); top_0->v = 0.0;
+    for (double i1 = 0, n1 = num(mul(G_0->v, G_0->v)); i1 < n1; i1++) {
+      auto c__1 = cell(i1);
+      top_0->v = call(K(S<"Fmt">()), S<"max">(), { top_0->v, add(elem(D_0->v, add(b0_0->v, c__1->v)), mul(w_0->v, (sub(elem(D_0->v, add(b1_0->v, c__1->v)), elem(D_0->v, add(b0_0->v, c__1->v)))))) });
+    };
+    auto side_0 = cell(); side_0->v = add(mul(cs_0->v, px_0->v), 0.6);
+    auto half_w_0 = cell(); half_w_0->v = add(div(get(s_0->v, S<"width">()), 2.0), side_0->v);
+    if (truthy(eq(get(H_0->v, Sym(str("young"))), 1.0))) {
+      call(K(S<"Video">()), S<"light">(), { s_0->v, film_0->v, b0_0->v, b1_0->v, w_0->v, G_0->v, span_0->v, cx_0->v, cy_0->v, px_0->v, ci_0->v, side_0->v });
+    } else {
+      call(s_0->v, S<"alpha">(), { call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, div((sub(24.0, side_0->v)), 14.0) }) }) });
+      for (double i1 = 0, n1 = num(G_0->v); i1 < n1; i1++) {
+        auto gy_1 = cell(i1);
+        auto y_1 = cell(); y_1->v = mul(mul((sub(add(sub(0.0, span_0->v), mul((add(gy_1->v, 0.5)), cs_0->v)), cy_0->v)), px_0->v), ci_0->v);
+        if (truthy(lt(m_abs(y_1->v), half_w_0->v))) {
+          for (double i2 = 0, n2 = num(G_0->v); i2 < n2; i2++) {
+            auto gx_2 = cell(i2);
+            auto c__2 = cell(); c__2->v = add(mul(gy_1->v, G_0->v), gx_2->v);
+            auto v_2 = cell(); v_2->v = add(elem(D_0->v, add(b0_0->v, c__2->v)), mul(w_0->v, (sub(elem(D_0->v, add(b1_0->v, c__2->v)), elem(D_0->v, add(b0_0->v, c__2->v))))));
+            if (truthy(gt(v_2->v, 0.0))) {
+              auto x_2 = cell(); x_2->v = mul((sub(add(sub(0.0, span_0->v), mul((add(gx_2->v, 0.5)), cs_0->v)), cx_0->v)), px_0->v);
+              if (truthy(lt(m_abs(x_2->v), half_w_0->v))) {
+                auto k_2 = cell(); k_2->v = call(K(S<"Fmt">()), S<"min">(), { 1.0, div(m_ln((add(1.0, v_2->v))), m_ln((add(1.0, top_0->v)))) });
+                auto r_2 = cell(); r_2->v = m_round((add(40.0, mul(mul(215.0, k_2->v), k_2->v))));
+                auto gr_2 = cell(); gr_2->v = m_round((add(60.0, mul(190.0, k_2->v))));
+                auto b_2 = cell(); b_2->v = m_round((add(110.0, mul(145.0, call(K(S<"Fmt">()), S<"min">(), { 1.0, mul(1.6, k_2->v) })))));
+                call(s_0->v, S<"fill_style">(), { "rgb(" + str(r_2->v) + "," + str(gr_2->v) + "," + str(b_2->v) + ")" });
+                call(s_0->v, S<"fill_rect">(), { sub(x_2->v, div(side_0->v, 2.0)), sub(sub(0.0, y_1->v), div(mul(side_0->v, ci_0->v), 2.0)), side_0->v, add(mul(side_0->v, ci_0->v), 0.6) });
+              }
+            }
+          };
+        }
+      };
+      call(s_0->v, S<"alpha">(), { 1.0 });
+    }
+    auto lit_0 = cell(); lit_0->v = eq(get(H_0->v, Sym(str("young"))), 1.0);
+    if (truthy((truthy((!eq(tracks_0->v, null))) && truthy(gt(px_0->v, ((truthy(lit_0->v) ? Value(6.0) : Value(12.0)))))))) {
+      auto XY_0 = cell(); XY_0->v = get(get(tracks_0->v, S<"columns">()), Sym(str("xy")));
+      auto m_0 = cell(); m_0->v = get(get(tracks_0->v, S<"header">()), Sym(str("shown")));
+      auto tags_0 = cell(); tags_0->v = get(get(tracks_0->v, S<"header">()), Sym(str("tags")));
+      call(s_0->v, S<"alpha">(), { (truthy(lit_0->v) ? Value(call(K(S<"Fmt">()), S<"min">(), { elem(get(K(S<"Video">()), S<"LIGHT_STARS">()), 0.0), div((sub(px_0->v, 6.0)), 14.0) })) : Value(call(K(S<"Fmt">()), S<"min">(), { 0.85, div((sub(px_0->v, 12.0)), 40.0) }))) });
+      for (double i1 = 0, n1 = num(m_0->v); i1 < n1; i1++) {
+        auto k_1 = cell(i1);
+        auto x_1 = cell(); x_1->v = mul((sub(add(elem(XY_0->v, mul((add(mul(f0_0->v, m_0->v), k_1->v)), 2.0)), mul(w_0->v, (sub(elem(XY_0->v, mul((add(mul(f1_0->v, m_0->v), k_1->v)), 2.0)), elem(XY_0->v, mul((add(mul(f0_0->v, m_0->v), k_1->v)), 2.0)))))), cx_0->v)), px_0->v);
+        auto y_1 = cell(); y_1->v = mul(mul((sub(add(elem(XY_0->v, add(mul((add(mul(f0_0->v, m_0->v), k_1->v)), 2.0), 1.0)), mul(w_0->v, (sub(elem(XY_0->v, add(mul((add(mul(f1_0->v, m_0->v), k_1->v)), 2.0), 1.0)), elem(XY_0->v, add(mul((add(mul(f0_0->v, m_0->v), k_1->v)), 2.0), 1.0)))))), cy_0->v)), px_0->v), ci_0->v);
+        if (truthy((truthy(lt(m_abs(x_1->v), half_w_0->v)) && truthy(lt(m_abs(y_1->v), half_w_0->v))))) {
+          auto tg_1 = cell(); tg_1->v = elem(tags_0->v, k_1->v);
+          call(s_0->v, S<"fill_style">(), { (truthy(ge(tg_1->v, 4.0)) ? Value("#d4e6ff") : Value((truthy((truthy(eq(tg_1->v, 1.0)) || truthy(eq(tg_1->v, 3.0)))) ? Value("#ffd9a0") : Value((truthy(eq(tg_1->v, 2.0)) ? Value("#ffc7e0") : Value("#dfe8ff")))))) });
+          auto sz_1 = cell(); sz_1->v = (truthy(lit_0->v) ? Value(((truthy(ge(tg_1->v, 4.0)) ? Value(elem(get(K(S<"Video">()), S<"LIGHT_STARS">()), 2.0)) : Value(elem(get(K(S<"Video">()), S<"LIGHT_STARS">()), 1.0))))) : Value(2.4));
+          call(s_0->v, S<"fill_rect">(), { sub(x_1->v, div(sz_1->v, 2.0)), sub(sub(0.0, y_1->v), div(sz_1->v, 2.0)), sz_1->v, sz_1->v });
+        }
+      };
+      call(s_0->v, S<"alpha">(), { 1.0 });
+    }
+    if (truthy((truthy((!eq(sol_0->v, null))) && truthy(gt(elem(sys_0->v, 4.0), 0.004))))) {
+      auto ax_0 = cell(); ax_0->v = mul((sub(sx_0->v, cx_0->v)), px_0->v);
+      auto ay_0 = cell(); ay_0->v = mul(mul((sub(sy_0->v, cy_0->v)), px_0->v), ci_0->v);
+      auto FRS_0 = cell(); FRS_0->v = get(get(sol_0->v, S<"header">()), Sym(str("frames")));
+      auto mk_0 = cell(); mk_0->v = fn([=](const Args& a2) -> Value {
+        auto f_1 = cell(arg(a2, 0)); auto k_1 = cell(arg(a2, 1)); auto c__1 = cell(arg(a2, 2));
+        return elem(SF_0->v, add(add(add(mul(f_1->v, elem(meta_0->v, 1.0)), elem(meta_0->v, 0.0)), mul(6.0, k_1->v)), c__1->v));
+        return null;
+      });
+      for (double i1 = 0, n1 = num(sub(elem(meta_0->v, 2.0), 1.0)); i1 < n1; i1++) {
+        auto k_1 = cell(i1);
+        auto b_1 = cell(); b_1->v = add(k_1->v, 1.0);
+        auto ink_1 = cell(); ink_1->v = elem(get(K(S<"Video">()), S<"PLANET_INK">()), call(K(S<"Fmt">()), S<"min">(), { 3.0, k_1->v }));
+        call(s_0->v, S<"alpha">(), { mul(0.85, elem(sys_0->v, 4.0)) });
+        call(s_0->v, S<"stroke_style">(), { ink_1->v });
+        call(s_0->v, S<"line_width">(), { 2.0 });
+        get(s_0->v, S<"begin_path">());
+        for (double i2 = 0, n2 = num(FRS_0->v); i2 < n2; i2++) {
+          auto f_2 = cell(i2);
+          auto x_2 = cell(); x_2->v = add(ax_0->v, mul((sub(invoke(mk_0->v, { f_2->v, b_1->v, 0.0 }), elem(sys_0->v, 1.0))), elem(sys_0->v, 0.0)));
+          auto y_2 = cell(); y_2->v = add(ay_0->v, mul((sub(invoke(mk_0->v, { f_2->v, b_1->v, 1.0 }), elem(sys_0->v, 2.0))), elem(sys_0->v, 0.0)));
+          if (truthy(eq(f_2->v, 0.0))) {
+            call(s_0->v, S<"move_to">(), { x_2->v, sub(0.0, y_2->v) });
+          } else {
+            call(s_0->v, S<"line_to">(), { x_2->v, sub(0.0, y_2->v) });
+          }
+        };
+        get(s_0->v, S<"stroke">());
+        call(s_0->v, S<"alpha">(), { elem(sys_0->v, 4.0) });
+        auto x_1 = cell(); x_1->v = add(ax_0->v, mul((sub(invoke(mk_0->v, { elem(sys_0->v, 3.0), b_1->v, 0.0 }), elem(sys_0->v, 1.0))), elem(sys_0->v, 0.0)));
+        auto y_1 = cell(); y_1->v = add(ay_0->v, mul((sub(invoke(mk_0->v, { elem(sys_0->v, 3.0), b_1->v, 1.0 }), elem(sys_0->v, 2.0))), elem(sys_0->v, 0.0)));
+        call(s_0->v, S<"line_width">(), { 2.5 });
+        get(s_0->v, S<"begin_path">());
+        call(s_0->v, S<"arc">(), { x_1->v, sub(0.0, y_1->v), 13.0, 0.0, (2 * RAY_PI) });
+        get(s_0->v, S<"stroke">());
+        call(s_0->v, S<"fill_style">(), { "#000000" });
+        get(s_0->v, S<"begin_path">());
+        call(s_0->v, S<"arc">(), { x_1->v, sub(0.0, y_1->v), 2.5, 0.0, (2 * RAY_PI) });
+        get(s_0->v, S<"fill">());
+      };
+      call(s_0->v, S<"alpha">(), { 1.0 });
+    }
+    if (truthy(has_sun_0->v)) {
+      auto x_0 = cell(); x_0->v = mul((sub(sx_0->v, cx_0->v)), px_0->v);
+      auto y_0 = cell(); y_0->v = mul(mul((sub(sy_0->v, cy_0->v)), px_0->v), ci_0->v);
+      auto big_0 = cell(); big_0->v = (truthy(lt(get(shot_0->v, S<"from_zoom">()), 1.0)) ? Value(sub(1.0, call(K(S<"Video">()), S<"smooth">(), { mul(e_0->v, 3.0) }))) : Value(0.0));
+      call(s_0->v, S<"fill_style">(), { "#ffd23f" });
+      get(s_0->v, S<"begin_path">());
+      call(s_0->v, S<"arc">(), { x_0->v, sub(0.0, y_0->v), mul(4.0, (sub(1.0, big_0->v))), 0.0, (2 * RAY_PI) });
+      get(s_0->v, S<"fill">());
+      if (truthy(gt(big_0->v, 0.0))) {
+        call(s_0->v, S<"alpha">(), { big_0->v });
+        call(s_0->v, S<"stroke_style">(), { "#e0a526" });
+        call(s_0->v, S<"line_width">(), { 3.0 });
+        get(s_0->v, S<"begin_path">());
+        call(s_0->v, S<"arc">(), { x_0->v, sub(0.0, y_0->v), 26.0, 0.0, (2 * RAY_PI) });
+        get(s_0->v, S<"stroke">());
+        call(s_0->v, S<"alpha">(), { 1.0 });
+      }
+    }
+    get(s_0->v, S<"restore">());
+    auto fade_0 = cell(); fade_0->v = call(K(S<"Fmt">()), S<"max">(), { (truthy(gt(get(shot_0->v, S<"fade_in">()), 0.0)) ? Value(sub(1.0, div(i_0->v, (mul(get(shot_0->v, S<"fade_in">()), get(K(S<"Video">()), S<"FPS">())))))) : Value(0.0)), (truthy(gt(get(shot_0->v, S<"fade_out">()), 0.0)) ? Value(sub(1.0, div((sub(sub(n_0->v, 1.0), i_0->v)), (mul(get(shot_0->v, S<"fade_out">()), get(K(S<"Video">()), S<"FPS">())))))) : Value(0.0)) });
+    if (truthy(gt(fade_0->v, 0.0))) {
+      call(s_0->v, S<"alpha">(), { call(K(S<"Fmt">()), S<"min">(), { 1.0, fade_0->v }) });
+      call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+      call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+      return call(s_0->v, S<"alpha">(), { 1.0 });
+    }
+    return null;
+  });
+  c.statik("transport", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0));
+    auto ink_0 = cell(); ink_0->v = make(S<"Ink">(), {  });
+    auto lanes_0 = cell(); lanes_0->v = call(K(S<"Video">()), S<"transport_lanes">(), { theory_0->v, ink_0->v });
+    auto n_0 = cell(); n_0->v = m_round((mul(14.0, get(K(S<"Video">()), S<"FPS">()))));
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), "video.transport"), kw(S<"what">(), "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line"), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), n_0->v), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"Banded">(), { kw(S<"inner">(), make(S<"Unrolling">(), { kw(S<"lanes">(), lanes_0->v), kw(S<"ink">(), ink_0->v), kw(S<"per">(), call(K(S<"Video">()), S<"per_tick">(), { lanes_0->v })) })), kw(S<"top">(), get(K(S<"Video">()), S<"STRIP_TOP">())), kw(S<"tall">(), get(K(S<"Video">()), S<"STRIP_TALL">())) });
+      return null;
+    })) });
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("transport_lanes", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0)); auto ink_0 = cell(arg(a1, 1));
+    set(ink_0->v, S<"every">(), true);
+    set(ink_0->v, S<"top">(), 36.0);
+    auto lanes_0 = cell(); lanes_0->v = call(theory_0->v, S<"transport_lanes">(), { ink_0->v });
+    for (const Value& e1 : Each(lanes_0->v)) {
+      auto l_1 = cell(e1);
+      set(l_1->v, S<"says">(), "");
+    };
+    set(ink_0->v, S<"centre">(), call(K(S<"Strip">()), S<"centre_of">(), { lanes_0->v }));
+    return lanes_0->v;
+    return null;
+  });
+  c.statik("per_tick", [](Value self, const Args& a1) -> Value {
+    auto lanes_0 = cell(arg(a1, 0));
+    return m_floor((div(m_round((mul(14.0, get(K(S<"Video">()), S<"FPS">())))), (add(len(lanes_0->v), 1.0)))));
+    return null;
+  });
+  c.statik("look", [](Value self, const Args& a1) -> Value {
+    auto width_0 = cell(arg(a1, 0)); auto lane_0 = cell(arg(a1, 1)); auto ink_0 = cell(arg(a1, 2));
+    auto seen_0 = cell(); seen_0->v = false;
+    auto lo_0 = cell(); lo_0->v = 0.0;
+    auto hi_0 = cell(); hi_0->v = 0.0;
+    for (const Value& e1 : Each(get(lane_0->v, S<"sides">()))) {
+      auto sd_1 = cell(e1);
+      auto to_1 = cell(); to_1->v = add(get(sd_1->v, S<"at">()), get(sd_1->v, S<"sign">()));
+      if (!truthy(seen_0->v)) {
+        lo_0->v = get(sd_1->v, S<"at">());
+        hi_0->v = get(sd_1->v, S<"at">());
+        seen_0->v = true;
+      }
+      lo_0->v = call(K(S<"Fmt">()), S<"min">(), { lo_0->v, call(K(S<"Fmt">()), S<"min">(), { get(sd_1->v, S<"at">()), to_1->v }) });
+      hi_0->v = call(K(S<"Fmt">()), S<"max">(), { hi_0->v, call(K(S<"Fmt">()), S<"max">(), { get(sd_1->v, S<"at">()), to_1->v }) });
+    };
+    for (const Value& e1 : Each(get(lane_0->v, S<"sources">()))) {
+      auto p_1 = cell(e1);
+      if (!truthy(seen_0->v)) {
+        lo_0->v = p_1->v;
+        hi_0->v = p_1->v;
+        seen_0->v = true;
+      }
+      lo_0->v = call(K(S<"Fmt">()), S<"min">(), { lo_0->v, sub(p_1->v, 1.0) });
+      hi_0->v = call(K(S<"Fmt">()), S<"max">(), { hi_0->v, add(p_1->v, 1.0) });
+    };
+    auto ext_0 = cell(); ext_0->v = add(call(K(S<"Fmt">()), S<"max">(), { sub(get(ink_0->v, S<"centre">()), lo_0->v), sub(hi_0->v, get(ink_0->v, S<"centre">())) }), 0.4);
+    auto lanew_0 = cell(); lanew_0->v = sub(width_0->v, mul(2.0, get(K(S<"Strip">()), S<"PAD">())));
+    auto cell_0 = cell(); cell_0->v = div(lanew_0->v, (add(mul(2.0, ext_0->v), 1.0)));
+    auto mid_0 = cell(); mid_0->v = add(get(K(S<"Strip">()), S<"PAD">()), div(lanew_0->v, 2.0));
+    auto src_0 = cell(); src_0->v = m_first(get(lane_0->v, S<"sources">()));
+    auto x0_0 = cell(); x0_0->v = add(mid_0->v, mul((sub(src_0->v, get(ink_0->v, S<"centre">()))), cell_0->v));
+    return list({ x0_0->v, add(add(get(K(S<"Video">()), S<"STRIP_TOP">()), get(ink_0->v, S<"top">())), div((sub(get(K(S<"Video">()), S<"STRIP_TALL">()), get(ink_0->v, S<"top">()))), 2.0)), cell_0->v, src_0->v, div((sub(get(K(S<"Strip">()), S<"PAD">()), x0_0->v)), cell_0->v), div((sub(sub(width_0->v, get(K(S<"Strip">()), S<"PAD">())), x0_0->v)), cell_0->v) });
+    return null;
+  });
+  c.statik("seen", [](Value self, const Args& a1) -> Value {
+    auto p_0 = cell(arg(a1, 0)); auto yaw_0 = cell(arg(a1, 1)); auto pitch_0 = cell(arg(a1, 2)); auto ox_0 = cell(arg(a1, 3)); auto oy_0 = cell(arg(a1, 4)); auto cell_0 = cell(arg(a1, 5));
+    auto x1_0 = cell(); x1_0->v = sub(mul(elem(p_0->v, 0.0), m_cos(yaw_0->v)), mul(elem(p_0->v, 2.0), m_sin(yaw_0->v)));
+    auto z1_0 = cell(); z1_0->v = add(mul(elem(p_0->v, 0.0), m_sin(yaw_0->v)), mul(elem(p_0->v, 2.0), m_cos(yaw_0->v)));
+    auto y1_0 = cell(); y1_0->v = sub(mul(elem(p_0->v, 1.0), m_cos(pitch_0->v)), mul(z1_0->v, m_sin(pitch_0->v)));
+    auto z2_0 = cell(); z2_0->v = add(mul(elem(p_0->v, 1.0), m_sin(pitch_0->v)), mul(z1_0->v, m_cos(pitch_0->v)));
+    auto f_0 = cell(); f_0->v = div(60.0, (add(60.0, z2_0->v)));
+    return list({ add(ox_0->v, mul(mul(cell_0->v, f_0->v), x1_0->v)), sub(oy_0->v, mul(mul(cell_0->v, f_0->v), y1_0->v)), f_0->v });
+    return null;
+  });
+  c.statik("arrow", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1)); auto y_0 = cell(arg(a1, 2)); auto ux_0 = cell(arg(a1, 3)); auto uy_0 = cell(arg(a1, 4)); auto cell_0 = cell(arg(a1, 5)); auto a_0 = cell(arg(a1, 6));
+    auto HEADW_0 = cell(); HEADW_0->v = call(K(S<"Fmt">()), S<"max">(), { 7.0, call(K(S<"Fmt">()), S<"min">(), { 12.0, mul(cell_0->v, 0.20) }) });
+    auto REACH_0 = cell(); REACH_0->v = mul(cell_0->v, 0.25);
+    auto BAR_0 = cell(); BAR_0->v = call(K(S<"Fmt">()), S<"max">(), { 2.5, call(K(S<"Fmt">()), S<"min">(), { 4.5, mul(cell_0->v, 0.075) }) });
+    auto BASE_0 = cell(); BASE_0->v = mul(HEADW_0->v, 0.45);
+    auto TIP_0 = cell(); TIP_0->v = mul(HEADW_0->v, 0.55);
+    auto LEN_0 = cell(); LEN_0->v = sub(REACH_0->v, BASE_0->v);
+    auto SEEN_0 = cell(); SEEN_0->v = sub(TIP_0->v, div(BAR_0->v, 0.84));
+    call(s_0->v, S<"line_width">(), { BAR_0->v });
+    call(s_0->v, S<"stroke_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"NEUTRAL">())) + "," + str(mul(0.32, a_0->v)) + ")" });
+    get(s_0->v, S<"begin_path">());
+    call(s_0->v, S<"move_to">(), { sub(x_0->v, mul(ux_0->v, (add(BASE_0->v, LEN_0->v)))), sub(y_0->v, mul(uy_0->v, (add(BASE_0->v, LEN_0->v)))) });
+    call(s_0->v, S<"line_to">(), { sub(x_0->v, mul(ux_0->v, BASE_0->v)), sub(y_0->v, mul(uy_0->v, BASE_0->v)) });
+    get(s_0->v, S<"stroke">());
+    call(s_0->v, S<"stroke_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"NEUTRAL">())) + "," + str(a_0->v) + ")" });
+    get(s_0->v, S<"begin_path">());
+    call(s_0->v, S<"move_to">(), { x_0->v, y_0->v });
+    call(s_0->v, S<"line_to">(), { add(x_0->v, mul(ux_0->v, (add(SEEN_0->v, LEN_0->v)))), add(y_0->v, mul(uy_0->v, (add(SEEN_0->v, LEN_0->v)))) });
+    get(s_0->v, S<"stroke">());
+    call(s_0->v, S<"fill_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"NEUTRAL">())) + "," + str(mul(0.97, a_0->v)) + ")" });
+    get(s_0->v, S<"begin_path">());
+    call(s_0->v, S<"move_to">(), { add(x_0->v, mul(ux_0->v, TIP_0->v)), add(y_0->v, mul(uy_0->v, TIP_0->v)) });
+    call(s_0->v, S<"line_to">(), { sub(sub(x_0->v, mul(ux_0->v, BASE_0->v)), mul(mul(uy_0->v, HEADW_0->v), 0.42)), add(sub(y_0->v, mul(uy_0->v, BASE_0->v)), mul(mul(ux_0->v, HEADW_0->v), 0.42)) });
+    call(s_0->v, S<"line_to">(), { add(sub(x_0->v, mul(ux_0->v, BASE_0->v)), mul(mul(uy_0->v, HEADW_0->v), 0.42)), sub(sub(y_0->v, mul(uy_0->v, BASE_0->v)), mul(mul(ux_0->v, HEADW_0->v), 0.42)) });
+    return get(s_0->v, S<"fill">());
+    return null;
+  });
+  c.statik("way", [](Value self, const Args& a1) -> Value {
+    auto k_0 = cell(arg(a1, 0)); auto space_0 = cell(arg(a1, 1));
+    auto q_0 = cell(); q_0->v = m_floor((div(k_0->v, 2.0)));
+    auto o_0 = cell(); o_0->v = elem(list({ list({ 1.0, 0.0 }), list({ 1.0, 1.0 }), list({ 0.0, 1.0 }), list({ sub(0.0, 1.0), 1.0 }), list({ sub(0.0, 1.0), 0.0 }), list({ sub(0.0, 1.0), sub(0.0, 1.0) }), list({ 0.0, sub(0.0, 1.0) }), list({ 1.0, sub(0.0, 1.0) }) }), k_0->v);
+    auto b_0 = cell(); b_0->v = elem(list({ list({ 0.5, 0.5 }), list({ sub(0.0, 0.5), 0.5 }), list({ sub(0.0, 0.5), sub(0.0, 0.5) }), list({ 0.5, sub(0.0, 0.5) }) }), q_0->v);
+    auto bz_0 = cell(); bz_0->v = (truthy(eq(mod(k_0->v, 2.0), 0.0)) ? Value(0.5) : Value(sub(0.0, 0.5)));
+    return list({ add(elem(o_0->v, 0.0), mul((sub(elem(b_0->v, 0.0), elem(o_0->v, 0.0))), space_0->v)), add(elem(o_0->v, 1.0), mul((sub(elem(b_0->v, 1.0), elem(o_0->v, 1.0))), space_0->v)), mul(bz_0->v, space_0->v) });
+    return null;
+  });
+  c.statik("lattice", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto lane_0 = cell(arg(a1, 1)); auto look_0 = cell(arg(a1, 2)); auto grow_0 = cell(arg(a1, 3)); auto ticks_0 = cell(arg(a1, 4)); auto fade_0 = cell(arg(a1, 5)); auto earth_0 = cell(arg(a1, 6)); auto ox_0 = cell(arg(a1, 7)); auto oy_0 = cell(arg(a1, 8)); auto cell_0 = cell(arg(a1, 9)); auto rays_0 = cell(arg(a1, 10)); auto dense_from_0 = cell(arg(a1, 11)); auto far_0 = cell(arg(a1, 12));
+    auto plane_0 = cell(); plane_0->v = call(K(S<"Video">()), S<"smooth">(), { div((sub(grow_0->v, 0.25)), 0.3) });
+    auto space_0 = cell(); space_0->v = call(K(S<"Video">()), S<"smooth">(), { div((sub(grow_0->v, 0.55)), 0.35) });
+    auto yaw_0 = cell(); yaw_0->v = mul(0.55, space_0->v);
+    auto pitch_0 = cell(); pitch_0->v = mul(0.42, space_0->v);
+    auto src_0 = cell(); src_0->v = elem(look_0->v, 3.0);
+    auto lo_0 = cell(); lo_0->v = elem(look_0->v, 4.0);
+    auto hi_0 = cell(); hi_0->v = elem(look_0->v, 5.0);
+    auto R_0 = cell(); R_0->v = 7.0;
+    auto a_0 = cell(); a_0->v = mul(R_0->v, plane_0->v);
+    auto b_0 = cell(); b_0->v = mul(R_0->v, space_0->v);
+    auto pt_0 = cell(); pt_0->v = fn([=](const Args& a2) -> Value {
+      auto p_1 = cell(arg(a2, 0));
+      return call(K(S<"Video">()), S<"seen">(), { p_1->v, yaw_0->v, pitch_0->v, ox_0->v, oy_0->v, cell_0->v });
+      return null;
+    });
+    auto line_0 = cell(); line_0->v = fn([=](const Args& a2) -> Value {
+      auto p_1 = cell(arg(a2, 0)); auto q_1 = cell(arg(a2, 1)); auto al_1 = cell(arg(a2, 2));
+      if (truthy(gt(al_1->v, 0.004))) {
+        auto P_1 = cell(); P_1->v = invoke(pt_0->v, { p_1->v });
+        auto Q_1 = cell(); Q_1->v = invoke(pt_0->v, { q_1->v });
+        call(s_0->v, S<"stroke_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"NEUTRAL">())) + "," + str(mul(0.16, al_1->v)) + ")" });
+        call(s_0->v, S<"line_width">(), { 1.0 });
+        get(s_0->v, S<"begin_path">());
+        call(s_0->v, S<"move_to">(), { elem(P_1->v, 0.0), elem(P_1->v, 1.0) });
+        call(s_0->v, S<"line_to">(), { elem(Q_1->v, 0.0), elem(Q_1->v, 1.0) });
+        return get(s_0->v, S<"stroke">());
+      }
+      return null;
+    });
+    auto dot_0 = cell(); dot_0->v = fn([=](const Args& a2) -> Value {
+      auto p_1 = cell(arg(a2, 0)); auto al_1 = cell(arg(a2, 1));
+      if (truthy(gt(al_1->v, 0.004))) {
+        auto P_1 = cell(); P_1->v = invoke(pt_0->v, { p_1->v });
+        call(s_0->v, S<"fill_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"NEUTRAL">())) + "," + str(mul(0.6, al_1->v)) + ")" });
+        get(s_0->v, S<"begin_path">());
+        call(s_0->v, S<"arc">(), { elem(P_1->v, 0.0), elem(P_1->v, 1.0), mul(2.6, elem(P_1->v, 2.0)), 0.0, (2 * RAY_PI) });
+        return get(s_0->v, S<"fill">());
+      }
+      return null;
+    });
+    auto ilo_0 = cell(); ilo_0->v = m_round((sub(m_reduce(get(lane_0->v, S<"points">()), m_first(get(lane_0->v, S<"points">())), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0)); auto q_2 = cell(arg(a3, 1));
+      return call(K(S<"Fmt">()), S<"min">(), { p_2->v, q_2->v });
+      return null;
+    })), src_0->v)));
+    auto ihi_0 = cell(); ihi_0->v = m_round((sub(m_reduce(get(lane_0->v, S<"points">()), m_first(get(lane_0->v, S<"points">())), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0)); auto q_2 = cell(arg(a3, 1));
+      return call(K(S<"Fmt">()), S<"max">(), { p_2->v, q_2->v });
+      return null;
+    })), src_0->v)));
+    for (double i1 = 0, n1 = num(add(mul(2.0, R_0->v), 1.0)); i1 < n1; i1++) {
+      auto jj_1 = cell(i1);
+      auto j_1 = cell(); j_1->v = sub(jj_1->v, R_0->v);
+      for (double i2 = 0, n2 = num(add(mul(2.0, R_0->v), 1.0)); i2 < n2; i2++) {
+        auto ll_2 = cell(i2);
+        auto l_2 = cell(); l_2->v = sub(ll_2->v, R_0->v);
+        auto vis_2 = cell(); vis_2->v = mul(mul(fade_0->v, call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, sub(add(a_0->v, 1.0), m_abs(j_1->v)) }) })), call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, sub(add(b_0->v, 1.0), m_abs(l_2->v)) }) }));
+        if (truthy(gt(vis_2->v, 0.004))) {
+          invoke(line_0->v, { list({ lo_0->v, j_1->v, l_2->v }), list({ hi_0->v, j_1->v, l_2->v }), vis_2->v });
+          for (double i3 = 0, n3 = num(add(sub(ihi_0->v, ilo_0->v), 1.0)); i3 < n3; i3++) {
+            auto ii_3 = cell(i3);
+            invoke(dot_0->v, { list({ add(ilo_0->v, ii_3->v), j_1->v, l_2->v }), vis_2->v });
+          };
+          if (truthy((truthy((truthy(gt(space_0->v, 0.01)) && truthy(lt(j_1->v, R_0->v)))) && truthy(lt(l_2->v, R_0->v))))) {
+            for (double i3 = 0, n3 = num(sub(ihi_0->v, ilo_0->v)); i3 < n3; i3++) {
+              auto ii_3 = cell(i3);
+              invoke(dot_0->v, { list({ add(add(ilo_0->v, ii_3->v), 0.5), add(j_1->v, 0.5), add(l_2->v, 0.5) }), mul(vis_2->v, space_0->v) });
+            };
+          }
+        }
+      };
+    };
+    for (double i1 = 0, n1 = num(add(sub(ihi_0->v, ilo_0->v), 1.0)); i1 < n1; i1++) {
+      auto ii_1 = cell(i1);
+      auto i_1 = cell(); i_1->v = add(ilo_0->v, ii_1->v);
+      for (double i2 = 0, n2 = num(add(mul(2.0, R_0->v), 1.0)); i2 < n2; i2++) {
+        auto ll_2 = cell(i2);
+        auto l_2 = cell(); l_2->v = sub(ll_2->v, R_0->v);
+        invoke(line_0->v, { list({ i_1->v, sub(0.0, a_0->v), l_2->v }), list({ i_1->v, a_0->v, l_2->v }), mul(mul(fade_0->v, plane_0->v), call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, sub(add(b_0->v, 1.0), m_abs(l_2->v)) }) })) });
+      };
+      for (double i2 = 0, n2 = num(add(mul(2.0, R_0->v), 1.0)); i2 < n2; i2++) {
+        auto jj_2 = cell(i2);
+        auto j_2 = cell(); j_2->v = sub(jj_2->v, R_0->v);
+        invoke(line_0->v, { list({ i_1->v, j_2->v, sub(0.0, b_0->v) }), list({ i_1->v, j_2->v, b_0->v }), mul(mul(fade_0->v, space_0->v), call(K(S<"Fmt">()), S<"min">(), { 1.0, call(K(S<"Fmt">()), S<"max">(), { 0.0, sub(add(a_0->v, 1.0), m_abs(j_2->v)) }) })) });
+      };
+    };
+    auto T_0 = cell(); T_0->v = m_floor(ticks_0->v);
+    auto ray_0 = cell(); ray_0->v = fn([=](const Args& a2) -> Value {
+      auto k_1 = cell(arg(a2, 0)); auto r_1 = cell(arg(a2, 1)); auto w_1 = cell(arg(a2, 2));
+      if (truthy((truthy((truthy(gt(w_1->v, 0.004)) && truthy(ge(r_1->v, 1.0)))) && truthy(le(r_1->v, far_0->v))))) {
+        auto d_1 = cell(); d_1->v = call(K(S<"Video">()), S<"way">(), { k_1->v, space_0->v });
+        auto P_1 = cell(); P_1->v = invoke(pt_0->v, { list({ mul(elem(d_1->v, 0.0), r_1->v), mul(elem(d_1->v, 1.0), r_1->v), mul(elem(d_1->v, 2.0), r_1->v) }) });
+        auto Q_1 = cell(); Q_1->v = invoke(pt_0->v, { list({ mul(elem(d_1->v, 0.0), (add(r_1->v, 0.25))), mul(elem(d_1->v, 1.0), (add(r_1->v, 0.25))), mul(elem(d_1->v, 2.0), (add(r_1->v, 0.25))) }) });
+        auto len_1 = cell(); len_1->v = call(K(S<"Fmt">()), S<"hypot">(), { sub(elem(Q_1->v, 0.0), elem(P_1->v, 0.0)), sub(elem(Q_1->v, 1.0), elem(P_1->v, 1.0)) });
+        if (truthy(gt(len_1->v, 0.01))) {
+          return call(K(S<"Video">()), S<"arrow">(), { s_0->v, elem(P_1->v, 0.0), elem(P_1->v, 1.0), div((sub(elem(Q_1->v, 0.0), elem(P_1->v, 0.0))), len_1->v), div((sub(elem(Q_1->v, 1.0), elem(P_1->v, 1.0))), len_1->v), mul(len_1->v, 4.0), mul(mul(w_1->v, rays_0->v), call(K(S<"Fmt">()), S<"min">(), { 1.0, sub(far_0->v, r_1->v) })) });
+        }
+      }
+      return null;
+    });
+    for (const Value& e1 : Each(get(lane_0->v, S<"sides">()))) {
+      auto sd_1 = cell(e1);
+      invoke(ray_0->v, { (truthy(gt(get(sd_1->v, S<"sign">()), 0.0)) ? Value(0.0) : Value(4.0)), add(m_abs((sub(get(sd_1->v, S<"at">()), src_0->v))), T_0->v), 1.0 });
+    };
+    for (double i1 = 0, n1 = num(T_0->v); i1 < n1; i1++) {
+      auto m_1 = cell(i1);
+      auto e_1 = cell(); e_1->v = add(m_1->v, 1.0);
+      if (truthy((truthy(eq(mod(e_1->v, 2.0), 1.0)) || truthy(gt(e_1->v, dense_from_0->v))))) {
+        for (double i2 = 0, n2 = num(8.0); i2 < n2; i2++) {
+          auto k_2 = cell(i2);
+          invoke(ray_0->v, { k_2->v, sub(add(1.0, T_0->v), e_1->v), (truthy(eq(mod(k_2->v, 4.0), 0.0)) ? Value(1.0) : Value(plane_0->v)) });
+        };
+      }
+    };
+    auto P_0 = cell(); P_0->v = invoke(pt_0->v, { list({ 0.0, 0.0, 0.0 }) });
+    auto half_0 = cell(); half_0->v = call(K(S<"Fmt">()), S<"max">(), { 9.0, call(K(S<"Fmt">()), S<"min">(), { 18.0, mul(cell_0->v, 0.3) }) });
+    call(s_0->v, S<"fill_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"SOURCE">())) + "," + str(mul(0.14, (sub(1.0, earth_0->v)))) + ")" });
+    call(s_0->v, S<"fill_rect">(), { sub(elem(P_0->v, 0.0), half_0->v), sub(elem(P_0->v, 1.0), half_0->v), mul(2.0, half_0->v), mul(2.0, half_0->v) });
+    call(s_0->v, S<"stroke_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"SOURCE">())) + "," + str(mul(0.9, (sub(1.0, earth_0->v)))) + ")" });
+    call(s_0->v, S<"line_width">(), { 1.5 });
+    call(s_0->v, S<"stroke_rect">(), { sub(elem(P_0->v, 0.0), half_0->v), sub(elem(P_0->v, 1.0), half_0->v), mul(2.0, half_0->v), mul(2.0, half_0->v) });
+    if (truthy(gt(earth_0->v, 0.0))) {
+      call(s_0->v, S<"fill_style">(), { "rgba(" + str(get(K(S<"Ink">()), S<"SOURCE">())) + "," + str(earth_0->v) + ")" });
+      get(s_0->v, S<"begin_path">());
+      call(s_0->v, S<"arc">(), { elem(P_0->v, 0.0), elem(P_0->v, 1.0), add(2.6, mul(7.4, earth_0->v)), 0.0, (2 * RAY_PI) });
+      return get(s_0->v, S<"fill">());
+    }
+    return null;
+  });
+  c.statik("source_camera", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto look_0 = cell(arg(a1, 1)); auto grow_0 = cell(arg(a1, 2));
+    auto e_0 = cell(); e_0->v = call(K(S<"Video">()), S<"smooth">(), { div(grow_0->v, 0.3) });
+    return list({ add(elem(look_0->v, 0.0), mul((sub(div(get(s_0->v, S<"width">()), 2.0), elem(look_0->v, 0.0))), e_0->v)), add(elem(look_0->v, 1.0), mul((sub(div(get(s_0->v, S<"height">()), 2.0), elem(look_0->v, 1.0))), e_0->v)), m_exp((add(m_ln(elem(look_0->v, 2.0)), mul((sub(m_ln(95.0), m_ln(elem(look_0->v, 2.0)))), e_0->v)))) });
+    return null;
+  });
+  c.statik("to_source", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0));
+    auto ink_0 = cell(); ink_0->v = make(S<"Ink">(), {  });
+    auto lanes_0 = cell(); lanes_0->v = call(K(S<"Video">()), S<"transport_lanes">(), { theory_0->v, ink_0->v });
+    auto n_0 = cell(); n_0->v = m_round((mul(4.0, get(K(S<"Video">()), S<"FPS">()))));
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), "video.to-source"), kw(S<"what">(), "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)"), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), n_0->v), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"Growing">(), { kw(S<"n">(), n_0->v), kw(S<"lane">(), m_last(lanes_0->v)), kw(S<"ink">(), ink_0->v), kw(S<"per">(), call(K(S<"Video">()), S<"per_tick">(), { lanes_0->v })) });
+      return null;
+    })) });
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("to_solar", [](Value self, const Args& a1) -> Value {
+    auto theory_0 = cell(arg(a1, 0));
+    auto ink_0 = cell(); ink_0->v = make(S<"Ink">(), {  });
+    auto lanes_0 = cell(); lanes_0->v = call(K(S<"Video">()), S<"transport_lanes">(), { theory_0->v, ink_0->v });
+    auto sol_0 = cell(); sol_0->v = get(theory_0->v, S<"solar">());
+    auto r_0 = cell(); r_0->v = get(sol_0->v, S<"record">());
+    auto at_0 = cell(); at_0->v = 0.0;
+    for (double i1 = 0, n1 = num(len(get(r_0->v, S<"names">()))); i1 < n1; i1++) {
+      auto k_1 = cell(i1);
+      at_0->v = (truthy(eq(elem(get(r_0->v, S<"names">()), k_1->v), "marks")) ? Value(k_1->v) : Value(at_0->v));
+    };
+    auto off_0 = cell(); off_0->v = m_sum(m_take(get(r_0->v, S<"sizes">()), at_0->v));
+    auto n_0 = cell(); n_0->v = m_round((mul(8.0, get(K(S<"Video">()), S<"FPS">()))));
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), "video.to-solar"), kw(S<"what">(), "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it"), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), n_0->v), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"Planets">(), { kw(S<"n">(), n_0->v), kw(S<"lane">(), m_last(lanes_0->v)), kw(S<"ink">(), ink_0->v), kw(S<"per">(), call(K(S<"Video">()), S<"per_tick">(), { lanes_0->v })), kw(S<"stamp">(), get(r_0->v, S<"stamp">())), kw(S<"off">(), off_0->v), kw(S<"width">(), get(r_0->v, S<"width">())), kw(S<"bodies">(), m_round((div((sub(elem(get(r_0->v, S<"sizes">()), at_0->v), 1.0)), 6.0)))) });
+      return null;
+    })) });
+    set(pic_0->v, S<"uses">(), list({ "solar.inner" }));
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("planets", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto t_0 = cell(arg(a1, 1)); auto lane_0 = cell(arg(a1, 2)); auto look_0 = cell(arg(a1, 3)); auto ticks_0 = cell(arg(a1, 4)); auto film_0 = cell(arg(a1, 5)); auto off_0 = cell(arg(a1, 6)); auto width_0 = cell(arg(a1, 7)); auto bodies_0 = cell(arg(a1, 8));
+    auto SOLAR_0 = cell(); SOLAR_0->v = call(K(S<"Measured">()), S<"of">(), { "solar-inner" });
+    if (truthy(eq(SOLAR_0->v, null))) {
+      invoke(fail, { "solar-inner is not on disk - run `npx ray data` and try again" });
+    }
+    auto NAMES_0 = cell(); NAMES_0->v = get(get(SOLAR_0->v, S<"header">()), Sym(str("names")));
+    auto PER_0 = cell(); PER_0->v = get(get(SOLAR_0->v, S<"columns">()), Sym(str("period")));
+    auto PLANETS_0 = cell(); PLANETS_0->v = filt(rng(len(NAMES_0->v)), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return gt(elem(PER_0->v, i_2->v), 0.0);
+      return null;
+    }));
+    auto F_0 = cell(); F_0->v = get(get(film_0->v, S<"columns">()), Sym(str("frames")));
+    auto FR_0 = cell(); FR_0->v = get(get(film_0->v, S<"header">()), Sym(str("frames")));
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+    call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+    auto fade_0 = cell(); fade_0->v = sub(1.0, call(K(S<"Video">()), S<"smooth">(), { div((sub(t_0->v, 0.05)), 0.4) }));
+    auto rays_0 = cell(); rays_0->v = sub(1.0, call(K(S<"Video">()), S<"smooth">(), { div((sub(t_0->v, 0.45)), 0.35) }));
+    auto earth_0 = cell(); earth_0->v = call(K(S<"Video">()), S<"smooth">(), { div((sub(t_0->v, 0.3)), 0.3) });
+    auto e_0 = cell(); e_0->v = call(K(S<"Video">()), S<"smooth">(), { div(t_0->v, 0.92) });
+    auto come_0 = cell(); come_0->v = call(K(S<"Video">()), S<"smooth">(), { div((sub(t_0->v, 0.45)), 0.35) });
+    auto u_0 = cell(); u_0->v = call(K(S<"Fmt">()), S<"min">(), { sub(FR_0->v, 1.0), add(get(K(S<"Video">()), S<"SOLAR_FROM">()), mul((sub(get(K(S<"Video">()), S<"SOLAR_TO">()), get(K(S<"Video">()), S<"SOLAR_FROM">()))), t_0->v)) });
+    auto f0_0 = cell(); f0_0->v = m_floor(u_0->v);
+    auto f1_0 = cell(); f1_0->v = call(K(S<"Fmt">()), S<"min">(), { add(f0_0->v, 1.0), sub(FR_0->v, 1.0) });
+    auto w_0 = cell(); w_0->v = sub(u_0->v, f0_0->v);
+    auto mark_0 = cell(); mark_0->v = fn([=](const Args& a2) -> Value {
+      auto f_1 = cell(arg(a2, 0)); auto k_1 = cell(arg(a2, 1)); auto c__1 = cell(arg(a2, 2));
+      return elem(F_0->v, add(add(add(mul(f_1->v, width_0->v), off_0->v), mul(6.0, k_1->v)), c__1->v));
+      return null;
+    });
+    auto where_0 = cell(); where_0->v = fn([=](const Args& a2) -> Value {
+      auto k_1 = cell(arg(a2, 0));
+      return list({ add(invoke(mark_0->v, { f0_0->v, k_1->v, 0.0 }), mul(w_0->v, (sub(invoke(mark_0->v, { f1_0->v, k_1->v, 0.0 }), invoke(mark_0->v, { f0_0->v, k_1->v, 0.0 }))))), add(invoke(mark_0->v, { f0_0->v, k_1->v, 1.0 }), mul(w_0->v, (sub(invoke(mark_0->v, { f1_0->v, k_1->v, 1.0 }), invoke(mark_0->v, { f0_0->v, k_1->v, 1.0 }))))) });
+      return null;
+    });
+    auto reach_0 = cell(); reach_0->v = 0.0;
+    for (double i1 = 0, n1 = num(FR_0->v); i1 < n1; i1++) {
+      auto f_1 = cell(i1);
+      for (double i2 = 0, n2 = num(sub(bodies_0->v, 1.0)); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        reach_0->v = call(K(S<"Fmt">()), S<"max">(), { reach_0->v, call(K(S<"Fmt">()), S<"hypot">(), { sub(invoke(mark_0->v, { f_1->v, add(k_2->v, 1.0), 0.0 }), invoke(mark_0->v, { f_1->v, 0.0, 0.0 })), sub(invoke(mark_0->v, { f_1->v, add(k_2->v, 1.0), 1.0 }), invoke(mark_0->v, { f_1->v, 0.0, 1.0 })) }) });
+      };
+    };
+    auto earth_body_0 = cell(); earth_body_0->v = 0.0;
+    for (double i1 = 0, n1 = num(len(PLANETS_0->v)); i1 < n1; i1++) {
+      auto k_1 = cell(i1);
+      earth_body_0->v = (truthy(eq(elem(NAMES_0->v, elem(PLANETS_0->v, k_1->v)), "Earth")) ? Value(add(k_1->v, 1.0)) : Value(earth_body_0->v));
+    };
+    auto E_0 = cell(); E_0->v = invoke(where_0->v, { earth_body_0->v });
+    auto O_0 = cell(); O_0->v = invoke(where_0->v, { 0.0 });
+    auto last_0 = cell(); last_0->v = mul(2.1, (add(reach_0->v, call(K(S<"Fmt">()), S<"hypot">(), { sub(elem(E_0->v, 0.0), elem(O_0->v, 0.0)), sub(elem(E_0->v, 1.0), elem(O_0->v, 1.0)) }))));
+    auto across_0 = cell(); across_0->v = m_exp((add(m_ln((div(last_0->v, 180.0))), mul((sub(m_ln(last_0->v), m_ln((div(last_0->v, 180.0))))), e_0->v))));
+    auto px_0 = cell(); px_0->v = div(get(s_0->v, S<"height">()), across_0->v);
+    auto cx_0 = cell(); cx_0->v = elem(E_0->v, 0.0);
+    auto cy_0 = cell(); cy_0->v = elem(E_0->v, 1.0);
+    auto X_0 = cell(); X_0->v = fn([=](const Args& a2) -> Value {
+      auto x_1 = cell(arg(a2, 0));
+      return add(div(get(s_0->v, S<"width">()), 2.0), mul((sub(x_1->v, cx_0->v)), px_0->v));
+      return null;
+    });
+    auto Y_0 = cell(); Y_0->v = fn([=](const Args& a2) -> Value {
+      auto y_1 = cell(arg(a2, 0));
+      return sub(div(get(s_0->v, S<"height">()), 2.0), mul((sub(y_1->v, cy_0->v)), px_0->v));
+      return null;
+    });
+    if (truthy((truthy(gt(fade_0->v, 0.004)) || truthy(gt(rays_0->v, 0.004))))) {
+      call(K(S<"Video">()), S<"lattice">(), { s_0->v, lane_0->v, look_0->v, 1.0, add(ticks_0->v, mul(mul(300.0, t_0->v), t_0->v)), fade_0->v, earth_0->v, invoke(X_0->v, { elem(E_0->v, 0.0) }), invoke(Y_0->v, { elem(E_0->v, 1.0) }), div(mul(95.0, (div(last_0->v, 180.0))), across_0->v), rays_0->v, m_floor(ticks_0->v), add(16.0, mul(40.0, call(K(S<"Video">()), S<"smooth">(), { div(t_0->v, 0.4) }))) });
+    }
+    for (double i1 = 0, n1 = num(sub(bodies_0->v, 1.0)); i1 < n1; i1++) {
+      auto k_1 = cell(i1);
+      auto b_1 = cell(); b_1->v = add(k_1->v, 1.0);
+      auto ink_1 = cell(); ink_1->v = elem(get(K(S<"Video">()), S<"PLANET_INK">()), call(K(S<"Fmt">()), S<"min">(), { 3.0, k_1->v }));
+      call(s_0->v, S<"alpha">(), { mul(0.85, come_0->v) });
+      call(s_0->v, S<"stroke_style">(), { ink_1->v });
+      call(s_0->v, S<"line_width">(), { 2.0 });
+      get(s_0->v, S<"begin_path">());
+      for (double i2 = 0, n2 = num(FR_0->v); i2 < n2; i2++) {
+        auto f_2 = cell(i2);
+        if (truthy(eq(f_2->v, 0.0))) {
+          call(s_0->v, S<"move_to">(), { invoke(X_0->v, { invoke(mark_0->v, { f_2->v, b_1->v, 0.0 }) }), invoke(Y_0->v, { invoke(mark_0->v, { f_2->v, b_1->v, 1.0 }) }) });
+        } else {
+          call(s_0->v, S<"line_to">(), { invoke(X_0->v, { invoke(mark_0->v, { f_2->v, b_1->v, 0.0 }) }), invoke(Y_0->v, { invoke(mark_0->v, { f_2->v, b_1->v, 1.0 }) }) });
+        }
+      };
+      get(s_0->v, S<"stroke">());
+      auto P_1 = cell(); P_1->v = invoke(where_0->v, { b_1->v });
+      auto x_1 = cell(); x_1->v = invoke(X_0->v, { elem(P_1->v, 0.0) });
+      auto y_1 = cell(); y_1->v = invoke(Y_0->v, { elem(P_1->v, 1.0) });
+      call(s_0->v, S<"alpha">(), { (truthy(eq(b_1->v, earth_body_0->v)) ? Value(earth_0->v) : Value(come_0->v)) });
+      call(s_0->v, S<"stroke_style">(), { ink_1->v });
+      call(s_0->v, S<"line_width">(), { 2.5 });
+      get(s_0->v, S<"begin_path">());
+      call(s_0->v, S<"arc">(), { x_1->v, y_1->v, 13.0, 0.0, (2 * RAY_PI) });
+      get(s_0->v, S<"stroke">());
+      call(s_0->v, S<"fill_style">(), { (truthy(eq(b_1->v, earth_body_0->v)) ? Value("rgba(" + str(get(K(S<"Ink">()), S<"SOURCE">())) + "," + str(sub(1.0, come_0->v)) + ")") : Value("#000000")) });
+      get(s_0->v, S<"begin_path">());
+      call(s_0->v, S<"arc">(), { x_1->v, y_1->v, (truthy(eq(b_1->v, earth_body_0->v)) ? Value(add(mul(10.0, (sub(1.0, come_0->v))), mul(2.5, come_0->v))) : Value(2.5)), 0.0, (2 * RAY_PI) });
+      get(s_0->v, S<"fill">());
+    };
+    call(s_0->v, S<"alpha">(), { come_0->v });
+    call(s_0->v, S<"stroke_style">(), { "#e0a526" });
+    call(s_0->v, S<"line_width">(), { 3.0 });
+    get(s_0->v, S<"begin_path">());
+    call(s_0->v, S<"arc">(), { invoke(X_0->v, { elem(O_0->v, 0.0) }), invoke(Y_0->v, { elem(O_0->v, 1.0) }), 26.0, 0.0, (2 * RAY_PI) });
+    get(s_0->v, S<"stroke">());
+    call(s_0->v, S<"fill_style">(), { "#000000" });
+    get(s_0->v, S<"begin_path">());
+    call(s_0->v, S<"arc">(), { invoke(X_0->v, { elem(O_0->v, 0.0) }), invoke(Y_0->v, { elem(O_0->v, 1.0) }), 3.0, 0.0, (2 * RAY_PI) });
+    get(s_0->v, S<"fill">());
+    return call(s_0->v, S<"alpha">(), { 1.0 });
+    return null;
+  });
+  c.statik("end", [](Value self, const Args& a1) -> Value {
+    auto n_0 = cell(); n_0->v = m_round((mul(20.0, get(K(S<"Video">()), S<"FPS">()))));
+    auto pic_0 = cell(); pic_0->v = make(S<"Picture">(), { kw(S<"id">(), "video.end"), kw(S<"what">(), "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics"), kw(S<"width">(), get(K(S<"Video">()), S<"WIDTH">())), kw(S<"height">(), get(K(S<"Video">()), S<"HEIGHT">())), kw(S<"frames">(), n_0->v), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"EndCard">(), { kw(S<"n">(), n_0->v) });
+      return null;
+    })) });
+    set(pic_0->v, S<"images">(), list({ get(K(S<"Video">()), S<"LOGO">()) }));
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+  c.statik("end_card", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto i_0 = cell(arg(a1, 1)); auto n_0 = cell(arg(a1, 2));
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+    call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+    call(s_0->v, S<"alpha">(), { call(K(S<"Video">()), S<"smooth">(), { div(i_0->v, get(K(S<"Video">()), S<"FPS">())) }) });
+    auto w_0 = cell(); w_0->v = 1500.0;
+    call(s_0->v, S<"image">(), { get(K(S<"Video">()), S<"LOGO">()), div((sub(get(s_0->v, S<"width">()), w_0->v)), 2.0), 330.0, w_0->v, div(w_0->v, 3.0) });
+    call(s_0->v, S<"text_align">(), { "center" });
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"SEEN">()) });
+    call(s_0->v, S<"font">(), { "600 72px ui-sans-serif, system-ui, sans-serif" });
+    call(s_0->v, S<"fill_text">(), { "Physics Project", div(get(s_0->v, S<"width">()), 2.0), 960.0 });
+    call(s_0->v, S<"fill_style">(), { "#3ddcff" });
+    call(s_0->v, S<"font">(), { "44px ui-sans-serif, system-ui, sans-serif" });
+    call(s_0->v, S<"fill_text">(), { "orbitmines.com/physics", div(get(s_0->v, S<"width">()), 2.0), 1060.0 });
+    return call(s_0->v, S<"alpha">(), { 1.0 });
+    return null;
+  });
+  c.statik("montage", [](Value self, const Args& a1) -> Value {
+    auto pic_0 = cell(); pic_0->v = call(K(S<"Picture">()), S<"still">(), { "video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", get(K(S<"Video">()), S<"WIDTH">()), get(K(S<"Video">()), S<"HEIGHT">()), fn([=](const Args& a3) -> Value {
+      auto s_2 = cell(arg(a3, 0));
+
+      return null;
+    }) });
+    set(pic_0->v, S<"parts">(), get(K(S<"Video">()), S<"PARTS">()));
+    set(pic_0->v, S<"on_request">(), true);
+    return pic_0->v;
+    return null;
+  });
+}
+static const bool R_Video = define_class("Video", "Node", &C_Video);
+
+static void C_Shot(Cls& c) {
+  c.field("film_id", nullptr);
+  c.field("seconds", nullptr);
+  c.field("from_zoom", nullptr);
+  c.field("to_zoom", nullptr);
+  c.field("from_sun", nullptr);
+  c.field("to_sun", nullptr);
+  c.field("from_at", nullptr);
+  c.field("to_at", nullptr);
+  c.field("tilt", nullptr);
+  c.field("turn", nullptr);
+  c.field("title", nullptr);
+  c.field("fade_in", nullptr);
+  c.field("fade_out", nullptr);
+  c.getter("frames", [](Value self, const Args& a1) -> Value {
+    return m_round((mul(get(self, S<"seconds">()), get(K(S<"Video">()), S<"FPS">()))));
+    return null;
+  });
+}
+static const bool R_Shot = define_class("Shot", "Node", &C_Shot);
+
+static void C_Sky(Cls& c) {
+  c.field("shot", nullptr);
+  c.field("sol", [](const Value& self) -> Value { return null; });
+  c.field("meta", [](const Value& self) -> Value { return list({  }); });
+  c.field("sol_stamp", [](const Value& self) -> Value { return ""; });
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.field("film", [](const Value& self) -> Value { return null; });
+  c.field("tracks", [](const Value& self) -> Value { return null; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    if (truthy(eq(get(self, S<"film">()), null))) {
+      set(self, S<"film">(), call(K(S<"Measured">()), S<"of">(), { get(get(self, S<"shot">()), S<"film_id">()) }));
+      set(self, S<"tracks">(), call(K(S<"Measured">()), S<"of">(), { "" + str(get(get(self, S<"shot">()), S<"film_id">())) + ".stars" }));
+    }
+    if (truthy(eq(get(self, S<"film">()), null))) {
+      invoke(fail, { "" + str(get(get(self, S<"shot">()), S<"film_id">())) + " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" + str(get(get(self, S<"shot">()), S<"film_id">())) + " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ." });
+    }
+    if (truthy((truthy(gt(len(get(self, S<"meta">())), 0.0)) && truthy(eq(get(self, S<"sol">()), null))))) {
+      set(self, S<"sol">(), call(K(S<"Measured">()), S<"of">(), { "solar.inner.frames" }));
+      if (truthy(eq(get(self, S<"sol">()), null))) {
+        invoke(fail, { "solar.inner is not recorded - run `npx ray visuals solar.inner` first" });
+      }
+      if (truthy((!eq(get(get(get(self, S<"sol">()), S<"header">()), Sym(str("stamp"))), get(self, S<"sol_stamp">()))))) {
+        invoke(fail, { "solar.inner's recording is stale - run `npx ray visuals solar.inner` again" });
+      }
+    }
+    call(K(S<"Video">()), S<"sky">(), { s_0->v, get(self, S<"shot">()), get(self, S<"film">()), get(self, S<"tracks">()), get(self, S<"shown_frames">()), get(self, S<"sol">()), get(self, S<"meta">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Sky = define_class("Sky", "Painter", &C_Sky);
+
+static void C_Band(Cls& c) {
+  c.field("inner", nullptr);
+  c.method("fill_style", [](Value self, const Args& a1) -> Value {
+    auto colour_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"fill_style">(), { colour_0->v });
+    return null;
+  });
+  c.method("stroke_style", [](Value self, const Args& a1) -> Value {
+    auto colour_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"stroke_style">(), { colour_0->v });
+    return null;
+  });
+  c.method("line_width", [](Value self, const Args& a1) -> Value {
+    auto w_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"line_width">(), { w_0->v });
+    return null;
+  });
+  c.method("alpha", [](Value self, const Args& a1) -> Value {
+    auto v_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"alpha">(), { v_0->v });
+    return null;
+  });
+  c.method("fill_rect", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1)); auto w_0 = cell(arg(a1, 2)); auto h_0 = cell(arg(a1, 3));
+    return call(get(self, S<"inner">()), S<"fill_rect">(), { x_0->v, y_0->v, w_0->v, h_0->v });
+    return null;
+  });
+  c.method("stroke_rect", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1)); auto w_0 = cell(arg(a1, 2)); auto h_0 = cell(arg(a1, 3));
+    return call(get(self, S<"inner">()), S<"stroke_rect">(), { x_0->v, y_0->v, w_0->v, h_0->v });
+    return null;
+  });
+  c.method("clear_rect", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1)); auto w_0 = cell(arg(a1, 2)); auto h_0 = cell(arg(a1, 3));
+    return call(get(self, S<"inner">()), S<"clear_rect">(), { x_0->v, y_0->v, w_0->v, h_0->v });
+    return null;
+  });
+  c.getter("begin_path", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"inner">()), S<"begin_path">());
+    return null;
+  });
+  c.method("move_to", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1));
+    return call(get(self, S<"inner">()), S<"move_to">(), { x_0->v, y_0->v });
+    return null;
+  });
+  c.method("line_to", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1));
+    return call(get(self, S<"inner">()), S<"line_to">(), { x_0->v, y_0->v });
+    return null;
+  });
+  c.method("arc", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1)); auto r_0 = cell(arg(a1, 2)); auto start_at_0 = cell(arg(a1, 3)); auto end_at_0 = cell(arg(a1, 4));
+    return call(get(self, S<"inner">()), S<"arc">(), { x_0->v, y_0->v, r_0->v, start_at_0->v, end_at_0->v });
+    return null;
+  });
+  c.getter("stroke", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"inner">()), S<"stroke">());
+    return null;
+  });
+  c.getter("fill", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"inner">()), S<"fill">());
+    return null;
+  });
+  c.method("font", [](Value self, const Args& a1) -> Value {
+    auto name_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"font">(), { name_0->v });
+    return null;
+  });
+  c.method("text_align", [](Value self, const Args& a1) -> Value {
+    auto how_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"text_align">(), { how_0->v });
+    return null;
+  });
+  c.method("text_baseline", [](Value self, const Args& a1) -> Value {
+    auto how_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"text_baseline">(), { how_0->v });
+    return null;
+  });
+  c.method("fill_text", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1)); auto y_0 = cell(arg(a1, 2));
+    return call(get(self, S<"inner">()), S<"fill_text">(), { t_0->v, x_0->v, y_0->v });
+    return null;
+  });
+  c.method("measure", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"measure">(), { t_0->v });
+    return null;
+  });
+  c.getter("save", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"inner">()), S<"save">());
+    return null;
+  });
+  c.getter("restore", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"inner">()), S<"restore">());
+    return null;
+  });
+  c.method("translate", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1));
+    return call(get(self, S<"inner">()), S<"translate">(), { x_0->v, y_0->v });
+    return null;
+  });
+  c.method("rotate", [](Value self, const Args& a1) -> Value {
+    auto angle_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"rotate">(), { angle_0->v });
+    return null;
+  });
+  c.method("dash", [](Value self, const Args& a1) -> Value {
+    auto segments_0 = cell(arg(a1, 0));
+    return call(get(self, S<"inner">()), S<"dash">(), { segments_0->v });
+    return null;
+  });
+  c.method("gradient_stroke", [](Value self, const Args& a1) -> Value {
+    auto x0_0 = cell(arg(a1, 0)); auto x1_0 = cell(arg(a1, 1)); auto stops_0 = cell(arg(a1, 2)); auto at_0 = cell(arg(a1, 3));
+    return call(get(self, S<"inner">()), S<"gradient_stroke">(), { x0_0->v, x1_0->v, stops_0->v, at_0->v });
+    return null;
+  });
+  c.method("image", [](Value self, const Args& a1) -> Value {
+    auto src_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1)); auto y_0 = cell(arg(a1, 2)); auto w_0 = cell(arg(a1, 3)); auto h_0 = cell(arg(a1, 4));
+    return call(get(self, S<"inner">()), S<"image">(), { src_0->v, x_0->v, y_0->v, w_0->v, h_0->v });
+    return null;
+  });
+}
+static const bool R_Band = define_class("Band", "Surface", &C_Band);
+
+static void C_Banded(Cls& c) {
+  c.field("inner", nullptr);
+  c.field("top", nullptr);
+  c.field("tall", nullptr);
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+    call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+    get(s_0->v, S<"save">());
+    call(s_0->v, S<"translate">(), { 0.0, get(self, S<"top">()) });
+    call(get(self, S<"inner">()), S<"frame">(), { make(S<"Band">(), { kw(S<"width">(), get(s_0->v, S<"width">())), kw(S<"height">(), get(self, S<"tall">())), kw(S<"inner">(), s_0->v) }), dt_0->v });
+    return get(s_0->v, S<"restore">());
+    return null;
+  });
+}
+static const bool R_Banded = define_class("Banded", "Painter", &C_Banded);
+
+static void C_Growing(Cls& c) {
+  c.field("n", nullptr);
+  c.field("lane", nullptr);
+  c.field("ink", nullptr);
+  c.field("per", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(s_0->v, S<"fill_style">(), { get(K(S<"Galaxies">()), S<"BACK">()) });
+    call(s_0->v, S<"fill_rect">(), { 0.0, 0.0, get(s_0->v, S<"width">()), get(s_0->v, S<"height">()) });
+    auto look_0 = cell(); look_0->v = call(K(S<"Video">()), S<"look">(), { get(s_0->v, S<"width">()), get(self, S<"lane">()), get(self, S<"ink">()) });
+    auto grow_0 = cell(); grow_0->v = div(get(self, S<"shown_frames">()), call(K(S<"Fmt">()), S<"max">(), { 1.0, sub(get(self, S<"n">()), 1.0) }));
+    auto cam_0 = cell(); cam_0->v = call(K(S<"Video">()), S<"source_camera">(), { s_0->v, look_0->v, grow_0->v });
+    call(K(S<"Video">()), S<"lattice">(), { s_0->v, get(self, S<"lane">()), look_0->v, grow_0->v, div(get(self, S<"shown_frames">()), get(self, S<"per">())), 1.0, 0.0, elem(cam_0->v, 0.0), elem(cam_0->v, 1.0), elem(cam_0->v, 2.0), 1.0, 1000000.0, 16.0 });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Growing = define_class("Growing", "Painter", &C_Growing);
+
+static void C_Planets(Cls& c) {
+  c.field("n", nullptr);
+  c.field("lane", nullptr);
+  c.field("ink", nullptr);
+  c.field("per", nullptr);
+  c.field("stamp", nullptr);
+  c.field("off", nullptr);
+  c.field("width", nullptr);
+  c.field("bodies", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.field("film", [](const Value& self) -> Value { return null; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    if (truthy(eq(get(self, S<"film">()), null))) {
+      set(self, S<"film">(), call(K(S<"Measured">()), S<"of">(), { "solar.inner.frames" }));
+    }
+    if (truthy(eq(get(self, S<"film">()), null))) {
+      invoke(fail, { "solar.inner is not recorded - run `npx ray visuals solar.inner` first" });
+    }
+    if (truthy((!eq(get(get(get(self, S<"film">()), S<"header">()), Sym(str("stamp"))), get(self, S<"stamp">()))))) {
+      invoke(fail, { "solar.inner's recording is stale - run `npx ray visuals solar.inner` again" });
+    }
+    auto look_0 = cell(); look_0->v = call(K(S<"Video">()), S<"look">(), { get(s_0->v, S<"width">()), get(self, S<"lane">()), get(self, S<"ink">()) });
+    call(K(S<"Video">()), S<"planets">(), { s_0->v, div(get(self, S<"shown_frames">()), call(K(S<"Fmt">()), S<"max">(), { 1.0, sub(get(self, S<"n">()), 1.0) })), get(self, S<"lane">()), look_0->v, div((add(sub(m_round((mul(4.0, get(K(S<"Video">()), S<"FPS">())))), 1.0), get(self, S<"shown_frames">()))), get(self, S<"per">())), get(self, S<"film">()), get(self, S<"off">()), get(self, S<"width">()), get(self, S<"bodies">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Planets = define_class("Planets", "Painter", &C_Planets);
+
+static void C_EndCard(Cls& c) {
+  c.field("n", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(K(S<"Video">()), S<"end_card">(), { s_0->v, get(self, S<"shown_frames">()), get(self, S<"n">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_EndCard = define_class("EndCard", "Painter", &C_EndCard);
+
 static void C_G(Cls& c) {
   c.field("name", [](const Value& self) -> Value { return "G"; });
   c.getter("lattice", [](Value self, const Args& a1) -> Value {
@@ -3157,13 +4041,13 @@ static void C_G(Cls& c) {
     set(ink_0->v, S<"every">(), true);
     auto w_0 = cell(); w_0->v = call(K(S<"Strip">()), S<"line">(), { self, 10.0 });
     call(K(S<"Strip">()), S<"light">(), { w_0->v, 0.0, 1.0 });
-    auto lanes_0 = cell(); lanes_0->v = list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) });
-    for (double i1 = 0, n1 = num(8.0); i1 < n1; i1++) {
-      auto t_1 = cell(i1);
+    auto lanes_0 = cell(); lanes_0->v = m_concat(list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) }), m_map(rng(8.0), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
       call(K(S<"Strip">()), S<"begin">(), { w_0->v });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/c", "/4" }) });
-      m_push(lanes_0->v, call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }));
-    };
+      return call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
+      return null;
+    })));
     return call(K(S<"Strip">()), S<"tell">(), { "rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes_0->v, ink_0->v });
     return null;
   });
@@ -3173,17 +4057,17 @@ static void C_G(Cls& c) {
     set(ink_0->v, S<"top">(), 36.0);
     auto w_0 = cell(); w_0->v = call(K(S<"Strip">()), S<"line">(), { self, 17.0 });
     call(w_0->v, S<"add">(), { make(S<"Scripted">(), { kw(S<"at">(), make(S<"Vector">(), { kw(S<"components">(), list({ 8.0 })) })), kw(S<"plan">(), list({ "", "+", "-", "", "+-", "", "+", "-" })), kw(S<"weight">(), 1.0) }) });
-    auto lanes_0 = cell(); lanes_0->v = list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) });
-    for (double i1 = 0, n1 = num(8.0); i1 < n1; i1++) {
-      auto t_1 = cell(i1);
+    auto lanes_0 = cell(); lanes_0->v = m_concat(list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) }), m_map(rng(8.0), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
       call(K(S<"Strip">()), S<"begin">(), { w_0->v });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/c", "/4" }) });
-      auto moved_1 = cell(); moved_1->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
+      auto moved_2 = cell(); moved_2->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/S.1" }) });
-      auto now_1 = cell(); now_1->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
-      set(now_1->v, S<"says">(), call(K(S<"Strip">()), S<"emitting">(), { moved_1->v, now_1->v }));
-      m_push(lanes_0->v, now_1->v);
-    };
+      auto now_2 = cell(); now_2->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
+      set(now_2->v, S<"says">(), call(K(S<"Strip">()), S<"emitting">(), { moved_2->v, now_2->v }));
+      return now_2->v;
+      return null;
+    })));
     return call(K(S<"Strip">()), S<"tell">(), { "rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes_0->v, ink_0->v });
     return null;
   });
@@ -3191,28 +4075,29 @@ static void C_G(Cls& c) {
     auto ink_0 = cell(); ink_0->v = make(S<"Ink">(), {  });
     set(ink_0->v, S<"every">(), true);
     set(ink_0->v, S<"top">(), 36.0);
+    return call(K(S<"Strip">()), S<"tell">(), { "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", call(self, S<"transport_lanes">(), { ink_0->v }), ink_0->v });
+    return null;
+  });
+  c.method("transport_lanes", [](Value self, const Args& a1) -> Value {
+    auto ink_0 = cell(arg(a1, 0));
     auto w_0 = cell(); w_0->v = call(K(S<"Strip">()), S<"line">(), { self, 21.0 });
     auto s_0 = cell(); s_0->v = call(w_0->v, S<"add">(), { make(S<"Scripted">(), { kw(S<"at">(), make(S<"Vector">(), { kw(S<"components">(), list({ 9.0 })) })), kw(S<"plan">(), list({ "+-", "", "", "", "+-" })), kw(S<"weight">(), 4.0) }) });
     set(s_0->v, S<"moves">(), true);
     set(s_0->v, S<"momentum">(), make(S<"Vector">(), { kw(S<"components">(), list({ 1.0 })) }));
-    auto lanes_0 = cell(); lanes_0->v = list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) });
-    for (double i1 = 0, n1 = num(9.0); i1 < n1; i1++) {
-      auto t_1 = cell(i1);
+    return m_concat(list({ call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) }), m_map(rng(9.0), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
       call(K(S<"Strip">()), S<"begin">(), { w_0->v });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/c", "/4" }) });
-      auto moved_1 = cell(); moved_1->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
+      auto moved_2 = cell(); moved_2->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/S.1" }) });
-      auto emitted_1 = cell(); emitted_1->v = call(K(S<"Strip">()), S<"emitting">(), { moved_1->v, call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) });
+      auto emitted_2 = cell(); emitted_2->v = call(K(S<"Strip">()), S<"emitting">(), { moved_2->v, call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v }) });
       call(K(S<"Strip">()), S<"run">(), { w_0->v, list({ "/S.v" }) });
-      auto now_1 = cell(); now_1->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
-      auto went_1 = cell(); went_1->v = "";
-      if (truthy(get(s_0->v, S<"stepped">()))) {
-        went_1->v = (truthy(gt(elem(get(call(get(w_0->v, S<"geometry">()), S<"V">(), { get(s_0->v, S<"moved_along">()) }), S<"components">()), 0.0), 0.0)) ? Value("steps right") : Value("steps left"));
-      }
-      set(now_1->v, S<"says">(), (truthy(m_empty(went_1->v)) ? Value(emitted_1->v) : Value(((truthy(m_empty(emitted_1->v)) ? Value(went_1->v) : Value("" + str(went_1->v) + ", " + str(emitted_1->v) + ""))))));
-      m_push(lanes_0->v, now_1->v);
-    };
-    return call(K(S<"Strip">()), S<"tell">(), { "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes_0->v, ink_0->v });
+      auto now_2 = cell(); now_2->v = call(K(S<"Strip">()), S<"lane">(), { w_0->v, ink_0->v });
+      auto went_2 = cell(); went_2->v = (truthy((!truthy(get(s_0->v, S<"stepped">())))) ? Value("") : Value(((truthy(gt(elem(get(call(get(w_0->v, S<"geometry">()), S<"V">(), { get(s_0->v, S<"moved_along">()) }), S<"components">()), 0.0), 0.0)) ? Value("steps right") : Value("steps left")))));
+      set(now_2->v, S<"says">(), (truthy(m_empty(went_2->v)) ? Value(emitted_2->v) : Value(((truthy(m_empty(emitted_2->v)) ? Value(went_2->v) : Value("" + str(went_2->v) + ", " + str(emitted_2->v) + ""))))));
+      return now_2->v;
+      return null;
+    })));
     return null;
   });
   c.getter("expansion", [](Value self, const Args& a1) -> Value {
@@ -3453,21 +4338,20 @@ static void C_G(Cls& c) {
       auto setup_2 = cell(arg(a3, 0));
       auto sun_2 = cell(); sun_2->v = make(S<"Body">(), { kw(S<"x">(), 0.0), kw(S<"y">(), 0.0), kw(S<"mx">(), invoke(pulse_0->v, { 0.0 })), kw(S<"ways">(), invoke(ways_0->v, { 0.0 })) });
       set(sun_2->v, S<"tag">(), 1.0);
-      auto out_2 = cell(); out_2->v = list({ sun_2->v });
-      for (double i3 = 0, n3 = num(len(PLANETS_0->v)); i3 < n3; i3++) {
-        auto k_3 = cell(i3);
-        auto i_3 = cell(); i_3->v = elem(PLANETS_0->v, k_3->v);
-        auto b__3 = cell(); b__3->v = make(S<"Body">(), { kw(S<"x">(), invoke(cells_0->v, { mul(elem(AX_0->v, i_3->v), (add(1.0, elem(EC_0->v, i_3->v)))) })), kw(S<"y">(), 0.0), kw(S<"mx">(), invoke(pulse_0->v, { i_3->v })), kw(S<"ways">(), invoke(ways_0->v, { i_3->v })) });
-        set(b__3->v, S<"tag">(), add(2.0, k_3->v));
-        set(b__3->v, S<"moves">(), true);
-        auto v_3 = cell(); v_3->v = (truthy((truthy(gt(len(get(setup_2->v, S<"found">())), k_3->v)) && truthy(call(K(S<"Fmt">()), S<"finite">(), { elem(elem(get(setup_2->v, S<"found">()), k_3->v), 1.0) })))) ? Value(elem(elem(get(setup_2->v, S<"found">()), k_3->v), 1.0)) : Value(0.0));
-        set(b__3->v, S<"py">(), sub(0.0, mul(mul(v_3->v, invoke(pulse_0->v, { i_3->v })), invoke(ways_0->v, { i_3->v }))));
-        set(b__3->v, S<"launch">(), "orbit");
-        set(b__3->v, S<"ecc">(), elem(EC_0->v, i_3->v));
-        set(b__3->v, S<"py">(), sub(0.0, 1.0));
-        m_push(out_2->v, b__3->v);
-      };
-      return out_2->v;
+      return m_concat(list({ sun_2->v }), m_map(rng(len(PLANETS_0->v)), fn([=](const Args& a5) -> Value {
+        auto k_4 = cell(arg(a5, 0));
+        auto i_4 = cell(); i_4->v = elem(PLANETS_0->v, k_4->v);
+        auto b__4 = cell(); b__4->v = make(S<"Body">(), { kw(S<"x">(), invoke(cells_0->v, { mul(elem(AX_0->v, i_4->v), (add(1.0, elem(EC_0->v, i_4->v)))) })), kw(S<"y">(), 0.0), kw(S<"mx">(), invoke(pulse_0->v, { i_4->v })), kw(S<"ways">(), invoke(ways_0->v, { i_4->v })) });
+        set(b__4->v, S<"tag">(), add(2.0, k_4->v));
+        set(b__4->v, S<"moves">(), true);
+        auto v_4 = cell(); v_4->v = (truthy((truthy(gt(len(get(setup_2->v, S<"found">())), k_4->v)) && truthy(call(K(S<"Fmt">()), S<"finite">(), { elem(elem(get(setup_2->v, S<"found">()), k_4->v), 1.0) })))) ? Value(elem(elem(get(setup_2->v, S<"found">()), k_4->v), 1.0)) : Value(0.0));
+        set(b__4->v, S<"py">(), sub(0.0, mul(mul(v_4->v, invoke(pulse_0->v, { i_4->v })), invoke(ways_0->v, { i_4->v }))));
+        set(b__4->v, S<"launch">(), "orbit");
+        set(b__4->v, S<"ecc">(), elem(EC_0->v, i_4->v));
+        set(b__4->v, S<"py">(), sub(0.0, 1.0));
+        return b__4->v;
+        return null;
+      })));
       return null;
     })) });
     auto BURN_0 = cell(); BURN_0->v = mul(2.0, (add(VIEW_0->v, MARGIN_0->v)));

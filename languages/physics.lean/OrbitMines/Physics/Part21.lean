@@ -107,16 +107,12 @@ ray_impl_method "taps" (px_0 : Float) (py_0 : Float) : (RList Value) := do
   let y0_0 ← IO.mkRef (← dot! (← py_0.get) rfloor ())
   let fx_0 ← IO.mkRef (← ωsub (← px_0.get) (← x0_0.get))
   let fy_0 ← IO.mkRef (← ωsub (← py_0.get) (← y0_0.get))
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← ωlst #[(← ωlst #[(← x0_0.get), (← y0_0.get), (← ωmul ((← ωsub (1 : Float) (← fx_0.get))) ((← ωsub (1 : Float) (← fy_0.get))))]), (← ωlst #[(← ωadd (← x0_0.get) (1 : Float)), (← y0_0.get), (← ωmul (← fx_0.get) ((← ωsub (1 : Float) (← fy_0.get))))]), (← ωlst #[(← x0_0.get), (← ωadd (← y0_0.get) (1 : Float)), (← ωmul ((← ωsub (1 : Float) (← fx_0.get))) (← fy_0.get))]), (← ωlst #[(← ωadd (← x0_0.get) (1 : Float)), (← ωadd (← y0_0.get) (1 : Float)), (← ωmul (← fx_0.get) (← fy_0.get))])])) do
-    let t_1 ← IO.mkRef e1
-    let c_1 ← IO.mkRef (← call! self "at" ((← ωelem (← t_1.get) (0 : Float)), (← ωelem (← t_1.get) (1 : Float))))
-    if ωtruthy (← ωandV (← ωge (← c_1.get) (0 : Float)) (do pure (← ωgt (← ωelem (← t_1.get) (2 : Float)) (0 : Float)))) then
-      (← dot! (← out_0.get) rpush ((← ωlst #[(← c_1.get), (← ωelem (← t_1.get) (2 : Float))]))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  let corners_0 ← IO.mkRef (← ωlst #[(← ωlst #[(← x0_0.get), (← y0_0.get), (← ωmul ((← ωsub (1 : Float) (← fx_0.get))) ((← ωsub (1 : Float) (← fy_0.get))))]), (← ωlst #[(← ωadd (← x0_0.get) (1 : Float)), (← y0_0.get), (← ωmul (← fx_0.get) ((← ωsub (1 : Float) (← fy_0.get))))]), (← ωlst #[(← x0_0.get), (← ωadd (← y0_0.get) (1 : Float)), (← ωmul ((← ωsub (1 : Float) (← fx_0.get))) (← fy_0.get))]), (← ωlst #[(← ωadd (← x0_0.get) (1 : Float)), (← ωadd (← y0_0.get) (1 : Float)), (← ωmul (← fx_0.get) (← fy_0.get))])])
+  if true then return (← dot! (← dot! (← corners_0.get) rmap ((fn! [t_3] do
+    if true then return (← ωlst #[(← call! self "at" ((← ωelem (← t_3.get) (0 : Float)), (← ωelem (← t_3.get) (1 : Float)))), (← ωelem (← t_3.get) (2 : Float))])
+    return ωnull))) rfilter ((fn! [p_2] do
+    if true then return (← ωandV (← ωge (← ωelem (← p_2.get) (0 : Float)) (0 : Float)) (do pure (← ωgt (← ωelem (← p_2.get) (1 : Float)) (0 : Float))))
+    return ωnull)))
   return ωnull
 ray_impl_method "hop" (c_0 : Float) (a_0 : Float) : (RList Value) := do
   if true then return (← call! self "taps" ((← ωadd (← ωmodv (← c_0.get) (← ωget self "N")) (← ωmul (← ωget self "K") (← ωelem (← ωget self "ux") (← a_0.get)))), (← ωadd (← ωdiv ((← ωsub (← c_0.get) (← ωmodv (← c_0.get) (← ωget self "N")))) (← ωget self "N")) (← ωmul (← ωget self "K") (← ωelem (← ωget self "uy") (← a_0.get))))))
@@ -137,7 +133,7 @@ ray_impl_method "inside" (ts_0 : (RList Value)) : Float := do
   if true then return (← total_0.get)
   return ωnull
 ray_impl_getter "terms" : (RList Value) := do
-  if true then return (← ωget (← ωget (← ωget self "theory") "equation") "terms")
+  if true then return (← ωget (← ωget self "theory") "terms_read")
   return ωnull
 ray_impl_getter "acting" : (RList Value) := do
   if true then return (← dot! (← ωget self "terms") rfilter ((fn! [t_2] do
@@ -675,20 +671,11 @@ ray_impl_method "point_of" (c_0 : Float) : (RList Float) := do
   let x_0 ← IO.mkRef (← call! self "column_of" ((← c_0.get)))
   let y_0 ← IO.mkRef (← call! self "row_of" ((← c_0.get)))
   let half_0 ← IO.mkRef (← dot! ((← ωdiv ((← ωsub (← ωget self "K") (1 : Float))) (2 : Float))) rfloor ())
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "K")] do
-    let dy_1 ← IO.mkRef (ωnatF i1)
-    for i2 in [0:ωrangeN (← ωget self "K")] do
-      let dx_2 ← IO.mkRef (ωnatF i2)
-      let cell_2 ← IO.mkRef (← call! self "at" ((← ωadd (← ωsub (← x_0.get) (← half_0.get)) (← dx_2.get)), (← ωadd (← ωsub (← y_0.get) (← half_0.get)) (← dy_1.get))))
-      if ωtruthy (← ωge (← cell_2.get) (0 : Float)) then
-        (← dot! (← out_0.get) rpush ((← cell_2.get))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← dot! (← ωrrange (← ωmul (← ωget self "K") (← ωget self "K"))) rmap ((fn! [i_3] do
+    if true then return (← call! self "at" ((← ωadd (← ωsub (← x_0.get) (← half_0.get)) (← ωmodv (← i_3.get) (← ωget self "K"))), (← ωadd (← ωsub (← y_0.get) (← half_0.get)) (← dot! ((← ωdiv (← i_3.get) (← ωget self "K"))) rfloor ()))))
+    return ωnull))) rfilter ((fn! [cell_2] do
+    if true then return (← ωge (← cell_2.get) (0 : Float))
+    return ωnull)))
   return ωnull
 ray_impl_getter "block" : Value := do
   for i1 in [0:ωrangeN (← ωget self "cells")] do

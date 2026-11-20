@@ -112,6 +112,15 @@ ray_class Axis < Node
 ray_class Shaded < Node
 ray_class Sweep < Node
 ray_class Measure < Node
+ray_class Sighted < Node
+ray_class Video < Node
+ray_class Shot < Node
+ray_class Sky < Painter
+ray_class Band < Surface
+ray_class Banded < Painter
+ray_class Growing < Painter
+ray_class Planets < Painter
+ray_class EndCard < Painter
 ray_class G < Theory
 
 namespace Ray
@@ -209,6 +218,7 @@ end Vertex
 
 namespace Vector
 ray_field "components" : (RList Float)
+ray_method "zipped" (b_0 : Vector) (f_0 : Value) : Vector
 ray_method "plus" (b_0 : Vector) : Vector
 ray_method "minus" (b_0 : Vector) : Vector
 ray_method "times" (k_0 : Float) : Vector
@@ -232,6 +242,7 @@ ray_method "steps" (d_0 : Float) : Float
 ray_method "opposite" (d_0 : Float) : Float
 ray_static "shells" (D_0 : Float) (squared_0 : (RList Float)) : Geometry
 ray_static "nearest" (D_0 : Float) (DEG_0 : Float) : Geometry
+ray_static "grid" (D_0 : Float) (low_0 : Float) (count_0 : Float) : (RList Vector)
 ray_static "box" (D_0 : Float) (radius_0 : Float) : (RList Vector)
 end Geometry
 
@@ -259,6 +270,7 @@ ray_method "apply" (x_0 : Value) : Value
 end Rule
 
 namespace Theory
+ray_sfield "TERMS" : Value
 ray_field "name" : String
 ray_field "rules" : (RList Rule)
 ray_field "visuals" : (RList Visual)
@@ -269,6 +281,7 @@ ray_method "seed" (geometry_0 : Geometry) (N_0 : Float) (seed_0 : Float := ωnul
 ray_getter "equation" : Equation
 ray_method "field" (N_0 : Float) (A_0 : Float := ωnull) (K_0 : Float := ωnull) (seed_0 : Float := ωnull) (DEG_0 : Float := ωnull) (tags_0 : Float := ωnull) : Field
 ray_method "medium" (N_0 : Float) (A_0 : Float := ωnull) (K_0 : Float := ωnull) (DEG_0 : Float := ωnull) (tags_0 : Float := ωnull) (D_0 : Float := ωnull) : Medium
+ray_getter "terms_read" : (RList Value)
 ray_getter "proved" : Proof
 end Theory
 
@@ -578,6 +591,9 @@ ray_field "link" : String
 end Reference
 
 namespace Setter
+ray_sfield "KINDS" : Value
+ray_sfield "OPENS" : Value
+ray_sfield "CLOSES" : Value
 ray_method "together" (parts_0 : (RList Value)) : Value
 ray_method "text" (t_0 : String) : Value
 ray_method "words" (t_0 : String) : Value
@@ -621,11 +637,13 @@ ray_static "is_alnum" (c_0 : Char) : Bool
 ray_static "is_name" (c_0 : Char) : Bool
 ray_static "sub_" (s_0 : String) (a_0 : Float) (b_0 : Float) : String
 ray_static "char_at" (s_0 : String) (i_0 : Float) : Char
+ray_static "run" (s_0 : String) (at__0 : Float) (keep_0 : Value) : String
 ray_static "letters" (s_0 : String) (at__0 : Float) : String
 ray_static "alnums" (s_0 : String) (at__0 : Float) : String
 ray_static "counted" (w_0 : String) : Piece
 ray_static "braced" (src_0 : String) (at__0 : Float) : Braced
 ray_static "args" (src_0 : String) (at__0 : Float) (n_0 : Float) (between_0 : (RList String)) : Args
+ray_static "scripted" (base_0 : Piece) (kind_0 : String) (of_0 : (RList Piece)) : Piece
 ray_static "attach" (out_0 : (RList Piece)) (kind_0 : String) (of_0 : (RList Piece)) : Value
 ray_static "parse" (src_0 : String) : (RList Piece)
 ray_static "plain" (s_0 : String) : (RList Piece)
@@ -683,6 +701,7 @@ ray_getter "is_num" : Bool
 ray_getter "is_zero" : Bool
 ray_getter "is_one" : Bool
 ray_getter "named" : Bool
+ray_getter "subtrees" : (RList Expr)
 ray_getter "by_num" : Float
 ray_static "flatten" (kind_0 : String) (xs_0 : (RList Expr)) : Expr
 ray_static "is_integer" (x_0 : Float) : Bool
@@ -714,6 +733,7 @@ ray_static "numeric" (e_0 : Expr) (at__0 : object) : Float
 ray_static "to_infinity" (of_0 : Expr) (name_0 : String) (at__0 : object) : Float
 ray_static "solve_root" (of_0 : Expr) (name_0 : String) (at__0 : object) : Float
 ray_static "solving" (of_0 : Expr) (name_0 : String) (env_0 : object) : Float
+ray_static "bracket_points" : (RList Float)
 ray_static "sorted" (xs_0 : (RList Float)) : (RList Float)
 ray_static "integrate" (e_0 : Expr) (of_0 : String) : Expr
 ray_static "factored" (e_0 : Expr) : Expr
@@ -738,6 +758,7 @@ ray_getter "peek" : Char
 ray_getter "skip" : Value
 ray_method "eat" (n_0 : Float) : String
 ray_method "starts" (s_0 : String) : Bool
+ray_method "take_while" (keep_0 : Value) : String
 ray_getter "addition" : Expr
 ray_getter "product" : Expr
 ray_getter "power" : Expr
@@ -745,6 +766,7 @@ ray_getter "unary" : Expr
 ray_getter "postfix" : Expr
 ray_getter "word" : String
 ray_getter "number" : Expr
+ray_getter "quoted" : String
 ray_getter "primary" : Expr
 end ExprReader
 
@@ -1365,6 +1387,8 @@ ray_method "translate" (x : Float) (y : Float) : Value
 ray_method "rotate" (angle : Float) : Value
 ray_method "dash" (segments : (RList Float)) : Value
 ray_method "gradient_stroke" (x0 : Float) (x1 : Float) (stops : (RList String)) (at_ : (RList Float)) : Value
+ray_method "image" (src : String) (x : Float) (y : Float) (w : Float) (h : Float) : Value
+ray_method "field" (rgb : (RList Float)) (cols : Float) (rows : Float) (x : Float) (y : Float) (w : Float) (h : Float) (blur : Float) : Value
 end Surface
 
 namespace Measured
@@ -1431,6 +1455,9 @@ ray_field "frames" : Float
 ray_field "record" : Recording
 ray_field "panes" : (RList Pane)
 ray_field "on_request" : Bool
+ray_field "images" : (RList String)
+ray_field "parts" : (RList String)
+ray_field "uses" : (RList String)
 ray_field "paint" : Value
 ray_getter "played" : Played
 ray_getter "painter" : Painter
@@ -1777,11 +1804,14 @@ ray_static "offsets" (YD_0 : Float) : (RList Float)
 ray_static "middle" (xs_0 : (RList Float)) : Float
 ray_static "asks" : Float
 ray_static "medium_at" (lx_0 : Float) : Float
+ray_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (range_0 : (RList Float)) (under_0 : Float) : Value
+ray_static "curve" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (f_0 : Value) (low_0 : Float) (high_0 : Float) (step_0 : Float) : Value
 ray_static "along" (s_0 : Surface) (at__0 : Value) (t_0 : Float) (text_0 : String) (colour_0 : String) (lift_0 : Float) (leans_0 : Value) : Value
 ray_static "ceiling_of" (data_0 : Measured) : Value
 ray_static "possible_at" (deg_0 : Float) : (RList Value)
 ray_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (deg_0 : Float) (support_0 : (RList Float)) (possible_0 : (RList Value)) : Value
 ray_static "single" (m_0 : Float) : Bool
+ray_static "freedoms_in" (m_0 : Float) : (RList Float)
 ray_static "ratio_at" (data_0 : Measured) (deg_0 : Float) : Float
 ray_static "shift_at" (data_0 : Measured) (deg_0 : Float) : Float
 ray_static "frame_of" (solved_0 : Measured) (k_0 : Float) : Measured
@@ -1991,6 +2021,7 @@ ray_static "epochs" (shape_0 : (RList Float)) (a0_0 : Float) (how_0 : String) : 
 ray_method "lift_test" (kappa_0 : Float) (a0_0 : Float) : (RList Float)
 ray_getter "law_table" : (RList Float)
 ray_method "felt" (gN_0 : Float) : Float
+ray_static "laid" (records_0 : (RList Value)) : (RList Float)
 ray_getter "points" : (RList Float)
 ray_method "nuisances" (fitted_0 : Bool) : (RList Float)
 ray_field "best_y" : (RList Float)
@@ -2169,6 +2200,189 @@ ray_static "law" (model_0 : Model) : Value
 ray_static "run" (theory_0 : Theory) (only_0 : (RList String)) : Value
 end Measure
 
+namespace Sighted
+ray_field "name" : String
+ray_field "disc_mass" : Float
+ray_field "disc_scale" : Float
+ray_field "bulge_mass" : Float
+ray_field "bulge_scale" : Float
+ray_field "circling" : Float
+ray_field "sun" : Float
+ray_field "inclination" : Float
+ray_field "position_angle" : Float
+ray_field "distance" : Float
+ray_field "approach" : Float
+ray_field "across" : Float
+ray_field "source" : String
+ray_getter "mass" : Float
+end Sighted
+
+namespace Video
+ray_sfield "WIDTH" : Value
+ray_sfield "HEIGHT" : Value
+ray_sfield "FPS" : Value
+ray_sfield "FILM_RD" : Value
+ray_sfield "PER_MYR" : Value
+ray_sfield "LIGHT" : Value
+ray_sfield "ANDROMEDA" : Value
+ray_sfield "MW_ORBITS" : Value
+ray_sfield "MW_ORBIT_TRIALS" : Value
+ray_sfield "MW_ORBIT_TEMPER" : Value
+ray_sfield "MW_ARM_END" : Value
+ray_sfield "MW_ARM_OLD" : Value
+ray_sfield "MW_ARM_FADE" : Value
+ray_sfield "MW_ARM_FADE_IN" : Value
+ray_sfield "MW_YOUNG" : Value
+ray_sfield "MW_CLUSTERS" : Value
+ray_sfield "LIGHT_STARS" : Value
+ray_sfield "ANDROMEDA_IMAGE" : Value
+ray_sfield "ANDROMEDA_FOV" : Value
+ray_sfield "SOURCE" : Value
+ray_sfield "STRIP_TOP" : Value
+ray_sfield "STRIP_TALL" : Value
+ray_sfield "PLANET_INK" : Value
+ray_sfield "SOLAR_FROM" : Value
+ray_sfield "SOLAR_TO" : Value
+ray_sfield "LOGO" : Value
+ray_sfield "PARTS" : Value
+ray_static "MILKY_WAY" : Sighted
+ray_static "measured" (id_0 : String) (name_0 : String) : Float
+ray_static "MW_BAR1" : (RList Float)
+ray_static "mw_bar" (i_0 : String) : (RList Float)
+ray_static "MW_BAR2" : (RList Float)
+ray_static "MW_BAR3" : (RList Float)
+ray_static "MW_BAR_MASSES" : (RList Float)
+ray_static "MW_BAR_ANGLE" : Float
+ray_static "MW_PATTERN_SPEED" : Float
+ray_static "mw_discs_mass" : Float
+ray_static "MW_DISCS" : (RList (RList Float))
+ray_static "MW_DISC_HOLE" : Float
+ray_static "MW_ARMS" : (RList (RList Float))
+ray_static "MW_ARM_WIDTH" : (RList Float)
+ray_static "MW_ARM_CONTRAST" : Float
+ray_static "MW_DUST" : (RList Float)
+ray_static "MW_STIR" : (RList (RList Float))
+ray_static "MW_SUN_MOTION" : (RList Float)
+ray_static "galaxy" (name_0 : String) : Sighted
+ray_static "per_kpc" : Float
+ray_static "myr_per_tick" (film_0 : Measured) : Float
+ray_static "faster" (film_0 : Measured) : Float
+ray_static "smooth" (t_0 : Float) : Float
+ray_static "shot" (id_0 : String) (what_0 : String) (shot_0 : Shot) : Picture
+ray_static "solar_meta" (theory_0 : Theory) : (RList Float)
+ray_static "shot_after_solar" (theory_0 : Theory) (id_0 : String) (what_0 : String) (shot_0 : Shot) : Picture
+ray_static "light" (s_0 : Surface) (film_0 : Measured) (b0_0 : Float) (b1_0 : Float) (w_0 : Float) (G_0 : Float) (span_0 : Float) (cx_0 : Float) (cy_0 : Float) (px_0 : Float) (ci_0 : Float) (side_0 : Float) : Value
+ray_static "sky" (s_0 : Surface) (shot_0 : Shot) (film_0 : Measured) (tracks_0 : Measured) (i_0 : Float) (sol_0 : Measured) (meta_0 : (RList Float)) : Value
+ray_static "transport" (theory_0 : Theory) : Picture
+ray_static "transport_lanes" (theory_0 : Theory) (ink_0 : Ink) : (RList Lane)
+ray_static "per_tick" (lanes_0 : (RList Lane)) : Float
+ray_static "look" (width_0 : Float) (lane_0 : Lane) (ink_0 : Ink) : (RList Float)
+ray_static "seen" (p_0 : (RList Float)) (yaw_0 : Float) (pitch_0 : Float) (ox_0 : Float) (oy_0 : Float) (cell_0 : Float) : (RList Float)
+ray_static "arrow" (s_0 : Surface) (x_0 : Float) (y_0 : Float) (ux_0 : Float) (uy_0 : Float) (cell_0 : Float) (a_0 : Float) : Value
+ray_static "way" (k_0 : Float) (space_0 : Float) : (RList Float)
+ray_static "lattice" (s_0 : Surface) (lane_0 : Lane) (look_0 : (RList Float)) (grow_0 : Float) (ticks_0 : Float) (fade_0 : Float) (earth_0 : Float) (ox_0 : Float) (oy_0 : Float) (cell_0 : Float) (rays_0 : Float) (dense_from_0 : Float) (far_0 : Float) : Value
+ray_static "source_camera" (s_0 : Surface) (look_0 : (RList Float)) (grow_0 : Float) : (RList Float)
+ray_static "to_source" (theory_0 : Theory) : Picture
+ray_static "to_solar" (theory_0 : Theory) : Picture
+ray_static "planets" (s_0 : Surface) (t_0 : Float) (lane_0 : Lane) (look_0 : (RList Float)) (ticks_0 : Float) (film_0 : Measured) (off_0 : Float) (width_0 : Float) (bodies_0 : Float) : Value
+ray_static "end" : Picture
+ray_static "end_card" (s_0 : Surface) (i_0 : Float) (n_0 : Float) : Value
+ray_static "montage" : Picture
+end Video
+
+namespace Shot
+ray_field "film_id" : String
+ray_field "seconds" : Float
+ray_field "from_zoom" : Float
+ray_field "to_zoom" : Float
+ray_field "from_sun" : Float
+ray_field "to_sun" : Float
+ray_field "from_at" : Float
+ray_field "to_at" : Float
+ray_field "tilt" : Float
+ray_field "turn" : Float
+ray_field "title" : String
+ray_field "fade_in" : Float
+ray_field "fade_out" : Float
+ray_getter "frames" : Float
+end Shot
+
+namespace Sky
+ray_field "shot" : Shot
+ray_field "sol" : Measured
+ray_field "meta" : (RList Float)
+ray_field "sol_stamp" : String
+ray_field "shown_frames" : Float
+ray_field "film" : Measured
+ray_field "tracks" : Measured
+ray_method "frame" (s_0 : Surface) (dt_0 : Float) : Value
+end Sky
+
+namespace Band
+ray_field "inner" : Surface
+ray_method "fill_style" (colour_0 : String) : Value
+ray_method "stroke_style" (colour_0 : String) : Value
+ray_method "line_width" (w_0 : Float) : Value
+ray_method "alpha" (v_0 : Float) : Value
+ray_method "fill_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value
+ray_method "stroke_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value
+ray_method "clear_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value
+ray_getter "begin_path" : Value
+ray_method "move_to" (x_0 : Float) (y_0 : Float) : Value
+ray_method "line_to" (x_0 : Float) (y_0 : Float) : Value
+ray_method "arc" (x_0 : Float) (y_0 : Float) (r_0 : Float) (start_at_0 : Float) (end_at_0 : Float) : Value
+ray_getter "stroke" : Value
+ray_getter "fill" : Value
+ray_method "font" (name_0 : String) : Value
+ray_method "text_align" (how_0 : String) : Value
+ray_method "text_baseline" (how_0 : String) : Value
+ray_method "fill_text" (t_0 : String) (x_0 : Float) (y_0 : Float) : Value
+ray_method "measure" (t_0 : String) : Float
+ray_getter "save" : Value
+ray_getter "restore" : Value
+ray_method "translate" (x_0 : Float) (y_0 : Float) : Value
+ray_method "rotate" (angle_0 : Float) : Value
+ray_method "dash" (segments_0 : (RList Float)) : Value
+ray_method "gradient_stroke" (x0_0 : Float) (x1_0 : Float) (stops_0 : (RList String)) (at__0 : (RList Float)) : Value
+ray_method "image" (src_0 : String) (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value
+end Band
+
+namespace Banded
+ray_field "inner" : Painter
+ray_field "top" : Float
+ray_field "tall" : Float
+ray_method "frame" (s_0 : Surface) (dt_0 : Float) : Value
+end Banded
+
+namespace Growing
+ray_field "n" : Float
+ray_field "lane" : Lane
+ray_field "ink" : Ink
+ray_field "per" : Float
+ray_field "shown_frames" : Float
+ray_method "frame" (s_0 : Surface) (dt_0 : Float) : Value
+end Growing
+
+namespace Planets
+ray_field "n" : Float
+ray_field "lane" : Lane
+ray_field "ink" : Ink
+ray_field "per" : Float
+ray_field "stamp" : String
+ray_field "off" : Float
+ray_field "width" : Float
+ray_field "bodies" : Float
+ray_field "shown_frames" : Float
+ray_field "film" : Measured
+ray_method "frame" (s_0 : Surface) (dt_0 : Float) : Value
+end Planets
+
+namespace EndCard
+ray_field "n" : Float
+ray_field "shown_frames" : Float
+ray_method "frame" (s_0 : Surface) (dt_0 : Float) : Value
+end EndCard
+
 namespace G
 ray_getter "lattice" : Geometry
 ray_sfield "rule 1" : Rule
@@ -2180,6 +2394,7 @@ ray_method "strip" (id_0 : String) : Picture
 ray_getter "movement_film" : Picture
 ray_getter "emission_film" : Picture
 ray_getter "transport_film" : Picture
+ray_method "transport_lanes" (ink_0 : Ink) : (RList Lane)
 ray_getter "expansion" : Picture
 ray_getter "shadow" : Picture
 ray_method "pair" (id_0 : String) (how_0 : String) (what_0 : String) : Picture

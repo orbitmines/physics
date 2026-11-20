@@ -61,9 +61,7 @@ Formed := class < deg: Real {
   }
   /* per galaxy [G M a star, softening, a_0, dt] */
   constants (): Real[] => {
-    out := []
-    Array.range(this.discs_n).for(g => { [this.GM(g) / Formed.N, this.soft(g), this.scale_a0, Formed.DT].for(v => { out.push(v) }) })
-    out
+    Array.range(this.discs_n).reduce([], (out, g) => [this.GM(g) / Formed.N, this.soft(g), this.scale_a0, Formed.DT].reduce(out, (o, v) => o.push(v)))
   }
   /* what one star feels, summed on the CPU - the device's ACCEL, checked: [a_x, a_y, |g_N|, |g|] */
   accel_cpu (state: Real[], i: N): Real[] => {
@@ -191,10 +189,8 @@ Formed := class < deg: Real {
   }
   save (frames: Array) => {
     G := Formed.GRID
-    density := []
-    Array.range(this.discs_n).for(g => {
-      frames.for(f => { Array.range(G * G).for(c => { density.push(f[g * G * G + c]) }) })
-    })
+    /* disc after disc, each one's frames in order, each frame G x G cells */
+    density := Array.range(this.discs_n).reduce([], (out, g) => frames.reduce(out, (o, f) => Array.range(G * G).reduce(o, (oo, c) => oo.push(f[g * G * G + c]))))
     cols := { }
     cols["density"] = density
     extra := { }

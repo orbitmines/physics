@@ -81,14 +81,9 @@ Played := class < cached: boolean {
 }
 Cached := class < Played, film: Measured, names: String[], sizes: N[] {
   at (frame_at: N): {} => {
+    /* a frame is every column side by side: a column starts where the ones before it end */
     out := { }
-    all := this.film.columns["frames"]
-    width := this.sizes.sum
-    from_at := frame_at * width
-    Array.range(this.names.length).for(i => {
-      out[this.names[i]] = all.drop(from_at).take(this.sizes[i])
-      from_at = from_at + this.sizes[i]
-    })
+    Array.range(this.names.length).for(i => { out[this.names[i]] = this.film.columns["frames"].drop(frame_at * this.sizes.sum + this.sizes.take(i).sum).take(this.sizes[i]) })
     out
   }
 }

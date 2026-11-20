@@ -87,38 +87,22 @@ ray_impl_static "bit" (mask_0 : Float) (at__0 : Float) : Bool := do
   if true then return (← ωeqv ((← ωmodv (← dot! ((← ωdiv (← mask_0.get) (← ωpow (2 : Float) (← at__0.get)))) rfloor ()) (2 : Float))) (1 : Float))
   return ωnull
 ray_impl_static "tint_of" (mask_0 : Float) : (RList Float) := do
-  if ωtruthy (← ωeqv (← mask_0.get) (0 : Float)) then
-    if true then return (← ωget (← cls% Galaxies) "SEVERAL")
-    pure ()
-  let r_0 ← IO.mkRef (0 : Float)
-  let g_0 ← IO.mkRef (0 : Float)
-  let bl_0 ← IO.mkRef (0 : Float)
-  let n_0 ← IO.mkRef (0 : Float)
-  for i1 in [0:ωrangeN (← dot! (← ωget (← cls% Galaxies) "FREEDOMS") rlength ())] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← call! (← cls% Galaxies) "bit" ((← mask_0.get), (← i_1.get))) then
-      (← ωwr r_0 (← ωadd (← r_0.get) (← ωelem (← ωelem (← ωget (← cls% Galaxies) "TINTS") (← i_1.get)) (0 : Float)))) |> ωsink
-      (← ωwr g_0 (← ωadd (← g_0.get) (← ωelem (← ωelem (← ωget (← cls% Galaxies) "TINTS") (← i_1.get)) (1 : Float)))) |> ωsink
-      (← ωwr bl_0 (← ωadd (← bl_0.get) (← ωelem (← ωelem (← ωget (← cls% Galaxies) "TINTS") (← i_1.get)) (2 : Float)))) |> ωsink
-      (← ωwr n_0 (← ωadd (← n_0.get) (1 : Float))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  if true then return (← ωtern (ωtruthy (← ωgt (← n_0.get) (0 : Float))) (do pure (← ωlst #[(← ωdiv (← r_0.get) (← n_0.get)), (← ωdiv (← g_0.get) (← n_0.get)), (← ωdiv (← bl_0.get) (← n_0.get))])) (do pure (← ωget (← cls% Galaxies) "SEVERAL")))
+  let on_0 ← IO.mkRef (← call! (← cls% Galaxies) "freedoms_in" ((← mask_0.get)))
+  if true then return (← ωtern (ωtruthy (← ωorV (← ωeqv (← mask_0.get) (0 : Float)) (do pure (← dot! (← on_0.get) rempty ())))) (do pure (← ωget (← cls% Galaxies) "SEVERAL")) (do pure (← dot! (← ωlst #[(0 : Float), (1 : Float), (2 : Float)]) rmap ((fn! [c_2] do
+    if true then return (← ωdiv (← dot! (← dot! (← on_0.get) rmap ((fn! [i_4] do
+      if true then return (← ωelem (← ωelem (← ωget (← cls% Galaxies) "TINTS") (← i_4.get)) (← c_2.get))
+      return ωnull))) rsum ()) (← dot! (← on_0.get) rlength ()))
+    return ωnull)))))
   return ωnull
 ray_impl_static "name_of" (mask_0 : Float) : String := do
   if ωtruthy (← ωeqv (← mask_0.get) (0 : Float)) then
     if true then return ("the source as it starts" : String)
     pure ()
-  let parts_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← dot! (← ωget (← cls% Galaxies) "NAMES_NOW") rlength ())] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← call! (← cls% Galaxies) "bit" ((← mask_0.get), (← i_1.get))) then
-      (← dot! (← parts_0.get) rpush ((← ωelem (← ωget (← cls% Galaxies) "NAMES_NOW") (← i_1.get)))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  let joined_0 ← IO.mkRef (← dot! (← parts_0.get) rjoin ((" + " : String)))
+  let joined_0 ← IO.mkRef (← dot! (← dot! (← dot! (← ωrrange (← dot! (← ωget (← cls% Galaxies) "NAMES_NOW") rlength ())) rfilter ((fn! [i_3] do
+    if true then return (← call! (← cls% Galaxies) "bit" ((← mask_0.get), (← i_3.get)))
+    return ωnull))) rmap ((fn! [i_2] do
+    if true then return (← ωelem (← ωget (← cls% Galaxies) "NAMES_NOW") (← i_2.get))
+    return ωnull))) rjoin ((" + " : String)))
   if true then return ("needs " ++ (← ωtoStr (← joined_0.get)) ++ "" : String)
   return ωnull
 ray_impl_static "rgb" (c_0 : (RList Float)) : String := do
@@ -236,6 +220,45 @@ ray_impl_static "medium_at" (lx_0 : Float) : Float := do
   let got_0 ← IO.mkRef (← ωadd (← ωmul (← ωelem (← ys__0.get) (← lo_0.get)) ((← ωsub (1 : Float) (← f_0.get)))) (← ωmul (← ωelem (← ys__0.get) (← hi_0.get)) (← f_0.get)))
   if true then return (← ωtern (ωtruthy (← ωgt (← got_0.get) (0 : Float))) (do pure (← call! (← cls% Fmt) "log10" ((← ωdiv (← got_0.get) (← a0_0.get))))) (do pure (0.0 / 0.0 : Float)))
   return ωnull
+ray_impl_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (range_0 : (RList Float)) (under_0 : Float) : Value := do
+  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← range_0.get) (1 : Float)) (← ωelem (← range_0.get) (0 : Float))) (1 : Float))) rmap ((fn! [i_3] do
+    if true then return (← ωadd (← ωelem (← range_0.get) (0 : Float)) (← i_3.get))
+    return ωnull)))) do
+    let l_1 ← IO.mkRef e1
+    (← ωget (← s_0.get) "begin_path") |> ωsink
+    (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_1.get))), (← ωelem (← box_0.get) (1 : Float)))) |> ωsink
+    (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_1.get))), (← ωelem (← box_0.get) (3 : Float)))) |> ωsink
+    (← ωget (← s_0.get) "stroke") |> ωsink
+    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_1.get)) ++ "" : String), (← app! (← X_0.get) ((← l_1.get))), (← ωadd (← ωelem (← box_0.get) (3 : Float)) (← under_0.get)))) |> ωsink
+    pure ()
+  Value.null |> ωsink
+  (← call! (← s_0.get) "text_align" (("right" : String))) |> ωsink
+  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← range_0.get) (3 : Float)) (← ωelem (← range_0.get) (2 : Float))) (1 : Float))) rmap ((fn! [i_3] do
+    if true then return (← ωadd (← ωelem (← range_0.get) (2 : Float)) (← i_3.get))
+    return ωnull)))) do
+    let l_1 ← IO.mkRef e1
+    (← ωget (← s_0.get) "begin_path") |> ωsink
+    (← call! (← s_0.get) "move_to" ((← ωelem (← box_0.get) (0 : Float)), (← app! (← Y_0.get) ((← l_1.get))))) |> ωsink
+    (← call! (← s_0.get) "line_to" ((← ωelem (← box_0.get) (2 : Float)), (← app! (← Y_0.get) ((← l_1.get))))) |> ωsink
+    (← ωget (← s_0.get) "stroke") |> ωsink
+    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_1.get)) ++ "" : String), (← ωsub (← ωelem (← box_0.get) (0 : Float)) (8 : Float)), (← ωadd (← app! (← Y_0.get) ((← l_1.get))) (4 : Float)))) |> ωsink
+    pure ()
+  Value.null |> ωsink
+  return ωnull
+ray_impl_static "curve" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (f_0 : Value) (low_0 : Float) (high_0 : Float) (step_0 : Float) : Value := do
+  (← ωget (← s_0.get) "begin_path") |> ωsink
+  let l_0 ← IO.mkRef (← low_0.get)
+  while ωtruthy (← ωle (← l_0.get) (← ωadd (← high_0.get) 0.000001)) do
+    if ωtruthy (← ωeqv (← l_0.get) (← low_0.get)) then
+      (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← app! (← f_0.get) ((← l_0.get))))))) |> ωsink
+      pure ()
+    else
+      (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← app! (← f_0.get) ((← l_0.get))))))) |> ωsink
+      pure ()
+    (← ωwr l_0 (← ωadd (← l_0.get) (← step_0.get))) |> ωsink
+    pure ()
+  if true then return (← ωget (← s_0.get) "stroke")
+  return ωnull
 ray_impl_static "along" (s_0 : Surface) (at__0 : Value) (t_0 : Float) (text_0 : String) (colour_0 : String) (lift_0 : Float) (leans_0 : Value) : Value := do
   let p0_0 ← IO.mkRef (← app! (← leans_0.get) ((← ωsub (← t_0.get) 0.01)))
   let p1_0 ← IO.mkRef (← app! (← leans_0.get) ((← ωadd (← t_0.get) 0.01)))
@@ -317,12 +340,12 @@ ray_impl_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (d
   let YMIN_0 ← IO.mkRef (← ωget (← cls% Galaxies) "YMIN")
   let YMAX_0 ← IO.mkRef (← ωget (← cls% Galaxies) "YMAX")
   let X_0 ← IO.mkRef ωnull
-  X_0.set (fn! [(l_0 : Float)] do
-      if true then return (← ωadd (← bx0_0.get) (← ωmul (← ωdiv ((← ωsub (← l_0.get) (← XMIN_0.get))) ((← ωsub (← XMAX_0.get) (← XMIN_0.get)))) ((← ωsub (← bx1_0.get) (← bx0_0.get)))))
+  X_0.set (fn! [(l : Float)] do
+      if true then return (← ωadd (← bx0_0.get) (← ωmul (← ωdiv ((← ωsub l (← XMIN_0.get))) ((← ωsub (← XMAX_0.get) (← XMIN_0.get)))) ((← ωsub (← bx1_0.get) (← bx0_0.get)))))
       return ωnull)
   let Y_0 ← IO.mkRef ωnull
-  Y_0.set (fn! [(l_0 : Float)] do
-      if true then return (← ωsub (← by1_0.get) (← ωmul (← ωdiv ((← ωsub (← l_0.get) (← YMIN_0.get))) ((← ωsub (← YMAX_0.get) (← YMIN_0.get)))) ((← ωsub (← by1_0.get) (← by0_0.get)))))
+  Y_0.set (fn! [(l : Float)] do
+      if true then return (← ωsub (← by1_0.get) (← ωmul (← ωdiv ((← ωsub l (← YMIN_0.get))) ((← ωsub (← YMAX_0.get) (← YMIN_0.get)))) ((← ωsub (← by1_0.get) (← by0_0.get)))))
       return ωnull)
   (ωsetter (← cls% Galaxies) "NAMES_NOW") (← call! (← cls% Galaxies) "freedoms_of" ((← data_0.get)))
   let shift_0 ← IO.mkRef (← call! (← cls% Galaxies) "shift_at" ((← data_0.get), (← deg_0.get)))
@@ -334,36 +357,13 @@ ray_impl_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (d
   (← call! (← s_0.get) "line_width" ((1 : Float))) |> ωsink
   (← call! (← s_0.get) "fill_style" ((← ωget (← cls% Galaxies) "FAINT"))) |> ωsink
   (← call! (← s_0.get) "text_align" (("center" : String))) |> ωsink
-  let l_0 ← IO.mkRef (← XMIN_0.get)
-  while ωtruthy (← ωle (← l_0.get) (← XMAX_0.get)) do
-    (← ωget (← s_0.get) "begin_path") |> ωsink
-    (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← by0_0.get))) |> ωsink
-    (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← by1_0.get))) |> ωsink
-    (← ωget (← s_0.get) "stroke") |> ωsink
-    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_0.get)) ++ "" : String), (← app! (← X_0.get) ((← l_0.get))), (← ωadd (← by1_0.get) (17 : Float)))) |> ωsink
-    (← ωwr l_0 (← ωadd (← l_0.get) (1 : Float))) |> ωsink
-    pure ()
-  (← call! (← s_0.get) "text_align" (("right" : String))) |> ωsink
-  (← ωwr l_0 (← YMIN_0.get)) |> ωsink
-  while ωtruthy (← ωle (← l_0.get) (← YMAX_0.get)) do
-    (← ωget (← s_0.get) "begin_path") |> ωsink
-    (← call! (← s_0.get) "move_to" ((← bx0_0.get), (← app! (← Y_0.get) ((← l_0.get))))) |> ωsink
-    (← call! (← s_0.get) "line_to" ((← bx1_0.get), (← app! (← Y_0.get) ((← l_0.get))))) |> ωsink
-    (← ωget (← s_0.get) "stroke") |> ωsink
-    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_0.get)) ++ "" : String), (← ωsub (← bx0_0.get) (8 : Float)), (← ωadd (← app! (← Y_0.get) ((← l_0.get))) (4 : Float)))) |> ωsink
-    (← ωwr l_0 (← ωadd (← l_0.get) (1 : Float))) |> ωsink
-    pure ()
-  let implied_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← ωget (← cls% Sparc) "btfr")) do
-    let g_1 ← IO.mkRef e1
-    let M_1 ← IO.mkRef (← ωget (← g_1.get) "mass")
-    let v_1 ← IO.mkRef (← ωmul (← ωget (← g_1.get) "vf") (1000 : Float))
-    if ωtruthy (← ωandV (← ωgt (← M_1.get) (0 : Float)) (do pure (← ωgt (← v_1.get) (0 : Float)))) then
-      (← dot! (← implied_0.get) rpush ((← call! (← cls% Fmt) "log10" ((← ωdiv (← ωdiv (← ωmul (← ωmul (← ωmul (← v_1.get) (← v_1.get)) (← v_1.get)) (← v_1.get)) ((← ωmul (← ωget (← cls% Sparc) "G_NEWTON") (← M_1.get)))) (← ωget (← cls% Galaxies) "A0_DATA")))))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  (← ωwr implied_0 (← call! (← cls% Expr) "sorted" ((← implied_0.get)))) |> ωsink
+  (← call! (← cls% Galaxies) "decades" ((← s_0.get), (← X_0.get), (← Y_0.get), (← ωlst #[(← bx0_0.get), (← by0_0.get), (← bx1_0.get), (← by1_0.get)]), (← ωlst #[(← XMIN_0.get), (← XMAX_0.get), (← YMIN_0.get), (← YMAX_0.get)]), (17 : Float))) |> ωsink
+  let implied_0 ← IO.mkRef (← call! (← cls% Expr) "sorted" ((← dot! (← dot! (← ωget (← cls% Sparc) "btfr") rfilter ((fn! [g_3] do
+    if true then return (← ωandV (← ωgt (← ωget (← g_3.get) "mass") (0 : Float)) (do pure (← ωgt (← ωget (← g_3.get) "vf") (0 : Float))))
+    return ωnull))) rmap ((fn! [g_2] do
+    let v_2 ← IO.mkRef (← ωmul (← ωget (← g_2.get) "vf") (1000 : Float))
+    if true then return (← call! (← cls% Fmt) "log10" ((← ωdiv (← ωdiv (← ωmul (← ωmul (← ωmul (← v_2.get) (← v_2.get)) (← v_2.get)) (← v_2.get)) ((← ωmul (← ωget (← cls% Sparc) "G_NEWTON") (← ωget (← g_2.get) "mass")))) (← ωget (← cls% Galaxies) "A0_DATA"))))
+    return ωnull)))))
   let med_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← implied_0.get) rempty ())) (do pure (0.0 / 0.0 : Float)) (do pure (← ωelem (← implied_0.get) (← dot! ((← ωdiv (← dot! (← implied_0.get) rlength ()) (2 : Float))) rfloor ()))))
   (← call! (← s_0.get) "line_width" ((1 : Float))) |> ωsink
   for e1 in (← ωitems (← implied_0.get)) do
@@ -553,35 +553,17 @@ ray_impl_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (d
   (← call! (← s_0.get) "stroke_style" ((← ωget (← cls% Galaxies) "BTFRC"))) |> ωsink
   (← call! (← s_0.get) "line_width" (1.5)) |> ωsink
   (← call! (← s_0.get) "dash" ((← ωlst #[(2 : Float), (4 : Float)]))) |> ωsink
-  (← ωget (← s_0.get) "begin_path") |> ωsink
-  (← ωwr l_0 (← XMIN_0.get)) |> ωsink
-  while ωtruthy (← ωle (← l_0.get) (← ωadd (← XMAX_0.get) 0.000001)) do
-    if ωtruthy (← ωeqv (← l_0.get) (← XMIN_0.get)) then
-      (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← ωmul 0.5 (← l_0.get)))))) |> ωsink
-      pure ()
-    else
-      (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← ωmul 0.5 (← l_0.get)))))) |> ωsink
-      pure ()
-    (← ωwr l_0 (← ωadd (← l_0.get) 0.05)) |> ωsink
-    pure ()
-  (← ωget (← s_0.get) "stroke") |> ωsink
+  (← call! (← cls% Galaxies) "curve" ((← s_0.get), (← X_0.get), (← Y_0.get), (fn! [l_2] do
+    if true then return (← ωmul 0.5 (← l_2.get))
+    return ωnull), (← XMIN_0.get), (← XMAX_0.get), 0.05)) |> ωsink
   (← call! (← s_0.get) "dash" ((← ωlst #[]))) |> ωsink
   (← call! (← s_0.get) "stroke_style" ((← ωget (← cls% Galaxies) "MODEL"))) |> ωsink
   (← call! (← s_0.get) "line_width" (1.2)) |> ωsink
   (← call! (← s_0.get) "alpha" (0.4)) |> ωsink
   (← call! (← s_0.get) "dash" ((← ωlst #[(5 : Float), (4 : Float)]))) |> ωsink
-  (← ωget (← s_0.get) "begin_path") |> ωsink
-  (← ωwr l_0 (← XMIN_0.get)) |> ωsink
-  while ωtruthy (← ωle (← l_0.get) (← ωadd (← XMAX_0.get) 0.000001)) do
-    if ωtruthy (← ωeqv (← l_0.get) (← XMIN_0.get)) then
-      (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← app! (← law_drawn_0.get) ((← l_0.get))))))) |> ωsink
-      pure ()
-    else
-      (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← app! (← law_drawn_0.get) ((← l_0.get))))))) |> ωsink
-      pure ()
-    (← ωwr l_0 (← ωadd (← l_0.get) 0.02)) |> ωsink
-    pure ()
-  (← ωget (← s_0.get) "stroke") |> ωsink
+  (← call! (← cls% Galaxies) "curve" ((← s_0.get), (← X_0.get), (← Y_0.get), (fn! [l_2] do
+    if true then return (← app! (← law_drawn_0.get) ((← l_2.get)))
+    return ωnull), (← XMIN_0.get), (← XMAX_0.get), 0.02)) |> ωsink
   (← call! (← s_0.get) "dash" ((← ωlst #[]))) |> ωsink
   (← call! (← s_0.get) "alpha" ((1 : Float))) |> ωsink
   let landed_0 ← IO.mkRef (← ωelem (← possible_0.get) (0 : Float))
@@ -725,15 +707,9 @@ ray_impl_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (d
       pure ()
     Value.null |> ωsink
     pure ()
-  let total_0 ← IO.mkRef (0 : Float)
-  for e1 in (← ωitems (← masks_0.get)) do
-    let m_1 ← IO.mkRef e1
-    (← ωwr total_0 (← ωadd (← total_0.get) (← ωelem (← tally_0.get) (← m_1.get)))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if ωtruthy (← ωeqv (← total_0.get) (0 : Float)) then
-    (← ωwr total_0 (1 : Float)) |> ωsink
-    pure ()
+  let total_0 ← IO.mkRef (← call! (← cls% Fmt) "max" ((← dot! (← masks_0.get) rreduce ((0 : Float), (fn! [t_2 m_2] do
+    if true then return (← ωadd (← t_2.get) (← ωelem (← tally_0.get) (← m_2.get)))
+    return ωnull))), (1 : Float)))
   let counts_0 ← IO.mkRef (← call! (← cls% Expr) "sorted" ((← dot! (← masks_0.get) rmap ((fn! [m_2] do
     if true then return (← ωsub (0 : Float) (← ωelem (← tally_0.get) (← m_2.get)))
     return ωnull)))))
@@ -815,15 +791,12 @@ ray_impl_static "panel" (s_0 : Surface) (data_0 : Measured) (what_0 : String) (d
   if true then return (← call! (← s_0.get) "text_align" (("left" : String)))
   return ωnull
 ray_impl_static "single" (m_0 : Float) : Bool := do
-  let n_0 ← IO.mkRef (0 : Float)
-  for i1 in [0:ωrangeN (← dot! (← ωget (← cls% Galaxies) "FREEDOMS") rlength ())] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← call! (← cls% Galaxies) "bit" ((← m_0.get), (← i_1.get))) then
-      (← ωwr n_0 (← ωadd (← n_0.get) (1 : Float))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  if true then return (← ωeqv (← n_0.get) (1 : Float))
+  if true then return (← ωeqv (← dot! (← call! (← cls% Galaxies) "freedoms_in" ((← m_0.get))) rlength ()) (1 : Float))
+  return ωnull
+ray_impl_static "freedoms_in" (m_0 : Float) : (RList Float) := do
+  if true then return (← dot! (← ωrrange (← dot! (← ωget (← cls% Galaxies) "FREEDOMS") rlength ())) rfilter ((fn! [i_2] do
+    if true then return (← call! (← cls% Galaxies) "bit" ((← m_0.get), (← i_2.get)))
+    return ωnull)))
   return ωnull
 ray_impl_static "ratio_at" (data_0 : Measured) (deg_0 : Float) : Float := do
   let table_0 ← IO.mkRef (← ωelem (← ωget (← data_0.get) "header") ("coincidence" : String))
@@ -972,19 +945,13 @@ ray_impl_static "sweep_of" (solved_0 : Measured) : (RList Float) := do
       pure ()
     pure ()
   Value.null |> ωsink
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← n_0.get)] do
-    let k_1 ← IO.mkRef (ωnatF i1)
-    (← dot! (← out_0.get) rpush ((← ωsub (← ωsub (← n_0.get) (1 : Float)) (← k_1.get)))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  for i1 in [0:ωrangeN (← ωget (← cls% Galaxies) "SETTLE")] do
-    let k_1 ← IO.mkRef (ωnatF i1)
-    let f_1 ← IO.mkRef (← ωdiv ((← ωadd (← k_1.get) (1 : Float))) (← ωget (← cls% Galaxies) "SETTLE"))
-    (← dot! (← out_0.get) rpush ((← dot! ((← ωmul (← ωmul (← ωmul (← rest_0.get) (← f_1.get)) (← f_1.get)) ((← ωsub (3 : Float) (← ωmul (2 : Float) (← f_1.get)))))) rround ()))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  let down_0 ← IO.mkRef (← dot! (← ωrrange (← n_0.get)) rmap ((fn! [k_2] do
+    if true then return (← ωsub (← ωsub (← n_0.get) (1 : Float)) (← k_2.get))
+    return ωnull)))
+  if true then return (← dot! (← down_0.get) rconcat ((← dot! (← ωrrange (← ωget (← cls% Galaxies) "SETTLE")) rmap ((fn! [k_2] do
+    let f_2 ← IO.mkRef (← ωdiv ((← ωadd (← k_2.get) (1 : Float))) (← ωget (← cls% Galaxies) "SETTLE"))
+    if true then return (← dot! ((← ωmul (← ωmul (← ωmul (← rest_0.get) (← f_2.get)) (← f_2.get)) ((← ωsub (3 : Float) (← ωmul (2 : Float) (← f_2.get)))))) rround ())
+    return ωnull)))))
   return ωnull
 ray_impl_static "of" (id_0 : String) (what_0 : String) (title_0 : String) : Picture := do
   let solved_0 ← IO.mkRef (← call! (← cls% Measured) "of" (("" ++ (← ωtoStr (← id_0.get)) ++ ".solved" : String)))
@@ -1019,14 +986,9 @@ ray_impl_static "pick" (want_0 : Float) : (RList Float) := do
       pure ()
     pure ()
   Value.null |> ωsink
-  let ids_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← dot! (← ωget (← cls% Sparc) "names") rlength ())] do
-    let g_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← ωge ((← ωorElse (← ωelem (← counts_0.get) ("" ++ (← ωtoStr (← g_1.get)) ++ "" : String)) (do pure (0 : Float)))) (12 : Float)) then
-      (← dot! (← ids_0.get) rpush ((← g_1.get))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
+  let ids_0 ← IO.mkRef (← dot! (← ωrrange (← dot! (← ωget (← cls% Sparc) "names") rlength ())) rfilter ((fn! [g_2] do
+    if true then return (← ωge ((← ωorElse (← ωelem (← counts_0.get) ("" ++ (← ωtoStr (← g_2.get)) ++ "" : String)) (do pure (0 : Float)))) (12 : Float))
+    return ωnull)))
   let tops_0 ← IO.mkRef (← RMap.new)
   for i1 in [0:ωrangeN (← ωget (← t_0.get) "rows")] do
     let i_1 ← IO.mkRef (ωnatF i1)
@@ -1037,13 +999,9 @@ ray_impl_static "pick" (want_0 : Float) : (RList Float) := do
   let sorted_0 ← IO.mkRef (← dot! (← ids_0.get) rsorted_by ((fn! [g_2] do
     if true then return (← ωelem (← tops_0.get) ("" ++ (← ωtoStr (← g_2.get)) ++ "" : String))
     return ωnull)))
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← want_0.get)] do
-    let k_1 ← IO.mkRef (ωnatF i1)
-    (← dot! (← out_0.get) rpush ((← ωelem (← sorted_0.get) (← dot! ((← ωdiv (← ωmul ((← ωsub (← dot! (← sorted_0.get) rlength ()) (1 : Float))) (← k_1.get)) ((← ωsub (← want_0.get) (1 : Float))))) rround ())))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← ωrrange (← want_0.get)) rmap ((fn! [k_2] do
+    if true then return (← ωelem (← sorted_0.get) (← dot! ((← ωdiv (← ωmul ((← ωsub (← dot! (← sorted_0.get) rlength ()) (1 : Float))) (← k_2.get)) ((← ωsub (← want_0.get) (1 : Float))))) rround ()))
+    return ωnull)))
   return ωnull
 ray_impl_static "simulated" : Measured := do
   let got_0 ← IO.mkRef (← call! (← cls% Measured) "of" (("galaxy.simulated" : String)))
@@ -1060,16 +1018,9 @@ ray_impl_static "fields" : Measured := do
   if true then return (← got_0.get)
   return ωnull
 ray_impl_static "rows_in" (m_0 : Measured) (g_0 : Float) : (RList Float) := do
-  let col_0 ← IO.mkRef (← ωelem (← ωget (← m_0.get) "columns") ("galaxy" : String))
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget (← m_0.get) "rows")] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← ωeqv (← ωelem (← col_0.get) (← i_1.get)) (← g_0.get)) then
-      (← dot! (← out_0.get) rpush ((← i_1.get))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← ωrrange (← ωget (← m_0.get) "rows")) rfilter ((fn! [i_2] do
+    if true then return (← ωeqv (← ωelem (← ωelem (← ωget (← m_0.get) "columns") ("galaxy" : String)) (← i_2.get)) (← g_0.get))
+    return ωnull)))
   return ωnull
 ray_impl_static "off_of" (g_0 : Float) (fitted_0 : Bool) : Float := do
   let sim_0 ← IO.mkRef (← ωget (← cls% Galaxies) "simulated")
@@ -1643,37 +1594,19 @@ ray_impl_static "rar_panel" (s_0 : Surface) : Value := do
   let YMIN_0 ← IO.mkRef (← ωneg (3 : Float))
   let YMAX_0 ← IO.mkRef (2 : Float)
   let X_0 ← IO.mkRef ωnull
-  X_0.set (fn! [(l_0 : Float)] do
-      if true then return (← ωadd (← bx0_0.get) (← ωmul (← ωdiv ((← ωsub (← l_0.get) (← XMIN_0.get))) ((← ωsub (← XMAX_0.get) (← XMIN_0.get)))) ((← ωsub (← bx1_0.get) (← bx0_0.get)))))
+  X_0.set (fn! [(l : Float)] do
+      if true then return (← ωadd (← bx0_0.get) (← ωmul (← ωdiv ((← ωsub l (← XMIN_0.get))) ((← ωsub (← XMAX_0.get) (← XMIN_0.get)))) ((← ωsub (← bx1_0.get) (← bx0_0.get)))))
       return ωnull)
   let Y_0 ← IO.mkRef ωnull
-  Y_0.set (fn! [(l_0 : Float)] do
-      if true then return (← ωsub (← by1_0.get) (← ωmul (← ωdiv ((← ωsub (← l_0.get) (← YMIN_0.get))) ((← ωsub (← YMAX_0.get) (← YMIN_0.get)))) ((← ωsub (← by1_0.get) (← by0_0.get)))))
+  Y_0.set (fn! [(l : Float)] do
+      if true then return (← ωsub (← by1_0.get) (← ωmul (← ωdiv ((← ωsub l (← YMIN_0.get))) ((← ωsub (← YMAX_0.get) (← YMIN_0.get)))) ((← ωsub (← by1_0.get) (← by0_0.get)))))
       return ωnull)
   (← call! (← s_0.get) "stroke_style" ((← ωget (← cls% Galaxies) "GRID"))) |> ωsink
   (← call! (← s_0.get) "line_width" ((1 : Float))) |> ωsink
   (← call! (← s_0.get) "fill_style" ((← ωget (← cls% Galaxies) "FAINT"))) |> ωsink
   (← call! (← s_0.get) "font" (("11px ui-monospace, monospace" : String))) |> ωsink
   (← call! (← s_0.get) "text_align" (("center" : String))) |> ωsink
-  let l_0 ← IO.mkRef (← XMIN_0.get)
-  while ωtruthy (← ωle (← l_0.get) (← XMAX_0.get)) do
-    (← ωget (← s_0.get) "begin_path") |> ωsink
-    (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← by0_0.get))) |> ωsink
-    (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← by1_0.get))) |> ωsink
-    (← ωget (← s_0.get) "stroke") |> ωsink
-    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_0.get)) ++ "" : String), (← app! (← X_0.get) ((← l_0.get))), (← ωadd (← by1_0.get) (16 : Float)))) |> ωsink
-    (← ωwr l_0 (← ωadd (← l_0.get) (1 : Float))) |> ωsink
-    pure ()
-  (← call! (← s_0.get) "text_align" (("right" : String))) |> ωsink
-  (← ωwr l_0 (← YMIN_0.get)) |> ωsink
-  while ωtruthy (← ωle (← l_0.get) (← YMAX_0.get)) do
-    (← ωget (← s_0.get) "begin_path") |> ωsink
-    (← call! (← s_0.get) "move_to" ((← bx0_0.get), (← app! (← Y_0.get) ((← l_0.get))))) |> ωsink
-    (← call! (← s_0.get) "line_to" ((← bx1_0.get), (← app! (← Y_0.get) ((← l_0.get))))) |> ωsink
-    (← ωget (← s_0.get) "stroke") |> ωsink
-    (← call! (← s_0.get) "fill_text" (("10^" ++ (← ωtoStr (← l_0.get)) ++ "" : String), (← ωsub (← bx0_0.get) (8 : Float)), (← ωadd (← app! (← Y_0.get) ((← l_0.get))) (4 : Float)))) |> ωsink
-    (← ωwr l_0 (← ωadd (← l_0.get) (1 : Float))) |> ωsink
-    pure ()
+  (← call! (← cls% Galaxies) "decades" ((← s_0.get), (← X_0.get), (← Y_0.get), (← ωlst #[(← bx0_0.get), (← by0_0.get), (← bx1_0.get), (← by1_0.get)]), (← ωlst #[(← XMIN_0.get), (← XMAX_0.get), (← YMIN_0.get), (← YMAX_0.get)]), (16 : Float))) |> ωsink
   let lg_0 ← IO.mkRef ωnull
   lg_0.set (fn! [(v : Float)] do
       if true then return (← call! (← cls% Fmt) "log10" ((← ωdiv v (← ωget (← cls% Galaxies) "A0_DATA"))))
@@ -1713,20 +1646,9 @@ ray_impl_static "rar_panel" (s_0 : Surface) : Value := do
   let a0_0 ← IO.mkRef (← ωelem (← ωget (← sim_0.get) "header") ("a0" : String))
   (← call! (← s_0.get) "stroke_style" ((← ωget (← cls% Galaxies) "MODEL"))) |> ωsink
   (← call! (← s_0.get) "line_width" ((2 : Float))) |> ωsink
-  (← ωget (← s_0.get) "begin_path") |> ωsink
-  (← ωwr l_0 (← XMIN_0.get)) |> ωsink
-  while ωtruthy (← ωle (← l_0.get) (← ωadd (← XMAX_0.get) 0.000001)) do
-    let gN_0 ← IO.mkRef (← ωmul (← ωpow (10 : Float) (← l_0.get)) (← ωget (← cls% Galaxies) "A0_DATA"))
-    let y_0 ← IO.mkRef (← app! (← lg_0.get) ((← call! (← cls% Law) "boost" ((← gN_0.get), (← a0_0.get)))))
-    if ωtruthy (← ωeqv (← l_0.get) (← XMIN_0.get)) then
-      (← call! (← s_0.get) "move_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← y_0.get))))) |> ωsink
-      pure ()
-    else
-      (← call! (← s_0.get) "line_to" ((← app! (← X_0.get) ((← l_0.get))), (← app! (← Y_0.get) ((← y_0.get))))) |> ωsink
-      pure ()
-    (← ωwr l_0 (← ωadd (← l_0.get) 0.02)) |> ωsink
-    pure ()
-  (← ωget (← s_0.get) "stroke") |> ωsink
+  (← call! (← cls% Galaxies) "curve" ((← s_0.get), (← X_0.get), (← Y_0.get), (fn! [l_2] do
+    if true then return (← app! (← lg_0.get) ((← call! (← cls% Law) "boost" ((← ωmul (← ωpow (10 : Float) (← l_2.get)) (← ωget (← cls% Galaxies) "A0_DATA")), (← a0_0.get)))))
+    return ωnull), (← XMIN_0.get), (← XMAX_0.get), 0.02)) |> ωsink
   (← call! (← s_0.get) "stroke_style" ((← ωget (← cls% Galaxies) "NEWT"))) |> ωsink
   (← call! (← s_0.get) "dash" ((← ωlst #[(6 : Float), (5 : Float)]))) |> ωsink
   (← ωget (← s_0.get) "begin_path") |> ωsink

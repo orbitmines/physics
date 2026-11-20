@@ -681,15 +681,20 @@ class Vector < Node
     args_.empty? ? @components : @components.(*args_)
   end
   attr_writer :components
-  def plus(b)
+  def zipped(b, f)
     return Vector.new(components: Ops.m_map(Ops.rng(self.components.length), ->(i) {
-      return Ops.add(Ops.elem(self.components, i), Ops.elem(b.components, i))
+      return f.(Ops.elem(self.components, i), Ops.elem(b.components, i))
     }))
   end
+  def plus(b)
+    return self.zipped(b, ->(x, y) {
+      return Ops.add(x, y)
+    })
+  end
   def minus(b)
-    return Vector.new(components: Ops.m_map(Ops.rng(self.components.length), ->(i) {
-      return Ops.sub(Ops.elem(self.components, i), Ops.elem(b.components, i))
-    }))
+    return self.zipped(b, ->(x, y) {
+      return Ops.sub(x, y)
+    })
   end
   def times(k)
     return Vector.new(components: Ops.m_map(self.components, ->(c) {
@@ -697,9 +702,9 @@ class Vector < Node
     }))
   end
   def dot(b)
-    return Ops.m_sum(Ops.m_map(Ops.rng(self.components.length), ->(i) {
-      return Ops.mul(Ops.elem(self.components, i), Ops.elem(b.components, i))
-    }))
+    return Ops.m_sum(self.zipped(b, ->(x, y) {
+      return Ops.mul(x, y)
+    }).components)
   end
   def norm
     return Ops.m_sqrt(self.dot(self))
@@ -760,14 +765,11 @@ class Geometry < Node
     }), ->(v) {
       return v.norm
     })
-    chosen = []
-    Ops.list(squared).each do |s|
-      Ops.list(all).each do |v|
-        if Ops.eq(v.dot(v), s)
-          Ops.m_push(chosen, v)
-        end
-      end
-    end
+    chosen = Ops.m_reduce(squared, [], ->(out, s) {
+      return Ops.m_concat(out, Ops.filt(all, ->(v) {
+        return Ops.eq(v.dot(v), s)
+      }))
+    })
     joined = Ops.m_join(squared, "+")
     return Geometry.new(name: "shells-#{_D}-#{joined}", offsets: chosen)
   end
@@ -790,22 +792,17 @@ class Geometry < Node
     raise "Ops.eq(chosen.length, _DEG)" unless Ops.eq(chosen.length, _DEG)
     return Geometry.new(name: "nearest-#{_D}-#{_DEG}", offsets: chosen)
   end
+  def self.grid(_D, low, count)
+    return Ops.m_reduce(Ops.rng(_D), [Vector.new(components: [])], ->(points, _) {
+      return Ops.m_reduce(points, [], ->(grown, p) {
+        return Ops.m_reduce(Ops.rng(count), grown, ->(out, k) {
+          return Ops.m_push(out, Vector.new(components: Ops.m_concat(p.components, [Ops.add(low, k)])))
+        })
+      })
+    })
+  end
   def self.box(_D, radius)
-    points = [Vector.new(components: [])]
-    i = 0
-    while Ops.lt(i, _D)
-      grown = []
-      Ops.list(points).each do |p|
-        k = Ops.sub(0, radius)
-        while Ops.le(k, radius)
-          Ops.m_push(grown, Vector.new(components: Ops.m_concat(p.components, [k])))
-          k = Ops.add(k, 1)
-        end
-      end
-      points = grown
-      i = Ops.add(i, 1)
-    end
-    return points
+    return Geometry.grid(_D, Ops.sub(0, radius), Ops.add(Ops.mul(2, radius), 1))
   end
   __exposed
 end
@@ -910,6 +907,13 @@ class Rule < Node
 end
 
 class Theory < Node
+  def self.TERMS
+    @TERMS = (Node.new) unless instance_variable_defined?(:@TERMS)
+    @TERMS
+  end
+  def self.TERMS=(v)
+    @TERMS = v
+  end
   def name(*args_)
     args_.empty? ? @name : @name.(*args_)
   end
@@ -948,6 +952,12 @@ class Theory < Node
   end
   def medium(_N, _A = 96, _K = 3, _DEG = nil, tags = 1, _D = nil)
     return Medium.new(theory: self, N: _N, A: _A, K: _K, DEG: Ops.or_else(_DEG) { self.lattice.DEG }, tags: tags, D: Ops.or_else(_D) { self.lattice.D })
+  end
+  def terms_read
+    if Ops.eq(Ops.elem(Theory.TERMS, self.name), nil)
+      Ops.set_at(Theory.TERMS, self.name, self.equation.terms)
+    end
+    return Ops.elem(Theory.TERMS, self.name)
   end
   def proved
     if Ops.eq(Ops.elem(Prover.PROOFS, self.name), nil)
@@ -1026,21 +1036,7 @@ class World < Node
     return self
   end
   def positions(_N)
-    points = [Vector.new(components: [])]
-    i = 0
-    while Ops.lt(i, self.geometry.D)
-      grown = []
-      Ops.list(points).each do |p|
-        k = 0
-        while Ops.lt(k, _N)
-          Ops.m_push(grown, Vector.new(components: Ops.m_concat(p.components, [k])))
-          k = Ops.add(k, 1)
-        end
-      end
-      points = grown
-      i = Ops.add(i, 1)
-    end
-    return points
+    return Geometry.grid(self.geometry.D, 0, _N)
   end
   def place(at)
     if Ops.ge(self.vertices.length, self.bound)
@@ -1122,26 +1118,22 @@ class World < Node
         return Ops.many(v.rays)
       })
     end
-    rays = []
-    Ops.list(self.live).each do |v|
-      Ops.list(v.rays).each do |r|
-        Ops.m_push(rays, r)
-      end
-    end
+    rays = Ops.m_reduce(self.live, [], ->(out, v) {
+      return Ops.m_reduce(v.rays, out, ->(o, r) {
+        return Ops.m_push(o, r)
+      })
+    })
     if Ops.eq(kind, "Boundary")
       return Ops.m_map(rays, ->(r) {
         return r.terminal
       })
     end
     if Ops.eq(kind, "Edge")
-      edges = []
-      Ops.list(rays).each do |r|
-        there = r.ahead
-        if (!Ops.eq(there, nil) && Ops.lt(r.vertex.ordinal, there.ordinal))
-          Ops.m_push(edges, r.terminal.edge)
-        end
-      end
-      return edges
+      return Ops.m_map(Ops.filt(rays, ->(r) {
+        return (!Ops.eq(r.ahead, nil) && Ops.lt(r.vertex.ordinal, r.ahead.ordinal))
+      }), ->(r) {
+        return r.terminal.edge
+      })
     end
     return []
   end
@@ -1793,14 +1785,12 @@ class Field < Node
     y0 = Ops.m_floor(py)
     fx = Ops.sub(px, x0)
     fy = Ops.sub(py, y0)
-    out = []
-    Ops.list([[x0, y0, Ops.mul((Ops.sub(1, fx)), (Ops.sub(1, fy)))], [Ops.add(x0, 1), y0, Ops.mul(fx, (Ops.sub(1, fy)))], [x0, Ops.add(y0, 1), Ops.mul((Ops.sub(1, fx)), fy)], [Ops.add(x0, 1), Ops.add(y0, 1), Ops.mul(fx, fy)]]).each do |t|
-      c = self.at(Ops.elem(t, 0), Ops.elem(t, 1))
-      if (Ops.ge(c, 0) && Ops.gt(Ops.elem(t, 2), 0))
-        Ops.m_push(out, [c, Ops.elem(t, 2)])
-      end
-    end
-    return out
+    corners = [[x0, y0, Ops.mul((Ops.sub(1, fx)), (Ops.sub(1, fy)))], [Ops.add(x0, 1), y0, Ops.mul(fx, (Ops.sub(1, fy)))], [x0, Ops.add(y0, 1), Ops.mul((Ops.sub(1, fx)), fy)], [Ops.add(x0, 1), Ops.add(y0, 1), Ops.mul(fx, fy)]]
+    return Ops.filt(Ops.m_map(corners, ->(t) {
+      return [self.at(Ops.elem(t, 0), Ops.elem(t, 1)), Ops.elem(t, 2)]
+    }), ->(p) {
+      return (Ops.ge(Ops.elem(p, 0), 0) && Ops.gt(Ops.elem(p, 1), 0))
+    })
   end
   def hop(c, a)
     return self.taps(Ops.add(Ops.mod(c, self.N), Ops.mul(self.K, Ops.elem(self.ux, a))), Ops.add(Ops.div((Ops.sub(c, Ops.mod(c, self.N))), self.N), Ops.mul(self.K, Ops.elem(self.uy, a))))
@@ -1819,7 +1809,7 @@ class Field < Node
     return total
   end
   def terms
-    return self.theory.equation.terms
+    return self.theory.terms_read
   end
   def acting
     return Ops.filt(self.terms, ->(t) {
@@ -2287,16 +2277,11 @@ class Field < Node
     x = self.column_of(c)
     y = self.row_of(c)
     half = Ops.m_floor((Ops.div((Ops.sub(self.K, 1)), 2)))
-    out = []
-    self.K.times do |dy|
-      self.K.times do |dx|
-        cell = self.at(Ops.add(Ops.sub(x, half), dx), Ops.add(Ops.sub(y, half), dy))
-        if Ops.ge(cell, 0)
-          Ops.m_push(out, cell)
-        end
-      end
-    end
-    return out
+    return Ops.filt(Ops.m_map(Ops.rng(Ops.mul(self.K, self.K)), ->(i) {
+      return self.at(Ops.add(Ops.sub(x, half), Ops.mod(i, self.K)), Ops.add(Ops.sub(y, half), Ops.m_floor((Ops.div(i, self.K)))))
+    }), ->(cell) {
+      return Ops.ge(cell, 0)
+    })
   end
   def block
     self.cells.times do |c|
@@ -2697,36 +2682,22 @@ class Piece < Node
   end
   attr_writer :key
   def self.text_(t)
-    p = Piece.new(kind: "text")
-    p.text = t
-    return p
+    return Piece.new(kind: "text", text: t)
   end
   def self.wrap(kind, of)
-    p = Piece.new(kind: kind)
-    p.of = of
-    return p
+    return Piece.new(kind: kind, of: of)
   end
   def self.words(t)
-    p = Piece.new(kind: "words")
-    p.text = t
-    return p
+    return Piece.new(kind: "words", text: t)
   end
   def self.big(kind, lo, hi)
-    p = Piece.new(kind: kind)
-    p.lo = lo
-    p.hi = hi
-    return p
+    return Piece.new(kind: kind, lo: lo, hi: hi)
   end
   def self.stacked(kind, over, under)
-    p = Piece.new(kind: kind)
-    p.over = over
-    p.under = under
-    return p
+    return Piece.new(kind: kind, over: over, under: under)
   end
   def self.cite(key)
-    p = Piece.new(kind: "ref")
-    p.key = key
-    return p
+    return Piece.new(kind: "ref", key: key)
   end
   __exposed
 end
@@ -2789,6 +2760,27 @@ class Reference < Node
 end
 
 class Setter < Node
+  def self.KINDS
+    @KINDS = (["var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren"]) unless instance_variable_defined?(:@KINDS)
+    @KINDS
+  end
+  def self.KINDS=(v)
+    @KINDS = v
+  end
+  def self.OPENS
+    @OPENS = (["<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&\#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">"]) unless instance_variable_defined?(:@OPENS)
+    @OPENS
+  end
+  def self.OPENS=(v)
+    @OPENS = v
+  end
+  def self.CLOSES
+    @CLOSES = (["</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>"]) unless instance_variable_defined?(:@CLOSES)
+    @CLOSES
+  end
+  def self.CLOSES=(v)
+    @CLOSES = v
+  end
   def together(parts)
     return Ops.m_join(parts, "")
   end
@@ -2799,58 +2791,8 @@ class Setter < Node
     return "<span class=\"tx\">#{Notation.escaped(t)}</span>"
   end
   def wrap(kind, c)
-    if Ops.eq(kind, "var")
-      return "<i>#{c}</i>"
-    end
-    if Ops.eq(kind, "count")
-      return "<b class=\"k\">#{c}</b>"
-    end
-    if Ops.eq(kind, "fn")
-      return "<b class=\"d\">#{c}</b>"
-    end
-    if Ops.eq(kind, "muted")
-      return "<span class=\"mu\">#{c}</span>"
-    end
-    if Ops.eq(kind, "bar")
-      return "<span class=\"bar\">#{c}</span>"
-    end
-    if Ops.eq(kind, "hat")
-      return "<span class=\"acc hat\">#{c}</span>"
-    end
-    if Ops.eq(kind, "tilde")
-      return "<span class=\"acc tld\">#{c}</span>"
-    end
-    if Ops.eq(kind, "vec")
-      return "<span class=\"acc vec\">#{c}</span>"
-    end
-    if Ops.eq(kind, "dot")
-      return "<span class=\"acc dot\">#{c}</span>"
-    end
-    if Ops.eq(kind, "ddot")
-      return "<span class=\"acc ddot\">#{c}</span>"
-    end
-    if Ops.eq(kind, "bold")
-      return "<b class=\"bf\">#{c}</b>"
-    end
-    if Ops.eq(kind, "cal")
-      return "<span class=\"cal\">#{c}</span>"
-    end
-    if Ops.eq(kind, "bb")
-      return "<span class=\"bb\">#{c}</span>"
-    end
-    if Ops.eq(kind, "sqrt")
-      return "<span class=\"sqrt\"><span class=\"sign\">&\#8730;</span><span class=\"of\">#{c}</span></span>"
-    end
-    if Ops.eq(kind, "sup")
-      return "<sup>#{c}</sup>"
-    end
-    if Ops.eq(kind, "sub")
-      return "<sub>#{c}</sub>"
-    end
-    if Ops.eq(kind, "paren")
-      return "<span class=\"paren\">#{c}</span>"
-    end
-    return "<span class=\"#{kind}\">#{c}</span>"
+    i = Ops.m_index_of(Setter.KINDS, kind)
+    return (Ops.eq(i, nil) ? "<span class=\"#{kind}\">#{c}</span>" : "#{Ops.elem(Setter.OPENS, i)}#{c}#{Ops.elem(Setter.CLOSES, i)}")
   end
   def big(kind, lo, hi)
     sign = (Ops.eq(kind, "int") ? "&\#8747;" : ((Ops.eq(kind, "oint") ? "&\#8750;" : ((Ops.eq(kind, "sum") ? "&\#8721;" : "&\#8719;")))))
@@ -3061,19 +3003,22 @@ class Notation < Node
   def self.char_at(s, i)
     return (Ops.lt(i, s.length) ? Ops.elem(Ops.m_chars(s), i) : 0)
   end
-  def self.letters(s, at)
+  def self.run(s, at, keep)
     k = at
-    while (Ops.lt(k, s.length) && Notation.is_letter(Ops.elem(Ops.m_chars(s), k)))
+    while (Ops.lt(k, s.length) && keep.(Ops.elem(Ops.m_chars(s), k)))
       k = Ops.add(k, 1)
     end
     return Notation.sub_(s, at, k)
   end
+  def self.letters(s, at)
+    return Notation.run(s, at, ->(c) {
+      return Notation.is_letter(c)
+    })
+  end
   def self.alnums(s, at)
-    k = at
-    while (Ops.lt(k, s.length) && Notation.is_alnum(Ops.elem(Ops.m_chars(s), k)))
-      k = Ops.add(k, 1)
-    end
-    return Notation.sub_(s, at, k)
+    return Notation.run(s, at, ->(c) {
+      return Notation.is_alnum(c)
+    })
   end
   def self.counted(w)
     of = Piece.wrap("count", [Piece.text_(w)])
@@ -3120,6 +3065,9 @@ class Notation < Node
     end
     return Args.new(got: got, end: k)
   end
+  def self.scripted(base, kind, of)
+    return Piece.new(kind: "scripted", base: base, raised: (Ops.eq(kind, "sup") ? of : nil), lowered: (Ops.eq(kind, "sup") ? nil : of))
+  end
   def self.attach(out, kind, of)
     if Ops.m_empty(out)
       Ops.m_push(out, Piece.wrap(kind, of))
@@ -3147,25 +3095,11 @@ class Notation < Node
       else
         tail.text = head
       end
-      s = Piece.new(kind: "scripted")
-      s.base = Piece.text_(last_char)
-      if Ops.eq(kind, "sup")
-        s.raised = of
-      else
-        s.lowered = of
-      end
-      Ops.m_push(out, s)
+      Ops.m_push(out, Notation.scripted(Piece.text_(last_char), kind, of))
       return nil
     end
     Ops.m_pop(out)
-    s = Piece.new(kind: "scripted")
-    s.base = tail
-    if Ops.eq(kind, "sup")
-      s.raised = of
-    else
-      s.lowered = of
-    end
-    return Ops.m_push(out, s)
+    return Ops.m_push(out, Notation.scripted(tail, kind, of))
   end
   def self.parse(src)
     out = []
@@ -3312,25 +3246,19 @@ class Notation < Node
         buf = ""
       end
     }
+    starts_name = ->(c) {
+      return (Notation.is_letter(c) || Ops.eq(c, 95))
+    }
     bits = []
     k = 0
     while Ops.lt(k, s.length)
-      c = Ops.elem(Ops.m_chars(s), k)
-      if (Notation.is_letter(c) || Ops.eq(c, 95))
-        j = k
-        while (Ops.lt(j, s.length) && Notation.is_name(Ops.elem(Ops.m_chars(s), j)))
-          j = Ops.add(j, 1)
-        end
-        Ops.m_push(bits, Notation.sub_(s, k, j))
-        k = j
-      else
-        j = k
-        while (Ops.lt(j, s.length) && !(((Notation.is_letter(Ops.elem(Ops.m_chars(s), j)) || Ops.eq(Ops.elem(Ops.m_chars(s), j), 95)))))
-          j = Ops.add(j, 1)
-        end
-        Ops.m_push(bits, Notation.sub_(s, k, j))
-        k = j
-      end
+      bit = (starts_name.(Ops.elem(Ops.m_chars(s), k)) ? Notation.run(s, k, ->(c) {
+        return Notation.is_name(c)
+      }) : Notation.run(s, k, ->(c) {
+        return !(starts_name.(c))
+      }))
+      Ops.m_push(bits, bit)
+      k = Ops.add(k, bit.length)
     end
     i = 0
     while Ops.lt(i, bits.length)
@@ -3583,19 +3511,13 @@ class Expr < Node
   end
   attr_writer :simple
   def self.num(n)
-    e = Expr.new(kind: "num")
-    e.value = n
-    return e
+    return Expr.new(kind: "num", value: n)
   end
   def self.sym(name)
-    e = Expr.new(kind: "sym")
-    e.label = name
-    return e
+    return Expr.new(kind: "sym", label: name)
   end
   def self.field(name)
-    e = Expr.new(kind: "field")
-    e.label = name
-    return e
+    return Expr.new(kind: "field", label: name)
   end
   def self.add(xs)
     return Expr.flatten("add", xs)
@@ -3604,58 +3526,34 @@ class Expr < Node
     return Expr.flatten("mul", xs)
   end
   def self.to_power(base, by)
-    e = Expr.new(kind: "pow")
-    e.base = base
-    e.power = by
-    return e
+    return Expr.new(kind: "pow", base: base, power: by)
   end
   def self.pown(base, by)
     return Expr.to_power(base, Expr.num(by))
   end
   def self.grad(x)
-    e = Expr.new(kind: "grad")
-    e.base = x
-    return e
+    return Expr.new(kind: "grad", base: x)
   end
   def self.log(x)
-    e = Expr.new(kind: "log")
-    e.base = x
-    return e
+    return Expr.new(kind: "log", base: x)
   end
   def self.exp(x)
-    e = Expr.new(kind: "exp")
-    e.base = x
-    return e
+    return Expr.new(kind: "exp", base: x)
   end
   def self.choose(n, k)
-    e = Expr.new(kind: "choose")
-    e.first_ = n
-    e.second_ = k
-    return e
+    return Expr.new(kind: "choose", first_: n, second_: k)
   end
   def self.gamma_inc(s, x)
-    e = Expr.new(kind: "gammaInc")
-    e.first_ = s
-    e.second_ = x
-    return e
+    return Expr.new(kind: "gammaInc", first_: s, second_: x)
   end
   def self.root(x, name)
-    e = Expr.new(kind: "root")
-    e.base = x
-    e.bound = name
-    return e
+    return Expr.new(kind: "root", base: x, bound: name)
   end
   def self.limit(x, name)
-    e = Expr.new(kind: "limit")
-    e.base = x
-    e.bound = name
-    return e
+    return Expr.new(kind: "limit", base: x, bound: name)
   end
   def self.call(name, x)
-    e = Expr.new(kind: "call")
-    e.label = name
-    e.base = x
-    return e
+    return Expr.new(kind: "call", label: name, base: x)
   end
   def self.neg(x)
     return Expr.mul([Expr.num((-1)), x])
@@ -3684,23 +3582,27 @@ class Expr < Node
   def named
     return (Ops.eq(self.kind, "sym") || Ops.eq(self.kind, "field"))
   end
+  def subtrees
+    if (Ops.eq(self.kind, "add") || Ops.eq(self.kind, "mul"))
+      return self.of
+    end
+    if Ops.eq(self.kind, "pow")
+      return [self.base, self.power]
+    end
+    if (Ops.eq(self.kind, "choose") || Ops.eq(self.kind, "gammaInc"))
+      return [self.first_, self.second_]
+    end
+    return (Ops.eq(self.base, nil) ? [] : [self.base])
+  end
   def by_num
     return (Ops.eq(self.power.kind, "num") ? self.power.value : nil)
   end
   def self.flatten(kind, xs)
-    e = Expr.new(kind: kind)
-    out = []
-    Ops.list(xs).each do |x|
-      if Ops.eq(x.kind, kind)
-        Ops.list(x.of).each do |y|
-          Ops.m_push(out, y)
-        end
-      else
-        Ops.m_push(out, x)
-      end
-    end
-    e.of = out
-    return e
+    return Expr.new(kind: kind, of: Ops.m_reduce(xs, [], ->(out, x) {
+      return (Ops.eq(x.kind, kind) ? Ops.m_reduce(x.of, out, ->(o, y) {
+        return Ops.m_push(o, y)
+      }) : Ops.m_push(out, x))
+    }))
   end
   def self.is_integer(x)
     return Ops.eq(x, Ops.m_floor(x))
@@ -3732,10 +3634,9 @@ class Expr < Node
       return Ops.sub(Ops.m_ln((Ops.div(Math::PI, Ops.m_sin((Ops.mul(Math::PI, z)))))), Expr.lgamma(Ops.sub(1, z)))
     end
     z = Ops.sub(z, 1)
-    x = 0.99999999999980993
-    g.length.times do |i|
-      x = Ops.add(x, Ops.div(Ops.elem(g, i), (Ops.add(Ops.add(z, i), 1))))
-    end
+    x = Ops.m_reduce(Ops.rng(g.length), 0.99999999999980993, ->(x, i) {
+      return Ops.add(x, Ops.div(Ops.elem(g, i), (Ops.add(Ops.add(z, i), 1))))
+    })
     t = Ops.sub(Ops.add(z, g.length), 0.5)
     return Ops.add(Ops.sub(Ops.add(Ops.mul(0.5, Ops.m_ln((Ops.mul(2, Math::PI)))), Ops.mul((Ops.add(z, 0.5)), Ops.m_ln(t))), t), Ops.m_ln(x))
   end
@@ -4127,12 +4028,11 @@ class Expr < Node
           like.set(id, [body, kk])
         end
       end
-      kept = []
-      Ops.list(like.values).each do |v|
-        if !Ops.eq(Ops.elem(v, 1), 0)
-          Ops.m_push(kept, (Ops.eq(Ops.elem(v, 1), 1) ? Ops.elem(v, 0) : Expr.mul([Expr.num(Ops.elem(v, 1)), Ops.elem(v, 0)])))
-        end
-      end
+      kept = Ops.m_map(Ops.filt(like.values, ->(v) {
+        return !Ops.eq(Ops.elem(v, 1), 0)
+      }), ->(v) {
+        return (Ops.eq(Ops.elem(v, 1), 1) ? Ops.elem(v, 0) : Expr.mul([Expr.num(Ops.elem(v, 1)), Ops.elem(v, 0)]))
+      })
       if Ops.m_empty(kept)
         return Expr.num(c)
       end
@@ -4225,21 +4125,12 @@ class Expr < Node
             return (y.named && Ops.eq(y.label, e.bound))
           }))
         }
-        at = nil
-        body.of.length.times do |i|
-          if (Ops.eq(at, nil) && is_minus.(Ops.elem(body.of, i)))
-            at = i
-          end
-        end
-        if (!Ops.eq(at, nil) && Ops.eq(Ops.filt(body.of, ->(x) {
+        if Ops.eq(Ops.filt(body.of, ->(x) {
           return is_minus.(x)
-        }).length, 1))
-          rest = []
-          body.of.length.times do |i|
-            if !Ops.eq(i, at)
-              Ops.m_push(rest, Ops.elem(body.of, i))
-            end
-          end
+        }).length, 1)
+          rest = Ops.filt(body.of, ->(x) {
+            return !(is_minus.(x))
+          })
           return "\\text{the } #{e.bound} \\text{ where } #{e.bound} = #{Expr.show((Ops.eq(rest.length, 1) ? Ops.elem(rest, 0) : Expr.add(rest)))}"
         end
       end
@@ -4336,14 +4227,12 @@ class Expr < Node
       }), Ops.filt(e.of, ->(x) {
         return negative.(x)
       }))
-      out = ""
-      ordered.length.times do |i|
-        x = Ops.elem(ordered, i)
-        t = (Ops.eq(x.kind, "root") ? "\\paren{#{Expr.show(x)}}" : Expr.show(x))
-        piece = (Ops.eq(i, 0) ? t : ((Ops.m_starts_with(t, "-") ? " - #{Ops.m_drop(t, 1)}" : " + #{t}")))
-        out = "#{out}#{piece}"
-      end
-      return out
+      shown = Ops.m_map(ordered, ->(x) {
+        return (Ops.eq(x.kind, "root") ? "\\paren{#{Expr.show(x)}}" : Expr.show(x))
+      })
+      return Ops.m_join(Ops.m_map(Ops.rng(shown.length), ->(i) {
+        return (Ops.eq(i, 0) ? Ops.elem(shown, i) : ((Ops.m_starts_with(Ops.elem(shown, i), "-") ? " - #{Ops.m_drop(Ops.elem(shown, i), 1)}" : " + #{Ops.elem(shown, i)}")))
+      }), "")
     end
     return ""
   end
@@ -4384,13 +4273,11 @@ class Expr < Node
     end
     if Ops.eq(k, "mul")
       return Expr.add(Ops.m_map(Ops.rng(e.of.length), ->(i) {
-        others = []
-        e.of.length.times do |j|
-          if !Ops.eq(j, i)
-            Ops.m_push(others, Ops.elem(e.of, j))
-          end
-        end
-        return Expr.mul(Ops.m_concat([Expr.d(Ops.elem(e.of, i), wrt)], others))
+        return Expr.mul(Ops.m_concat([Expr.d(Ops.elem(e.of, i), wrt)], Ops.m_map(Ops.filt(Ops.rng(e.of.length), ->(j) {
+          return !Ops.eq(j, i)
+        }), ->(j) {
+          return Ops.elem(e.of, j)
+        })))
       }))
     end
     if Ops.eq(k, "pow")
@@ -4665,18 +4552,14 @@ class Expr < Node
       return (Ops.eq(v, nil) ? Expr.NAN : v)
     end
     if Ops.eq(k, "add")
-      total_ = 0
-      Ops.list(e.of).each do |x|
-        total_ = Ops.add(total_, Expr.numeric(x, at))
-      end
-      return total_
+      return Ops.m_reduce(e.of, 0, ->(total_, x) {
+        return Ops.add(total_, Expr.numeric(x, at))
+      })
     end
     if Ops.eq(k, "mul")
-      prod = 1
-      Ops.list(e.of).each do |x|
-        prod = Ops.mul(prod, Expr.numeric(x, at))
-      end
-      return prod
+      return Ops.m_reduce(e.of, 1, ->(prod, x) {
+        return Ops.mul(prod, Expr.numeric(x, at))
+      })
     end
     if Ops.eq(k, "pow")
       return Ops.power(Expr.numeric(e.base, at), Expr.numeric(e.power, at))
@@ -4747,22 +4630,7 @@ class Expr < Node
     if ((!(Expr.finite(f.(0.5))) && !(Expr.finite(f.(1)))) && !(Expr.finite(f.(0.1))))
       return Expr.NAN
     end
-    points = []
-    i = 1
-    while Ops.le(i, 120)
-      Ops.m_push(points, Ops.div(i, 120))
-      i = Ops.add(i, 1)
-    end
-    ex = 0
-    while Ops.le(ex, 24)
-      k = 1
-      while Ops.lt(k, 8)
-        Ops.m_push(points, Ops.mul((Ops.power(10, (Ops.sub(ex, 12)))), (Ops.add(1, Ops.div(k, 2)))))
-        k = Ops.add(k, 1)
-      end
-      ex = Ops.add(ex, 1)
-    end
-    points = Expr.sorted(points)
+    points = Expr.bracket_points
     lo = nil
     hi = nil
     px = Ops.elem(points, 0)
@@ -4803,16 +4671,21 @@ class Expr < Node
     end
     return Ops.div((Ops.add(lo, hi)), 2)
   end
+  def self.bracket_points
+    even = Ops.m_map(Ops.rng(120), ->(i) {
+      return Ops.div((Ops.add(i, 1)), 120)
+    })
+    decades = Ops.m_reduce(Ops.rng(25), [], ->(out, ex) {
+      return Ops.m_reduce(Ops.rng(7), out, ->(o, k) {
+        return Ops.m_push(o, Ops.mul((Ops.power(10, (Ops.sub(ex, 12)))), (Ops.add(1, Ops.div((Ops.add(k, 1)), 2)))))
+      })
+    })
+    return Expr.sorted(Ops.m_concat(even, decades))
+  end
   def self.sorted(xs)
-    out = []
-    Ops.list(xs).each do |x|
-      i = 0
-      while (Ops.lt(i, out.length) && Ops.le(Ops.elem(out, i), x))
-        i = Ops.add(i, 1)
-      end
-      out = Ops.m_concat(Ops.m_concat(Ops.m_take(out, i), [x]), Ops.m_drop(out, i))
-    end
-    return out
+    return Ops.m_sorted_by(xs, ->(x) {
+      return x
+    })
   end
   def self.integrate(e, of)
     s = Expr.spread(e)
@@ -4926,24 +4799,14 @@ class Expr < Node
         ok = true
         k = Ops.elem(head_, 1)
         if !Ops.eq(nums, nil)
-          lo = Ops.elem(nums, 0)
-          hi = Ops.elem(nums, 0)
-          Ops.list(nums).each do |v|
-            if Ops.lt(v, lo)
-              lo = v
-            end
-            if Ops.gt(v, hi)
-              hi = v
-            end
-          end
-          ok = Ops.eq((Ops.le(lo, 0)), (Ops.le(hi, 0)))
-          least = Ops.elem(nums, 0)
-          Ops.list(nums).each do |v|
-            if Ops.lt(Ops.m_abs(v), Ops.m_abs(least))
-              least = v
-            end
-          end
-          k = Expr.num(least)
+          ok = (Ops.m_every(nums, ->(v) {
+            return Ops.le(v, 0)
+          }) || Ops.m_every(nums, ->(v) {
+            return Ops.gt(v, 0)
+          }))
+          k = Expr.num(Ops.m_reduce(nums, Ops.elem(nums, 0), ->(least, v) {
+            return (Ops.lt(Ops.m_abs(v), Ops.m_abs(least)) ? v : least)
+          }))
         end
         if ok
           Ops.m_push(common, [Ops.elem(head_, 0), k])
@@ -5159,20 +5022,15 @@ class Expr < Node
       })))
     end
     if Ops.eq(t.kind, "mul")
-      parts = Ops.m_map(t.of, ->(x) {
+      out = Ops.m_reduce(Ops.m_map(t.of, ->(x) {
         return Expr.expand(x)
+      }), [Expr.num(1)], ->(out, p) {
+        return Ops.m_reduce(out, [], ->(_next, a) {
+          return Ops.m_reduce(((Ops.eq(p.kind, "add") ? p.of : [p])), _next, ->(n, b) {
+            return Ops.m_push(n, Expr.mul([a, b]))
+          })
+        })
       })
-      out = [Expr.num(1)]
-      Ops.list(parts).each do |p|
-        terms = (Ops.eq(p.kind, "add") ? p.of : [p])
-        _next = []
-        Ops.list(out).each do |a|
-          Ops.list(terms).each do |b|
-            Ops.m_push(_next, Expr.mul([a, b]))
-          end
-        end
-        out = _next
-      end
       return Expr.simplify(Expr.add(out))
     end
     return t
@@ -5343,6 +5201,13 @@ class ExprReader < Node
   def starts(s)
     return Ops.eq(Notation.sub_(self.text, self.at, Ops.add(self.at, s.length)), s)
   end
+  def take_while(keep)
+    k = self.at
+    while (Ops.lt(k, self.text.length) && keep.(Ops.elem(Ops.m_chars(self.text), k)))
+      k = Ops.add(k, 1)
+    end
+    return self.eat(Ops.sub(k, self.at))
+  end
   def addition
     left = self.product
     self.skip
@@ -5393,18 +5258,19 @@ class ExprReader < Node
     return e
   end
   def word
-    k = self.at
-    while (Ops.lt(k, self.text.length) && ((Notation.is_name(Ops.elem(Ops.m_chars(self.text), k)) || Ops.gt(Ops.elem(Ops.m_chars(self.text), k), 127))))
-      k = Ops.add(k, 1)
-    end
-    return self.eat(Ops.sub(k, self.at))
+    return self.take_while(->(c) {
+      return (Notation.is_name(c) || Ops.gt(c, 127))
+    })
   end
   def number
-    k = self.at
-    while (Ops.lt(k, self.text.length) && ((Notation.is_digit(Ops.elem(Ops.m_chars(self.text), k)) || Ops.eq(Ops.elem(Ops.m_chars(self.text), k), 46))))
-      k = Ops.add(k, 1)
-    end
-    return Expr.num(Float(self.eat(Ops.sub(k, self.at))))
+    return Expr.num(Float(self.take_while(->(c) {
+      return (Notation.is_digit(c) || Ops.eq(c, 46))
+    })))
+  end
+  def quoted
+    return self.take_while(->(c) {
+      return !Ops.eq(c, 34)
+    })
   end
   def primary
     self.skip
@@ -5421,11 +5287,7 @@ class ExprReader < Node
     end
     if Ops.eq(c, 34)
       self.eat(1)
-      k = self.at
-      while (Ops.lt(k, self.text.length) && !Ops.eq(Ops.elem(Ops.m_chars(self.text), k), 34))
-        k = Ops.add(k, 1)
-      end
-      name = self.eat(Ops.sub(k, self.at))
+      name = Ops.quoted(self)
       self.eat(1)
       return Expr.field(Expr.name_of(name))
     end
@@ -5437,11 +5299,7 @@ class ExprReader < Node
       self.eat(1)
       self.skip
       self.eat(1)
-      k = self.at
-      while (Ops.lt(k, self.text.length) && !Ops.eq(Ops.elem(Ops.m_chars(self.text), k), 34))
-        k = Ops.add(k, 1)
-      end
-      name = self.eat(Ops.sub(k, self.at))
+      name = Ops.quoted(self)
       self.eat(1)
       self.skip
       self.eat(1)
@@ -5463,11 +5321,7 @@ class ExprReader < Node
     end
     if (Ops.eq(name, "s") && Ops.eq(self.peek, 91))
       self.eat(2)
-      k = self.at
-      while (Ops.lt(k, self.text.length) && !Ops.eq(Ops.elem(Ops.m_chars(self.text), k), 34))
-        k = Ops.add(k, 1)
-      end
-      key = self.eat(Ops.sub(k, self.at))
+      key = Ops.quoted(self)
       self.eat(2)
       return Expr.field(Expr.name_of(key))
     end
@@ -6315,21 +6169,18 @@ class Prover < Node
       sw.derivation = [inner]
       Ops.m_push(out, sw)
     end
-    rates = []
-    Ops.list(infos).each do |t|
-      if (!Ops.eq(t.rate, nil) && !(Ops.m_contains(rates, t.rate)))
-        Ops.m_push(rates, t.rate)
-      end
-    end
+    rates = Ops.m_reduce(Ops.filt(infos, ->(t) {
+      return !Ops.eq(t.rate, nil)
+    }), [], ->(out, t) {
+      return (Ops.m_contains(out, t.rate) ? out : Ops.m_push(out, t.rate))
+    })
     Ops.list(rates).each do |name|
       Ops.m_push(out, Step.of(Fact.stands(name, Expr.num(1)), "the rewrite", [], "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit", ["#{name} = 1 per match per tick"]))
     end
     Ops.list(["rays", "space", "folds"]).each do |ledger|
-      parts = []
-      Ops.list(acting).each do |t|
-        c = (Ops.eq(ledger, "rays") ? t.ray_count : ((Ops.eq(ledger, "space") ? t.space_count : t.fold_count)))
-        Ops.m_push(parts, Expr.simplify(Expr.mul([Prover.body_of(t), c])))
-      end
+      parts = Ops.m_map(acting, ->(t) {
+        return Expr.simplify(Expr.mul([Prover.body_of(t), (Ops.eq(ledger, "rays") ? t.ray_count : ((Ops.eq(ledger, "space") ? t.space_count : t.fold_count)))]))
+      })
       unless Ops.m_empty(parts)
         Ops.m_push(out, Step.of(Fact.stands("the #{ledger} line nets", Expr.simplify(Expr.add(parts))), "the line", [], "every term of the line does something to the #{ledger} ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted", Ops.m_map(acting, ->(t) {
           c = (Ops.eq(ledger, "rays") ? t.ray_count : ((Ops.eq(ledger, "space") ? t.space_count : t.fold_count)))
@@ -7882,21 +7733,17 @@ class Inferences < Node
         if !Ops.eq(t.kind, "mul")
           return t
         end
-        at = nil
-        t.of.length.times do |i|
-          if (Ops.eq(at, nil) && Ops.eq(Ops.elem(t.of, i).kind, "add"))
-            at = i
-          end
-        end
+        at = Ops.m_first(Ops.filt(Ops.rng(t.of.length), ->(i) {
+          return Ops.eq(Ops.elem(t.of, i).kind, "add")
+        }))
         if Ops.eq(at, nil)
           return t
         end
-        rest = []
-        t.of.length.times do |i|
-          if !Ops.eq(i, at)
-            Ops.m_push(rest, Ops.elem(t.of, i))
-          end
-        end
+        rest = Ops.m_map(Ops.filt(Ops.rng(t.of.length), ->(i) {
+          return !Ops.eq(i, at)
+        }), ->(i) {
+          return Ops.elem(t.of, i)
+        })
         spread = Expr.simplify(Expr.add(Ops.m_map(Ops.elem(t.of, at).of, ->(x) {
           return Expr.simplify(Expr.mul(Ops.m_concat(rest, [x])))
         })))
@@ -8626,18 +8473,14 @@ class Aggregate < Node
       return (Ops.eq(v, nil) ? Float::NAN : v)
     end
     if Ops.eq(k, "add")
-      total = 0
-      Ops.list(e.of).each do |p|
-        total = Ops.add(total, self.value(p, at, masses, _Rs, skip))
-      end
-      return total
+      return Ops.m_sum(Ops.m_map(e.of, ->(p) {
+        return self.value(p, at, masses, _Rs, skip)
+      }))
     end
     if Ops.eq(k, "mul")
-      prod = 1
-      Ops.list(e.of).each do |p|
-        prod = Ops.mul(prod, self.value(p, at, masses, _Rs, skip))
-      end
-      return prod
+      return Ops.m_reduce(e.of, 1, ->(prod, p) {
+        return Ops.mul(prod, self.value(p, at, masses, _Rs, skip))
+      })
     end
     if Ops.eq(k, "pow")
       return Ops.power(self.value(e.base, at, masses, _Rs, skip), self.value(e.power, at, masses, _Rs, skip))
@@ -8934,18 +8777,13 @@ class Aggregate < Node
     return (Ops.eq(f, nil) ? Expr.num(0) : f.to)
   end
   def names
-    out = Ops.m_map(self.per_body, ->(n) {
-      return n
+    return Ops.m_reduce([self.outer, self.summand, self.shell_expr, self.reach_expr], Ops.m_concat(self.per_body, ["SUM"]), ->(out, e) {
+      return Ops.m_reduce(Ops.filt(Model.unbound(e), ->(n) {
+        return (!Ops.eq(n, "\\bar{R}") && !(Ops.m_ends_with(n, "\\paren{...}")))
+      }), out, ->(o, n) {
+        return (Ops.m_contains(o, n) ? o : Ops.m_push(o, n))
+      })
     })
-    Ops.m_push(out, "SUM")
-    Ops.list([self.outer, self.summand, self.shell_expr, self.reach_expr]).each do |e|
-      Ops.list(Model.unbound(e)).each do |n|
-        if ((!(Ops.m_contains(out, n)) && !Ops.eq(n, "\\bar{R}")) && !(Ops.m_ends_with(n, "\\paren{...}")))
-          Ops.m_push(out, n)
-        end
-      end
-    end
-    return out
   end
   def constants
     return Ops.m_map(self.names, ->(n) {
@@ -9258,7 +9096,7 @@ class Medium < Node
     })))
   end
   def terms
-    return self.theory.equation.terms
+    return self.theory.terms_read
   end
   def meets(*args_)
     @meets = (Ops.filt(self.terms, ->(t) {
@@ -9480,16 +9318,11 @@ class Medium < Node
   end
   def under(h)
     half = Ops.m_floor((Ops.div((Ops.sub(self.K, 1)), 2)))
-    out = []
-    self.K.times do |dy|
-      self.K.times do |dx|
-        c = self.at(Ops.add(Ops.sub(Ops.m_round(h.x), half), dx), Ops.add(Ops.sub(Ops.m_round(h.y), half), dy))
-        if Ops.ge(c, 0)
-          Ops.m_push(out, c)
-        end
-      end
-    end
-    return out
+    return Ops.filt(Ops.m_map(Ops.rng(Ops.mul(self.K, self.K)), ->(i) {
+      return self.at(Ops.add(Ops.sub(Ops.m_round(h.x), half), Ops.mod(i, self.K)), Ops.add(Ops.sub(Ops.m_round(h.y), half), Ops.m_floor((Ops.div(i, self.K)))))
+    }), ->(c) {
+      return Ops.ge(c, 0)
+    })
   end
   def spread(h)
     half = Ops.div(Ops.sub(self.K, 1), 2)
@@ -10790,6 +10623,12 @@ class Surface < Node
   def gradient_stroke(x0, x1, stops, at)
     raise NotImplementedError, "gradient_stroke is declared but not defined by anyone"
   end
+  def image(src, x, y, w, h)
+    raise NotImplementedError, "image is declared but not defined by anyone"
+  end
+  def field(rgb, cols, rows, x, y, w, h, blur)
+    raise NotImplementedError, "field is declared but not defined by anyone"
+  end
   __exposed
 end
 
@@ -10865,12 +10704,8 @@ class Cached < Played
   attr_writer :sizes
   def at(frame_at)
     out = Node.new
-    all = Ops.getattr(self.film.columns, "frames")
-    width = Ops.m_sum(self.sizes)
-    from_at = Ops.mul(frame_at, width)
     self.names.length.times do |i|
-      Ops.set_at(out, Ops.elem(self.names, i), Ops.m_take(Ops.m_drop(all, from_at), Ops.elem(self.sizes, i)))
-      from_at = Ops.add(from_at, Ops.elem(self.sizes, i))
+      Ops.set_at(out, Ops.elem(self.names, i), Ops.m_take(Ops.m_drop(Ops.getattr(self.film.columns, "frames"), Ops.add(Ops.mul(frame_at, Ops.m_sum(self.sizes)), Ops.m_sum(Ops.m_take(self.sizes, i)))), Ops.elem(self.sizes, i)))
     end
     return out
   end
@@ -10997,6 +10832,21 @@ class Picture < Node
     args_.empty? ? @on_request : @on_request.(*args_)
   end
   attr_writer :on_request
+  def images(*args_)
+    @images = ([]) unless instance_variable_defined?(:@images)
+    args_.empty? ? @images : @images.(*args_)
+  end
+  attr_writer :images
+  def parts(*args_)
+    @parts = ([]) unless instance_variable_defined?(:@parts)
+    args_.empty? ? @parts : @parts.(*args_)
+  end
+  attr_writer :parts
+  def uses(*args_)
+    @uses = ([]) unless instance_variable_defined?(:@uses)
+    args_.empty? ? @uses : @uses.(*args_)
+  end
+  attr_writer :uses
   def paint(*args_)
     args_.empty? ? @paint : @paint.(*args_)
   end
@@ -11409,14 +11259,15 @@ class Setup < Node
     return Ops.add(Ops.mul(cy, self.coarse_side), cx)
   end
   def self.middle(holes)
-    m = 0
-    x = 0
-    y = 0
-    Ops.list(holes).each do |h|
-      m = Ops.add(m, h.mass)
-      x = Ops.add(x, Ops.mul(h.x, h.mass))
-      y = Ops.add(y, Ops.mul(h.y, h.mass))
-    end
+    m = Ops.m_sum(Ops.m_map(holes, ->(h) {
+      return h.mass
+    }))
+    x = Ops.m_sum(Ops.m_map(holes, ->(h) {
+      return Ops.mul(h.x, h.mass)
+    }))
+    y = Ops.m_sum(Ops.m_map(holes, ->(h) {
+      return Ops.mul(h.y, h.mass)
+    }))
     return (Ops.gt(m, 0) ? [Ops.div(x, m), Ops.div(y, m)] : [0, 0])
   end
   def self.rest_of(holes, k)
@@ -12023,10 +11874,9 @@ class Panel < Node
         centre = k
       end
     end
-    weight = 0
-    p.bodies.times do |k|
-      weight = Ops.add(weight, Ops.elem(marks, Ops.add(Ops.mul(k, 6), 5)))
-    end
+    weight = Ops.m_sum(Ops.m_map(Ops.rng(p.bodies), ->(k) {
+      return Ops.elem(marks, Ops.add(Ops.mul(k, 6), 5))
+    }))
     frames = Ops.div(Ops.elem(trail, centre).length, 2)
     midx = Ops.m_map(Ops.rng(frames), ->(i) {
       return 0
@@ -12404,14 +12254,13 @@ class Strip < Node
     pts = Ops.m_map(w.live, ->(v) {
       return Ops.elem(v.at.components, 0)
     })
-    sides = []
-    Ops.list(w.live).each do |v|
-      Ops.list(v.rays).each do |r|
-        if r.active
-          Ops.m_push(sides, Side.new(at: Ops.elem(v.at.components, 0), sign: Ops.elem(r.along.components, 0), ink: ink.ink_of(r)))
-        end
-      end
-    end
+    sides = Ops.m_reduce(w.live, [], ->(out, v) {
+      return Ops.m_reduce(Ops.filt(v.rays, ->(r) {
+        return r.active
+      }), out, ->(o, r) {
+        return Ops.m_push(o, Side.new(at: Ops.elem(v.at.components, 0), sign: Ops.elem(r.along.components, 0), ink: ink.ink_of(r)))
+      })
+    })
     l = Lane.new(points: pts, sides: sides)
     Ops.list(w.sources).each do |s|
       Ops.list(s.cells).each do |c|
@@ -12498,15 +12347,12 @@ class Strip < Node
     return rel
   end
   def self.centre_of(lanes)
-    xs = []
-    Ops.list(lanes).each do |l|
-      Ops.list(l.sources).each do |p|
-        Ops.m_push(xs, p)
-      end
-    end
-    if Ops.m_empty(xs)
-      xs = Ops.m_first(lanes).points
-    end
+    sourced = Ops.m_reduce(lanes, [], ->(out, l) {
+      return Ops.m_reduce(l.sources, out, ->(o, p) {
+        return Ops.m_push(o, p)
+      })
+    })
+    xs = (Ops.m_empty(sourced) ? Ops.m_first(lanes).points : sourced)
     if Ops.m_empty(xs)
       return 0
     end
@@ -12952,16 +12798,14 @@ class Sparc < Node
         Ops.set_at(best, p.galaxy, p)
       end
     end
-    out = []
     names = Sparc.names
-    names.length.times do |g|
-      p = Ops.elem(best, g)
-      if !Ops.eq(p, nil)
-        q = RarPoint.new(gbar: p.gbar, gobs: p.gobs, galaxy: p.galaxy, R: p.R)
-        q.name = Ops.elem(names, g)
-        Ops.m_push(out, q)
-      end
-    end
+    out = Ops.m_map(Ops.filt(Ops.rng(names.length), ->(g) {
+      return !Ops.eq(Ops.elem(best, g), nil)
+    }), ->(g) {
+      q = RarPoint.new(gbar: Ops.elem(best, g).gbar, gobs: Ops.elem(best, g).gobs, galaxy: Ops.elem(best, g).galaxy, R: Ops.elem(best, g).R)
+      q.name = Ops.elem(names, g)
+      return q
+    })
     Ops.setattr(Sparc.CACHE, "flat", out)
     return out
   end
@@ -12975,12 +12819,11 @@ class Sparc < Node
     end
     c = t.columns
     names = Ops.getattr(t.header, "names")
-    out = []
-    t.rows.times do |i|
-      if Ops.gt(Ops.elem(Ops.getattr(c, "Vf"), i), 0)
-        Ops.m_push(out, Btfr.new(name: Ops.elem(names, i), galaxy: Ops.elem(Ops.getattr(c, "galaxy"), i), vf: Ops.elem(Ops.getattr(c, "Vf"), i), err: Ops.elem(Ops.getattr(c, "e_Vf"), i), mass: Ops.mul(Ops.power(10, Ops.elem(Ops.getattr(c, "log(Mb)"), i)), Sparc.MSUN), err_mass: Ops.elem(Ops.getattr(c, "e_log(Mb)"), i)))
-      end
-    end
+    out = Ops.m_map(Ops.filt(Ops.rng(t.rows), ->(i) {
+      return Ops.gt(Ops.elem(Ops.getattr(c, "Vf"), i), 0)
+    }), ->(i) {
+      return Btfr.new(name: Ops.elem(names, i), galaxy: Ops.elem(Ops.getattr(c, "galaxy"), i), vf: Ops.elem(Ops.getattr(c, "Vf"), i), err: Ops.elem(Ops.getattr(c, "e_Vf"), i), mass: Ops.mul(Ops.power(10, Ops.elem(Ops.getattr(c, "log(Mb)"), i)), Sparc.MSUN), err_mass: Ops.elem(Ops.getattr(c, "e_log(Mb)"), i))
+    })
     Ops.setattr(Sparc.CACHE, "btfr", out)
     return out
   end
@@ -13322,34 +13165,22 @@ class Galaxies < Node
     return Ops.eq((Ops.mod(Ops.m_floor((Ops.div(mask, Ops.power(2, at)))), 2)), 1)
   end
   def self.tint_of(mask)
-    if Ops.eq(mask, 0)
-      return Galaxies.SEVERAL
-    end
-    r = 0
-    g = 0
-    bl = 0
-    n = 0
-    Galaxies.FREEDOMS.length.times do |i|
-      if Galaxies.bit(mask, i)
-        r = Ops.add(r, Ops.elem(Ops.elem(Galaxies.TINTS, i), 0))
-        g = Ops.add(g, Ops.elem(Ops.elem(Galaxies.TINTS, i), 1))
-        bl = Ops.add(bl, Ops.elem(Ops.elem(Galaxies.TINTS, i), 2))
-        n = Ops.add(n, 1)
-      end
-    end
-    return (Ops.gt(n, 0) ? [Ops.div(r, n), Ops.div(g, n), Ops.div(bl, n)] : Galaxies.SEVERAL)
+    on = Galaxies.freedoms_in(mask)
+    return ((Ops.eq(mask, 0) || Ops.m_empty(on)) ? Galaxies.SEVERAL : Ops.m_map([0, 1, 2], ->(c) {
+      return Ops.div(Ops.m_sum(Ops.m_map(on, ->(i) {
+        return Ops.elem(Ops.elem(Galaxies.TINTS, i), c)
+      })), on.length)
+    }))
   end
   def self.name_of(mask)
     if Ops.eq(mask, 0)
       return "the source as it starts"
     end
-    parts = []
-    Galaxies.NAMES_NOW.length.times do |i|
-      if Galaxies.bit(mask, i)
-        Ops.m_push(parts, Ops.elem(Galaxies.NAMES_NOW, i))
-      end
-    end
-    joined = Ops.m_join(parts, " + ")
+    joined = Ops.m_join(Ops.m_map(Ops.filt(Ops.rng(Galaxies.NAMES_NOW.length), ->(i) {
+      return Galaxies.bit(mask, i)
+    }), ->(i) {
+      return Ops.elem(Galaxies.NAMES_NOW, i)
+    }), " + ")
     return "needs #{joined}"
   end
   def self.rgb(c)
@@ -13459,6 +13290,40 @@ class Galaxies < Node
     got = Ops.add(Ops.mul(Ops.elem(ys_, lo), (Ops.sub(1, f))), Ops.mul(Ops.elem(ys_, hi), f))
     return (Ops.gt(got, 0) ? Fmt.log10(Ops.div(got, a0)) : Float::NAN)
   end
+  def self.decades(s, _X, _Y, box, range, under)
+    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(range, 1), Ops.elem(range, 0)), 1)), ->(i) {
+      return Ops.add(Ops.elem(range, 0), i)
+    })).each do |l|
+      s.begin_path
+      s.move_to(_X.(l), Ops.elem(box, 1))
+      s.line_to(_X.(l), Ops.elem(box, 3))
+      s.stroke
+      s.fill_text("10^#{l}", _X.(l), Ops.add(Ops.elem(box, 3), under))
+    end
+    s.text_align("right")
+    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(range, 3), Ops.elem(range, 2)), 1)), ->(i) {
+      return Ops.add(Ops.elem(range, 2), i)
+    })).each do |l|
+      s.begin_path
+      s.move_to(Ops.elem(box, 0), _Y.(l))
+      s.line_to(Ops.elem(box, 2), _Y.(l))
+      s.stroke
+      s.fill_text("10^#{l}", Ops.sub(Ops.elem(box, 0), 8), Ops.add(_Y.(l), 4))
+    end
+  end
+  def self.curve(s, _X, _Y, f, low, high, step)
+    s.begin_path
+    l = low
+    while Ops.le(l, Ops.add(high, 0.000001))
+      if Ops.eq(l, low)
+        s.move_to(_X.(l), _Y.(f.(l)))
+      else
+        s.line_to(_X.(l), _Y.(f.(l)))
+      end
+      l = Ops.add(l, step)
+    end
+    return s.stroke
+  end
   def self.along(s, at, t, text, colour, lift, leans)
     p0 = leans.(Ops.sub(t, 0.01))
     p1 = leans.(Ops.add(t, 0.01))
@@ -13549,34 +13414,13 @@ class Galaxies < Node
     s.line_width(1)
     s.fill_style(Galaxies.FAINT)
     s.text_align("center")
-    l = _XMIN
-    while Ops.le(l, _XMAX)
-      s.begin_path
-      s.move_to(_X.(l), by0)
-      s.line_to(_X.(l), by1)
-      s.stroke
-      s.fill_text("10^#{l}", _X.(l), Ops.add(by1, 17))
-      l = Ops.add(l, 1)
-    end
-    s.text_align("right")
-    l = _YMIN
-    while Ops.le(l, _YMAX)
-      s.begin_path
-      s.move_to(bx0, _Y.(l))
-      s.line_to(bx1, _Y.(l))
-      s.stroke
-      s.fill_text("10^#{l}", Ops.sub(bx0, 8), Ops.add(_Y.(l), 4))
-      l = Ops.add(l, 1)
-    end
-    implied = []
-    Ops.list(Sparc.btfr).each do |g|
-      _M = g.mass
+    Galaxies.decades(s, _X, _Y, [bx0, by0, bx1, by1], [_XMIN, _XMAX, _YMIN, _YMAX], 17)
+    implied = Expr.sorted(Ops.m_map(Ops.filt(Sparc.btfr, ->(g) {
+      return (Ops.gt(g.mass, 0) && Ops.gt(g.vf, 0))
+    }), ->(g) {
       v = Ops.mul(g.vf, 1000)
-      if (Ops.gt(_M, 0) && Ops.gt(v, 0))
-        Ops.m_push(implied, Fmt.log10(Ops.div(Ops.div(Ops.mul(Ops.mul(Ops.mul(v, v), v), v), (Ops.mul(Sparc.G_NEWTON, _M))), Galaxies.A0_DATA)))
-      end
-    end
-    implied = Expr.sorted(implied)
+      return Fmt.log10(Ops.div(Ops.div(Ops.mul(Ops.mul(Ops.mul(v, v), v), v), (Ops.mul(Sparc.G_NEWTON, g.mass))), Galaxies.A0_DATA))
+    }))
     med = (Ops.m_empty(implied) ? Float::NAN : Ops.elem(implied, Ops.m_floor((Ops.div(implied.length, 2)))))
     s.line_width(1)
     Ops.list(implied).each do |o|
@@ -13743,33 +13587,17 @@ class Galaxies < Node
     s.stroke_style(Galaxies.BTFRC)
     s.line_width(1.5)
     s.dash([2, 4])
-    s.begin_path
-    l = _XMIN
-    while Ops.le(l, Ops.add(_XMAX, 0.000001))
-      if Ops.eq(l, _XMIN)
-        s.move_to(_X.(l), _Y.(Ops.mul(0.5, l)))
-      else
-        s.line_to(_X.(l), _Y.(Ops.mul(0.5, l)))
-      end
-      l = Ops.add(l, 0.05)
-    end
-    s.stroke
+    Galaxies.curve(s, _X, _Y, ->(l) {
+      return Ops.mul(0.5, l)
+    }, _XMIN, _XMAX, 0.05)
     s.dash([])
     s.stroke_style(Galaxies.MODEL)
     s.line_width(1.2)
     s.alpha(0.4)
     s.dash([5, 4])
-    s.begin_path
-    l = _XMIN
-    while Ops.le(l, Ops.add(_XMAX, 0.000001))
-      if Ops.eq(l, _XMIN)
-        s.move_to(_X.(l), _Y.(law_drawn.(l)))
-      else
-        s.line_to(_X.(l), _Y.(law_drawn.(l)))
-      end
-      l = Ops.add(l, 0.02)
-    end
-    s.stroke
+    Galaxies.curve(s, _X, _Y, ->(l) {
+      return law_drawn.(l)
+    }, _XMIN, _XMAX, 0.02)
     s.dash([])
     s.alpha(1)
     landed = Ops.elem(possible, 0)
@@ -13893,13 +13721,9 @@ class Galaxies < Node
         end
       end
     end
-    total = 0
-    Ops.list(masks).each do |m|
-      total = Ops.add(total, Ops.elem(tally, m))
-    end
-    if Ops.eq(total, 0)
-      total = 1
-    end
+    total = Fmt.max(Ops.m_reduce(masks, 0, ->(t, m) {
+      return Ops.add(t, Ops.elem(tally, m))
+    }), 1)
     counts = Expr.sorted(Ops.m_map(masks, ->(m) {
       return Ops.sub(0, Ops.elem(tally, m))
     }))
@@ -13972,13 +13796,12 @@ class Galaxies < Node
     return s.text_align("left")
   end
   def self.single(m)
-    n = 0
-    Galaxies.FREEDOMS.length.times do |i|
-      if Galaxies.bit(m, i)
-        n = Ops.add(n, 1)
-      end
-    end
-    return Ops.eq(n, 1)
+    return Ops.eq(Galaxies.freedoms_in(m).length, 1)
+  end
+  def self.freedoms_in(m)
+    return Ops.filt(Ops.rng(Galaxies.FREEDOMS.length), ->(i) {
+      return Galaxies.bit(m, i)
+    })
   end
   def self.ratio_at(data, deg)
     table = Ops.getattr(data.header, "coincidence")
@@ -14115,15 +13938,13 @@ class Galaxies < Node
         rest = k
       end
     end
-    out = []
-    n.times do |k|
-      Ops.m_push(out, Ops.sub(Ops.sub(n, 1), k))
-    end
-    Galaxies.SETTLE.times do |k|
+    down = Ops.m_map(Ops.rng(n), ->(k) {
+      return Ops.sub(Ops.sub(n, 1), k)
+    })
+    return Ops.m_concat(down, Ops.m_map(Ops.rng(Galaxies.SETTLE), ->(k) {
       f = Ops.div((Ops.add(k, 1)), Galaxies.SETTLE)
-      Ops.m_push(out, Ops.m_round((Ops.mul(Ops.mul(Ops.mul(rest, f), f), (Ops.sub(3, Ops.mul(2, f)))))))
-    end
-    return out
+      return Ops.m_round((Ops.mul(Ops.mul(Ops.mul(rest, f), f), (Ops.sub(3, Ops.mul(2, f))))))
+    }))
   end
   def self.of(id, what, title)
     solved = Measured.of("#{id}.solved")
@@ -14156,12 +13977,9 @@ class Galaxies < Node
         Ops.setattr(counts, "#{g}", Ops.add((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 1))
       end
     end
-    ids = []
-    Sparc.names.length.times do |g|
-      if Ops.ge((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 12)
-        Ops.m_push(ids, g)
-      end
-    end
+    ids = Ops.filt(Ops.rng(Sparc.names.length), ->(g) {
+      return Ops.ge((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 12)
+    })
     tops = Node.new
     t.rows.times do |i|
       g = Ops.elem(Ops.getattr(_C, "galaxy"), i)
@@ -14170,11 +13988,9 @@ class Galaxies < Node
     sorted = Ops.m_sorted_by(ids, ->(g) {
       return Ops.getattr(tops, "#{g}")
     })
-    out = []
-    want.times do |k|
-      Ops.m_push(out, Ops.elem(sorted, Ops.m_round((Ops.div(Ops.mul((Ops.sub(sorted.length, 1)), k), (Ops.sub(want, 1)))))))
-    end
-    return out
+    return Ops.m_map(Ops.rng(want), ->(k) {
+      return Ops.elem(sorted, Ops.m_round((Ops.div(Ops.mul((Ops.sub(sorted.length, 1)), k), (Ops.sub(want, 1))))))
+    })
   end
   def self.simulated
     got = Measured.of("galaxy.simulated")
@@ -14191,14 +14007,9 @@ class Galaxies < Node
     return got
   end
   def self.rows_in(m, g)
-    col = Ops.getattr(m.columns, "galaxy")
-    out = []
-    m.rows.times do |i|
-      if Ops.eq(Ops.elem(col, i), g)
-        Ops.m_push(out, i)
-      end
-    end
-    return out
+    return Ops.filt(Ops.rng(m.rows), ->(i) {
+      return Ops.eq(Ops.elem(Ops.getattr(m.columns, "galaxy"), i), g)
+    })
   end
   def self.off_of(g, fitted)
     sim = Galaxies.simulated
@@ -14728,25 +14539,7 @@ class Galaxies < Node
     s.fill_style(Galaxies.FAINT)
     s.font("11px ui-monospace, monospace")
     s.text_align("center")
-    l = _XMIN
-    while Ops.le(l, _XMAX)
-      s.begin_path
-      s.move_to(_X.(l), by0)
-      s.line_to(_X.(l), by1)
-      s.stroke
-      s.fill_text("10^#{l}", _X.(l), Ops.add(by1, 16))
-      l = Ops.add(l, 1)
-    end
-    s.text_align("right")
-    l = _YMIN
-    while Ops.le(l, _YMAX)
-      s.begin_path
-      s.move_to(bx0, _Y.(l))
-      s.line_to(bx1, _Y.(l))
-      s.stroke
-      s.fill_text("10^#{l}", Ops.sub(bx0, 8), Ops.add(_Y.(l), 4))
-      l = Ops.add(l, 1)
-    end
+    Galaxies.decades(s, _X, _Y, [bx0, by0, bx1, by1], [_XMIN, _XMAX, _YMIN, _YMAX], 16)
     lg = ->(v) {
       return Fmt.log10(Ops.div(v, Galaxies.A0_DATA))
     }
@@ -14783,19 +14576,9 @@ class Galaxies < Node
     a0 = Ops.getattr(sim.header, "a0")
     s.stroke_style(Galaxies.MODEL)
     s.line_width(2)
-    s.begin_path
-    l = _XMIN
-    while Ops.le(l, Ops.add(_XMAX, 0.000001))
-      gN = Ops.mul(Ops.power(10, l), Galaxies.A0_DATA)
-      y = lg.(Law.boost(gN, a0))
-      if Ops.eq(l, _XMIN)
-        s.move_to(_X.(l), _Y.(y))
-      else
-        s.line_to(_X.(l), _Y.(y))
-      end
-      l = Ops.add(l, 0.02)
-    end
-    s.stroke
+    Galaxies.curve(s, _X, _Y, ->(l) {
+      return lg.(Law.boost(Ops.mul(Ops.power(10, l), Galaxies.A0_DATA), a0))
+    }, _XMIN, _XMAX, 0.02)
     s.stroke_style(Galaxies.NEWT)
     s.dash([6, 5])
     s.begin_path
@@ -15123,11 +14906,9 @@ class Plan < Node
     }))
   end
   def total
-    sum = 0
-    Ops.list(self.parts).each do |p|
-      sum = Ops.add(sum, Ops.elem(p, 1))
-    end
-    return sum
+    return Ops.m_sum(Ops.m_map(self.parts, ->(p) {
+      return Ops.elem(p, 1)
+    }))
   end
   def per_source
     return (self.budget.compact ? 12 : Ops.mul(Ops.add(Ops.add(Ops.add(Ops.add(12, 4), 2), 1), 1), 4))
@@ -15535,34 +15316,26 @@ class Simulation < Node
         Ops.setattr(counts, "#{g}", Ops.add((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 1))
       end
     end
-    out = []
-    Sparc.names.length.times do |g|
-      if Ops.ge((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 3)
-        Ops.m_push(out, g)
-      end
-    end
-    return out
+    return Ops.filt(Ops.rng(Sparc.names.length), ->(g) {
+      return Ops.ge((Ops.or_else(Ops.getattr(counts, "#{g}")) { 0 }), 3)
+    })
   end
   def self.rows_of(g)
     _C = Sparc.curves.columns
-    out = []
-    Sparc.curves.rows.times do |i|
-      if ((Ops.eq(Ops.elem(Ops.getattr(_C, "galaxy"), i), g) && Ops.gt(Ops.elem(Ops.getattr(_C, "R"), i), 0)) && Ops.gt(Ops.elem(Ops.getattr(_C, "Vobs"), i), 0))
-        Ops.m_push(out, [Ops.elem(Ops.getattr(_C, "R"), i), Ops.elem(Ops.getattr(_C, "Vobs"), i), Ops.elem(Ops.getattr(_C, "e_Vobs"), i), Ops.elem(Ops.getattr(_C, "Vgas"), i), Ops.elem(Ops.getattr(_C, "Vdisk"), i), Ops.elem(Ops.getattr(_C, "Vbul"), i), (Simulation.kept(g, Ops.elem(Ops.getattr(_C, "Vobs"), i), Ops.elem(Ops.getattr(_C, "e_Vobs"), i)) ? 1 : 0)])
-      end
-    end
-    return Ops.m_sorted_by(out, ->(r) {
+    mine = Ops.filt(Ops.rng(Sparc.curves.rows), ->(i) {
+      return ((Ops.eq(Ops.elem(Ops.getattr(_C, "galaxy"), i), g) && Ops.gt(Ops.elem(Ops.getattr(_C, "R"), i), 0)) && Ops.gt(Ops.elem(Ops.getattr(_C, "Vobs"), i), 0))
+    })
+    return Ops.m_sorted_by(Ops.m_map(mine, ->(i) {
+      return [Ops.elem(Ops.getattr(_C, "R"), i), Ops.elem(Ops.getattr(_C, "Vobs"), i), Ops.elem(Ops.getattr(_C, "e_Vobs"), i), Ops.elem(Ops.getattr(_C, "Vgas"), i), Ops.elem(Ops.getattr(_C, "Vdisk"), i), Ops.elem(Ops.getattr(_C, "Vbul"), i), (Simulation.kept(g, Ops.elem(Ops.getattr(_C, "Vobs"), i), Ops.elem(Ops.getattr(_C, "e_Vobs"), i)) ? 1 : 0)]
+    }), ->(r) {
       return Ops.elem(r, 0)
     })
   end
   def self.edges_of(rs)
     n = rs.length
-    out = [0, Ops.div(Ops.elem(Ops.elem(rs, 0), 0), 2)]
-    Ops.sub(n, 1).times do |i|
-      Ops.m_push(out, Ops.div((Ops.add(Ops.elem(Ops.elem(rs, i), 0), Ops.elem(Ops.elem(rs, Ops.add(i, 1)), 0))), 2))
-    end
-    Ops.m_push(out, Ops.add(Ops.elem(Ops.elem(rs, Ops.sub(n, 1)), 0), Ops.div((Ops.sub(Ops.elem(Ops.elem(rs, Ops.sub(n, 1)), 0), Ops.elem(Ops.elem(rs, Ops.sub(n, 2)), 0))), 2)))
-    return out
+    return Ops.m_concat(Ops.m_concat([0, Ops.div(Ops.elem(Ops.elem(rs, 0), 0), 2)], Ops.m_map(Ops.rng(Ops.sub(n, 1)), ->(i) {
+      return Ops.div((Ops.add(Ops.elem(Ops.elem(rs, i), 0), Ops.elem(Ops.elem(rs, Ops.add(i, 1)), 0))), 2)
+    })), [Ops.add(Ops.elem(Ops.elem(rs, Ops.sub(n, 1)), 0), Ops.div((Ops.sub(Ops.elem(Ops.elem(rs, Ops.sub(n, 1)), 0), Ops.elem(Ops.elem(rs, Ops.sub(n, 2)), 0))), 2))])
   end
   def self.bulge_arrives(rs, r, h)
     got = 0
@@ -15894,11 +15667,9 @@ class Simulation < Node
       w_gas = Simulation.nnls(_K, want_gas)
       w_disc = Simulation.nnls(_K, want_disc)
       sum_at = ->(row_of, w) {
-        s = 0
-        n.times do |a|
-          s = Ops.add(s, Ops.mul(row_of.(a), Ops.elem(w, a)))
-        end
-        return s
+        return Ops.m_reduce(Ops.rng(n), 0, ->(s, a) {
+          return Ops.add(s, Ops.mul(row_of.(a), Ops.elem(w, a)))
+        })
       }
       here = []
       worst = 0
@@ -15923,18 +15694,14 @@ class Simulation < Node
       Ops.m_push(self.w_discs, w_disc)
       Ops.m_push(self.w_gases, w_gas)
       Ops.m_push(self.repro, (Ops.gt(top, 0) ? Ops.div(worst, top) : 0))
-      tab = []
-      Simulation.TABLE.times do |t|
+      Ops.m_push(self.tables, Ops.m_map(Ops.rng(Simulation.TABLE), ->(t) {
         base = Ops.add(Ops.elem(self.tabled_at, j), Ops.mul(t, n))
-        gd = sum_at.(->(a) {
+        return [self.table_r(j, t), sum_at.(->(a) {
           return Ops.elem(pulls, Ops.add(base, a))
-        }, w_disc)
-        gg = sum_at.(->(a) {
+        }, w_disc), sum_at.(->(a) {
           return Ops.elem(pulls, Ops.add(base, a))
-        }, w_gas)
-        Ops.m_push(tab, [self.table_r(j, t), gd, gg, Simulation.bulge_at(rs, self.table_r(j, t))])
-      end
-      Ops.m_push(self.tables, tab)
+        }, w_gas), Simulation.bulge_at(rs, self.table_r(j, t))]
+      }))
     end
   end
   def seen_rows(*args_)
@@ -15947,18 +15714,14 @@ class Simulation < Node
     self.ids.length.times do |j|
       rs = Ops.elem(self.rows, j)
       n = Ops.sub(Ops.elem(self.edges, j).length, 1)
-      here = []
-      rs.length.times do |i|
-        sd = 0
-        sg = 0
-        n.times do |a|
-          k = Ops.elem(spulls, Ops.add(Ops.add(Ops.elem(self.measured_at, j), Ops.mul(i, n)), a))
-          sd = Ops.add(sd, Ops.mul(k, Ops.elem(Ops.elem(self.w_discs, j), a)))
-          sg = Ops.add(sg, Ops.mul(k, Ops.elem(Ops.elem(self.w_gases, j), a)))
-        end
-        Ops.m_push(here, [sd, sg, Simulation.bulge_arrives(rs, Ops.elem(Ops.elem(rs, i), 0), Ops.elem(self.thick, j))])
-      end
-      Ops.m_push(self.seen_rows, here)
+      seen = ->(i, w) {
+        return Ops.m_reduce(Ops.rng(n), 0, ->(s, a) {
+          return Ops.add(s, Ops.mul(Ops.elem(spulls, Ops.add(Ops.add(Ops.elem(self.measured_at, j), Ops.mul(i, n)), a)), Ops.elem(w, a)))
+        })
+      }
+      Ops.m_push(self.seen_rows, Ops.m_map(Ops.rng(rs.length), ->(i) {
+        return [seen.(i, Ops.elem(self.w_discs, j)), seen.(i, Ops.elem(self.w_gases, j)), Simulation.bulge_arrives(rs, Ops.elem(Ops.elem(rs, i), 0), Ops.elem(self.thick, j))]
+      }))
     end
   end
   def self.lift_coefficients(theory, deg)
@@ -16043,34 +15806,30 @@ class Simulation < Node
   def felt(gN)
     return (Ops.gt(gN, 0) ? Law.boost(gN, self.a0) : ((Ops.lt(gN, 0) ? Ops.sub(0, Law.boost(Ops.sub(0, gN), self.a0)) : 0)))
   end
+  def self.laid(records)
+    return Ops.m_reduce(records, [], ->(out, r) {
+      return Ops.m_reduce(r, out, ->(o, v) {
+        return Ops.m_push(o, v)
+      })
+    })
+  end
   def points
-    out = []
-    self.ids.length.times do |j|
-      Ops.elem(self.rows, j).length.times do |i|
-        p = Ops.elem(Ops.elem(self.at_rows, j), i)
-        Ops.list([j, Ops.elem(Ops.elem(Ops.elem(self.rows, j), i), 0), Ops.elem(p, 0), Ops.elem(p, 1), Ops.elem(p, 2), 0]).each do |v|
-          Ops.m_push(out, v)
-        end
-      end
-    end
-    self.ids.length.times do |j|
-      Ops.list(Ops.elem(self.tables, j)).each do |t|
-        Ops.list([j, Ops.elem(t, 0), Ops.elem(t, 1), Ops.elem(t, 2), Ops.elem(t, 3), 0]).each do |v|
-          Ops.m_push(out, v)
-        end
-      end
-    end
-    return out
+    measured = Ops.m_reduce(Ops.rng(self.ids.length), [], ->(out, j) {
+      return Ops.m_reduce(Ops.rng(Ops.elem(self.rows, j).length), out, ->(o, i) {
+        return Ops.m_push(o, [j, Ops.elem(Ops.elem(Ops.elem(self.rows, j), i), 0), Ops.elem(Ops.elem(Ops.elem(self.at_rows, j), i), 0), Ops.elem(Ops.elem(Ops.elem(self.at_rows, j), i), 1), Ops.elem(Ops.elem(Ops.elem(self.at_rows, j), i), 2), 0])
+      })
+    })
+    tabled = Ops.m_reduce(Ops.rng(self.ids.length), [], ->(out, j) {
+      return Ops.m_reduce(Ops.elem(self.tables, j), out, ->(o, t) {
+        return Ops.m_push(o, [j, Ops.elem(t, 0), Ops.elem(t, 1), Ops.elem(t, 2), Ops.elem(t, 3), 0])
+      })
+    })
+    return Simulation.laid(Ops.m_concat(measured, tabled))
   end
   def nuisances(fitted)
-    out = []
-    self.ids.length.times do |j|
-      Ops.m_push(out, (fitted ? Ops.elem(self.best_y, j) : Sparc.YD))
-      Ops.m_push(out, (fitted ? Ops.elem(self.best_b, j) : Sparc.YB))
-      Ops.m_push(out, self.a0)
-      Ops.m_push(out, 0)
-    end
-    return out
+    return Simulation.laid(Ops.m_map(Ops.rng(self.ids.length), ->(j) {
+      return [(fitted ? Ops.elem(self.best_y, j) : Sparc.YD), (fitted ? Ops.elem(self.best_b, j) : Sparc.YB), self.a0, 0]
+    }))
   end
   def best_y(*args_)
     @best_y = ([]) unless instance_variable_defined?(:@best_y)
@@ -16163,15 +15922,11 @@ class Simulation < Node
   def searches
     _S = Sparc.sample.columns
     pts = self.fit_points
-    out = []
-    self.ids.length.times do |j|
+    return Simulation.laid(Ops.m_map(Ops.rng(self.ids.length), ->(j) {
       g = Ops.elem(self.ids, j)
       stop = (Ops.lt(Ops.add(j, 1), self.ids.length) ? Ops.elem(self.fit_at, Ops.add(j, 1)) : Ops.m_floor((Ops.div(pts.length, 8))))
-      Ops.list([Ops.elem(self.fit_at, j), Ops.sub(stop, Ops.elem(self.fit_at, j)), Ops.elem(Ops.getattr(_S, "D"), g), Ops.elem(Ops.getattr(_S, "e_D"), g), Ops.elem(Ops.getattr(_S, "Inc"), g), Ops.elem(Ops.getattr(_S, "e_Inc"), g), self.a0, (self.has_bulge(j) ? 1 : 0), Ops.elem(self.centre_y, j), Ops.elem(self.centre_b, j), Ops.elem(self.centre_d, j), Ops.elem(self.centre_i, j), Ops.mul(Simulation.STEP_Y, self.spacing), Ops.mul(Simulation.STEP_D, self.spacing), Ops.mul(Simulation.STEP_I, self.spacing), 0]).each do |v|
-        Ops.m_push(out, v)
-      end
-    end
-    return out
+      return [Ops.elem(self.fit_at, j), Ops.sub(stop, Ops.elem(self.fit_at, j)), Ops.elem(Ops.getattr(_S, "D"), g), Ops.elem(Ops.getattr(_S, "e_D"), g), Ops.elem(Ops.getattr(_S, "Inc"), g), Ops.elem(Ops.getattr(_S, "e_Inc"), g), self.a0, (self.has_bulge(j) ? 1 : 0), Ops.elem(self.centre_y, j), Ops.elem(self.centre_b, j), Ops.elem(self.centre_d, j), Ops.elem(self.centre_i, j), Ops.mul(Simulation.STEP_Y, self.spacing), Ops.mul(Simulation.STEP_D, self.spacing), Ops.mul(Simulation.STEP_I, self.spacing), 0]
+    }))
   end
   def combo(j, c, n)
     _S = Sparc.sample.columns
@@ -16304,11 +16059,9 @@ class Simulation < Node
     return out
   end
   def most_steps
-    m = 0
-    Ops.list(self.steps).each do |n|
-      m = Fmt.max(m, n)
-    end
-    return m
+    return Ops.m_reduce(self.steps, 0, ->(m, n) {
+      return Fmt.max(m, n)
+    })
   end
   def film_sources(*args_)
     @film_sources = ([]) unless instance_variable_defined?(:@film_sources)
@@ -16357,15 +16110,14 @@ class Simulation < Node
     per_pixel = Ops.mul(Ops.mul(Ops.div(Ops.mul(Ops.div(fov, _P), Math::PI), 180), _D), 1000)
     light = Ops.getattr(_I.columns, "light")
     base = Ops.mul(Ops.mul(g, _P), _P)
-    edge = []
-    _P.times do |r|
-      _P.times do |c|
-        if (((Ops.lt(r, Simulation.SKY_EDGE) || Ops.lt(c, Simulation.SKY_EDGE)) || Ops.ge(r, Ops.sub(_P, Simulation.SKY_EDGE))) || Ops.ge(c, Ops.sub(_P, Simulation.SKY_EDGE)))
-          Ops.m_push(edge, Ops.elem(light, Ops.add(Ops.add(base, Ops.mul(r, _P)), c)))
-        end
-      end
-    end
-    sky = Fmt.median(edge)
+    on_edge = ->(r, c) {
+      return (((Ops.lt(r, Simulation.SKY_EDGE) || Ops.lt(c, Simulation.SKY_EDGE)) || Ops.ge(r, Ops.sub(_P, Simulation.SKY_EDGE))) || Ops.ge(c, Ops.sub(_P, Simulation.SKY_EDGE)))
+    }
+    sky = Fmt.median(Ops.m_map(Ops.filt(Ops.rng(Ops.mul(_P, _P)), ->(k) {
+      return on_edge.(Ops.m_floor((Ops.div(k, _P))), Ops.mod(k, _P))
+    }), ->(k) {
+      return Ops.elem(light, Ops.add(base, k))
+    }))
     reach = Ops.elem(self.reach, j)
     east = ->(c) {
       return Ops.sub(0, Ops.mul((Ops.sub(Ops.add(c, 0.5), Ops.div(_P, 2))), per_pixel))
@@ -16463,10 +16215,9 @@ class Simulation < Node
         Ops.m_push(self.film_angles, Float::NAN)
         es = Ops.elem(self.edges, j)
         rs = Ops.elem(self.rows, j)
-        masses = []
-        Ops.sub(es.length, 1).times do |a|
-          Ops.m_push(masses, [Ops.elem(es, a), Ops.elem(es, Ops.add(a, 1)), Ops.add(Ops.mul(Sparc.YD, Ops.elem(Ops.elem(self.w_discs, j), a)), Ops.elem(Ops.elem(self.w_gases, j), a))])
-        end
+        masses = Ops.m_map(Ops.rng(Ops.sub(es.length, 1)), ->(a) {
+          return [Ops.elem(es, a), Ops.elem(es, Ops.add(a, 1)), Ops.add(Ops.mul(Sparc.YD, Ops.elem(Ops.elem(self.w_discs, j), a)), Ops.elem(Ops.elem(self.w_gases, j), a))]
+        })
         last = 0
         rs.length.times do |i|
           inside = Ops.mul(Ops.mul(Ops.mul(Sparc.YB, Ops.elem(Ops.elem(rs, i), 5)), Ops.m_abs(Ops.elem(Ops.elem(rs, i), 5))), Ops.elem(Ops.elem(rs, i), 0))
@@ -16475,12 +16226,10 @@ class Simulation < Node
             last = inside
           end
         end
-        run = []
-        total = 0
-        Ops.list(masses).each do |m|
-          total = Ops.add(total, Fmt.max(Ops.elem(m, 2), 0))
-          Ops.m_push(run, total)
-        end
+        run = Ops.m_reduce(masses, [], ->(run, m) {
+          return Ops.m_push(run, Ops.add((Ops.or_else(Ops.m_last(run)) { 0 }), Fmt.max(Ops.elem(m, 2), 0)))
+        })
+        total = Ops.or_else(Ops.m_last(run)) { 0 }
         Simulation.FILM_STARS.times do |k|
           want = Ops.mul(rng.next, total)
           a = 0
@@ -16500,14 +16249,11 @@ class Simulation < Node
     return out
   end
   def film_table(felt_table)
-    out = []
-    Ops.list(self.film_ids).each do |g|
-      j = Ops.m_index_of(self.ids, g)
-      Simulation.TABLE.times do |t|
-        Ops.m_push(out, Ops.elem(felt_table, Ops.add(Ops.mul(j, Simulation.TABLE), t)))
-      end
-    end
-    return out
+    return Ops.m_reduce(self.film_ids, [], ->(out, g) {
+      return Ops.m_reduce(Ops.rng(Simulation.TABLE), out, ->(o, t) {
+        return Ops.m_push(o, Ops.elem(felt_table, Ops.add(Ops.mul(Ops.m_index_of(self.ids, g), Simulation.TABLE), t)))
+      })
+    })
   end
   def film_runs(felt_table)
     out = []
@@ -16534,19 +16280,16 @@ class Simulation < Node
     return out
   end
   def most_film_steps
-    m = 0
-    Ops.list(self.film_steps).each do |n|
-      m = Fmt.max(m, n)
-    end
-    return m
+    return Ops.m_reduce(self.film_steps, 0, ->(m, n) {
+      return Fmt.max(m, n)
+    })
   end
   def save(felt0, felt1, stars, frames)
     _S = Sparc.sample.columns
     _T = Simulation.TABLE
-    nrows = 0
-    Ops.list(self.rows).each do |rs|
-      nrows = Ops.add(nrows, rs.length)
-    end
+    nrows = Ops.m_reduce(self.rows, 0, ->(n, rs) {
+      return Ops.add(n, rs.length)
+    })
     cols = Node.new
     names = ["galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept"]
     Ops.list(names).each do |nm_|
@@ -16938,13 +16681,11 @@ class Formed < Node
     return out
   end
   def constants
-    out = []
-    self.discs_n.times do |g|
-      Ops.list([Ops.div(self.GM(g), Formed.N), self.soft(g), self.scale_a0, Formed.DT]).each do |v|
-        Ops.m_push(out, v)
-      end
-    end
-    return out
+    return Ops.m_reduce(Ops.rng(self.discs_n), [], ->(out, g) {
+      return Ops.m_reduce([Ops.div(self.GM(g), Formed.N), self.soft(g), self.scale_a0, Formed.DT], out, ->(o, v) {
+        return Ops.m_push(o, v)
+      })
+    })
   end
   def accel_cpu(state, i)
     g = Ops.m_floor((Ops.div(i, Formed.N)))
@@ -17076,14 +16817,13 @@ class Formed < Node
   end
   def save(frames)
     _G = Formed.GRID
-    density = []
-    self.discs_n.times do |g|
-      Ops.list(frames).each do |f|
-        Ops.mul(_G, _G).times do |c|
-          Ops.m_push(density, Ops.elem(f, Ops.add(Ops.mul(Ops.mul(g, _G), _G), c)))
-        end
-      end
-    end
+    density = Ops.m_reduce(Ops.rng(self.discs_n), [], ->(out, g) {
+      return Ops.m_reduce(frames, out, ->(o, f) {
+        return Ops.m_reduce(Ops.rng(Ops.mul(_G, _G)), o, ->(oo, c) {
+          return Ops.m_push(oo, Ops.elem(f, Ops.add(Ops.mul(Ops.mul(g, _G), _G), c)))
+        })
+      })
+    })
     cols = Node.new
     Ops.setattr(cols, "density", density)
     extra = Node.new
@@ -17197,39 +16937,12 @@ class Model < Node
     return out
   end
   def self.walk_names(e, out)
-    k = e.kind
-    if (Ops.eq(k, "sym") || Ops.eq(k, "field"))
-      if !(Ops.m_contains(out, e.label))
-        Ops.m_push(out, e.label)
-      end
-    else
-      if (Ops.eq(k, "add") || Ops.eq(k, "mul"))
-        Ops.list(e.of).each do |x|
-          Model.walk_names(x, out)
-        end
-      else
-        if Ops.eq(k, "pow")
-          Model.walk_names(e.base, out)
-          return Model.walk_names(e.power, out)
-        else
-          if ((((Ops.eq(k, "grad") || Ops.eq(k, "log")) || Ops.eq(k, "exp")) || Ops.eq(k, "root")) || Ops.eq(k, "limit"))
-            return Model.walk_names(e.base, out)
-          else
-            if (Ops.eq(k, "choose") || Ops.eq(k, "gammaInc"))
-              Model.walk_names(e.first_, out)
-              return Model.walk_names(e.second_, out)
-            else
-              if Ops.eq(k, "call")
-                called = "#{e.label}\\paren{...}"
-                if !(Ops.m_contains(out, called))
-                  Ops.m_push(out, called)
-                end
-                return Model.walk_names(e.base, out)
-              end
-            end
-          end
-        end
-      end
+    name = (e.named ? e.label : ((Ops.eq(e.kind, "call") ? "#{e.label}\\paren{...}" : nil)))
+    if (!Ops.eq(name, nil) && !(Ops.m_contains(out, name)))
+      Ops.m_push(out, name)
+    end
+    Ops.list(e.subtrees).each do |x|
+      Model.walk_names(x, out)
     end
   end
   def resolved(e, env, seen)
@@ -17547,22 +17260,7 @@ class Shaded < Node
     return "fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }"
   end
   def self.points
-    points = []
-    i = 1
-    while Ops.le(i, 120)
-      Ops.m_push(points, Ops.div(i, 120))
-      i = Ops.add(i, 1)
-    end
-    ex = 0
-    while Ops.le(ex, 24)
-      k = 1
-      while Ops.lt(k, 8)
-        Ops.m_push(points, Ops.mul((Ops.power(10, (Ops.sub(ex, 12)))), (Ops.add(1, Ops.div(k, 2)))))
-        k = Ops.add(k, 1)
-      end
-      ex = Ops.add(ex, 1)
-    end
-    return Expr.sorted(points)
+    return Expr.bracket_points
   end
   def self.solver(name, f)
     pts = Shaded.points
@@ -17855,29 +17553,23 @@ class Sweep < Node
     return need
   end
   def save(id, grid, need)
-    x = []
-    y = []
-    p = []
-    by = []
-    self.YS.times do |gy|
-      self.XS.times do |gx|
-        Ops.m_push(x, Ops.add(self.X0, Ops.mul(gx, self.dx)))
-        Ops.m_push(y, Ops.add(self.Y0, Ops.mul(gy, self.dy)))
-        Ops.m_push(p, Ops.elem(grid, Ops.add(Ops.mul(gy, self.XS), gx)))
-        Ops.m_push(by, Ops.elem(need, Ops.add(Ops.mul(gy, self.XS), gx)))
-      end
-    end
-    most = 0
-    Ops.list(p).each do |v|
-      if Ops.gt(v, most)
-        most = v
-      end
-    end
+    cells = Ops.rng(Ops.mul(self.YS, self.XS))
     columns = Node.new
-    Ops.setattr(columns, "x", x)
-    Ops.setattr(columns, "y", y)
-    Ops.setattr(columns, "p", p)
-    Ops.setattr(columns, "by", by)
+    Ops.setattr(columns, "x", Ops.m_map(cells, ->(i) {
+      return Ops.add(self.X0, Ops.mul((Ops.mod(i, self.XS)), self.dx))
+    }))
+    Ops.setattr(columns, "y", Ops.m_map(cells, ->(i) {
+      return Ops.add(self.Y0, Ops.mul(Ops.m_floor((Ops.div(i, self.XS))), self.dy))
+    }))
+    Ops.setattr(columns, "p", Ops.m_map(cells, ->(i) {
+      return Ops.elem(grid, i)
+    }))
+    Ops.setattr(columns, "by", Ops.m_map(cells, ->(i) {
+      return Ops.elem(need, i)
+    }))
+    most = Ops.m_reduce(Ops.getattr(columns, "p"), 0, ->(m, v) {
+      return (Ops.gt(v, m) ? v : m)
+    })
     extra = Node.new
     Ops.setattr(extra, "a0", self.a0)
     Ops.setattr(extra, "arrangement", self.how)
@@ -17932,15 +17624,11 @@ class Sweep < Node
     return (Ops.eq(i, nil) ? (-1) : i)
   end
   def radii
-    out = []
-    self.RS.times do |k|
-      e = Ops.elem(self.env, k)
-      Ops.m_push(out, Ops.elem(self.rad, k))
-      Ops.m_push(out, Ops.or_else(Ops.getattr(e, "n_{f}")) { Float::NAN })
-      Ops.m_push(out, Ops.or_else(Ops.getattr(e, "\\sigma_{tr}")) { Float::NAN })
-      Ops.m_push(out, Ops.or_else(Ops.getattr(e, "L")) { Float::NAN })
-    end
-    return out
+    return Ops.m_reduce(Ops.rng(self.RS), [], ->(out, k) {
+      return Ops.m_reduce([Ops.elem(self.rad, k), Ops.or_else(Ops.getattr(Ops.elem(self.env, k), "n_{f}")) { Float::NAN }, Ops.or_else(Ops.getattr(Ops.elem(self.env, k), "\\sigma_{tr}")) { Float::NAN }, Ops.or_else(Ops.getattr(Ops.elem(self.env, k), "L")) { Float::NAN }], out, ->(o, v) {
+        return Ops.m_push(o, v)
+      })
+    })
   end
   def kernel
     names = self.names
@@ -18093,6 +17781,1308 @@ class Measure < Node
   __exposed
 end
 
+class Sighted < Node
+  def name(*args_)
+    args_.empty? ? @name : @name.(*args_)
+  end
+  attr_writer :name
+  def disc_mass(*args_)
+    args_.empty? ? @disc_mass : @disc_mass.(*args_)
+  end
+  attr_writer :disc_mass
+  def disc_scale(*args_)
+    args_.empty? ? @disc_scale : @disc_scale.(*args_)
+  end
+  attr_writer :disc_scale
+  def bulge_mass(*args_)
+    args_.empty? ? @bulge_mass : @bulge_mass.(*args_)
+  end
+  attr_writer :bulge_mass
+  def bulge_scale(*args_)
+    args_.empty? ? @bulge_scale : @bulge_scale.(*args_)
+  end
+  attr_writer :bulge_scale
+  def circling(*args_)
+    args_.empty? ? @circling : @circling.(*args_)
+  end
+  attr_writer :circling
+  def sun(*args_)
+    args_.empty? ? @sun : @sun.(*args_)
+  end
+  attr_writer :sun
+  def inclination(*args_)
+    args_.empty? ? @inclination : @inclination.(*args_)
+  end
+  attr_writer :inclination
+  def position_angle(*args_)
+    args_.empty? ? @position_angle : @position_angle.(*args_)
+  end
+  attr_writer :position_angle
+  def distance(*args_)
+    args_.empty? ? @distance : @distance.(*args_)
+  end
+  attr_writer :distance
+  def approach(*args_)
+    args_.empty? ? @approach : @approach.(*args_)
+  end
+  attr_writer :approach
+  def across(*args_)
+    args_.empty? ? @across : @across.(*args_)
+  end
+  attr_writer :across
+  def source(*args_)
+    args_.empty? ? @source : @source.(*args_)
+  end
+  attr_writer :source
+  def mass
+    return Ops.add(self.disc_mass, self.bulge_mass)
+  end
+  __exposed
+end
+
+class Video < Node
+  def self.WIDTH
+    @WIDTH = (2560) unless instance_variable_defined?(:@WIDTH)
+    @WIDTH
+  end
+  def self.WIDTH=(v)
+    @WIDTH = v
+  end
+  def self.HEIGHT
+    @HEIGHT = (1440) unless instance_variable_defined?(:@HEIGHT)
+    @HEIGHT
+  end
+  def self.HEIGHT=(v)
+    @HEIGHT = v
+  end
+  def self.FPS
+    @FPS = (60) unless instance_variable_defined?(:@FPS)
+    @FPS
+  end
+  def self.FPS=(v)
+    @FPS = v
+  end
+  def self.FILM_RD
+    @FILM_RD = (6) unless instance_variable_defined?(:@FILM_RD)
+    @FILM_RD
+  end
+  def self.FILM_RD=(v)
+    @FILM_RD = v
+  end
+  def self.PER_MYR
+    @PER_MYR = (0.0010227) unless instance_variable_defined?(:@PER_MYR)
+    @PER_MYR
+  end
+  def self.PER_MYR=(v)
+    @PER_MYR = v
+  end
+  def self.LIGHT
+    @LIGHT = (299792.458) unless instance_variable_defined?(:@LIGHT)
+    @LIGHT
+  end
+  def self.LIGHT=(v)
+    @LIGHT = v
+  end
+  def self.ANDROMEDA
+    @ANDROMEDA = (Sighted.new(name: "Andromeda (M31)", disc_mass: 8.4, disc_scale: 5.4, bulge_mass: 3.3, bulge_scale: 0.61, circling: 250, sun: 0, inclination: 77, position_angle: 38, distance: 785, approach: 110, across: 17, source: "Geehan et al. 2006, van der Marel et al. 2012")) unless instance_variable_defined?(:@ANDROMEDA)
+    @ANDROMEDA
+  end
+  def self.ANDROMEDA=(v)
+    @ANDROMEDA = v
+  end
+  def self.MW_ORBITS
+    @MW_ORBITS = ([5.5, 0.25]) unless instance_variable_defined?(:@MW_ORBITS)
+    @MW_ORBITS
+  end
+  def self.MW_ORBITS=(v)
+    @MW_ORBITS = v
+  end
+  def self.MW_ORBIT_TRIALS
+    @MW_ORBIT_TRIALS = ([10, 7]) unless instance_variable_defined?(:@MW_ORBIT_TRIALS)
+    @MW_ORBIT_TRIALS
+  end
+  def self.MW_ORBIT_TRIALS=(v)
+    @MW_ORBIT_TRIALS = v
+  end
+  def self.MW_ORBIT_TEMPER
+    @MW_ORBIT_TEMPER = (0.1) unless instance_variable_defined?(:@MW_ORBIT_TEMPER)
+    @MW_ORBIT_TEMPER
+  end
+  def self.MW_ORBIT_TEMPER=(v)
+    @MW_ORBIT_TEMPER = v
+  end
+  def self.MW_ARM_END
+    @MW_ARM_END = ([0, 0, 0, 0, 140]) unless instance_variable_defined?(:@MW_ARM_END)
+    @MW_ARM_END
+  end
+  def self.MW_ARM_END=(v)
+    @MW_ARM_END = v
+  end
+  def self.MW_ARM_OLD
+    @MW_ARM_OLD = ([0, 1, 0, 1, 0]) unless instance_variable_defined?(:@MW_ARM_OLD)
+    @MW_ARM_OLD
+  end
+  def self.MW_ARM_OLD=(v)
+    @MW_ARM_OLD = v
+  end
+  def self.MW_ARM_FADE
+    @MW_ARM_FADE = (12) unless instance_variable_defined?(:@MW_ARM_FADE)
+    @MW_ARM_FADE
+  end
+  def self.MW_ARM_FADE=(v)
+    @MW_ARM_FADE = v
+  end
+  def self.MW_ARM_FADE_IN
+    @MW_ARM_FADE_IN = (45) unless instance_variable_defined?(:@MW_ARM_FADE_IN)
+    @MW_ARM_FADE_IN
+  end
+  def self.MW_ARM_FADE_IN=(v)
+    @MW_ARM_FADE_IN = v
+  end
+  def self.MW_YOUNG
+    @MW_YOUNG = (0.1) unless instance_variable_defined?(:@MW_YOUNG)
+    @MW_YOUNG
+  end
+  def self.MW_YOUNG=(v)
+    @MW_YOUNG = v
+  end
+  def self.MW_CLUSTERS
+    @MW_CLUSTERS = ([0.5, 50, 0.1]) unless instance_variable_defined?(:@MW_CLUSTERS)
+    @MW_CLUSTERS
+  end
+  def self.MW_CLUSTERS=(v)
+    @MW_CLUSTERS = v
+  end
+  def self.LIGHT_STARS
+    @LIGHT_STARS = ([0.95, 2.4, 3.2]) unless instance_variable_defined?(:@LIGHT_STARS)
+    @LIGHT_STARS
+  end
+  def self.LIGHT_STARS=(v)
+    @LIGHT_STARS = v
+  end
+  def self.ANDROMEDA_IMAGE
+    @ANDROMEDA_IMAGE = (512) unless instance_variable_defined?(:@ANDROMEDA_IMAGE)
+    @ANDROMEDA_IMAGE
+  end
+  def self.ANDROMEDA_IMAGE=(v)
+    @ANDROMEDA_IMAGE = v
+  end
+  def self.ANDROMEDA_FOV
+    @ANDROMEDA_FOV = (3.2) unless instance_variable_defined?(:@ANDROMEDA_FOV)
+    @ANDROMEDA_FOV
+  end
+  def self.ANDROMEDA_FOV=(v)
+    @ANDROMEDA_FOV = v
+  end
+  def self.SOURCE
+    @SOURCE = ("74,168,235") unless instance_variable_defined?(:@SOURCE)
+    @SOURCE
+  end
+  def self.SOURCE=(v)
+    @SOURCE = v
+  end
+  def self.STRIP_TOP
+    @STRIP_TOP = (570) unless instance_variable_defined?(:@STRIP_TOP)
+    @STRIP_TOP
+  end
+  def self.STRIP_TOP=(v)
+    @STRIP_TOP = v
+  end
+  def self.STRIP_TALL
+    @STRIP_TALL = (300) unless instance_variable_defined?(:@STRIP_TALL)
+    @STRIP_TALL
+  end
+  def self.STRIP_TALL=(v)
+    @STRIP_TALL = v
+  end
+  def self.PLANET_INK
+    @PLANET_INK = (["\#9a9a9a", "\#e8d3a0", "\#4a90e2", "\#c1440e"]) unless instance_variable_defined?(:@PLANET_INK)
+    @PLANET_INK
+  end
+  def self.PLANET_INK=(v)
+    @PLANET_INK = v
+  end
+  def self.SOLAR_FROM
+    @SOLAR_FROM = (160) unless instance_variable_defined?(:@SOLAR_FROM)
+    @SOLAR_FROM
+  end
+  def self.SOLAR_FROM=(v)
+    @SOLAR_FROM = v
+  end
+  def self.SOLAR_TO
+    @SOLAR_TO = (280) unless instance_variable_defined?(:@SOLAR_TO)
+    @SOLAR_TO
+  end
+  def self.SOLAR_TO=(v)
+    @SOLAR_TO = v
+  end
+  def self.LOGO
+    @LOGO = ("../orbitmines.com/orbitmines.com/public/logo.png") unless instance_variable_defined?(:@LOGO)
+    @LOGO
+  end
+  def self.LOGO=(v)
+    @LOGO = v
+  end
+  def self.PARTS
+    @PARTS = (["video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end"]) unless instance_variable_defined?(:@PARTS)
+    @PARTS
+  end
+  def self.PARTS=(v)
+    @PARTS = v
+  end
+  def self.MILKY_WAY
+    return Sighted.new(name: "Milky Way", disc_mass: Video.mw_discs_mass, disc_scale: Video.measured("milkyway-discs", "thin_scale"), bulge_mass: Ops.m_sum(Video.MW_BAR_MASSES), bulge_scale: 0.6, circling: Video.measured("milkyway-discs", "circling"), sun: Video.measured("milkyway-discs", "sun_distance"), inclination: 0, position_angle: 0, distance: 0, approach: 0, across: 0, source: "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)")
+  end
+  def self.measured(id, name)
+    m = Measured.of(id)
+    if Ops.eq(m, nil)
+      fail.("no data/#{id}: run npx ray data #{id}")
+    end
+    names = Ops.getattr(m.header, "names")
+    k = Ops.m_first(Ops.filt(Ops.rng(names.length), ->(i) {
+      return Ops.eq(Ops.elem(names, i), name)
+    }))
+    if Ops.eq(k, nil)
+      fail.("data/#{id} has no #{Ops.quoted(name)}")
+    end
+    return Ops.elem(Ops.getattr(m.columns, "value"), k)
+  end
+  def self.MW_BAR1
+    return Ops.m_map(["rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut"], ->(n) {
+      return Video.measured("milkyway-bar", n)
+    })
+  end
+  def self.mw_bar(i)
+    return Ops.m_map(["rho_#{i}", "x_#{i}", "y_#{i}", "z_#{i}", "n_#{i}", "c_perp,#{i}", "R_#{i},out", "R_#{i},in", "n_#{i},out", "n_#{i},in"], ->(n) {
+      return Video.measured("milkyway-bar", n)
+    })
+  end
+  def self.MW_BAR2
+    return Video.mw_bar("2")
+  end
+  def self.MW_BAR3
+    return Video.mw_bar("3")
+  end
+  def self.MW_BAR_MASSES
+    return Ops.m_map(["M_bar1", "M_bar2", "M_bar3"], ->(n) {
+      return Video.measured("milkyway-bar", n)
+    })
+  end
+  def self.MW_BAR_ANGLE
+    return Video.measured("milkyway-discs", "bar_angle")
+  end
+  def self.MW_PATTERN_SPEED
+    return Video.measured("milkyway-bar", "pattern_speed")
+  end
+  def self.mw_discs_mass
+    return Ops.sub(Ops.add(Ops.add(Video.measured("milkyway-discs", "bulge_region_mass"), Video.measured("milkyway-discs", "thin_mass")), Video.measured("milkyway-discs", "thick_mass")), Ops.m_sum(Video.MW_BAR_MASSES))
+  end
+  def self.MW_DISCS
+    thin = Video.measured("milkyway-discs", "thin_mass")
+    thick = Video.measured("milkyway-discs", "thick_mass")
+    return [[Ops.div(Ops.mul(Video.mw_discs_mass, thin), (Ops.add(thin, thick))), Video.measured("milkyway-discs", "thin_scale"), 1], [Ops.div(Ops.mul(Video.mw_discs_mass, thick), (Ops.add(thin, thick))), Video.measured("milkyway-discs", "thick_scale"), 0]]
+  end
+  def self.MW_DISC_HOLE
+    return Video.measured("milkyway-bar", "R_cut")
+  end
+  def self.MW_ARMS
+    m = Measured.of("milkyway-arms")
+    if Ops.eq(m, nil)
+      fail.("no data/milkyway-arms: run npx ray data milkyway-arms")
+    end
+    return Ops.m_map(Ops.rng(5), ->(k) {
+      return [Ops.elem(Ops.getattr(m.columns, "R"), k), Ops.elem(Ops.getattr(m.columns, "theta"), k), Ops.elem(Ops.getattr(m.columns, "psi"), k), Ops.elem(Video.MW_ARM_END, k), Ops.elem(Video.MW_ARM_OLD, k)]
+    })
+  end
+  def self.MW_ARM_WIDTH
+    return [Ops.div(Video.measured("milkyway-arm-widths", "w0"), 1000), Ops.div(Video.measured("milkyway-arm-widths", "slope"), 1000), Video.measured("milkyway-arm-widths", "R0")]
+  end
+  def self.MW_ARM_CONTRAST
+    return Video.measured("milkyway-arm-contrast", "K")
+  end
+  def self.MW_DUST
+    return [Ops.div(Video.measured("milkyway-dust-lane", "hot"), 1000), 0.12, 0.1]
+  end
+  def self.MW_STIR
+    return [[Video.measured("milkyway-discs", "thin_sigma_R"), Video.measured("milkyway-discs", "thin_sigma_scale")], [Video.measured("milkyway-discs", "thick_sigma_R"), Video.measured("milkyway-discs", "thick_sigma_scale")], [Video.measured("milkyway-arm-widths", "young_spread"), Video.measured("milkyway-discs", "thin_sigma_scale")]]
+  end
+  def self.MW_SUN_MOTION
+    return [Video.measured("milkyway-arm-widths", "U_sun"), Ops.sub(Video.measured("milkyway-discs", "sun_tangential"), Video.measured("milkyway-discs", "circling"))]
+  end
+  def self.galaxy(name)
+    return (Ops.eq(name, "andromeda") ? Video.ANDROMEDA : Video.MILKY_WAY)
+  end
+  def self.per_kpc
+    return Ops.div(Video.FILM_RD, Video.MILKY_WAY.disc_scale)
+  end
+  def self.myr_per_tick(film)
+    c = Ops.getattr(film.header, "clock")
+    return Ops.div((Ops.div(Ops.elem(c, 1), Ops.elem(c, 0))), (Ops.mul(Ops.div(Ops.elem(c, 3), Ops.elem(c, 2)), Video.PER_MYR)))
+  end
+  def self.faster(film)
+    return Ops.div(Ops.elem(Ops.getattr(film.header, "clock"), 1), (Ops.div(Ops.elem(Ops.getattr(film.header, "clock"), 3), Video.LIGHT)))
+  end
+  def self.smooth(t)
+    u = Fmt.min(1, Fmt.max(0, t))
+    return Ops.mul(Ops.mul(u, u), (Ops.sub(3, Ops.mul(2, u))))
+  end
+  def self.shot(id, what, shot)
+    pic = Picture.new(id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: ->(played) {
+      return Sky.new(shot: shot)
+    })
+    pic.on_request = true
+    return pic
+  end
+  def self.solar_meta(theory)
+    r = theory.solar.record
+    at = 0
+    r.names.length.times do |k|
+      at = (Ops.eq(Ops.elem(r.names, k), "marks") ? k : at)
+    end
+    off = Ops.m_sum(Ops.m_take(r.sizes, at))
+    _SOLAR = Measured.of("solar-inner")
+    _NAMES = Ops.getattr(_SOLAR.header, "names")
+    _PER = Ops.getattr(_SOLAR.columns, "period")
+    _PLANETS = Ops.filt(Ops.rng(_NAMES.length), ->(i) {
+      return Ops.gt(Ops.elem(_PER, i), 0)
+    })
+    earth_body = 0
+    _PLANETS.length.times do |k|
+      earth_body = (Ops.eq(Ops.elem(_NAMES, Ops.elem(_PLANETS, k)), "Earth") ? Ops.add(k, 1) : earth_body)
+    end
+    return [off, r.width, Ops.m_round((Ops.div((Ops.sub(Ops.elem(r.sizes, at), 1)), 6))), earth_body]
+  end
+  def self.shot_after_solar(theory, id, what, shot)
+    meta = Video.solar_meta(theory)
+    stamp = theory.solar.record.stamp
+    pic = Picture.new(id: id, what: what, width: Video.WIDTH, height: Video.HEIGHT, frames: shot.frames, paint: ->(played) {
+      sky = Sky.new(shot: shot)
+      sky.meta = meta
+      sky.sol_stamp = stamp
+      return sky
+    })
+    pic.uses = ["solar.inner"]
+    pic.on_request = true
+    return pic
+  end
+  def self.light(s, film, b0, b1, w, _G, span, cx, cy, px, ci, side)
+    _D = Ops.getattr(film.columns, "density")
+    _Y = Ops.getattr(film.columns, "young")
+    _U = Ops.getattr(film.columns, "dust")
+    top = 0
+    ytop = 0
+    utop = 0
+    Ops.mul(_G, _G).times do |c|
+      top = Fmt.max(top, Ops.add(Ops.elem(_D, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_D, Ops.add(b1, c)), Ops.elem(_D, Ops.add(b0, c)))))))
+      ytop = Fmt.max(ytop, Ops.add(Ops.elem(_Y, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_Y, Ops.add(b1, c)), Ops.elem(_Y, Ops.add(b0, c)))))))
+      utop = Fmt.max(utop, Ops.add(Ops.elem(_U, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_U, Ops.add(b1, c)), Ops.elem(_U, Ops.add(b0, c)))))))
+    end
+    lt = Ops.m_ln((Ops.add(1, top)))
+    rgb = []
+    _G.times do |row|
+      gy = Ops.sub(Ops.sub(_G, 1), row)
+      _G.times do |gx|
+        c = Ops.add(Ops.mul(gy, _G), gx)
+        o = Fmt.min(1, Ops.div(Ops.m_ln((Ops.add(Ops.add(1, Ops.elem(_D, Ops.add(b0, c))), Ops.mul(w, (Ops.sub(Ops.elem(_D, Ops.add(b1, c)), Ops.elem(_D, Ops.add(b0, c)))))))), lt))
+        y = Fmt.min(1, Ops.m_sqrt((Ops.div((Ops.add(Ops.elem(_Y, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_Y, Ops.add(b1, c)), Ops.elem(_Y, Ops.add(b0, c))))))), ytop))))
+        lo = Ops.mul(Ops.m_sqrt(o), o)
+        hii = Fmt.max(0, Ops.div((Ops.sub(y, 0.7)), 0.3))
+        dim = Ops.sub(1, Ops.mul(0.7, Fmt.min(1, Ops.m_sqrt((Ops.div((Ops.add(Ops.elem(_U, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_U, Ops.add(b1, c)), Ops.elem(_U, Ops.add(b0, c))))))), utop))))))
+        Ops.m_push(rgb, Fmt.min(255, Ops.mul(dim, (Ops.add(Ops.add(Ops.mul(lo, (Ops.add(130, Ops.mul(125, o)))), Ops.mul(Ops.mul(95, y), y)), Ops.mul(110, hii))))))
+        Ops.m_push(rgb, Fmt.min(255, Ops.mul(dim, (Ops.add(Ops.add(Ops.mul(lo, (Ops.add(140, Ops.mul(85, o)))), Ops.mul(Ops.mul(120, y), y)), Ops.mul(25, hii))))))
+        Ops.m_push(rgb, Fmt.min(255, Ops.mul(dim, (Ops.add(Ops.add(Ops.mul(lo, (Ops.sub(175, Ops.mul(55, o)))), Ops.mul(Ops.mul(165, y), y)), Ops.mul(70, hii))))))
+      end
+    end
+    x0 = Ops.mul((Ops.sub(Ops.sub(0, span), cx)), px)
+    y0 = Ops.sub(0, Ops.mul(Ops.mul((Ops.sub(span, cy)), px), ci))
+    bw = Ops.mul(Ops.mul(2, span), px)
+    bh = Ops.mul(Ops.mul(Ops.mul(2, span), px), ci)
+    fade = Fmt.min(1, Fmt.max(0, Ops.div((Ops.sub(90, side)), 50)))
+    s.alpha(Ops.mul(0.3, fade))
+    s.field(rgb, _G, _G, x0, y0, bw, bh, Fmt.max(2, Ops.mul(2, side)))
+    s.alpha(Ops.mul(0.9, fade))
+    s.field(rgb, _G, _G, x0, y0, bw, bh, 0)
+    return s.alpha(1)
+  end
+  def self.sky(s, shot, film, tracks, i, sol, meta)
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    _H = film.header
+    n = shot.frames
+    t = (Ops.gt(n, 1) ? Ops.div(i, (Ops.sub(n, 1))) : 0)
+    e = Video.smooth(t)
+    _FR = Ops.getattr(_H, "frames")
+    u = Ops.mul((Ops.add(shot.from_at, Ops.mul((Ops.sub(shot.to_at, shot.from_at)), t))), (Ops.sub(_FR, 1)))
+    f0 = Fmt.min(Ops.m_floor(u), Ops.sub(_FR, 1))
+    f1 = Fmt.min(Ops.add(f0, 1), Ops.sub(_FR, 1))
+    w = Ops.sub(u, f0)
+    ez = (Ops.lt(shot.from_zoom, 1) ? Ops.sub(1, Ops.mul((Ops.sub(1, Video.smooth(Ops.div(t, 0.6)))), (Ops.sub(1, Video.smooth(Ops.div(t, 0.6)))))) : e)
+    across = Ops.m_exp((Ops.add(Ops.m_ln(shot.from_zoom), Ops.mul((Ops.sub(Ops.m_ln(shot.to_zoom), Ops.m_ln(shot.from_zoom))), ez))))
+    px = Ops.div(s.height, across)
+    has_sun = (!Ops.eq(tracks, nil) && Ops.eq(Ops.getattr(tracks.header, "sun"), 0))
+    sx = 0
+    sy = 0
+    if has_sun
+      _XY = Ops.getattr(tracks.columns, "xy")
+      m = Ops.getattr(tracks.header, "shown")
+      sx = Ops.add(Ops.elem(_XY, Ops.mul(Ops.mul(f0, m), 2)), Ops.mul(w, (Ops.sub(Ops.elem(_XY, Ops.mul(Ops.mul(f1, m), 2)), Ops.elem(_XY, Ops.mul(Ops.mul(f0, m), 2))))))
+      sy = Ops.add(Ops.elem(_XY, Ops.add(Ops.mul(Ops.mul(f0, m), 2), 1)), Ops.mul(w, (Ops.sub(Ops.elem(_XY, Ops.add(Ops.mul(Ops.mul(f1, m), 2), 1)), Ops.elem(_XY, Ops.add(Ops.mul(Ops.mul(f0, m), 2), 1))))))
+    end
+    look = (has_sun ? Ops.add(shot.from_sun, Ops.mul((Ops.sub(shot.to_sun, shot.from_sun)), e)) : 0)
+    px_end = Ops.div(s.height, shot.to_zoom)
+    away = (has_sun ? Ops.div(Ops.mul((Ops.sub(1, look)), px_end), px) : 0)
+    cx = Ops.mul(sx, (Ops.sub(1, away)))
+    cy = Ops.mul(sy, (Ops.sub(1, away)))
+    ci = Ops.m_cos((Ops.div(Ops.mul(shot.tilt, Math::PI), 180)))
+    _SF = (!Ops.eq(sol, nil) ? Ops.getattr(sol.columns, "frames") : [])
+    sys = [0, 0, 0, 0, 0]
+    if !Ops.eq(sol, nil)
+      _FRS = Ops.getattr(sol.header, "frames")
+      at_f = Fmt.min(Ops.sub(_FRS, 1), Video.SOLAR_TO)
+      mk = ->(f, k, c) {
+        return Ops.elem(_SF, Ops.add(Ops.add(Ops.add(Ops.mul(f, Ops.elem(meta, 1)), Ops.elem(meta, 0)), Ops.mul(6, k)), c))
+      }
+      reach = 0
+      _FRS.times do |f|
+        Ops.sub(Ops.elem(meta, 2), 1).times do |k|
+          reach = Fmt.max(reach, Fmt.hypot(Ops.sub(mk.(f, Ops.add(k, 1), 0), mk.(f, 0, 0)), Ops.sub(mk.(f, Ops.add(k, 1), 1), mk.(f, 0, 1))))
+        end
+      end
+      eb = Ops.elem(meta, 3)
+      ex = mk.(at_f, eb, 0)
+      ey = mk.(at_f, eb, 1)
+      last = Ops.mul(2.1, (Ops.add(reach, Fmt.hypot(Ops.sub(ex, mk.(at_f, 0, 0)), Ops.sub(ey, mk.(at_f, 0, 1))))))
+      pxs = Ops.mul(Ops.div(s.height, last), (Ops.div(shot.from_zoom, across)))
+      sun_x = Ops.mul((Ops.sub(mk.(at_f, 0, 0), ex)), pxs)
+      sun_y = Ops.mul((Ops.sub(mk.(at_f, 0, 1), ey)), pxs)
+      cx = Ops.sub(cx, Ops.div(sun_x, px))
+      cy = Ops.sub(cy, Ops.div(sun_y, (Ops.mul(px, ci))))
+      sys = [pxs, mk.(at_f, 0, 0), mk.(at_f, 0, 1), at_f, Ops.sub(1, Video.smooth(Ops.div(e, 0.3)))]
+    end
+    s.save
+    s.translate(Ops.div(s.width, 2), Ops.div(s.height, 2))
+    s.rotate(Ops.sub(0, Ops.div(Ops.mul(shot.turn, Math::PI), 180)))
+    _G = Ops.getattr(_H, "grid")
+    span = Ops.elem(Ops.getattr(_H, "span"), 0)
+    _D = Ops.getattr(film.columns, "density")
+    cs = Ops.div(Ops.mul(2, span), _G)
+    b0 = Ops.mul(Ops.mul(f0, _G), _G)
+    b1 = Ops.mul(Ops.mul(f1, _G), _G)
+    top = 0
+    Ops.mul(_G, _G).times do |c|
+      top = Fmt.max(top, Ops.add(Ops.elem(_D, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_D, Ops.add(b1, c)), Ops.elem(_D, Ops.add(b0, c)))))))
+    end
+    side = Ops.add(Ops.mul(cs, px), 0.6)
+    half_w = Ops.add(Ops.div(s.width, 2), side)
+    if Ops.eq(Ops.getattr(_H, "young"), 1)
+      Video.light(s, film, b0, b1, w, _G, span, cx, cy, px, ci, side)
+    else
+      s.alpha(Fmt.min(1, Fmt.max(0, Ops.div((Ops.sub(24, side)), 14))))
+      _G.times do |gy|
+        y = Ops.mul(Ops.mul((Ops.sub(Ops.add(Ops.sub(0, span), Ops.mul((Ops.add(gy, 0.5)), cs)), cy)), px), ci)
+        if Ops.lt(Ops.m_abs(y), half_w)
+          _G.times do |gx|
+            c = Ops.add(Ops.mul(gy, _G), gx)
+            v = Ops.add(Ops.elem(_D, Ops.add(b0, c)), Ops.mul(w, (Ops.sub(Ops.elem(_D, Ops.add(b1, c)), Ops.elem(_D, Ops.add(b0, c))))))
+            if Ops.gt(v, 0)
+              x = Ops.mul((Ops.sub(Ops.add(Ops.sub(0, span), Ops.mul((Ops.add(gx, 0.5)), cs)), cx)), px)
+              if Ops.lt(Ops.m_abs(x), half_w)
+                k = Fmt.min(1, Ops.div(Ops.m_ln((Ops.add(1, v))), Ops.m_ln((Ops.add(1, top)))))
+                r = Ops.m_round((Ops.add(40, Ops.mul(Ops.mul(215, k), k))))
+                gr = Ops.m_round((Ops.add(60, Ops.mul(190, k))))
+                b = Ops.m_round((Ops.add(110, Ops.mul(145, Fmt.min(1, Ops.mul(1.6, k))))))
+                s.fill_style("rgb(#{r},#{gr},#{b})")
+                s.fill_rect(Ops.sub(x, Ops.div(side, 2)), Ops.sub(Ops.sub(0, y), Ops.div(Ops.mul(side, ci), 2)), side, Ops.add(Ops.mul(side, ci), 0.6))
+              end
+            end
+          end
+        end
+      end
+      s.alpha(1)
+    end
+    lit = Ops.eq(Ops.getattr(_H, "young"), 1)
+    if (!Ops.eq(tracks, nil) && Ops.gt(px, ((lit ? 6 : 12))))
+      _XY = Ops.getattr(tracks.columns, "xy")
+      m = Ops.getattr(tracks.header, "shown")
+      tags = Ops.getattr(tracks.header, "tags")
+      s.alpha((lit ? Fmt.min(Ops.elem(Video.LIGHT_STARS, 0), Ops.div((Ops.sub(px, 6)), 14)) : Fmt.min(0.85, Ops.div((Ops.sub(px, 12)), 40))))
+      m.times do |k|
+        x = Ops.mul((Ops.sub(Ops.add(Ops.elem(_XY, Ops.mul((Ops.add(Ops.mul(f0, m), k)), 2)), Ops.mul(w, (Ops.sub(Ops.elem(_XY, Ops.mul((Ops.add(Ops.mul(f1, m), k)), 2)), Ops.elem(_XY, Ops.mul((Ops.add(Ops.mul(f0, m), k)), 2)))))), cx)), px)
+        y = Ops.mul(Ops.mul((Ops.sub(Ops.add(Ops.elem(_XY, Ops.add(Ops.mul((Ops.add(Ops.mul(f0, m), k)), 2), 1)), Ops.mul(w, (Ops.sub(Ops.elem(_XY, Ops.add(Ops.mul((Ops.add(Ops.mul(f1, m), k)), 2), 1)), Ops.elem(_XY, Ops.add(Ops.mul((Ops.add(Ops.mul(f0, m), k)), 2), 1)))))), cy)), px), ci)
+        if (Ops.lt(Ops.m_abs(x), half_w) && Ops.lt(Ops.m_abs(y), half_w))
+          tg = Ops.elem(tags, k)
+          s.fill_style((Ops.ge(tg, 4) ? "\#d4e6ff" : ((Ops.eq(tg, 1) || Ops.eq(tg, 3)) ? "\#ffd9a0" : (Ops.eq(tg, 2) ? "\#ffc7e0" : "\#dfe8ff"))))
+          sz = (lit ? ((Ops.ge(tg, 4) ? Ops.elem(Video.LIGHT_STARS, 2) : Ops.elem(Video.LIGHT_STARS, 1))) : 2.4)
+          s.fill_rect(Ops.sub(x, Ops.div(sz, 2)), Ops.sub(Ops.sub(0, y), Ops.div(sz, 2)), sz, sz)
+        end
+      end
+      s.alpha(1)
+    end
+    if (!Ops.eq(sol, nil) && Ops.gt(Ops.elem(sys, 4), 0.004))
+      ax = Ops.mul((Ops.sub(sx, cx)), px)
+      ay = Ops.mul(Ops.mul((Ops.sub(sy, cy)), px), ci)
+      _FRS = Ops.getattr(sol.header, "frames")
+      mk = ->(f, k, c) {
+        return Ops.elem(_SF, Ops.add(Ops.add(Ops.add(Ops.mul(f, Ops.elem(meta, 1)), Ops.elem(meta, 0)), Ops.mul(6, k)), c))
+      }
+      Ops.sub(Ops.elem(meta, 2), 1).times do |k|
+        b = Ops.add(k, 1)
+        ink = Ops.elem(Video.PLANET_INK, Fmt.min(3, k))
+        s.alpha(Ops.mul(0.85, Ops.elem(sys, 4)))
+        s.stroke_style(ink)
+        s.line_width(2)
+        s.begin_path
+        _FRS.times do |f|
+          x = Ops.add(ax, Ops.mul((Ops.sub(mk.(f, b, 0), Ops.elem(sys, 1))), Ops.elem(sys, 0)))
+          y = Ops.add(ay, Ops.mul((Ops.sub(mk.(f, b, 1), Ops.elem(sys, 2))), Ops.elem(sys, 0)))
+          if Ops.eq(f, 0)
+            s.move_to(x, Ops.sub(0, y))
+          else
+            s.line_to(x, Ops.sub(0, y))
+          end
+        end
+        s.stroke
+        s.alpha(Ops.elem(sys, 4))
+        x = Ops.add(ax, Ops.mul((Ops.sub(mk.(Ops.elem(sys, 3), b, 0), Ops.elem(sys, 1))), Ops.elem(sys, 0)))
+        y = Ops.add(ay, Ops.mul((Ops.sub(mk.(Ops.elem(sys, 3), b, 1), Ops.elem(sys, 2))), Ops.elem(sys, 0)))
+        s.line_width(2.5)
+        s.begin_path
+        s.arc(x, Ops.sub(0, y), 13, 0, (2 * Math::PI))
+        s.stroke
+        s.fill_style("\#000000")
+        s.begin_path
+        s.arc(x, Ops.sub(0, y), 2.5, 0, (2 * Math::PI))
+        s.fill
+      end
+      s.alpha(1)
+    end
+    if has_sun
+      x = Ops.mul((Ops.sub(sx, cx)), px)
+      y = Ops.mul(Ops.mul((Ops.sub(sy, cy)), px), ci)
+      big = (Ops.lt(shot.from_zoom, 1) ? Ops.sub(1, Video.smooth(Ops.mul(e, 3))) : 0)
+      s.fill_style("\#ffd23f")
+      s.begin_path
+      s.arc(x, Ops.sub(0, y), Ops.mul(4, (Ops.sub(1, big))), 0, (2 * Math::PI))
+      s.fill
+      if Ops.gt(big, 0)
+        s.alpha(big)
+        s.stroke_style("\#e0a526")
+        s.line_width(3)
+        s.begin_path
+        s.arc(x, Ops.sub(0, y), 26, 0, (2 * Math::PI))
+        s.stroke
+        s.alpha(1)
+      end
+    end
+    s.restore
+    fade = Fmt.max((Ops.gt(shot.fade_in, 0) ? Ops.sub(1, Ops.div(i, (Ops.mul(shot.fade_in, Video.FPS)))) : 0), (Ops.gt(shot.fade_out, 0) ? Ops.sub(1, Ops.div((Ops.sub(Ops.sub(n, 1), i)), (Ops.mul(shot.fade_out, Video.FPS)))) : 0))
+    if Ops.gt(fade, 0)
+      s.alpha(Fmt.min(1, fade))
+      s.fill_style(Galaxies.BACK)
+      s.fill_rect(0, 0, s.width, s.height)
+      return s.alpha(1)
+    end
+  end
+  def self.transport(theory)
+    ink = Ink.new()
+    lanes = Video.transport_lanes(theory, ink)
+    n = Ops.m_round((Ops.mul(14, Video.FPS)))
+    pic = Picture.new(id: "video.transport", what: "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ->(played) {
+      return Banded.new(inner: Unrolling.new(lanes: lanes, ink: ink, per: Video.per_tick(lanes)), top: Video.STRIP_TOP, tall: Video.STRIP_TALL)
+    })
+    pic.on_request = true
+    return pic
+  end
+  def self.transport_lanes(theory, ink)
+    ink.every = true
+    ink.top = 36
+    lanes = theory.transport_lanes(ink)
+    Ops.list(lanes).each do |l|
+      l.says = ""
+    end
+    ink.centre = Strip.centre_of(lanes)
+    return lanes
+  end
+  def self.per_tick(lanes)
+    return Ops.m_floor((Ops.div(Ops.m_round((Ops.mul(14, Video.FPS))), (Ops.add(lanes.length, 1)))))
+  end
+  def self.look(width, lane, ink)
+    seen = false
+    lo = 0
+    hi = 0
+    Ops.list(lane.sides).each do |sd|
+      to = Ops.add(sd.at, sd.sign)
+      unless seen
+        lo = sd.at
+        hi = sd.at
+        seen = true
+      end
+      lo = Fmt.min(lo, Fmt.min(sd.at, to))
+      hi = Fmt.max(hi, Fmt.max(sd.at, to))
+    end
+    Ops.list(lane.sources).each do |p|
+      unless seen
+        lo = p
+        hi = p
+        seen = true
+      end
+      lo = Fmt.min(lo, Ops.sub(p, 1))
+      hi = Fmt.max(hi, Ops.add(p, 1))
+    end
+    ext = Ops.add(Fmt.max(Ops.sub(ink.centre, lo), Ops.sub(hi, ink.centre)), 0.4)
+    lanew = Ops.sub(width, Ops.mul(2, Strip.PAD))
+    cell = Ops.div(lanew, (Ops.add(Ops.mul(2, ext), 1)))
+    mid = Ops.add(Strip.PAD, Ops.div(lanew, 2))
+    src = Ops.m_first(lane.sources)
+    x0 = Ops.add(mid, Ops.mul((Ops.sub(src, ink.centre)), cell))
+    return [x0, Ops.add(Ops.add(Video.STRIP_TOP, ink.top), Ops.div((Ops.sub(Video.STRIP_TALL, ink.top)), 2)), cell, src, Ops.div((Ops.sub(Strip.PAD, x0)), cell), Ops.div((Ops.sub(Ops.sub(width, Strip.PAD), x0)), cell)]
+  end
+  def self.seen(p, yaw, pitch, ox, oy, cell)
+    x1 = Ops.sub(Ops.mul(Ops.elem(p, 0), Ops.m_cos(yaw)), Ops.mul(Ops.elem(p, 2), Ops.m_sin(yaw)))
+    z1 = Ops.add(Ops.mul(Ops.elem(p, 0), Ops.m_sin(yaw)), Ops.mul(Ops.elem(p, 2), Ops.m_cos(yaw)))
+    y1 = Ops.sub(Ops.mul(Ops.elem(p, 1), Ops.m_cos(pitch)), Ops.mul(z1, Ops.m_sin(pitch)))
+    z2 = Ops.add(Ops.mul(Ops.elem(p, 1), Ops.m_sin(pitch)), Ops.mul(z1, Ops.m_cos(pitch)))
+    f = Ops.div(60, (Ops.add(60, z2)))
+    return [Ops.add(ox, Ops.mul(Ops.mul(cell, f), x1)), Ops.sub(oy, Ops.mul(Ops.mul(cell, f), y1)), f]
+  end
+  def self.arrow(s, x, y, ux, uy, cell, a)
+    _HEADW = Fmt.max(7, Fmt.min(12, Ops.mul(cell, 0.20)))
+    _REACH = Ops.mul(cell, 0.25)
+    _BAR = Fmt.max(2.5, Fmt.min(4.5, Ops.mul(cell, 0.075)))
+    _BASE = Ops.mul(_HEADW, 0.45)
+    _TIP = Ops.mul(_HEADW, 0.55)
+    _LEN = Ops.sub(_REACH, _BASE)
+    _SEEN = Ops.sub(_TIP, Ops.div(_BAR, 0.84))
+    s.line_width(_BAR)
+    s.stroke_style("rgba(#{Ink.NEUTRAL},#{Ops.mul(0.32, a)})")
+    s.begin_path
+    s.move_to(Ops.sub(x, Ops.mul(ux, (Ops.add(_BASE, _LEN)))), Ops.sub(y, Ops.mul(uy, (Ops.add(_BASE, _LEN)))))
+    s.line_to(Ops.sub(x, Ops.mul(ux, _BASE)), Ops.sub(y, Ops.mul(uy, _BASE)))
+    s.stroke
+    s.stroke_style("rgba(#{Ink.NEUTRAL},#{a})")
+    s.begin_path
+    s.move_to(x, y)
+    s.line_to(Ops.add(x, Ops.mul(ux, (Ops.add(_SEEN, _LEN)))), Ops.add(y, Ops.mul(uy, (Ops.add(_SEEN, _LEN)))))
+    s.stroke
+    s.fill_style("rgba(#{Ink.NEUTRAL},#{Ops.mul(0.97, a)})")
+    s.begin_path
+    s.move_to(Ops.add(x, Ops.mul(ux, _TIP)), Ops.add(y, Ops.mul(uy, _TIP)))
+    s.line_to(Ops.sub(Ops.sub(x, Ops.mul(ux, _BASE)), Ops.mul(Ops.mul(uy, _HEADW), 0.42)), Ops.add(Ops.sub(y, Ops.mul(uy, _BASE)), Ops.mul(Ops.mul(ux, _HEADW), 0.42)))
+    s.line_to(Ops.add(Ops.sub(x, Ops.mul(ux, _BASE)), Ops.mul(Ops.mul(uy, _HEADW), 0.42)), Ops.sub(Ops.sub(y, Ops.mul(uy, _BASE)), Ops.mul(Ops.mul(ux, _HEADW), 0.42)))
+    return s.fill
+  end
+  def self.way(k, space)
+    q = Ops.m_floor((Ops.div(k, 2)))
+    o = Ops.elem([[1, 0], [1, 1], [0, 1], [Ops.sub(0, 1), 1], [Ops.sub(0, 1), 0], [Ops.sub(0, 1), Ops.sub(0, 1)], [0, Ops.sub(0, 1)], [1, Ops.sub(0, 1)]], k)
+    b = Ops.elem([[0.5, 0.5], [Ops.sub(0, 0.5), 0.5], [Ops.sub(0, 0.5), Ops.sub(0, 0.5)], [0.5, Ops.sub(0, 0.5)]], q)
+    bz = (Ops.eq(Ops.mod(k, 2), 0) ? 0.5 : Ops.sub(0, 0.5))
+    return [Ops.add(Ops.elem(o, 0), Ops.mul((Ops.sub(Ops.elem(b, 0), Ops.elem(o, 0))), space)), Ops.add(Ops.elem(o, 1), Ops.mul((Ops.sub(Ops.elem(b, 1), Ops.elem(o, 1))), space)), Ops.mul(bz, space)]
+  end
+  def self.lattice(s, lane, look, grow, ticks, fade, earth, ox, oy, cell, rays, dense_from, far)
+    plane = Video.smooth(Ops.div((Ops.sub(grow, 0.25)), 0.3))
+    space = Video.smooth(Ops.div((Ops.sub(grow, 0.55)), 0.35))
+    yaw = Ops.mul(0.55, space)
+    pitch = Ops.mul(0.42, space)
+    src = Ops.elem(look, 3)
+    lo = Ops.elem(look, 4)
+    hi = Ops.elem(look, 5)
+    _R = 7
+    a = Ops.mul(_R, plane)
+    b = Ops.mul(_R, space)
+    pt = ->(p) {
+      return Video.seen(p, yaw, pitch, ox, oy, cell)
+    }
+    line = ->(p, q, al) {
+      if Ops.gt(al, 0.004)
+        _P = pt.(p)
+        _Q = pt.(q)
+        s.stroke_style("rgba(#{Ink.NEUTRAL},#{Ops.mul(0.16, al)})")
+        s.line_width(1)
+        s.begin_path
+        s.move_to(Ops.elem(_P, 0), Ops.elem(_P, 1))
+        s.line_to(Ops.elem(_Q, 0), Ops.elem(_Q, 1))
+        return s.stroke
+      end
+    }
+    dot = ->(p, al) {
+      if Ops.gt(al, 0.004)
+        _P = pt.(p)
+        s.fill_style("rgba(#{Ink.NEUTRAL},#{Ops.mul(0.6, al)})")
+        s.begin_path
+        s.arc(Ops.elem(_P, 0), Ops.elem(_P, 1), Ops.mul(2.6, Ops.elem(_P, 2)), 0, (2 * Math::PI))
+        return s.fill
+      end
+    }
+    ilo = Ops.m_round((Ops.sub(Ops.m_reduce(lane.points, Ops.m_first(lane.points), ->(p, q) {
+      return Fmt.min(p, q)
+    }), src)))
+    ihi = Ops.m_round((Ops.sub(Ops.m_reduce(lane.points, Ops.m_first(lane.points), ->(p, q) {
+      return Fmt.max(p, q)
+    }), src)))
+    Ops.add(Ops.mul(2, _R), 1).times do |jj|
+      j = Ops.sub(jj, _R)
+      Ops.add(Ops.mul(2, _R), 1).times do |ll|
+        l = Ops.sub(ll, _R)
+        vis = Ops.mul(Ops.mul(fade, Fmt.min(1, Fmt.max(0, Ops.sub(Ops.add(a, 1), Ops.m_abs(j))))), Fmt.min(1, Fmt.max(0, Ops.sub(Ops.add(b, 1), Ops.m_abs(l)))))
+        if Ops.gt(vis, 0.004)
+          line.([lo, j, l], [hi, j, l], vis)
+          Ops.add(Ops.sub(ihi, ilo), 1).times do |ii|
+            dot.([Ops.add(ilo, ii), j, l], vis)
+          end
+          if ((Ops.gt(space, 0.01) && Ops.lt(j, _R)) && Ops.lt(l, _R))
+            Ops.sub(ihi, ilo).times do |ii|
+              dot.([Ops.add(Ops.add(ilo, ii), 0.5), Ops.add(j, 0.5), Ops.add(l, 0.5)], Ops.mul(vis, space))
+            end
+          end
+        end
+      end
+    end
+    Ops.add(Ops.sub(ihi, ilo), 1).times do |ii|
+      i = Ops.add(ilo, ii)
+      Ops.add(Ops.mul(2, _R), 1).times do |ll|
+        l = Ops.sub(ll, _R)
+        line.([i, Ops.sub(0, a), l], [i, a, l], Ops.mul(Ops.mul(fade, plane), Fmt.min(1, Fmt.max(0, Ops.sub(Ops.add(b, 1), Ops.m_abs(l))))))
+      end
+      Ops.add(Ops.mul(2, _R), 1).times do |jj|
+        j = Ops.sub(jj, _R)
+        line.([i, j, Ops.sub(0, b)], [i, j, b], Ops.mul(Ops.mul(fade, space), Fmt.min(1, Fmt.max(0, Ops.sub(Ops.add(a, 1), Ops.m_abs(j))))))
+      end
+    end
+    _T = Ops.m_floor(ticks)
+    ray = ->(k, r, w) {
+      if ((Ops.gt(w, 0.004) && Ops.ge(r, 1)) && Ops.le(r, far))
+        d = Video.way(k, space)
+        _P = pt.([Ops.mul(Ops.elem(d, 0), r), Ops.mul(Ops.elem(d, 1), r), Ops.mul(Ops.elem(d, 2), r)])
+        _Q = pt.([Ops.mul(Ops.elem(d, 0), (Ops.add(r, 0.25))), Ops.mul(Ops.elem(d, 1), (Ops.add(r, 0.25))), Ops.mul(Ops.elem(d, 2), (Ops.add(r, 0.25)))])
+        len = Fmt.hypot(Ops.sub(Ops.elem(_Q, 0), Ops.elem(_P, 0)), Ops.sub(Ops.elem(_Q, 1), Ops.elem(_P, 1)))
+        if Ops.gt(len, 0.01)
+          return Video.arrow(s, Ops.elem(_P, 0), Ops.elem(_P, 1), Ops.div((Ops.sub(Ops.elem(_Q, 0), Ops.elem(_P, 0))), len), Ops.div((Ops.sub(Ops.elem(_Q, 1), Ops.elem(_P, 1))), len), Ops.mul(len, 4), Ops.mul(Ops.mul(w, rays), Fmt.min(1, Ops.sub(far, r))))
+        end
+      end
+    }
+    Ops.list(lane.sides).each do |sd|
+      ray.((Ops.gt(sd.sign, 0) ? 0 : 4), Ops.add(Ops.m_abs((Ops.sub(sd.at, src))), _T), 1)
+    end
+    _T.times do |m|
+      e = Ops.add(m, 1)
+      if (Ops.eq(Ops.mod(e, 2), 1) || Ops.gt(e, dense_from))
+        8.times do |k|
+          ray.(k, Ops.sub(Ops.add(1, _T), e), (Ops.eq(Ops.mod(k, 4), 0) ? 1 : plane))
+        end
+      end
+    end
+    _P = pt.([0, 0, 0])
+    half = Fmt.max(9, Fmt.min(18, Ops.mul(cell, 0.3)))
+    s.fill_style("rgba(#{Ink.SOURCE},#{Ops.mul(0.14, (Ops.sub(1, earth)))})")
+    s.fill_rect(Ops.sub(Ops.elem(_P, 0), half), Ops.sub(Ops.elem(_P, 1), half), Ops.mul(2, half), Ops.mul(2, half))
+    s.stroke_style("rgba(#{Ink.SOURCE},#{Ops.mul(0.9, (Ops.sub(1, earth)))})")
+    s.line_width(1.5)
+    s.stroke_rect(Ops.sub(Ops.elem(_P, 0), half), Ops.sub(Ops.elem(_P, 1), half), Ops.mul(2, half), Ops.mul(2, half))
+    if Ops.gt(earth, 0)
+      s.fill_style("rgba(#{Ink.SOURCE},#{earth})")
+      s.begin_path
+      s.arc(Ops.elem(_P, 0), Ops.elem(_P, 1), Ops.add(2.6, Ops.mul(7.4, earth)), 0, (2 * Math::PI))
+      return s.fill
+    end
+  end
+  def self.source_camera(s, look, grow)
+    e = Video.smooth(Ops.div(grow, 0.3))
+    return [Ops.add(Ops.elem(look, 0), Ops.mul((Ops.sub(Ops.div(s.width, 2), Ops.elem(look, 0))), e)), Ops.add(Ops.elem(look, 1), Ops.mul((Ops.sub(Ops.div(s.height, 2), Ops.elem(look, 1))), e)), Ops.m_exp((Ops.add(Ops.m_ln(Ops.elem(look, 2)), Ops.mul((Ops.sub(Ops.m_ln(95), Ops.m_ln(Ops.elem(look, 2)))), e))))]
+  end
+  def self.to_source(theory)
+    ink = Ink.new()
+    lanes = Video.transport_lanes(theory, ink)
+    n = Ops.m_round((Ops.mul(4, Video.FPS)))
+    pic = Picture.new(id: "video.to-source", what: "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ->(played) {
+      return Growing.new(n: n, lane: Ops.m_last(lanes), ink: ink, per: Video.per_tick(lanes))
+    })
+    pic.on_request = true
+    return pic
+  end
+  def self.to_solar(theory)
+    ink = Ink.new()
+    lanes = Video.transport_lanes(theory, ink)
+    sol = theory.solar
+    r = sol.record
+    at = 0
+    r.names.length.times do |k|
+      at = (Ops.eq(Ops.elem(r.names, k), "marks") ? k : at)
+    end
+    off = Ops.m_sum(Ops.m_take(r.sizes, at))
+    n = Ops.m_round((Ops.mul(8, Video.FPS)))
+    pic = Picture.new(id: "video.to-solar", what: "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ->(played) {
+      return Planets.new(n: n, lane: Ops.m_last(lanes), ink: ink, per: Video.per_tick(lanes), stamp: r.stamp, off: off, width: r.width, bodies: Ops.m_round((Ops.div((Ops.sub(Ops.elem(r.sizes, at), 1)), 6))))
+    })
+    pic.uses = ["solar.inner"]
+    pic.on_request = true
+    return pic
+  end
+  def self.planets(s, t, lane, look, ticks, film, off, width, bodies)
+    _SOLAR = Measured.of("solar-inner")
+    if Ops.eq(_SOLAR, nil)
+      fail.("solar-inner is not on disk - run `npx ray data` and try again")
+    end
+    _NAMES = Ops.getattr(_SOLAR.header, "names")
+    _PER = Ops.getattr(_SOLAR.columns, "period")
+    _PLANETS = Ops.filt(Ops.rng(_NAMES.length), ->(i) {
+      return Ops.gt(Ops.elem(_PER, i), 0)
+    })
+    _F = Ops.getattr(film.columns, "frames")
+    _FR = Ops.getattr(film.header, "frames")
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    fade = Ops.sub(1, Video.smooth(Ops.div((Ops.sub(t, 0.05)), 0.4)))
+    rays = Ops.sub(1, Video.smooth(Ops.div((Ops.sub(t, 0.45)), 0.35)))
+    earth = Video.smooth(Ops.div((Ops.sub(t, 0.3)), 0.3))
+    e = Video.smooth(Ops.div(t, 0.92))
+    come = Video.smooth(Ops.div((Ops.sub(t, 0.45)), 0.35))
+    u = Fmt.min(Ops.sub(_FR, 1), Ops.add(Video.SOLAR_FROM, Ops.mul((Ops.sub(Video.SOLAR_TO, Video.SOLAR_FROM)), t)))
+    f0 = Ops.m_floor(u)
+    f1 = Fmt.min(Ops.add(f0, 1), Ops.sub(_FR, 1))
+    w = Ops.sub(u, f0)
+    mark = ->(f, k, c) {
+      return Ops.elem(_F, Ops.add(Ops.add(Ops.add(Ops.mul(f, width), off), Ops.mul(6, k)), c))
+    }
+    where = ->(k) {
+      return [Ops.add(mark.(f0, k, 0), Ops.mul(w, (Ops.sub(mark.(f1, k, 0), mark.(f0, k, 0))))), Ops.add(mark.(f0, k, 1), Ops.mul(w, (Ops.sub(mark.(f1, k, 1), mark.(f0, k, 1)))))]
+    }
+    reach = 0
+    _FR.times do |f|
+      Ops.sub(bodies, 1).times do |k|
+        reach = Fmt.max(reach, Fmt.hypot(Ops.sub(mark.(f, Ops.add(k, 1), 0), mark.(f, 0, 0)), Ops.sub(mark.(f, Ops.add(k, 1), 1), mark.(f, 0, 1))))
+      end
+    end
+    earth_body = 0
+    _PLANETS.length.times do |k|
+      earth_body = (Ops.eq(Ops.elem(_NAMES, Ops.elem(_PLANETS, k)), "Earth") ? Ops.add(k, 1) : earth_body)
+    end
+    _E = where.(earth_body)
+    _O = where.(0)
+    last = Ops.mul(2.1, (Ops.add(reach, Fmt.hypot(Ops.sub(Ops.elem(_E, 0), Ops.elem(_O, 0)), Ops.sub(Ops.elem(_E, 1), Ops.elem(_O, 1))))))
+    across = Ops.m_exp((Ops.add(Ops.m_ln((Ops.div(last, 180))), Ops.mul((Ops.sub(Ops.m_ln(last), Ops.m_ln((Ops.div(last, 180))))), e))))
+    px = Ops.div(s.height, across)
+    cx = Ops.elem(_E, 0)
+    cy = Ops.elem(_E, 1)
+    _X = ->(x) {
+      return Ops.add(Ops.div(s.width, 2), Ops.mul((Ops.sub(x, cx)), px))
+    }
+    _Y = ->(y) {
+      return Ops.sub(Ops.div(s.height, 2), Ops.mul((Ops.sub(y, cy)), px))
+    }
+    if (Ops.gt(fade, 0.004) || Ops.gt(rays, 0.004))
+      Video.lattice(s, lane, look, 1, Ops.add(ticks, Ops.mul(Ops.mul(300, t), t)), fade, earth, _X.(Ops.elem(_E, 0)), _Y.(Ops.elem(_E, 1)), Ops.div(Ops.mul(95, (Ops.div(last, 180))), across), rays, Ops.m_floor(ticks), Ops.add(16, Ops.mul(40, Video.smooth(Ops.div(t, 0.4)))))
+    end
+    Ops.sub(bodies, 1).times do |k|
+      b = Ops.add(k, 1)
+      ink = Ops.elem(Video.PLANET_INK, Fmt.min(3, k))
+      s.alpha(Ops.mul(0.85, come))
+      s.stroke_style(ink)
+      s.line_width(2)
+      s.begin_path
+      _FR.times do |f|
+        if Ops.eq(f, 0)
+          s.move_to(_X.(mark.(f, b, 0)), _Y.(mark.(f, b, 1)))
+        else
+          s.line_to(_X.(mark.(f, b, 0)), _Y.(mark.(f, b, 1)))
+        end
+      end
+      s.stroke
+      _P = where.(b)
+      x = _X.(Ops.elem(_P, 0))
+      y = _Y.(Ops.elem(_P, 1))
+      s.alpha((Ops.eq(b, earth_body) ? earth : come))
+      s.stroke_style(ink)
+      s.line_width(2.5)
+      s.begin_path
+      s.arc(x, y, 13, 0, (2 * Math::PI))
+      s.stroke
+      s.fill_style((Ops.eq(b, earth_body) ? "rgba(#{Ink.SOURCE},#{Ops.sub(1, come)})" : "\#000000"))
+      s.begin_path
+      s.arc(x, y, (Ops.eq(b, earth_body) ? Ops.add(Ops.mul(10, (Ops.sub(1, come))), Ops.mul(2.5, come)) : 2.5), 0, (2 * Math::PI))
+      s.fill
+    end
+    s.alpha(come)
+    s.stroke_style("\#e0a526")
+    s.line_width(3)
+    s.begin_path
+    s.arc(_X.(Ops.elem(_O, 0)), _Y.(Ops.elem(_O, 1)), 26, 0, (2 * Math::PI))
+    s.stroke
+    s.fill_style("\#000000")
+    s.begin_path
+    s.arc(_X.(Ops.elem(_O, 0)), _Y.(Ops.elem(_O, 1)), 3, 0, (2 * Math::PI))
+    s.fill
+    return s.alpha(1)
+  end
+  def self.end
+    n = Ops.m_round((Ops.mul(20, Video.FPS)))
+    pic = Picture.new(id: "video.end", what: "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ->(played) {
+      return EndCard.new(n: n)
+    })
+    pic.images = [Video.LOGO]
+    pic.on_request = true
+    return pic
+  end
+  def self.end_card(s, i, n)
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    s.alpha(Video.smooth(Ops.div(i, Video.FPS)))
+    w = 1500
+    s.image(Video.LOGO, Ops.div((Ops.sub(s.width, w)), 2), 330, w, Ops.div(w, 3))
+    s.text_align("center")
+    s.fill_style(Galaxies.SEEN)
+    s.font("600 72px ui-sans-serif, system-ui, sans-serif")
+    s.fill_text("Physics Project", Ops.div(s.width, 2), 960)
+    s.fill_style("\#3ddcff")
+    s.font("44px ui-sans-serif, system-ui, sans-serif")
+    s.fill_text("orbitmines.com/physics", Ops.div(s.width, 2), 1060)
+    return s.alpha(1)
+  end
+  def self.montage
+    pic = Picture.still("video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", Video.WIDTH, Video.HEIGHT, ->(s) {
+      nil
+    })
+    pic.parts = Video.PARTS
+    pic.on_request = true
+    return pic
+  end
+  __exposed
+end
+
+class Shot < Node
+  def film_id(*args_)
+    args_.empty? ? @film_id : @film_id.(*args_)
+  end
+  attr_writer :film_id
+  def seconds(*args_)
+    args_.empty? ? @seconds : @seconds.(*args_)
+  end
+  attr_writer :seconds
+  def from_zoom(*args_)
+    args_.empty? ? @from_zoom : @from_zoom.(*args_)
+  end
+  attr_writer :from_zoom
+  def to_zoom(*args_)
+    args_.empty? ? @to_zoom : @to_zoom.(*args_)
+  end
+  attr_writer :to_zoom
+  def from_sun(*args_)
+    args_.empty? ? @from_sun : @from_sun.(*args_)
+  end
+  attr_writer :from_sun
+  def to_sun(*args_)
+    args_.empty? ? @to_sun : @to_sun.(*args_)
+  end
+  attr_writer :to_sun
+  def from_at(*args_)
+    args_.empty? ? @from_at : @from_at.(*args_)
+  end
+  attr_writer :from_at
+  def to_at(*args_)
+    args_.empty? ? @to_at : @to_at.(*args_)
+  end
+  attr_writer :to_at
+  def tilt(*args_)
+    args_.empty? ? @tilt : @tilt.(*args_)
+  end
+  attr_writer :tilt
+  def turn(*args_)
+    args_.empty? ? @turn : @turn.(*args_)
+  end
+  attr_writer :turn
+  def title(*args_)
+    args_.empty? ? @title : @title.(*args_)
+  end
+  attr_writer :title
+  def fade_in(*args_)
+    args_.empty? ? @fade_in : @fade_in.(*args_)
+  end
+  attr_writer :fade_in
+  def fade_out(*args_)
+    args_.empty? ? @fade_out : @fade_out.(*args_)
+  end
+  attr_writer :fade_out
+  def frames
+    return Ops.m_round((Ops.mul(self.seconds, Video.FPS)))
+  end
+  __exposed
+end
+
+class Sky < Painter
+  def shot(*args_)
+    args_.empty? ? @shot : @shot.(*args_)
+  end
+  attr_writer :shot
+  def sol(*args_)
+    @sol = (nil) unless instance_variable_defined?(:@sol)
+    args_.empty? ? @sol : @sol.(*args_)
+  end
+  attr_writer :sol
+  def meta(*args_)
+    @meta = ([]) unless instance_variable_defined?(:@meta)
+    args_.empty? ? @meta : @meta.(*args_)
+  end
+  attr_writer :meta
+  def sol_stamp(*args_)
+    @sol_stamp = ("") unless instance_variable_defined?(:@sol_stamp)
+    args_.empty? ? @sol_stamp : @sol_stamp.(*args_)
+  end
+  attr_writer :sol_stamp
+  def shown_frames(*args_)
+    @shown_frames = (0) unless instance_variable_defined?(:@shown_frames)
+    args_.empty? ? @shown_frames : @shown_frames.(*args_)
+  end
+  attr_writer :shown_frames
+  def film(*args_)
+    @film = (nil) unless instance_variable_defined?(:@film)
+    args_.empty? ? @film : @film.(*args_)
+  end
+  attr_writer :film
+  def tracks(*args_)
+    @tracks = (nil) unless instance_variable_defined?(:@tracks)
+    args_.empty? ? @tracks : @tracks.(*args_)
+  end
+  attr_writer :tracks
+  def frame(s, dt)
+    if Ops.eq(self.film, nil)
+      self.film = Measured.of(self.shot.film_id)
+      self.tracks = Measured.of("#{self.shot.film_id}.stars")
+    end
+    if Ops.eq(self.film, nil)
+      fail.("#{self.shot.film_id} is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=#{self.shot.film_id} deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts .")
+    end
+    if (Ops.gt(self.meta.length, 0) && Ops.eq(self.sol, nil))
+      self.sol = Measured.of("solar.inner.frames")
+      if Ops.eq(self.sol, nil)
+        fail.("solar.inner is not recorded - run `npx ray visuals solar.inner` first")
+      end
+      if !Ops.eq(Ops.getattr(self.sol.header, "stamp"), self.sol_stamp)
+        fail.("solar.inner's recording is stale - run `npx ray visuals solar.inner` again")
+      end
+    end
+    Video.sky(s, self.shot, self.film, self.tracks, self.shown_frames, self.sol, self.meta)
+    self.shown_frames = Ops.add(self.shown_frames, 1)
+  end
+  __exposed
+end
+
+class Band < Surface
+  def inner(*args_)
+    args_.empty? ? @inner : @inner.(*args_)
+  end
+  attr_writer :inner
+  def fill_style(colour)
+    return self.inner.fill_style(colour)
+  end
+  def stroke_style(colour)
+    return self.inner.stroke_style(colour)
+  end
+  def line_width(w)
+    return self.inner.line_width(w)
+  end
+  def alpha(v)
+    return self.inner.alpha(v)
+  end
+  def fill_rect(x, y, w, h)
+    return self.inner.fill_rect(x, y, w, h)
+  end
+  def stroke_rect(x, y, w, h)
+    return self.inner.stroke_rect(x, y, w, h)
+  end
+  def clear_rect(x, y, w, h)
+    return self.inner.clear_rect(x, y, w, h)
+  end
+  def begin_path
+    return self.inner.begin_path
+  end
+  def move_to(x, y)
+    return self.inner.move_to(x, y)
+  end
+  def line_to(x, y)
+    return self.inner.line_to(x, y)
+  end
+  def arc(x, y, r, start_at, end_at)
+    return self.inner.arc(x, y, r, start_at, end_at)
+  end
+  def stroke
+    return self.inner.stroke
+  end
+  def fill
+    return self.inner.fill
+  end
+  def font(name)
+    return self.inner.font(name)
+  end
+  def text_align(how)
+    return self.inner.text_align(how)
+  end
+  def text_baseline(how)
+    return self.inner.text_baseline(how)
+  end
+  def fill_text(t, x, y)
+    return self.inner.fill_text(t, x, y)
+  end
+  def measure(t)
+    return self.inner.measure(t)
+  end
+  def save
+    return self.inner.save
+  end
+  def restore
+    return self.inner.restore
+  end
+  def translate(x, y)
+    return self.inner.translate(x, y)
+  end
+  def rotate(angle)
+    return self.inner.rotate(angle)
+  end
+  def dash(segments)
+    return self.inner.dash(segments)
+  end
+  def gradient_stroke(x0, x1, stops, at)
+    return self.inner.gradient_stroke(x0, x1, stops, at)
+  end
+  def image(src, x, y, w, h)
+    return self.inner.image(src, x, y, w, h)
+  end
+  __exposed
+end
+
+class Banded < Painter
+  def inner(*args_)
+    args_.empty? ? @inner : @inner.(*args_)
+  end
+  attr_writer :inner
+  def top(*args_)
+    args_.empty? ? @top : @top.(*args_)
+  end
+  attr_writer :top
+  def tall(*args_)
+    args_.empty? ? @tall : @tall.(*args_)
+  end
+  attr_writer :tall
+  def frame(s, dt)
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    s.save
+    s.translate(0, self.top)
+    self.inner.frame(Band.new(width: s.width, height: self.tall, inner: s), dt)
+    return s.restore
+  end
+  __exposed
+end
+
+class Growing < Painter
+  def n(*args_)
+    args_.empty? ? @n : @n.(*args_)
+  end
+  attr_writer :n
+  def lane(*args_)
+    args_.empty? ? @lane : @lane.(*args_)
+  end
+  attr_writer :lane
+  def ink(*args_)
+    args_.empty? ? @ink : @ink.(*args_)
+  end
+  attr_writer :ink
+  def per(*args_)
+    args_.empty? ? @per : @per.(*args_)
+  end
+  attr_writer :per
+  def shown_frames(*args_)
+    @shown_frames = (0) unless instance_variable_defined?(:@shown_frames)
+    args_.empty? ? @shown_frames : @shown_frames.(*args_)
+  end
+  attr_writer :shown_frames
+  def frame(s, dt)
+    s.fill_style(Galaxies.BACK)
+    s.fill_rect(0, 0, s.width, s.height)
+    look = Video.look(s.width, self.lane, self.ink)
+    grow = Ops.div(self.shown_frames, Fmt.max(1, Ops.sub(self.n, 1)))
+    cam = Video.source_camera(s, look, grow)
+    Video.lattice(s, self.lane, look, grow, Ops.div(self.shown_frames, self.per), 1, 0, Ops.elem(cam, 0), Ops.elem(cam, 1), Ops.elem(cam, 2), 1, 1000000, 16)
+    self.shown_frames = Ops.add(self.shown_frames, 1)
+  end
+  __exposed
+end
+
+class Planets < Painter
+  def n(*args_)
+    args_.empty? ? @n : @n.(*args_)
+  end
+  attr_writer :n
+  def lane(*args_)
+    args_.empty? ? @lane : @lane.(*args_)
+  end
+  attr_writer :lane
+  def ink(*args_)
+    args_.empty? ? @ink : @ink.(*args_)
+  end
+  attr_writer :ink
+  def per(*args_)
+    args_.empty? ? @per : @per.(*args_)
+  end
+  attr_writer :per
+  def stamp(*args_)
+    args_.empty? ? @stamp : @stamp.(*args_)
+  end
+  attr_writer :stamp
+  def off(*args_)
+    args_.empty? ? @off : @off.(*args_)
+  end
+  attr_writer :off
+  def width(*args_)
+    args_.empty? ? @width : @width.(*args_)
+  end
+  attr_writer :width
+  def bodies(*args_)
+    args_.empty? ? @bodies : @bodies.(*args_)
+  end
+  attr_writer :bodies
+  def shown_frames(*args_)
+    @shown_frames = (0) unless instance_variable_defined?(:@shown_frames)
+    args_.empty? ? @shown_frames : @shown_frames.(*args_)
+  end
+  attr_writer :shown_frames
+  def film(*args_)
+    @film = (nil) unless instance_variable_defined?(:@film)
+    args_.empty? ? @film : @film.(*args_)
+  end
+  attr_writer :film
+  def frame(s, dt)
+    if Ops.eq(self.film, nil)
+      self.film = Measured.of("solar.inner.frames")
+    end
+    if Ops.eq(self.film, nil)
+      fail.("solar.inner is not recorded - run `npx ray visuals solar.inner` first")
+    end
+    if !Ops.eq(Ops.getattr(self.film.header, "stamp"), self.stamp)
+      fail.("solar.inner's recording is stale - run `npx ray visuals solar.inner` again")
+    end
+    look = Video.look(s.width, self.lane, self.ink)
+    Video.planets(s, Ops.div(self.shown_frames, Fmt.max(1, Ops.sub(self.n, 1))), self.lane, look, Ops.div((Ops.add(Ops.sub(Ops.m_round((Ops.mul(4, Video.FPS))), 1), self.shown_frames)), self.per), self.film, self.off, self.width, self.bodies)
+    self.shown_frames = Ops.add(self.shown_frames, 1)
+  end
+  __exposed
+end
+
+class EndCard < Painter
+  def n(*args_)
+    args_.empty? ? @n : @n.(*args_)
+  end
+  attr_writer :n
+  def shown_frames(*args_)
+    @shown_frames = (0) unless instance_variable_defined?(:@shown_frames)
+    args_.empty? ? @shown_frames : @shown_frames.(*args_)
+  end
+  attr_writer :shown_frames
+  def frame(s, dt)
+    Video.end_card(s, self.shown_frames, self.n)
+    self.shown_frames = Ops.add(self.shown_frames, 1)
+  end
+  __exposed
+end
+
 class GTheory < Theory
   def name(*args_)
     @name = ("G") unless instance_variable_defined?(:@name)
@@ -18144,12 +19134,11 @@ class GTheory < Theory
     ink.every = true
     w = Strip.line(self, 10)
     Strip.light(w, 0, 1)
-    lanes = [Strip.lane(w, ink)]
-    8.times do |t|
+    lanes = Ops.m_concat([Strip.lane(w, ink)], Ops.m_map(Ops.rng(8), ->(t) {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
-      Ops.m_push(lanes, Strip.lane(w, ink))
-    end
+      return Strip.lane(w, ink)
+    }))
     return Strip.tell("rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes, ink)
   end
   def emission_film
@@ -18158,28 +19147,29 @@ class GTheory < Theory
     ink.top = 36
     w = Strip.line(self, 17)
     w.add(Scripted.new(at: Vector.new(components: [8]), plan: ["", "+", "-", "", "+-", "", "+", "-"], weight: 1))
-    lanes = [Strip.lane(w, ink)]
-    8.times do |t|
+    lanes = Ops.m_concat([Strip.lane(w, ink)], Ops.m_map(Ops.rng(8), ->(t) {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
       moved = Strip.lane(w, ink)
       Strip.run(w, ["/S.1"])
       now = Strip.lane(w, ink)
       now.says = Strip.emitting(moved, now)
-      Ops.m_push(lanes, now)
-    end
+      return now
+    }))
     return Strip.tell("rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes, ink)
   end
   def transport_film
     ink = Ink.new()
     ink.every = true
     ink.top = 36
+    return Strip.tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", self.transport_lanes(ink), ink)
+  end
+  def transport_lanes(ink)
     w = Strip.line(self, 21)
     s = w.add(Scripted.new(at: Vector.new(components: [9]), plan: ["+-", "", "", "", "+-"], weight: 4))
     s.moves = true
     s.momentum = Vector.new(components: [1])
-    lanes = [Strip.lane(w, ink)]
-    9.times do |t|
+    return Ops.m_concat([Strip.lane(w, ink)], Ops.m_map(Ops.rng(9), ->(t) {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
       moved = Strip.lane(w, ink)
@@ -18187,14 +19177,10 @@ class GTheory < Theory
       emitted = Strip.emitting(moved, Strip.lane(w, ink))
       Strip.run(w, ["/S.v"])
       now = Strip.lane(w, ink)
-      went = ""
-      if s.stepped
-        went = (Ops.gt(Ops.elem(w.geometry.V(s.moved_along).components, 0), 0) ? "steps right" : "steps left")
-      end
+      went = (!(s.stepped) ? "" : ((Ops.gt(Ops.elem(w.geometry.V(s.moved_along).components, 0), 0) ? "steps right" : "steps left")))
       now.says = (Ops.m_empty(went) ? emitted : ((Ops.m_empty(emitted) ? went : "#{went}, #{emitted}")))
-      Ops.m_push(lanes, now)
-    end
-    return Strip.tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes, ink)
+      return now
+    }))
   end
   def expansion
     ink = Ink.new()
@@ -18401,8 +19387,7 @@ class GTheory < Theory
     }, place: ->(setup) {
       sun = Body.new(x: 0, y: 0, mx: pulse.(0), ways: ways.(0))
       sun.tag = 1
-      out = [sun]
-      _PLANETS.length.times do |k|
+      return Ops.m_concat([sun], Ops.m_map(Ops.rng(_PLANETS.length), ->(k) {
         i = Ops.elem(_PLANETS, k)
         b_ = Body.new(x: cells.(Ops.mul(Ops.elem(_AX, i), (Ops.add(1, Ops.elem(_EC, i))))), y: 0, mx: pulse.(i), ways: ways.(i))
         b_.tag = Ops.add(2, k)
@@ -18412,9 +19397,8 @@ class GTheory < Theory
         b_.launch = "orbit"
         b_.ecc = Ops.elem(_EC, i)
         b_.py = Ops.sub(0, 1)
-        Ops.m_push(out, b_)
-      end
-      return out
+        return b_
+      }))
     })
     _BURN = Ops.mul(2, (Ops.add(_VIEW, _MARGIN)))
     _LAW = Aggregate.of(self)

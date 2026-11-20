@@ -446,22 +446,31 @@ public static readonly Cls Vector = cls("Vector", Node, C_Vector.define);
 public static class C_Vector {
   public static void define(Cls c) {
     c.field("components", null);
-    c.method("plus", (self, a1) => {
-      object b_0 = arg(a1, 0);
+    c.method("zipped", (self, a1) => {
+      object b_0 = arg(a1, 0); object f_0 = arg(a1, 1);
       return make("Vector", new object[] { kw("components", m_map(rng(len(get(self, "components"))), new Fn((a3) => {
         object i_2 = arg(a3, 0);
-        return add(elem(get(self, "components"), i_2), elem(get(b_0, "components"), i_2));
+        return invoke(f_0, new object[] { elem(get(self, "components"), i_2), elem(get(b_0, "components"), i_2) });
         return null;
       }))) });
       return null;
     });
+    c.method("plus", (self, a1) => {
+      object b_0 = arg(a1, 0);
+      return call(self, "zipped", new object[] { b_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0); object y_2 = arg(a3, 1);
+        return add(x_2, y_2);
+        return null;
+      }) });
+      return null;
+    });
     c.method("minus", (self, a1) => {
       object b_0 = arg(a1, 0);
-      return make("Vector", new object[] { kw("components", m_map(rng(len(get(self, "components"))), new Fn((a3) => {
-        object i_2 = arg(a3, 0);
-        return sub(elem(get(self, "components"), i_2), elem(get(b_0, "components"), i_2));
+      return call(self, "zipped", new object[] { b_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0); object y_2 = arg(a3, 1);
+        return sub(x_2, y_2);
         return null;
-      }))) });
+      }) });
       return null;
     });
     c.method("times", (self, a1) => {
@@ -475,11 +484,11 @@ public static class C_Vector {
     });
     c.method("dot", (self, a1) => {
       object b_0 = arg(a1, 0);
-      return m_sum(m_map(rng(len(get(self, "components"))), new Fn((a3) => {
-        object i_2 = arg(a3, 0);
-        return mul(elem(get(self, "components"), i_2), elem(get(b_0, "components"), i_2));
+      return m_sum(get(call(self, "zipped", new object[] { b_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0); object y_2 = arg(a3, 1);
+        return mul(x_2, y_2);
         return null;
-      })));
+      }) }), "components"));
       return null;
     });
     c.getter("norm", (self, a1) => {
@@ -564,16 +573,15 @@ public static class C_Geometry {
         return get(v_2, "norm");
         return null;
       }));
-      object chosen_0 = null; chosen_0 = list();
-      foreach (object e1 in each_of(squared_0)) {
-        object s_1 = e1;
-        foreach (object e2 in each_of(all_0)) {
-          object v_2 = e2;
-          if (truthy(eq(call(v_2, "dot", new object[] { v_2 }), s_1))) {
-            m_push(chosen_0, v_2);
-          }
-        };
-      };
+      object chosen_0 = null; chosen_0 = m_reduce(squared_0, list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object s_2 = arg(a3, 1);
+        return m_concat(out__2, filt(all_0, new Fn((a5) => {
+          object v_4 = arg(a5, 0);
+          return eq(call(v_4, "dot", new object[] { v_4 }), s_2);
+          return null;
+        })));
+        return null;
+      }));
       object joined_0 = null; joined_0 = m_join(squared_0, "+");
       return make("Geometry", new object[] { kw("name", "shells-" + str(D_0) + "-" + str(joined_0) + ""), kw("offsets", chosen_0) });
       return null;
@@ -605,24 +613,26 @@ public static class C_Geometry {
       return make("Geometry", new object[] { kw("name", "nearest-" + str(D_0) + "-" + str(DEG_0) + ""), kw("offsets", chosen_0) });
       return null;
     });
+    c.statik("grid", (self, a1) => {
+      object D_0 = arg(a1, 0); object low_0 = arg(a1, 1); object count_0 = arg(a1, 2);
+      return m_reduce(rng(D_0), list(make("Vector", new object[] { kw("components", list()) })), new Fn((a3) => {
+        object points_2 = arg(a3, 0); object __2 = arg(a3, 1);
+        return m_reduce(points_2, list(), new Fn((a5) => {
+          object grown_4 = arg(a5, 0); object p_4 = arg(a5, 1);
+          return m_reduce(rng(count_0), grown_4, new Fn((a7) => {
+            object out__6 = arg(a7, 0); object k_6 = arg(a7, 1);
+            return m_push(out__6, make("Vector", new object[] { kw("components", m_concat(get(p_4, "components"), list(add(low_0, k_6)))) }));
+            return null;
+          }));
+          return null;
+        }));
+        return null;
+      }));
+      return null;
+    });
     c.statik("box", (self, a1) => {
       object D_0 = arg(a1, 0); object radius_0 = arg(a1, 1);
-      object points_0 = null; points_0 = list(make("Vector", new object[] { kw("components", list()) }));
-      object i_0 = null; i_0 = 0.0;
-      while (truthy(lt(i_0, D_0))) {
-        object grown_0 = null; grown_0 = list();
-        foreach (object e1 in each_of(points_0)) {
-          object p_1 = e1;
-          object k_1 = null; k_1 = sub(0.0, radius_0);
-          while (truthy(le(k_1, radius_0))) {
-            m_push(grown_0, make("Vector", new object[] { kw("components", m_concat(get(p_1, "components"), list(k_1))) }));
-            k_1 = add(k_1, 1.0);
-          }
-        };
-        points_0 = grown_0;
-        i_0 = add(i_0, 1.0);
-      }
-      return points_0;
+      return call(K("Geometry"), "grid", new object[] { D_0, sub(0.0, radius_0), add(mul(2.0, radius_0), 1.0) });
       return null;
     });
   }
@@ -699,6 +709,7 @@ public static class C_Rule {
 public static readonly Cls Theory = cls("Theory", Node, C_Theory.define);
 public static class C_Theory {
   public static void define(Cls c) {
+    c.staticField("TERMS", self => make(NODE));
     c.field("name", null);
     c.field("rules", self => list());
     c.field("visuals", self => list());
@@ -766,6 +777,13 @@ public static class C_Theory {
       return make("Medium", new object[] { kw("theory", self), kw("N", N_0), kw("A", A_0), kw("K", K_0), kw("DEG", orElse(DEG_0, () => get(get(self, "lattice"), "DEG"))), kw("tags", tags_0), kw("D", orElse(D_0, () => get(get(self, "lattice"), "D"))) });
       return null;
     });
+    c.getter("terms_read", (self, a1) => {
+      if (truthy(eq(elem(get(K("Theory"), "TERMS"), get(self, "name")), null))) {
+        setAt(get(K("Theory"), "TERMS"), get(self, "name"), get(get(self, "equation"), "terms"));
+      }
+      return elem(get(K("Theory"), "TERMS"), get(self, "name"));
+      return null;
+    });
     c.getter("proved", (self, a1) => {
       if (truthy(eq(elem(get(K("Prover"), "PROOFS"), get(self, "name")), null))) {
         setAt(get(K("Prover"), "PROOFS"), get(self, "name"), get(make("Prover", new object[] { kw("theory", self) }), "proof"));
@@ -802,22 +820,7 @@ public static class C_World {
     });
     c.method("positions", (self, a1) => {
       object N_0 = arg(a1, 0);
-      object points_0 = null; points_0 = list(make("Vector", new object[] { kw("components", list()) }));
-      object i_0 = null; i_0 = 0.0;
-      while (truthy(lt(i_0, get(get(self, "geometry"), "D")))) {
-        object grown_0 = null; grown_0 = list();
-        foreach (object e1 in each_of(points_0)) {
-          object p_1 = e1;
-          object k_1 = null; k_1 = 0.0;
-          while (truthy(lt(k_1, N_0))) {
-            m_push(grown_0, make("Vector", new object[] { kw("components", m_concat(get(p_1, "components"), list(k_1))) }));
-            k_1 = add(k_1, 1.0);
-          }
-        };
-        points_0 = grown_0;
-        i_0 = add(i_0, 1.0);
-      }
-      return points_0;
+      return call(K("Geometry"), "grid", new object[] { get(get(self, "geometry"), "D"), 0.0, N_0 });
       return null;
     });
     c.method("place", (self, a1) => {
@@ -926,14 +929,15 @@ public static class C_World {
           return null;
         }));
       }
-      object rays_0 = null; rays_0 = list();
-      foreach (object e1 in each_of(get(self, "live"))) {
-        object v_1 = e1;
-        foreach (object e2 in each_of(get(v_1, "rays"))) {
-          object r_2 = e2;
-          m_push(rays_0, r_2);
-        };
-      };
+      object rays_0 = null; rays_0 = m_reduce(get(self, "live"), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object v_2 = arg(a3, 1);
+        return m_reduce(get(v_2, "rays"), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object r_4 = arg(a5, 1);
+          return m_push(o_4, r_4);
+          return null;
+        }));
+        return null;
+      }));
       if (truthy(eq(kind_0, "Boundary"))) {
         return m_map(rays_0, new Fn((a3) => {
           object r_2 = arg(a3, 0);
@@ -942,16 +946,16 @@ public static class C_World {
         }));
       }
       if (truthy(eq(kind_0, "Edge"))) {
-        object edges_1 = null; edges_1 = list();
-        foreach (object e2 in each_of(rays_0)) {
-          object r_2 = e2;
-          object there_2 = null; there_2 = get(r_2, "ahead");
-          if (truthy((truthy(!eq(there_2, null)) && truthy(lt(get(get(r_2, "vertex"), "ordinal"), get(there_2, "ordinal")))))) {
-            m_push(edges_1, get(get(r_2, "terminal"), "edge"));
-          }
-        };
-        return edges_1;
-      };
+        return m_map(filt(rays_0, new Fn((a4) => {
+          object r_3 = arg(a4, 0);
+          return (truthy(!eq(get(r_3, "ahead"), null)) && truthy(lt(get(get(r_3, "vertex"), "ordinal"), get(get(r_3, "ahead"), "ordinal"))));
+          return null;
+        })), new Fn((a3) => {
+          object r_2 = arg(a3, 0);
+          return get(get(r_2, "terminal"), "edge");
+          return null;
+        }));
+      }
       return list();
       return null;
     });
@@ -1452,15 +1456,16 @@ public static class C_Field {
       object y0_0 = null; y0_0 = m_floor(py_0);
       object fx_0 = null; fx_0 = sub(px_0, x0_0);
       object fy_0 = null; fy_0 = sub(py_0, y0_0);
-      object out__0 = null; out__0 = list();
-      foreach (object e1 in each_of(list(list(x0_0, y0_0, mul((sub(1.0, fx_0)), (sub(1.0, fy_0)))), list(add(x0_0, 1.0), y0_0, mul(fx_0, (sub(1.0, fy_0)))), list(x0_0, add(y0_0, 1.0), mul((sub(1.0, fx_0)), fy_0)), list(add(x0_0, 1.0), add(y0_0, 1.0), mul(fx_0, fy_0))))) {
-        object t_1 = e1;
-        object c__1 = null; c__1 = call(self, "at", new object[] { elem(t_1, 0.0), elem(t_1, 1.0) });
-        if (truthy((truthy(ge(c__1, 0.0)) && truthy(gt(elem(t_1, 2.0), 0.0))))) {
-          m_push(out__0, list(c__1, elem(t_1, 2.0)));
-        }
-      };
-      return out__0;
+      object corners_0 = null; corners_0 = list(list(x0_0, y0_0, mul((sub(1.0, fx_0)), (sub(1.0, fy_0)))), list(add(x0_0, 1.0), y0_0, mul(fx_0, (sub(1.0, fy_0)))), list(x0_0, add(y0_0, 1.0), mul((sub(1.0, fx_0)), fy_0)), list(add(x0_0, 1.0), add(y0_0, 1.0), mul(fx_0, fy_0)));
+      return filt(m_map(corners_0, new Fn((a4) => {
+        object t_3 = arg(a4, 0);
+        return list(call(self, "at", new object[] { elem(t_3, 0.0), elem(t_3, 1.0) }), elem(t_3, 2.0));
+        return null;
+      })), new Fn((a3) => {
+        object p_2 = arg(a3, 0);
+        return (truthy(ge(elem(p_2, 0.0), 0.0)) && truthy(gt(elem(p_2, 1.0), 0.0)));
+        return null;
+      }));
       return null;
     });
     c.method("hop", (self, a1) => {
@@ -1489,7 +1494,7 @@ public static class C_Field {
       return null;
     });
     c.getter("terms", (self, a1) => {
-      return get(get(get(self, "theory"), "equation"), "terms");
+      return get(get(self, "theory"), "terms_read");
       return null;
     });
     c.getter("acting", (self, a1) => {
@@ -2087,18 +2092,15 @@ public static class C_Field {
       object x_0 = null; x_0 = call(self, "column_of", new object[] { c__0 });
       object y_0 = null; y_0 = call(self, "row_of", new object[] { c__0 });
       object half_0 = null; half_0 = m_floor((div((sub(get(self, "K"), 1.0)), 2.0)));
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(self, "K")); i1++) {
-        object dy_1 = i1;
-        for (double i2 = 0; i2 < num(get(self, "K")); i2++) {
-          object dx_2 = i2;
-          object cell_2 = null; cell_2 = call(self, "at", new object[] { add(sub(x_0, half_0), dx_2), add(sub(y_0, half_0), dy_1) });
-          if (truthy(ge(cell_2, 0.0))) {
-            m_push(out__0, cell_2);
-          }
-        };
-      };
-      return out__0;
+      return filt(m_map(rng(mul(get(self, "K"), get(self, "K"))), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return call(self, "at", new object[] { add(sub(x_0, half_0), mod(i_3, get(self, "K"))), add(sub(y_0, half_0), m_floor((div(i_3, get(self, "K"))))) });
+        return null;
+      })), new Fn((a3) => {
+        object cell_2 = arg(a3, 0);
+        return ge(cell_2, 0.0);
+        return null;
+      }));
       return null;
     });
     c.getter("block", (self, a1) => {
@@ -2527,46 +2529,32 @@ public static class C_Piece {
     c.field("key", self => "");
     c.statik("text_", (self, a1) => {
       object t_0 = arg(a1, 0);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", "text") });
-      set(p_0, "text", t_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", "text"), kw("text", t_0) });
       return null;
     });
     c.statik("wrap", (self, a1) => {
       object kind_0 = arg(a1, 0); object of_0 = arg(a1, 1);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", kind_0) });
-      set(p_0, "of", of_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", kind_0), kw("of", of_0) });
       return null;
     });
     c.statik("words", (self, a1) => {
       object t_0 = arg(a1, 0);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", "words") });
-      set(p_0, "text", t_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", "words"), kw("text", t_0) });
       return null;
     });
     c.statik("big", (self, a1) => {
       object kind_0 = arg(a1, 0); object lo_0 = arg(a1, 1); object hi_0 = arg(a1, 2);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", kind_0) });
-      set(p_0, "lo", lo_0);
-      set(p_0, "hi", hi_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", kind_0), kw("lo", lo_0), kw("hi", hi_0) });
       return null;
     });
     c.statik("stacked", (self, a1) => {
       object kind_0 = arg(a1, 0); object over_0 = arg(a1, 1); object under_0 = arg(a1, 2);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", kind_0) });
-      set(p_0, "over", over_0);
-      set(p_0, "under", under_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", kind_0), kw("over", over_0), kw("under", under_0) });
       return null;
     });
     c.statik("cite", (self, a1) => {
       object key_0 = arg(a1, 0);
-      object p_0 = null; p_0 = make("Piece", new object[] { kw("kind", "ref") });
-      set(p_0, "key", key_0);
-      return p_0;
+      return make("Piece", new object[] { kw("kind", "ref"), kw("key", key_0) });
       return null;
     });
   }
@@ -2604,6 +2592,9 @@ public static class C_Reference {
 public static readonly Cls Setter = cls("Setter", Node, C_Setter.define);
 public static class C_Setter {
   public static void define(Cls c) {
+    c.staticField("KINDS", self => list("var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren"));
+    c.staticField("OPENS", self => list("<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">"));
+    c.staticField("CLOSES", self => list("</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>"));
     c.method("together", (self, a1) => {
       object parts_0 = arg(a1, 0);
       return m_join(parts_0, "");
@@ -2621,58 +2612,8 @@ public static class C_Setter {
     });
     c.method("wrap", (self, a1) => {
       object kind_0 = arg(a1, 0); object c__0 = arg(a1, 1);
-      if (truthy(eq(kind_0, "var"))) {
-        return "<i>" + str(c__0) + "</i>";
-      }
-      if (truthy(eq(kind_0, "count"))) {
-        return "<b class=\"k\">" + str(c__0) + "</b>";
-      }
-      if (truthy(eq(kind_0, "fn"))) {
-        return "<b class=\"d\">" + str(c__0) + "</b>";
-      }
-      if (truthy(eq(kind_0, "muted"))) {
-        return "<span class=\"mu\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "bar"))) {
-        return "<span class=\"bar\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "hat"))) {
-        return "<span class=\"acc hat\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "tilde"))) {
-        return "<span class=\"acc tld\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "vec"))) {
-        return "<span class=\"acc vec\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "dot"))) {
-        return "<span class=\"acc dot\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "ddot"))) {
-        return "<span class=\"acc ddot\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "bold"))) {
-        return "<b class=\"bf\">" + str(c__0) + "</b>";
-      }
-      if (truthy(eq(kind_0, "cal"))) {
-        return "<span class=\"cal\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "bb"))) {
-        return "<span class=\"bb\">" + str(c__0) + "</span>";
-      }
-      if (truthy(eq(kind_0, "sqrt"))) {
-        return "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" + str(c__0) + "</span></span>";
-      }
-      if (truthy(eq(kind_0, "sup"))) {
-        return "<sup>" + str(c__0) + "</sup>";
-      }
-      if (truthy(eq(kind_0, "sub"))) {
-        return "<sub>" + str(c__0) + "</sub>";
-      }
-      if (truthy(eq(kind_0, "paren"))) {
-        return "<span class=\"paren\">" + str(c__0) + "</span>";
-      }
-      return "<span class=\"" + str(kind_0) + "\">" + str(c__0) + "</span>";
+      object i_0 = null; i_0 = m_index_of(get(K("Setter"), "KINDS"), kind_0);
+      return (truthy(eq(i_0, null)) ? (object) "<span class=\"" + str(kind_0) + "\">" + str(c__0) + "</span>" : (object) "" + str(elem(get(K("Setter"), "OPENS"), i_0)) + "" + str(c__0) + "" + str(elem(get(K("Setter"), "CLOSES"), i_0)) + "");
       return null;
     });
     c.method("big", (self, a1) => {
@@ -2800,22 +2741,31 @@ public static class C_Notation {
       return (truthy(lt(i_0, len(s_0))) ? (object) elem(m_chars(s_0), i_0) : (object) 0.0);
       return null;
     });
-    c.statik("letters", (self, a1) => {
-      object s_0 = arg(a1, 0); object at_0 = arg(a1, 1);
+    c.statik("run", (self, a1) => {
+      object s_0 = arg(a1, 0); object at_0 = arg(a1, 1); object keep_0 = arg(a1, 2);
       object k_0 = null; k_0 = at_0;
-      while (truthy((truthy(lt(k_0, len(s_0))) && truthy(call(K("Notation"), "is_letter", new object[] { elem(m_chars(s_0), k_0) }))))) {
+      while (truthy((truthy(lt(k_0, len(s_0))) && truthy(invoke(keep_0, new object[] { elem(m_chars(s_0), k_0) }))))) {
         k_0 = add(k_0, 1.0);
       }
       return call(K("Notation"), "sub_", new object[] { s_0, at_0, k_0 });
       return null;
     });
+    c.statik("letters", (self, a1) => {
+      object s_0 = arg(a1, 0); object at_0 = arg(a1, 1);
+      return call(K("Notation"), "run", new object[] { s_0, at_0, new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return call(K("Notation"), "is_letter", new object[] { c__2 });
+        return null;
+      }) });
+      return null;
+    });
     c.statik("alnums", (self, a1) => {
       object s_0 = arg(a1, 0); object at_0 = arg(a1, 1);
-      object k_0 = null; k_0 = at_0;
-      while (truthy((truthy(lt(k_0, len(s_0))) && truthy(call(K("Notation"), "is_alnum", new object[] { elem(m_chars(s_0), k_0) }))))) {
-        k_0 = add(k_0, 1.0);
-      }
-      return call(K("Notation"), "sub_", new object[] { s_0, at_0, k_0 });
+      return call(K("Notation"), "run", new object[] { s_0, at_0, new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return call(K("Notation"), "is_alnum", new object[] { c__2 });
+        return null;
+      }) });
       return null;
     });
     c.statik("counted", (self, a1) => {
@@ -2869,6 +2819,11 @@ public static class C_Notation {
       return make("Args", new object[] { kw("got", got_0), kw("end", k_0) });
       return null;
     });
+    c.statik("scripted", (self, a1) => {
+      object base__0 = arg(a1, 0); object kind_0 = arg(a1, 1); object of_0 = arg(a1, 2);
+      return make("Piece", new object[] { kw("kind", "scripted"), kw("base", base__0), kw("raised", (truthy(eq(kind_0, "sup")) ? (object) of_0 : (object) null)), kw("lowered", (truthy(eq(kind_0, "sup")) ? (object) null : (object) of_0)) });
+      return null;
+    });
     c.statik("attach", (self, a1) => {
       object out__0 = arg(a1, 0); object kind_0 = arg(a1, 1); object of_0 = arg(a1, 2);
       if (truthy(m_empty(out__0))) {
@@ -2897,25 +2852,11 @@ public static class C_Notation {
         } else {
           set(tail_0, "text", head_1);
         };
-        object s_1 = null; s_1 = make("Piece", new object[] { kw("kind", "scripted") });
-        set(s_1, "base", call(K("Piece"), "text_", new object[] { last_char_1 }));
-        if (truthy(eq(kind_0, "sup"))) {
-          set(s_1, "raised", of_0);
-        } else {
-          set(s_1, "lowered", of_0);
-        };
-        m_push(out__0, s_1);
+        m_push(out__0, call(K("Notation"), "scripted", new object[] { call(K("Piece"), "text_", new object[] { last_char_1 }), kind_0, of_0 }));
         return null;
       };
       m_pop(out__0);
-      object s_0 = null; s_0 = make("Piece", new object[] { kw("kind", "scripted") });
-      set(s_0, "base", tail_0);
-      if (truthy(eq(kind_0, "sup"))) {
-        set(s_0, "raised", of_0);
-      } else {
-        set(s_0, "lowered", of_0);
-      };
-      return m_push(out__0, s_0);
+      return m_push(out__0, call(K("Notation"), "scripted", new object[] { tail_0, kind_0, of_0 }));
       return null;
     });
     c.statik("parse", (self, a1) => {
@@ -3075,25 +3016,25 @@ public static class C_Notation {
         }
         return null;
       });
+      object starts_name_0 = null; starts_name_0 = new Fn((a2) => {
+        object c__1 = arg(a2, 0);
+        return (truthy(call(K("Notation"), "is_letter", new object[] { c__1 })) || truthy(eq(c__1, 95.0)));
+        return null;
+      });
       object bits_0 = null; bits_0 = list();
       object k_0 = null; k_0 = 0.0;
       while (truthy(lt(k_0, len(s_0)))) {
-        object c__0 = null; c__0 = elem(m_chars(s_0), k_0);
-        if (truthy((truthy(call(K("Notation"), "is_letter", new object[] { c__0 })) || truthy(eq(c__0, 95.0))))) {
-          object j_1 = null; j_1 = k_0;
-          while (truthy((truthy(lt(j_1, len(s_0))) && truthy(call(K("Notation"), "is_name", new object[] { elem(m_chars(s_0), j_1) }))))) {
-            j_1 = add(j_1, 1.0);
-          }
-          m_push(bits_0, call(K("Notation"), "sub_", new object[] { s_0, k_0, j_1 }));
-          k_0 = j_1;
-        } else {
-          object j_1 = null; j_1 = k_0;
-          while (truthy((truthy(lt(j_1, len(s_0))) && truthy(not(((truthy(call(K("Notation"), "is_letter", new object[] { elem(m_chars(s_0), j_1) })) || truthy(eq(elem(m_chars(s_0), j_1), 95.0))))))))) {
-            j_1 = add(j_1, 1.0);
-          }
-          m_push(bits_0, call(K("Notation"), "sub_", new object[] { s_0, k_0, j_1 }));
-          k_0 = j_1;
-        };
+        object bit_0 = null; bit_0 = (truthy(invoke(starts_name_0, new object[] { elem(m_chars(s_0), k_0) })) ? (object) call(K("Notation"), "run", new object[] { s_0, k_0, new Fn((a3) => {
+          object c__2 = arg(a3, 0);
+          return call(K("Notation"), "is_name", new object[] { c__2 });
+          return null;
+        }) }) : (object) call(K("Notation"), "run", new object[] { s_0, k_0, new Fn((a3) => {
+          object c__2 = arg(a3, 0);
+          return not(invoke(starts_name_0, new object[] { c__2 }));
+          return null;
+        }) }));
+        m_push(bits_0, bit_0);
+        k_0 = add(k_0, len(bit_0));
       }
       object i_0 = null; i_0 = 0.0;
       while (truthy(lt(i_0, len(bits_0)))) {
@@ -3320,23 +3261,17 @@ public static class C_Expr {
     c.field("simple", self => null);
     c.statik("num", (self, a1) => {
       object n_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "num") });
-      set(e_0, "value", n_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "num"), kw("value", n_0) });
       return null;
     });
     c.statik("sym", (self, a1) => {
       object name_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "sym") });
-      set(e_0, "label", name_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "sym"), kw("label", name_0) });
       return null;
     });
     c.statik("field", (self, a1) => {
       object name_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "field") });
-      set(e_0, "label", name_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "field"), kw("label", name_0) });
       return null;
     });
     c.statik("add", (self, a1) => {
@@ -3351,10 +3286,7 @@ public static class C_Expr {
     });
     c.statik("to_power", (self, a1) => {
       object base__0 = arg(a1, 0); object by_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "pow") });
-      set(e_0, "base", base__0);
-      set(e_0, "power", by_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "pow"), kw("base", base__0), kw("power", by_0) });
       return null;
     });
     c.statik("pown", (self, a1) => {
@@ -3364,63 +3296,42 @@ public static class C_Expr {
     });
     c.statik("grad", (self, a1) => {
       object x_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "grad") });
-      set(e_0, "base", x_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "grad"), kw("base", x_0) });
       return null;
     });
     c.statik("log", (self, a1) => {
       object x_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "log") });
-      set(e_0, "base", x_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "log"), kw("base", x_0) });
       return null;
     });
     c.statik("exp", (self, a1) => {
       object x_0 = arg(a1, 0);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "exp") });
-      set(e_0, "base", x_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "exp"), kw("base", x_0) });
       return null;
     });
     c.statik("choose", (self, a1) => {
       object n_0 = arg(a1, 0); object k_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "choose") });
-      set(e_0, "first_", n_0);
-      set(e_0, "second_", k_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "choose"), kw("first_", n_0), kw("second_", k_0) });
       return null;
     });
     c.statik("gamma_inc", (self, a1) => {
       object s_0 = arg(a1, 0); object x_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "gammaInc") });
-      set(e_0, "first_", s_0);
-      set(e_0, "second_", x_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "gammaInc"), kw("first_", s_0), kw("second_", x_0) });
       return null;
     });
     c.statik("root", (self, a1) => {
       object x_0 = arg(a1, 0); object name_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "root") });
-      set(e_0, "base", x_0);
-      set(e_0, "bound", name_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "root"), kw("base", x_0), kw("bound", name_0) });
       return null;
     });
     c.statik("limit", (self, a1) => {
       object x_0 = arg(a1, 0); object name_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "limit") });
-      set(e_0, "base", x_0);
-      set(e_0, "bound", name_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "limit"), kw("base", x_0), kw("bound", name_0) });
       return null;
     });
     c.statik("call", (self, a1) => {
       object name_0 = arg(a1, 0); object x_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", "call") });
-      set(e_0, "label", name_0);
-      set(e_0, "base", x_0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", "call"), kw("label", name_0), kw("base", x_0) });
       return null;
     });
     c.statik("neg", (self, a1) => {
@@ -3464,27 +3375,34 @@ public static class C_Expr {
       return (truthy(eq(get(self, "kind"), "sym")) || truthy(eq(get(self, "kind"), "field")));
       return null;
     });
+    c.getter("subtrees", (self, a1) => {
+      if (truthy((truthy(eq(get(self, "kind"), "add")) || truthy(eq(get(self, "kind"), "mul"))))) {
+        return get(self, "of");
+      }
+      if (truthy(eq(get(self, "kind"), "pow"))) {
+        return list(get(self, "base"), get(self, "power"));
+      }
+      if (truthy((truthy(eq(get(self, "kind"), "choose")) || truthy(eq(get(self, "kind"), "gammaInc"))))) {
+        return list(get(self, "first_"), get(self, "second_"));
+      }
+      return (truthy(eq(get(self, "base"), null)) ? (object) list() : (object) list(get(self, "base")));
+      return null;
+    });
     c.getter("by_num", (self, a1) => {
       return (truthy(eq(get(get(self, "power"), "kind"), "num")) ? (object) get(get(self, "power"), "value") : (object) null);
       return null;
     });
     c.statik("flatten", (self, a1) => {
       object kind_0 = arg(a1, 0); object xs_0 = arg(a1, 1);
-      object e_0 = null; e_0 = make("Expr", new object[] { kw("kind", kind_0) });
-      object out__0 = null; out__0 = list();
-      foreach (object e1 in each_of(xs_0)) {
-        object x_1 = e1;
-        if (truthy(eq(get(x_1, "kind"), kind_0))) {
-          foreach (object e3 in each_of(get(x_1, "of"))) {
-            object y_3 = e3;
-            m_push(out__0, y_3);
-          };
-        } else {
-          m_push(out__0, x_1);
-        };
-      };
-      set(e_0, "of", out__0);
-      return e_0;
+      return make("Expr", new object[] { kw("kind", kind_0), kw("of", m_reduce(xs_0, list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object x_2 = arg(a3, 1);
+        return (truthy(eq(get(x_2, "kind"), kind_0)) ? (object) m_reduce(get(x_2, "of"), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object y_4 = arg(a5, 1);
+          return m_push(o_4, y_4);
+          return null;
+        })) : (object) m_push(out__2, x_2));
+        return null;
+      }))) });
       return null;
     });
     c.statik("is_integer", (self, a1) => {
@@ -3526,11 +3444,11 @@ public static class C_Expr {
         return sub(m_ln((div(System.Math.PI, m_sin((mul(System.Math.PI, z_0)))))), call(K("Expr"), "lgamma", new object[] { sub(1.0, z_0) }));
       }
       z_0 = sub(z_0, 1.0);
-      object x_0 = null; x_0 = 0.99999999999980993;
-      for (double i1 = 0; i1 < num(len(g_0)); i1++) {
-        object i_1 = i1;
-        x_0 = add(x_0, div(elem(g_0, i_1), (add(add(z_0, i_1), 1.0))));
-      };
+      object x_0 = null; x_0 = m_reduce(rng(len(g_0)), 0.99999999999980993, new Fn((a3) => {
+        object x_2 = arg(a3, 0); object i_2 = arg(a3, 1);
+        return add(x_2, div(elem(g_0, i_2), (add(add(z_0, i_2), 1.0))));
+        return null;
+      }));
       object t_0 = null; t_0 = sub(add(z_0, len(g_0)), 0.5);
       return add(sub(add(mul(0.5, m_ln((mul(2.0, System.Math.PI)))), mul((add(z_0, 0.5)), m_ln(t_0))), t_0), m_ln(x_0));
       return null;
@@ -3984,13 +3902,15 @@ public static class C_Expr {
             call(like_1, "set", new object[] { id_2, list(body_2, kk_2) });
           };
         };
-        object kept_1 = null; kept_1 = list();
-        foreach (object e2 in each_of(get(like_1, "values"))) {
-          object v_2 = e2;
-          if (truthy(!eq(elem(v_2, 1.0), 0.0))) {
-            m_push(kept_1, (truthy(eq(elem(v_2, 1.0), 1.0)) ? (object) elem(v_2, 0.0) : (object) call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { elem(v_2, 1.0) }), elem(v_2, 0.0)) })));
-          }
-        };
+        object kept_1 = null; kept_1 = m_map(filt(get(like_1, "values"), new Fn((a5) => {
+          object v_4 = arg(a5, 0);
+          return !eq(elem(v_4, 1.0), 0.0);
+          return null;
+        })), new Fn((a4) => {
+          object v_3 = arg(a4, 0);
+          return (truthy(eq(elem(v_3, 1.0), 1.0)) ? (object) elem(v_3, 0.0) : (object) call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { elem(v_3, 1.0) }), elem(v_3, 0.0)) }));
+          return null;
+        }));
         if (truthy(m_empty(kept_1))) {
           return call(K("Expr"), "num", new object[] { c__1 });
         }
@@ -4103,25 +4023,16 @@ public static class C_Expr {
             }))));
             return null;
           });
-          object at_2 = null; at_2 = null;
-          for (double i3 = 0; i3 < num(len(get(body_1, "of"))); i3++) {
-            object i_3 = i3;
-            if (truthy((truthy(eq(at_2, null)) && truthy(invoke(is_minus_2, new object[] { elem(get(body_1, "of"), i_3) }))))) {
-              at_2 = i_3;
-            }
-          };
-          if (truthy((truthy(!eq(at_2, null)) && truthy(eq(len(filt(get(body_1, "of"), new Fn((a6) => {
+          if (truthy(eq(len(filt(get(body_1, "of"), new Fn((a6) => {
             object x_5 = arg(a6, 0);
             return invoke(is_minus_2, new object[] { x_5 });
             return null;
-          }))), 1.0))))) {
-            object rest_3 = null; rest_3 = list();
-            for (double i4 = 0; i4 < num(len(get(body_1, "of"))); i4++) {
-              object i_4 = i4;
-              if (truthy(!eq(i_4, at_2))) {
-                m_push(rest_3, elem(get(body_1, "of"), i_4));
-              }
-            };
+          }))), 1.0))) {
+            object rest_3 = null; rest_3 = filt(get(body_1, "of"), new Fn((a6) => {
+              object x_5 = arg(a6, 0);
+              return not(invoke(is_minus_2, new object[] { x_5 }));
+              return null;
+            }));
             return "\\text{the } " + str(get(e_0, "bound")) + " \\text{ where } " + str(get(e_0, "bound")) + " = " + str(call(K("Expr"), "show", new object[] { (truthy(eq(len(rest_3), 1.0)) ? (object) elem(rest_3, 0.0) : (object) call(K("Expr"), "add", new object[] { rest_3 })) })) + "";
           };
         };
@@ -4245,15 +4156,16 @@ public static class C_Expr {
           return invoke(negative_1, new object[] { x_3 });
           return null;
         })));
-        object out__1 = null; out__1 = "";
-        for (double i2 = 0; i2 < num(len(ordered_1)); i2++) {
-          object i_2 = i2;
-          object x_2 = null; x_2 = elem(ordered_1, i_2);
-          object t_2 = null; t_2 = (truthy(eq(get(x_2, "kind"), "root")) ? (object) "\\paren{" + str(call(K("Expr"), "show", new object[] { x_2 })) + "}" : (object) call(K("Expr"), "show", new object[] { x_2 }));
-          object piece_2 = null; piece_2 = (truthy(eq(i_2, 0.0)) ? (object) t_2 : (object) ((truthy(m_starts_with(t_2, "-")) ? (object) " - " + str(m_drop(t_2, 1.0)) + "" : (object) " + " + str(t_2) + "")));
-          out__1 = "" + str(out__1) + "" + str(piece_2) + "";
-        };
-        return out__1;
+        object shown_1 = null; shown_1 = m_map(ordered_1, new Fn((a4) => {
+          object x_3 = arg(a4, 0);
+          return (truthy(eq(get(x_3, "kind"), "root")) ? (object) "\\paren{" + str(call(K("Expr"), "show", new object[] { x_3 })) + "}" : (object) call(K("Expr"), "show", new object[] { x_3 }));
+          return null;
+        }));
+        return m_join(m_map(rng(len(shown_1)), new Fn((a4) => {
+          object i_3 = arg(a4, 0);
+          return (truthy(eq(i_3, 0.0)) ? (object) elem(shown_1, i_3) : (object) ((truthy(m_starts_with(elem(shown_1, i_3), "-")) ? (object) " - " + str(m_drop(elem(shown_1, i_3), 1.0)) + "" : (object) " + " + str(elem(shown_1, i_3)) + "")));
+          return null;
+        })), "");
       };
       return "";
       return null;
@@ -4301,14 +4213,15 @@ public static class C_Expr {
       if (truthy(eq(k_0, "mul"))) {
         return call(K("Expr"), "add", new object[] { m_map(rng(len(get(e_0, "of"))), new Fn((a4) => {
           object i_3 = arg(a4, 0);
-          object others_3 = null; others_3 = list();
-          for (double i4 = 0; i4 < num(len(get(e_0, "of"))); i4++) {
-            object j_4 = i4;
-            if (truthy(!eq(j_4, i_3))) {
-              m_push(others_3, elem(get(e_0, "of"), j_4));
-            }
-          };
-          return call(K("Expr"), "mul", new object[] { m_concat(list(call(K("Expr"), "d", new object[] { elem(get(e_0, "of"), i_3), wrt_0 })), others_3) });
+          return call(K("Expr"), "mul", new object[] { m_concat(list(call(K("Expr"), "d", new object[] { elem(get(e_0, "of"), i_3), wrt_0 })), m_map(filt(rng(len(get(e_0, "of"))), new Fn((a7) => {
+            object j_6 = arg(a7, 0);
+            return !eq(j_6, i_3);
+            return null;
+          })), new Fn((a6) => {
+            object j_5 = arg(a6, 0);
+            return elem(get(e_0, "of"), j_5);
+            return null;
+          }))) });
           return null;
         })) });
       };
@@ -4630,21 +4543,19 @@ public static class C_Expr {
         return (truthy(eq(v_1, null)) ? (object) get(K("Expr"), "NAN") : (object) v_1);
       };
       if (truthy(eq(k_0, "add"))) {
-        object total__1 = null; total__1 = 0.0;
-        foreach (object e2 in each_of(get(e_0, "of"))) {
-          object x_2 = e2;
-          total__1 = add(total__1, call(K("Expr"), "numeric", new object[] { x_2, at_0 }));
-        };
-        return total__1;
-      };
+        return m_reduce(get(e_0, "of"), 0.0, new Fn((a3) => {
+          object total__2 = arg(a3, 0); object x_2 = arg(a3, 1);
+          return add(total__2, call(K("Expr"), "numeric", new object[] { x_2, at_0 }));
+          return null;
+        }));
+      }
       if (truthy(eq(k_0, "mul"))) {
-        object prod_1 = null; prod_1 = 1.0;
-        foreach (object e2 in each_of(get(e_0, "of"))) {
-          object x_2 = e2;
-          prod_1 = mul(prod_1, call(K("Expr"), "numeric", new object[] { x_2, at_0 }));
-        };
-        return prod_1;
-      };
+        return m_reduce(get(e_0, "of"), 1.0, new Fn((a3) => {
+          object prod_2 = arg(a3, 0); object x_2 = arg(a3, 1);
+          return mul(prod_2, call(K("Expr"), "numeric", new object[] { x_2, at_0 }));
+          return null;
+        }));
+      }
       if (truthy(eq(k_0, "pow"))) {
         return power(call(K("Expr"), "numeric", new object[] { get(e_0, "base"), at_0 }), call(K("Expr"), "numeric", new object[] { get(e_0, "power"), at_0 }));
       }
@@ -4722,22 +4633,7 @@ public static class C_Expr {
       if (truthy((truthy((truthy(not(call(K("Expr"), "finite", new object[] { invoke(f_0, new object[] { 0.5 }) }))) && truthy(not(call(K("Expr"), "finite", new object[] { invoke(f_0, new object[] { 1.0 }) }))))) && truthy(not(call(K("Expr"), "finite", new object[] { invoke(f_0, new object[] { 0.1 }) })))))) {
         return get(K("Expr"), "NAN");
       }
-      object points_0 = null; points_0 = list();
-      object i_0 = null; i_0 = 1.0;
-      while (truthy(le(i_0, 120.0))) {
-        m_push(points_0, div(i_0, 120.0));
-        i_0 = add(i_0, 1.0);
-      }
-      object ex_0 = null; ex_0 = 0.0;
-      while (truthy(le(ex_0, 24.0))) {
-        object k_0 = null; k_0 = 1.0;
-        while (truthy(lt(k_0, 8.0))) {
-          m_push(points_0, mul((power(10.0, (sub(ex_0, 12.0)))), (add(1.0, div(k_0, 2.0)))));
-          k_0 = add(k_0, 1.0);
-        }
-        ex_0 = add(ex_0, 1.0);
-      }
-      points_0 = call(K("Expr"), "sorted", new object[] { points_0 });
+      object points_0 = null; points_0 = get(K("Expr"), "bracket_points");
       object lo_0 = null; lo_0 = null;
       object hi_0 = null; hi_0 = null;
       object px_0 = null; px_0 = elem(points_0, 0.0);
@@ -4779,18 +4675,31 @@ public static class C_Expr {
       return div((add(lo_0, hi_0)), 2.0);
       return null;
     });
+    c.statik("bracket_points", (self, a1) => {
+      object even_0 = null; even_0 = m_map(rng(120.0), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return div((add(i_2, 1.0)), 120.0);
+        return null;
+      }));
+      object decades_0 = null; decades_0 = m_reduce(rng(25.0), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object ex_2 = arg(a3, 1);
+        return m_reduce(rng(7.0), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object k_4 = arg(a5, 1);
+          return m_push(o_4, mul((power(10.0, (sub(ex_2, 12.0)))), (add(1.0, div((add(k_4, 1.0)), 2.0)))));
+          return null;
+        }));
+        return null;
+      }));
+      return call(K("Expr"), "sorted", new object[] { m_concat(even_0, decades_0) });
+      return null;
+    });
     c.statik("sorted", (self, a1) => {
       object xs_0 = arg(a1, 0);
-      object out__0 = null; out__0 = list();
-      foreach (object e1 in each_of(xs_0)) {
-        object x_1 = e1;
-        object i_1 = null; i_1 = 0.0;
-        while (truthy((truthy(lt(i_1, len(out__0))) && truthy(le(elem(out__0, i_1), x_1))))) {
-          i_1 = add(i_1, 1.0);
-        }
-        out__0 = m_concat(m_concat(m_take(out__0, i_1), list(x_1)), m_drop(out__0, i_1));
-      };
-      return out__0;
+      return m_sorted_by(xs_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return x_2;
+        return null;
+      }));
       return null;
     });
     c.statik("integrate", (self, a1) => {
@@ -4938,26 +4847,20 @@ public static class C_Expr {
           object ok_2 = null; ok_2 = true;
           object k_2 = null; k_2 = elem(head__2, 1.0);
           if (truthy(!eq(nums_2, null))) {
-            object lo_3 = null; lo_3 = elem(nums_2, 0.0);
-            object hi_3 = null; hi_3 = elem(nums_2, 0.0);
-            foreach (object e4 in each_of(nums_2)) {
-              object v_4 = e4;
-              if (truthy(lt(v_4, lo_3))) {
-                lo_3 = v_4;
-              }
-              if (truthy(gt(v_4, hi_3))) {
-                hi_3 = v_4;
-              }
-            };
-            ok_2 = eq((le(lo_3, 0.0)), (le(hi_3, 0.0)));
-            object least_3 = null; least_3 = elem(nums_2, 0.0);
-            foreach (object e4 in each_of(nums_2)) {
-              object v_4 = e4;
-              if (truthy(lt(m_abs(v_4), m_abs(least_3)))) {
-                least_3 = v_4;
-              }
-            };
-            k_2 = call(K("Expr"), "num", new object[] { least_3 });
+            ok_2 = (truthy(m_every(nums_2, new Fn((a6) => {
+              object v_5 = arg(a6, 0);
+              return le(v_5, 0.0);
+              return null;
+            }))) || truthy(m_every(nums_2, new Fn((a6) => {
+              object v_5 = arg(a6, 0);
+              return gt(v_5, 0.0);
+              return null;
+            }))));
+            k_2 = call(K("Expr"), "num", new object[] { m_reduce(nums_2, elem(nums_2, 0.0), new Fn((a6) => {
+              object least_5 = arg(a6, 0); object v_5 = arg(a6, 1);
+              return (truthy(lt(m_abs(v_5), m_abs(least_5))) ? (object) v_5 : (object) least_5);
+              return null;
+            })) });
           };
           if (truthy(ok_2)) {
             m_push(common_0, list(elem(head__2, 0.0), k_2));
@@ -5233,25 +5136,23 @@ public static class C_Expr {
         })) }) });
       }
       if (truthy(eq(get(t_0, "kind"), "mul"))) {
-        object parts_1 = null; parts_1 = m_map(get(t_0, "of"), new Fn((a4) => {
-          object x_3 = arg(a4, 0);
-          return call(K("Expr"), "expand", new object[] { x_3 });
+        object out__1 = null; out__1 = m_reduce(m_map(get(t_0, "of"), new Fn((a5) => {
+          object x_4 = arg(a5, 0);
+          return call(K("Expr"), "expand", new object[] { x_4 });
+          return null;
+        })), list(call(K("Expr"), "num", new object[] { 1.0 })), new Fn((a4) => {
+          object out__3 = arg(a4, 0); object p_3 = arg(a4, 1);
+          return m_reduce(out__3, list(), new Fn((a6) => {
+            object next_5 = arg(a6, 0); object a_5 = arg(a6, 1);
+            return m_reduce(((truthy(eq(get(p_3, "kind"), "add")) ? (object) get(p_3, "of") : (object) list(p_3))), next_5, new Fn((a8) => {
+              object n_7 = arg(a8, 0); object b_7 = arg(a8, 1);
+              return m_push(n_7, call(K("Expr"), "mul", new object[] { list(a_5, b_7) }));
+              return null;
+            }));
+            return null;
+          }));
           return null;
         }));
-        object out__1 = null; out__1 = list(call(K("Expr"), "num", new object[] { 1.0 }));
-        foreach (object e2 in each_of(parts_1)) {
-          object p_2 = e2;
-          object terms_2 = null; terms_2 = (truthy(eq(get(p_2, "kind"), "add")) ? (object) get(p_2, "of") : (object) list(p_2));
-          object next_2 = null; next_2 = list();
-          foreach (object e3 in each_of(out__1)) {
-            object a_3 = e3;
-            foreach (object e4 in each_of(terms_2)) {
-              object b_4 = e4;
-              m_push(next_2, call(K("Expr"), "mul", new object[] { list(a_3, b_4) }));
-            };
-          };
-          out__1 = next_2;
-        };
         return call(K("Expr"), "simplify", new object[] { call(K("Expr"), "add", new object[] { out__1 }) });
       };
       return t_0;
@@ -5453,6 +5354,15 @@ public static class C_ExprReader {
       return eq(call(K("Notation"), "sub_", new object[] { get(self, "text"), get(self, "at"), add(get(self, "at"), len(s_0)) }), s_0);
       return null;
     });
+    c.method("take_while", (self, a1) => {
+      object keep_0 = arg(a1, 0);
+      object k_0 = null; k_0 = get(self, "at");
+      while (truthy((truthy(lt(k_0, len(get(self, "text")))) && truthy(invoke(keep_0, new object[] { elem(m_chars(get(self, "text")), k_0) }))))) {
+        k_0 = add(k_0, 1.0);
+      }
+      return call(self, "eat", new object[] { sub(k_0, get(self, "at")) });
+      return null;
+    });
     c.getter("addition", (self, a1) => {
       object left_0 = null; left_0 = get(self, "product");
       get(self, "skip");
@@ -5508,19 +5418,27 @@ public static class C_ExprReader {
       return null;
     });
     c.getter("word", (self, a1) => {
-      object k_0 = null; k_0 = get(self, "at");
-      while (truthy((truthy(lt(k_0, len(get(self, "text")))) && truthy(((truthy(call(K("Notation"), "is_name", new object[] { elem(m_chars(get(self, "text")), k_0) })) || truthy(gt(elem(m_chars(get(self, "text")), k_0), 127.0)))))))) {
-        k_0 = add(k_0, 1.0);
-      }
-      return call(self, "eat", new object[] { sub(k_0, get(self, "at")) });
+      return call(self, "take_while", new object[] { new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return (truthy(call(K("Notation"), "is_name", new object[] { c__2 })) || truthy(gt(c__2, 127.0)));
+        return null;
+      }) });
       return null;
     });
     c.getter("number", (self, a1) => {
-      object k_0 = null; k_0 = get(self, "at");
-      while (truthy((truthy(lt(k_0, len(get(self, "text")))) && truthy(((truthy(call(K("Notation"), "is_digit", new object[] { elem(m_chars(get(self, "text")), k_0) })) || truthy(eq(elem(m_chars(get(self, "text")), k_0), 46.0)))))))) {
-        k_0 = add(k_0, 1.0);
-      }
-      return call(K("Expr"), "num", new object[] { number(call(self, "eat", new object[] { sub(k_0, get(self, "at")) })) });
+      return call(K("Expr"), "num", new object[] { number(call(self, "take_while", new object[] { new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return (truthy(call(K("Notation"), "is_digit", new object[] { c__2 })) || truthy(eq(c__2, 46.0)));
+        return null;
+      }) })) });
+      return null;
+    });
+    c.getter("quoted", (self, a1) => {
+      return call(self, "take_while", new object[] { new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return !eq(c__2, 34.0);
+        return null;
+      }) });
       return null;
     });
     c.getter("primary", (self, a1) => {
@@ -5538,11 +5456,7 @@ public static class C_ExprReader {
       }
       if (truthy(eq(c__0, 34.0))) {
         call(self, "eat", new object[] { 1.0 });
-        object k_1 = null; k_1 = get(self, "at");
-        while (truthy((truthy(lt(k_1, len(get(self, "text")))) && truthy(!eq(elem(m_chars(get(self, "text")), k_1), 34.0))))) {
-          k_1 = add(k_1, 1.0);
-        }
-        object name_1 = null; name_1 = call(self, "eat", new object[] { sub(k_1, get(self, "at")) });
+        object name_1 = null; name_1 = quoted(self);
         call(self, "eat", new object[] { 1.0 });
         return call(K("Expr"), "field", new object[] { call(K("Expr"), "name_of", new object[] { name_1 }) });
       };
@@ -5554,11 +5468,7 @@ public static class C_ExprReader {
         call(self, "eat", new object[] { 1.0 });
         get(self, "skip");
         call(self, "eat", new object[] { 1.0 });
-        object k_1 = null; k_1 = get(self, "at");
-        while (truthy((truthy(lt(k_1, len(get(self, "text")))) && truthy(!eq(elem(m_chars(get(self, "text")), k_1), 34.0))))) {
-          k_1 = add(k_1, 1.0);
-        }
-        object name_1 = null; name_1 = call(self, "eat", new object[] { sub(k_1, get(self, "at")) });
+        object name_1 = null; name_1 = quoted(self);
         call(self, "eat", new object[] { 1.0 });
         get(self, "skip");
         call(self, "eat", new object[] { 1.0 });
@@ -5580,11 +5490,7 @@ public static class C_ExprReader {
       };
       if (truthy((truthy(eq(name_0, "s")) && truthy(eq(get(self, "peek"), 91.0))))) {
         call(self, "eat", new object[] { 2.0 });
-        object k_1 = null; k_1 = get(self, "at");
-        while (truthy((truthy(lt(k_1, len(get(self, "text")))) && truthy(!eq(elem(m_chars(get(self, "text")), k_1), 34.0))))) {
-          k_1 = add(k_1, 1.0);
-        }
-        object key_1 = null; key_1 = call(self, "eat", new object[] { sub(k_1, get(self, "at")) });
+        object key_1 = null; key_1 = quoted(self);
         call(self, "eat", new object[] { 2.0 });
         return call(K("Expr"), "field", new object[] { call(K("Expr"), "name_of", new object[] { key_1 }) });
       };
@@ -6342,25 +6248,26 @@ public static class C_Prover {
         set(sw_1, "derivation", list(inner_1));
         m_push(out__0, sw_1);
       };
-      object rates_0 = null; rates_0 = list();
-      foreach (object e1 in each_of(infos_0)) {
-        object t_1 = e1;
-        if (truthy((truthy(!eq(get(t_1, "rate"), null)) && truthy(not(m_contains(rates_0, get(t_1, "rate"))))))) {
-          m_push(rates_0, get(t_1, "rate"));
-        }
-      };
+      object rates_0 = null; rates_0 = m_reduce(filt(infos_0, new Fn((a4) => {
+        object t_3 = arg(a4, 0);
+        return !eq(get(t_3, "rate"), null);
+        return null;
+      })), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object t_2 = arg(a3, 1);
+        return (truthy(m_contains(out__2, get(t_2, "rate"))) ? (object) out__2 : (object) m_push(out__2, get(t_2, "rate")));
+        return null;
+      }));
       foreach (object e1 in each_of(rates_0)) {
         object name_1 = e1;
         m_push(out__0, call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { name_1, call(K("Expr"), "num", new object[] { 1.0 }) }), "the rewrite", list(), "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit", list("" + str(name_1) + " = 1 per match per tick") }));
       };
       foreach (object e1 in each_of(list("rays", "space", "folds"))) {
         object ledger_1 = e1;
-        object parts_1 = null; parts_1 = list();
-        foreach (object e2 in each_of(acting_0)) {
-          object t_2 = e2;
-          object c__2 = null; c__2 = (truthy(eq(ledger_1, "rays")) ? (object) get(t_2, "ray_count") : (object) ((truthy(eq(ledger_1, "space")) ? (object) get(t_2, "space_count") : (object) get(t_2, "fold_count"))));
-          m_push(parts_1, call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Prover"), "body_of", new object[] { t_2 }), c__2) }) }));
-        };
+        object parts_1 = null; parts_1 = m_map(acting_0, new Fn((a4) => {
+          object t_3 = arg(a4, 0);
+          return call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Prover"), "body_of", new object[] { t_3 }), (truthy(eq(ledger_1, "rays")) ? (object) get(t_3, "ray_count") : (object) ((truthy(eq(ledger_1, "space")) ? (object) get(t_3, "space_count") : (object) get(t_3, "fold_count"))))) }) });
+          return null;
+        }));
         if (!truthy(m_empty(parts_1))) {
           m_push(out__0, call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "the " + str(ledger_1) + " line nets", call(K("Expr"), "simplify", new object[] { call(K("Expr"), "add", new object[] { parts_1 }) }) }), "the line", list(), "every term of the line does something to the " + str(ledger_1) + " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted", m_map(acting_0, new Fn((a4) => {
             object t_3 = arg(a4, 0);
@@ -8336,23 +8243,23 @@ public static class C_Inferences {
           if (truthy(!eq(get(t_3, "kind"), "mul"))) {
             return t_3;
           }
-          object at_3 = null; at_3 = null;
-          for (double i4 = 0; i4 < num(len(get(t_3, "of"))); i4++) {
-            object i_4 = i4;
-            if (truthy((truthy(eq(at_3, null)) && truthy(eq(get(elem(get(t_3, "of"), i_4), "kind"), "add"))))) {
-              at_3 = i_4;
-            }
-          };
+          object at_3 = null; at_3 = m_first(filt(rng(len(get(t_3, "of"))), new Fn((a6) => {
+            object i_5 = arg(a6, 0);
+            return eq(get(elem(get(t_3, "of"), i_5), "kind"), "add");
+            return null;
+          })));
           if (truthy(eq(at_3, null))) {
             return t_3;
           }
-          object rest_3 = null; rest_3 = list();
-          for (double i4 = 0; i4 < num(len(get(t_3, "of"))); i4++) {
-            object i_4 = i4;
-            if (truthy(!eq(i_4, at_3))) {
-              m_push(rest_3, elem(get(t_3, "of"), i_4));
-            }
-          };
+          object rest_3 = null; rest_3 = m_map(filt(rng(len(get(t_3, "of"))), new Fn((a7) => {
+            object i_6 = arg(a7, 0);
+            return !eq(i_6, at_3);
+            return null;
+          })), new Fn((a6) => {
+            object i_5 = arg(a6, 0);
+            return elem(get(t_3, "of"), i_5);
+            return null;
+          }));
           object spread_3 = null; spread_3 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "add", new object[] { m_map(get(elem(get(t_3, "of"), at_3), "of"), new Fn((a6) => {
             object x_5 = arg(a6, 0);
             return call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { m_concat(rest_3, list(x_5)) }) });
@@ -9174,21 +9081,19 @@ public static class C_Aggregate {
         return (truthy(eq(v_1, null)) ? (object) double.NaN : (object) v_1);
       };
       if (truthy(eq(k_0, "add"))) {
-        object total_1 = null; total_1 = 0.0;
-        foreach (object e2 in each_of(get(e_0, "of"))) {
-          object p_2 = e2;
-          total_1 = add(total_1, call(self, "value", new object[] { p_2, at_0, masses_0, Rs_0, skip_0 }));
-        };
-        return total_1;
-      };
+        return m_sum(m_map(get(e_0, "of"), new Fn((a3) => {
+          object p_2 = arg(a3, 0);
+          return call(self, "value", new object[] { p_2, at_0, masses_0, Rs_0, skip_0 });
+          return null;
+        })));
+      }
       if (truthy(eq(k_0, "mul"))) {
-        object prod_1 = null; prod_1 = 1.0;
-        foreach (object e2 in each_of(get(e_0, "of"))) {
-          object p_2 = e2;
-          prod_1 = mul(prod_1, call(self, "value", new object[] { p_2, at_0, masses_0, Rs_0, skip_0 }));
-        };
-        return prod_1;
-      };
+        return m_reduce(get(e_0, "of"), 1.0, new Fn((a3) => {
+          object prod_2 = arg(a3, 0); object p_2 = arg(a3, 1);
+          return mul(prod_2, call(self, "value", new object[] { p_2, at_0, masses_0, Rs_0, skip_0 }));
+          return null;
+        }));
+      }
       if (truthy(eq(k_0, "pow"))) {
         return power(call(self, "value", new object[] { get(e_0, "base"), at_0, masses_0, Rs_0, skip_0 }), call(self, "value", new object[] { get(e_0, "power"), at_0, masses_0, Rs_0, skip_0 }));
       }
@@ -9553,22 +9458,19 @@ public static class C_Aggregate {
       return null;
     });
     c.getter("names", (self, a1) => {
-      object out__0 = null; out__0 = m_map(get(self, "per_body"), new Fn((a3) => {
-        object n_2 = arg(a3, 0);
-        return n_2;
+      return m_reduce(list(get(self, "outer"), get(self, "summand"), get(self, "shell_expr"), get(self, "reach_expr")), m_concat(get(self, "per_body"), list("SUM")), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object e_2 = arg(a3, 1);
+        return m_reduce(filt(call(K("Model"), "unbound", new object[] { e_2 }), new Fn((a6) => {
+          object n_5 = arg(a6, 0);
+          return (truthy(!eq(n_5, "\\bar{R}")) && truthy(not(m_ends_with(n_5, "\\paren{...}"))));
+          return null;
+        })), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object n_4 = arg(a5, 1);
+          return (truthy(m_contains(o_4, n_4)) ? (object) o_4 : (object) m_push(o_4, n_4));
+          return null;
+        }));
         return null;
       }));
-      m_push(out__0, "SUM");
-      foreach (object e1 in each_of(list(get(self, "outer"), get(self, "summand"), get(self, "shell_expr"), get(self, "reach_expr")))) {
-        object e_1 = e1;
-        foreach (object e2 in each_of(call(K("Model"), "unbound", new object[] { e_1 }))) {
-          object n_2 = e2;
-          if (truthy((truthy((truthy(not(m_contains(out__0, n_2))) && truthy(!eq(n_2, "\\bar{R}")))) && truthy(not(m_ends_with(n_2, "\\paren{...}")))))) {
-            m_push(out__0, n_2);
-          }
-        };
-      };
-      return out__0;
       return null;
     });
     c.getter("constants", (self, a1) => {
@@ -9821,7 +9723,7 @@ public static class C_Medium {
       return null;
     });
     c.getter("terms", (self, a1) => {
-      return get(get(get(self, "theory"), "equation"), "terms");
+      return get(get(self, "theory"), "terms_read");
       return null;
     });
     c.field("meets", self => filt(get(self, "terms"), new Fn((a2) => {
@@ -10024,18 +9926,15 @@ public static class C_Medium {
     c.method("under", (self, a1) => {
       object h_0 = arg(a1, 0);
       object half_0 = null; half_0 = m_floor((div((sub(get(self, "K"), 1.0)), 2.0)));
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(self, "K")); i1++) {
-        object dy_1 = i1;
-        for (double i2 = 0; i2 < num(get(self, "K")); i2++) {
-          object dx_2 = i2;
-          object c__2 = null; c__2 = call(self, "at", new object[] { add(sub(m_round(get(h_0, "x")), half_0), dx_2), add(sub(m_round(get(h_0, "y")), half_0), dy_1) });
-          if (truthy(ge(c__2, 0.0))) {
-            m_push(out__0, c__2);
-          }
-        };
-      };
-      return out__0;
+      return filt(m_map(rng(mul(get(self, "K"), get(self, "K"))), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return call(self, "at", new object[] { add(sub(m_round(get(h_0, "x")), half_0), mod(i_3, get(self, "K"))), add(sub(m_round(get(h_0, "y")), half_0), m_floor((div(i_3, get(self, "K"))))) });
+        return null;
+      })), new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return ge(c__2, 0.0);
+        return null;
+      }));
       return null;
     });
     c.method("spread", (self, a1) => {
@@ -11468,6 +11367,8 @@ public static class C_Surface {
     c.method("rotate", (self, a0) => { throw new System.NotSupportedException("rotate is declared but not defined by anyone"); });
     c.method("dash", (self, a0) => { throw new System.NotSupportedException("dash is declared but not defined by anyone"); });
     c.method("gradient_stroke", (self, a0) => { throw new System.NotSupportedException("gradient_stroke is declared but not defined by anyone"); });
+    c.method("image", (self, a0) => { throw new System.NotSupportedException("image is declared but not defined by anyone"); });
+    c.method("field", (self, a0) => { throw new System.NotSupportedException("field is declared but not defined by anyone"); });
   }
 }
 
@@ -11524,13 +11425,9 @@ public static class C_Cached {
     c.method("at", (self, a1) => {
       object frame_at_0 = arg(a1, 0);
       object out__0 = null; out__0 = make(NODE);
-      object all_0 = null; all_0 = get(get(get(self, "film"), "columns"), str("frames"));
-      object width_0 = null; width_0 = m_sum(get(self, "sizes"));
-      object from_at_0 = null; from_at_0 = mul(frame_at_0, width_0);
       for (double i1 = 0; i1 < num(len(get(self, "names"))); i1++) {
         object i_1 = i1;
-        setAt(out__0, elem(get(self, "names"), i_1), m_take(m_drop(all_0, from_at_0), elem(get(self, "sizes"), i_1)));
-        from_at_0 = add(from_at_0, elem(get(self, "sizes"), i_1));
+        setAt(out__0, elem(get(self, "names"), i_1), m_take(m_drop(get(get(get(self, "film"), "columns"), str("frames")), add(mul(frame_at_0, m_sum(get(self, "sizes"))), m_sum(m_take(get(self, "sizes"), i_1)))), elem(get(self, "sizes"), i_1)));
       };
       return out__0;
       return null;
@@ -11621,6 +11518,9 @@ public static class C_Picture {
     c.field("record", self => null);
     c.field("panes", self => list());
     c.field("on_request", self => false);
+    c.field("images", self => list());
+    c.field("parts", self => list());
+    c.field("uses", self => list());
     c.field("paint", null);
     c.getter("played", (self, a1) => {
       object r_0 = null; r_0 = get(self, "record");
@@ -11862,15 +11762,21 @@ public static class C_Setup {
     });
     c.statik("middle", (self, a1) => {
       object holes_0 = arg(a1, 0);
-      object m_0 = null; m_0 = 0.0;
-      object x_0 = null; x_0 = 0.0;
-      object y_0 = null; y_0 = 0.0;
-      foreach (object e1 in each_of(holes_0)) {
-        object h_1 = e1;
-        m_0 = add(m_0, get(h_1, "mass"));
-        x_0 = add(x_0, mul(get(h_1, "x"), get(h_1, "mass")));
-        y_0 = add(y_0, mul(get(h_1, "y"), get(h_1, "mass")));
-      };
+      object m_0 = null; m_0 = m_sum(m_map(holes_0, new Fn((a3) => {
+        object h_2 = arg(a3, 0);
+        return get(h_2, "mass");
+        return null;
+      })));
+      object x_0 = null; x_0 = m_sum(m_map(holes_0, new Fn((a3) => {
+        object h_2 = arg(a3, 0);
+        return mul(get(h_2, "x"), get(h_2, "mass"));
+        return null;
+      })));
+      object y_0 = null; y_0 = m_sum(m_map(holes_0, new Fn((a3) => {
+        object h_2 = arg(a3, 0);
+        return mul(get(h_2, "y"), get(h_2, "mass"));
+        return null;
+      })));
       return (truthy(gt(m_0, 0.0)) ? (object) list(div(x_0, m_0), div(y_0, m_0)) : (object) list(0.0, 0.0));
       return null;
     });
@@ -12455,11 +12361,11 @@ public static class C_Panel {
           centre_0 = k_1;
         }
       };
-      object weight_0 = null; weight_0 = 0.0;
-      for (double i1 = 0; i1 < num(get(p_0, "bodies")); i1++) {
-        object k_1 = i1;
-        weight_0 = add(weight_0, elem(marks_0, add(mul(k_1, 6.0), 5.0)));
-      };
+      object weight_0 = null; weight_0 = m_sum(m_map(rng(get(p_0, "bodies")), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        return elem(marks_0, add(mul(k_2, 6.0), 5.0));
+        return null;
+      })));
       object frames_0 = null; frames_0 = div(len(elem(trail_0, centre_0)), 2.0);
       object midx_0 = null; midx_0 = m_map(rng(frames_0), new Fn((a3) => {
         object i_2 = arg(a3, 0);
@@ -12809,16 +12715,19 @@ public static class C_Strip {
         return elem(get(get(v_2, "at"), "components"), 0.0);
         return null;
       }));
-      object sides_0 = null; sides_0 = list();
-      foreach (object e1 in each_of(get(w_0, "live"))) {
-        object v_1 = e1;
-        foreach (object e2 in each_of(get(v_1, "rays"))) {
-          object r_2 = e2;
-          if (truthy(get(r_2, "active"))) {
-            m_push(sides_0, make("Side", new object[] { kw("at", elem(get(get(v_1, "at"), "components"), 0.0)), kw("sign", elem(get(get(r_2, "along"), "components"), 0.0)), kw("ink", call(ink_0, "ink_of", new object[] { r_2 })) }));
-          }
-        };
-      };
+      object sides_0 = null; sides_0 = m_reduce(get(w_0, "live"), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object v_2 = arg(a3, 1);
+        return m_reduce(filt(get(v_2, "rays"), new Fn((a6) => {
+          object r_5 = arg(a6, 0);
+          return get(r_5, "active");
+          return null;
+        })), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object r_4 = arg(a5, 1);
+          return m_push(o_4, make("Side", new object[] { kw("at", elem(get(get(v_2, "at"), "components"), 0.0)), kw("sign", elem(get(get(r_4, "along"), "components"), 0.0)), kw("ink", call(ink_0, "ink_of", new object[] { r_4 })) }));
+          return null;
+        }));
+        return null;
+      }));
       object l_0 = null; l_0 = make("Lane", new object[] { kw("points", pts_0), kw("sides", sides_0) });
       foreach (object e1 in each_of(get(w_0, "sources"))) {
         object s_1 = e1;
@@ -12940,17 +12849,16 @@ public static class C_Strip {
     });
     c.statik("centre_of", (self, a1) => {
       object lanes_0 = arg(a1, 0);
-      object xs_0 = null; xs_0 = list();
-      foreach (object e1 in each_of(lanes_0)) {
-        object l_1 = e1;
-        foreach (object e2 in each_of(get(l_1, "sources"))) {
-          object p_2 = e2;
-          m_push(xs_0, p_2);
-        };
-      };
-      if (truthy(m_empty(xs_0))) {
-        xs_0 = get(m_first(lanes_0), "points");
-      }
+      object sourced_0 = null; sourced_0 = m_reduce(lanes_0, list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object l_2 = arg(a3, 1);
+        return m_reduce(get(l_2, "sources"), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object p_4 = arg(a5, 1);
+          return m_push(o_4, p_4);
+          return null;
+        }));
+        return null;
+      }));
+      object xs_0 = null; xs_0 = (truthy(m_empty(sourced_0)) ? (object) get(m_first(lanes_0), "points") : (object) sourced_0);
       if (truthy(m_empty(xs_0))) {
         return 0.0;
       }
@@ -13337,17 +13245,18 @@ public static class C_Sparc {
           setAt(best_0, get(p_1, "galaxy"), p_1);
         }
       };
-      object out__0 = null; out__0 = list();
       object names_0 = null; names_0 = get(K("Sparc"), "names");
-      for (double i1 = 0; i1 < num(len(names_0)); i1++) {
-        object g_1 = i1;
-        object p_1 = null; p_1 = elem(best_0, g_1);
-        if (truthy(!eq(p_1, null))) {
-          object q_2 = null; q_2 = make("RarPoint", new object[] { kw("gbar", get(p_1, "gbar")), kw("gobs", get(p_1, "gobs")), kw("galaxy", get(p_1, "galaxy")), kw("R", get(p_1, "R")) });
-          set(q_2, "name", elem(names_0, g_1));
-          m_push(out__0, q_2);
-        };
-      };
+      object out__0 = null; out__0 = m_map(filt(rng(len(names_0)), new Fn((a4) => {
+        object g_3 = arg(a4, 0);
+        return !eq(elem(best_0, g_3), null);
+        return null;
+      })), new Fn((a3) => {
+        object g_2 = arg(a3, 0);
+        object q_2 = null; q_2 = make("RarPoint", new object[] { kw("gbar", get(elem(best_0, g_2), "gbar")), kw("gobs", get(elem(best_0, g_2), "gobs")), kw("galaxy", get(elem(best_0, g_2), "galaxy")), kw("R", get(elem(best_0, g_2), "R")) });
+        set(q_2, "name", elem(names_0, g_2));
+        return q_2;
+        return null;
+      }));
       set(get(K("Sparc"), "CACHE"), str("flat"), out__0);
       return out__0;
       return null;
@@ -13362,13 +13271,15 @@ public static class C_Sparc {
       }
       object c__0 = null; c__0 = get(t_0, "columns");
       object names_0 = null; names_0 = get(get(t_0, "header"), str("names"));
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(t_0, "rows")); i1++) {
-        object i_1 = i1;
-        if (truthy(gt(elem(get(c__0, str("Vf")), i_1), 0.0))) {
-          m_push(out__0, make("Btfr", new object[] { kw("name", elem(names_0, i_1)), kw("galaxy", elem(get(c__0, str("galaxy")), i_1)), kw("vf", elem(get(c__0, str("Vf")), i_1)), kw("err", elem(get(c__0, str("e_Vf")), i_1)), kw("mass", mul(power(10.0, elem(get(c__0, str("log(Mb)")), i_1)), get(K("Sparc"), "MSUN"))), kw("err_mass", elem(get(c__0, str("e_log(Mb)")), i_1)) }));
-        };
-      };
+      object out__0 = null; out__0 = m_map(filt(rng(get(t_0, "rows")), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return gt(elem(get(c__0, str("Vf")), i_3), 0.0);
+        return null;
+      })), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return make("Btfr", new object[] { kw("name", elem(names_0, i_2)), kw("galaxy", elem(get(c__0, str("galaxy")), i_2)), kw("vf", elem(get(c__0, str("Vf")), i_2)), kw("err", elem(get(c__0, str("e_Vf")), i_2)), kw("mass", mul(power(10.0, elem(get(c__0, str("log(Mb)")), i_2)), get(K("Sparc"), "MSUN"))), kw("err_mass", elem(get(c__0, str("e_log(Mb)")), i_2)) });
+        return null;
+      }));
       set(get(K("Sparc"), "CACHE"), str("btfr"), out__0);
       return out__0;
       return null;
@@ -13511,23 +13422,16 @@ public static class C_Galaxies {
     });
     c.statik("tint_of", (self, a1) => {
       object mask_0 = arg(a1, 0);
-      if (truthy(eq(mask_0, 0.0))) {
-        return get(K("Galaxies"), "SEVERAL");
-      }
-      object r_0 = null; r_0 = 0.0;
-      object g_0 = null; g_0 = 0.0;
-      object bl_0 = null; bl_0 = 0.0;
-      object n_0 = null; n_0 = 0.0;
-      for (double i1 = 0; i1 < num(len(get(K("Galaxies"), "FREEDOMS"))); i1++) {
-        object i_1 = i1;
-        if (truthy(call(K("Galaxies"), "bit", new object[] { mask_0, i_1 }))) {
-          r_0 = add(r_0, elem(elem(get(K("Galaxies"), "TINTS"), i_1), 0.0));
-          g_0 = add(g_0, elem(elem(get(K("Galaxies"), "TINTS"), i_1), 1.0));
-          bl_0 = add(bl_0, elem(elem(get(K("Galaxies"), "TINTS"), i_1), 2.0));
-          n_0 = add(n_0, 1.0);
-        };
-      };
-      return (truthy(gt(n_0, 0.0)) ? (object) list(div(r_0, n_0), div(g_0, n_0), div(bl_0, n_0)) : (object) get(K("Galaxies"), "SEVERAL"));
+      object on_0 = null; on_0 = call(K("Galaxies"), "freedoms_in", new object[] { mask_0 });
+      return (truthy((truthy(eq(mask_0, 0.0)) || truthy(m_empty(on_0)))) ? (object) get(K("Galaxies"), "SEVERAL") : (object) m_map(list(0.0, 1.0, 2.0), new Fn((a3) => {
+        object c__2 = arg(a3, 0);
+        return div(m_sum(m_map(on_0, new Fn((a5) => {
+          object i_4 = arg(a5, 0);
+          return elem(elem(get(K("Galaxies"), "TINTS"), i_4), c__2);
+          return null;
+        }))), len(on_0));
+        return null;
+      })));
       return null;
     });
     c.statik("name_of", (self, a1) => {
@@ -13535,14 +13439,15 @@ public static class C_Galaxies {
       if (truthy(eq(mask_0, 0.0))) {
         return "the source as it starts";
       }
-      object parts_0 = null; parts_0 = list();
-      for (double i1 = 0; i1 < num(len(get(K("Galaxies"), "NAMES_NOW"))); i1++) {
-        object i_1 = i1;
-        if (truthy(call(K("Galaxies"), "bit", new object[] { mask_0, i_1 }))) {
-          m_push(parts_0, elem(get(K("Galaxies"), "NAMES_NOW"), i_1));
-        }
-      };
-      object joined_0 = null; joined_0 = m_join(parts_0, " + ");
+      object joined_0 = null; joined_0 = m_join(m_map(filt(rng(len(get(K("Galaxies"), "NAMES_NOW"))), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return call(K("Galaxies"), "bit", new object[] { mask_0, i_3 });
+        return null;
+      })), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return elem(get(K("Galaxies"), "NAMES_NOW"), i_2);
+        return null;
+      })), " + ");
       return "needs " + str(joined_0) + "";
       return null;
     });
@@ -13674,6 +13579,50 @@ public static class C_Galaxies {
       return (truthy(gt(got_0, 0.0)) ? (object) call(K("Fmt"), "log10", new object[] { div(got_0, a0_0) }) : (object) double.NaN);
       return null;
     });
+    c.statik("decades", (self, a1) => {
+      object s_0 = arg(a1, 0); object X_0 = arg(a1, 1); object Y_0 = arg(a1, 2); object box_0 = arg(a1, 3); object range_0 = arg(a1, 4); object under_0 = arg(a1, 5);
+      foreach (object e1 in each_of(m_map(rng(add(sub(elem(range_0, 1.0), elem(range_0, 0.0)), 1.0)), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return add(elem(range_0, 0.0), i_3);
+        return null;
+      })))) {
+        object l_1 = e1;
+        get(s_0, "begin_path");
+        call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_1 }), elem(box_0, 1.0) });
+        call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_1 }), elem(box_0, 3.0) });
+        get(s_0, "stroke");
+        call(s_0, "fill_text", new object[] { "10^" + str(l_1) + "", invoke(X_0, new object[] { l_1 }), add(elem(box_0, 3.0), under_0) });
+      };
+      call(s_0, "text_align", new object[] { "right" });
+      foreach (object e1 in each_of(m_map(rng(add(sub(elem(range_0, 3.0), elem(range_0, 2.0)), 1.0)), new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return add(elem(range_0, 2.0), i_3);
+        return null;
+      })))) {
+        object l_1 = e1;
+        get(s_0, "begin_path");
+        call(s_0, "move_to", new object[] { elem(box_0, 0.0), invoke(Y_0, new object[] { l_1 }) });
+        call(s_0, "line_to", new object[] { elem(box_0, 2.0), invoke(Y_0, new object[] { l_1 }) });
+        get(s_0, "stroke");
+        call(s_0, "fill_text", new object[] { "10^" + str(l_1) + "", sub(elem(box_0, 0.0), 8.0), add(invoke(Y_0, new object[] { l_1 }), 4.0) });
+      };
+      return null;
+    });
+    c.statik("curve", (self, a1) => {
+      object s_0 = arg(a1, 0); object X_0 = arg(a1, 1); object Y_0 = arg(a1, 2); object f_0 = arg(a1, 3); object low_0 = arg(a1, 4); object high_0 = arg(a1, 5); object step_0 = arg(a1, 6);
+      get(s_0, "begin_path");
+      object l_0 = null; l_0 = low_0;
+      while (truthy(le(l_0, add(high_0, 0.000001)))) {
+        if (truthy(eq(l_0, low_0))) {
+          call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { invoke(f_0, new object[] { l_0 }) }) });
+        } else {
+          call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { invoke(f_0, new object[] { l_0 }) }) });
+        };
+        l_0 = add(l_0, step_0);
+      }
+      return get(s_0, "stroke");
+      return null;
+    });
     c.statik("along", (self, a1) => {
       object s_0 = arg(a1, 0); object at_0 = arg(a1, 1); object t_0 = arg(a1, 2); object text_0 = arg(a1, 3); object colour_0 = arg(a1, 4); object lift_0 = arg(a1, 5); object leans_0 = arg(a1, 6);
       object p0_0 = null; p0_0 = invoke(leans_0, new object[] { sub(t_0, 0.01) });
@@ -13781,35 +13730,17 @@ public static class C_Galaxies {
       call(s_0, "line_width", new object[] { 1.0 });
       call(s_0, "fill_style", new object[] { get(K("Galaxies"), "FAINT") });
       call(s_0, "text_align", new object[] { "center" });
-      object l_0 = null; l_0 = XMIN_0;
-      while (truthy(le(l_0, XMAX_0))) {
-        get(s_0, "begin_path");
-        call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), by0_0 });
-        call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), by1_0 });
-        get(s_0, "stroke");
-        call(s_0, "fill_text", new object[] { "10^" + str(l_0) + "", invoke(X_0, new object[] { l_0 }), add(by1_0, 17.0) });
-        l_0 = add(l_0, 1.0);
-      }
-      call(s_0, "text_align", new object[] { "right" });
-      l_0 = YMIN_0;
-      while (truthy(le(l_0, YMAX_0))) {
-        get(s_0, "begin_path");
-        call(s_0, "move_to", new object[] { bx0_0, invoke(Y_0, new object[] { l_0 }) });
-        call(s_0, "line_to", new object[] { bx1_0, invoke(Y_0, new object[] { l_0 }) });
-        get(s_0, "stroke");
-        call(s_0, "fill_text", new object[] { "10^" + str(l_0) + "", sub(bx0_0, 8.0), add(invoke(Y_0, new object[] { l_0 }), 4.0) });
-        l_0 = add(l_0, 1.0);
-      }
-      object implied_0 = null; implied_0 = list();
-      foreach (object e1 in each_of(get(K("Sparc"), "btfr"))) {
-        object g_1 = e1;
-        object M_1 = null; M_1 = get(g_1, "mass");
-        object v_1 = null; v_1 = mul(get(g_1, "vf"), 1000.0);
-        if (truthy((truthy(gt(M_1, 0.0)) && truthy(gt(v_1, 0.0))))) {
-          m_push(implied_0, call(K("Fmt"), "log10", new object[] { div(div(mul(mul(mul(v_1, v_1), v_1), v_1), (mul(get(K("Sparc"), "G_NEWTON"), M_1))), get(K("Galaxies"), "A0_DATA")) }));
-        }
-      };
-      implied_0 = call(K("Expr"), "sorted", new object[] { implied_0 });
+      call(K("Galaxies"), "decades", new object[] { s_0, X_0, Y_0, list(bx0_0, by0_0, bx1_0, by1_0), list(XMIN_0, XMAX_0, YMIN_0, YMAX_0), 17.0 });
+      object implied_0 = null; implied_0 = call(K("Expr"), "sorted", new object[] { m_map(filt(get(K("Sparc"), "btfr"), new Fn((a4) => {
+        object g_3 = arg(a4, 0);
+        return (truthy(gt(get(g_3, "mass"), 0.0)) && truthy(gt(get(g_3, "vf"), 0.0)));
+        return null;
+      })), new Fn((a3) => {
+        object g_2 = arg(a3, 0);
+        object v_2 = null; v_2 = mul(get(g_2, "vf"), 1000.0);
+        return call(K("Fmt"), "log10", new object[] { div(div(mul(mul(mul(v_2, v_2), v_2), v_2), (mul(get(K("Sparc"), "G_NEWTON"), get(g_2, "mass")))), get(K("Galaxies"), "A0_DATA")) });
+        return null;
+      })) });
       object med_0 = null; med_0 = (truthy(m_empty(implied_0)) ? (object) double.NaN : (object) elem(implied_0, m_floor((div(len(implied_0), 2.0)))));
       call(s_0, "line_width", new object[] { 1.0 });
       foreach (object e1 in each_of(implied_0)) {
@@ -13995,33 +13926,21 @@ public static class C_Galaxies {
       call(s_0, "stroke_style", new object[] { get(K("Galaxies"), "BTFRC") });
       call(s_0, "line_width", new object[] { 1.5 });
       call(s_0, "dash", new object[] { list(2.0, 4.0) });
-      get(s_0, "begin_path");
-      l_0 = XMIN_0;
-      while (truthy(le(l_0, add(XMAX_0, 0.000001)))) {
-        if (truthy(eq(l_0, XMIN_0))) {
-          call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { mul(0.5, l_0) }) });
-        } else {
-          call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { mul(0.5, l_0) }) });
-        };
-        l_0 = add(l_0, 0.05);
-      }
-      get(s_0, "stroke");
+      call(K("Galaxies"), "curve", new object[] { s_0, X_0, Y_0, new Fn((a3) => {
+        object l_2 = arg(a3, 0);
+        return mul(0.5, l_2);
+        return null;
+      }), XMIN_0, XMAX_0, 0.05 });
       call(s_0, "dash", new object[] { list() });
       call(s_0, "stroke_style", new object[] { get(K("Galaxies"), "MODEL") });
       call(s_0, "line_width", new object[] { 1.2 });
       call(s_0, "alpha", new object[] { 0.4 });
       call(s_0, "dash", new object[] { list(5.0, 4.0) });
-      get(s_0, "begin_path");
-      l_0 = XMIN_0;
-      while (truthy(le(l_0, add(XMAX_0, 0.000001)))) {
-        if (truthy(eq(l_0, XMIN_0))) {
-          call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { invoke(law_drawn_0, new object[] { l_0 }) }) });
-        } else {
-          call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { invoke(law_drawn_0, new object[] { l_0 }) }) });
-        };
-        l_0 = add(l_0, 0.02);
-      }
-      get(s_0, "stroke");
+      call(K("Galaxies"), "curve", new object[] { s_0, X_0, Y_0, new Fn((a3) => {
+        object l_2 = arg(a3, 0);
+        return invoke(law_drawn_0, new object[] { l_2 });
+        return null;
+      }), XMIN_0, XMAX_0, 0.02 });
       call(s_0, "dash", new object[] { list() });
       call(s_0, "alpha", new object[] { 1.0 });
       object landed_0 = null; landed_0 = elem(possible_0, 0.0);
@@ -14169,14 +14088,11 @@ public static class C_Galaxies {
           };
         };
       };
-      object total_0 = null; total_0 = 0.0;
-      foreach (object e1 in each_of(masks_0)) {
-        object m_1 = e1;
-        total_0 = add(total_0, elem(tally_0, m_1));
-      };
-      if (truthy(eq(total_0, 0.0))) {
-        total_0 = 1.0;
-      }
+      object total_0 = null; total_0 = call(K("Fmt"), "max", new object[] { m_reduce(masks_0, 0.0, new Fn((a3) => {
+        object t_2 = arg(a3, 0); object m_2 = arg(a3, 1);
+        return add(t_2, elem(tally_0, m_2));
+        return null;
+      })), 1.0 });
       object counts_0 = null; counts_0 = call(K("Expr"), "sorted", new object[] { m_map(masks_0, new Fn((a3) => {
         object m_2 = arg(a3, 0);
         return sub(0.0, elem(tally_0, m_2));
@@ -14261,14 +14177,16 @@ public static class C_Galaxies {
     });
     c.statik("single", (self, a1) => {
       object m_0 = arg(a1, 0);
-      object n_0 = null; n_0 = 0.0;
-      for (double i1 = 0; i1 < num(len(get(K("Galaxies"), "FREEDOMS"))); i1++) {
-        object i_1 = i1;
-        if (truthy(call(K("Galaxies"), "bit", new object[] { m_0, i_1 }))) {
-          n_0 = add(n_0, 1.0);
-        }
-      };
-      return eq(n_0, 1.0);
+      return eq(len(call(K("Galaxies"), "freedoms_in", new object[] { m_0 })), 1.0);
+      return null;
+    });
+    c.statik("freedoms_in", (self, a1) => {
+      object m_0 = arg(a1, 0);
+      return filt(rng(len(get(K("Galaxies"), "FREEDOMS"))), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return call(K("Galaxies"), "bit", new object[] { m_0, i_2 });
+        return null;
+      }));
       return null;
     });
     c.statik("ratio_at", (self, a1) => {
@@ -14423,17 +14341,17 @@ public static class C_Galaxies {
           rest_0 = k_1;
         }
       };
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(n_0); i1++) {
-        object k_1 = i1;
-        m_push(out__0, sub(sub(n_0, 1.0), k_1));
-      };
-      for (double i1 = 0; i1 < num(get(K("Galaxies"), "SETTLE")); i1++) {
-        object k_1 = i1;
-        object f_1 = null; f_1 = div((add(k_1, 1.0)), get(K("Galaxies"), "SETTLE"));
-        m_push(out__0, m_round((mul(mul(mul(rest_0, f_1), f_1), (sub(3.0, mul(2.0, f_1)))))));
-      };
-      return out__0;
+      object down_0 = null; down_0 = m_map(rng(n_0), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        return sub(sub(n_0, 1.0), k_2);
+        return null;
+      }));
+      return m_concat(down_0, m_map(rng(get(K("Galaxies"), "SETTLE")), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        object f_2 = null; f_2 = div((add(k_2, 1.0)), get(K("Galaxies"), "SETTLE"));
+        return m_round((mul(mul(mul(rest_0, f_2), f_2), (sub(3.0, mul(2.0, f_2))))));
+        return null;
+      })));
       return null;
     });
     c.statik("of", (self, a1) => {
@@ -14476,13 +14394,11 @@ public static class C_Galaxies {
           set(counts_0, str("" + str(g_1) + ""), add((orElse(get(counts_0, str("" + str(g_1) + "")), () => 0.0)), 1.0));
         }
       };
-      object ids_0 = null; ids_0 = list();
-      for (double i1 = 0; i1 < num(len(get(K("Sparc"), "names"))); i1++) {
-        object g_1 = i1;
-        if (truthy(ge((orElse(get(counts_0, str("" + str(g_1) + "")), () => 0.0)), 12.0))) {
-          m_push(ids_0, g_1);
-        }
-      };
+      object ids_0 = null; ids_0 = filt(rng(len(get(K("Sparc"), "names"))), new Fn((a3) => {
+        object g_2 = arg(a3, 0);
+        return ge((orElse(get(counts_0, str("" + str(g_2) + "")), () => 0.0)), 12.0);
+        return null;
+      }));
       object tops_0 = null; tops_0 = make(NODE);
       for (double i1 = 0; i1 < num(get(t_0, "rows")); i1++) {
         object i_1 = i1;
@@ -14494,12 +14410,11 @@ public static class C_Galaxies {
         return get(tops_0, str("" + str(g_2) + ""));
         return null;
       }));
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(want_0); i1++) {
-        object k_1 = i1;
-        m_push(out__0, elem(sorted_0, m_round((div(mul((sub(len(sorted_0), 1.0)), k_1), (sub(want_0, 1.0)))))));
-      };
-      return out__0;
+      return m_map(rng(want_0), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        return elem(sorted_0, m_round((div(mul((sub(len(sorted_0), 1.0)), k_2), (sub(want_0, 1.0))))));
+        return null;
+      }));
       return null;
     });
     c.statik("simulated", (self, a1) => {
@@ -14520,15 +14435,11 @@ public static class C_Galaxies {
     });
     c.statik("rows_in", (self, a1) => {
       object m_0 = arg(a1, 0); object g_0 = arg(a1, 1);
-      object col_0 = null; col_0 = get(get(m_0, "columns"), str("galaxy"));
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(m_0, "rows")); i1++) {
-        object i_1 = i1;
-        if (truthy(eq(elem(col_0, i_1), g_0))) {
-          m_push(out__0, i_1);
-        }
-      };
-      return out__0;
+      return filt(rng(get(m_0, "rows")), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return eq(elem(get(get(m_0, "columns"), str("galaxy")), i_2), g_0);
+        return null;
+      }));
       return null;
     });
     c.statik("off_of", (self, a1) => {
@@ -15133,25 +15044,7 @@ public static class C_Galaxies {
       call(s_0, "fill_style", new object[] { get(K("Galaxies"), "FAINT") });
       call(s_0, "font", new object[] { "11px ui-monospace, monospace" });
       call(s_0, "text_align", new object[] { "center" });
-      object l_0 = null; l_0 = XMIN_0;
-      while (truthy(le(l_0, XMAX_0))) {
-        get(s_0, "begin_path");
-        call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), by0_0 });
-        call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), by1_0 });
-        get(s_0, "stroke");
-        call(s_0, "fill_text", new object[] { "10^" + str(l_0) + "", invoke(X_0, new object[] { l_0 }), add(by1_0, 16.0) });
-        l_0 = add(l_0, 1.0);
-      }
-      call(s_0, "text_align", new object[] { "right" });
-      l_0 = YMIN_0;
-      while (truthy(le(l_0, YMAX_0))) {
-        get(s_0, "begin_path");
-        call(s_0, "move_to", new object[] { bx0_0, invoke(Y_0, new object[] { l_0 }) });
-        call(s_0, "line_to", new object[] { bx1_0, invoke(Y_0, new object[] { l_0 }) });
-        get(s_0, "stroke");
-        call(s_0, "fill_text", new object[] { "10^" + str(l_0) + "", sub(bx0_0, 8.0), add(invoke(Y_0, new object[] { l_0 }), 4.0) });
-        l_0 = add(l_0, 1.0);
-      }
+      call(K("Galaxies"), "decades", new object[] { s_0, X_0, Y_0, list(bx0_0, by0_0, bx1_0, by1_0), list(XMIN_0, XMAX_0, YMIN_0, YMAX_0), 16.0 });
       object lg_0 = null; lg_0 = new Fn((a2) => {
         object v_1 = arg(a2, 0);
         return call(K("Fmt"), "log10", new object[] { div(v_1, get(K("Galaxies"), "A0_DATA")) });
@@ -15191,19 +15084,11 @@ public static class C_Galaxies {
       object a0_0 = null; a0_0 = get(get(sim_0, "header"), str("a0"));
       call(s_0, "stroke_style", new object[] { get(K("Galaxies"), "MODEL") });
       call(s_0, "line_width", new object[] { 2.0 });
-      get(s_0, "begin_path");
-      l_0 = XMIN_0;
-      while (truthy(le(l_0, add(XMAX_0, 0.000001)))) {
-        object gN_0 = null; gN_0 = mul(power(10.0, l_0), get(K("Galaxies"), "A0_DATA"));
-        object y_0 = null; y_0 = invoke(lg_0, new object[] { call(K("Law"), "boost", new object[] { gN_0, a0_0 }) });
-        if (truthy(eq(l_0, XMIN_0))) {
-          call(s_0, "move_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { y_0 }) });
-        } else {
-          call(s_0, "line_to", new object[] { invoke(X_0, new object[] { l_0 }), invoke(Y_0, new object[] { y_0 }) });
-        };
-        l_0 = add(l_0, 0.02);
-      }
-      get(s_0, "stroke");
+      call(K("Galaxies"), "curve", new object[] { s_0, X_0, Y_0, new Fn((a3) => {
+        object l_2 = arg(a3, 0);
+        return invoke(lg_0, new object[] { call(K("Law"), "boost", new object[] { mul(power(10.0, l_2), get(K("Galaxies"), "A0_DATA")), a0_0 }) });
+        return null;
+      }), XMIN_0, XMAX_0, 0.02 });
       call(s_0, "stroke_style", new object[] { get(K("Galaxies"), "NEWT") });
       call(s_0, "dash", new object[] { list(6.0, 5.0) });
       get(s_0, "begin_path");
@@ -15433,12 +15318,11 @@ public static class C_Plan {
       return null;
     });
     c.getter("total", (self, a1) => {
-      object sum_0 = null; sum_0 = 0.0;
-      foreach (object e1 in each_of(get(self, "parts"))) {
-        object p_1 = e1;
-        sum_0 = add(sum_0, elem(p_1, 1.0));
-      };
-      return sum_0;
+      return m_sum(m_map(get(self, "parts"), new Fn((a3) => {
+        object p_2 = arg(a3, 0);
+        return elem(p_2, 1.0);
+        return null;
+      })));
       return null;
     });
     c.getter("per_source", (self, a1) => {
@@ -15621,27 +15505,26 @@ public static class C_Simulation {
           set(counts_0, str("" + str(g_1) + ""), add((orElse(get(counts_0, str("" + str(g_1) + "")), () => 0.0)), 1.0));
         }
       };
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(len(get(K("Sparc"), "names"))); i1++) {
-        object g_1 = i1;
-        if (truthy(ge((orElse(get(counts_0, str("" + str(g_1) + "")), () => 0.0)), 3.0))) {
-          m_push(out__0, g_1);
-        }
-      };
-      return out__0;
+      return filt(rng(len(get(K("Sparc"), "names"))), new Fn((a3) => {
+        object g_2 = arg(a3, 0);
+        return ge((orElse(get(counts_0, str("" + str(g_2) + "")), () => 0.0)), 3.0);
+        return null;
+      }));
       return null;
     });
     c.statik("rows_of", (self, a1) => {
       object g_0 = arg(a1, 0);
       object C_0 = null; C_0 = get(get(K("Sparc"), "curves"), "columns");
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(get(K("Sparc"), "curves"), "rows")); i1++) {
-        object i_1 = i1;
-        if (truthy((truthy((truthy(eq(elem(get(C_0, str("galaxy")), i_1), g_0)) && truthy(gt(elem(get(C_0, str("R")), i_1), 0.0)))) && truthy(gt(elem(get(C_0, str("Vobs")), i_1), 0.0))))) {
-          m_push(out__0, list(elem(get(C_0, str("R")), i_1), elem(get(C_0, str("Vobs")), i_1), elem(get(C_0, str("e_Vobs")), i_1), elem(get(C_0, str("Vgas")), i_1), elem(get(C_0, str("Vdisk")), i_1), elem(get(C_0, str("Vbul")), i_1), (truthy(call(K("Simulation"), "kept", new object[] { g_0, elem(get(C_0, str("Vobs")), i_1), elem(get(C_0, str("e_Vobs")), i_1) })) ? (object) 1.0 : (object) 0.0)));
-        };
-      };
-      return m_sorted_by(out__0, new Fn((a3) => {
+      object mine_0 = null; mine_0 = filt(rng(get(get(K("Sparc"), "curves"), "rows")), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return (truthy((truthy(eq(elem(get(C_0, str("galaxy")), i_2), g_0)) && truthy(gt(elem(get(C_0, str("R")), i_2), 0.0)))) && truthy(gt(elem(get(C_0, str("Vobs")), i_2), 0.0)));
+        return null;
+      }));
+      return m_sorted_by(m_map(mine_0, new Fn((a4) => {
+        object i_3 = arg(a4, 0);
+        return list(elem(get(C_0, str("R")), i_3), elem(get(C_0, str("Vobs")), i_3), elem(get(C_0, str("e_Vobs")), i_3), elem(get(C_0, str("Vgas")), i_3), elem(get(C_0, str("Vdisk")), i_3), elem(get(C_0, str("Vbul")), i_3), (truthy(call(K("Simulation"), "kept", new object[] { g_0, elem(get(C_0, str("Vobs")), i_3), elem(get(C_0, str("e_Vobs")), i_3) })) ? (object) 1.0 : (object) 0.0));
+        return null;
+      })), new Fn((a3) => {
         object r_2 = arg(a3, 0);
         return elem(r_2, 0.0);
         return null;
@@ -15651,13 +15534,11 @@ public static class C_Simulation {
     c.statik("edges_of", (self, a1) => {
       object rs_0 = arg(a1, 0);
       object n_0 = null; n_0 = len(rs_0);
-      object out__0 = null; out__0 = list(0.0, div(elem(elem(rs_0, 0.0), 0.0), 2.0));
-      for (double i1 = 0; i1 < num(sub(n_0, 1.0)); i1++) {
-        object i_1 = i1;
-        m_push(out__0, div((add(elem(elem(rs_0, i_1), 0.0), elem(elem(rs_0, add(i_1, 1.0)), 0.0))), 2.0));
-      };
-      m_push(out__0, add(elem(elem(rs_0, sub(n_0, 1.0)), 0.0), div((sub(elem(elem(rs_0, sub(n_0, 1.0)), 0.0), elem(elem(rs_0, sub(n_0, 2.0)), 0.0))), 2.0)));
-      return out__0;
+      return m_concat(m_concat(list(0.0, div(elem(elem(rs_0, 0.0), 0.0), 2.0)), m_map(rng(sub(n_0, 1.0)), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return div((add(elem(elem(rs_0, i_2), 0.0), elem(elem(rs_0, add(i_2, 1.0)), 0.0))), 2.0);
+        return null;
+      }))), list(add(elem(elem(rs_0, sub(n_0, 1.0)), 0.0), div((sub(elem(elem(rs_0, sub(n_0, 1.0)), 0.0), elem(elem(rs_0, sub(n_0, 2.0)), 0.0))), 2.0))));
       return null;
     });
     c.statik("bulge_arrives", (self, a1) => {
@@ -16019,12 +15900,11 @@ public static class C_Simulation {
         object w_disc_1 = null; w_disc_1 = call(K("Simulation"), "nnls", new object[] { K_1, want_disc_1 });
         object sum_at_1 = null; sum_at_1 = new Fn((a3) => {
           object row_of_2 = arg(a3, 0); object w_2 = arg(a3, 1);
-          object s_2 = null; s_2 = 0.0;
-          for (double i3 = 0; i3 < num(n_1); i3++) {
-            object a_3 = i3;
-            s_2 = add(s_2, mul(invoke(row_of_2, new object[] { a_3 }), elem(w_2, a_3)));
-          };
-          return s_2;
+          return m_reduce(rng(n_1), 0.0, new Fn((a5) => {
+            object s_4 = arg(a5, 0); object a_4 = arg(a5, 1);
+            return add(s_4, mul(invoke(row_of_2, new object[] { a_4 }), elem(w_2, a_4)));
+            return null;
+          }));
           return null;
         });
         object here_1 = null; here_1 = list();
@@ -16057,23 +15937,20 @@ public static class C_Simulation {
         m_push(get(self, "w_discs"), w_disc_1);
         m_push(get(self, "w_gases"), w_gas_1);
         m_push(get(self, "repro"), (truthy(gt(top_1, 0.0)) ? (object) div(worst_1, top_1) : (object) 0.0));
-        object tab_1 = null; tab_1 = list();
-        for (double i2 = 0; i2 < num(get(K("Simulation"), "TABLE")); i2++) {
-          object t_2 = i2;
-          object base__2 = null; base__2 = add(elem(get(self, "tabled_at"), j_1), mul(t_2, n_1));
-          object gd_2 = null; gd_2 = invoke(sum_at_1, new object[] { new Fn((a5) => {
-            object a_4 = arg(a5, 0);
-            return elem(pulls_0, add(base__2, a_4));
+        m_push(get(self, "tables"), m_map(rng(get(K("Simulation"), "TABLE")), new Fn((a4) => {
+          object t_3 = arg(a4, 0);
+          object base__3 = null; base__3 = add(elem(get(self, "tabled_at"), j_1), mul(t_3, n_1));
+          return list(call(self, "table_r", new object[] { j_1, t_3 }), invoke(sum_at_1, new object[] { new Fn((a6) => {
+            object a_5 = arg(a6, 0);
+            return elem(pulls_0, add(base__3, a_5));
             return null;
-          }), w_disc_1 });
-          object gg_2 = null; gg_2 = invoke(sum_at_1, new object[] { new Fn((a5) => {
-            object a_4 = arg(a5, 0);
-            return elem(pulls_0, add(base__2, a_4));
+          }), w_disc_1 }), invoke(sum_at_1, new object[] { new Fn((a6) => {
+            object a_5 = arg(a6, 0);
+            return elem(pulls_0, add(base__3, a_5));
             return null;
-          }), w_gas_1 });
-          m_push(tab_1, list(call(self, "table_r", new object[] { j_1, t_2 }), gd_2, gg_2, call(K("Simulation"), "bulge_at", new object[] { rs_1, call(self, "table_r", new object[] { j_1, t_2 }) })));
-        };
-        m_push(get(self, "tables"), tab_1);
+          }), w_gas_1 }), call(K("Simulation"), "bulge_at", new object[] { rs_1, call(self, "table_r", new object[] { j_1, t_3 }) }));
+          return null;
+        })));
       };
       return null;
     });
@@ -16085,20 +15962,20 @@ public static class C_Simulation {
         object j_1 = i1;
         object rs_1 = null; rs_1 = elem(get(self, "rows"), j_1);
         object n_1 = null; n_1 = sub(len(elem(get(self, "edges"), j_1)), 1.0);
-        object here_1 = null; here_1 = list();
-        for (double i2 = 0; i2 < num(len(rs_1)); i2++) {
-          object i_2 = i2;
-          object sd_2 = null; sd_2 = 0.0;
-          object sg_2 = null; sg_2 = 0.0;
-          for (double i3 = 0; i3 < num(n_1); i3++) {
-            object a_3 = i3;
-            object k_3 = null; k_3 = elem(spulls_0, add(add(elem(get(self, "measured_at"), j_1), mul(i_2, n_1)), a_3));
-            sd_2 = add(sd_2, mul(k_3, elem(elem(get(self, "w_discs"), j_1), a_3)));
-            sg_2 = add(sg_2, mul(k_3, elem(elem(get(self, "w_gases"), j_1), a_3)));
-          };
-          m_push(here_1, list(sd_2, sg_2, call(K("Simulation"), "bulge_arrives", new object[] { rs_1, elem(elem(rs_1, i_2), 0.0), elem(get(self, "thick"), j_1) })));
-        };
-        m_push(get(self, "seen_rows"), here_1);
+        object seen_1 = null; seen_1 = new Fn((a3) => {
+          object i_2 = arg(a3, 0); object w_2 = arg(a3, 1);
+          return m_reduce(rng(n_1), 0.0, new Fn((a5) => {
+            object s_4 = arg(a5, 0); object a_4 = arg(a5, 1);
+            return add(s_4, mul(elem(spulls_0, add(add(elem(get(self, "measured_at"), j_1), mul(i_2, n_1)), a_4)), elem(w_2, a_4)));
+            return null;
+          }));
+          return null;
+        });
+        m_push(get(self, "seen_rows"), m_map(rng(len(rs_1)), new Fn((a4) => {
+          object i_3 = arg(a4, 0);
+          return list(invoke(seen_1, new object[] { i_3, elem(get(self, "w_discs"), j_1) }), invoke(seen_1, new object[] { i_3, elem(get(self, "w_gases"), j_1) }), call(K("Simulation"), "bulge_arrives", new object[] { rs_1, elem(elem(rs_1, i_3), 0.0), elem(get(self, "thick"), j_1) }));
+          return null;
+        })));
       };
       return null;
     });
@@ -16209,43 +16086,48 @@ public static class C_Simulation {
       return (truthy(gt(gN_0, 0.0)) ? (object) call(K("Law"), "boost", new object[] { gN_0, get(self, "a0") }) : (object) ((truthy(lt(gN_0, 0.0)) ? (object) sub(0.0, call(K("Law"), "boost", new object[] { sub(0.0, gN_0), get(self, "a0") })) : (object) 0.0)));
       return null;
     });
+    c.statik("laid", (self, a1) => {
+      object records_0 = arg(a1, 0);
+      return m_reduce(records_0, list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object r_2 = arg(a3, 1);
+        return m_reduce(r_2, out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object v_4 = arg(a5, 1);
+          return m_push(o_4, v_4);
+          return null;
+        }));
+        return null;
+      }));
+      return null;
+    });
     c.getter("points", (self, a1) => {
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
-        object j_1 = i1;
-        for (double i2 = 0; i2 < num(len(elem(get(self, "rows"), j_1))); i2++) {
-          object i_2 = i2;
-          object p_2 = null; p_2 = elem(elem(get(self, "at_rows"), j_1), i_2);
-          foreach (object e3 in each_of(list(j_1, elem(elem(elem(get(self, "rows"), j_1), i_2), 0.0), elem(p_2, 0.0), elem(p_2, 1.0), elem(p_2, 2.0), 0.0))) {
-            object v_3 = e3;
-            m_push(out__0, v_3);
-          };
-        };
-      };
-      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
-        object j_1 = i1;
-        foreach (object e2 in each_of(elem(get(self, "tables"), j_1))) {
-          object t_2 = e2;
-          foreach (object e3 in each_of(list(j_1, elem(t_2, 0.0), elem(t_2, 1.0), elem(t_2, 2.0), elem(t_2, 3.0), 0.0))) {
-            object v_3 = e3;
-            m_push(out__0, v_3);
-          };
-        };
-      };
-      return out__0;
+      object measured_0 = null; measured_0 = m_reduce(rng(len(get(self, "ids"))), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object j_2 = arg(a3, 1);
+        return m_reduce(rng(len(elem(get(self, "rows"), j_2))), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object i_4 = arg(a5, 1);
+          return m_push(o_4, list(j_2, elem(elem(elem(get(self, "rows"), j_2), i_4), 0.0), elem(elem(elem(get(self, "at_rows"), j_2), i_4), 0.0), elem(elem(elem(get(self, "at_rows"), j_2), i_4), 1.0), elem(elem(elem(get(self, "at_rows"), j_2), i_4), 2.0), 0.0));
+          return null;
+        }));
+        return null;
+      }));
+      object tabled_0 = null; tabled_0 = m_reduce(rng(len(get(self, "ids"))), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object j_2 = arg(a3, 1);
+        return m_reduce(elem(get(self, "tables"), j_2), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object t_4 = arg(a5, 1);
+          return m_push(o_4, list(j_2, elem(t_4, 0.0), elem(t_4, 1.0), elem(t_4, 2.0), elem(t_4, 3.0), 0.0));
+          return null;
+        }));
+        return null;
+      }));
+      return call(K("Simulation"), "laid", new object[] { m_concat(measured_0, tabled_0) });
       return null;
     });
     c.method("nuisances", (self, a1) => {
       object fitted_0 = arg(a1, 0);
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
-        object j_1 = i1;
-        m_push(out__0, (truthy(fitted_0) ? (object) elem(get(self, "best_y"), j_1) : (object) get(K("Sparc"), "YD")));
-        m_push(out__0, (truthy(fitted_0) ? (object) elem(get(self, "best_b"), j_1) : (object) get(K("Sparc"), "YB")));
-        m_push(out__0, get(self, "a0"));
-        m_push(out__0, 0.0);
-      };
-      return out__0;
+      return call(K("Simulation"), "laid", new object[] { m_map(rng(len(get(self, "ids"))), new Fn((a3) => {
+        object j_2 = arg(a3, 0);
+        return list((truthy(fitted_0) ? (object) elem(get(self, "best_y"), j_2) : (object) get(K("Sparc"), "YD")), (truthy(fitted_0) ? (object) elem(get(self, "best_b"), j_2) : (object) get(K("Sparc"), "YB")), get(self, "a0"), 0.0);
+        return null;
+      })) });
       return null;
     });
     c.field("best_y", self => list());
@@ -16316,17 +16198,13 @@ public static class C_Simulation {
     c.getter("searches", (self, a1) => {
       object S_0 = null; S_0 = get(get(K("Sparc"), "sample"), "columns");
       object pts_0 = null; pts_0 = get(self, "fit_points");
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
-        object j_1 = i1;
-        object g_1 = null; g_1 = elem(get(self, "ids"), j_1);
-        object stop_1 = null; stop_1 = (truthy(lt(add(j_1, 1.0), len(get(self, "ids")))) ? (object) elem(get(self, "fit_at"), add(j_1, 1.0)) : (object) m_floor((div(len(pts_0), 8.0))));
-        foreach (object e2 in each_of(list(elem(get(self, "fit_at"), j_1), sub(stop_1, elem(get(self, "fit_at"), j_1)), elem(get(S_0, str("D")), g_1), elem(get(S_0, str("e_D")), g_1), elem(get(S_0, str("Inc")), g_1), elem(get(S_0, str("e_Inc")), g_1), get(self, "a0"), (truthy(call(self, "has_bulge", new object[] { j_1 })) ? (object) 1.0 : (object) 0.0), elem(get(self, "centre_y"), j_1), elem(get(self, "centre_b"), j_1), elem(get(self, "centre_d"), j_1), elem(get(self, "centre_i"), j_1), mul(get(K("Simulation"), "STEP_Y"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_D"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_I"), get(self, "spacing")), 0.0))) {
-          object v_2 = e2;
-          m_push(out__0, v_2);
-        };
-      };
-      return out__0;
+      return call(K("Simulation"), "laid", new object[] { m_map(rng(len(get(self, "ids"))), new Fn((a3) => {
+        object j_2 = arg(a3, 0);
+        object g_2 = null; g_2 = elem(get(self, "ids"), j_2);
+        object stop_2 = null; stop_2 = (truthy(lt(add(j_2, 1.0), len(get(self, "ids")))) ? (object) elem(get(self, "fit_at"), add(j_2, 1.0)) : (object) m_floor((div(len(pts_0), 8.0))));
+        return list(elem(get(self, "fit_at"), j_2), sub(stop_2, elem(get(self, "fit_at"), j_2)), elem(get(S_0, str("D")), g_2), elem(get(S_0, str("e_D")), g_2), elem(get(S_0, str("Inc")), g_2), elem(get(S_0, str("e_Inc")), g_2), get(self, "a0"), (truthy(call(self, "has_bulge", new object[] { j_2 })) ? (object) 1.0 : (object) 0.0), elem(get(self, "centre_y"), j_2), elem(get(self, "centre_b"), j_2), elem(get(self, "centre_d"), j_2), elem(get(self, "centre_i"), j_2), mul(get(K("Simulation"), "STEP_Y"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_D"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_I"), get(self, "spacing")), 0.0);
+        return null;
+      })) });
       return null;
     });
     c.method("combo", (self, a1) => {
@@ -16486,12 +16364,11 @@ public static class C_Simulation {
       return null;
     });
     c.getter("most_steps", (self, a1) => {
-      object m_0 = null; m_0 = 0.0;
-      foreach (object e1 in each_of(get(self, "steps"))) {
-        object n_1 = e1;
-        m_0 = call(K("Fmt"), "max", new object[] { m_0, n_1 });
-      };
-      return m_0;
+      return m_reduce(get(self, "steps"), 0.0, new Fn((a3) => {
+        object m_2 = arg(a3, 0); object n_2 = arg(a3, 1);
+        return call(K("Fmt"), "max", new object[] { m_2, n_2 });
+        return null;
+      }));
       return null;
     });
     c.field("film_sources", self => list());
@@ -16529,17 +16406,20 @@ public static class C_Simulation {
       object per_pixel_0 = null; per_pixel_0 = mul(mul(div(mul(div(fov_0, P_0), System.Math.PI), 180.0), D_0), 1000.0);
       object light_0 = null; light_0 = get(get(I_0, "columns"), str("light"));
       object base__0 = null; base__0 = mul(mul(g_0, P_0), P_0);
-      object edge_0 = null; edge_0 = list();
-      for (double i1 = 0; i1 < num(P_0); i1++) {
-        object r_1 = i1;
-        for (double i2 = 0; i2 < num(P_0); i2++) {
-          object c__2 = i2;
-          if (truthy((truthy((truthy((truthy(lt(r_1, get(K("Simulation"), "SKY_EDGE"))) || truthy(lt(c__2, get(K("Simulation"), "SKY_EDGE"))))) || truthy(ge(r_1, sub(P_0, get(K("Simulation"), "SKY_EDGE")))))) || truthy(ge(c__2, sub(P_0, get(K("Simulation"), "SKY_EDGE"))))))) {
-            m_push(edge_0, elem(light_0, add(add(base__0, mul(r_1, P_0)), c__2)));
-          }
-        };
-      };
-      object sky_0 = null; sky_0 = call(K("Fmt"), "median", new object[] { edge_0 });
+      object on_edge_0 = null; on_edge_0 = new Fn((a2) => {
+        object r_1 = arg(a2, 0); object c__1 = arg(a2, 1);
+        return (truthy((truthy((truthy(lt(r_1, get(K("Simulation"), "SKY_EDGE"))) || truthy(lt(c__1, get(K("Simulation"), "SKY_EDGE"))))) || truthy(ge(r_1, sub(P_0, get(K("Simulation"), "SKY_EDGE")))))) || truthy(ge(c__1, sub(P_0, get(K("Simulation"), "SKY_EDGE")))));
+        return null;
+      });
+      object sky_0 = null; sky_0 = call(K("Fmt"), "median", new object[] { m_map(filt(rng(mul(P_0, P_0)), new Fn((a4) => {
+        object k_3 = arg(a4, 0);
+        return invoke(on_edge_0, new object[] { m_floor((div(k_3, P_0))), mod(k_3, P_0) });
+        return null;
+      })), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        return elem(light_0, add(base__0, k_2));
+        return null;
+      })) });
       object reach_0 = null; reach_0 = elem(get(self, "reach"), j_0);
       object east_0 = null; east_0 = new Fn((a2) => {
         object c__1 = arg(a2, 0);
@@ -16654,11 +16534,11 @@ public static class C_Simulation {
           m_push(get(self, "film_angles"), double.NaN);
           object es_2 = null; es_2 = elem(get(self, "edges"), j_1);
           object rs_2 = null; rs_2 = elem(get(self, "rows"), j_1);
-          object masses_2 = null; masses_2 = list();
-          for (double i3 = 0; i3 < num(sub(len(es_2), 1.0)); i3++) {
-            object a_3 = i3;
-            m_push(masses_2, list(elem(es_2, a_3), elem(es_2, add(a_3, 1.0)), add(mul(get(K("Sparc"), "YD"), elem(elem(get(self, "w_discs"), j_1), a_3)), elem(elem(get(self, "w_gases"), j_1), a_3))));
-          };
+          object masses_2 = null; masses_2 = m_map(rng(sub(len(es_2), 1.0)), new Fn((a5) => {
+            object a_4 = arg(a5, 0);
+            return list(elem(es_2, a_4), elem(es_2, add(a_4, 1.0)), add(mul(get(K("Sparc"), "YD"), elem(elem(get(self, "w_discs"), j_1), a_4)), elem(elem(get(self, "w_gases"), j_1), a_4)));
+            return null;
+          }));
           object last_2 = null; last_2 = 0.0;
           for (double i3 = 0; i3 < num(len(rs_2)); i3++) {
             object i_3 = i3;
@@ -16668,13 +16548,12 @@ public static class C_Simulation {
               last_2 = inside_3;
             };
           };
-          object run_2 = null; run_2 = list();
-          object total_2 = null; total_2 = 0.0;
-          foreach (object e3 in each_of(masses_2)) {
-            object m_3 = e3;
-            total_2 = add(total_2, call(K("Fmt"), "max", new object[] { elem(m_3, 2.0), 0.0 }));
-            m_push(run_2, total_2);
-          };
+          object run_2 = null; run_2 = m_reduce(masses_2, list(), new Fn((a5) => {
+            object run_4 = arg(a5, 0); object m_4 = arg(a5, 1);
+            return m_push(run_4, add((orElse(m_last(run_4), () => 0.0)), call(K("Fmt"), "max", new object[] { elem(m_4, 2.0), 0.0 })));
+            return null;
+          }));
+          object total_2 = null; total_2 = orElse(m_last(run_2), () => 0.0);
           for (double i3 = 0; i3 < num(get(K("Simulation"), "FILM_STARS")); i3++) {
             object k_3 = i3;
             object want_3 = null; want_3 = mul(get(rng_0, "next"), total_2);
@@ -16698,16 +16577,15 @@ public static class C_Simulation {
     });
     c.method("film_table", (self, a1) => {
       object felt_table_0 = arg(a1, 0);
-      object out__0 = null; out__0 = list();
-      foreach (object e1 in each_of(get(self, "film_ids"))) {
-        object g_1 = e1;
-        object j_1 = null; j_1 = m_index_of(get(self, "ids"), g_1);
-        for (double i2 = 0; i2 < num(get(K("Simulation"), "TABLE")); i2++) {
-          object t_2 = i2;
-          m_push(out__0, elem(felt_table_0, add(mul(j_1, get(K("Simulation"), "TABLE")), t_2)));
-        };
-      };
-      return out__0;
+      return m_reduce(get(self, "film_ids"), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object g_2 = arg(a3, 1);
+        return m_reduce(rng(get(K("Simulation"), "TABLE")), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object t_4 = arg(a5, 1);
+          return m_push(o_4, elem(felt_table_0, add(mul(m_index_of(get(self, "ids"), g_2), get(K("Simulation"), "TABLE")), t_4)));
+          return null;
+        }));
+        return null;
+      }));
       return null;
     });
     c.method("film_runs", (self, a1) => {
@@ -16739,23 +16617,22 @@ public static class C_Simulation {
       return null;
     });
     c.getter("most_film_steps", (self, a1) => {
-      object m_0 = null; m_0 = 0.0;
-      foreach (object e1 in each_of(get(self, "film_steps"))) {
-        object n_1 = e1;
-        m_0 = call(K("Fmt"), "max", new object[] { m_0, n_1 });
-      };
-      return m_0;
+      return m_reduce(get(self, "film_steps"), 0.0, new Fn((a3) => {
+        object m_2 = arg(a3, 0); object n_2 = arg(a3, 1);
+        return call(K("Fmt"), "max", new object[] { m_2, n_2 });
+        return null;
+      }));
       return null;
     });
     c.method("save", (self, a1) => {
       object felt0_0 = arg(a1, 0); object felt1_0 = arg(a1, 1); object stars_0 = arg(a1, 2); object frames_0 = arg(a1, 3);
       object S_0 = null; S_0 = get(get(K("Sparc"), "sample"), "columns");
       object T_0 = null; T_0 = get(K("Simulation"), "TABLE");
-      object nrows_0 = null; nrows_0 = 0.0;
-      foreach (object e1 in each_of(get(self, "rows"))) {
-        object rs_1 = e1;
-        nrows_0 = add(nrows_0, len(rs_1));
-      };
+      object nrows_0 = null; nrows_0 = m_reduce(get(self, "rows"), 0.0, new Fn((a3) => {
+        object n_2 = arg(a3, 0); object rs_2 = arg(a3, 1);
+        return add(n_2, len(rs_2));
+        return null;
+      }));
       object cols_0 = null; cols_0 = make(NODE);
       object names_0 = null; names_0 = list("galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept");
       foreach (object e1 in each_of(names_0)) {
@@ -17138,15 +17015,15 @@ public static class C_Formed {
       return null;
     });
     c.getter("constants", (self, a1) => {
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(self, "discs_n")); i1++) {
-        object g_1 = i1;
-        foreach (object e2 in each_of(list(div(call(self, "GM", new object[] { g_1 }), get(K("Formed"), "N")), call(self, "soft", new object[] { g_1 }), get(self, "scale_a0"), get(K("Formed"), "DT")))) {
-          object v_2 = e2;
-          m_push(out__0, v_2);
-        };
-      };
-      return out__0;
+      return m_reduce(rng(get(self, "discs_n")), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object g_2 = arg(a3, 1);
+        return m_reduce(list(div(call(self, "GM", new object[] { g_2 }), get(K("Formed"), "N")), call(self, "soft", new object[] { g_2 }), get(self, "scale_a0"), get(K("Formed"), "DT")), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object v_4 = arg(a5, 1);
+          return m_push(o_4, v_4);
+          return null;
+        }));
+        return null;
+      }));
       return null;
     });
     c.method("accel_cpu", (self, a1) => {
@@ -17303,17 +17180,19 @@ public static class C_Formed {
     c.method("save", (self, a1) => {
       object frames_0 = arg(a1, 0);
       object G_0 = null; G_0 = get(K("Formed"), "GRID");
-      object density_0 = null; density_0 = list();
-      for (double i1 = 0; i1 < num(get(self, "discs_n")); i1++) {
-        object g_1 = i1;
-        foreach (object e2 in each_of(frames_0)) {
-          object f_2 = e2;
-          for (double i3 = 0; i3 < num(mul(G_0, G_0)); i3++) {
-            object c__3 = i3;
-            m_push(density_0, elem(f_2, add(mul(mul(g_1, G_0), G_0), c__3)));
-          };
-        };
-      };
+      object density_0 = null; density_0 = m_reduce(rng(get(self, "discs_n")), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object g_2 = arg(a3, 1);
+        return m_reduce(frames_0, out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object f_4 = arg(a5, 1);
+          return m_reduce(rng(mul(G_0, G_0)), o_4, new Fn((a7) => {
+            object oo_6 = arg(a7, 0); object c__6 = arg(a7, 1);
+            return m_push(oo_6, elem(f_4, add(mul(mul(g_2, G_0), G_0), c__6)));
+            return null;
+          }));
+          return null;
+        }));
+        return null;
+      }));
       object cols_0 = null; cols_0 = make(NODE);
       set(cols_0, str("density"), density_0);
       object extra_0 = null; extra_0 = make(NODE);
@@ -17427,41 +17306,14 @@ public static class C_Model {
     });
     c.statik("walk_names", (self, a1) => {
       object e_0 = arg(a1, 0); object out__0 = arg(a1, 1);
-      object k_0 = null; k_0 = get(e_0, "kind");
-      if (truthy((truthy(eq(k_0, "sym")) || truthy(eq(k_0, "field"))))) {
-        if (truthy(not(m_contains(out__0, get(e_0, "label"))))) {
-          m_push(out__0, get(e_0, "label"));
-        }
-      } else {
-        if (truthy((truthy(eq(k_0, "add")) || truthy(eq(k_0, "mul"))))) {
-          foreach (object e1 in each_of(get(e_0, "of"))) {
-            object x_1 = e1;
-            call(K("Model"), "walk_names", new object[] { x_1, out__0 });
-          };
-        } else {
-          if (truthy(eq(k_0, "pow"))) {
-            call(K("Model"), "walk_names", new object[] { get(e_0, "base"), out__0 });
-            return call(K("Model"), "walk_names", new object[] { get(e_0, "power"), out__0 });
-          } else {
-            if (truthy((truthy((truthy((truthy((truthy(eq(k_0, "grad")) || truthy(eq(k_0, "log")))) || truthy(eq(k_0, "exp")))) || truthy(eq(k_0, "root")))) || truthy(eq(k_0, "limit"))))) {
-              return call(K("Model"), "walk_names", new object[] { get(e_0, "base"), out__0 });
-            } else {
-              if (truthy((truthy(eq(k_0, "choose")) || truthy(eq(k_0, "gammaInc"))))) {
-                call(K("Model"), "walk_names", new object[] { get(e_0, "first_"), out__0 });
-                return call(K("Model"), "walk_names", new object[] { get(e_0, "second_"), out__0 });
-              } else {
-                if (truthy(eq(k_0, "call"))) {
-                  object called = null; called = "" + str(get(e_0, "label")) + "\\paren{...}";
-                  if (truthy(not(m_contains(out__0, called)))) {
-                    m_push(out__0, called);
-                  }
-                  return call(K("Model"), "walk_names", new object[] { get(e_0, "base"), out__0 });
-                }
-              }
-            }
-          }
-        }
+      object name_0 = null; name_0 = (truthy(get(e_0, "named")) ? (object) get(e_0, "label") : (object) ((truthy(eq(get(e_0, "kind"), "call")) ? (object) "" + str(get(e_0, "label")) + "\\paren{...}" : (object) null)));
+      if (truthy((truthy(!eq(name_0, null)) && truthy(not(m_contains(out__0, name_0)))))) {
+        m_push(out__0, name_0);
       }
+      foreach (object e1 in each_of(get(e_0, "subtrees"))) {
+        object x_1 = e1;
+        call(K("Model"), "walk_names", new object[] { x_1, out__0 });
+      };
       return null;
     });
     c.method("resolved", (self, a1) => {
@@ -17818,22 +17670,7 @@ public static class C_Shaded {
       return null;
     });
     c.statik("points", (self, a1) => {
-      object points_0 = null; points_0 = list();
-      object i_0 = null; i_0 = 1.0;
-      while (truthy(le(i_0, 120.0))) {
-        m_push(points_0, div(i_0, 120.0));
-        i_0 = add(i_0, 1.0);
-      }
-      object ex_0 = null; ex_0 = 0.0;
-      while (truthy(le(ex_0, 24.0))) {
-        object k_0 = null; k_0 = 1.0;
-        while (truthy(lt(k_0, 8.0))) {
-          m_push(points_0, mul((power(10.0, (sub(ex_0, 12.0)))), (add(1.0, div(k_0, 2.0)))));
-          k_0 = add(k_0, 1.0);
-        }
-        ex_0 = add(ex_0, 1.0);
-      }
-      return call(K("Expr"), "sorted", new object[] { points_0 });
+      return get(K("Expr"), "bracket_points");
       return null;
     });
     c.statik("solver", (self, a1) => {
@@ -18090,32 +17927,33 @@ public static class C_Sweep {
     });
     c.method("save", (self, a1) => {
       object id_0 = arg(a1, 0); object grid_0 = arg(a1, 1); object need_0 = arg(a1, 2);
-      object x_0 = null; x_0 = list();
-      object y_0 = null; y_0 = list();
-      object p_0 = null; p_0 = list();
-      object by_0 = null; by_0 = list();
-      for (double i1 = 0; i1 < num(get(self, "YS")); i1++) {
-        object gy_1 = i1;
-        for (double i2 = 0; i2 < num(get(self, "XS")); i2++) {
-          object gx_2 = i2;
-          m_push(x_0, add(get(self, "X0"), mul(gx_2, get(self, "dx"))));
-          m_push(y_0, add(get(self, "Y0"), mul(gy_1, get(self, "dy"))));
-          m_push(p_0, elem(grid_0, add(mul(gy_1, get(self, "XS")), gx_2)));
-          m_push(by_0, elem(need_0, add(mul(gy_1, get(self, "XS")), gx_2)));
-        };
-      };
-      object most_0 = null; most_0 = 0.0;
-      foreach (object e1 in each_of(p_0)) {
-        object v_1 = e1;
-        if (truthy(gt(v_1, most_0))) {
-          most_0 = v_1;
-        }
-      };
+      object cells_0 = null; cells_0 = rng(mul(get(self, "YS"), get(self, "XS")));
       object columns_0 = null; columns_0 = make(NODE);
-      set(columns_0, str("x"), x_0);
-      set(columns_0, str("y"), y_0);
-      set(columns_0, str("p"), p_0);
-      set(columns_0, str("by"), by_0);
+      set(columns_0, str("x"), m_map(cells_0, new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return add(get(self, "X0"), mul((mod(i_2, get(self, "XS"))), get(self, "dx")));
+        return null;
+      })));
+      set(columns_0, str("y"), m_map(cells_0, new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return add(get(self, "Y0"), mul(m_floor((div(i_2, get(self, "XS")))), get(self, "dy")));
+        return null;
+      })));
+      set(columns_0, str("p"), m_map(cells_0, new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return elem(grid_0, i_2);
+        return null;
+      })));
+      set(columns_0, str("by"), m_map(cells_0, new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return elem(need_0, i_2);
+        return null;
+      })));
+      object most_0 = null; most_0 = m_reduce(get(columns_0, str("p")), 0.0, new Fn((a3) => {
+        object m_2 = arg(a3, 0); object v_2 = arg(a3, 1);
+        return (truthy(gt(v_2, m_2)) ? (object) v_2 : (object) m_2);
+        return null;
+      }));
       object extra_0 = null; extra_0 = make(NODE);
       set(extra_0, str("a0"), get(self, "a0"));
       set(extra_0, str("arrangement"), get(self, "how"));
@@ -18181,16 +18019,15 @@ public static class C_Sweep {
       return null;
     });
     c.getter("radii", (self, a1) => {
-      object out__0 = null; out__0 = list();
-      for (double i1 = 0; i1 < num(get(self, "RS")); i1++) {
-        object k_1 = i1;
-        object e_1 = null; e_1 = elem(get(self, "env"), k_1);
-        m_push(out__0, elem(get(self, "rad"), k_1));
-        m_push(out__0, orElse(get(e_1, str("n_{f}")), () => double.NaN));
-        m_push(out__0, orElse(get(e_1, str("\\sigma_{tr}")), () => double.NaN));
-        m_push(out__0, orElse(get(e_1, str("L")), () => double.NaN));
-      };
-      return out__0;
+      return m_reduce(rng(get(self, "RS")), list(), new Fn((a3) => {
+        object out__2 = arg(a3, 0); object k_2 = arg(a3, 1);
+        return m_reduce(list(elem(get(self, "rad"), k_2), orElse(get(elem(get(self, "env"), k_2), str("n_{f}")), () => double.NaN), orElse(get(elem(get(self, "env"), k_2), str("\\sigma_{tr}")), () => double.NaN), orElse(get(elem(get(self, "env"), k_2), str("L")), () => double.NaN)), out__2, new Fn((a5) => {
+          object o_4 = arg(a5, 0); object v_4 = arg(a5, 1);
+          return m_push(o_4, v_4);
+          return null;
+        }));
+        return null;
+      }));
       return null;
     });
     c.getter("kernel", (self, a1) => {
@@ -18372,6 +18209,1200 @@ public static class C_Measure {
   }
 }
 
+public static readonly Cls Sighted = cls("Sighted", Node, C_Sighted.define);
+public static class C_Sighted {
+  public static void define(Cls c) {
+    c.field("name", null);
+    c.field("disc_mass", null);
+    c.field("disc_scale", null);
+    c.field("bulge_mass", null);
+    c.field("bulge_scale", null);
+    c.field("circling", null);
+    c.field("sun", null);
+    c.field("inclination", null);
+    c.field("position_angle", null);
+    c.field("distance", null);
+    c.field("approach", null);
+    c.field("across", null);
+    c.field("source", null);
+    c.getter("mass", (self, a1) => {
+      return add(get(self, "disc_mass"), get(self, "bulge_mass"));
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Video = cls("Video", Node, C_Video.define);
+public static class C_Video {
+  public static void define(Cls c) {
+    c.staticField("WIDTH", self => 2560.0);
+    c.staticField("HEIGHT", self => 1440.0);
+    c.staticField("FPS", self => 60.0);
+    c.staticField("FILM_RD", self => 6.0);
+    c.staticField("PER_MYR", self => 0.0010227);
+    c.staticField("LIGHT", self => 299792.458);
+    c.staticField("ANDROMEDA", self => make("Sighted", new object[] { kw("name", "Andromeda (M31)"), kw("disc_mass", 8.4), kw("disc_scale", 5.4), kw("bulge_mass", 3.3), kw("bulge_scale", 0.61), kw("circling", 250.0), kw("sun", 0.0), kw("inclination", 77.0), kw("position_angle", 38.0), kw("distance", 785.0), kw("approach", 110.0), kw("across", 17.0), kw("source", "Geehan et al. 2006, van der Marel et al. 2012") }));
+    c.staticField("MW_ORBITS", self => list(5.5, 0.25));
+    c.staticField("MW_ORBIT_TRIALS", self => list(10.0, 7.0));
+    c.staticField("MW_ORBIT_TEMPER", self => 0.1);
+    c.staticField("MW_ARM_END", self => list(0.0, 0.0, 0.0, 0.0, 140.0));
+    c.staticField("MW_ARM_OLD", self => list(0.0, 1.0, 0.0, 1.0, 0.0));
+    c.staticField("MW_ARM_FADE", self => 12.0);
+    c.staticField("MW_ARM_FADE_IN", self => 45.0);
+    c.staticField("MW_YOUNG", self => 0.1);
+    c.staticField("MW_CLUSTERS", self => list(0.5, 50.0, 0.1));
+    c.staticField("LIGHT_STARS", self => list(0.95, 2.4, 3.2));
+    c.staticField("ANDROMEDA_IMAGE", self => 512.0);
+    c.staticField("ANDROMEDA_FOV", self => 3.2);
+    c.staticField("SOURCE", self => "74,168,235");
+    c.staticField("STRIP_TOP", self => 570.0);
+    c.staticField("STRIP_TALL", self => 300.0);
+    c.staticField("PLANET_INK", self => list("#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e"));
+    c.staticField("SOLAR_FROM", self => 160.0);
+    c.staticField("SOLAR_TO", self => 280.0);
+    c.staticField("LOGO", self => "../orbitmines.com/orbitmines.com/public/logo.png");
+    c.staticField("PARTS", self => list("video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end"));
+    c.statik("MILKY_WAY", (self, a1) => {
+      return make("Sighted", new object[] { kw("name", "Milky Way"), kw("disc_mass", get(K("Video"), "mw_discs_mass")), kw("disc_scale", call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_scale" })), kw("bulge_mass", m_sum(get(K("Video"), "MW_BAR_MASSES"))), kw("bulge_scale", 0.6), kw("circling", call(K("Video"), "measured", new object[] { "milkyway-discs", "circling" })), kw("sun", call(K("Video"), "measured", new object[] { "milkyway-discs", "sun_distance" })), kw("inclination", 0.0), kw("position_angle", 0.0), kw("distance", 0.0), kw("approach", 0.0), kw("across", 0.0), kw("source", "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)") });
+      return null;
+    });
+    c.statik("measured", (self, a1) => {
+      object id_0 = arg(a1, 0); object name_0 = arg(a1, 1);
+      object m_0 = null; m_0 = call(K("Measured"), "of", new object[] { id_0 });
+      if (truthy(eq(m_0, null))) {
+        invoke(fail, new object[] { "no data/" + str(id_0) + ": run npx ray data " + str(id_0) + "" });
+      }
+      object names_0 = null; names_0 = get(get(m_0, "header"), str("names"));
+      object k_0 = null; k_0 = m_first(filt(rng(len(names_0)), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return eq(elem(names_0, i_2), name_0);
+        return null;
+      })));
+      if (truthy(eq(k_0, null))) {
+        invoke(fail, new object[] { "data/" + str(id_0) + " has no " + str(quoted(name_0)) + "" });
+      }
+      return elem(get(get(m_0, "columns"), str("value")), k_0);
+      return null;
+    });
+    c.statik("MW_BAR1", (self, a1) => {
+      return m_map(list("rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut"), new Fn((a3) => {
+        object n_2 = arg(a3, 0);
+        return call(K("Video"), "measured", new object[] { "milkyway-bar", n_2 });
+        return null;
+      }));
+      return null;
+    });
+    c.statik("mw_bar", (self, a1) => {
+      object i_0 = arg(a1, 0);
+      return m_map(list("rho_" + str(i_0) + "", "x_" + str(i_0) + "", "y_" + str(i_0) + "", "z_" + str(i_0) + "", "n_" + str(i_0) + "", "c_perp," + str(i_0) + "", "R_" + str(i_0) + ",out", "R_" + str(i_0) + ",in", "n_" + str(i_0) + ",out", "n_" + str(i_0) + ",in"), new Fn((a3) => {
+        object n_2 = arg(a3, 0);
+        return call(K("Video"), "measured", new object[] { "milkyway-bar", n_2 });
+        return null;
+      }));
+      return null;
+    });
+    c.statik("MW_BAR2", (self, a1) => {
+      return call(K("Video"), "mw_bar", new object[] { "2" });
+      return null;
+    });
+    c.statik("MW_BAR3", (self, a1) => {
+      return call(K("Video"), "mw_bar", new object[] { "3" });
+      return null;
+    });
+    c.statik("MW_BAR_MASSES", (self, a1) => {
+      return m_map(list("M_bar1", "M_bar2", "M_bar3"), new Fn((a3) => {
+        object n_2 = arg(a3, 0);
+        return call(K("Video"), "measured", new object[] { "milkyway-bar", n_2 });
+        return null;
+      }));
+      return null;
+    });
+    c.statik("MW_BAR_ANGLE", (self, a1) => {
+      return call(K("Video"), "measured", new object[] { "milkyway-discs", "bar_angle" });
+      return null;
+    });
+    c.statik("MW_PATTERN_SPEED", (self, a1) => {
+      return call(K("Video"), "measured", new object[] { "milkyway-bar", "pattern_speed" });
+      return null;
+    });
+    c.statik("mw_discs_mass", (self, a1) => {
+      return sub(add(add(call(K("Video"), "measured", new object[] { "milkyway-discs", "bulge_region_mass" }), call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_mass" })), call(K("Video"), "measured", new object[] { "milkyway-discs", "thick_mass" })), m_sum(get(K("Video"), "MW_BAR_MASSES")));
+      return null;
+    });
+    c.statik("MW_DISCS", (self, a1) => {
+      object thin_0 = null; thin_0 = call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_mass" });
+      object thick_0 = null; thick_0 = call(K("Video"), "measured", new object[] { "milkyway-discs", "thick_mass" });
+      return list(list(div(mul(get(K("Video"), "mw_discs_mass"), thin_0), (add(thin_0, thick_0))), call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_scale" }), 1.0), list(div(mul(get(K("Video"), "mw_discs_mass"), thick_0), (add(thin_0, thick_0))), call(K("Video"), "measured", new object[] { "milkyway-discs", "thick_scale" }), 0.0));
+      return null;
+    });
+    c.statik("MW_DISC_HOLE", (self, a1) => {
+      return call(K("Video"), "measured", new object[] { "milkyway-bar", "R_cut" });
+      return null;
+    });
+    c.statik("MW_ARMS", (self, a1) => {
+      object m_0 = null; m_0 = call(K("Measured"), "of", new object[] { "milkyway-arms" });
+      if (truthy(eq(m_0, null))) {
+        invoke(fail, new object[] { "no data/milkyway-arms: run npx ray data milkyway-arms" });
+      }
+      return m_map(rng(5.0), new Fn((a3) => {
+        object k_2 = arg(a3, 0);
+        return list(elem(get(get(m_0, "columns"), str("R")), k_2), elem(get(get(m_0, "columns"), str("theta")), k_2), elem(get(get(m_0, "columns"), str("psi")), k_2), elem(get(K("Video"), "MW_ARM_END"), k_2), elem(get(K("Video"), "MW_ARM_OLD"), k_2));
+        return null;
+      }));
+      return null;
+    });
+    c.statik("MW_ARM_WIDTH", (self, a1) => {
+      return list(div(call(K("Video"), "measured", new object[] { "milkyway-arm-widths", "w0" }), 1000.0), div(call(K("Video"), "measured", new object[] { "milkyway-arm-widths", "slope" }), 1000.0), call(K("Video"), "measured", new object[] { "milkyway-arm-widths", "R0" }));
+      return null;
+    });
+    c.statik("MW_ARM_CONTRAST", (self, a1) => {
+      return call(K("Video"), "measured", new object[] { "milkyway-arm-contrast", "K" });
+      return null;
+    });
+    c.statik("MW_DUST", (self, a1) => {
+      return list(div(call(K("Video"), "measured", new object[] { "milkyway-dust-lane", "hot" }), 1000.0), 0.12, 0.1);
+      return null;
+    });
+    c.statik("MW_STIR", (self, a1) => {
+      return list(list(call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_sigma_R" }), call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_sigma_scale" })), list(call(K("Video"), "measured", new object[] { "milkyway-discs", "thick_sigma_R" }), call(K("Video"), "measured", new object[] { "milkyway-discs", "thick_sigma_scale" })), list(call(K("Video"), "measured", new object[] { "milkyway-arm-widths", "young_spread" }), call(K("Video"), "measured", new object[] { "milkyway-discs", "thin_sigma_scale" })));
+      return null;
+    });
+    c.statik("MW_SUN_MOTION", (self, a1) => {
+      return list(call(K("Video"), "measured", new object[] { "milkyway-arm-widths", "U_sun" }), sub(call(K("Video"), "measured", new object[] { "milkyway-discs", "sun_tangential" }), call(K("Video"), "measured", new object[] { "milkyway-discs", "circling" })));
+      return null;
+    });
+    c.statik("galaxy", (self, a1) => {
+      object name_0 = arg(a1, 0);
+      return (truthy(eq(name_0, "andromeda")) ? (object) get(K("Video"), "ANDROMEDA") : (object) get(K("Video"), "MILKY_WAY"));
+      return null;
+    });
+    c.statik("per_kpc", (self, a1) => {
+      return div(get(K("Video"), "FILM_RD"), get(get(K("Video"), "MILKY_WAY"), "disc_scale"));
+      return null;
+    });
+    c.statik("myr_per_tick", (self, a1) => {
+      object film_0 = arg(a1, 0);
+      object c__0 = null; c__0 = get(get(film_0, "header"), str("clock"));
+      return div((div(elem(c__0, 1.0), elem(c__0, 0.0))), (mul(div(elem(c__0, 3.0), elem(c__0, 2.0)), get(K("Video"), "PER_MYR"))));
+      return null;
+    });
+    c.statik("faster", (self, a1) => {
+      object film_0 = arg(a1, 0);
+      return div(elem(get(get(film_0, "header"), str("clock")), 1.0), (div(elem(get(get(film_0, "header"), str("clock")), 3.0), get(K("Video"), "LIGHT"))));
+      return null;
+    });
+    c.statik("smooth", (self, a1) => {
+      object t_0 = arg(a1, 0);
+      object u_0 = null; u_0 = call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, t_0 }) });
+      return mul(mul(u_0, u_0), (sub(3.0, mul(2.0, u_0))));
+      return null;
+    });
+    c.statik("shot", (self, a1) => {
+      object id_0 = arg(a1, 0); object what_0 = arg(a1, 1); object shot_0 = arg(a1, 2);
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", id_0), kw("what", what_0), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", get(shot_0, "frames")), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        return make("Sky", new object[] { kw("shot", shot_0) });
+        return null;
+      })) });
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("solar_meta", (self, a1) => {
+      object theory_0 = arg(a1, 0);
+      object r_0 = null; r_0 = get(get(theory_0, "solar"), "record");
+      object at_0 = null; at_0 = 0.0;
+      for (double i1 = 0; i1 < num(len(get(r_0, "names"))); i1++) {
+        object k_1 = i1;
+        at_0 = (truthy(eq(elem(get(r_0, "names"), k_1), "marks")) ? (object) k_1 : (object) at_0);
+      };
+      object off_0 = null; off_0 = m_sum(m_take(get(r_0, "sizes"), at_0));
+      object SOLAR_0 = null; SOLAR_0 = call(K("Measured"), "of", new object[] { "solar-inner" });
+      object NAMES_0 = null; NAMES_0 = get(get(SOLAR_0, "header"), str("names"));
+      object PER_0 = null; PER_0 = get(get(SOLAR_0, "columns"), str("period"));
+      object PLANETS_0 = null; PLANETS_0 = filt(rng(len(NAMES_0)), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return gt(elem(PER_0, i_2), 0.0);
+        return null;
+      }));
+      object earth_body_0 = null; earth_body_0 = 0.0;
+      for (double i1 = 0; i1 < num(len(PLANETS_0)); i1++) {
+        object k_1 = i1;
+        earth_body_0 = (truthy(eq(elem(NAMES_0, elem(PLANETS_0, k_1)), "Earth")) ? (object) add(k_1, 1.0) : (object) earth_body_0);
+      };
+      return list(off_0, get(r_0, "width"), m_round((div((sub(elem(get(r_0, "sizes"), at_0), 1.0)), 6.0))), earth_body_0);
+      return null;
+    });
+    c.statik("shot_after_solar", (self, a1) => {
+      object theory_0 = arg(a1, 0); object id_0 = arg(a1, 1); object what_0 = arg(a1, 2); object shot_0 = arg(a1, 3);
+      object meta_0 = null; meta_0 = call(K("Video"), "solar_meta", new object[] { theory_0 });
+      object stamp_0 = null; stamp_0 = get(get(get(theory_0, "solar"), "record"), "stamp");
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", id_0), kw("what", what_0), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", get(shot_0, "frames")), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        object sky_2 = null; sky_2 = make("Sky", new object[] { kw("shot", shot_0) });
+        set(sky_2, "meta", meta_0);
+        set(sky_2, "sol_stamp", stamp_0);
+        return sky_2;
+        return null;
+      })) });
+      set(pic_0, "uses", list("solar.inner"));
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("light", (self, a1) => {
+      object s_0 = arg(a1, 0); object film_0 = arg(a1, 1); object b0_0 = arg(a1, 2); object b1_0 = arg(a1, 3); object w_0 = arg(a1, 4); object G_0 = arg(a1, 5); object span_0 = arg(a1, 6); object cx_0 = arg(a1, 7); object cy_0 = arg(a1, 8); object px_0 = arg(a1, 9); object ci_0 = arg(a1, 10); object side_0 = arg(a1, 11);
+      object D_0 = null; D_0 = get(get(film_0, "columns"), str("density"));
+      object Y_0 = null; Y_0 = get(get(film_0, "columns"), str("young"));
+      object U_0 = null; U_0 = get(get(film_0, "columns"), str("dust"));
+      object top_0 = null; top_0 = 0.0;
+      object ytop_0 = null; ytop_0 = 0.0;
+      object utop_0 = null; utop_0 = 0.0;
+      for (double i1 = 0; i1 < num(mul(G_0, G_0)); i1++) {
+        object c__1 = i1;
+        top_0 = call(K("Fmt"), "max", new object[] { top_0, add(elem(D_0, add(b0_0, c__1)), mul(w_0, (sub(elem(D_0, add(b1_0, c__1)), elem(D_0, add(b0_0, c__1)))))) });
+        ytop_0 = call(K("Fmt"), "max", new object[] { ytop_0, add(elem(Y_0, add(b0_0, c__1)), mul(w_0, (sub(elem(Y_0, add(b1_0, c__1)), elem(Y_0, add(b0_0, c__1)))))) });
+        utop_0 = call(K("Fmt"), "max", new object[] { utop_0, add(elem(U_0, add(b0_0, c__1)), mul(w_0, (sub(elem(U_0, add(b1_0, c__1)), elem(U_0, add(b0_0, c__1)))))) });
+      };
+      object lt_0 = null; lt_0 = m_ln((add(1.0, top_0)));
+      object rgb_0 = null; rgb_0 = list();
+      for (double i1 = 0; i1 < num(G_0); i1++) {
+        object row_1 = i1;
+        object gy_1 = null; gy_1 = sub(sub(G_0, 1.0), row_1);
+        for (double i2 = 0; i2 < num(G_0); i2++) {
+          object gx_2 = i2;
+          object c__2 = null; c__2 = add(mul(gy_1, G_0), gx_2);
+          object o_2 = null; o_2 = call(K("Fmt"), "min", new object[] { 1.0, div(m_ln((add(add(1.0, elem(D_0, add(b0_0, c__2))), mul(w_0, (sub(elem(D_0, add(b1_0, c__2)), elem(D_0, add(b0_0, c__2)))))))), lt_0) });
+          object y_2 = null; y_2 = call(K("Fmt"), "min", new object[] { 1.0, m_sqrt((div((add(elem(Y_0, add(b0_0, c__2)), mul(w_0, (sub(elem(Y_0, add(b1_0, c__2)), elem(Y_0, add(b0_0, c__2))))))), ytop_0))) });
+          object lo_2 = null; lo_2 = mul(m_sqrt(o_2), o_2);
+          object hii_2 = null; hii_2 = call(K("Fmt"), "max", new object[] { 0.0, div((sub(y_2, 0.7)), 0.3) });
+          object dim_2 = null; dim_2 = sub(1.0, mul(0.7, call(K("Fmt"), "min", new object[] { 1.0, m_sqrt((div((add(elem(U_0, add(b0_0, c__2)), mul(w_0, (sub(elem(U_0, add(b1_0, c__2)), elem(U_0, add(b0_0, c__2))))))), utop_0))) })));
+          m_push(rgb_0, call(K("Fmt"), "min", new object[] { 255.0, mul(dim_2, (add(add(mul(lo_2, (add(130.0, mul(125.0, o_2)))), mul(mul(95.0, y_2), y_2)), mul(110.0, hii_2)))) }));
+          m_push(rgb_0, call(K("Fmt"), "min", new object[] { 255.0, mul(dim_2, (add(add(mul(lo_2, (add(140.0, mul(85.0, o_2)))), mul(mul(120.0, y_2), y_2)), mul(25.0, hii_2)))) }));
+          m_push(rgb_0, call(K("Fmt"), "min", new object[] { 255.0, mul(dim_2, (add(add(mul(lo_2, (sub(175.0, mul(55.0, o_2)))), mul(mul(165.0, y_2), y_2)), mul(70.0, hii_2)))) }));
+        };
+      };
+      object x0_0 = null; x0_0 = mul((sub(sub(0.0, span_0), cx_0)), px_0);
+      object y0_0 = null; y0_0 = sub(0.0, mul(mul((sub(span_0, cy_0)), px_0), ci_0));
+      object bw_0 = null; bw_0 = mul(mul(2.0, span_0), px_0);
+      object bh_0 = null; bh_0 = mul(mul(mul(2.0, span_0), px_0), ci_0);
+      object fade_0 = null; fade_0 = call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, div((sub(90.0, side_0)), 50.0) }) });
+      call(s_0, "alpha", new object[] { mul(0.3, fade_0) });
+      call(s_0, "field", new object[] { rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, call(K("Fmt"), "max", new object[] { 2.0, mul(2.0, side_0) }) });
+      call(s_0, "alpha", new object[] { mul(0.9, fade_0) });
+      call(s_0, "field", new object[] { rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, 0.0 });
+      return call(s_0, "alpha", new object[] { 1.0 });
+      return null;
+    });
+    c.statik("sky", (self, a1) => {
+      object s_0 = arg(a1, 0); object shot_0 = arg(a1, 1); object film_0 = arg(a1, 2); object tracks_0 = arg(a1, 3); object i_0 = arg(a1, 4); object sol_0 = arg(a1, 5); object meta_0 = arg(a1, 6);
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+      call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+      object H_0 = null; H_0 = get(film_0, "header");
+      object n_0 = null; n_0 = get(shot_0, "frames");
+      object t_0 = null; t_0 = (truthy(gt(n_0, 1.0)) ? (object) div(i_0, (sub(n_0, 1.0))) : (object) 0.0);
+      object e_0 = null; e_0 = call(K("Video"), "smooth", new object[] { t_0 });
+      object FR_0 = null; FR_0 = get(H_0, str("frames"));
+      object u_0 = null; u_0 = mul((add(get(shot_0, "from_at"), mul((sub(get(shot_0, "to_at"), get(shot_0, "from_at"))), t_0))), (sub(FR_0, 1.0)));
+      object f0_0 = null; f0_0 = call(K("Fmt"), "min", new object[] { m_floor(u_0), sub(FR_0, 1.0) });
+      object f1_0 = null; f1_0 = call(K("Fmt"), "min", new object[] { add(f0_0, 1.0), sub(FR_0, 1.0) });
+      object w_0 = null; w_0 = sub(u_0, f0_0);
+      object ez_0 = null; ez_0 = (truthy(lt(get(shot_0, "from_zoom"), 1.0)) ? (object) sub(1.0, mul((sub(1.0, call(K("Video"), "smooth", new object[] { div(t_0, 0.6) }))), (sub(1.0, call(K("Video"), "smooth", new object[] { div(t_0, 0.6) }))))) : (object) e_0);
+      object across_0 = null; across_0 = m_exp((add(m_ln(get(shot_0, "from_zoom")), mul((sub(m_ln(get(shot_0, "to_zoom")), m_ln(get(shot_0, "from_zoom")))), ez_0))));
+      object px_0 = null; px_0 = div(get(s_0, "height"), across_0);
+      object has_sun_0 = null; has_sun_0 = (truthy(!eq(tracks_0, null)) && truthy(eq(get(get(tracks_0, "header"), str("sun")), 0.0)));
+      object sx_0 = null; sx_0 = 0.0;
+      object sy_0 = null; sy_0 = 0.0;
+      if (truthy(has_sun_0)) {
+        object XY_1 = null; XY_1 = get(get(tracks_0, "columns"), str("xy"));
+        object m_1 = null; m_1 = get(get(tracks_0, "header"), str("shown"));
+        sx_0 = add(elem(XY_1, mul(mul(f0_0, m_1), 2.0)), mul(w_0, (sub(elem(XY_1, mul(mul(f1_0, m_1), 2.0)), elem(XY_1, mul(mul(f0_0, m_1), 2.0))))));
+        sy_0 = add(elem(XY_1, add(mul(mul(f0_0, m_1), 2.0), 1.0)), mul(w_0, (sub(elem(XY_1, add(mul(mul(f1_0, m_1), 2.0), 1.0)), elem(XY_1, add(mul(mul(f0_0, m_1), 2.0), 1.0))))));
+      };
+      object look_0 = null; look_0 = (truthy(has_sun_0) ? (object) add(get(shot_0, "from_sun"), mul((sub(get(shot_0, "to_sun"), get(shot_0, "from_sun"))), e_0)) : (object) 0.0);
+      object px_end_0 = null; px_end_0 = div(get(s_0, "height"), get(shot_0, "to_zoom"));
+      object away_0 = null; away_0 = (truthy(has_sun_0) ? (object) div(mul((sub(1.0, look_0)), px_end_0), px_0) : (object) 0.0);
+      object cx_0 = null; cx_0 = mul(sx_0, (sub(1.0, away_0)));
+      object cy_0 = null; cy_0 = mul(sy_0, (sub(1.0, away_0)));
+      object ci_0 = null; ci_0 = m_cos((div(mul(get(shot_0, "tilt"), System.Math.PI), 180.0)));
+      object SF_0 = null; SF_0 = (truthy(!eq(sol_0, null)) ? (object) get(get(sol_0, "columns"), str("frames")) : (object) list());
+      object sys_0 = null; sys_0 = list(0.0, 0.0, 0.0, 0.0, 0.0);
+      if (truthy(!eq(sol_0, null))) {
+        object FRS_1 = null; FRS_1 = get(get(sol_0, "header"), str("frames"));
+        object at_f_1 = null; at_f_1 = call(K("Fmt"), "min", new object[] { sub(FRS_1, 1.0), get(K("Video"), "SOLAR_TO") });
+        object mk_1 = null; mk_1 = new Fn((a3) => {
+          object f_2 = arg(a3, 0); object k_2 = arg(a3, 1); object c__2 = arg(a3, 2);
+          return elem(SF_0, add(add(add(mul(f_2, elem(meta_0, 1.0)), elem(meta_0, 0.0)), mul(6.0, k_2)), c__2));
+          return null;
+        });
+        object reach_1 = null; reach_1 = 0.0;
+        for (double i2 = 0; i2 < num(FRS_1); i2++) {
+          object f_2 = i2;
+          for (double i3 = 0; i3 < num(sub(elem(meta_0, 2.0), 1.0)); i3++) {
+            object k_3 = i3;
+            reach_1 = call(K("Fmt"), "max", new object[] { reach_1, call(K("Fmt"), "hypot", new object[] { sub(invoke(mk_1, new object[] { f_2, add(k_3, 1.0), 0.0 }), invoke(mk_1, new object[] { f_2, 0.0, 0.0 })), sub(invoke(mk_1, new object[] { f_2, add(k_3, 1.0), 1.0 }), invoke(mk_1, new object[] { f_2, 0.0, 1.0 })) }) });
+          };
+        };
+        object eb_1 = null; eb_1 = elem(meta_0, 3.0);
+        object ex_1 = null; ex_1 = invoke(mk_1, new object[] { at_f_1, eb_1, 0.0 });
+        object ey_1 = null; ey_1 = invoke(mk_1, new object[] { at_f_1, eb_1, 1.0 });
+        object last_1 = null; last_1 = mul(2.1, (add(reach_1, call(K("Fmt"), "hypot", new object[] { sub(ex_1, invoke(mk_1, new object[] { at_f_1, 0.0, 0.0 })), sub(ey_1, invoke(mk_1, new object[] { at_f_1, 0.0, 1.0 })) }))));
+        object pxs_1 = null; pxs_1 = mul(div(get(s_0, "height"), last_1), (div(get(shot_0, "from_zoom"), across_0)));
+        object sun_x_1 = null; sun_x_1 = mul((sub(invoke(mk_1, new object[] { at_f_1, 0.0, 0.0 }), ex_1)), pxs_1);
+        object sun_y_1 = null; sun_y_1 = mul((sub(invoke(mk_1, new object[] { at_f_1, 0.0, 1.0 }), ey_1)), pxs_1);
+        cx_0 = sub(cx_0, div(sun_x_1, px_0));
+        cy_0 = sub(cy_0, div(sun_y_1, (mul(px_0, ci_0))));
+        sys_0 = list(pxs_1, invoke(mk_1, new object[] { at_f_1, 0.0, 0.0 }), invoke(mk_1, new object[] { at_f_1, 0.0, 1.0 }), at_f_1, sub(1.0, call(K("Video"), "smooth", new object[] { div(e_0, 0.3) })));
+      };
+      get(s_0, "save");
+      call(s_0, "translate", new object[] { div(get(s_0, "width"), 2.0), div(get(s_0, "height"), 2.0) });
+      call(s_0, "rotate", new object[] { sub(0.0, div(mul(get(shot_0, "turn"), System.Math.PI), 180.0)) });
+      object G_0 = null; G_0 = get(H_0, str("grid"));
+      object span_0 = null; span_0 = elem(get(H_0, str("span")), 0.0);
+      object D_0 = null; D_0 = get(get(film_0, "columns"), str("density"));
+      object cs_0 = null; cs_0 = div(mul(2.0, span_0), G_0);
+      object b0_0 = null; b0_0 = mul(mul(f0_0, G_0), G_0);
+      object b1_0 = null; b1_0 = mul(mul(f1_0, G_0), G_0);
+      object top_0 = null; top_0 = 0.0;
+      for (double i1 = 0; i1 < num(mul(G_0, G_0)); i1++) {
+        object c__1 = i1;
+        top_0 = call(K("Fmt"), "max", new object[] { top_0, add(elem(D_0, add(b0_0, c__1)), mul(w_0, (sub(elem(D_0, add(b1_0, c__1)), elem(D_0, add(b0_0, c__1)))))) });
+      };
+      object side_0 = null; side_0 = add(mul(cs_0, px_0), 0.6);
+      object half_w_0 = null; half_w_0 = add(div(get(s_0, "width"), 2.0), side_0);
+      if (truthy(eq(get(H_0, str("young")), 1.0))) {
+        call(K("Video"), "light", new object[] { s_0, film_0, b0_0, b1_0, w_0, G_0, span_0, cx_0, cy_0, px_0, ci_0, side_0 });
+      } else {
+        call(s_0, "alpha", new object[] { call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, div((sub(24.0, side_0)), 14.0) }) }) });
+        for (double i2 = 0; i2 < num(G_0); i2++) {
+          object gy_2 = i2;
+          object y_2 = null; y_2 = mul(mul((sub(add(sub(0.0, span_0), mul((add(gy_2, 0.5)), cs_0)), cy_0)), px_0), ci_0);
+          if (truthy(lt(m_abs(y_2), half_w_0))) {
+            for (double i4 = 0; i4 < num(G_0); i4++) {
+              object gx_4 = i4;
+              object c__4 = null; c__4 = add(mul(gy_2, G_0), gx_4);
+              object v_4 = null; v_4 = add(elem(D_0, add(b0_0, c__4)), mul(w_0, (sub(elem(D_0, add(b1_0, c__4)), elem(D_0, add(b0_0, c__4))))));
+              if (truthy(gt(v_4, 0.0))) {
+                object x_5 = null; x_5 = mul((sub(add(sub(0.0, span_0), mul((add(gx_4, 0.5)), cs_0)), cx_0)), px_0);
+                if (truthy(lt(m_abs(x_5), half_w_0))) {
+                  object k_6 = null; k_6 = call(K("Fmt"), "min", new object[] { 1.0, div(m_ln((add(1.0, v_4))), m_ln((add(1.0, top_0)))) });
+                  object r_6 = null; r_6 = m_round((add(40.0, mul(mul(215.0, k_6), k_6))));
+                  object gr_6 = null; gr_6 = m_round((add(60.0, mul(190.0, k_6))));
+                  object b_6 = null; b_6 = m_round((add(110.0, mul(145.0, call(K("Fmt"), "min", new object[] { 1.0, mul(1.6, k_6) })))));
+                  call(s_0, "fill_style", new object[] { "rgb(" + str(r_6) + "," + str(gr_6) + "," + str(b_6) + ")" });
+                  call(s_0, "fill_rect", new object[] { sub(x_5, div(side_0, 2.0)), sub(sub(0.0, y_2), div(mul(side_0, ci_0), 2.0)), side_0, add(mul(side_0, ci_0), 0.6) });
+                };
+              };
+            };
+          };
+        };
+        call(s_0, "alpha", new object[] { 1.0 });
+      };
+      object lit_0 = null; lit_0 = eq(get(H_0, str("young")), 1.0);
+      if (truthy((truthy(!eq(tracks_0, null)) && truthy(gt(px_0, ((truthy(lit_0) ? (object) 6.0 : (object) 12.0))))))) {
+        object XY_1 = null; XY_1 = get(get(tracks_0, "columns"), str("xy"));
+        object m_1 = null; m_1 = get(get(tracks_0, "header"), str("shown"));
+        object tags_1 = null; tags_1 = get(get(tracks_0, "header"), str("tags"));
+        call(s_0, "alpha", new object[] { (truthy(lit_0) ? (object) call(K("Fmt"), "min", new object[] { elem(get(K("Video"), "LIGHT_STARS"), 0.0), div((sub(px_0, 6.0)), 14.0) }) : (object) call(K("Fmt"), "min", new object[] { 0.85, div((sub(px_0, 12.0)), 40.0) })) });
+        for (double i2 = 0; i2 < num(m_1); i2++) {
+          object k_2 = i2;
+          object x_2 = null; x_2 = mul((sub(add(elem(XY_1, mul((add(mul(f0_0, m_1), k_2)), 2.0)), mul(w_0, (sub(elem(XY_1, mul((add(mul(f1_0, m_1), k_2)), 2.0)), elem(XY_1, mul((add(mul(f0_0, m_1), k_2)), 2.0)))))), cx_0)), px_0);
+          object y_2 = null; y_2 = mul(mul((sub(add(elem(XY_1, add(mul((add(mul(f0_0, m_1), k_2)), 2.0), 1.0)), mul(w_0, (sub(elem(XY_1, add(mul((add(mul(f1_0, m_1), k_2)), 2.0), 1.0)), elem(XY_1, add(mul((add(mul(f0_0, m_1), k_2)), 2.0), 1.0)))))), cy_0)), px_0), ci_0);
+          if (truthy((truthy(lt(m_abs(x_2), half_w_0)) && truthy(lt(m_abs(y_2), half_w_0))))) {
+            object tg_3 = null; tg_3 = elem(tags_1, k_2);
+            call(s_0, "fill_style", new object[] { (truthy(ge(tg_3, 4.0)) ? (object) "#d4e6ff" : (object) (truthy((truthy(eq(tg_3, 1.0)) || truthy(eq(tg_3, 3.0)))) ? (object) "#ffd9a0" : (object) (truthy(eq(tg_3, 2.0)) ? (object) "#ffc7e0" : (object) "#dfe8ff"))) });
+            object sz_3 = null; sz_3 = (truthy(lit_0) ? (object) ((truthy(ge(tg_3, 4.0)) ? (object) elem(get(K("Video"), "LIGHT_STARS"), 2.0) : (object) elem(get(K("Video"), "LIGHT_STARS"), 1.0))) : (object) 2.4);
+            call(s_0, "fill_rect", new object[] { sub(x_2, div(sz_3, 2.0)), sub(sub(0.0, y_2), div(sz_3, 2.0)), sz_3, sz_3 });
+          };
+        };
+        call(s_0, "alpha", new object[] { 1.0 });
+      };
+      if (truthy((truthy(!eq(sol_0, null)) && truthy(gt(elem(sys_0, 4.0), 0.004))))) {
+        object ax_1 = null; ax_1 = mul((sub(sx_0, cx_0)), px_0);
+        object ay_1 = null; ay_1 = mul(mul((sub(sy_0, cy_0)), px_0), ci_0);
+        object FRS_1 = null; FRS_1 = get(get(sol_0, "header"), str("frames"));
+        object mk_1 = null; mk_1 = new Fn((a3) => {
+          object f_2 = arg(a3, 0); object k_2 = arg(a3, 1); object c__2 = arg(a3, 2);
+          return elem(SF_0, add(add(add(mul(f_2, elem(meta_0, 1.0)), elem(meta_0, 0.0)), mul(6.0, k_2)), c__2));
+          return null;
+        });
+        for (double i2 = 0; i2 < num(sub(elem(meta_0, 2.0), 1.0)); i2++) {
+          object k_2 = i2;
+          object b_2 = null; b_2 = add(k_2, 1.0);
+          object ink_2 = null; ink_2 = elem(get(K("Video"), "PLANET_INK"), call(K("Fmt"), "min", new object[] { 3.0, k_2 }));
+          call(s_0, "alpha", new object[] { mul(0.85, elem(sys_0, 4.0)) });
+          call(s_0, "stroke_style", new object[] { ink_2 });
+          call(s_0, "line_width", new object[] { 2.0 });
+          get(s_0, "begin_path");
+          for (double i3 = 0; i3 < num(FRS_1); i3++) {
+            object f_3 = i3;
+            object x_3 = null; x_3 = add(ax_1, mul((sub(invoke(mk_1, new object[] { f_3, b_2, 0.0 }), elem(sys_0, 1.0))), elem(sys_0, 0.0)));
+            object y_3 = null; y_3 = add(ay_1, mul((sub(invoke(mk_1, new object[] { f_3, b_2, 1.0 }), elem(sys_0, 2.0))), elem(sys_0, 0.0)));
+            if (truthy(eq(f_3, 0.0))) {
+              call(s_0, "move_to", new object[] { x_3, sub(0.0, y_3) });
+            } else {
+              call(s_0, "line_to", new object[] { x_3, sub(0.0, y_3) });
+            };
+          };
+          get(s_0, "stroke");
+          call(s_0, "alpha", new object[] { elem(sys_0, 4.0) });
+          object x_2 = null; x_2 = add(ax_1, mul((sub(invoke(mk_1, new object[] { elem(sys_0, 3.0), b_2, 0.0 }), elem(sys_0, 1.0))), elem(sys_0, 0.0)));
+          object y_2 = null; y_2 = add(ay_1, mul((sub(invoke(mk_1, new object[] { elem(sys_0, 3.0), b_2, 1.0 }), elem(sys_0, 2.0))), elem(sys_0, 0.0)));
+          call(s_0, "line_width", new object[] { 2.5 });
+          get(s_0, "begin_path");
+          call(s_0, "arc", new object[] { x_2, sub(0.0, y_2), 13.0, 0.0, (2 * System.Math.PI) });
+          get(s_0, "stroke");
+          call(s_0, "fill_style", new object[] { "#000000" });
+          get(s_0, "begin_path");
+          call(s_0, "arc", new object[] { x_2, sub(0.0, y_2), 2.5, 0.0, (2 * System.Math.PI) });
+          get(s_0, "fill");
+        };
+        call(s_0, "alpha", new object[] { 1.0 });
+      };
+      if (truthy(has_sun_0)) {
+        object x_1 = null; x_1 = mul((sub(sx_0, cx_0)), px_0);
+        object y_1 = null; y_1 = mul(mul((sub(sy_0, cy_0)), px_0), ci_0);
+        object big_1 = null; big_1 = (truthy(lt(get(shot_0, "from_zoom"), 1.0)) ? (object) sub(1.0, call(K("Video"), "smooth", new object[] { mul(e_0, 3.0) })) : (object) 0.0);
+        call(s_0, "fill_style", new object[] { "#ffd23f" });
+        get(s_0, "begin_path");
+        call(s_0, "arc", new object[] { x_1, sub(0.0, y_1), mul(4.0, (sub(1.0, big_1))), 0.0, (2 * System.Math.PI) });
+        get(s_0, "fill");
+        if (truthy(gt(big_1, 0.0))) {
+          call(s_0, "alpha", new object[] { big_1 });
+          call(s_0, "stroke_style", new object[] { "#e0a526" });
+          call(s_0, "line_width", new object[] { 3.0 });
+          get(s_0, "begin_path");
+          call(s_0, "arc", new object[] { x_1, sub(0.0, y_1), 26.0, 0.0, (2 * System.Math.PI) });
+          get(s_0, "stroke");
+          call(s_0, "alpha", new object[] { 1.0 });
+        };
+      };
+      get(s_0, "restore");
+      object fade_0 = null; fade_0 = call(K("Fmt"), "max", new object[] { (truthy(gt(get(shot_0, "fade_in"), 0.0)) ? (object) sub(1.0, div(i_0, (mul(get(shot_0, "fade_in"), get(K("Video"), "FPS"))))) : (object) 0.0), (truthy(gt(get(shot_0, "fade_out"), 0.0)) ? (object) sub(1.0, div((sub(sub(n_0, 1.0), i_0)), (mul(get(shot_0, "fade_out"), get(K("Video"), "FPS"))))) : (object) 0.0) });
+      if (truthy(gt(fade_0, 0.0))) {
+        call(s_0, "alpha", new object[] { call(K("Fmt"), "min", new object[] { 1.0, fade_0 }) });
+        call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+        call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+        return call(s_0, "alpha", new object[] { 1.0 });
+      }
+      return null;
+    });
+    c.statik("transport", (self, a1) => {
+      object theory_0 = arg(a1, 0);
+      object ink_0 = null; ink_0 = make("Ink", new object[] {  });
+      object lanes_0 = null; lanes_0 = call(K("Video"), "transport_lanes", new object[] { theory_0, ink_0 });
+      object n_0 = null; n_0 = m_round((mul(14.0, get(K("Video"), "FPS"))));
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", "video.transport"), kw("what", "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line"), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", n_0), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        return make("Banded", new object[] { kw("inner", make("Unrolling", new object[] { kw("lanes", lanes_0), kw("ink", ink_0), kw("per", call(K("Video"), "per_tick", new object[] { lanes_0 })) })), kw("top", get(K("Video"), "STRIP_TOP")), kw("tall", get(K("Video"), "STRIP_TALL")) });
+        return null;
+      })) });
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("transport_lanes", (self, a1) => {
+      object theory_0 = arg(a1, 0); object ink_0 = arg(a1, 1);
+      set(ink_0, "every", true);
+      set(ink_0, "top", 36.0);
+      object lanes_0 = null; lanes_0 = call(theory_0, "transport_lanes", new object[] { ink_0 });
+      foreach (object e1 in each_of(lanes_0)) {
+        object l_1 = e1;
+        set(l_1, "says", "");
+      };
+      set(ink_0, "centre", call(K("Strip"), "centre_of", new object[] { lanes_0 }));
+      return lanes_0;
+      return null;
+    });
+    c.statik("per_tick", (self, a1) => {
+      object lanes_0 = arg(a1, 0);
+      return m_floor((div(m_round((mul(14.0, get(K("Video"), "FPS")))), (add(len(lanes_0), 1.0)))));
+      return null;
+    });
+    c.statik("look", (self, a1) => {
+      object width_0 = arg(a1, 0); object lane_0 = arg(a1, 1); object ink_0 = arg(a1, 2);
+      object seen_0 = null; seen_0 = false;
+      object lo_0 = null; lo_0 = 0.0;
+      object hi_0 = null; hi_0 = 0.0;
+      foreach (object e1 in each_of(get(lane_0, "sides"))) {
+        object sd_1 = e1;
+        object to_1 = null; to_1 = add(get(sd_1, "at"), get(sd_1, "sign"));
+        if (!truthy(seen_0)) {
+          lo_0 = get(sd_1, "at");
+          hi_0 = get(sd_1, "at");
+          seen_0 = true;
+        }
+        lo_0 = call(K("Fmt"), "min", new object[] { lo_0, call(K("Fmt"), "min", new object[] { get(sd_1, "at"), to_1 }) });
+        hi_0 = call(K("Fmt"), "max", new object[] { hi_0, call(K("Fmt"), "max", new object[] { get(sd_1, "at"), to_1 }) });
+      };
+      foreach (object e1 in each_of(get(lane_0, "sources"))) {
+        object p_1 = e1;
+        if (!truthy(seen_0)) {
+          lo_0 = p_1;
+          hi_0 = p_1;
+          seen_0 = true;
+        }
+        lo_0 = call(K("Fmt"), "min", new object[] { lo_0, sub(p_1, 1.0) });
+        hi_0 = call(K("Fmt"), "max", new object[] { hi_0, add(p_1, 1.0) });
+      };
+      object ext_0 = null; ext_0 = add(call(K("Fmt"), "max", new object[] { sub(get(ink_0, "centre"), lo_0), sub(hi_0, get(ink_0, "centre")) }), 0.4);
+      object lanew_0 = null; lanew_0 = sub(width_0, mul(2.0, get(K("Strip"), "PAD")));
+      object cell_0 = null; cell_0 = div(lanew_0, (add(mul(2.0, ext_0), 1.0)));
+      object mid_0 = null; mid_0 = add(get(K("Strip"), "PAD"), div(lanew_0, 2.0));
+      object src_0 = null; src_0 = m_first(get(lane_0, "sources"));
+      object x0_0 = null; x0_0 = add(mid_0, mul((sub(src_0, get(ink_0, "centre"))), cell_0));
+      return list(x0_0, add(add(get(K("Video"), "STRIP_TOP"), get(ink_0, "top")), div((sub(get(K("Video"), "STRIP_TALL"), get(ink_0, "top"))), 2.0)), cell_0, src_0, div((sub(get(K("Strip"), "PAD"), x0_0)), cell_0), div((sub(sub(width_0, get(K("Strip"), "PAD")), x0_0)), cell_0));
+      return null;
+    });
+    c.statik("seen", (self, a1) => {
+      object p_0 = arg(a1, 0); object yaw_0 = arg(a1, 1); object pitch_0 = arg(a1, 2); object ox_0 = arg(a1, 3); object oy_0 = arg(a1, 4); object cell_0 = arg(a1, 5);
+      object x1_0 = null; x1_0 = sub(mul(elem(p_0, 0.0), m_cos(yaw_0)), mul(elem(p_0, 2.0), m_sin(yaw_0)));
+      object z1_0 = null; z1_0 = add(mul(elem(p_0, 0.0), m_sin(yaw_0)), mul(elem(p_0, 2.0), m_cos(yaw_0)));
+      object y1_0 = null; y1_0 = sub(mul(elem(p_0, 1.0), m_cos(pitch_0)), mul(z1_0, m_sin(pitch_0)));
+      object z2_0 = null; z2_0 = add(mul(elem(p_0, 1.0), m_sin(pitch_0)), mul(z1_0, m_cos(pitch_0)));
+      object f_0 = null; f_0 = div(60.0, (add(60.0, z2_0)));
+      return list(add(ox_0, mul(mul(cell_0, f_0), x1_0)), sub(oy_0, mul(mul(cell_0, f_0), y1_0)), f_0);
+      return null;
+    });
+    c.statik("arrow", (self, a1) => {
+      object s_0 = arg(a1, 0); object x_0 = arg(a1, 1); object y_0 = arg(a1, 2); object ux_0 = arg(a1, 3); object uy_0 = arg(a1, 4); object cell_0 = arg(a1, 5); object a_0 = arg(a1, 6);
+      object HEADW_0 = null; HEADW_0 = call(K("Fmt"), "max", new object[] { 7.0, call(K("Fmt"), "min", new object[] { 12.0, mul(cell_0, 0.20) }) });
+      object REACH_0 = null; REACH_0 = mul(cell_0, 0.25);
+      object BAR_0 = null; BAR_0 = call(K("Fmt"), "max", new object[] { 2.5, call(K("Fmt"), "min", new object[] { 4.5, mul(cell_0, 0.075) }) });
+      object BASE_0 = null; BASE_0 = mul(HEADW_0, 0.45);
+      object TIP_0 = null; TIP_0 = mul(HEADW_0, 0.55);
+      object LEN_0 = null; LEN_0 = sub(REACH_0, BASE_0);
+      object SEEN_0 = null; SEEN_0 = sub(TIP_0, div(BAR_0, 0.84));
+      call(s_0, "line_width", new object[] { BAR_0 });
+      call(s_0, "stroke_style", new object[] { "rgba(" + str(get(K("Ink"), "NEUTRAL")) + "," + str(mul(0.32, a_0)) + ")" });
+      get(s_0, "begin_path");
+      call(s_0, "move_to", new object[] { sub(x_0, mul(ux_0, (add(BASE_0, LEN_0)))), sub(y_0, mul(uy_0, (add(BASE_0, LEN_0)))) });
+      call(s_0, "line_to", new object[] { sub(x_0, mul(ux_0, BASE_0)), sub(y_0, mul(uy_0, BASE_0)) });
+      get(s_0, "stroke");
+      call(s_0, "stroke_style", new object[] { "rgba(" + str(get(K("Ink"), "NEUTRAL")) + "," + str(a_0) + ")" });
+      get(s_0, "begin_path");
+      call(s_0, "move_to", new object[] { x_0, y_0 });
+      call(s_0, "line_to", new object[] { add(x_0, mul(ux_0, (add(SEEN_0, LEN_0)))), add(y_0, mul(uy_0, (add(SEEN_0, LEN_0)))) });
+      get(s_0, "stroke");
+      call(s_0, "fill_style", new object[] { "rgba(" + str(get(K("Ink"), "NEUTRAL")) + "," + str(mul(0.97, a_0)) + ")" });
+      get(s_0, "begin_path");
+      call(s_0, "move_to", new object[] { add(x_0, mul(ux_0, TIP_0)), add(y_0, mul(uy_0, TIP_0)) });
+      call(s_0, "line_to", new object[] { sub(sub(x_0, mul(ux_0, BASE_0)), mul(mul(uy_0, HEADW_0), 0.42)), add(sub(y_0, mul(uy_0, BASE_0)), mul(mul(ux_0, HEADW_0), 0.42)) });
+      call(s_0, "line_to", new object[] { add(sub(x_0, mul(ux_0, BASE_0)), mul(mul(uy_0, HEADW_0), 0.42)), sub(sub(y_0, mul(uy_0, BASE_0)), mul(mul(ux_0, HEADW_0), 0.42)) });
+      return get(s_0, "fill");
+      return null;
+    });
+    c.statik("way", (self, a1) => {
+      object k_0 = arg(a1, 0); object space_0 = arg(a1, 1);
+      object q_0 = null; q_0 = m_floor((div(k_0, 2.0)));
+      object o_0 = null; o_0 = elem(list(list(1.0, 0.0), list(1.0, 1.0), list(0.0, 1.0), list(sub(0.0, 1.0), 1.0), list(sub(0.0, 1.0), 0.0), list(sub(0.0, 1.0), sub(0.0, 1.0)), list(0.0, sub(0.0, 1.0)), list(1.0, sub(0.0, 1.0))), k_0);
+      object b_0 = null; b_0 = elem(list(list(0.5, 0.5), list(sub(0.0, 0.5), 0.5), list(sub(0.0, 0.5), sub(0.0, 0.5)), list(0.5, sub(0.0, 0.5))), q_0);
+      object bz_0 = null; bz_0 = (truthy(eq(mod(k_0, 2.0), 0.0)) ? (object) 0.5 : (object) sub(0.0, 0.5));
+      return list(add(elem(o_0, 0.0), mul((sub(elem(b_0, 0.0), elem(o_0, 0.0))), space_0)), add(elem(o_0, 1.0), mul((sub(elem(b_0, 1.0), elem(o_0, 1.0))), space_0)), mul(bz_0, space_0));
+      return null;
+    });
+    c.statik("lattice", (self, a1) => {
+      object s_0 = arg(a1, 0); object lane_0 = arg(a1, 1); object look_0 = arg(a1, 2); object grow_0 = arg(a1, 3); object ticks_0 = arg(a1, 4); object fade_0 = arg(a1, 5); object earth_0 = arg(a1, 6); object ox_0 = arg(a1, 7); object oy_0 = arg(a1, 8); object cell_0 = arg(a1, 9); object rays_0 = arg(a1, 10); object dense_from_0 = arg(a1, 11); object far_0 = arg(a1, 12);
+      object plane_0 = null; plane_0 = call(K("Video"), "smooth", new object[] { div((sub(grow_0, 0.25)), 0.3) });
+      object space_0 = null; space_0 = call(K("Video"), "smooth", new object[] { div((sub(grow_0, 0.55)), 0.35) });
+      object yaw_0 = null; yaw_0 = mul(0.55, space_0);
+      object pitch_0 = null; pitch_0 = mul(0.42, space_0);
+      object src_0 = null; src_0 = elem(look_0, 3.0);
+      object lo_0 = null; lo_0 = elem(look_0, 4.0);
+      object hi_0 = null; hi_0 = elem(look_0, 5.0);
+      object R_0 = null; R_0 = 7.0;
+      object a_0 = null; a_0 = mul(R_0, plane_0);
+      object b_0 = null; b_0 = mul(R_0, space_0);
+      object pt_0 = null; pt_0 = new Fn((a2) => {
+        object p_1 = arg(a2, 0);
+        return call(K("Video"), "seen", new object[] { p_1, yaw_0, pitch_0, ox_0, oy_0, cell_0 });
+        return null;
+      });
+      object line_0 = null; line_0 = new Fn((a2) => {
+        object p_1 = arg(a2, 0); object q_1 = arg(a2, 1); object al_1 = arg(a2, 2);
+        if (truthy(gt(al_1, 0.004))) {
+          object P_0 = null; P_0 = invoke(pt_0, new object[] { p_1 });
+          object Q = null; Q = invoke(pt_0, new object[] { q_1 });
+          call(s_0, "stroke_style", new object[] { "rgba(" + str(get(K("Ink"), "NEUTRAL")) + "," + str(mul(0.16, al_1)) + ")" });
+          call(s_0, "line_width", new object[] { 1.0 });
+          get(s_0, "begin_path");
+          call(s_0, "move_to", new object[] { elem(P_0, 0.0), elem(P_0, 1.0) });
+          call(s_0, "line_to", new object[] { elem(Q, 0.0), elem(Q, 1.0) });
+          return get(s_0, "stroke");
+        }
+        return null;
+      });
+      object dot_0 = null; dot_0 = new Fn((a2) => {
+        object p_1 = arg(a2, 0); object al_1 = arg(a2, 1);
+        if (truthy(gt(al_1, 0.004))) {
+          object P_0 = null; P_0 = invoke(pt_0, new object[] { p_1 });
+          call(s_0, "fill_style", new object[] { "rgba(" + str(get(K("Ink"), "NEUTRAL")) + "," + str(mul(0.6, al_1)) + ")" });
+          get(s_0, "begin_path");
+          call(s_0, "arc", new object[] { elem(P_0, 0.0), elem(P_0, 1.0), mul(2.6, elem(P_0, 2.0)), 0.0, (2 * System.Math.PI) });
+          return get(s_0, "fill");
+        }
+        return null;
+      });
+      object ilo_0 = null; ilo_0 = m_round((sub(m_reduce(get(lane_0, "points"), m_first(get(lane_0, "points")), new Fn((a3) => {
+        object p_2 = arg(a3, 0); object q_2 = arg(a3, 1);
+        return call(K("Fmt"), "min", new object[] { p_2, q_2 });
+        return null;
+      })), src_0)));
+      object ihi_0 = null; ihi_0 = m_round((sub(m_reduce(get(lane_0, "points"), m_first(get(lane_0, "points")), new Fn((a3) => {
+        object p_2 = arg(a3, 0); object q_2 = arg(a3, 1);
+        return call(K("Fmt"), "max", new object[] { p_2, q_2 });
+        return null;
+      })), src_0)));
+      for (double i1 = 0; i1 < num(add(mul(2.0, R_0), 1.0)); i1++) {
+        object jj_1 = i1;
+        object j_1 = null; j_1 = sub(jj_1, R_0);
+        for (double i2 = 0; i2 < num(add(mul(2.0, R_0), 1.0)); i2++) {
+          object ll_2 = i2;
+          object l_2 = null; l_2 = sub(ll_2, R_0);
+          object vis_2 = null; vis_2 = mul(mul(fade_0, call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, sub(add(a_0, 1.0), m_abs(j_1)) }) })), call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, sub(add(b_0, 1.0), m_abs(l_2)) }) }));
+          if (truthy(gt(vis_2, 0.004))) {
+            invoke(line_0, new object[] { list(lo_0, j_1, l_2), list(hi_0, j_1, l_2), vis_2 });
+            for (double i4 = 0; i4 < num(add(sub(ihi_0, ilo_0), 1.0)); i4++) {
+              object ii_4 = i4;
+              invoke(dot_0, new object[] { list(add(ilo_0, ii_4), j_1, l_2), vis_2 });
+            };
+            if (truthy((truthy((truthy(gt(space_0, 0.01)) && truthy(lt(j_1, R_0)))) && truthy(lt(l_2, R_0))))) {
+              for (double i5 = 0; i5 < num(sub(ihi_0, ilo_0)); i5++) {
+                object ii_5 = i5;
+                invoke(dot_0, new object[] { list(add(add(ilo_0, ii_5), 0.5), add(j_1, 0.5), add(l_2, 0.5)), mul(vis_2, space_0) });
+              };
+            };
+          };
+        };
+      };
+      for (double i1 = 0; i1 < num(add(sub(ihi_0, ilo_0), 1.0)); i1++) {
+        object ii_1 = i1;
+        object i_1 = null; i_1 = add(ilo_0, ii_1);
+        for (double i2 = 0; i2 < num(add(mul(2.0, R_0), 1.0)); i2++) {
+          object ll_2 = i2;
+          object l_2 = null; l_2 = sub(ll_2, R_0);
+          invoke(line_0, new object[] { list(i_1, sub(0.0, a_0), l_2), list(i_1, a_0, l_2), mul(mul(fade_0, plane_0), call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, sub(add(b_0, 1.0), m_abs(l_2)) }) })) });
+        };
+        for (double i2 = 0; i2 < num(add(mul(2.0, R_0), 1.0)); i2++) {
+          object jj_2 = i2;
+          object j_2 = null; j_2 = sub(jj_2, R_0);
+          invoke(line_0, new object[] { list(i_1, j_2, sub(0.0, b_0)), list(i_1, j_2, b_0), mul(mul(fade_0, space_0), call(K("Fmt"), "min", new object[] { 1.0, call(K("Fmt"), "max", new object[] { 0.0, sub(add(a_0, 1.0), m_abs(j_2)) }) })) });
+        };
+      };
+      object T_0 = null; T_0 = m_floor(ticks_0);
+      object ray_0 = null; ray_0 = new Fn((a2) => {
+        object k_1 = arg(a2, 0); object r_1 = arg(a2, 1); object w_1 = arg(a2, 2);
+        if (truthy((truthy((truthy(gt(w_1, 0.004)) && truthy(ge(r_1, 1.0)))) && truthy(le(r_1, far_0))))) {
+          object d = null; d = call(K("Video"), "way", new object[] { k_1, space_0 });
+          object P_0 = null; P_0 = invoke(pt_0, new object[] { list(mul(elem(d, 0.0), r_1), mul(elem(d, 1.0), r_1), mul(elem(d, 2.0), r_1)) });
+          object Q = null; Q = invoke(pt_0, new object[] { list(mul(elem(d, 0.0), (add(r_1, 0.25))), mul(elem(d, 1.0), (add(r_1, 0.25))), mul(elem(d, 2.0), (add(r_1, 0.25)))) });
+          object len = null; len = call(K("Fmt"), "hypot", new object[] { sub(elem(Q, 0.0), elem(P_0, 0.0)), sub(elem(Q, 1.0), elem(P_0, 1.0)) });
+          if (truthy(gt(len, 0.01))) {
+            return call(K("Video"), "arrow", new object[] { s_0, elem(P_0, 0.0), elem(P_0, 1.0), div((sub(elem(Q, 0.0), elem(P_0, 0.0))), len), div((sub(elem(Q, 1.0), elem(P_0, 1.0))), len), mul(len, 4.0), mul(mul(w_1, rays_0), call(K("Fmt"), "min", new object[] { 1.0, sub(far_0, r_1) })) });
+          }
+        }
+        return null;
+      });
+      foreach (object e1 in each_of(get(lane_0, "sides"))) {
+        object sd_1 = e1;
+        invoke(ray_0, new object[] { (truthy(gt(get(sd_1, "sign"), 0.0)) ? (object) 0.0 : (object) 4.0), add(m_abs((sub(get(sd_1, "at"), src_0))), T_0), 1.0 });
+      };
+      for (double i1 = 0; i1 < num(T_0); i1++) {
+        object m_1 = i1;
+        object e_1 = null; e_1 = add(m_1, 1.0);
+        if (truthy((truthy(eq(mod(e_1, 2.0), 1.0)) || truthy(gt(e_1, dense_from_0))))) {
+          for (double i3 = 0; i3 < num(8.0); i3++) {
+            object k_3 = i3;
+            invoke(ray_0, new object[] { k_3, sub(add(1.0, T_0), e_1), (truthy(eq(mod(k_3, 4.0), 0.0)) ? (object) 1.0 : (object) plane_0) });
+          };
+        };
+      };
+      object P_0 = null; P_0 = invoke(pt_0, new object[] { list(0.0, 0.0, 0.0) });
+      object half_0 = null; half_0 = call(K("Fmt"), "max", new object[] { 9.0, call(K("Fmt"), "min", new object[] { 18.0, mul(cell_0, 0.3) }) });
+      call(s_0, "fill_style", new object[] { "rgba(" + str(get(K("Ink"), "SOURCE")) + "," + str(mul(0.14, (sub(1.0, earth_0)))) + ")" });
+      call(s_0, "fill_rect", new object[] { sub(elem(P_0, 0.0), half_0), sub(elem(P_0, 1.0), half_0), mul(2.0, half_0), mul(2.0, half_0) });
+      call(s_0, "stroke_style", new object[] { "rgba(" + str(get(K("Ink"), "SOURCE")) + "," + str(mul(0.9, (sub(1.0, earth_0)))) + ")" });
+      call(s_0, "line_width", new object[] { 1.5 });
+      call(s_0, "stroke_rect", new object[] { sub(elem(P_0, 0.0), half_0), sub(elem(P_0, 1.0), half_0), mul(2.0, half_0), mul(2.0, half_0) });
+      if (truthy(gt(earth_0, 0.0))) {
+        call(s_0, "fill_style", new object[] { "rgba(" + str(get(K("Ink"), "SOURCE")) + "," + str(earth_0) + ")" });
+        get(s_0, "begin_path");
+        call(s_0, "arc", new object[] { elem(P_0, 0.0), elem(P_0, 1.0), add(2.6, mul(7.4, earth_0)), 0.0, (2 * System.Math.PI) });
+        return get(s_0, "fill");
+      }
+      return null;
+    });
+    c.statik("source_camera", (self, a1) => {
+      object s_0 = arg(a1, 0); object look_0 = arg(a1, 1); object grow_0 = arg(a1, 2);
+      object e_0 = null; e_0 = call(K("Video"), "smooth", new object[] { div(grow_0, 0.3) });
+      return list(add(elem(look_0, 0.0), mul((sub(div(get(s_0, "width"), 2.0), elem(look_0, 0.0))), e_0)), add(elem(look_0, 1.0), mul((sub(div(get(s_0, "height"), 2.0), elem(look_0, 1.0))), e_0)), m_exp((add(m_ln(elem(look_0, 2.0)), mul((sub(m_ln(95.0), m_ln(elem(look_0, 2.0)))), e_0)))));
+      return null;
+    });
+    c.statik("to_source", (self, a1) => {
+      object theory_0 = arg(a1, 0);
+      object ink_0 = null; ink_0 = make("Ink", new object[] {  });
+      object lanes_0 = null; lanes_0 = call(K("Video"), "transport_lanes", new object[] { theory_0, ink_0 });
+      object n_0 = null; n_0 = m_round((mul(4.0, get(K("Video"), "FPS"))));
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", "video.to-source"), kw("what", "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)"), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", n_0), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        return make("Growing", new object[] { kw("n", n_0), kw("lane", m_last(lanes_0)), kw("ink", ink_0), kw("per", call(K("Video"), "per_tick", new object[] { lanes_0 })) });
+        return null;
+      })) });
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("to_solar", (self, a1) => {
+      object theory_0 = arg(a1, 0);
+      object ink_0 = null; ink_0 = make("Ink", new object[] {  });
+      object lanes_0 = null; lanes_0 = call(K("Video"), "transport_lanes", new object[] { theory_0, ink_0 });
+      object sol_0 = null; sol_0 = get(theory_0, "solar");
+      object r_0 = null; r_0 = get(sol_0, "record");
+      object at_0 = null; at_0 = 0.0;
+      for (double i1 = 0; i1 < num(len(get(r_0, "names"))); i1++) {
+        object k_1 = i1;
+        at_0 = (truthy(eq(elem(get(r_0, "names"), k_1), "marks")) ? (object) k_1 : (object) at_0);
+      };
+      object off_0 = null; off_0 = m_sum(m_take(get(r_0, "sizes"), at_0));
+      object n_0 = null; n_0 = m_round((mul(8.0, get(K("Video"), "FPS"))));
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", "video.to-solar"), kw("what", "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it"), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", n_0), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        return make("Planets", new object[] { kw("n", n_0), kw("lane", m_last(lanes_0)), kw("ink", ink_0), kw("per", call(K("Video"), "per_tick", new object[] { lanes_0 })), kw("stamp", get(r_0, "stamp")), kw("off", off_0), kw("width", get(r_0, "width")), kw("bodies", m_round((div((sub(elem(get(r_0, "sizes"), at_0), 1.0)), 6.0)))) });
+        return null;
+      })) });
+      set(pic_0, "uses", list("solar.inner"));
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("planets", (self, a1) => {
+      object s_0 = arg(a1, 0); object t_0 = arg(a1, 1); object lane_0 = arg(a1, 2); object look_0 = arg(a1, 3); object ticks_0 = arg(a1, 4); object film_0 = arg(a1, 5); object off_0 = arg(a1, 6); object width_0 = arg(a1, 7); object bodies_0 = arg(a1, 8);
+      object SOLAR_0 = null; SOLAR_0 = call(K("Measured"), "of", new object[] { "solar-inner" });
+      if (truthy(eq(SOLAR_0, null))) {
+        invoke(fail, new object[] { "solar-inner is not on disk - run `npx ray data` and try again" });
+      }
+      object NAMES_0 = null; NAMES_0 = get(get(SOLAR_0, "header"), str("names"));
+      object PER_0 = null; PER_0 = get(get(SOLAR_0, "columns"), str("period"));
+      object PLANETS_0 = null; PLANETS_0 = filt(rng(len(NAMES_0)), new Fn((a3) => {
+        object i_2 = arg(a3, 0);
+        return gt(elem(PER_0, i_2), 0.0);
+        return null;
+      }));
+      object F_0 = null; F_0 = get(get(film_0, "columns"), str("frames"));
+      object FR_0 = null; FR_0 = get(get(film_0, "header"), str("frames"));
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+      call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+      object fade_0 = null; fade_0 = sub(1.0, call(K("Video"), "smooth", new object[] { div((sub(t_0, 0.05)), 0.4) }));
+      object rays_0 = null; rays_0 = sub(1.0, call(K("Video"), "smooth", new object[] { div((sub(t_0, 0.45)), 0.35) }));
+      object earth_0 = null; earth_0 = call(K("Video"), "smooth", new object[] { div((sub(t_0, 0.3)), 0.3) });
+      object e_0 = null; e_0 = call(K("Video"), "smooth", new object[] { div(t_0, 0.92) });
+      object come_0 = null; come_0 = call(K("Video"), "smooth", new object[] { div((sub(t_0, 0.45)), 0.35) });
+      object u_0 = null; u_0 = call(K("Fmt"), "min", new object[] { sub(FR_0, 1.0), add(get(K("Video"), "SOLAR_FROM"), mul((sub(get(K("Video"), "SOLAR_TO"), get(K("Video"), "SOLAR_FROM"))), t_0)) });
+      object f0_0 = null; f0_0 = m_floor(u_0);
+      object f1_0 = null; f1_0 = call(K("Fmt"), "min", new object[] { add(f0_0, 1.0), sub(FR_0, 1.0) });
+      object w_0 = null; w_0 = sub(u_0, f0_0);
+      object mark_0 = null; mark_0 = new Fn((a2) => {
+        object f_1 = arg(a2, 0); object k_1 = arg(a2, 1); object c__1 = arg(a2, 2);
+        return elem(F_0, add(add(add(mul(f_1, width_0), off_0), mul(6.0, k_1)), c__1));
+        return null;
+      });
+      object where_0 = null; where_0 = new Fn((a2) => {
+        object k_1 = arg(a2, 0);
+        return list(add(invoke(mark_0, new object[] { f0_0, k_1, 0.0 }), mul(w_0, (sub(invoke(mark_0, new object[] { f1_0, k_1, 0.0 }), invoke(mark_0, new object[] { f0_0, k_1, 0.0 }))))), add(invoke(mark_0, new object[] { f0_0, k_1, 1.0 }), mul(w_0, (sub(invoke(mark_0, new object[] { f1_0, k_1, 1.0 }), invoke(mark_0, new object[] { f0_0, k_1, 1.0 }))))));
+        return null;
+      });
+      object reach_0 = null; reach_0 = 0.0;
+      for (double i1 = 0; i1 < num(FR_0); i1++) {
+        object f_1 = i1;
+        for (double i2 = 0; i2 < num(sub(bodies_0, 1.0)); i2++) {
+          object k_2 = i2;
+          reach_0 = call(K("Fmt"), "max", new object[] { reach_0, call(K("Fmt"), "hypot", new object[] { sub(invoke(mark_0, new object[] { f_1, add(k_2, 1.0), 0.0 }), invoke(mark_0, new object[] { f_1, 0.0, 0.0 })), sub(invoke(mark_0, new object[] { f_1, add(k_2, 1.0), 1.0 }), invoke(mark_0, new object[] { f_1, 0.0, 1.0 })) }) });
+        };
+      };
+      object earth_body_0 = null; earth_body_0 = 0.0;
+      for (double i1 = 0; i1 < num(len(PLANETS_0)); i1++) {
+        object k_1 = i1;
+        earth_body_0 = (truthy(eq(elem(NAMES_0, elem(PLANETS_0, k_1)), "Earth")) ? (object) add(k_1, 1.0) : (object) earth_body_0);
+      };
+      object E_0 = null; E_0 = invoke(where_0, new object[] { earth_body_0 });
+      object O_0 = null; O_0 = invoke(where_0, new object[] { 0.0 });
+      object last_0 = null; last_0 = mul(2.1, (add(reach_0, call(K("Fmt"), "hypot", new object[] { sub(elem(E_0, 0.0), elem(O_0, 0.0)), sub(elem(E_0, 1.0), elem(O_0, 1.0)) }))));
+      object across_0 = null; across_0 = m_exp((add(m_ln((div(last_0, 180.0))), mul((sub(m_ln(last_0), m_ln((div(last_0, 180.0))))), e_0))));
+      object px_0 = null; px_0 = div(get(s_0, "height"), across_0);
+      object cx_0 = null; cx_0 = elem(E_0, 0.0);
+      object cy_0 = null; cy_0 = elem(E_0, 1.0);
+      object X_0 = null; X_0 = new Fn((a2) => {
+        object x_1 = arg(a2, 0);
+        return add(div(get(s_0, "width"), 2.0), mul((sub(x_1, cx_0)), px_0));
+        return null;
+      });
+      object Y_0 = null; Y_0 = new Fn((a2) => {
+        object y_1 = arg(a2, 0);
+        return sub(div(get(s_0, "height"), 2.0), mul((sub(y_1, cy_0)), px_0));
+        return null;
+      });
+      if (truthy((truthy(gt(fade_0, 0.004)) || truthy(gt(rays_0, 0.004))))) {
+        call(K("Video"), "lattice", new object[] { s_0, lane_0, look_0, 1.0, add(ticks_0, mul(mul(300.0, t_0), t_0)), fade_0, earth_0, invoke(X_0, new object[] { elem(E_0, 0.0) }), invoke(Y_0, new object[] { elem(E_0, 1.0) }), div(mul(95.0, (div(last_0, 180.0))), across_0), rays_0, m_floor(ticks_0), add(16.0, mul(40.0, call(K("Video"), "smooth", new object[] { div(t_0, 0.4) }))) });
+      };
+      for (double i1 = 0; i1 < num(sub(bodies_0, 1.0)); i1++) {
+        object k_1 = i1;
+        object b_1 = null; b_1 = add(k_1, 1.0);
+        object ink_1 = null; ink_1 = elem(get(K("Video"), "PLANET_INK"), call(K("Fmt"), "min", new object[] { 3.0, k_1 }));
+        call(s_0, "alpha", new object[] { mul(0.85, come_0) });
+        call(s_0, "stroke_style", new object[] { ink_1 });
+        call(s_0, "line_width", new object[] { 2.0 });
+        get(s_0, "begin_path");
+        for (double i2 = 0; i2 < num(FR_0); i2++) {
+          object f_2 = i2;
+          if (truthy(eq(f_2, 0.0))) {
+            call(s_0, "move_to", new object[] { invoke(X_0, new object[] { invoke(mark_0, new object[] { f_2, b_1, 0.0 }) }), invoke(Y_0, new object[] { invoke(mark_0, new object[] { f_2, b_1, 1.0 }) }) });
+          } else {
+            call(s_0, "line_to", new object[] { invoke(X_0, new object[] { invoke(mark_0, new object[] { f_2, b_1, 0.0 }) }), invoke(Y_0, new object[] { invoke(mark_0, new object[] { f_2, b_1, 1.0 }) }) });
+          };
+        };
+        get(s_0, "stroke");
+        object P_1 = null; P_1 = invoke(where_0, new object[] { b_1 });
+        object x_1 = null; x_1 = invoke(X_0, new object[] { elem(P_1, 0.0) });
+        object y_1 = null; y_1 = invoke(Y_0, new object[] { elem(P_1, 1.0) });
+        call(s_0, "alpha", new object[] { (truthy(eq(b_1, earth_body_0)) ? (object) earth_0 : (object) come_0) });
+        call(s_0, "stroke_style", new object[] { ink_1 });
+        call(s_0, "line_width", new object[] { 2.5 });
+        get(s_0, "begin_path");
+        call(s_0, "arc", new object[] { x_1, y_1, 13.0, 0.0, (2 * System.Math.PI) });
+        get(s_0, "stroke");
+        call(s_0, "fill_style", new object[] { (truthy(eq(b_1, earth_body_0)) ? (object) "rgba(" + str(get(K("Ink"), "SOURCE")) + "," + str(sub(1.0, come_0)) + ")" : (object) "#000000") });
+        get(s_0, "begin_path");
+        call(s_0, "arc", new object[] { x_1, y_1, (truthy(eq(b_1, earth_body_0)) ? (object) add(mul(10.0, (sub(1.0, come_0))), mul(2.5, come_0)) : (object) 2.5), 0.0, (2 * System.Math.PI) });
+        get(s_0, "fill");
+      };
+      call(s_0, "alpha", new object[] { come_0 });
+      call(s_0, "stroke_style", new object[] { "#e0a526" });
+      call(s_0, "line_width", new object[] { 3.0 });
+      get(s_0, "begin_path");
+      call(s_0, "arc", new object[] { invoke(X_0, new object[] { elem(O_0, 0.0) }), invoke(Y_0, new object[] { elem(O_0, 1.0) }), 26.0, 0.0, (2 * System.Math.PI) });
+      get(s_0, "stroke");
+      call(s_0, "fill_style", new object[] { "#000000" });
+      get(s_0, "begin_path");
+      call(s_0, "arc", new object[] { invoke(X_0, new object[] { elem(O_0, 0.0) }), invoke(Y_0, new object[] { elem(O_0, 1.0) }), 3.0, 0.0, (2 * System.Math.PI) });
+      get(s_0, "fill");
+      return call(s_0, "alpha", new object[] { 1.0 });
+      return null;
+    });
+    c.statik("end", (self, a1) => {
+      object n_0 = null; n_0 = m_round((mul(20.0, get(K("Video"), "FPS"))));
+      object pic_0 = null; pic_0 = make("Picture", new object[] { kw("id", "video.end"), kw("what", "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics"), kw("width", get(K("Video"), "WIDTH")), kw("height", get(K("Video"), "HEIGHT")), kw("frames", n_0), kw("paint", new Fn((a3) => {
+        object played_2 = arg(a3, 0);
+        return make("EndCard", new object[] { kw("n", n_0) });
+        return null;
+      })) });
+      set(pic_0, "images", list(get(K("Video"), "LOGO")));
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+    c.statik("end_card", (self, a1) => {
+      object s_0 = arg(a1, 0); object i_0 = arg(a1, 1); object n_0 = arg(a1, 2);
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+      call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+      call(s_0, "alpha", new object[] { call(K("Video"), "smooth", new object[] { div(i_0, get(K("Video"), "FPS")) }) });
+      object w_0 = null; w_0 = 1500.0;
+      call(s_0, "image", new object[] { get(K("Video"), "LOGO"), div((sub(get(s_0, "width"), w_0)), 2.0), 330.0, w_0, div(w_0, 3.0) });
+      call(s_0, "text_align", new object[] { "center" });
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "SEEN") });
+      call(s_0, "font", new object[] { "600 72px ui-sans-serif, system-ui, sans-serif" });
+      call(s_0, "fill_text", new object[] { "Physics Project", div(get(s_0, "width"), 2.0), 960.0 });
+      call(s_0, "fill_style", new object[] { "#3ddcff" });
+      call(s_0, "font", new object[] { "44px ui-sans-serif, system-ui, sans-serif" });
+      call(s_0, "fill_text", new object[] { "orbitmines.com/physics", div(get(s_0, "width"), 2.0), 1060.0 });
+      return call(s_0, "alpha", new object[] { 1.0 });
+      return null;
+    });
+    c.statik("montage", (self, a1) => {
+      object pic_0 = null; pic_0 = call(K("Picture"), "still", new object[] { "video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", get(K("Video"), "WIDTH"), get(K("Video"), "HEIGHT"), new Fn((a3) => {
+        object s_2 = arg(a3, 0);
+
+        return null;
+      }) });
+      set(pic_0, "parts", get(K("Video"), "PARTS"));
+      set(pic_0, "on_request", true);
+      return pic_0;
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Shot = cls("Shot", Node, C_Shot.define);
+public static class C_Shot {
+  public static void define(Cls c) {
+    c.field("film_id", null);
+    c.field("seconds", null);
+    c.field("from_zoom", null);
+    c.field("to_zoom", null);
+    c.field("from_sun", null);
+    c.field("to_sun", null);
+    c.field("from_at", null);
+    c.field("to_at", null);
+    c.field("tilt", null);
+    c.field("turn", null);
+    c.field("title", null);
+    c.field("fade_in", null);
+    c.field("fade_out", null);
+    c.getter("frames", (self, a1) => {
+      return m_round((mul(get(self, "seconds"), get(K("Video"), "FPS"))));
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Sky = cls("Sky", Painter, C_Sky.define);
+public static class C_Sky {
+  public static void define(Cls c) {
+    c.field("shot", null);
+    c.field("sol", self => null);
+    c.field("meta", self => list());
+    c.field("sol_stamp", self => "");
+    c.field("shown_frames", self => 0.0);
+    c.field("film", self => null);
+    c.field("tracks", self => null);
+    c.method("frame", (self, a1) => {
+      object s_0 = arg(a1, 0); object dt_0 = arg(a1, 1);
+      if (truthy(eq(get(self, "film"), null))) {
+        set(self, "film", call(K("Measured"), "of", new object[] { get(get(self, "shot"), "film_id") }));
+        set(self, "tracks", call(K("Measured"), "of", new object[] { "" + str(get(get(self, "shot"), "film_id")) + ".stars" }));
+      };
+      if (truthy(eq(get(self, "film"), null))) {
+        invoke(fail, new object[] { "" + str(get(get(self, "shot"), "film_id")) + " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" + str(get(get(self, "shot"), "film_id")) + " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ." });
+      }
+      if (truthy((truthy(gt(len(get(self, "meta")), 0.0)) && truthy(eq(get(self, "sol"), null))))) {
+        set(self, "sol", call(K("Measured"), "of", new object[] { "solar.inner.frames" }));
+        if (truthy(eq(get(self, "sol"), null))) {
+          invoke(fail, new object[] { "solar.inner is not recorded - run `npx ray visuals solar.inner` first" });
+        }
+        if (truthy(!eq(get(get(get(self, "sol"), "header"), str("stamp")), get(self, "sol_stamp")))) {
+          invoke(fail, new object[] { "solar.inner's recording is stale - run `npx ray visuals solar.inner` again" });
+        }
+      };
+      call(K("Video"), "sky", new object[] { s_0, get(self, "shot"), get(self, "film"), get(self, "tracks"), get(self, "shown_frames"), get(self, "sol"), get(self, "meta") });
+      set(self, "shown_frames", add(get(self, "shown_frames"), 1.0));
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Band = cls("Band", Surface, C_Band.define);
+public static class C_Band {
+  public static void define(Cls c) {
+    c.field("inner", null);
+    c.method("fill_style", (self, a1) => {
+      object colour_0 = arg(a1, 0);
+      return call(get(self, "inner"), "fill_style", new object[] { colour_0 });
+      return null;
+    });
+    c.method("stroke_style", (self, a1) => {
+      object colour_0 = arg(a1, 0);
+      return call(get(self, "inner"), "stroke_style", new object[] { colour_0 });
+      return null;
+    });
+    c.method("line_width", (self, a1) => {
+      object w_0 = arg(a1, 0);
+      return call(get(self, "inner"), "line_width", new object[] { w_0 });
+      return null;
+    });
+    c.method("alpha", (self, a1) => {
+      object v_0 = arg(a1, 0);
+      return call(get(self, "inner"), "alpha", new object[] { v_0 });
+      return null;
+    });
+    c.method("fill_rect", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1); object w_0 = arg(a1, 2); object h_0 = arg(a1, 3);
+      return call(get(self, "inner"), "fill_rect", new object[] { x_0, y_0, w_0, h_0 });
+      return null;
+    });
+    c.method("stroke_rect", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1); object w_0 = arg(a1, 2); object h_0 = arg(a1, 3);
+      return call(get(self, "inner"), "stroke_rect", new object[] { x_0, y_0, w_0, h_0 });
+      return null;
+    });
+    c.method("clear_rect", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1); object w_0 = arg(a1, 2); object h_0 = arg(a1, 3);
+      return call(get(self, "inner"), "clear_rect", new object[] { x_0, y_0, w_0, h_0 });
+      return null;
+    });
+    c.getter("begin_path", (self, a1) => {
+      return get(get(self, "inner"), "begin_path");
+      return null;
+    });
+    c.method("move_to", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1);
+      return call(get(self, "inner"), "move_to", new object[] { x_0, y_0 });
+      return null;
+    });
+    c.method("line_to", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1);
+      return call(get(self, "inner"), "line_to", new object[] { x_0, y_0 });
+      return null;
+    });
+    c.method("arc", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1); object r_0 = arg(a1, 2); object start_at_0 = arg(a1, 3); object end_at_0 = arg(a1, 4);
+      return call(get(self, "inner"), "arc", new object[] { x_0, y_0, r_0, start_at_0, end_at_0 });
+      return null;
+    });
+    c.getter("stroke", (self, a1) => {
+      return get(get(self, "inner"), "stroke");
+      return null;
+    });
+    c.getter("fill", (self, a1) => {
+      return get(get(self, "inner"), "fill");
+      return null;
+    });
+    c.method("font", (self, a1) => {
+      object name_0 = arg(a1, 0);
+      return call(get(self, "inner"), "font", new object[] { name_0 });
+      return null;
+    });
+    c.method("text_align", (self, a1) => {
+      object how_0 = arg(a1, 0);
+      return call(get(self, "inner"), "text_align", new object[] { how_0 });
+      return null;
+    });
+    c.method("text_baseline", (self, a1) => {
+      object how_0 = arg(a1, 0);
+      return call(get(self, "inner"), "text_baseline", new object[] { how_0 });
+      return null;
+    });
+    c.method("fill_text", (self, a1) => {
+      object t_0 = arg(a1, 0); object x_0 = arg(a1, 1); object y_0 = arg(a1, 2);
+      return call(get(self, "inner"), "fill_text", new object[] { t_0, x_0, y_0 });
+      return null;
+    });
+    c.method("measure", (self, a1) => {
+      object t_0 = arg(a1, 0);
+      return call(get(self, "inner"), "measure", new object[] { t_0 });
+      return null;
+    });
+    c.getter("save", (self, a1) => {
+      return get(get(self, "inner"), "save");
+      return null;
+    });
+    c.getter("restore", (self, a1) => {
+      return get(get(self, "inner"), "restore");
+      return null;
+    });
+    c.method("translate", (self, a1) => {
+      object x_0 = arg(a1, 0); object y_0 = arg(a1, 1);
+      return call(get(self, "inner"), "translate", new object[] { x_0, y_0 });
+      return null;
+    });
+    c.method("rotate", (self, a1) => {
+      object angle_0 = arg(a1, 0);
+      return call(get(self, "inner"), "rotate", new object[] { angle_0 });
+      return null;
+    });
+    c.method("dash", (self, a1) => {
+      object segments_0 = arg(a1, 0);
+      return call(get(self, "inner"), "dash", new object[] { segments_0 });
+      return null;
+    });
+    c.method("gradient_stroke", (self, a1) => {
+      object x0_0 = arg(a1, 0); object x1_0 = arg(a1, 1); object stops_0 = arg(a1, 2); object at_0 = arg(a1, 3);
+      return call(get(self, "inner"), "gradient_stroke", new object[] { x0_0, x1_0, stops_0, at_0 });
+      return null;
+    });
+    c.method("image", (self, a1) => {
+      object src_0 = arg(a1, 0); object x_0 = arg(a1, 1); object y_0 = arg(a1, 2); object w_0 = arg(a1, 3); object h_0 = arg(a1, 4);
+      return call(get(self, "inner"), "image", new object[] { src_0, x_0, y_0, w_0, h_0 });
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Banded = cls("Banded", Painter, C_Banded.define);
+public static class C_Banded {
+  public static void define(Cls c) {
+    c.field("inner", null);
+    c.field("top", null);
+    c.field("tall", null);
+    c.method("frame", (self, a1) => {
+      object s_0 = arg(a1, 0); object dt_0 = arg(a1, 1);
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+      call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+      get(s_0, "save");
+      call(s_0, "translate", new object[] { 0.0, get(self, "top") });
+      call(get(self, "inner"), "frame", new object[] { make("Band", new object[] { kw("width", get(s_0, "width")), kw("height", get(self, "tall")), kw("inner", s_0) }), dt_0 });
+      return get(s_0, "restore");
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Growing = cls("Growing", Painter, C_Growing.define);
+public static class C_Growing {
+  public static void define(Cls c) {
+    c.field("n", null);
+    c.field("lane", null);
+    c.field("ink", null);
+    c.field("per", null);
+    c.field("shown_frames", self => 0.0);
+    c.method("frame", (self, a1) => {
+      object s_0 = arg(a1, 0); object dt_0 = arg(a1, 1);
+      call(s_0, "fill_style", new object[] { get(K("Galaxies"), "BACK") });
+      call(s_0, "fill_rect", new object[] { 0.0, 0.0, get(s_0, "width"), get(s_0, "height") });
+      object look_0 = null; look_0 = call(K("Video"), "look", new object[] { get(s_0, "width"), get(self, "lane"), get(self, "ink") });
+      object grow_0 = null; grow_0 = div(get(self, "shown_frames"), call(K("Fmt"), "max", new object[] { 1.0, sub(get(self, "n"), 1.0) }));
+      object cam_0 = null; cam_0 = call(K("Video"), "source_camera", new object[] { s_0, look_0, grow_0 });
+      call(K("Video"), "lattice", new object[] { s_0, get(self, "lane"), look_0, grow_0, div(get(self, "shown_frames"), get(self, "per")), 1.0, 0.0, elem(cam_0, 0.0), elem(cam_0, 1.0), elem(cam_0, 2.0), 1.0, 1000000.0, 16.0 });
+      set(self, "shown_frames", add(get(self, "shown_frames"), 1.0));
+      return null;
+    });
+  }
+}
+
+public static readonly Cls Planets = cls("Planets", Painter, C_Planets.define);
+public static class C_Planets {
+  public static void define(Cls c) {
+    c.field("n", null);
+    c.field("lane", null);
+    c.field("ink", null);
+    c.field("per", null);
+    c.field("stamp", null);
+    c.field("off", null);
+    c.field("width", null);
+    c.field("bodies", null);
+    c.field("shown_frames", self => 0.0);
+    c.field("film", self => null);
+    c.method("frame", (self, a1) => {
+      object s_0 = arg(a1, 0); object dt_0 = arg(a1, 1);
+      if (truthy(eq(get(self, "film"), null))) {
+        set(self, "film", call(K("Measured"), "of", new object[] { "solar.inner.frames" }));
+      };
+      if (truthy(eq(get(self, "film"), null))) {
+        invoke(fail, new object[] { "solar.inner is not recorded - run `npx ray visuals solar.inner` first" });
+      }
+      if (truthy(!eq(get(get(get(self, "film"), "header"), str("stamp")), get(self, "stamp")))) {
+        invoke(fail, new object[] { "solar.inner's recording is stale - run `npx ray visuals solar.inner` again" });
+      }
+      object look_0 = null; look_0 = call(K("Video"), "look", new object[] { get(s_0, "width"), get(self, "lane"), get(self, "ink") });
+      call(K("Video"), "planets", new object[] { s_0, div(get(self, "shown_frames"), call(K("Fmt"), "max", new object[] { 1.0, sub(get(self, "n"), 1.0) })), get(self, "lane"), look_0, div((add(sub(m_round((mul(4.0, get(K("Video"), "FPS")))), 1.0), get(self, "shown_frames"))), get(self, "per")), get(self, "film"), get(self, "off"), get(self, "width"), get(self, "bodies") });
+      set(self, "shown_frames", add(get(self, "shown_frames"), 1.0));
+      return null;
+    });
+  }
+}
+
+public static readonly Cls EndCard = cls("EndCard", Painter, C_EndCard.define);
+public static class C_EndCard {
+  public static void define(Cls c) {
+    c.field("n", null);
+    c.field("shown_frames", self => 0.0);
+    c.method("frame", (self, a1) => {
+      object s_0 = arg(a1, 0); object dt_0 = arg(a1, 1);
+      call(K("Video"), "end_card", new object[] { s_0, get(self, "shown_frames"), get(self, "n") });
+      set(self, "shown_frames", add(get(self, "shown_frames"), 1.0));
+      return null;
+    });
+  }
+}
+
 public static readonly Cls GTheory = cls("G", Theory, C_G.define);
 public static class C_G {
   public static void define(Cls c) {
@@ -18444,13 +19475,13 @@ public static class C_G {
       set(ink_0, "every", true);
       object w_0 = null; w_0 = call(K("Strip"), "line", new object[] { self, 10.0 });
       call(K("Strip"), "light", new object[] { w_0, 0.0, 1.0 });
-      object lanes_0 = null; lanes_0 = list(call(K("Strip"), "lane", new object[] { w_0, ink_0 }));
-      for (double i1 = 0; i1 < num(8.0); i1++) {
-        object t_1 = i1;
+      object lanes_0 = null; lanes_0 = m_concat(list(call(K("Strip"), "lane", new object[] { w_0, ink_0 })), m_map(rng(8.0), new Fn((a3) => {
+        object t_2 = arg(a3, 0);
         call(K("Strip"), "begin", new object[] { w_0 });
         call(K("Strip"), "run", new object[] { w_0, list("/c", "/4") });
-        m_push(lanes_0, call(K("Strip"), "lane", new object[] { w_0, ink_0 }));
-      };
+        return call(K("Strip"), "lane", new object[] { w_0, ink_0 });
+        return null;
+      })));
       return call(K("Strip"), "tell", new object[] { "rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes_0, ink_0 });
       return null;
     });
@@ -18460,17 +19491,17 @@ public static class C_G {
       set(ink_0, "top", 36.0);
       object w_0 = null; w_0 = call(K("Strip"), "line", new object[] { self, 17.0 });
       call(w_0, "add", new object[] { make("Scripted", new object[] { kw("at", make("Vector", new object[] { kw("components", list(8.0)) })), kw("plan", list("", "+", "-", "", "+-", "", "+", "-")), kw("weight", 1.0) }) });
-      object lanes_0 = null; lanes_0 = list(call(K("Strip"), "lane", new object[] { w_0, ink_0 }));
-      for (double i1 = 0; i1 < num(8.0); i1++) {
-        object t_1 = i1;
+      object lanes_0 = null; lanes_0 = m_concat(list(call(K("Strip"), "lane", new object[] { w_0, ink_0 })), m_map(rng(8.0), new Fn((a3) => {
+        object t_2 = arg(a3, 0);
         call(K("Strip"), "begin", new object[] { w_0 });
         call(K("Strip"), "run", new object[] { w_0, list("/c", "/4") });
-        object moved_1 = null; moved_1 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
+        object moved_2 = null; moved_2 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
         call(K("Strip"), "run", new object[] { w_0, list("/S.1") });
-        object now_1 = null; now_1 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
-        set(now_1, "says", call(K("Strip"), "emitting", new object[] { moved_1, now_1 }));
-        m_push(lanes_0, now_1);
-      };
+        object now_2 = null; now_2 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
+        set(now_2, "says", call(K("Strip"), "emitting", new object[] { moved_2, now_2 }));
+        return now_2;
+        return null;
+      })));
       return call(K("Strip"), "tell", new object[] { "rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes_0, ink_0 });
       return null;
     });
@@ -18478,28 +19509,29 @@ public static class C_G {
       object ink_0 = null; ink_0 = make("Ink", new object[] {  });
       set(ink_0, "every", true);
       set(ink_0, "top", 36.0);
+      return call(K("Strip"), "tell", new object[] { "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", call(self, "transport_lanes", new object[] { ink_0 }), ink_0 });
+      return null;
+    });
+    c.method("transport_lanes", (self, a1) => {
+      object ink_0 = arg(a1, 0);
       object w_0 = null; w_0 = call(K("Strip"), "line", new object[] { self, 21.0 });
       object s_0 = null; s_0 = call(w_0, "add", new object[] { make("Scripted", new object[] { kw("at", make("Vector", new object[] { kw("components", list(9.0)) })), kw("plan", list("+-", "", "", "", "+-")), kw("weight", 4.0) }) });
       set(s_0, "moves", true);
       set(s_0, "momentum", make("Vector", new object[] { kw("components", list(1.0)) }));
-      object lanes_0 = null; lanes_0 = list(call(K("Strip"), "lane", new object[] { w_0, ink_0 }));
-      for (double i1 = 0; i1 < num(9.0); i1++) {
-        object t_1 = i1;
+      return m_concat(list(call(K("Strip"), "lane", new object[] { w_0, ink_0 })), m_map(rng(9.0), new Fn((a3) => {
+        object t_2 = arg(a3, 0);
         call(K("Strip"), "begin", new object[] { w_0 });
         call(K("Strip"), "run", new object[] { w_0, list("/c", "/4") });
-        object moved_1 = null; moved_1 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
+        object moved_2 = null; moved_2 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
         call(K("Strip"), "run", new object[] { w_0, list("/S.1") });
-        object emitted_1 = null; emitted_1 = call(K("Strip"), "emitting", new object[] { moved_1, call(K("Strip"), "lane", new object[] { w_0, ink_0 }) });
+        object emitted_2 = null; emitted_2 = call(K("Strip"), "emitting", new object[] { moved_2, call(K("Strip"), "lane", new object[] { w_0, ink_0 }) });
         call(K("Strip"), "run", new object[] { w_0, list("/S.v") });
-        object now_1 = null; now_1 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
-        object went_1 = null; went_1 = "";
-        if (truthy(get(s_0, "stepped"))) {
-          went_1 = (truthy(gt(elem(get(call(get(w_0, "geometry"), "V", new object[] { get(s_0, "moved_along") }), "components"), 0.0), 0.0)) ? (object) "steps right" : (object) "steps left");
-        };
-        set(now_1, "says", (truthy(m_empty(went_1)) ? (object) emitted_1 : (object) ((truthy(m_empty(emitted_1)) ? (object) went_1 : (object) "" + str(went_1) + ", " + str(emitted_1) + ""))));
-        m_push(lanes_0, now_1);
-      };
-      return call(K("Strip"), "tell", new object[] { "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes_0, ink_0 });
+        object now_2 = null; now_2 = call(K("Strip"), "lane", new object[] { w_0, ink_0 });
+        object went_2 = null; went_2 = (truthy(not(get(s_0, "stepped"))) ? (object) "" : (object) ((truthy(gt(elem(get(call(get(w_0, "geometry"), "V", new object[] { get(s_0, "moved_along") }), "components"), 0.0), 0.0)) ? (object) "steps right" : (object) "steps left")));
+        set(now_2, "says", (truthy(m_empty(went_2)) ? (object) emitted_2 : (object) ((truthy(m_empty(emitted_2)) ? (object) went_2 : (object) "" + str(went_2) + ", " + str(emitted_2) + ""))));
+        return now_2;
+        return null;
+      })));
       return null;
     });
     c.getter("expansion", (self, a1) => {
@@ -18740,21 +19772,20 @@ public static class C_G {
         object setup_2 = arg(a3, 0);
         object sun_2 = null; sun_2 = make("Body", new object[] { kw("x", 0.0), kw("y", 0.0), kw("mx", invoke(pulse_0, new object[] { 0.0 })), kw("ways", invoke(ways_0, new object[] { 0.0 })) });
         set(sun_2, "tag", 1.0);
-        object out__2 = null; out__2 = list(sun_2);
-        for (double i3 = 0; i3 < num(len(PLANETS_0)); i3++) {
-          object k_3 = i3;
-          object i_3 = null; i_3 = elem(PLANETS_0, k_3);
-          object b__3 = null; b__3 = make("Body", new object[] { kw("x", invoke(cells_0, new object[] { mul(elem(AX_0, i_3), (add(1.0, elem(EC_0, i_3)))) })), kw("y", 0.0), kw("mx", invoke(pulse_0, new object[] { i_3 })), kw("ways", invoke(ways_0, new object[] { i_3 })) });
-          set(b__3, "tag", add(2.0, k_3));
-          set(b__3, "moves", true);
-          object v_3 = null; v_3 = (truthy((truthy(gt(len(get(setup_2, "found")), k_3)) && truthy(call(K("Fmt"), "finite", new object[] { elem(elem(get(setup_2, "found"), k_3), 1.0) })))) ? (object) elem(elem(get(setup_2, "found"), k_3), 1.0) : (object) 0.0);
-          set(b__3, "py", sub(0.0, mul(mul(v_3, invoke(pulse_0, new object[] { i_3 })), invoke(ways_0, new object[] { i_3 }))));
-          set(b__3, "launch", "orbit");
-          set(b__3, "ecc", elem(EC_0, i_3));
-          set(b__3, "py", sub(0.0, 1.0));
-          m_push(out__2, b__3);
-        };
-        return out__2;
+        return m_concat(list(sun_2), m_map(rng(len(PLANETS_0)), new Fn((a5) => {
+          object k_4 = arg(a5, 0);
+          object i_4 = null; i_4 = elem(PLANETS_0, k_4);
+          object b__4 = null; b__4 = make("Body", new object[] { kw("x", invoke(cells_0, new object[] { mul(elem(AX_0, i_4), (add(1.0, elem(EC_0, i_4)))) })), kw("y", 0.0), kw("mx", invoke(pulse_0, new object[] { i_4 })), kw("ways", invoke(ways_0, new object[] { i_4 })) });
+          set(b__4, "tag", add(2.0, k_4));
+          set(b__4, "moves", true);
+          object v_4 = null; v_4 = (truthy((truthy(gt(len(get(setup_2, "found")), k_4)) && truthy(call(K("Fmt"), "finite", new object[] { elem(elem(get(setup_2, "found"), k_4), 1.0) })))) ? (object) elem(elem(get(setup_2, "found"), k_4), 1.0) : (object) 0.0);
+          set(b__4, "py", sub(0.0, mul(mul(v_4, invoke(pulse_0, new object[] { i_4 })), invoke(ways_0, new object[] { i_4 }))));
+          set(b__4, "launch", "orbit");
+          set(b__4, "ecc", elem(EC_0, i_4));
+          set(b__4, "py", sub(0.0, 1.0));
+          return b__4;
+          return null;
+        })));
         return null;
       })) });
       object BURN_0 = null; BURN_0 = mul(2.0, (add(VIEW_0, MARGIN_0)));

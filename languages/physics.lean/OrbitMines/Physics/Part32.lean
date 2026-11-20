@@ -35,19 +35,13 @@ ray_impl_field "shown" : String := do
 ray_impl_field "simple" : Expr := do
   return ωnull
 ray_impl_static "num" (n_0 : Float) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("num" : String)))
-  (ωsetter (← e_0.get) "value") (← n_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("num" : String), «value» := (← n_0.get)))
   return ωnull
 ray_impl_static "sym" (name_0 : String) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("sym" : String)))
-  (ωsetter (← e_0.get) "label") (← name_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("sym" : String), «label» := (← name_0.get)))
   return ωnull
 ray_impl_static "field" (name_0 : String) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("field" : String)))
-  (ωsetter (← e_0.get) "label") (← name_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("field" : String), «label» := (← name_0.get)))
   return ωnull
 ray_impl_static "add" (xs_0 : (RList Expr)) : Expr := do
   if true then return (← call! (← cls% Expr) "flatten" (("add" : String), (← xs_0.get)))
@@ -56,58 +50,34 @@ ray_impl_static "mul" (xs_0 : (RList Expr)) : Expr := do
   if true then return (← call! (← cls% Expr) "flatten" (("mul" : String), (← xs_0.get)))
   return ωnull
 ray_impl_static "to_power" (base_0 : Expr) (by__0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("pow" : String)))
-  (ωsetter (← e_0.get) "base") (← base_0.get)
-  (ωsetter (← e_0.get) "power") (← by__0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("pow" : String), «base» := (← base_0.get), «power» := (← by__0.get)))
   return ωnull
 ray_impl_static "pown" (base_0 : Expr) (by__0 : Float) : Expr := do
   if true then return (← call! (← cls% Expr) "to_power" ((← base_0.get), (← call! (← cls% Expr) "num" ((← by__0.get)))))
   return ωnull
 ray_impl_static "grad" (x_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("grad" : String)))
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("grad" : String), «base» := (← x_0.get)))
   return ωnull
 ray_impl_static "log" (x_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("log" : String)))
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("log" : String), «base» := (← x_0.get)))
   return ωnull
 ray_impl_static "exp" (x_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("exp" : String)))
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("exp" : String), «base» := (← x_0.get)))
   return ωnull
 ray_impl_static "choose" (n_0 : Expr) (k_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("choose" : String)))
-  (ωsetter (← e_0.get) "first_") (← n_0.get)
-  (ωsetter (← e_0.get) "second_") (← k_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("choose" : String), «first_» := (← n_0.get), «second_» := (← k_0.get)))
   return ωnull
 ray_impl_static "gamma_inc" (s_0 : Expr) (x_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("gammaInc" : String)))
-  (ωsetter (← e_0.get) "first_") (← s_0.get)
-  (ωsetter (← e_0.get) "second_") (← x_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("gammaInc" : String), «first_» := (← s_0.get), «second_» := (← x_0.get)))
   return ωnull
 ray_impl_static "root" (x_0 : Expr) (name_0 : String) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("root" : String)))
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  (ωsetter (← e_0.get) "bound") (← name_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("root" : String), «base» := (← x_0.get), «bound» := (← name_0.get)))
   return ωnull
 ray_impl_static "limit" (x_0 : Expr) (name_0 : String) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("limit" : String)))
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  (ωsetter (← e_0.get) "bound") (← name_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("limit" : String), «base» := (← x_0.get), «bound» := (← name_0.get)))
   return ωnull
 ray_impl_static "call" (name_0 : String) (x_0 : Expr) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := ("call" : String)))
-  (ωsetter (← e_0.get) "label") (← name_0.get)
-  (ωsetter (← e_0.get) "base") (← x_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := ("call" : String), «label» := (← name_0.get), «base» := (← x_0.get)))
   return ωnull
 ray_impl_static "neg" (x_0 : Expr) : Expr := do
   if true then return (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← ωneg (1 : Float)))), (← x_0.get)])))
@@ -136,28 +106,27 @@ ray_impl_getter "is_one" : Bool := do
 ray_impl_getter "named" : Bool := do
   if true then return (← ωorV (← ωeqv (← ωget self "kind") ("sym" : String)) (do pure (← ωeqv (← ωget self "kind") ("field" : String))))
   return ωnull
+ray_impl_getter "subtrees" : (RList Expr) := do
+  if ωtruthy (← ωorV (← ωeqv (← ωget self "kind") ("add" : String)) (do pure (← ωeqv (← ωget self "kind") ("mul" : String)))) then
+    if true then return (← ωget self "of")
+    pure ()
+  if ωtruthy (← ωeqv (← ωget self "kind") ("pow" : String)) then
+    if true then return (← ωlst #[(← ωget self "base"), (← ωget self "power")])
+    pure ()
+  if ωtruthy (← ωorV (← ωeqv (← ωget self "kind") ("choose" : String)) (do pure (← ωeqv (← ωget self "kind") ("gammaInc" : String)))) then
+    if true then return (← ωlst #[(← ωget self "first_"), (← ωget self "second_")])
+    pure ()
+  if true then return (← ωtern (ωtruthy (ωisNull (← ωget self "base"))) (do pure (← ωlst #[])) (do pure (← ωlst #[(← ωget self "base")])))
+  return ωnull
 ray_impl_getter "by_num" : Float := do
   if true then return (← ωtern (ωtruthy (← ωeqv (← ωget (← ωget self "power") "kind") ("num" : String))) (do pure (← ωget (← ωget self "power") "value")) (do pure ωnull))
   return ωnull
 ray_impl_static "flatten" (kind_0 : String) (xs_0 : (RList Expr)) : Expr := do
-  let e_0 ← IO.mkRef (← new! Expr («kind» := (← kind_0.get)))
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← xs_0.get)) do
-    let x_1 ← IO.mkRef e1
-    if ωtruthy (← ωeqv (← ωget (← x_1.get) "kind") (← kind_0.get)) then
-      for e2 in (← ωitems (← ωget (← x_1.get) "of")) do
-        let y_2 ← IO.mkRef e2
-        (← dot! (← out_0.get) rpush ((← y_2.get))) |> ωsink
-        pure ()
-      Value.null |> ωsink
-      pure ()
-    else
-      (← dot! (← out_0.get) rpush ((← x_1.get))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  (ωsetter (← e_0.get) "of") (← out_0.get)
-  if true then return (← e_0.get)
+  if true then return (← new! Expr («kind» := (← kind_0.get), «of» := (← dot! (← xs_0.get) rreduce ((← ωlst #[]), (fn! [out_2 x_2] do
+    if true then return (← ωtern (ωtruthy (← ωeqv (← ωget (← x_2.get) "kind") (← kind_0.get))) (do pure (← dot! (← ωget (← x_2.get) "of") rreduce ((← out_2.get), (fn! [o_4 y_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← y_4.get)))
+      return ωnull)))) (do pure (← dot! (← out_2.get) rpush ((← x_2.get)))))
+    return ωnull)))))
   return ωnull
 ray_impl_static "is_integer" (x_0 : Float) : Bool := do
   if true then return (← ωeqv (← x_0.get) (← dot! (← x_0.get) rfloor ()))
@@ -189,12 +158,9 @@ ray_impl_static "lgamma" (z_0 : Float) : Float := do
     if true then return (← ωsub (← dot! ((← ωdiv (3.141592653589793 : Float) (← dot! ((← ωmul (3.141592653589793 : Float) (← z_0.get))) rsin ()))) rln ()) (← call! (← cls% Expr) "lgamma" ((← ωsub (1 : Float) (← z_0.get)))))
     pure ()
   (← ωwr z_0 (← ωsub (← z_0.get) (1 : Float))) |> ωsink
-  let x_0 ← IO.mkRef 0.99999999999980993
-  for i1 in [0:ωrangeN (← dot! (← g_0.get) rlength ())] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    (← ωwr x_0 (← ωadd (← x_0.get) (← ωdiv (← ωelem (← g_0.get) (← i_1.get)) ((← ωadd (← ωadd (← z_0.get) (← i_1.get)) (1 : Float)))))) |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let x_0 ← IO.mkRef (← dot! (← ωrrange (← dot! (← g_0.get) rlength ())) rreduce (0.99999999999980993, (fn! [x_2 i_2] do
+    if true then return (← ωadd (← x_2.get) (← ωdiv (← ωelem (← g_0.get) (← i_2.get)) ((← ωadd (← ωadd (← z_0.get) (← i_2.get)) (1 : Float)))))
+    return ωnull)))
   let t_0 ← IO.mkRef (← ωsub (← ωadd (← z_0.get) (← dot! (← g_0.get) rlength ())) 0.5)
   if true then return (← ωadd (← ωsub (← ωadd (← ωmul 0.5 (← dot! ((← ωmul (2 : Float) (3.141592653589793 : Float))) rln ())) (← ωmul ((← ωadd (← z_0.get) 0.5)) (← dot! (← t_0.get) rln ()))) (← t_0.get)) (← dot! (← x_0.get) rln ()))
   return ωnull
@@ -636,14 +602,11 @@ ray_impl_static "simplified" (e_0 : Expr) : Expr := do
         pure ()
       pure ()
     Value.null |> ωsink
-    let kept_0 ← IO.mkRef (← ωlst #[])
-    for e1 in (← ωitems (← ωget (← like_0.get) "values")) do
-      let v_1 ← IO.mkRef e1
-      if ωtruthy (← ωnev (← ωelem (← v_1.get) (1 : Float)) (0 : Float)) then
-        (← dot! (← kept_0.get) rpush ((← ωtern (ωtruthy (← ωeqv (← ωelem (← v_1.get) (1 : Float)) (1 : Float))) (do pure (← ωelem (← v_1.get) (0 : Float))) (do pure (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← ωelem (← v_1.get) (1 : Float)))), (← ωelem (← v_1.get) (0 : Float))]))))))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
+    let kept_0 ← IO.mkRef (← dot! (← dot! (← ωget (← like_0.get) "values") rfilter ((fn! [v_3] do
+      if true then return (← ωnev (← ωelem (← v_3.get) (1 : Float)) (0 : Float))
+      return ωnull))) rmap ((fn! [v_2] do
+      if true then return (← ωtern (ωtruthy (← ωeqv (← ωelem (← v_2.get) (1 : Float)) (1 : Float))) (do pure (← ωelem (← v_2.get) (0 : Float))) (do pure (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← ωelem (← v_2.get) (1 : Float)))), (← ωelem (← v_2.get) (0 : Float))])))))
+      return ωnull)))
     if ωtruthy (← dot! (← kept_0.get) rempty ()) then
       if true then return (← call! (← cls% Expr) "num" ((← c_0.get)))
       pure ()
@@ -738,25 +701,12 @@ ray_impl_static "shown_as" (e_0 : Expr) : String := do
             if true then return (← ωandV (← ωget (← y_2.get) "named") (do pure (← ωeqv (← ωget (← y_2.get) "label") (← ωget (← e_0.get) "bound"))))
             return ωnull)))))
           return ωnull)
-      let at__0 ← IO.mkRef ωnull
-      for i1 in [0:ωrangeN (← dot! (← ωget (← body_0.get) "of") rlength ())] do
-        let i_1 ← IO.mkRef (ωnatF i1)
-        if ωtruthy (← ωandV (ωisNull (← at__0.get)) (do pure (← app! (← is_minus_0.get) ((← ωelem (← ωget (← body_0.get) "of") (← i_1.get)))))) then
-          (← ωwr at__0 (← i_1.get)) |> ωsink
-          pure ()
-        pure ()
-      Value.null |> ωsink
-      if ωtruthy (← ωandV (!ωisNull (← at__0.get)) (do pure (← ωeqv (← dot! (← dot! (← ωget (← body_0.get) "of") rfilter ((fn! [x_2] do
+      if ωtruthy (← ωeqv (← dot! (← dot! (← ωget (← body_0.get) "of") rfilter ((fn! [x_2] do
         if true then return (← app! (← is_minus_0.get) ((← x_2.get)))
-        return ωnull))) rlength ()) (1 : Float)))) then
-        let rest_0 ← IO.mkRef (← ωlst #[])
-        for i1 in [0:ωrangeN (← dot! (← ωget (← body_0.get) "of") rlength ())] do
-          let i_1 ← IO.mkRef (ωnatF i1)
-          if ωtruthy (← ωnev (← i_1.get) (← at__0.get)) then
-            (← dot! (← rest_0.get) rpush ((← ωelem (← ωget (← body_0.get) "of") (← i_1.get)))) |> ωsink
-            pure ()
-          pure ()
-        Value.null |> ωsink
+        return ωnull))) rlength ()) (1 : Float)) then
+        let rest_0 ← IO.mkRef (← dot! (← ωget (← body_0.get) "of") rfilter ((fn! [x_2] do
+          if true then return (ωnotV (← app! (← is_minus_0.get) ((← x_2.get))))
+          return ωnull)))
         if true then return ("\\text{the } " ++ (← ωtoStr (← ωget (← e_0.get) "bound")) ++ " \\text{ where } " ++ (← ωtoStr (← ωget (← e_0.get) "bound")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωtern (ωtruthy (← ωeqv (← dot! (← rest_0.get) rlength ()) (1 : Float))) (do pure (← ωelem (← rest_0.get) (0 : Float))) (do pure (← call! (← cls% Expr) "add" ((← rest_0.get)))))))) ++ "" : String)
         pure ()
       pure ()
@@ -859,16 +809,12 @@ ray_impl_static "shown_as" (e_0 : Expr) : String := do
       return ωnull))) rconcat ((← dot! (← ωget (← e_0.get) "of") rfilter ((fn! [x_2] do
       if true then return (← app! (← negative_0.get) ((← x_2.get)))
       return ωnull)))))
-    let out_0 ← IO.mkRef ("" : String)
-    for i1 in [0:ωrangeN (← dot! (← ordered_0.get) rlength ())] do
-      let i_1 ← IO.mkRef (ωnatF i1)
-      let x_1 ← IO.mkRef (← ωelem (← ordered_0.get) (← i_1.get))
-      let t_1 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ωget (← x_1.get) "kind") ("root" : String))) (do pure ("\\paren{" ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← x_1.get)))) ++ "}" : String)) (do pure (← call! (← cls% Expr) "show" ((← x_1.get)))))
-      let piece_1 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← i_1.get) (0 : Float))) (do pure (← t_1.get)) (do pure ((← ωtern (ωtruthy (← dot! (← t_1.get) rstarts_with (("-" : String)))) (do pure (" - " ++ (← ωtoStr (← dot! (← t_1.get) rdrop ((1 : Float)))) ++ "" : String)) (do pure (" + " ++ (← ωtoStr (← t_1.get)) ++ "" : String))))))
-      (← ωwr out_0 ("" ++ (← ωtoStr (← out_0.get)) ++ "" ++ (← ωtoStr (← piece_1.get)) ++ "" : String)) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    if true then return (← out_0.get)
+    let shown_0 ← IO.mkRef (← dot! (← ordered_0.get) rmap ((fn! [x_2] do
+      if true then return (← ωtern (ωtruthy (← ωeqv (← ωget (← x_2.get) "kind") ("root" : String))) (do pure ("\\paren{" ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← x_2.get)))) ++ "}" : String)) (do pure (← call! (← cls% Expr) "show" ((← x_2.get)))))
+      return ωnull)))
+    if true then return (← dot! (← dot! (← ωrrange (← dot! (← shown_0.get) rlength ())) rmap ((fn! [i_2] do
+      if true then return (← ωtern (ωtruthy (← ωeqv (← i_2.get) (0 : Float))) (do pure (← ωelem (← shown_0.get) (← i_2.get))) (do pure ((← ωtern (ωtruthy (← dot! (← ωelem (← shown_0.get) (← i_2.get)) rstarts_with (("-" : String)))) (do pure (" - " ++ (← ωtoStr (← dot! (← ωelem (← shown_0.get) (← i_2.get)) rdrop ((1 : Float)))) ++ "" : String)) (do pure (" + " ++ (← ωtoStr (← ωelem (← shown_0.get) (← i_2.get))) ++ "" : String))))))
+      return ωnull))) rjoin (("" : String)))
     pure ()
   if true then return ("" : String)
   return ωnull
@@ -910,15 +856,11 @@ ray_impl_static "d" (e_0 : Expr) (wrt_0 : String) : Expr := do
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("mul" : String)) then
     if true then return (← call! (← cls% Expr) "add" ((← dot! (← ωrrange (← dot! (← ωget (← e_0.get) "of") rlength ())) rmap ((fn! [i_2] do
-      let others_2 ← IO.mkRef (← ωlst #[])
-      for i3 in [0:ωrangeN (← dot! (← ωget (← e_0.get) "of") rlength ())] do
-        let j_3 ← IO.mkRef (ωnatF i3)
-        if ωtruthy (← ωnev (← j_3.get) (← i_2.get)) then
-          (← dot! (← others_2.get) rpush ((← ωelem (← ωget (← e_0.get) "of") (← j_3.get)))) |> ωsink
-          pure ()
-        pure ()
-      Value.null |> ωsink
-      if true then return (← call! (← cls% Expr) "mul" ((← dot! (← ωlst #[(← call! (← cls% Expr) "d" ((← ωelem (← ωget (← e_0.get) "of") (← i_2.get)), (← wrt_0.get)))]) rconcat ((← others_2.get)))))
+      if true then return (← call! (← cls% Expr) "mul" ((← dot! (← ωlst #[(← call! (← cls% Expr) "d" ((← ωelem (← ωget (← e_0.get) "of") (← i_2.get)), (← wrt_0.get)))]) rconcat ((← dot! (← dot! (← ωrrange (← dot! (← ωget (← e_0.get) "of") rlength ())) rfilter ((fn! [j_5] do
+        if true then return (← ωnev (← j_5.get) (← i_2.get))
+        return ωnull))) rmap ((fn! [j_4] do
+        if true then return (← ωelem (← ωget (← e_0.get) "of") (← j_4.get))
+        return ωnull)))))))
       return ωnull)))))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("pow" : String)) then
@@ -1202,22 +1144,14 @@ ray_impl_static "numeric" (e_0 : Expr) (at__0 : object) : Float := do
     if true then return (← ωtern (ωtruthy (ωisNull (← v_0.get))) (do pure (← ωget (← cls% Expr) "NAN")) (do pure (← v_0.get)))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("add" : String)) then
-    let total__0 ← IO.mkRef (0 : Float)
-    for e1 in (← ωitems (← ωget (← e_0.get) "of")) do
-      let x_1 ← IO.mkRef e1
-      (← ωwr total__0 (← ωadd (← total__0.get) (← call! (← cls% Expr) "numeric" ((← x_1.get), (← at__0.get))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    if true then return (← total__0.get)
+    if true then return (← dot! (← ωget (← e_0.get) "of") rreduce ((0 : Float), (fn! [total__2 x_2] do
+      if true then return (← ωadd (← total__2.get) (← call! (← cls% Expr) "numeric" ((← x_2.get), (← at__0.get))))
+      return ωnull)))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("mul" : String)) then
-    let prod_0 ← IO.mkRef (1 : Float)
-    for e1 in (← ωitems (← ωget (← e_0.get) "of")) do
-      let x_1 ← IO.mkRef e1
-      (← ωwr prod_0 (← ωmul (← prod_0.get) (← call! (← cls% Expr) "numeric" ((← x_1.get), (← at__0.get))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    if true then return (← prod_0.get)
+    if true then return (← dot! (← ωget (← e_0.get) "of") rreduce ((1 : Float), (fn! [prod_2 x_2] do
+      if true then return (← ωmul (← prod_2.get) (← call! (← cls% Expr) "numeric" ((← x_2.get), (← at__0.get))))
+      return ωnull)))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("pow" : String)) then
     if true then return (← ωpow (← call! (← cls% Expr) "numeric" ((← ωget (← e_0.get) "base"), (← at__0.get))) (← call! (← cls% Expr) "numeric" ((← ωget (← e_0.get) "power"), (← at__0.get))))
@@ -1291,22 +1225,7 @@ ray_impl_static "solving" (of_0 : Expr) (name_0 : String) (env_0 : object) : Flo
   if ωtruthy (← ωandV (← ωandV (ωnotV (← call! (← cls% Expr) "finite" ((← app! (← f_0.get) (0.5))))) (do pure (ωnotV (← call! (← cls% Expr) "finite" ((← app! (← f_0.get) ((1 : Float)))))))) (do pure (ωnotV (← call! (← cls% Expr) "finite" ((← app! (← f_0.get) (0.1))))))) then
     if true then return (← ωget (← cls% Expr) "NAN")
     pure ()
-  let points_0 ← IO.mkRef (← ωlst #[])
-  let i_0 ← IO.mkRef (1 : Float)
-  while ωtruthy (← ωle (← i_0.get) (120 : Float)) do
-    (← dot! (← points_0.get) rpush ((← ωdiv (← i_0.get) (120 : Float)))) |> ωsink
-    (← ωwr i_0 (← ωadd (← i_0.get) (1 : Float))) |> ωsink
-    pure ()
-  let ex_0 ← IO.mkRef (0 : Float)
-  while ωtruthy (← ωle (← ex_0.get) (24 : Float)) do
-    let k_0 ← IO.mkRef (1 : Float)
-    while ωtruthy (← ωlt (← k_0.get) (8 : Float)) do
-      (← dot! (← points_0.get) rpush ((← ωmul ((← ωpow (10 : Float) ((← ωsub (← ex_0.get) (12 : Float))))) ((← ωadd (1 : Float) (← ωdiv (← k_0.get) (2 : Float))))))) |> ωsink
-      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-      pure ()
-    (← ωwr ex_0 (← ωadd (← ex_0.get) (1 : Float))) |> ωsink
-    pure ()
-  (← ωwr points_0 (← call! (← cls% Expr) "sorted" ((← points_0.get)))) |> ωsink
+  let points_0 ← IO.mkRef (← ωget (← cls% Expr) "bracket_points")
   let lo_0 ← IO.mkRef ωnull
   let hi_0 ← IO.mkRef ωnull
   let px_0 ← IO.mkRef (← ωelem (← points_0.get) (0 : Float))
@@ -1349,18 +1268,21 @@ ray_impl_static "solving" (of_0 : Expr) (name_0 : String) (env_0 : object) : Flo
     pure ()
   if true then return (← ωdiv ((← ωadd (← lo_0.get) (← hi_0.get))) (2 : Float))
   return ωnull
+ray_impl_static "bracket_points" : (RList Float) := do
+  let even_0 ← IO.mkRef (← dot! (← ωrrange (120 : Float)) rmap ((fn! [i_2] do
+    if true then return (← ωdiv ((← ωadd (← i_2.get) (1 : Float))) (120 : Float))
+    return ωnull)))
+  let decades_0 ← IO.mkRef (← dot! (← ωrrange (25 : Float)) rreduce ((← ωlst #[]), (fn! [out_2 ex_2] do
+    if true then return (← dot! (← ωrrange (7 : Float)) rreduce ((← out_2.get), (fn! [o_4 k_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← ωmul ((← ωpow (10 : Float) ((← ωsub (← ex_2.get) (12 : Float))))) ((← ωadd (1 : Float) (← ωdiv ((← ωadd (← k_4.get) (1 : Float))) (2 : Float)))))))
+      return ωnull)))
+    return ωnull)))
+  if true then return (← call! (← cls% Expr) "sorted" ((← dot! (← even_0.get) rconcat ((← decades_0.get)))))
+  return ωnull
 ray_impl_static "sorted" (xs_0 : (RList Float)) : (RList Float) := do
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← xs_0.get)) do
-    let x_1 ← IO.mkRef e1
-    let i_1 ← IO.mkRef (0 : Float)
-    while ωtruthy (← ωandV (← ωlt (← i_1.get) (← dot! (← out_0.get) rlength ())) (do pure (← ωle (← ωelem (← out_0.get) (← i_1.get)) (← x_1.get)))) do
-      (← ωwr i_1 (← ωadd (← i_1.get) (1 : Float))) |> ωsink
-      pure ()
-    (← ωwr out_0 (← dot! (← dot! (← dot! (← out_0.get) rtake ((← i_1.get))) rconcat ((← ωlst #[(← x_1.get)]))) rconcat ((← dot! (← out_0.get) rdrop ((← i_1.get)))))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← xs_0.get) rsorted_by ((fn! [x_2] do
+    if true then return (← x_2.get)
+    return ωnull)))
   return ωnull
 ray_impl_static "integrate" (e_0 : Expr) (of_0 : String) : Expr := do
   let s_0 ← IO.mkRef (← call! (← cls% Expr) "spread" ((← e_0.get)))
@@ -1478,28 +1400,14 @@ ray_impl_static "factored" (e_0 : Expr) : Expr := do
       let ok_1 ← IO.mkRef true
       let k_1 ← IO.mkRef (← ωelem (← head__1.get) (1 : Float))
       if ωtruthy (!ωisNull (← nums_1.get)) then
-        let lo_1 ← IO.mkRef (← ωelem (← nums_1.get) (0 : Float))
-        let hi_1 ← IO.mkRef (← ωelem (← nums_1.get) (0 : Float))
-        for e2 in (← ωitems (← nums_1.get)) do
-          let v_2 ← IO.mkRef e2
-          if ωtruthy (← ωlt (← v_2.get) (← lo_1.get)) then
-            (← ωwr lo_1 (← v_2.get)) |> ωsink
-            pure ()
-          if ωtruthy (← ωgt (← v_2.get) (← hi_1.get)) then
-            (← ωwr hi_1 (← v_2.get)) |> ωsink
-            pure ()
-          pure ()
-        Value.null |> ωsink
-        (← ωwr ok_1 (← ωeqv ((← ωle (← lo_1.get) (0 : Float))) ((← ωle (← hi_1.get) (0 : Float))))) |> ωsink
-        let least_1 ← IO.mkRef (← ωelem (← nums_1.get) (0 : Float))
-        for e2 in (← ωitems (← nums_1.get)) do
-          let v_2 ← IO.mkRef e2
-          if ωtruthy (← ωlt (← dot! (← v_2.get) rabs ()) (← dot! (← least_1.get) rabs ())) then
-            (← ωwr least_1 (← v_2.get)) |> ωsink
-            pure ()
-          pure ()
-        Value.null |> ωsink
-        (← ωwr k_1 (← call! (← cls% Expr) "num" ((← least_1.get)))) |> ωsink
+        (← ωwr ok_1 (← ωorV (← dot! (← nums_1.get) revery ((fn! [v_3] do
+          if true then return (← ωle (← v_3.get) (0 : Float))
+          return ωnull))) (do pure (← dot! (← nums_1.get) revery ((fn! [v_3] do
+          if true then return (← ωgt (← v_3.get) (0 : Float))
+          return ωnull)))))) |> ωsink
+        (← ωwr k_1 (← call! (← cls% Expr) "num" ((← dot! (← nums_1.get) rreduce ((← ωelem (← nums_1.get) (0 : Float)), (fn! [least_3 v_3] do
+          if true then return (← ωtern (ωtruthy (← ωlt (← dot! (← v_3.get) rabs ()) (← dot! (← least_3.get) rabs ()))) (do pure (← v_3.get)) (do pure (← least_3.get)))
+          return ωnull)))))) |> ωsink
         pure ()
       if ωtruthy (← ok_1.get) then
         (← dot! (← common_0.get) rpush ((← ωlst #[(← ωelem (← head__1.get) (0 : Float)), (← k_1.get)]))) |> ωsink
@@ -1734,26 +1642,15 @@ ray_impl_static "expand" (e_0 : Expr) : Expr := do
       return ωnull)))))))
     pure ()
   if ωtruthy (← ωeqv (← ωget (← t_0.get) "kind") ("mul" : String)) then
-    let parts_0 ← IO.mkRef (← dot! (← ωget (← t_0.get) "of") rmap ((fn! [x_2] do
-      if true then return (← call! (← cls% Expr) "expand" ((← x_2.get)))
+    let out_0 ← IO.mkRef (← dot! (← dot! (← ωget (← t_0.get) "of") rmap ((fn! [x_3] do
+      if true then return (← call! (← cls% Expr) "expand" ((← x_3.get)))
+      return ωnull))) rreduce ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float)))]), (fn! [out_2 p_2] do
+      if true then return (← dot! (← out_2.get) rreduce ((← ωlst #[]), (fn! [next_4 a_4] do
+        if true then return (← dot! ((← ωtern (ωtruthy (← ωeqv (← ωget (← p_2.get) "kind") ("add" : String))) (do pure (← ωget (← p_2.get) "of")) (do pure (← ωlst #[(← p_2.get)])))) rreduce ((← next_4.get), (fn! [n_6 b_6] do
+          if true then return (← dot! (← n_6.get) rpush ((← call! (← cls% Expr) "mul" ((← ωlst #[(← a_4.get), (← b_6.get)])))))
+          return ωnull)))
+        return ωnull)))
       return ωnull)))
-    let out_0 ← IO.mkRef (← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float)))])
-    for e1 in (← ωitems (← parts_0.get)) do
-      let p_1 ← IO.mkRef e1
-      let terms_1 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ωget (← p_1.get) "kind") ("add" : String))) (do pure (← ωget (← p_1.get) "of")) (do pure (← ωlst #[(← p_1.get)])))
-      let next_1 ← IO.mkRef (← ωlst #[])
-      for e2 in (← ωitems (← out_0.get)) do
-        let a_2 ← IO.mkRef e2
-        for e3 in (← ωitems (← terms_1.get)) do
-          let b_3 ← IO.mkRef e3
-          (← dot! (← next_1.get) rpush ((← call! (← cls% Expr) "mul" ((← ωlst #[(← a_2.get), (← b_3.get)]))))) |> ωsink
-          pure ()
-        Value.null |> ωsink
-        pure ()
-      Value.null |> ωsink
-      (← ωwr out_0 (← next_1.get)) |> ωsink
-      pure ()
-    Value.null |> ωsink
     if true then return (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "add" ((← out_0.get)))))
     pure ()
   if true then return (← t_0.get)

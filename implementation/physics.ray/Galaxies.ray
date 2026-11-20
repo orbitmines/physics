@@ -48,29 +48,16 @@ Galaxies := class {
 
   static bit (mask: N, at: N): boolean => ((mask / 2 ^ at).floor % 2) == 1
   static tint_of (mask: N): Real[] => {
-    return Galaxies.SEVERAL if mask == 0
-    r := 0
-    g := 0
-    bl := 0
-    n := 0
-    Array.range(Galaxies.FREEDOMS.length).for(i => {
-      if Galaxies.bit(mask, i) {
-        r = r + Galaxies.TINTS[i][0]
-        g = g + Galaxies.TINTS[i][1]
-        bl = bl + Galaxies.TINTS[i][2]
-        n = n + 1
-      }
-    })
-    n > 0 ? [r / n, g / n, bl / n] : Galaxies.SEVERAL
+    /* the freedoms' own tints, mixed evenly */
+    on := Galaxies.freedoms_in(mask)
+    mask == 0 | on.empty ? Galaxies.SEVERAL : [0, 1, 2].map(c => on.map(i => Galaxies.TINTS[i][c]).sum / on.length)
   }
   /* the names the space being drawn uses, set as a panel starts (a picture draws one measurement at a time) */
   static NAMES_NOW = ["mass", "face", "moving", "spread"]
   static name_of (mask: N): String => {
     /* the fewest freedoms that reach a cell; nought is the source as it starts - one mass, its own cell, at rest - the law's own line */
     return "the source as it starts" if mask == 0
-    parts := []
-    Array.range(Galaxies.NAMES_NOW.length).for(i => { parts.push(Galaxies.NAMES_NOW[i]) if Galaxies.bit(mask, i) })
-    joined := parts.join(" + ")
+    joined := Array.range(Galaxies.NAMES_NOW.length).filter(i => Galaxies.bit(mask, i)).map(i => Galaxies.NAMES_NOW[i]).join(" + ")
     "needs {joined}"
   }
   static rgb (c: Real[]): String => {
@@ -192,6 +179,34 @@ Galaxies := class {
   }
 
   /* a label laid along the line it names, at the angle the line has on screen: the position off `at`, the lean off `leans` */
+  /* a log-log panel's decades: a faint line and a label at every power of ten across `box`, along x then along y */
+  static decades (s: Surface, X: Program, Y: Program, box: Real[], range: Real[], under: Real) => {
+    Array.range(range[1] - range[0] + 1).map(i => range[0] + i).for(l => {
+      s.begin_path
+      s.move_to(X(l), box[1])
+      s.line_to(X(l), box[3])
+      s.stroke
+      s.fill_text("10^{l}", X(l), box[3] + under)
+    })
+    s.text_align("right")
+    Array.range(range[3] - range[2] + 1).map(i => range[2] + i).for(l => {
+      s.begin_path
+      s.move_to(box[0], Y(l))
+      s.line_to(box[2], Y(l))
+      s.stroke
+      s.fill_text("10^{l}", box[0] - 8, Y(l) + 4)
+    })
+  }
+  /* y = f(x) traced across [low, high] in steps of `step`, as one stroke */
+  static curve (s: Surface, X: Program, Y: Program, f: Program, low: Real, high: Real, step: Real) => {
+    s.begin_path
+    l := low
+    while l <= high + 0.000001 {
+      if l == low { s.move_to(X(l), Y(f(l))) } else { s.line_to(X(l), Y(f(l))) }
+      l = l + step
+    }
+    s.stroke
+  }
   static along (s: Surface, at: Program, t: Real, text: String, colour: String, lift: Real, leans: Program) => {
     p0 := leans(t - 0.01)
     p1 := leans(t + 0.01)
@@ -280,34 +295,13 @@ Galaxies := class {
     s.line_width(1)
     s.fill_style(Galaxies.FAINT)
     s.text_align("center")
-    l := XMIN
-    while l <= XMAX {
-      s.begin_path
-      s.move_to(X(l), by0)
-      s.line_to(X(l), by1)
-      s.stroke
-      s.fill_text("10^{l}", X(l), by1 + 17)
-      l = l + 1
-    }
-    s.text_align("right")
-    l = YMIN
-    while l <= YMAX {
-      s.begin_path
-      s.move_to(bx0, Y(l))
-      s.line_to(bx1, Y(l))
-      s.stroke
-      s.fill_text("10^{l}", bx0 - 8, Y(l) + 4)
-      l = l + 1
-    }
+    Galaxies.decades(s, X, Y, [bx0, by0, bx1, by1], [XMIN, XMAX, YMIN, YMAX], 17)
 
     /* Tully-Fisher: each galaxy is a line parallel to the deep asymptote, lifted by half its own scale's offset; fading out where the relation stops applying */
-    implied := []
-    Sparc.btfr.for(g => {
-      M := g.mass
+    implied := Expr.sorted(Sparc.btfr.filter(g => g.mass > 0 & g.vf > 0).map(g => {
       v := g.vf * 1000
-      implied.push(Fmt.log10(v * v * v * v / (Sparc.G_NEWTON * M) / Galaxies.A0_DATA)) if M > 0 & v > 0
-    })
-    implied = Expr.sorted(implied)
+      Fmt.log10(v * v * v * v / (Sparc.G_NEWTON * g.mass) / Galaxies.A0_DATA)
+    }))
     med := implied.empty ? Real.NAN : implied[(implied.length / 2).floor]
     s.line_width(1)
     implied.for(o => {
@@ -471,13 +465,7 @@ Galaxies := class {
     s.stroke_style(Galaxies.BTFRC)
     s.line_width(1.5)
     s.dash([2, 4])
-    s.begin_path
-    l = XMIN
-    while l <= XMAX + 0.000001 {
-      if l == XMIN { s.move_to(X(l), Y(0.5 * l)) } else { s.line_to(X(l), Y(0.5 * l)) }
-      l = l + 0.05
-    }
-    s.stroke
+    Galaxies.curve(s, X, Y, l => 0.5 * l, XMIN, XMAX, 0.05)
     s.dash([])
 
     /*
@@ -488,13 +476,7 @@ Galaxies := class {
     s.line_width(1.2)
     s.alpha(0.4)
     s.dash([5, 4])
-    s.begin_path
-    l = XMIN
-    while l <= XMAX + 0.000001 {
-      if l == XMIN { s.move_to(X(l), Y(law_drawn(l))) } else { s.line_to(X(l), Y(law_drawn(l))) }
-      l = l + 0.02
-    }
-    s.stroke
+    Galaxies.curve(s, X, Y, l => law_drawn(l), XMIN, XMAX, 0.02)
     s.dash([])
     s.alpha(1)
 
@@ -607,9 +589,7 @@ Galaxies := class {
         }
       })
     }
-    total := 0
-    masks.for(m => { total = total + tally[m] })
-    total = 1 if total == 0
+    total := Fmt.max(masks.reduce(0, (t, m) => t + tally[m]), 1)
     counts := Expr.sorted(masks.map(m => 0 - tally[m]))
     ranked := []
     counts.for(cn => { masks.for(m => { ranked.push(m) if tally[m] == 0 - cn & !ranked.contains(m) }) })
@@ -675,11 +655,9 @@ Galaxies := class {
     s.text_align("left")
   }
   /* one bit set: a single freedom */
-  static single (m: N): boolean => {
-    n := 0
-    Array.range(Galaxies.FREEDOMS.length).for(i => { n = n + 1 if Galaxies.bit(m, i) })
-    n == 1
-  }
+  static single (m: N): boolean => Galaxies.freedoms_in(m).length == 1
+  /* which freedoms a mask has set */
+  static freedoms_in (m: N): N[] => Array.range(Galaxies.FREEDOMS.length).filter(i => Galaxies.bit(m, i))
 
   /* H_0, borrowed: the middle of Planck's 67.4 and SH0ES' 73.0 km/s/Mpc - the one number from outside that puts the model's a_0 in m/s^2 */
   static H0 = 70
@@ -814,13 +792,12 @@ Galaxies := class {
     home := solved.header["theory_deg"] ?? 18
     rest := 0
     Array.range(n).for(k => { rest = k if (ds[k] - home).abs < (ds[rest] - home).abs })
-    out := []
-    Array.range(n).for(k => { out.push(n - 1 - k) })
-    Array.range(Galaxies.SETTLE).for(k => {
+    /* down every lattice, then eased back up to the one the theory stands on */
+    down := Array.range(n).map(k => n - 1 - k)
+    down.concat(Array.range(Galaxies.SETTLE).map(k => {
       f := (k + 1) / Galaxies.SETTLE
-      out.push((rest * f * f * (3 - 2 * f)).round)
-    })
-    out
+      (rest * f * f * (3 - 2 * f)).round
+    }))
   }
   static of (id: String, what: String, title: String): Picture => {
     solved := Measured.of("{id}.solved")
@@ -854,8 +831,7 @@ Galaxies := class {
       g := C["galaxy"][i]
       counts["{g}"] = (counts["{g}"] ?? 0) + 1 if Sparc.usable(g) & C["R"][i] > 0 & C["Vobs"][i] > 0
     })
-    ids := []
-    Array.range(Sparc.names.length).for(g => { ids.push(g) if (counts["{g}"] ?? 0) >= 12 })
+    ids := Array.range(Sparc.names.length).filter(g => (counts["{g}"] ?? 0) >= 12)
     /* the widest span of speeds the sample has, taken evenly: the slowest to the fastest */
     tops := { }
     Array.range(t.rows).for(i => {
@@ -863,9 +839,7 @@ Galaxies := class {
       tops["{g}"] = Fmt.max(tops["{g}"] ?? 0, C["Vobs"][i])
     })
     sorted := ids.sorted_by(g => tops["{g}"])
-    out := []
-    Array.range(want).for(k => { out.push(sorted[((sorted.length - 1) * k / (want - 1)).round]) })
-    out
+    Array.range(want).map(k => sorted[((sorted.length - 1) * k / (want - 1)).round])
   }
   /*
    * WHAT THE SIMULATION SAID (Simulation.ray, `npx ray measure galaxy.simulated`), read back: every measured radius of
@@ -884,10 +858,7 @@ Galaxies := class {
   }
   /* the rows of one galaxy in a measurement whose first column names the galaxy */
   static rows_in (m: Measured, g: N): N[] => {
-    col := m.columns["galaxy"]
-    out := []
-    Array.range(m.rows).for(i => { out.push(i) if col[i] == g })
-    out
+    Array.range(m.rows).filter(i => m.columns["galaxy"][i] == g)
   }
   /* how far a galaxy's run is off what was measured, as an rms in dex - at SPARC's own freedoms, or at the fitted */
   static off_of (g: N, fitted: boolean): Real => {
@@ -1412,25 +1383,7 @@ Galaxies := class {
     s.fill_style(Galaxies.FAINT)
     s.font("11px ui-monospace, monospace")
     s.text_align("center")
-    l := XMIN
-    while l <= XMAX {
-      s.begin_path
-      s.move_to(X(l), by0)
-      s.line_to(X(l), by1)
-      s.stroke
-      s.fill_text("10^{l}", X(l), by1 + 16)
-      l = l + 1
-    }
-    s.text_align("right")
-    l = YMIN
-    while l <= YMAX {
-      s.begin_path
-      s.move_to(bx0, Y(l))
-      s.line_to(bx1, Y(l))
-      s.stroke
-      s.fill_text("10^{l}", bx0 - 8, Y(l) + 4)
-      l = l + 1
-    }
+    Galaxies.decades(s, X, Y, [bx0, by0, bx1, by1], [XMIN, XMAX, YMIN, YMAX], 16)
     lg := (v: Real): Real => Fmt.log10(v / Galaxies.A0_DATA)
     spread0 := []
     spread1 := []
@@ -1462,15 +1415,7 @@ Galaxies := class {
     a0 := sim.header["a0"]
     s.stroke_style(Galaxies.MODEL)
     s.line_width(2)
-    s.begin_path
-    l = XMIN
-    while l <= XMAX + 0.000001 {
-      gN := 10 ^ l * Galaxies.A0_DATA
-      y := lg(Law.boost(gN, a0))
-      if l == XMIN { s.move_to(X(l), Y(y)) } else { s.line_to(X(l), Y(y)) }
-      l = l + 0.02
-    }
-    s.stroke
+    Galaxies.curve(s, X, Y, l => lg(Law.boost(10 ^ l * Galaxies.A0_DATA, a0)), XMIN, XMAX, 0.02)
     s.stroke_style(Galaxies.NEWT)
     s.dash([6, 5])
     s.begin_path

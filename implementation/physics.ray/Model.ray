@@ -55,14 +55,11 @@ Model := class < theory: Theory {
     Model.walk_names(e, out)
     out
   }
+  /* a name, or a call written as the function it calls, before what is under it */
   static walk_names (e: Expr, out: String[]) => {
-    k := e.kind
-    if k == "sym" | k == "field" { out.push(e.label) if !out.contains(e.label) }
-    elsif k == "add" | k == "mul" { e.of.for(x => { Model.walk_names(x, out) }) }
-    elsif k == "pow" { Model.walk_names(e.base, out); Model.walk_names(e.power, out) }
-    elsif k == "grad" | k == "log" | k == "exp" | k == "root" | k == "limit" { Model.walk_names(e.base, out) }
-    elsif k == "choose" | k == "gammaInc" { Model.walk_names(e.first_, out); Model.walk_names(e.second_, out) }
-    elsif k == "call" { called := "{e.label}\\paren{{...}}"; out.push(called) if !out.contains(called); Model.walk_names(e.base, out) }
+    name := e.named ? e.label : (e.kind == "call" ? "{e.label}\\paren{{...}}" : None)
+    out.push(name) if name != None & !out.contains(name)
+    e.subtrees.for(x => { Model.walk_names(x, out) })
   }
   /* a name nobody bound is looked up in the store; anything in `env` is used as given; a genuine recursion is left standing as a root */
   resolved (e: Expr, env: {}, seen: String[]): Expr => {
@@ -311,19 +308,8 @@ Shaded := class {
   }
   /* the helpers every law's code stands on */
   static helpers (): String => "fn powi(b: f32, n: i32) -> f32 {{\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) {{ r = r * b; }}\n  if (n < 0) {{ return 1.0 / r; }}\n  return r;\n}}\nfn choose(n: f32, k: f32) -> f32 {{\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) {{ if (i < k) {{ r = r * (n - i) / (i + 1.0); i = i + 1.0; }} }}\n  return r;\n}}\nfn finite(v: f32) -> bool {{ return abs(v) < 1e30 && v == v; }}"
-  /* the grid of points a root is bracketed on, the same as Expr.solving's */
-  static points (): Real[] => {
-    points := []
-    i := 1
-    while i <= 120 { points.push(i / 120); i = i + 1 }
-    ex := 0
-    while ex <= 24 {
-      k := 1
-      while k < 8 { points.push((10 ^ (ex - 12)) * (1 + k / 2)); k = k + 1 }
-      ex = ex + 1
-    }
-    Expr.sorted(points)
-  }
+  /* the grid of points a root is bracketed on: Expr.solving's own */
+  static points (): Real[] => Expr.bracket_points
   /* `f` bracketed on the points and bisected: the root, or 1e30 where there is none */
   static solver (name: String, f: String): String => {
     pts := Shaded.points
@@ -514,25 +500,14 @@ Sweep := class < model: Model, how: String {
   }
   /* and written down */
   save (id: String, grid: Real[], need: Real[]) => {
-    x := []
-    y := []
-    p := []
-    by := []
-    Array.range(this.YS).for(gy => {
-      Array.range(this.XS).for(gx => {
-        x.push(this.X0 + gx * this.dx)
-        y.push(this.Y0 + gy * this.dy)
-        p.push(grid[gy * this.XS + gx])
-        by.push(need[gy * this.XS + gx])
-      })
-    })
-    most := 0
-    p.for(v => { most = v if v > most })
+    /* cell i is row (i / XS), column (i % XS) */
+    cells := Array.range(this.YS * this.XS)
     columns := { }
-    columns["x"] = x
-    columns["y"] = y
-    columns["p"] = p
-    columns["by"] = by
+    columns["x"] = cells.map(i => this.X0 + (i % this.XS) * this.dx)
+    columns["y"] = cells.map(i => this.Y0 + (i / this.XS).floor * this.dy)
+    columns["p"] = cells.map(i => grid[i])
+    columns["by"] = cells.map(i => need[i])
+    most := columns["p"].reduce(0, (m, v) => v > m ? v : m)
     extra := { }
     extra["a0"] = this.a0
     extra["arrangement"] = this.how
@@ -580,15 +555,7 @@ Sweep := class < model: Model, how: String {
   slot (n: String): Z => { i := this.names.index_of(n); i == None ? -1 : i }
   /* the fold record and what follows it, per radius, for the device: RS × [R, n_f, sigma_tr, L] */
   radii (): Real[] => {
-    out := []
-    Array.range(this.RS).for(k => {
-      e := this.env[k]
-      out.push(this.rad[k])
-      out.push(e["n_{{f}}"] ?? Real.NAN)
-      out.push(e["\\sigma_{{tr}}"] ?? Real.NAN)
-      out.push(e["L"] ?? Real.NAN)
-    })
-    out
+    Array.range(this.RS).reduce([], (out, k) => [this.rad[k], this.env[k]["n_{{f}}"] ?? Real.NAN, this.env[k]["\\sigma_{{tr}}"] ?? Real.NAN, this.env[k]["L"] ?? Real.NAN].reduce(out, (o, v) => o.push(v)))
   }
   /* the kernels: PROFILE, one thread per (mass, face) solving rho at every radius and averaging it; TRACK, one thread per point */
   kernel (): String => {

@@ -195,7 +195,7 @@ static void C_Medium(Cls& c) {
     return null;
   });
   c.getter("terms", [](Value self, const Args& a1) -> Value {
-    return get(get(get(self, S<"theory">()), S<"equation">()), S<"terms">());
+    return get(get(self, S<"theory">()), S<"terms_read">());
     return null;
   });
   c.field("meets", [](const Value& self) -> Value { return filt(get(self, S<"terms">()), fn([=](const Args& a2) -> Value {
@@ -398,18 +398,15 @@ static void C_Medium(Cls& c) {
   c.method("under", [](Value self, const Args& a1) -> Value {
     auto h_0 = cell(arg(a1, 0));
     auto half_0 = cell(); half_0->v = m_floor((div((sub(get(self, S<"K">()), 1.0)), 2.0)));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"K">())); i1 < n1; i1++) {
-      auto dy_1 = cell(i1);
-      for (double i2 = 0, n2 = num(get(self, S<"K">())); i2 < n2; i2++) {
-        auto dx_2 = cell(i2);
-        auto c__2 = cell(); c__2->v = call(self, S<"at">(), { add(sub(m_round(get(h_0->v, S<"x">())), half_0->v), dx_2->v), add(sub(m_round(get(h_0->v, S<"y">())), half_0->v), dy_1->v) });
-        if (truthy(ge(c__2->v, 0.0))) {
-          m_push(out_0->v, c__2->v);
-        }
-      };
-    };
-    return out_0->v;
+    return filt(m_map(rng(mul(get(self, S<"K">()), get(self, S<"K">()))), fn([=](const Args& a4) -> Value {
+      auto i_3 = cell(arg(a4, 0));
+      return call(self, S<"at">(), { add(sub(m_round(get(h_0->v, S<"x">())), half_0->v), mod(i_3->v, get(self, S<"K">()))), add(sub(m_round(get(h_0->v, S<"y">())), half_0->v), m_floor((div(i_3->v, get(self, S<"K">()))))) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return ge(c__2->v, 0.0);
+      return null;
+    }));
     return null;
   });
   c.method("spread", [](Value self, const Args& a1) -> Value {
@@ -1812,6 +1809,50 @@ static void C_Medium(Cls& c) {
   });
 }
 static const bool R_Medium = define_class("Medium", "Node", &C_Medium);
+
+static void C_Surface(Cls& c) {
+  c.field("width", nullptr);
+  c.field("height", nullptr);
+  c.method("fill_style", [](Value, const Args&) -> Value { throw std::runtime_error("fill_style is declared but not defined by anyone"); });
+  c.method("stroke_style", [](Value, const Args&) -> Value { throw std::runtime_error("stroke_style is declared but not defined by anyone"); });
+  c.method("line_width", [](Value, const Args&) -> Value { throw std::runtime_error("line_width is declared but not defined by anyone"); });
+  c.method("alpha", [](Value, const Args&) -> Value { throw std::runtime_error("alpha is declared but not defined by anyone"); });
+  c.method("fill_rect", [](Value, const Args&) -> Value { throw std::runtime_error("fill_rect is declared but not defined by anyone"); });
+  c.method("stroke_rect", [](Value, const Args&) -> Value { throw std::runtime_error("stroke_rect is declared but not defined by anyone"); });
+  c.method("clear_rect", [](Value, const Args&) -> Value { throw std::runtime_error("clear_rect is declared but not defined by anyone"); });
+  c.getter("begin_path", [](Value, const Args&) -> Value { throw std::runtime_error("begin_path is declared but not defined by anyone"); });
+  c.method("move_to", [](Value, const Args&) -> Value { throw std::runtime_error("move_to is declared but not defined by anyone"); });
+  c.method("line_to", [](Value, const Args&) -> Value { throw std::runtime_error("line_to is declared but not defined by anyone"); });
+  c.method("arc", [](Value, const Args&) -> Value { throw std::runtime_error("arc is declared but not defined by anyone"); });
+  c.getter("stroke", [](Value, const Args&) -> Value { throw std::runtime_error("stroke is declared but not defined by anyone"); });
+  c.getter("fill", [](Value, const Args&) -> Value { throw std::runtime_error("fill is declared but not defined by anyone"); });
+  c.method("font", [](Value, const Args&) -> Value { throw std::runtime_error("font is declared but not defined by anyone"); });
+  c.method("text_align", [](Value, const Args&) -> Value { throw std::runtime_error("text_align is declared but not defined by anyone"); });
+  c.method("text_baseline", [](Value, const Args&) -> Value { throw std::runtime_error("text_baseline is declared but not defined by anyone"); });
+  c.method("fill_text", [](Value, const Args&) -> Value { throw std::runtime_error("fill_text is declared but not defined by anyone"); });
+  c.method("measure", [](Value, const Args&) -> Value { throw std::runtime_error("measure is declared but not defined by anyone"); });
+  c.getter("save", [](Value, const Args&) -> Value { throw std::runtime_error("save is declared but not defined by anyone"); });
+  c.getter("restore", [](Value, const Args&) -> Value { throw std::runtime_error("restore is declared but not defined by anyone"); });
+  c.method("translate", [](Value, const Args&) -> Value { throw std::runtime_error("translate is declared but not defined by anyone"); });
+  c.method("rotate", [](Value, const Args&) -> Value { throw std::runtime_error("rotate is declared but not defined by anyone"); });
+  c.method("dash", [](Value, const Args&) -> Value { throw std::runtime_error("dash is declared but not defined by anyone"); });
+  c.method("gradient_stroke", [](Value, const Args&) -> Value { throw std::runtime_error("gradient_stroke is declared but not defined by anyone"); });
+  c.method("image", [](Value, const Args&) -> Value { throw std::runtime_error("image is declared but not defined by anyone"); });
+  c.method("field", [](Value, const Args&) -> Value { throw std::runtime_error("field is declared but not defined by anyone"); });
+}
+static const bool R_Surface = define_class("Surface", "Node", &C_Surface);
+
+static void C_Measured(Cls& c) {
+  c.field("header", nullptr);
+  c.field("columns", nullptr);
+  c.statik("of", [](Value, const Args&) -> Value { throw std::runtime_error("of is declared but not defined by anyone"); });
+  c.statik("save", [](Value, const Args&) -> Value { throw std::runtime_error("save is declared but not defined by anyone"); });
+  c.getter("rows", [](Value self, const Args& a1) -> Value {
+    return get(get(self, S<"header">()), Sym(str("rows")));
+    return null;
+  });
+}
+static const bool R_Measured = define_class("Measured", "Node", &C_Measured);
 
 
 

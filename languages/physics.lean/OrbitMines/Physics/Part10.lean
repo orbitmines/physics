@@ -8,6 +8,8 @@ namespace OrbitMines.Physics
 
 
 namespace Theory
+ray_impl_sfield "TERMS" : Value := do
+  return (← RMap.new)
 ray_impl_field "name" : String := do
   return ωnull
 ray_impl_field "rules" : (RList Rule) := do
@@ -71,6 +73,12 @@ ray_impl_method "medium" (N_0 : Float) (A_0 : Float := ωnull) (K_0 : Float := �
     (← ωwr D_0 ωnull) |> ωsink
     pure ()
   if true then return (← new! Medium («theory» := self, «N» := (← N_0.get), «A» := (← A_0.get), «K» := (← K_0.get), «DEG» := (← ωorElse (← DEG_0.get) (do pure (← ωget (← ωget self "lattice") "DEG"))), «tags» := (← tags_0.get), «D» := (← ωorElse (← D_0.get) (do pure (← ωget (← ωget self "lattice") "D")))))
+  return ωnull
+ray_impl_getter "terms_read" : (RList Value) := do
+  if ωtruthy (ωisNull (← ωelem (← ωget (← cls% Theory) "TERMS") (← ωget self "name"))) then
+    (ωatSetter (← ωget (← cls% Theory) "TERMS") (← ωget self "name")) (← ωget (← ωget self "equation") "terms")
+    pure ()
+  if true then return (← ωelem (← ωget (← cls% Theory) "TERMS") (← ωget self "name"))
   return ωnull
 ray_impl_getter "proved" : Proof := do
   if ωtruthy (ωisNull (← ωelem (← ωget (← cls% Prover) "PROOFS") (← ωget self "name"))) then

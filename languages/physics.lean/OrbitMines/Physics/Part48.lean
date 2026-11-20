@@ -223,22 +223,14 @@ ray_impl_method "value" (e_0 : Expr) (at__0 : object) (masses_0 : (RList Float))
     if true then return (← ωtern (ωtruthy (ωisNull (← v_0.get))) (do pure (0.0 / 0.0 : Float)) (do pure (← v_0.get)))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("add" : String)) then
-    let total_0 ← IO.mkRef (0 : Float)
-    for e1 in (← ωitems (← ωget (← e_0.get) "of")) do
-      let p_1 ← IO.mkRef e1
-      (← ωwr total_0 (← ωadd (← total_0.get) (← call! self "value" ((← p_1.get), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    if true then return (← total_0.get)
+    if true then return (← dot! (← dot! (← ωget (← e_0.get) "of") rmap ((fn! [p_2] do
+      if true then return (← call! self "value" ((← p_2.get), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get)))
+      return ωnull))) rsum ())
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("mul" : String)) then
-    let prod_0 ← IO.mkRef (1 : Float)
-    for e1 in (← ωitems (← ωget (← e_0.get) "of")) do
-      let p_1 ← IO.mkRef e1
-      (← ωwr prod_0 (← ωmul (← prod_0.get) (← call! self "value" ((← p_1.get), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get))))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    if true then return (← prod_0.get)
+    if true then return (← dot! (← ωget (← e_0.get) "of") rreduce ((1 : Float), (fn! [prod_2 p_2] do
+      if true then return (← ωmul (← prod_2.get) (← call! self "value" ((← p_2.get), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get))))
+      return ωnull)))
     pure ()
   if ωtruthy (← ωeqv (← k_0.get) ("pow" : String)) then
     if true then return (← ωpow (← call! self "value" ((← ωget (← e_0.get) "base"), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get))) (← call! self "value" ((← ωget (← e_0.get) "power"), (← at__0.get), (← masses_0.get), (← Rs_0.get), (← skip_0.get))))
@@ -548,22 +540,13 @@ ray_impl_getter "reach_expr" : Expr := do
   if true then return (← ωtern (ωtruthy (ωisNull (← f_0.get))) (do pure (← call! (← cls% Expr) "num" ((0 : Float)))) (do pure (← ωget (← f_0.get) "to")))
   return ωnull
 ray_impl_getter "names" : (RList String) := do
-  let out_0 ← IO.mkRef (← dot! (← ωget self "per_body") rmap ((fn! [n_2] do
-    if true then return (← n_2.get)
+  if true then return (← dot! (← ωlst #[(← ωget self "outer"), (← ωget self "summand"), (← ωget self "shell_expr"), (← ωget self "reach_expr")]) rreduce ((← dot! (← ωget self "per_body") rconcat ((← ωlst #[("SUM" : String)]))), (fn! [out_2 e_2] do
+    if true then return (← dot! (← dot! (← call! (← cls% Model) "unbound" ((← e_2.get))) rfilter ((fn! [n_5] do
+      if true then return (← ωandV (← ωnev (← n_5.get) ("\\bar{R}" : String)) (do pure (ωnotV (← dot! (← n_5.get) rends_with (("\\paren{...}" : String))))))
+      return ωnull))) rreduce ((← out_2.get), (fn! [o_4 n_4] do
+      if true then return (← ωtern (ωtruthy (← dot! (← o_4.get) rcontains ((← n_4.get)))) (do pure (← o_4.get)) (do pure (← dot! (← o_4.get) rpush ((← n_4.get)))))
+      return ωnull)))
     return ωnull)))
-  (← dot! (← out_0.get) rpush (("SUM" : String))) |> ωsink
-  for e1 in (← ωitems (← ωlst #[(← ωget self "outer"), (← ωget self "summand"), (← ωget self "shell_expr"), (← ωget self "reach_expr")])) do
-    let e_1 ← IO.mkRef e1
-    for e2 in (← ωitems (← call! (← cls% Model) "unbound" ((← e_1.get)))) do
-      let n_2 ← IO.mkRef e2
-      if ωtruthy (← ωandV (← ωandV (ωnotV (← dot! (← out_0.get) rcontains ((← n_2.get)))) (do pure (← ωnev (← n_2.get) ("\\bar{R}" : String)))) (do pure (ωnotV (← dot! (← n_2.get) rends_with (("\\paren{...}" : String)))))) then
-        (← dot! (← out_0.get) rpush ((← n_2.get))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
   return ωnull
 ray_impl_getter "constants" : (RList Float) := do
   if true then return (← dot! (← ωget self "names") rmap ((fn! [n_2] do

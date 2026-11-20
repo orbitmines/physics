@@ -9,48 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_Surface(Cls& c) {
-  c.field("width", nullptr);
-  c.field("height", nullptr);
-  c.method("fill_style", [](Value, const Args&) -> Value { throw std::runtime_error("fill_style is declared but not defined by anyone"); });
-  c.method("stroke_style", [](Value, const Args&) -> Value { throw std::runtime_error("stroke_style is declared but not defined by anyone"); });
-  c.method("line_width", [](Value, const Args&) -> Value { throw std::runtime_error("line_width is declared but not defined by anyone"); });
-  c.method("alpha", [](Value, const Args&) -> Value { throw std::runtime_error("alpha is declared but not defined by anyone"); });
-  c.method("fill_rect", [](Value, const Args&) -> Value { throw std::runtime_error("fill_rect is declared but not defined by anyone"); });
-  c.method("stroke_rect", [](Value, const Args&) -> Value { throw std::runtime_error("stroke_rect is declared but not defined by anyone"); });
-  c.method("clear_rect", [](Value, const Args&) -> Value { throw std::runtime_error("clear_rect is declared but not defined by anyone"); });
-  c.getter("begin_path", [](Value, const Args&) -> Value { throw std::runtime_error("begin_path is declared but not defined by anyone"); });
-  c.method("move_to", [](Value, const Args&) -> Value { throw std::runtime_error("move_to is declared but not defined by anyone"); });
-  c.method("line_to", [](Value, const Args&) -> Value { throw std::runtime_error("line_to is declared but not defined by anyone"); });
-  c.method("arc", [](Value, const Args&) -> Value { throw std::runtime_error("arc is declared but not defined by anyone"); });
-  c.getter("stroke", [](Value, const Args&) -> Value { throw std::runtime_error("stroke is declared but not defined by anyone"); });
-  c.getter("fill", [](Value, const Args&) -> Value { throw std::runtime_error("fill is declared but not defined by anyone"); });
-  c.method("font", [](Value, const Args&) -> Value { throw std::runtime_error("font is declared but not defined by anyone"); });
-  c.method("text_align", [](Value, const Args&) -> Value { throw std::runtime_error("text_align is declared but not defined by anyone"); });
-  c.method("text_baseline", [](Value, const Args&) -> Value { throw std::runtime_error("text_baseline is declared but not defined by anyone"); });
-  c.method("fill_text", [](Value, const Args&) -> Value { throw std::runtime_error("fill_text is declared but not defined by anyone"); });
-  c.method("measure", [](Value, const Args&) -> Value { throw std::runtime_error("measure is declared but not defined by anyone"); });
-  c.getter("save", [](Value, const Args&) -> Value { throw std::runtime_error("save is declared but not defined by anyone"); });
-  c.getter("restore", [](Value, const Args&) -> Value { throw std::runtime_error("restore is declared but not defined by anyone"); });
-  c.method("translate", [](Value, const Args&) -> Value { throw std::runtime_error("translate is declared but not defined by anyone"); });
-  c.method("rotate", [](Value, const Args&) -> Value { throw std::runtime_error("rotate is declared but not defined by anyone"); });
-  c.method("dash", [](Value, const Args&) -> Value { throw std::runtime_error("dash is declared but not defined by anyone"); });
-  c.method("gradient_stroke", [](Value, const Args&) -> Value { throw std::runtime_error("gradient_stroke is declared but not defined by anyone"); });
-}
-static const bool R_Surface = define_class("Surface", "Node", &C_Surface);
-
-static void C_Measured(Cls& c) {
-  c.field("header", nullptr);
-  c.field("columns", nullptr);
-  c.statik("of", [](Value, const Args&) -> Value { throw std::runtime_error("of is declared but not defined by anyone"); });
-  c.statik("save", [](Value, const Args&) -> Value { throw std::runtime_error("save is declared but not defined by anyone"); });
-  c.getter("rows", [](Value self, const Args& a1) -> Value {
-    return get(get(self, S<"header">()), Sym(str("rows")));
-    return null;
-  });
-}
-static const bool R_Measured = define_class("Measured", "Node", &C_Measured);
-
 static void C_Recording(Cls& c) {
   c.field("stamp", nullptr);
   c.field("names", nullptr);
@@ -84,13 +42,9 @@ static void C_Cached(Cls& c) {
   c.method("at", [](Value self, const Args& a1) -> Value {
     auto frame_at_0 = cell(arg(a1, 0));
     auto out_0 = cell(); out_0->v = make(S<"Node">(), { });
-    auto all_0 = cell(); all_0->v = get(get(get(self, S<"film">()), S<"columns">()), Sym(str("frames")));
-    auto width_0 = cell(); width_0->v = m_sum(get(self, S<"sizes">()));
-    auto from_at_0 = cell(); from_at_0->v = mul(frame_at_0->v, width_0->v);
     for (double i1 = 0, n1 = num(len(get(self, S<"names">()))); i1 < n1; i1++) {
       auto i_1 = cell(i1);
-      setAt(out_0->v, elem(get(self, S<"names">()), i_1->v), m_take(m_drop(all_0->v, from_at_0->v), elem(get(self, S<"sizes">()), i_1->v)));
-      from_at_0->v = add(from_at_0->v, elem(get(self, S<"sizes">()), i_1->v));
+      setAt(out_0->v, elem(get(self, S<"names">()), i_1->v), m_take(m_drop(get(get(get(self, S<"film">()), S<"columns">()), Sym(str("frames"))), add(mul(frame_at_0->v, m_sum(get(self, S<"sizes">()))), m_sum(m_take(get(self, S<"sizes">()), i_1->v)))), elem(get(self, S<"sizes">()), i_1->v)));
     };
     return out_0->v;
     return null;
@@ -171,6 +125,9 @@ static void C_Picture(Cls& c) {
   c.field("record", [](const Value& self) -> Value { return null; });
   c.field("panes", [](const Value& self) -> Value { return list({  }); });
   c.field("on_request", [](const Value& self) -> Value { return false; });
+  c.field("images", [](const Value& self) -> Value { return list({  }); });
+  c.field("parts", [](const Value& self) -> Value { return list({  }); });
+  c.field("uses", [](const Value& self) -> Value { return list({  }); });
   c.field("paint", nullptr);
   c.getter("played", [](Value self, const Args& a1) -> Value {
     auto r_0 = cell(); r_0->v = get(self, S<"record">());
@@ -402,15 +359,21 @@ static void C_Setup(Cls& c) {
   });
   c.statik("middle", [](Value self, const Args& a1) -> Value {
     auto holes_0 = cell(arg(a1, 0));
-    auto m_0 = cell(); m_0->v = 0.0;
-    auto x_0 = cell(); x_0->v = 0.0;
-    auto y_0 = cell(); y_0->v = 0.0;
-    for (const Value& e1 : Each(holes_0->v)) {
-      auto h_1 = cell(e1);
-      m_0->v = add(m_0->v, get(h_1->v, S<"mass">()));
-      x_0->v = add(x_0->v, mul(get(h_1->v, S<"x">()), get(h_1->v, S<"mass">())));
-      y_0->v = add(y_0->v, mul(get(h_1->v, S<"y">()), get(h_1->v, S<"mass">())));
-    };
+    auto m_0 = cell(); m_0->v = m_sum(m_map(holes_0->v, fn([=](const Args& a3) -> Value {
+      auto h_2 = cell(arg(a3, 0));
+      return get(h_2->v, S<"mass">());
+      return null;
+    })));
+    auto x_0 = cell(); x_0->v = m_sum(m_map(holes_0->v, fn([=](const Args& a3) -> Value {
+      auto h_2 = cell(arg(a3, 0));
+      return mul(get(h_2->v, S<"x">()), get(h_2->v, S<"mass">()));
+      return null;
+    })));
+    auto y_0 = cell(); y_0->v = m_sum(m_map(holes_0->v, fn([=](const Args& a3) -> Value {
+      auto h_2 = cell(arg(a3, 0));
+      return mul(get(h_2->v, S<"y">()), get(h_2->v, S<"mass">()));
+      return null;
+    })));
     return (truthy(gt(m_0->v, 0.0)) ? Value(list({ div(x_0->v, m_0->v), div(y_0->v, m_0->v) })) : Value(list({ 0.0, 0.0 })));
     return null;
   });
@@ -987,11 +950,11 @@ static void C_Panel(Cls& c) {
         centre_0->v = k_1->v;
       }
     };
-    auto weight_0 = cell(); weight_0->v = 0.0;
-    for (double i1 = 0, n1 = num(get(p_0->v, S<"bodies">())); i1 < n1; i1++) {
-      auto k_1 = cell(i1);
-      weight_0->v = add(weight_0->v, elem(marks_0->v, add(mul(k_1->v, 6.0), 5.0)));
-    };
+    auto weight_0 = cell(); weight_0->v = m_sum(m_map(rng(get(p_0->v, S<"bodies">())), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return elem(marks_0->v, add(mul(k_2->v, 6.0), 5.0));
+      return null;
+    })));
     auto frames_0 = cell(); frames_0->v = div(len(elem(trail_0->v, centre_0->v)), 2.0);
     auto midx_0 = cell(); midx_0->v = m_map(rng(frames_0->v), fn([=](const Args& a3) -> Value {
       auto i_2 = cell(arg(a3, 0));
@@ -1333,16 +1296,19 @@ static void C_Strip(Cls& c) {
       return elem(get(get(v_2->v, S<"at">()), S<"components">()), 0.0);
       return null;
     }));
-    auto sides_0 = cell(); sides_0->v = list({  });
-    for (const Value& e1 : Each(get(w_0->v, S<"live">()))) {
-      auto v_1 = cell(e1);
-      for (const Value& e2 : Each(get(v_1->v, S<"rays">()))) {
-        auto r_2 = cell(e2);
-        if (truthy(get(r_2->v, S<"active">()))) {
-          m_push(sides_0->v, make(S<"Side">(), { kw(S<"at">(), elem(get(get(v_1->v, S<"at">()), S<"components">()), 0.0)), kw(S<"sign">(), elem(get(get(r_2->v, S<"along">()), S<"components">()), 0.0)), kw(S<"ink">(), call(ink_0->v, S<"ink_of">(), { r_2->v })) }));
-        }
-      };
-    };
+    auto sides_0 = cell(); sides_0->v = m_reduce(get(w_0->v, S<"live">()), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return m_reduce(filt(get(v_2->v, S<"rays">()), fn([=](const Args& a6) -> Value {
+        auto r_5 = cell(arg(a6, 0));
+        return get(r_5->v, S<"active">());
+        return null;
+      })), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto r_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, make(S<"Side">(), { kw(S<"at">(), elem(get(get(v_2->v, S<"at">()), S<"components">()), 0.0)), kw(S<"sign">(), elem(get(get(r_4->v, S<"along">()), S<"components">()), 0.0)), kw(S<"ink">(), call(ink_0->v, S<"ink_of">(), { r_4->v })) }));
+        return null;
+      }));
+      return null;
+    }));
     auto l_0 = cell(); l_0->v = make(S<"Lane">(), { kw(S<"points">(), pts_0->v), kw(S<"sides">(), sides_0->v) });
     for (const Value& e1 : Each(get(w_0->v, S<"sources">()))) {
       auto s_1 = cell(e1);
@@ -1464,17 +1430,16 @@ static void C_Strip(Cls& c) {
   });
   c.statik("centre_of", [](Value self, const Args& a1) -> Value {
     auto lanes_0 = cell(arg(a1, 0));
-    auto xs_0 = cell(); xs_0->v = list({  });
-    for (const Value& e1 : Each(lanes_0->v)) {
-      auto l_1 = cell(e1);
-      for (const Value& e2 : Each(get(l_1->v, S<"sources">()))) {
-        auto p_2 = cell(e2);
-        m_push(xs_0->v, p_2->v);
-      };
-    };
-    if (truthy(m_empty(xs_0->v))) {
-      xs_0->v = get(m_first(lanes_0->v), S<"points">());
-    }
+    auto sourced_0 = cell(); sourced_0->v = m_reduce(lanes_0->v, list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto l_2 = cell(arg(a3, 1));
+      return m_reduce(get(l_2->v, S<"sources">()), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto p_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, p_4->v);
+        return null;
+      }));
+      return null;
+    }));
+    auto xs_0 = cell(); xs_0->v = (truthy(m_empty(sourced_0->v)) ? Value(get(m_first(lanes_0->v), S<"points">())) : Value(sourced_0->v));
     if (truthy(m_empty(xs_0->v))) {
       return 0.0;
     }
@@ -1849,17 +1814,18 @@ static void C_Sparc(Cls& c) {
         setAt(best_0->v, get(p_1->v, S<"galaxy">()), p_1->v);
       }
     };
-    auto out_0 = cell(); out_0->v = list({  });
     auto names_0 = cell(); names_0->v = get(K(S<"Sparc">()), S<"names">());
-    for (double i1 = 0, n1 = num(len(names_0->v)); i1 < n1; i1++) {
-      auto g_1 = cell(i1);
-      auto p_1 = cell(); p_1->v = elem(best_0->v, g_1->v);
-      if (truthy((!eq(p_1->v, null)))) {
-        auto q_1 = cell(); q_1->v = make(S<"RarPoint">(), { kw(S<"gbar">(), get(p_1->v, S<"gbar">())), kw(S<"gobs">(), get(p_1->v, S<"gobs">())), kw(S<"galaxy">(), get(p_1->v, S<"galaxy">())), kw(S<"R">(), get(p_1->v, S<"R">())) });
-        set(q_1->v, S<"name">(), elem(names_0->v, g_1->v));
-        m_push(out_0->v, q_1->v);
-      }
-    };
+    auto out_0 = cell(); out_0->v = m_map(filt(rng(len(names_0->v)), fn([=](const Args& a4) -> Value {
+      auto g_3 = cell(arg(a4, 0));
+      return (!eq(elem(best_0->v, g_3->v), null));
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto g_2 = cell(arg(a3, 0));
+      auto q_2 = cell(); q_2->v = make(S<"RarPoint">(), { kw(S<"gbar">(), get(elem(best_0->v, g_2->v), S<"gbar">())), kw(S<"gobs">(), get(elem(best_0->v, g_2->v), S<"gobs">())), kw(S<"galaxy">(), get(elem(best_0->v, g_2->v), S<"galaxy">())), kw(S<"R">(), get(elem(best_0->v, g_2->v), S<"R">())) });
+      set(q_2->v, S<"name">(), elem(names_0->v, g_2->v));
+      return q_2->v;
+      return null;
+    }));
     set(get(K(S<"Sparc">()), S<"CACHE">()), Sym(str("flat")), out_0->v);
     return out_0->v;
     return null;
@@ -1874,13 +1840,15 @@ static void C_Sparc(Cls& c) {
     }
     auto c__0 = cell(); c__0->v = get(t_0->v, S<"columns">());
     auto names_0 = cell(); names_0->v = get(get(t_0->v, S<"header">()), Sym(str("names")));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(t_0->v, S<"rows">())); i1 < n1; i1++) {
-      auto i_1 = cell(i1);
-      if (truthy(gt(elem(get(c__0->v, Sym(str("Vf"))), i_1->v), 0.0))) {
-        m_push(out_0->v, make(S<"Btfr">(), { kw(S<"name">(), elem(names_0->v, i_1->v)), kw(S<"galaxy">(), elem(get(c__0->v, Sym(str("galaxy"))), i_1->v)), kw(S<"vf">(), elem(get(c__0->v, Sym(str("Vf"))), i_1->v)), kw(S<"err">(), elem(get(c__0->v, Sym(str("e_Vf"))), i_1->v)), kw(S<"mass">(), mul(power(10.0, elem(get(c__0->v, Sym(str("log(Mb)"))), i_1->v)), get(K(S<"Sparc">()), S<"MSUN">()))), kw(S<"err_mass">(), elem(get(c__0->v, Sym(str("e_log(Mb)"))), i_1->v)) }));
-      }
-    };
+    auto out_0 = cell(); out_0->v = m_map(filt(rng(get(t_0->v, S<"rows">())), fn([=](const Args& a4) -> Value {
+      auto i_3 = cell(arg(a4, 0));
+      return gt(elem(get(c__0->v, Sym(str("Vf"))), i_3->v), 0.0);
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return make(S<"Btfr">(), { kw(S<"name">(), elem(names_0->v, i_2->v)), kw(S<"galaxy">(), elem(get(c__0->v, Sym(str("galaxy"))), i_2->v)), kw(S<"vf">(), elem(get(c__0->v, Sym(str("Vf"))), i_2->v)), kw(S<"err">(), elem(get(c__0->v, Sym(str("e_Vf"))), i_2->v)), kw(S<"mass">(), mul(power(10.0, elem(get(c__0->v, Sym(str("log(Mb)"))), i_2->v)), get(K(S<"Sparc">()), S<"MSUN">()))), kw(S<"err_mass">(), elem(get(c__0->v, Sym(str("e_log(Mb)"))), i_2->v)) });
+      return null;
+    }));
     set(get(K(S<"Sparc">()), S<"CACHE">()), Sym(str("btfr")), out_0->v);
     return out_0->v;
     return null;
@@ -1916,6 +1884,59 @@ static void C_Sparc(Cls& c) {
   });
 }
 static const bool R_Sparc = define_class("Sparc", "Node", &C_Sparc);
+
+static void C_Law(Cls& c) {
+  c.staticField("CACHE", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
+  c.statik("law", [](Value self, const Args& a1) -> Value {
+    if (truthy(eq(get(get(K(S<"Law">()), S<"CACHE">()), Sym(str("law"))), null))) {
+      set(get(K(S<"Law">()), S<"CACHE">()), Sym(str("law")), call(K(S<"Measured">()), S<"of">(), { "law" }));
+    }
+    if (truthy(eq(get(get(K(S<"Law">()), S<"CACHE">()), Sym(str("law"))), null))) {
+      invoke(fail, { "law is not on disk - run `npx ray measure` and try again" });
+    }
+    return get(get(K(S<"Law">()), S<"CACHE">()), Sym(str("law")));
+    return null;
+  });
+  c.statik("a0", [](Value self, const Args& a1) -> Value {
+    return get(get(get(K(S<"Law">()), S<"law">()), S<"header">()), Sym(str("a0")));
+    return null;
+  });
+  c.statik("carries", [](Value self, const Args& a1) -> Value {
+    return orElse(get(get(get(K(S<"Law">()), S<"law">()), S<"header">()), Sym(str("carries"))), [&]() -> Value { return 0.0; });
+    return null;
+  });
+  c.statik("theory", [](Value self, const Args& a1) -> Value {
+    return orElse(get(get(get(K(S<"Law">()), S<"law">()), S<"header">()), Sym(str("theory"))), [&]() -> Value { return "G"; });
+    return null;
+  });
+  c.statik("boost", [](Value self, const Args& a1) -> Value {
+    auto gN_0 = cell(arg(a1, 0)); auto scale_0 = cell(arg(a1, 1));
+    auto A0_0 = cell(); A0_0->v = get(K(S<"Law">()), S<"a0">());
+    auto xs__0 = cell(); xs__0->v = get(get(get(K(S<"Law">()), S<"law">()), S<"columns">()), Sym(str("gN")));
+    auto ys__0 = cell(); ys__0->v = get(get(get(K(S<"Law">()), S<"law">()), S<"columns">()), Sym(str("g")));
+    auto want_0 = cell(); want_0->v = mul((div(gN_0->v, scale_0->v)), A0_0->v);
+    auto lo_0 = cell(); lo_0->v = 0.0;
+    auto hi_0 = cell(); hi_0->v = sub(get(get(K(S<"Law">()), S<"law">()), S<"rows">()), 1.0);
+    if (truthy(le(want_0->v, elem(xs__0->v, 0.0)))) {
+      return mul((div(elem(ys__0->v, 0.0), A0_0->v)), scale_0->v);
+    }
+    if (truthy(ge(want_0->v, elem(xs__0->v, hi_0->v)))) {
+      return mul((div(elem(ys__0->v, hi_0->v), A0_0->v)), scale_0->v);
+    }
+    while (truthy(gt(sub(hi_0->v, lo_0->v), 1.0))) {
+      auto mid_0 = cell(); mid_0->v = m_floor((div((add(lo_0->v, hi_0->v)), 2.0)));
+      if (truthy(le(elem(xs__0->v, mid_0->v), want_0->v))) {
+        lo_0->v = mid_0->v;
+      } else {
+        hi_0->v = mid_0->v;
+      }
+    }
+    auto t_0 = cell(); t_0->v = div((sub(m_ln(want_0->v), m_ln(elem(xs__0->v, lo_0->v)))), (sub(m_ln(elem(xs__0->v, hi_0->v)), m_ln(elem(xs__0->v, lo_0->v)))));
+    return mul((div(m_exp((add(m_ln(elem(ys__0->v, lo_0->v)), mul(t_0->v, (sub(m_ln(elem(ys__0->v, hi_0->v)), m_ln(elem(ys__0->v, lo_0->v)))))))), A0_0->v)), scale_0->v);
+    return null;
+  });
+}
+static const bool R_Law = define_class("Law", "Node", &C_Law);
 
 
 

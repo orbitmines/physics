@@ -29,6 +29,9 @@ export function canonicalOf(names: string[]): string {
 /** a field default not yet evaluated: everything is lazy, as in the ray repository */
 export class Thunk { constructor(public expr: Expr, public env: Env) {} }
 
+/** a global bound lazily: worked out the first time it is looked up (a typed test fixture, `closure: Proof = G.proved`) */
+export class Lazy { constructor(public force: () => Value) {} }
+
 /** a location `@./path` */
 export class Path { constructor(public path: string) {} }
 
@@ -139,7 +142,11 @@ export class Env {
   lookup(name: string): { env: Env; value: Value } | undefined {
     let e: Env | undefined = this;
     while (e) {
-      if (e.vars.has(name)) return { env: e, value: e.vars.get(name)! };
+      if (e.vars.has(name)) {
+        let v = e.vars.get(name)!;
+        if (v instanceof Lazy) { e.vars.delete(name); v = v.force(); e.vars.set(name, v); }
+        return { env: e, value: v };
+      }
       e = e.parent;
     }
     return undefined;
@@ -182,7 +189,7 @@ export class Runtime {
   /** every `dynamically assert`, for the generated tests */
   asserts: { requirement: Expr; predicate?: Expr; loc: Loc; owner?: string; filter?: Expr; env?: Env }[] = [];
   /** every top-level definition, by name: what it was defined as, and where */
-  definitions = new Map<string, { value: Expr; loc: Loc }>();
+  definitions = new Map<string, { value: Expr; loc: Loc; type?: Type }>();
   /** bodyless statics the host fulfils, by `Class.method`: installed by the CLI (`Catalogue.fetch`, ...) */
   hosted: Record<string, (...args: Value[]) => Value> = {};
   /** `@./path := text` writes go through here */
@@ -218,9 +225,10 @@ export class Runtime {
     const out: Value[] = [];
     for (const [name, d] of this.definitions) {
       if (!d.loc.file.includes("/tests/")) continue;
-      const v = this.global.lookup(name)?.value;
-      if (!(v instanceof RayObject)) continue;
-      out.push(this.makeObject("Fixture", { name, kind: v.cls.name, kinds: this.allParents(v.cls).map(c => c.name), definition: this.program(d.value, this.global, null, []) }));
+      // a typed fixture says its class, so it is not worked out just to be listed
+      const cls = d.type ? this.resolveType(d.type, this.global) : (this.global.lookup(name)?.value as any)?.cls;
+      if (!(cls instanceof RayClass)) continue;
+      out.push(this.makeObject("Fixture", { name, kind: cls.name, kinds: this.allParents(cls).map(c => c.name), definition: this.program(d.value, this.global, null, []) }));
     }
     return out;
   }
@@ -333,6 +341,13 @@ export class Runtime {
             if (base instanceof RayClass) { shell.parents.unshift(base); v = this.instantiate(shell, [], env, s.loc); for (const n of s.names) env.define(n, v); }
           }
           return v;
+        }
+        // a typed fixture of a test file (`closure: Proof = G.proved`) is only worked out when a test asks for it
+        if (env === this.global && s.value && s.type && s.loc.file.includes("/tests/")) {
+          const value = s.value;
+          this.definitions.set(s.names[0], { value, loc: s.loc, type: s.type });
+          for (const n of s.names) env.define(n, new Lazy(() => this.eval(value, env)) as any);
+          return null;
         }
         let v: Value = s.value ? this.eval(s.value, env) : null;
         if (v instanceof RayClass && v.name === "") v.name = s.names[0];
@@ -804,7 +819,8 @@ export class Runtime {
 
   private name(n: string, env: Env, loc: Loc): Value {
     const found = env.lookup(n);
-    if (found) return found.value;
+    // a local wins; a top-level definition (a test fixture named `standing`) does not shadow a member of `this`
+    if (found && (found.env !== this.global || n === "None" || n === "true" || n === "false")) return found.value;
     // an implicit receiver: filters `Ray{active}` read members off the element
     let e: Env | undefined = env;
     while (e) {
@@ -819,6 +835,7 @@ export class Runtime {
       const v = this.tryMember(env.self, n, env, loc);
       if (v !== undefined) return v;
     }
+    if (found) return found.value;
     if (this.classes.has(n)) return this.classes.get(n)!;
     // `fail(says)`: what `assert` calls when a requirement does not hold - a thrown error, with its text
     if (n === "fail") return new NativeFn("fail", (says) => { throw new RayError(String(says ?? "failed"), loc); });

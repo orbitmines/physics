@@ -111,9 +111,7 @@ Gen := class {
             language.write_theorems(Gen.theories.map(t => t.proved.json).join(", "))
             language.write_notation
             Tests.write(language, backend)
-            entries := []
-            Gen.theories.for(t => { t.visuals.for(v => { entries.push(v.as(language)) }) })
-            language.write_visuals(entries.join("\n"))
+            language.write_visuals(Gen.theories.reduce([], (out, t) => t.visuals.reduce(out, (o, v) => o.push(v.as(language)))).join("\n"))
           } else {
             /* a GPU: the kernels come off the equation, the runtime around them off the template */
             Gen.theories.for(t => {

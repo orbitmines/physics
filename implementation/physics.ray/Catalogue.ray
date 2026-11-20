@@ -38,9 +38,8 @@ Catalogue := class < id: String, what: String, source: String, paper: String {
   write () => {
     rows := this.rows
     this.columns.for(c => { fail("{this.id}: column {c.name} has {c.values.length} rows, not {rows}") if c.values.length != rows })
-    all := []
-    this.columns.for(c => { c.values.for(v => { all.push(v) }) })
-    Catalogue.save_f32("data/{this.id}/field.f32", all)
+    /* every column after the one before it */
+    Catalogue.save_f32("data/{this.id}/field.f32", this.columns.reduce([], (all, c) => c.values.reduce(all, (o, v) => o.push(v))))
     sep := ", "
     units := this.units.map(u => u.quoted).join(sep)
     names := this.names.map(n => n.quoted).join(sep)
@@ -74,45 +73,30 @@ Mrt := class < text: String {
   }
   read_fields (): MrtField[] => {
     lines := this.lines
-    rules := []
-    Array.range(lines.length).for(i => { rules.push(i) if Mrt.is_rule(lines[i]) })
-    heading := None
-    Array.range(lines.length).for(i => {
-      l := lines[i]
-      heading = i if heading == None & l.contains("Bytes") & l.contains("Format") & l.contains("Units") & l.contains("Label")
-    })
+    rules := Array.range(lines.length).filter(i => Mrt.is_rule(lines[i]))
+    heading := Array.range(lines.length).filter(i => lines[i].contains("Bytes") & lines[i].contains("Format") & lines[i].contains("Units") & lines[i].contains("Label")).first
     fail("no byte-by-byte description in this file") if heading == None | rules.length < 2
     ends := rules.filter(r => r > heading + 1).first ?? lines.length
-    out := []
-    i := heading + 1
-    while i < ends {
-      ws := Mrt.words(lines[i])
-      k := 0
-      while k < ws.length & Mrt.is_range(ws[k]) { k = k + 1 }
-      out.push(MrtField(kind: ws[k], label: ws[k + 2])) if k > 0 & k + 2 < ws.length & Mrt.is_kind(ws[k])
-      i = i + 1
-    }
-    out
+    /* a field's line: its byte range, then its format, units and label */
+    lines.take(ends).drop(heading + 1).map(l => Mrt.words(l)).reduce([], (out, ws) => {
+      k := Array.range(ws.length).filter(j => !Mrt.is_range(ws[j])).first ?? ws.length
+      k > 0 & k + 2 < ws.length & Mrt.is_kind(ws[k]) ? out.push(MrtField(kind: ws[k], label: ws[k + 2])) : out
+    })
   }
 
   /* the rows, after the last rule: whitespace-separated cells, one per field */
   rows (): String[][] => {
     lines := this.lines
-    last := 0
-    Array.range(lines.length).for(i => { last = i if Mrt.is_rule(lines[i]) })
+    last := Array.range(lines.length).filter(i => Mrt.is_rule(lines[i])).last ?? 0
     count := this.fields.length
-    out := []
-    lines.drop(last + 1).filter(l => !l.trim.empty).for(l => {
+    lines.drop(last + 1).filter(l => !l.trim.empty).map(l => {
       cells := Mrt.words(l)
       fail("row has {cells.length} values, the description declares {count} columns - this file needs reading by its byte offsets") if cells.length != count
-      out.push(cells)
+      cells
     })
-    out
   }
   of (label: String): N => {
-    fs := this.fields
-    i := None
-    Array.range(fs.length).for(k => { i = k if i == None & fs[k].label == label })
+    i := this.fields.map(f => f.label).index_of(label)
     fail("no column called {label} - the format has moved") if i == None
     i
   }
@@ -260,9 +244,7 @@ Borrowed := class {
           url := "{Borrowed.HIPS}?hips={Borrowed.url_encoded(Borrowed.SURVEYS[k])}&width={P}&height={P}&fov={fov}&object={Borrowed.url_encoded(names[g])}&format=fits"
           px := Catalogue.fits(url, "image-{names[g]}-{k}.fits")
           if px.length == P * P + 2 {
-            lit := 0
-            px.drop(2).for(v => { lit = lit + 1 if Fmt.finite(v) & v != 0 })
-            if lit > 0.6 * P * P {
+            if px.drop(2).filter(v => Fmt.finite(v) & v != 0).length > 0.6 * P * P {
               got = px.drop(2).map(v => Fmt.finite(v) ? v : 0)
               which = k
             }
@@ -290,9 +272,7 @@ Borrowed := class {
   data "sparc-images" () => {
     c := Catalogue(id: "sparc-images", what: "each SPARC galaxy's light, north up and east left, IMAGE pixels a side, galaxy after galaxy, rows from the bottom", source: Borrowed.HIPS, paper: "S4G (Sheth et al. 2010), SEIP (Spitzer), unWISE (Lang 2014), cut out by hips2fits (CDS)")
     c.units = ["light: the survey's own units, 0 where there is no image (sparc-orientation says which)"]
-    all := []
-    Borrowed.images.for(im => { im[2].for(v => { all.push(v) }) })
-    c.column("light", all)
+    c.column("light", Borrowed.images.reduce([], (all, im) => im[2].reduce(all, (o, v) => o.push(v))))
     c
   }
 
@@ -549,32 +529,19 @@ Borrowed := class {
     c := Catalogue(id: "solar-inner", what: "the Sun and the four terrestrial planets - the near field, where gravity is known to eleven figures and a theory of it has nothing to argue with", source: "{Borrowed.HORIZONS} (COMMAND=10,199,299,399,499)", paper: "JPL Horizons on-line ephemeris system, Giorgini et al. 1996, DPS 28:25.04")
     c.units = ["GM: km^3/s^2, the body's own gravitational parameter", "radius: km, volumetric mean", "a: au, semi-major axis at J2000, heliocentric; 0 for the Sun", "e: eccentricity at J2000; 0 for the Sun", "period: days, sidereal orbital period; 0 for the Sun"]
     c.names = names
-    gm := []
-    radius := []
-    a := []
-    e := []
-    period := []
-    ids.for(id => {
+    /* a planet's orbit at J2000 - semi-major axis, eccentricity, period - and none for the Sun */
+    elements := (id: String): Real[] => {
+      return [0, 0, 0] if id == "10"
+      orb := Catalogue.fetch("{Borrowed.HORIZONS}?format=text&COMMAND='{id}'&EPHEM_TYPE='ELEMENTS'&CENTER='@sun'&START_TIME='2000-01-01'&STOP_TIME='2000-01-02'&STEP_SIZE='1d'&OUT_UNITS='AU-D'", "horizons-{id}-elements.txt")
+      block := orb.drop(orb.index_of("$$SOE")).take(orb.index_of("$$EOE") - orb.index_of("$$SOE"))
+      ["A", "EC", "PR"].map(k => Horizons.element(block, k))
+    }
+    bodies := ids.map(id => {
       phys := Catalogue.fetch("{Borrowed.HORIZONS}?format=text&COMMAND='{id}'&OBJ_DATA='YES'&MAKE_EPHEM='NO'", "horizons-{id}-physical.txt")
-      gm.push(Horizons.quoted(phys, "GM"))
-      radius.push(Horizons.quoted(phys, "Vol. mean radius"))
-      if id == "10" {
-        a.push(0)
-        e.push(0)
-        period.push(0)
-      } else {
-        orb := Catalogue.fetch("{Borrowed.HORIZONS}?format=text&COMMAND='{id}'&EPHEM_TYPE='ELEMENTS'&CENTER='@sun'&START_TIME='2000-01-01'&STOP_TIME='2000-01-02'&STEP_SIZE='1d'&OUT_UNITS='AU-D'", "horizons-{id}-elements.txt")
-        block := orb.drop(orb.index_of("$$SOE")).take(orb.index_of("$$EOE") - orb.index_of("$$SOE"))
-        a.push(Horizons.element(block, "A"))
-        e.push(Horizons.element(block, "EC"))
-        period.push(Horizons.element(block, "PR"))
-      }
+      [Horizons.quoted(phys, "GM"), Horizons.quoted(phys, "Vol. mean radius")].concat(elements(id))
     })
-    c.column("GM", gm)
-    c.column("radius", radius)
-    c.column("a", a)
-    c.column("e", e)
-    c.column("period", period)
+    columns := ["GM", "radius", "a", "e", "period"]
+    Array.range(columns.length).for(k => { c.column(columns[k], bodies.map(b => b[k])) })
     c
   }
 }

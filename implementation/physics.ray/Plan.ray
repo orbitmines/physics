@@ -124,11 +124,7 @@ Plan := class < sources: Real, side: N {
     base.concat(Array.range(shards.length).map(k => ["sources (shard {k})", shards[k] * 12, true]))
   }
   /* all the device holds at once */
-  total (): Real => {
-    sum := 0
-    this.parts.for(p => { sum = sum + p[1] })
-    sum
-  }
+  total (): Real => this.parts.map(p => p[1]).sum
   /* a source's own share of it, in bytes: what a run of more sources needs a byte at a time */
   per_source (): Real => this.budget.compact ? 12 : Real.of(12 + 4 + 2 + 1 + 1) * 4
   /* whether it all fits: every part under one binding, and the whole under the memory the budget gives */

@@ -212,11 +212,7 @@ Reading := class < theory: Theory {
 
   /* every branch of every rule, as terms: what the equation is made of */
   read (): Doing[] => {
-    out := []
-    this.theory.rules.for(rule => {
-      this.rule(rule).for(d => { out.push(d) })
-    })
-    out
+    this.theory.rules.reduce([], (out, rule) => this.rule(rule).reduce(out, (o, d) => o.push(d)))
   }
 
   /* the branches of one rule: its quantifier's share and degree, then its body's doing */

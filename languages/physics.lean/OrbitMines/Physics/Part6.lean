@@ -10,15 +10,20 @@ namespace OrbitMines.Physics
 namespace Vector
 ray_impl_field "components" : (RList Float) := do
   return ωnull
-ray_impl_method "plus" (b_0 : Vector) : Vector := do
+ray_impl_method "zipped" (b_0 : Vector) (f_0 : Value) : Vector := do
   if true then return (← new! Vector («components» := (← dot! (← ωrrange (← dot! (← ωget self "components") rlength ())) rmap ((fn! [i_2] do
-    if true then return (← ωadd (← ωelem (← ωget self "components") (← i_2.get)) (← ωelem (← ωget (← b_0.get) "components") (← i_2.get)))
+    if true then return (← app! (← f_0.get) ((← ωelem (← ωget self "components") (← i_2.get)), (← ωelem (← ωget (← b_0.get) "components") (← i_2.get))))
     return ωnull)))))
   return ωnull
+ray_impl_method "plus" (b_0 : Vector) : Vector := do
+  if true then return (← call! self "zipped" ((← b_0.get), (fn! [x_2 y_2] do
+    if true then return (← ωadd (← x_2.get) (← y_2.get))
+    return ωnull)))
+  return ωnull
 ray_impl_method "minus" (b_0 : Vector) : Vector := do
-  if true then return (← new! Vector («components» := (← dot! (← ωrrange (← dot! (← ωget self "components") rlength ())) rmap ((fn! [i_2] do
-    if true then return (← ωsub (← ωelem (← ωget self "components") (← i_2.get)) (← ωelem (← ωget (← b_0.get) "components") (← i_2.get)))
-    return ωnull)))))
+  if true then return (← call! self "zipped" ((← b_0.get), (fn! [x_2 y_2] do
+    if true then return (← ωsub (← x_2.get) (← y_2.get))
+    return ωnull)))
   return ωnull
 ray_impl_method "times" (k_0 : Float) : Vector := do
   if true then return (← new! Vector («components» := (← dot! (← ωget self "components") rmap ((fn! [c_2] do
@@ -26,9 +31,9 @@ ray_impl_method "times" (k_0 : Float) : Vector := do
     return ωnull)))))
   return ωnull
 ray_impl_method "dot" (b_0 : Vector) : Float := do
-  if true then return (← dot! (← dot! (← ωrrange (← dot! (← ωget self "components") rlength ())) rmap ((fn! [i_2] do
-    if true then return (← ωmul (← ωelem (← ωget self "components") (← i_2.get)) (← ωelem (← ωget (← b_0.get) "components") (← i_2.get)))
-    return ωnull))) rsum ())
+  if true then return (← dot! (← ωget (← call! self "zipped" ((← b_0.get), (fn! [x_2 y_2] do
+    if true then return (← ωmul (← x_2.get) (← y_2.get))
+    return ωnull))) "components") rsum ())
   return ωnull
 ray_impl_getter "norm" : Float := do
   if true then return (← dot! (← call! self "dot" (self)) rsqrt ())

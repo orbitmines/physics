@@ -211,16 +211,8 @@ Aggregate := class < theory: Theory {
       v := at[e.label]
       return v == None ? Real.NAN : v
     }
-    if k == "add" {
-      total := 0
-      e.of.for(p => { total = total + this.value(p, at, masses, Rs, skip) })
-      return total
-    }
-    if k == "mul" {
-      prod := 1
-      e.of.for(p => { prod = prod * this.value(p, at, masses, Rs, skip) })
-      return prod
-    }
+    return e.of.map(p => this.value(p, at, masses, Rs, skip)).sum if k == "add"
+    return e.of.reduce(1, (prod, p) => prod * this.value(p, at, masses, Rs, skip)) if k == "mul"
     return this.value(e.base, at, masses, Rs, skip) ^ this.value(e.power, at, masses, Rs, skip) if k == "pow"
     return this.value(e.base, at, masses, Rs, skip).ln if k == "log"
     return this.value(e.base, at, masses, Rs, skip).exp if k == "exp"
@@ -470,12 +462,7 @@ Aggregate := class < theory: Theory {
   }
   /* every name the four pieces stand on, in one order: the per-body ones first, then the constants */
   names (): String[] => {
-    out := this.per_body.map(n => n)
-    out.push("SUM")
-    [this.outer, this.summand, this.shell_expr, this.reach_expr].for(e => {
-      Model.unbound(e).for(n => { out.push(n) if !out.contains(n) & n != "\\bar{{R}}" & !n.ends_with("\\paren{{...}}") })
-    })
-    out
+    [this.outer, this.summand, this.shell_expr, this.reach_expr].reduce(this.per_body.concat(["SUM"]), (out, e) => Model.unbound(e).filter(n => n != "\\bar{{R}}" & !n.ends_with("\\paren{{...}}")).reduce(out, (o, n) => o.contains(n) ? o : o.push(n)))
   }
   /* the constants, by the names' order: nought for a per-body name and the sum, and a name the closure does not settle is an error */
   constants (): Real[] => this.names.map(n => {

@@ -27,12 +27,12 @@ Piece := class < kind: String {
   /* a citation's key */
   key: String = ""
 
-  static text_ (t: String): Piece => { p := Piece(kind: "text"); p.text = t; p }
-  static wrap (kind: String, of: Piece[]): Piece => { p := Piece(kind: kind); p.of = of; p }
-  static words (t: String): Piece => { p := Piece(kind: "words"); p.text = t; p }
-  static big (kind: String, lo: Piece[], hi: Piece[]): Piece => { p := Piece(kind: kind); p.lo = lo; p.hi = hi; p }
-  static stacked (kind: String, over: Piece[], under: Piece[]): Piece => { p := Piece(kind: kind); p.over = over; p.under = under; p }
-  static cite (key: String): Piece => { p := Piece(kind: "ref"); p.key = key; p }
+  static text_ (t: String): Piece => Piece(kind: "text", text: t)
+  static wrap (kind: String, of: Piece[]): Piece => Piece(kind: kind, of: of)
+  static words (t: String): Piece => Piece(kind: "words", text: t)
+  static big (kind: String, lo: Piece[], hi: Piece[]): Piece => Piece(kind: kind, lo: lo, hi: hi)
+  static stacked (kind: String, over: Piece[], under: Piece[]): Piece => Piece(kind: kind, over: over, under: under)
+  static cite (key: String): Piece => Piece(kind: "ref", key: key)
 }
 
 /* a braced argument: what was inside, and where the text goes on */
@@ -94,17 +94,15 @@ Notation := class {
   static is_name (c: Char): boolean => Notation.is_alnum(c) | c == 95
   static sub_ (s: String, a: N, b: N): String => String(chars: s.chars.drop(a).take(b - a))
   static char_at (s: String, i: N): Char => i < s.length ? s.chars[i] : 0
+  /* the characters from `at` on for as long as they pass */
+  static run (s: String, at: N, keep: (c: Char): boolean): String => {
+    k := at
+    while k < s.length & keep(s.chars[k]) { k = k + 1 }
+    Notation.sub_(s, at, k)
+  }
   /* the letters from `at` on: a command's name */
-  static letters (s: String, at: N): String => {
-    k := at
-    while k < s.length & Notation.is_letter(s.chars[k]) { k = k + 1 }
-    Notation.sub_(s, at, k)
-  }
-  static alnums (s: String, at: N): String => {
-    k := at
-    while k < s.length & Notation.is_alnum(s.chars[k]) { k = k + 1 }
-    Notation.sub_(s, at, k)
-  }
+  static letters (s: String, at: N): String => Notation.run(s, at, c => Notation.is_letter(c))
+  static alnums (s: String, at: N): String => Notation.run(s, at, c => Notation.is_alnum(c))
 
   /* one of the lattice's own counts, barred if it is always written so */
   static counted (w: String): Piece => {
@@ -147,6 +145,9 @@ Notation := class {
     Args(got: got, end: k)
   }
 
+  /* a base with a script raised (`sup`) or lowered on it */
+  static scripted (base: Piece, kind: String, of: Piece[]): Piece => Piece(kind: "scripted", base: base, raised: kind == "sup" ? of : None, lowered: kind == "sup" ? None : of)
+
   /* a script on what came before: a base and its scripts are one box */
   static attach (out: Piece[], kind: String, of: Piece[]) => {
     if out.empty {
@@ -167,17 +168,11 @@ Notation := class {
       head := Notation.sub_(t, 0, t.length - 1)
       last_char := Notation.sub_(t, t.length - 1, t.length)
       if head.empty { out.pop } else { tail.text = head }
-      s := Piece(kind: "scripted")
-      s.base = Piece.text_(last_char)
-      if kind == "sup" { s.raised = of } else { s.lowered = of }
-      out.push(s)
+      out.push(Notation.scripted(Piece.text_(last_char), kind, of))
       return None
     }
     out.pop
-    s := Piece(kind: "scripted")
-    s.base = tail
-    if kind == "sup" { s.raised = of } else { s.lowered = of }
-    out.push(s)
+    out.push(Notation.scripted(tail, kind, of))
   }
 
   /* the markup, read into pieces */
@@ -304,21 +299,13 @@ Notation := class {
       }
     }
     /* split keeping the separators, so a word can be tested against what follows it */
+    starts_name := (c: Char): boolean => Notation.is_letter(c) | c == 95
     bits := []
     k := 0
     while k < s.length {
-      c := s.chars[k]
-      if Notation.is_letter(c) | c == 95 {
-        j := k
-        while j < s.length & Notation.is_name(s.chars[j]) { j = j + 1 }
-        bits.push(Notation.sub_(s, k, j))
-        k = j
-      } else {
-        j := k
-        while j < s.length & !(Notation.is_letter(s.chars[j]) | s.chars[j] == 95) { j = j + 1 }
-        bits.push(Notation.sub_(s, k, j))
-        k = j
-      }
+      bit := starts_name(s.chars[k]) ? Notation.run(s, k, c => Notation.is_name(c)) : Notation.run(s, k, c => !starts_name(c))
+      bits.push(bit)
+      k = k + bit.length
     }
     i := 0
     while i < bits.length {
@@ -427,26 +414,13 @@ Setter := class {
   together (parts: Array): * => parts.join("")
   text (t: String): * => Notation.escaped(t)
   words (t: String): * => "<span class=\"tx\">{Notation.escaped(t)}</span>"
-  /* a wrap by kind: var, count, fn, muted, bar, hat, tilde, vec, dot, ddot, bold, cal, bb, sqrt, sup, sub, paren */
+  /* how each kind of wrap is drawn: what opens it and what closes it; any other kind is a span of that class */
+  static KINDS = ["var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren"]
+  static OPENS = ["<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">"]
+  static CLOSES = ["</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>"]
   wrap (kind: String, c: *): * => {
-    return "<i>{c}</i>" if kind == "var"
-    return "<b class=\"k\">{c}</b>" if kind == "count"
-    return "<b class=\"d\">{c}</b>" if kind == "fn"
-    return "<span class=\"mu\">{c}</span>" if kind == "muted"
-    return "<span class=\"bar\">{c}</span>" if kind == "bar"
-    return "<span class=\"acc hat\">{c}</span>" if kind == "hat"
-    return "<span class=\"acc tld\">{c}</span>" if kind == "tilde"
-    return "<span class=\"acc vec\">{c}</span>" if kind == "vec"
-    return "<span class=\"acc dot\">{c}</span>" if kind == "dot"
-    return "<span class=\"acc ddot\">{c}</span>" if kind == "ddot"
-    return "<b class=\"bf\">{c}</b>" if kind == "bold"
-    return "<span class=\"cal\">{c}</span>" if kind == "cal"
-    return "<span class=\"bb\">{c}</span>" if kind == "bb"
-    return "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">{c}</span></span>" if kind == "sqrt"
-    return "<sup>{c}</sup>" if kind == "sup"
-    return "<sub>{c}</sub>" if kind == "sub"
-    return "<span class=\"paren\">{c}</span>" if kind == "paren"
-    "<span class=\"{kind}\">{c}</span>"
+    i := Setter.KINDS.index_of(kind)
+    i == None ? "<span class=\"{kind}\">{c}</span>" : "{Setter.OPENS[i]}{c}{Setter.CLOSES[i]}"
   }
   /* an integral, a contour integral, a sum, a product: a sign with its two limits */
   big (kind: String, lo: *, hi: *): * => {

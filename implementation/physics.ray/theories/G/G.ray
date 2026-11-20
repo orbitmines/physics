@@ -202,12 +202,11 @@ G: Theory = class {
     ink.every = true
     w := Strip.line(this, 10)
     Strip.light(w, 0, 1)
-    lanes := [Strip.lane(w, ink)]
-    Array.range(8).for(t => {
+    lanes := [Strip.lane(w, ink)].concat(Array.range(8).map(t => {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
-      lanes.push(Strip.lane(w, ink))
-    })
+      Strip.lane(w, ink)
+    }))
     Strip.tell("rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes, ink)
   }
 
@@ -224,16 +223,15 @@ G: Theory = class {
     ink.top = 36
     w := Strip.line(this, 17)
     w.add(Scripted(at: Vector(components: [Real.of(8)]), plan: ["", "+", "-", "", "+-", "", "+", "-"], weight: 1))
-    lanes := [Strip.lane(w, ink)]
-    Array.range(8).for(t => {
+    lanes := [Strip.lane(w, ink)].concat(Array.range(8).map(t => {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
       moved := Strip.lane(w, ink)
       Strip.run(w, ["/S.1"])
       now := Strip.lane(w, ink)
       now.says = Strip.emitting(moved, now)
-      lanes.push(now)
-    })
+      now
+    }))
     Strip.tell("rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes, ink)
   }
 
@@ -256,8 +254,7 @@ G: Theory = class {
     s := w.add(Scripted(at: Vector(components: [Real.of(9)]), plan: ["+-", "", "", "", "+-"], weight: 4))
     s.moves = true
     s.momentum = Vector(components: [Real.of(1)])
-    lanes := [Strip.lane(w, ink)]
-    Array.range(9).for(t => {
+    [Strip.lane(w, ink)].concat(Array.range(9).map(t => {
       Strip.begin(w)
       Strip.run(w, ["/c", "/4"])
       moved := Strip.lane(w, ink)
@@ -266,12 +263,10 @@ G: Theory = class {
       Strip.run(w, ["/S.v"])
       now := Strip.lane(w, ink)
       /* only what it does is said: standing still and emitting nothing leave the source unlabelled */
-      went := ""
-      if s.stepped { went = w.geometry.V(s.moved_along).components[0] > 0 ? "steps right" : "steps left" }
+      went := !s.stepped ? "" : (w.geometry.V(s.moved_along).components[0] > 0 ? "steps right" : "steps left")
       now.says = went.empty ? emitted : (emitted.empty ? went : "{went}, {emitted}")
-      lanes.push(now)
-    })
-    lanes
+      now
+    }))
   }
 
   /*
@@ -568,8 +563,7 @@ G: Theory = class {
         /* the Sun is held, because the panel is about whether a planet goes round it */
         sun := Body(x: 0, y: 0, mx: pulse(0), ways: ways(0))
         sun.tag = 1
-        out := [sun]
-        Array.range(PLANETS.length).for(k => {
+        [sun].concat(Array.range(PLANETS.length).map(k => {
           i := PLANETS[k]
           /* at its aphelion, moving across at the speed the derivation gives for its orbit (a speed is a momentum of v m-bar) */
           b_ := Body(x: cells(AX[i] * (1 + EC[i])), y: 0, mx: pulse(i), ways: ways(i))
@@ -581,9 +575,8 @@ G: Theory = class {
           b_.launch = "orbit"
           b_.ecc = EC[i]
           b_.py = 0 - 1
-          out.push(b_)
-        })
-        out
+          b_
+        }))
       })
     /* the fields have already propagated: the bodies held while their rays and the beat cross the whole box, an even number of ticks */
     BURN := 2 * (VIEW + MARGIN)

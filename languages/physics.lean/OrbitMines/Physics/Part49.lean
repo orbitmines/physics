@@ -192,7 +192,7 @@ ray_impl_method "body_of" (z_0 : Float) : Hole := do
     return ωnull))) rfirst ())))
   return ωnull
 ray_impl_getter "terms" : (RList Value) := do
-  if true then return (← ωget (← ωget (← ωget self "theory") "equation") "terms")
+  if true then return (← ωget (← ωget self "theory") "terms_read")
   return ωnull
 ray_impl_field "meets" : (RList Value) := do
   return (← dot! (← ωget self "terms") rfilter ((fn! [t_1] do
@@ -369,20 +369,11 @@ ray_impl_method "add" (h_0 : Hole) : Hole := do
   return ωnull
 ray_impl_method "under" (h_0 : Hole) : (RList Float) := do
   let half_0 ← IO.mkRef (← dot! ((← ωdiv ((← ωsub (← ωget self "K") (1 : Float))) (2 : Float))) rfloor ())
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget self "K")] do
-    let dy_1 ← IO.mkRef (ωnatF i1)
-    for i2 in [0:ωrangeN (← ωget self "K")] do
-      let dx_2 ← IO.mkRef (ωnatF i2)
-      let c_2 ← IO.mkRef (← call! self "at" ((← ωadd (← ωsub (← dot! (← ωget (← h_0.get) "x") rround ()) (← half_0.get)) (← dx_2.get)), (← ωadd (← ωsub (← dot! (← ωget (← h_0.get) "y") rround ()) (← half_0.get)) (← dy_1.get))))
-      if ωtruthy (← ωge (← c_2.get) (0 : Float)) then
-        (← dot! (← out_0.get) rpush ((← c_2.get))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← out_0.get)
+  if true then return (← dot! (← dot! (← ωrrange (← ωmul (← ωget self "K") (← ωget self "K"))) rmap ((fn! [i_3] do
+    if true then return (← call! self "at" ((← ωadd (← ωsub (← dot! (← ωget (← h_0.get) "x") rround ()) (← half_0.get)) (← ωmodv (← i_3.get) (← ωget self "K"))), (← ωadd (← ωsub (← dot! (← ωget (← h_0.get) "y") rround ()) (← half_0.get)) (← dot! ((← ωdiv (← i_3.get) (← ωget self "K"))) rfloor ()))))
+    return ωnull))) rfilter ((fn! [c_2] do
+    if true then return (← ωge (← c_2.get) (0 : Float))
+    return ωnull)))
   return ωnull
 ray_impl_method "spread" (h_0 : Hole) : (RList (RList Float)) := do
   let half_0 ← IO.mkRef (← ωdiv (← ωsub (← ωget self "K") (1 : Float)) (2 : Float))

@@ -106,4 +106,13 @@ import OrbitMines.Physics.Part95
 import OrbitMines.Physics.Part96
 import OrbitMines.Physics.Part97
 import OrbitMines.Physics.Part98
+import OrbitMines.Physics.Part99
+import OrbitMines.Physics.Part100
+import OrbitMines.Physics.Part101
+import OrbitMines.Physics.Part102
+import OrbitMines.Physics.Part103
+import OrbitMines.Physics.Part104
+import OrbitMines.Physics.Part105
+import OrbitMines.Physics.Part106
+import OrbitMines.Physics.Part107
 import OrbitMines.Physics.Theorems

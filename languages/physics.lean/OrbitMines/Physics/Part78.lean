@@ -96,18 +96,14 @@ ray_impl_static "flat" : (RList RarPoint) := do
       pure ()
     pure ()
   Value.null |> ωsink
-  let out_0 ← IO.mkRef (← ωlst #[])
   let names_0 ← IO.mkRef (← ωget (← cls% Sparc) "names")
-  for i1 in [0:ωrangeN (← dot! (← names_0.get) rlength ())] do
-    let g_1 ← IO.mkRef (ωnatF i1)
-    let p_1 ← IO.mkRef (← ωelem (← best_0.get) (← g_1.get))
-    if ωtruthy (!ωisNull (← p_1.get)) then
-      let q_1 ← IO.mkRef (← new! RarPoint («gbar» := (← ωget (← p_1.get) "gbar"), «gobs» := (← ωget (← p_1.get) "gobs"), «galaxy» := (← ωget (← p_1.get) "galaxy"), «R» := (← ωget (← p_1.get) "R")))
-      (ωsetter (← q_1.get) "name") (← ωelem (← names_0.get) (← g_1.get))
-      (← dot! (← out_0.get) rpush ((← q_1.get))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
+  let out_0 ← IO.mkRef (← dot! (← dot! (← ωrrange (← dot! (← names_0.get) rlength ())) rfilter ((fn! [g_3] do
+    if true then return (!ωisNull (← ωelem (← best_0.get) (← g_3.get)))
+    return ωnull))) rmap ((fn! [g_2] do
+    let q_2 ← IO.mkRef (← new! RarPoint («gbar» := (← ωget (← ωelem (← best_0.get) (← g_2.get)) "gbar"), «gobs» := (← ωget (← ωelem (← best_0.get) (← g_2.get)) "gobs"), «galaxy» := (← ωget (← ωelem (← best_0.get) (← g_2.get)) "galaxy"), «R» := (← ωget (← ωelem (← best_0.get) (← g_2.get)) "R")))
+    (ωsetter (← q_2.get) "name") (← ωelem (← names_0.get) (← g_2.get))
+    if true then return (← q_2.get)
+    return ωnull)))
   (← (ωatSetter (← ωget (← cls% Sparc) "CACHE") ("flat" : String)) (← out_0.get)) |> ωsink
   if true then return (← out_0.get)
   return ωnull
@@ -121,14 +117,11 @@ ray_impl_static "btfr" : (RList Btfr) := do
     pure ()
   let c_0 ← IO.mkRef (← ωget (← t_0.get) "columns")
   let names_0 ← IO.mkRef (← ωelem (← ωget (← t_0.get) "header") ("names" : String))
-  let out_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (← ωget (← t_0.get) "rows")] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    if ωtruthy (← ωgt (← ωelem (← ωelem (← c_0.get) ("Vf" : String)) (← i_1.get)) (0 : Float)) then
-      (← dot! (← out_0.get) rpush ((← new! Btfr («name» := (← ωelem (← names_0.get) (← i_1.get)), «galaxy» := (← ωelem (← ωelem (← c_0.get) ("galaxy" : String)) (← i_1.get)), «vf» := (← ωelem (← ωelem (← c_0.get) ("Vf" : String)) (← i_1.get)), «err» := (← ωelem (← ωelem (← c_0.get) ("e_Vf" : String)) (← i_1.get)), «mass» := (← ωmul (← ωpow (10 : Float) (← ωelem (← ωelem (← c_0.get) ("log(Mb)" : String)) (← i_1.get))) (← ωget (← cls% Sparc) "MSUN")), «err_mass» := (← ωelem (← ωelem (← c_0.get) ("e_log(Mb)" : String)) (← i_1.get)))))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
+  let out_0 ← IO.mkRef (← dot! (← dot! (← ωrrange (← ωget (← t_0.get) "rows")) rfilter ((fn! [i_3] do
+    if true then return (← ωgt (← ωelem (← ωelem (← c_0.get) ("Vf" : String)) (← i_3.get)) (0 : Float))
+    return ωnull))) rmap ((fn! [i_2] do
+    if true then return (← new! Btfr («name» := (← ωelem (← names_0.get) (← i_2.get)), «galaxy» := (← ωelem (← ωelem (← c_0.get) ("galaxy" : String)) (← i_2.get)), «vf» := (← ωelem (← ωelem (← c_0.get) ("Vf" : String)) (← i_2.get)), «err» := (← ωelem (← ωelem (← c_0.get) ("e_Vf" : String)) (← i_2.get)), «mass» := (← ωmul (← ωpow (10 : Float) (← ωelem (← ωelem (← c_0.get) ("log(Mb)" : String)) (← i_2.get))) (← ωget (← cls% Sparc) "MSUN")), «err_mass» := (← ωelem (← ωelem (← c_0.get) ("e_log(Mb)" : String)) (← i_2.get))))
+    return ωnull)))
   (← (ωatSetter (← ωget (← cls% Sparc) "CACHE") ("btfr" : String)) (← out_0.get)) |> ωsink
   if true then return (← out_0.get)
   return ωnull

@@ -424,22 +424,31 @@ static const bool R_Vertex = define_class("Vertex", "Ray", &C_Vertex);
 
 static void C_Vector(Cls& c) {
   c.field("components", nullptr);
-  c.method("plus", [](Value self, const Args& a1) -> Value {
-    auto b_0 = cell(arg(a1, 0));
+  c.method("zipped", [](Value self, const Args& a1) -> Value {
+    auto b_0 = cell(arg(a1, 0)); auto f_0 = cell(arg(a1, 1));
     return make(S<"Vector">(), { kw(S<"components">(), m_map(rng(len(get(self, S<"components">()))), fn([=](const Args& a3) -> Value {
       auto i_2 = cell(arg(a3, 0));
-      return add(elem(get(self, S<"components">()), i_2->v), elem(get(b_0->v, S<"components">()), i_2->v));
+      return invoke(f_0->v, { elem(get(self, S<"components">()), i_2->v), elem(get(b_0->v, S<"components">()), i_2->v) });
       return null;
     }))) });
     return null;
   });
+  c.method("plus", [](Value self, const Args& a1) -> Value {
+    auto b_0 = cell(arg(a1, 0));
+    return call(self, S<"zipped">(), { b_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0)); auto y_2 = cell(arg(a3, 1));
+      return add(x_2->v, y_2->v);
+      return null;
+    }) });
+    return null;
+  });
   c.method("minus", [](Value self, const Args& a1) -> Value {
     auto b_0 = cell(arg(a1, 0));
-    return make(S<"Vector">(), { kw(S<"components">(), m_map(rng(len(get(self, S<"components">()))), fn([=](const Args& a3) -> Value {
-      auto i_2 = cell(arg(a3, 0));
-      return sub(elem(get(self, S<"components">()), i_2->v), elem(get(b_0->v, S<"components">()), i_2->v));
+    return call(self, S<"zipped">(), { b_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0)); auto y_2 = cell(arg(a3, 1));
+      return sub(x_2->v, y_2->v);
       return null;
-    }))) });
+    }) });
     return null;
   });
   c.method("times", [](Value self, const Args& a1) -> Value {
@@ -453,11 +462,11 @@ static void C_Vector(Cls& c) {
   });
   c.method("dot", [](Value self, const Args& a1) -> Value {
     auto b_0 = cell(arg(a1, 0));
-    return m_sum(m_map(rng(len(get(self, S<"components">()))), fn([=](const Args& a3) -> Value {
-      auto i_2 = cell(arg(a3, 0));
-      return mul(elem(get(self, S<"components">()), i_2->v), elem(get(b_0->v, S<"components">()), i_2->v));
+    return m_sum(get(call(self, S<"zipped">(), { b_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0)); auto y_2 = cell(arg(a3, 1));
+      return mul(x_2->v, y_2->v);
       return null;
-    })));
+    }) }), S<"components">()));
     return null;
   });
   c.getter("norm", [](Value self, const Args& a1) -> Value {
@@ -540,16 +549,15 @@ static void C_Geometry(Cls& c) {
       return get(v_2->v, S<"norm">());
       return null;
     }));
-    auto chosen_0 = cell(); chosen_0->v = list({  });
-    for (const Value& e1 : Each(squared_0->v)) {
-      auto s_1 = cell(e1);
-      for (const Value& e2 : Each(all_0->v)) {
-        auto v_2 = cell(e2);
-        if (truthy(eq(call(v_2->v, S<"dot">(), { v_2->v }), s_1->v))) {
-          m_push(chosen_0->v, v_2->v);
-        }
-      };
-    };
+    auto chosen_0 = cell(); chosen_0->v = m_reduce(squared_0->v, list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto s_2 = cell(arg(a3, 1));
+      return m_concat(out_2->v, filt(all_0->v, fn([=](const Args& a5) -> Value {
+        auto v_4 = cell(arg(a5, 0));
+        return eq(call(v_4->v, S<"dot">(), { v_4->v }), s_2->v);
+        return null;
+      })));
+      return null;
+    }));
     auto joined_0 = cell(); joined_0->v = m_join(squared_0->v, "+");
     return make(S<"Geometry">(), { kw(S<"name">(), "shells-" + str(D_0->v) + "-" + str(joined_0->v) + ""), kw(S<"offsets">(), chosen_0->v) });
     return null;
@@ -581,24 +589,26 @@ static void C_Geometry(Cls& c) {
     return make(S<"Geometry">(), { kw(S<"name">(), "nearest-" + str(D_0->v) + "-" + str(DEG_0->v) + ""), kw(S<"offsets">(), chosen_0->v) });
     return null;
   });
+  c.statik("grid", [](Value self, const Args& a1) -> Value {
+    auto D_0 = cell(arg(a1, 0)); auto low_0 = cell(arg(a1, 1)); auto count_0 = cell(arg(a1, 2));
+    return m_reduce(rng(D_0->v), list({ make(S<"Vector">(), { kw(S<"components">(), list({  })) }) }), fn([=](const Args& a3) -> Value {
+      auto points_2 = cell(arg(a3, 0)); auto __2 = cell(arg(a3, 1));
+      return m_reduce(points_2->v, list({  }), fn([=](const Args& a5) -> Value {
+        auto grown_4 = cell(arg(a5, 0)); auto p_4 = cell(arg(a5, 1));
+        return m_reduce(rng(count_0->v), grown_4->v, fn([=](const Args& a7) -> Value {
+          auto out_6 = cell(arg(a7, 0)); auto k_6 = cell(arg(a7, 1));
+          return m_push(out_6->v, make(S<"Vector">(), { kw(S<"components">(), m_concat(get(p_4->v, S<"components">()), list({ add(low_0->v, k_6->v) }))) }));
+          return null;
+        }));
+        return null;
+      }));
+      return null;
+    }));
+    return null;
+  });
   c.statik("box", [](Value self, const Args& a1) -> Value {
     auto D_0 = cell(arg(a1, 0)); auto radius_0 = cell(arg(a1, 1));
-    auto points_0 = cell(); points_0->v = list({ make(S<"Vector">(), { kw(S<"components">(), list({  })) }) });
-    auto i_0 = cell(); i_0->v = 0.0;
-    while (truthy(lt(i_0->v, D_0->v))) {
-      auto grown_0 = cell(); grown_0->v = list({  });
-      for (const Value& e1 : Each(points_0->v)) {
-        auto p_1 = cell(e1);
-        auto k_1 = cell(); k_1->v = sub(0.0, radius_0->v);
-        while (truthy(le(k_1->v, radius_0->v))) {
-          m_push(grown_0->v, make(S<"Vector">(), { kw(S<"components">(), m_concat(get(p_1->v, S<"components">()), list({ k_1->v }))) }));
-          k_1->v = add(k_1->v, 1.0);
-        }
-      };
-      points_0->v = grown_0->v;
-      i_0->v = add(i_0->v, 1.0);
-    }
-    return points_0->v;
+    return call(K(S<"Geometry">()), S<"grid">(), { D_0->v, sub(0.0, radius_0->v), add(mul(2.0, radius_0->v), 1.0) });
     return null;
   });
 }
@@ -669,6 +679,7 @@ static void C_Rule(Cls& c) {
 static const bool R_Rule = define_class("Rule", "Node", &C_Rule);
 
 static void C_Theory(Cls& c) {
+  c.staticField("TERMS", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
   c.field("name", nullptr);
   c.field("rules", [](const Value& self) -> Value { return list({  }); });
   c.field("visuals", [](const Value& self) -> Value { return list({  }); });
@@ -736,6 +747,13 @@ static void C_Theory(Cls& c) {
     return make(S<"Medium">(), { kw(S<"theory">(), self), kw(S<"N">(), N_0->v), kw(S<"A">(), A_0->v), kw(S<"K">(), K_0->v), kw(S<"DEG">(), orElse(DEG_0->v, [&]() -> Value { return get(get(self, S<"lattice">()), S<"DEG">()); })), kw(S<"tags">(), tags_0->v), kw(S<"D">(), orElse(D_0->v, [&]() -> Value { return get(get(self, S<"lattice">()), S<"D">()); })) });
     return null;
   });
+  c.getter("terms_read", [](Value self, const Args& a1) -> Value {
+    if (truthy(eq(elem(get(K(S<"Theory">()), S<"TERMS">()), get(self, S<"name">())), null))) {
+      setAt(get(K(S<"Theory">()), S<"TERMS">()), get(self, S<"name">()), get(get(self, S<"equation">()), S<"terms">()));
+    }
+    return elem(get(K(S<"Theory">()), S<"TERMS">()), get(self, S<"name">()));
+    return null;
+  });
   c.getter("proved", [](Value self, const Args& a1) -> Value {
     if (truthy(eq(elem(get(K(S<"Prover">()), S<"PROOFS">()), get(self, S<"name">())), null))) {
       setAt(get(K(S<"Prover">()), S<"PROOFS">()), get(self, S<"name">()), get(make(S<"Prover">(), { kw(S<"theory">(), self) }), S<"proof">()));
@@ -770,22 +788,7 @@ static void C_World(Cls& c) {
   });
   c.method("positions", [](Value self, const Args& a1) -> Value {
     auto N_0 = cell(arg(a1, 0));
-    auto points_0 = cell(); points_0->v = list({ make(S<"Vector">(), { kw(S<"components">(), list({  })) }) });
-    auto i_0 = cell(); i_0->v = 0.0;
-    while (truthy(lt(i_0->v, get(get(self, S<"geometry">()), S<"D">())))) {
-      auto grown_0 = cell(); grown_0->v = list({  });
-      for (const Value& e1 : Each(points_0->v)) {
-        auto p_1 = cell(e1);
-        auto k_1 = cell(); k_1->v = 0.0;
-        while (truthy(lt(k_1->v, N_0->v))) {
-          m_push(grown_0->v, make(S<"Vector">(), { kw(S<"components">(), m_concat(get(p_1->v, S<"components">()), list({ k_1->v }))) }));
-          k_1->v = add(k_1->v, 1.0);
-        }
-      };
-      points_0->v = grown_0->v;
-      i_0->v = add(i_0->v, 1.0);
-    }
-    return points_0->v;
+    return call(K(S<"Geometry">()), S<"grid">(), { get(get(self, S<"geometry">()), S<"D">()), 0.0, N_0->v });
     return null;
   });
   c.method("place", [](Value self, const Args& a1) -> Value {
@@ -894,14 +897,15 @@ static void C_World(Cls& c) {
         return null;
       }));
     }
-    auto rays_0 = cell(); rays_0->v = list({  });
-    for (const Value& e1 : Each(get(self, S<"live">()))) {
-      auto v_1 = cell(e1);
-      for (const Value& e2 : Each(get(v_1->v, S<"rays">()))) {
-        auto r_2 = cell(e2);
-        m_push(rays_0->v, r_2->v);
-      };
-    };
+    auto rays_0 = cell(); rays_0->v = m_reduce(get(self, S<"live">()), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return m_reduce(get(v_2->v, S<"rays">()), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto r_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, r_4->v);
+        return null;
+      }));
+      return null;
+    }));
     if (truthy(eq(kind_0->v, "Boundary"))) {
       return m_map(rays_0->v, fn([=](const Args& a3) -> Value {
         auto r_2 = cell(arg(a3, 0));
@@ -910,15 +914,15 @@ static void C_World(Cls& c) {
       }));
     }
     if (truthy(eq(kind_0->v, "Edge"))) {
-      auto edges_0 = cell(); edges_0->v = list({  });
-      for (const Value& e1 : Each(rays_0->v)) {
-        auto r_1 = cell(e1);
-        auto there_1 = cell(); there_1->v = get(r_1->v, S<"ahead">());
-        if (truthy((truthy((!eq(there_1->v, null))) && truthy(lt(get(get(r_1->v, S<"vertex">()), S<"ordinal">()), get(there_1->v, S<"ordinal">())))))) {
-          m_push(edges_0->v, get(get(r_1->v, S<"terminal">()), S<"edge">()));
-        }
-      };
-      return edges_0->v;
+      return m_map(filt(rays_0->v, fn([=](const Args& a4) -> Value {
+        auto r_3 = cell(arg(a4, 0));
+        return (truthy((!eq(get(r_3->v, S<"ahead">()), null))) && truthy(lt(get(get(r_3->v, S<"vertex">()), S<"ordinal">()), get(get(r_3->v, S<"ahead">()), S<"ordinal">()))));
+        return null;
+      })), fn([=](const Args& a3) -> Value {
+        auto r_2 = cell(arg(a3, 0));
+        return get(get(r_2->v, S<"terminal">()), S<"edge">());
+        return null;
+      }));
     }
     return list({  });
     return null;
@@ -1400,15 +1404,16 @@ static void C_Field(Cls& c) {
     auto y0_0 = cell(); y0_0->v = m_floor(py_0->v);
     auto fx_0 = cell(); fx_0->v = sub(px_0->v, x0_0->v);
     auto fy_0 = cell(); fy_0->v = sub(py_0->v, y0_0->v);
-    auto out_0 = cell(); out_0->v = list({  });
-    for (const Value& e1 : Each(list({ list({ x0_0->v, y0_0->v, mul((sub(1.0, fx_0->v)), (sub(1.0, fy_0->v))) }), list({ add(x0_0->v, 1.0), y0_0->v, mul(fx_0->v, (sub(1.0, fy_0->v))) }), list({ x0_0->v, add(y0_0->v, 1.0), mul((sub(1.0, fx_0->v)), fy_0->v) }), list({ add(x0_0->v, 1.0), add(y0_0->v, 1.0), mul(fx_0->v, fy_0->v) }) }))) {
-      auto t_1 = cell(e1);
-      auto c__1 = cell(); c__1->v = call(self, S<"at">(), { elem(t_1->v, 0.0), elem(t_1->v, 1.0) });
-      if (truthy((truthy(ge(c__1->v, 0.0)) && truthy(gt(elem(t_1->v, 2.0), 0.0))))) {
-        m_push(out_0->v, list({ c__1->v, elem(t_1->v, 2.0) }));
-      }
-    };
-    return out_0->v;
+    auto corners_0 = cell(); corners_0->v = list({ list({ x0_0->v, y0_0->v, mul((sub(1.0, fx_0->v)), (sub(1.0, fy_0->v))) }), list({ add(x0_0->v, 1.0), y0_0->v, mul(fx_0->v, (sub(1.0, fy_0->v))) }), list({ x0_0->v, add(y0_0->v, 1.0), mul((sub(1.0, fx_0->v)), fy_0->v) }), list({ add(x0_0->v, 1.0), add(y0_0->v, 1.0), mul(fx_0->v, fy_0->v) }) });
+    return filt(m_map(corners_0->v, fn([=](const Args& a4) -> Value {
+      auto t_3 = cell(arg(a4, 0));
+      return list({ call(self, S<"at">(), { elem(t_3->v, 0.0), elem(t_3->v, 1.0) }), elem(t_3->v, 2.0) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0));
+      return (truthy(ge(elem(p_2->v, 0.0), 0.0)) && truthy(gt(elem(p_2->v, 1.0), 0.0)));
+      return null;
+    }));
     return null;
   });
   c.method("hop", [](Value self, const Args& a1) -> Value {
@@ -1437,7 +1442,7 @@ static void C_Field(Cls& c) {
     return null;
   });
   c.getter("terms", [](Value self, const Args& a1) -> Value {
-    return get(get(get(self, S<"theory">()), S<"equation">()), S<"terms">());
+    return get(get(self, S<"theory">()), S<"terms_read">());
     return null;
   });
   c.getter("acting", [](Value self, const Args& a1) -> Value {
@@ -2035,18 +2040,15 @@ static void C_Field(Cls& c) {
     auto x_0 = cell(); x_0->v = call(self, S<"column_of">(), { c__0->v });
     auto y_0 = cell(); y_0->v = call(self, S<"row_of">(), { c__0->v });
     auto half_0 = cell(); half_0->v = m_floor((div((sub(get(self, S<"K">()), 1.0)), 2.0)));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (double i1 = 0, n1 = num(get(self, S<"K">())); i1 < n1; i1++) {
-      auto dy_1 = cell(i1);
-      for (double i2 = 0, n2 = num(get(self, S<"K">())); i2 < n2; i2++) {
-        auto dx_2 = cell(i2);
-        auto cell_2 = cell(); cell_2->v = call(self, S<"at">(), { add(sub(x_0->v, half_0->v), dx_2->v), add(sub(y_0->v, half_0->v), dy_1->v) });
-        if (truthy(ge(cell_2->v, 0.0))) {
-          m_push(out_0->v, cell_2->v);
-        }
-      };
-    };
-    return out_0->v;
+    return filt(m_map(rng(mul(get(self, S<"K">()), get(self, S<"K">()))), fn([=](const Args& a4) -> Value {
+      auto i_3 = cell(arg(a4, 0));
+      return call(self, S<"at">(), { add(sub(x_0->v, half_0->v), mod(i_3->v, get(self, S<"K">()))), add(sub(y_0->v, half_0->v), m_floor((div(i_3->v, get(self, S<"K">()))))) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto cell_2 = cell(arg(a3, 0));
+      return ge(cell_2->v, 0.0);
+      return null;
+    }));
     return null;
   });
   c.getter("block", [](Value self, const Args& a1) -> Value {

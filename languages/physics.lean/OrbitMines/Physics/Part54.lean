@@ -16,13 +16,9 @@ ray_impl_field "sizes" : (RList Float) := do
   return ωnull
 ray_impl_method "at" (frame_at_0 : Float) : object := do
   let out_0 ← IO.mkRef (← RMap.new)
-  let all_0 ← IO.mkRef (← ωelem (← ωget (← ωget self "film") "columns") ("frames" : String))
-  let width_0 ← IO.mkRef (← dot! (← ωget self "sizes") rsum ())
-  let from_at_0 ← IO.mkRef (← ωmul (← frame_at_0.get) (← width_0.get))
   for i1 in [0:ωrangeN (← dot! (← ωget self "names") rlength ())] do
     let i_1 ← IO.mkRef (ωnatF i1)
-    (ωatSetter (← out_0.get) (← ωelem (← ωget self "names") (← i_1.get))) (← dot! (← dot! (← all_0.get) rdrop ((← from_at_0.get))) rtake ((← ωelem (← ωget self "sizes") (← i_1.get))))
-    (← ωwr from_at_0 (← ωadd (← from_at_0.get) (← ωelem (← ωget self "sizes") (← i_1.get)))) |> ωsink
+    (ωatSetter (← out_0.get) (← ωelem (← ωget self "names") (← i_1.get))) (← dot! (← dot! (← ωelem (← ωget (← ωget self "film") "columns") ("frames" : String)) rdrop ((← ωadd (← ωmul (← frame_at_0.get) (← dot! (← ωget self "sizes") rsum ())) (← dot! (← dot! (← ωget self "sizes") rtake ((← i_1.get))) rsum ())))) rtake ((← ωelem (← ωget self "sizes") (← i_1.get))))
     pure ()
   Value.null |> ωsink
   if true then return (← out_0.get)

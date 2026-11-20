@@ -555,11 +555,9 @@ Inferences := class {
       each := (e: Expr, by: Expr): Expr => {
         t := Expr.simplify(Expr.div(e, by))
         return t if t.kind != "mul"
-        at := None
-        Array.range(t.of.length).for(i => { at = i if at == None & t.of[i].kind == "add" })
+        at := Array.range(t.of.length).filter(i => t.of[i].kind == "add").first
         return t if at == None
-        rest := []
-        Array.range(t.of.length).for(i => { rest.push(t.of[i]) if i != at })
+        rest := Array.range(t.of.length).filter(i => i != at).map(i => t.of[i])
         spread := Expr.simplify(Expr.add(t.of[at].of.map(x => Expr.simplify(Expr.mul(rest.concat([x]))))))
         Expr.show(spread).length < Expr.show(t).length ? spread : t
       }

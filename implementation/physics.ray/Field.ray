@@ -241,12 +241,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     y0 := py.floor
     fx := px - Real.of(x0)
     fy := py - Real.of(y0)
-    out := []
-    [[x0, y0, (1 - fx) * (1 - fy)], [x0 + 1, y0, fx * (1 - fy)], [x0, y0 + 1, (1 - fx) * fy], [x0 + 1, y0 + 1, fx * fy]].for(t => {
-      c := this.at(t[0], t[1])
-      out.push([c, t[2]]) if c >= 0 & t[2] > 0
-    })
-    out
+    corners := [[x0, y0, (1 - fx) * (1 - fy)], [x0 + 1, y0, fx * (1 - fy)], [x0, y0 + 1, (1 - fx) * fy], [x0 + 1, y0 + 1, fx * fy]]
+    corners.map(t => [this.at(t[0], t[1]), t[2]]).filter(p => p[0] >= 0 & p[1] > 0)
   }
   /* the cells one step on along a from c, and the cells whose step along a lands on c, by weight */
   hop (c: N, a: N): Array => this.taps(Real.of(c % this.N) + Real.of(this.K) * this.ux[a], Real.of((c - c % this.N) / this.N) + Real.of(this.K) * this.uy[a])
@@ -700,14 +696,8 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     x := this.column_of(c)
     y := this.row_of(c)
     half := ((Real.of(this.K) - 1) / 2).floor
-    out := []
-    Array.range(this.K).for(dy => {
-      Array.range(this.K).for(dx => {
-        cell := this.at(x - half + dx, y - half + dy)
-        out.push(cell) if cell >= 0
-      })
-    })
-    out
+    /* the K x K cells round it, row by row, those inside the box */
+    Array.range(this.K * this.K).map(i => this.at(x - half + i % this.K, y - half + (i / this.K).floor)).filter(cell => cell >= 0)
   }
   /* which cells the bodies stand on, off the bodies themselves */
   block () => {

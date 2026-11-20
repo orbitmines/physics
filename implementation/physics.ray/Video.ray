@@ -181,8 +181,7 @@ Video += {
     r := theory.solar.record
     at := 0
     Array.range(r.names.length).for(k => { at = r.names[k] == "marks" ? k : at })
-    off := 0
-    Array.range(at).for(k => { off = off + r.sizes[k] })
+    off := r.sizes.take(at).sum
     SOLAR := Measured.of("solar-inner")
     NAMES := SOLAR.header["names"]
     PER := SOLAR.columns["period"]
@@ -746,8 +745,7 @@ Video += {
     r := sol.record
     at := 0
     Array.range(r.names.length).for(k => { at = r.names[k] == "marks" ? k : at })
-    off := 0
-    Array.range(at).for(k => { off = off + r.sizes[k] })
+    off := r.sizes.take(at).sum
     n := (8 * Video.FPS).round
     pic := Picture(id: "video.to-solar", what: "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it", width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: (played: Played?) => Planets(n: n, lane: lanes.last, ink: ink, per: Video.per_tick(lanes), stamp: r.stamp, off: off, width: r.width, bodies: ((r.sizes[at] - 1) / 6).round))
     pic.uses = ["solar.inner"]

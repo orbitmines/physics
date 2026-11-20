@@ -8,6 +8,12 @@ namespace OrbitMines.Physics
 
 
 namespace Setter
+ray_impl_sfield "KINDS" : Value := do
+  return (← ωlst #[("var" : String), ("count" : String), ("fn" : String), ("muted" : String), ("bar" : String), ("hat" : String), ("tilde" : String), ("vec" : String), ("dot" : String), ("ddot" : String), ("bold" : String), ("cal" : String), ("bb" : String), ("sqrt" : String), ("sup" : String), ("sub" : String), ("paren" : String)])
+ray_impl_sfield "OPENS" : Value := do
+  return (← ωlst #[("<i>" : String), ("<b class=\"k\">" : String), ("<b class=\"d\">" : String), ("<span class=\"mu\">" : String), ("<span class=\"bar\">" : String), ("<span class=\"acc hat\">" : String), ("<span class=\"acc tld\">" : String), ("<span class=\"acc vec\">" : String), ("<span class=\"acc dot\">" : String), ("<span class=\"acc ddot\">" : String), ("<b class=\"bf\">" : String), ("<span class=\"cal\">" : String), ("<span class=\"bb\">" : String), ("<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" : String), ("<sup>" : String), ("<sub>" : String), ("<span class=\"paren\">" : String)])
+ray_impl_sfield "CLOSES" : Value := do
+  return (← ωlst #[("</i>" : String), ("</b>" : String), ("</b>" : String), ("</span>" : String), ("</span>" : String), ("</span>" : String), ("</span>" : String), ("</span>" : String), ("</span>" : String), ("</span>" : String), ("</b>" : String), ("</span>" : String), ("</span>" : String), ("</span></span>" : String), ("</sup>" : String), ("</sub>" : String), ("</span>" : String)])
 ray_impl_method "together" (parts_0 : (RList Value)) : Value := do
   if true then return (← dot! (← parts_0.get) rjoin (("" : String)))
   return ωnull
@@ -18,58 +24,8 @@ ray_impl_method "words" (t_0 : String) : Value := do
   if true then return ("<span class=\"tx\">" ++ (← ωtoStr (← call! (← cls% Notation) "escaped" ((← t_0.get)))) ++ "</span>" : String)
   return ωnull
 ray_impl_method "wrap" (kind_0 : String) (c_0 : Value) : Value := do
-  if ωtruthy (← ωeqv (← kind_0.get) ("var" : String)) then
-    if true then return ("<i>" ++ (← ωtoStr (← c_0.get)) ++ "</i>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("count" : String)) then
-    if true then return ("<b class=\"k\">" ++ (← ωtoStr (← c_0.get)) ++ "</b>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("fn" : String)) then
-    if true then return ("<b class=\"d\">" ++ (← ωtoStr (← c_0.get)) ++ "</b>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("muted" : String)) then
-    if true then return ("<span class=\"mu\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("bar" : String)) then
-    if true then return ("<span class=\"bar\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("hat" : String)) then
-    if true then return ("<span class=\"acc hat\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("tilde" : String)) then
-    if true then return ("<span class=\"acc tld\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("vec" : String)) then
-    if true then return ("<span class=\"acc vec\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("dot" : String)) then
-    if true then return ("<span class=\"acc dot\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("ddot" : String)) then
-    if true then return ("<span class=\"acc ddot\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("bold" : String)) then
-    if true then return ("<b class=\"bf\">" ++ (← ωtoStr (← c_0.get)) ++ "</b>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("cal" : String)) then
-    if true then return ("<span class=\"cal\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("bb" : String)) then
-    if true then return ("<span class=\"bb\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("sqrt" : String)) then
-    if true then return ("<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" ++ (← ωtoStr (← c_0.get)) ++ "</span></span>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("sup" : String)) then
-    if true then return ("<sup>" ++ (← ωtoStr (← c_0.get)) ++ "</sup>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("sub" : String)) then
-    if true then return ("<sub>" ++ (← ωtoStr (← c_0.get)) ++ "</sub>" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← kind_0.get) ("paren" : String)) then
-    if true then return ("<span class=\"paren\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
-    pure ()
-  if true then return ("<span class=\"" ++ (← ωtoStr (← kind_0.get)) ++ "\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)
+  let i_0 ← IO.mkRef (← dot! (← ωget (← cls% Setter) "KINDS") rindex_of ((← kind_0.get)))
+  if true then return (← ωtern (ωtruthy (ωisNull (← i_0.get))) (do pure ("<span class=\"" ++ (← ωtoStr (← kind_0.get)) ++ "\">" ++ (← ωtoStr (← c_0.get)) ++ "</span>" : String)) (do pure ("" ++ (← ωtoStr (← ωelem (← ωget (← cls% Setter) "OPENS") (← i_0.get))) ++ "" ++ (← ωtoStr (← c_0.get)) ++ "" ++ (← ωtoStr (← ωelem (← ωget (← cls% Setter) "CLOSES") (← i_0.get))) ++ "" : String)))
   return ωnull
 ray_impl_method "big" (kind_0 : String) (lo_0 : Value) (hi_0 : Value) : Value := do
   let sign_0 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← kind_0.get) ("int" : String))) (do pure ("&#8747;" : String)) (do pure ((← ωtern (ωtruthy (← ωeqv (← kind_0.get) ("oint" : String))) (do pure ("&#8750;" : String)) (do pure ((← ωtern (ωtruthy (← ωeqv (← kind_0.get) ("sum" : String))) (do pure ("&#8721;" : String)) (do pure ("&#8719;" : String)))))))))

@@ -359,15 +359,20 @@ end
 
 @class Vector <: Node begin
   @field components::List
-  function plus(self::__class__, b_0 = nothing, _...)
+  function zipped(self::__class__, b_0 = nothing, f_0 = nothing, _...)
     return Vector(components = map(rng(length(components(self))), (function (i_2 = nothing, _...)
-      return (getat(components(self), i_2) + getat(components(b_0), i_2))
+      return f_0(getat(components(self), i_2), getat(components(b_0), i_2))
     end)))
   end
+  function plus(self::__class__, b_0 = nothing, _...)
+    return zipped(self, b_0, (function (x_2 = nothing, y_2 = nothing, _...)
+      return (x_2 + y_2)
+    end))
+  end
   function minus(self::__class__, b_0 = nothing, _...)
-    return Vector(components = map(rng(length(components(self))), (function (i_2 = nothing, _...)
-      return (getat(components(self), i_2) - getat(components(b_0), i_2))
-    end)))
+    return zipped(self, b_0, (function (x_2 = nothing, y_2 = nothing, _...)
+      return (x_2 - y_2)
+    end))
   end
   function times(self::__class__, k_0 = nothing, _...)
     return Vector(components = map(components(self), (function (c_2 = nothing, _...)
@@ -375,9 +380,9 @@ end
     end)))
   end
   function dot(self::__class__, b_0 = nothing, _...)
-    return sum(map(rng(length(components(self))), (function (i_2 = nothing, _...)
-      return (getat(components(self), i_2) * getat(components(b_0), i_2))
-    end)))
+    return sum(components(zipped(self, b_0, (function (x_2 = nothing, y_2 = nothing, _...)
+      return (x_2 * y_2)
+    end))))
   end
   function norm(self::__class__)
     return sqrt(dot(self, self))
@@ -431,14 +436,11 @@ end
     end)), (function (v_2 = nothing, _...)
       return norm(v_2)
     end))
-    chosen_0 = Any[]
-    for s_1 in items(squared_0)
-      for v_2 in items(all_0)
-        if truthy((dot(v_2, v_2) == s_1))
-          push(chosen_0, v_2)
-        end
-      end
-    end
+    chosen_0 = reduce(squared_0, Any[], (function (out_2 = nothing, s_2 = nothing, _...)
+      return concat(out_2, filter(all_0, (function (v_4 = nothing, _...)
+        return (dot(v_4, v_4) == s_2)
+      end)))
+    end))
     joined_0 = join(squared_0, Base.string(j"+"))
     return Geometry(name = Base.string(j"shells-", str(D_0), j"-", str(joined_0), j""), offsets = chosen_0)
   end
@@ -461,22 +463,17 @@ end
     truthy((length(chosen_0) == DEG_0)) || throw(AssertionError(j"(length(chosen_0) == DEG_0)"))
     return Geometry(name = Base.string(j"nearest-", str(D_0), j"-", str(DEG_0), j""), offsets = chosen_0)
   end
+  function grid(self::Type{<:__class__}, D_0 = nothing, low_0 = nothing, count_0 = nothing, _...)
+    return reduce(rng(D_0), Any[Vector(components = Any[])], (function (points_2 = nothing, __2 = nothing, _...)
+      return reduce(points_2, Any[], (function (grown_4 = nothing, p_4 = nothing, _...)
+        return reduce(rng(count_0), grown_4, (function (out_6 = nothing, k_6 = nothing, _...)
+          return push(out_6, Vector(components = concat(components(p_4), Any[(low_0 + k_6)])))
+        end))
+      end))
+    end))
+  end
   function box(self::Type{<:__class__}, D_0 = nothing, radius_0 = nothing, _...)
-    points_0 = Any[Vector(components = Any[])]
-    i_0 = 0.0
-    while truthy((i_0 < D_0))
-      grown_0 = Any[]
-      for p_1 in items(points_0)
-        k_1 = (0.0 - radius_0)
-        while truthy((k_1 <= radius_0))
-          push(grown_0, Vector(components = concat(components(p_1), Any[k_1])))
-          k_1 = (k_1 + 1.0)
-        end
-      end
-      points_0 = grown_0
-      i_0 = (i_0 + 1.0)
-    end
-    return points_0
+    return grid(Geometry, D_0, (0.0 - radius_0), ((2.0 * radius_0) + 1.0))
   end
 end
 
@@ -528,6 +525,7 @@ end
 end
 
 @class Theory <: Node begin
+  @static_field TERMS = Node()
   @field name::String
   @field rules::List = Any[]
   @field visuals::List = Any[]
@@ -547,6 +545,12 @@ end
   end
   function medium(self::__class__, N_0 = nothing, A_0 = 96.0, K_0 = 3.0, DEG_0 = nothing, tags_0 = 1.0, D_0 = nothing, _...)
     return Medium(theory = self, N = N_0, A = A_0, K = K_0, DEG = (let q_ = DEG_0; q_ === nothing ? (DEG(lattice(self))) : q_ end), tags = tags_0, D = (let q_ = D_0; q_ === nothing ? (D(lattice(self))) : q_ end))
+  end
+  function terms_read(self::__class__)
+    if truthy((getat(TERMS(Theory), name(self)) == nothing))
+      setat!(TERMS(Theory), name(self), terms(equation(self)))
+    end
+    return getat(TERMS(Theory), name(self))
   end
   function proved(self::__class__)
     if truthy((getat(PROOFS(Prover), name(self)) == nothing))
@@ -577,21 +581,7 @@ end
     return self
   end
   function positions(self::__class__, N_0 = nothing, _...)
-    points_0 = Any[Vector(components = Any[])]
-    i_0 = 0.0
-    while truthy((i_0 < D(geometry(self))))
-      grown_0 = Any[]
-      for p_1 in items(points_0)
-        k_1 = 0.0
-        while truthy((k_1 < N_0))
-          push(grown_0, Vector(components = concat(components(p_1), Any[k_1])))
-          k_1 = (k_1 + 1.0)
-        end
-      end
-      points_0 = grown_0
-      i_0 = (i_0 + 1.0)
-    end
-    return points_0
+    return grid(Geometry, D(geometry(self)), 0.0, N_0)
   end
   function place(self::__class__, at_0 = nothing, _...)
     if truthy((length(vertices(self)) >= bound(self)))
@@ -675,26 +665,22 @@ end
         return Many(items(rays(v_2)))
       end))
     end
-    rays_0 = Any[]
-    for v_1 in items(live(self))
-      for r_2 in items(rays(v_1))
-        push(rays_0, r_2)
-      end
-    end
+    rays_0 = reduce(live(self), Any[], (function (out_2 = nothing, v_2 = nothing, _...)
+      return reduce(rays(v_2), out_2, (function (o_4 = nothing, r_4 = nothing, _...)
+        return push(o_4, r_4)
+      end))
+    end))
     if truthy((kind_0 == Base.string(j"Boundary")))
       return map(rays_0, (function (r_2 = nothing, _...)
         return terminal(r_2)
       end))
     end
     if truthy((kind_0 == Base.string(j"Edge")))
-      edges_0 = Any[]
-      for r_1 in items(rays_0)
-        there_1 = ahead(r_1)
-        if truthy((truthy((there_1 != nothing)) && truthy((ordinal(vertex(r_1)) < ordinal(there_1)))))
-          push(edges_0, edge(terminal(r_1)))
-        end
-      end
-      return edges_0
+      return map(filter(rays_0, (function (r_3 = nothing, _...)
+        return (truthy((ahead(r_3) != nothing)) && truthy((ordinal(vertex(r_3)) < ordinal(ahead(r_3)))))
+      end)), (function (r_2 = nothing, _...)
+        return edge(terminal(r_2))
+      end))
     end
     return Any[]
   end
@@ -1069,14 +1055,12 @@ end
     y0_0 = floor(py_0)
     fx_0 = (px_0 - x0_0)
     fy_0 = (py_0 - y0_0)
-    out_0 = Any[]
-    for t_1 in items(Any[Any[x0_0, y0_0, (((1.0 - fx_0)) * ((1.0 - fy_0)))], Any[(x0_0 + 1.0), y0_0, (fx_0 * ((1.0 - fy_0)))], Any[x0_0, (y0_0 + 1.0), (((1.0 - fx_0)) * fy_0)], Any[(x0_0 + 1.0), (y0_0 + 1.0), (fx_0 * fy_0)]])
-      c_1 = at(self, getat(t_1, 0.0), getat(t_1, 1.0))
-      if truthy((truthy((c_1 >= 0.0)) && truthy((getat(t_1, 2.0) > 0.0))))
-        push(out_0, Any[c_1, getat(t_1, 2.0)])
-      end
-    end
-    return out_0
+    corners_0 = Any[Any[x0_0, y0_0, (((1.0 - fx_0)) * ((1.0 - fy_0)))], Any[(x0_0 + 1.0), y0_0, (fx_0 * ((1.0 - fy_0)))], Any[x0_0, (y0_0 + 1.0), (((1.0 - fx_0)) * fy_0)], Any[(x0_0 + 1.0), (y0_0 + 1.0), (fx_0 * fy_0)]]
+    return filter(map(corners_0, (function (t_3 = nothing, _...)
+      return Any[at(self, getat(t_3, 0.0), getat(t_3, 1.0)), getat(t_3, 2.0)]
+    end)), (function (p_2 = nothing, _...)
+      return (truthy((getat(p_2, 0.0) >= 0.0)) && truthy((getat(p_2, 1.0) > 0.0)))
+    end))
   end
   function hop(self::__class__, c_0 = nothing, a_0 = nothing, _...)
     return taps(self, ((c_0 % N(self)) + (K(self) * getat(ux(self), a_0))), ((((c_0 - (c_0 % N(self)))) / N(self)) + (K(self) * getat(uy(self), a_0))))
@@ -1095,7 +1079,7 @@ end
     return total_0
   end
   function terms(self::__class__)
-    return terms(equation(theory(self)))
+    return terms_read(theory(self))
   end
   function acting(self::__class__)
     return filter(terms(self), (function (t_2 = nothing, _...)
@@ -1580,18 +1564,11 @@ end
     x_0 = column_of(self, c_0)
     y_0 = row_of(self, c_0)
     half_0 = floor(((((K(self) - 1.0)) / 2.0)))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(K(self))) - 1)
-      dy_1 = Float64(i1)
-      for i2 in 0:(ceil(Int, Rt.num(K(self))) - 1)
-        dx_2 = Float64(i2)
-        cell_2 = at(self, ((x_0 - half_0) + dx_2), ((y_0 - half_0) + dy_1))
-        if truthy((cell_2 >= 0.0))
-          push(out_0, cell_2)
-        end
-      end
-    end
-    return out_0
+    return filter(map(rng((K(self) * K(self))), (function (i_3 = nothing, _...)
+      return at(self, ((x_0 - half_0) + (i_3 % K(self))), ((y_0 - half_0) + floor(((i_3 / K(self))))))
+    end)), (function (cell_2 = nothing, _...)
+      return (cell_2 >= 0.0)
+    end))
   end
   function block(self::__class__)
     for i1 in 0:(ceil(Int, Rt.num(cells(self))) - 1)
@@ -1923,36 +1900,22 @@ end
   @field lowered::List = nothing
   @field key::String = Base.string(j"")
   function text_(self::Type{<:__class__}, t_0 = nothing, _...)
-    p_0 = Piece(kind = Base.string(j"text"))
-    p_0.text = t_0
-    return p_0
+    return Piece(kind = Base.string(j"text"), text = t_0)
   end
   function wrap(self::Type{<:__class__}, kind_0 = nothing, of_0 = nothing, _...)
-    p_0 = Piece(kind = kind_0)
-    p_0.of = of_0
-    return p_0
+    return Piece(kind = kind_0, of = of_0)
   end
   function words(self::Type{<:__class__}, t_0 = nothing, _...)
-    p_0 = Piece(kind = Base.string(j"words"))
-    p_0.text = t_0
-    return p_0
+    return Piece(kind = Base.string(j"words"), text = t_0)
   end
   function big(self::Type{<:__class__}, kind_0 = nothing, lo_0 = nothing, hi_0 = nothing, _...)
-    p_0 = Piece(kind = kind_0)
-    p_0.lo = lo_0
-    p_0.hi = hi_0
-    return p_0
+    return Piece(kind = kind_0, lo = lo_0, hi = hi_0)
   end
   function stacked(self::Type{<:__class__}, kind_0 = nothing, over_0 = nothing, under_0 = nothing, _...)
-    p_0 = Piece(kind = kind_0)
-    p_0.over = over_0
-    p_0.under = under_0
-    return p_0
+    return Piece(kind = kind_0, over = over_0, under = under_0)
   end
   function cite(self::Type{<:__class__}, key_0 = nothing, _...)
-    p_0 = Piece(kind = Base.string(j"ref"))
-    p_0.key = key_0
-    return p_0
+    return Piece(kind = Base.string(j"ref"), key = key_0)
   end
 end
 
@@ -1977,6 +1940,9 @@ end
 end
 
 @class Setter <: Node begin
+  @static_field KINDS = Any[Base.string(j"var"), Base.string(j"count"), Base.string(j"fn"), Base.string(j"muted"), Base.string(j"bar"), Base.string(j"hat"), Base.string(j"tilde"), Base.string(j"vec"), Base.string(j"dot"), Base.string(j"ddot"), Base.string(j"bold"), Base.string(j"cal"), Base.string(j"bb"), Base.string(j"sqrt"), Base.string(j"sup"), Base.string(j"sub"), Base.string(j"paren")]
+  @static_field OPENS = Any[Base.string(j"<i>"), Base.string(j"<b class=\"k\">"), Base.string(j"<b class=\"d\">"), Base.string(j"<span class=\"mu\">"), Base.string(j"<span class=\"bar\">"), Base.string(j"<span class=\"acc hat\">"), Base.string(j"<span class=\"acc tld\">"), Base.string(j"<span class=\"acc vec\">"), Base.string(j"<span class=\"acc dot\">"), Base.string(j"<span class=\"acc ddot\">"), Base.string(j"<b class=\"bf\">"), Base.string(j"<span class=\"cal\">"), Base.string(j"<span class=\"bb\">"), Base.string(j"<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">"), Base.string(j"<sup>"), Base.string(j"<sub>"), Base.string(j"<span class=\"paren\">")]
+  @static_field CLOSES = Any[Base.string(j"</i>"), Base.string(j"</b>"), Base.string(j"</b>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</b>"), Base.string(j"</span>"), Base.string(j"</span>"), Base.string(j"</span></span>"), Base.string(j"</sup>"), Base.string(j"</sub>"), Base.string(j"</span>")]
   function together(self::__class__, parts_0 = nothing, _...)
     return join(parts_0, Base.string(j""))
   end
@@ -1987,58 +1953,8 @@ end
     return Base.string(j"<span class=\"tx\">", str(escaped(Notation, t_0)), j"</span>")
   end
   function wrap(self::__class__, kind_0 = nothing, c_0 = nothing, _...)
-    if truthy((kind_0 == Base.string(j"var")))
-      return Base.string(j"<i>", str(c_0), j"</i>")
-    end
-    if truthy((kind_0 == Base.string(j"count")))
-      return Base.string(j"<b class=\"k\">", str(c_0), j"</b>")
-    end
-    if truthy((kind_0 == Base.string(j"fn")))
-      return Base.string(j"<b class=\"d\">", str(c_0), j"</b>")
-    end
-    if truthy((kind_0 == Base.string(j"muted")))
-      return Base.string(j"<span class=\"mu\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"bar")))
-      return Base.string(j"<span class=\"bar\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"hat")))
-      return Base.string(j"<span class=\"acc hat\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"tilde")))
-      return Base.string(j"<span class=\"acc tld\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"vec")))
-      return Base.string(j"<span class=\"acc vec\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"dot")))
-      return Base.string(j"<span class=\"acc dot\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"ddot")))
-      return Base.string(j"<span class=\"acc ddot\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"bold")))
-      return Base.string(j"<b class=\"bf\">", str(c_0), j"</b>")
-    end
-    if truthy((kind_0 == Base.string(j"cal")))
-      return Base.string(j"<span class=\"cal\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"bb")))
-      return Base.string(j"<span class=\"bb\">", str(c_0), j"</span>")
-    end
-    if truthy((kind_0 == Base.string(j"sqrt")))
-      return Base.string(j"<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", str(c_0), j"</span></span>")
-    end
-    if truthy((kind_0 == Base.string(j"sup")))
-      return Base.string(j"<sup>", str(c_0), j"</sup>")
-    end
-    if truthy((kind_0 == Base.string(j"sub")))
-      return Base.string(j"<sub>", str(c_0), j"</sub>")
-    end
-    if truthy((kind_0 == Base.string(j"paren")))
-      return Base.string(j"<span class=\"paren\">", str(c_0), j"</span>")
-    end
-    return Base.string(j"<span class=\"", str(kind_0), j"\">", str(c_0), j"</span>")
+    i_0 = index_of(KINDS(Setter), kind_0)
+    return (truthy((i_0 == nothing)) ? (Base.string(j"<span class=\"", str(kind_0), j"\">", str(c_0), j"</span>")) : (Base.string(j"", str(getat(OPENS(Setter), i_0)), j"", str(c_0), j"", str(getat(CLOSES(Setter), i_0)), j"")))
   end
   function big(self::__class__, kind_0 = nothing, lo_0 = nothing, hi_0 = nothing, _...)
     sign_0 = (truthy((kind_0 == Base.string(j"int"))) ? (Base.string(j"&#8747;")) : (((truthy((kind_0 == Base.string(j"oint"))) ? (Base.string(j"&#8750;")) : (((truthy((kind_0 == Base.string(j"sum"))) ? (Base.string(j"&#8721;")) : (Base.string(j"&#8719;")))))))))
@@ -2128,19 +2044,22 @@ end
   function char_at(self::Type{<:__class__}, s_0 = nothing, i_0 = nothing, _...)
     return (truthy((i_0 < length(s_0))) ? (getat(chars(s_0), i_0)) : (0.0))
   end
-  function letters(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, _...)
+  function run(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, keep_0 = nothing, _...)
     k_0 = at_0
-    while truthy((truthy((k_0 < length(s_0))) && truthy(is_letter(Notation, getat(chars(s_0), k_0)))))
+    while truthy((truthy((k_0 < length(s_0))) && truthy(keep_0(getat(chars(s_0), k_0)))))
       k_0 = (k_0 + 1.0)
     end
     return sub_(Notation, s_0, at_0, k_0)
   end
+  function letters(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, _...)
+    return run(Notation, s_0, at_0, (function (c_2 = nothing, _...)
+      return is_letter(Notation, c_2)
+    end))
+  end
   function alnums(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, _...)
-    k_0 = at_0
-    while truthy((truthy((k_0 < length(s_0))) && truthy(is_alnum(Notation, getat(chars(s_0), k_0)))))
-      k_0 = (k_0 + 1.0)
-    end
-    return sub_(Notation, s_0, at_0, k_0)
+    return run(Notation, s_0, at_0, (function (c_2 = nothing, _...)
+      return is_alnum(Notation, c_2)
+    end))
   end
   function counted(self::Type{<:__class__}, w_0 = nothing, _...)
     of_0 = wrap(Piece, Base.string(j"count"), Any[text_(Piece, w_0)])
@@ -2187,6 +2106,9 @@ end
     end
     return Args(got = got_0, end_ = k_0)
   end
+  function scripted(self::Type{<:__class__}, base_0 = nothing, kind_0 = nothing, of_0 = nothing, _...)
+    return Piece(kind = Base.string(j"scripted"), base = base_0, raised = (truthy((kind_0 == Base.string(j"sup"))) ? (of_0) : (nothing)), lowered = (truthy((kind_0 == Base.string(j"sup"))) ? (nothing) : (of_0)))
+  end
   function attach(self::Type{<:__class__}, out_0 = nothing, kind_0 = nothing, of_0 = nothing, _...)
     if truthy(empty(out_0))
       push(out_0, wrap(Piece, kind_0, of_0))
@@ -2214,25 +2136,11 @@ end
       else
         tail_0.text = head_0
       end
-      s_0 = Piece(kind = Base.string(j"scripted"))
-      s_0.base = text_(Piece, last_char_0)
-      if truthy((kind_0 == Base.string(j"sup")))
-        s_0.raised = of_0
-      else
-        s_0.lowered = of_0
-      end
-      push(out_0, s_0)
+      push(out_0, scripted(Notation, text_(Piece, last_char_0), kind_0, of_0))
       return nothing
     end
     pop(out_0)
-    s_0 = Piece(kind = Base.string(j"scripted"))
-    s_0.base = tail_0
-    if truthy((kind_0 == Base.string(j"sup")))
-      s_0.raised = of_0
-    else
-      s_0.lowered = of_0
-    end
-    return push(out_0, s_0)
+    return push(out_0, scripted(Notation, tail_0, kind_0, of_0))
   end
   function parse(self::Type{<:__class__}, src_0 = nothing, _...)
     out_0 = Any[]
@@ -2379,25 +2287,19 @@ end
         buf_0 = Base.string(j"")
       end
     end)
+    starts_name_0 = (function (c_1 = nothing, _...)
+      return (truthy(is_letter(Notation, c_1)) || truthy((c_1 == 95.0)))
+    end)
     bits_0 = Any[]
     k_0 = 0.0
     while truthy((k_0 < length(s_0)))
-      c_0 = getat(chars(s_0), k_0)
-      if truthy((truthy(is_letter(Notation, c_0)) || truthy((c_0 == 95.0))))
-        j_0 = k_0
-        while truthy((truthy((j_0 < length(s_0))) && truthy(is_name(Notation, getat(chars(s_0), j_0)))))
-          j_0 = (j_0 + 1.0)
-        end
-        push(bits_0, sub_(Notation, s_0, k_0, j_0))
-        k_0 = j_0
-      else
-        j_0 = k_0
-        while truthy((truthy((j_0 < length(s_0))) && truthy(!(((truthy(is_letter(Notation, getat(chars(s_0), j_0))) || truthy((getat(chars(s_0), j_0) == 95.0))))))))
-          j_0 = (j_0 + 1.0)
-        end
-        push(bits_0, sub_(Notation, s_0, k_0, j_0))
-        k_0 = j_0
-      end
+      bit_0 = (truthy(starts_name_0(getat(chars(s_0), k_0))) ? (run(Notation, s_0, k_0, (function (c_2 = nothing, _...)
+        return is_name(Notation, c_2)
+      end))) : (run(Notation, s_0, k_0, (function (c_2 = nothing, _...)
+        return !(starts_name_0(c_2))
+      end))))
+      push(bits_0, bit_0)
+      k_0 = (k_0 + length(bit_0))
     end
     i_0 = 0.0
     while truthy((i_0 < length(bits_0)))
@@ -2585,19 +2487,13 @@ end
   @field shown::String = nothing
   @field simple::Expr = nothing
   function num(self::Type{<:__class__}, n_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"num"))
-    e_0.value = n_0
-    return e_0
+    return Expr(kind = Base.string(j"num"), value = n_0)
   end
   function sym(self::Type{<:__class__}, name_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"sym"))
-    e_0.label = name_0
-    return e_0
+    return Expr(kind = Base.string(j"sym"), label = name_0)
   end
   function field(self::Type{<:__class__}, name_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"field"))
-    e_0.label = name_0
-    return e_0
+    return Expr(kind = Base.string(j"field"), label = name_0)
   end
   function add(self::Type{<:__class__}, xs_0 = nothing, _...)
     return flatten(Expr, Base.string(j"add"), xs_0)
@@ -2606,58 +2502,34 @@ end
     return flatten(Expr, Base.string(j"mul"), xs_0)
   end
   function to_power(self::Type{<:__class__}, base_0 = nothing, by_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"pow"))
-    e_0.base = base_0
-    e_0.power = by_0
-    return e_0
+    return Expr(kind = Base.string(j"pow"), base = base_0, power = by_0)
   end
   function pown(self::Type{<:__class__}, base_0 = nothing, by_0 = nothing, _...)
     return to_power(Expr, base_0, num(Expr, by_0))
   end
   function grad(self::Type{<:__class__}, x_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"grad"))
-    e_0.base = x_0
-    return e_0
+    return Expr(kind = Base.string(j"grad"), base = x_0)
   end
   function log(self::Type{<:__class__}, x_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"log"))
-    e_0.base = x_0
-    return e_0
+    return Expr(kind = Base.string(j"log"), base = x_0)
   end
   function exp(self::Type{<:__class__}, x_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"exp"))
-    e_0.base = x_0
-    return e_0
+    return Expr(kind = Base.string(j"exp"), base = x_0)
   end
   function choose(self::Type{<:__class__}, n_0 = nothing, k_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"choose"))
-    e_0.first_ = n_0
-    e_0.second_ = k_0
-    return e_0
+    return Expr(kind = Base.string(j"choose"), first_ = n_0, second_ = k_0)
   end
   function gamma_inc(self::Type{<:__class__}, s_0 = nothing, x_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"gammaInc"))
-    e_0.first_ = s_0
-    e_0.second_ = x_0
-    return e_0
+    return Expr(kind = Base.string(j"gammaInc"), first_ = s_0, second_ = x_0)
   end
   function root(self::Type{<:__class__}, x_0 = nothing, name_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"root"))
-    e_0.base = x_0
-    e_0.bound = name_0
-    return e_0
+    return Expr(kind = Base.string(j"root"), base = x_0, bound = name_0)
   end
   function limit(self::Type{<:__class__}, x_0 = nothing, name_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"limit"))
-    e_0.base = x_0
-    e_0.bound = name_0
-    return e_0
+    return Expr(kind = Base.string(j"limit"), base = x_0, bound = name_0)
   end
   function call(self::Type{<:__class__}, name_0 = nothing, x_0 = nothing, _...)
-    e_0 = Expr(kind = Base.string(j"call"))
-    e_0.label = name_0
-    e_0.base = x_0
-    return e_0
+    return Expr(kind = Base.string(j"call"), label = name_0, base = x_0)
   end
   function neg(self::Type{<:__class__}, x_0 = nothing, _...)
     return mul(Expr, Any[num(Expr, (-1.0)), x_0])
@@ -2686,23 +2558,27 @@ end
   function named(self::__class__)
     return (truthy((kind(self) == Base.string(j"sym"))) || truthy((kind(self) == Base.string(j"field"))))
   end
+  function subtrees(self::__class__)
+    if truthy((truthy((kind(self) == Base.string(j"add"))) || truthy((kind(self) == Base.string(j"mul")))))
+      return of(self)
+    end
+    if truthy((kind(self) == Base.string(j"pow")))
+      return Any[base(self), power(self)]
+    end
+    if truthy((truthy((kind(self) == Base.string(j"choose"))) || truthy((kind(self) == Base.string(j"gammaInc")))))
+      return Any[first_(self), second_(self)]
+    end
+    return (truthy((base(self) == nothing)) ? (Any[]) : (Any[base(self)]))
+  end
   function by_num(self::__class__)
     return (truthy((kind(power(self)) == Base.string(j"num"))) ? (value(power(self))) : (nothing))
   end
   function flatten(self::Type{<:__class__}, kind_0 = nothing, xs_0 = nothing, _...)
-    e_0 = Expr(kind = kind_0)
-    out_0 = Any[]
-    for x_1 in items(xs_0)
-      if truthy((kind(x_1) == kind_0))
-        for y_2 in items(of(x_1))
-          push(out_0, y_2)
-        end
-      else
-        push(out_0, x_1)
-      end
-    end
-    e_0.of = out_0
-    return e_0
+    return Expr(kind = kind_0, of = reduce(xs_0, Any[], (function (out_2 = nothing, x_2 = nothing, _...)
+      return (truthy((kind(x_2) == kind_0)) ? (reduce(of(x_2), out_2, (function (o_4 = nothing, y_4 = nothing, _...)
+        return push(o_4, y_4)
+      end))) : (push(out_2, x_2)))
+    end)))
   end
   function is_integer(self::Type{<:__class__}, x_0 = nothing, _...)
     return (x_0 == floor(x_0))
@@ -2734,11 +2610,9 @@ end
       return (ln(((3.141592653589793 / sin(((3.141592653589793 * z_0)))))) - lgamma(Expr, (1.0 - z_0)))
     end
     z_0 = (z_0 - 1.0)
-    x_0 = 0.99999999999980993
-    for i1 in 0:(ceil(Int, Rt.num(length(g_0))) - 1)
-      i_1 = Float64(i1)
-      x_0 = (x_0 + (getat(g_0, i_1) / (((z_0 + i_1) + 1.0))))
-    end
+    x_0 = reduce(rng(length(g_0)), 0.99999999999980993, (function (x_2 = nothing, i_2 = nothing, _...)
+      return (x_2 + (getat(g_0, i_2) / (((z_0 + i_2) + 1.0))))
+    end))
     t_0 = ((z_0 + length(g_0)) - 0.5)
     return ((((0.5 * ln(((2.0 * 3.141592653589793)))) + (((z_0 + 0.5)) * ln(t_0))) - t_0) + ln(x_0))
   end
@@ -3130,12 +3004,11 @@ end
           set(like_0, id_1, Any[body_1, kk_1])
         end
       end
-      kept_0 = Any[]
-      for v_1 in items(values(like_0))
-        if truthy((getat(v_1, 1.0) != 0.0))
-          push(kept_0, (truthy((getat(v_1, 1.0) == 1.0)) ? (getat(v_1, 0.0)) : (mul(Expr, Any[num(Expr, getat(v_1, 1.0)), getat(v_1, 0.0)]))))
-        end
-      end
+      kept_0 = map(filter(values(like_0), (function (v_3 = nothing, _...)
+        return (getat(v_3, 1.0) != 0.0)
+      end)), (function (v_2 = nothing, _...)
+        return (truthy((getat(v_2, 1.0) == 1.0)) ? (getat(v_2, 0.0)) : (mul(Expr, Any[num(Expr, getat(v_2, 1.0)), getat(v_2, 0.0)])))
+      end))
       if truthy(empty(kept_0))
         return num(Expr, c_0)
       end
@@ -3228,23 +3101,12 @@ end
             return (truthy(named(y_3)) && truthy((label(y_3) == bound(e_0))))
           end))))
         end)
-        at_0 = nothing
-        for i1 in 0:(ceil(Int, Rt.num(length(of(body_0)))) - 1)
-          i_1 = Float64(i1)
-          if truthy((truthy((at_0 == nothing)) && truthy(is_minus_0(getat(of(body_0), i_1)))))
-            at_0 = i_1
-          end
-        end
-        if truthy((truthy((at_0 != nothing)) && truthy((length(filter(of(body_0), (function (x_2 = nothing, _...)
+        if truthy((length(filter(of(body_0), (function (x_2 = nothing, _...)
           return is_minus_0(x_2)
-        end))) == 1.0))))
-          rest_0 = Any[]
-          for i1 in 0:(ceil(Int, Rt.num(length(of(body_0)))) - 1)
-            i_1 = Float64(i1)
-            if truthy((i_1 != at_0))
-              push(rest_0, getat(of(body_0), i_1))
-            end
-          end
+        end))) == 1.0))
+          rest_0 = filter(of(body_0), (function (x_2 = nothing, _...)
+            return !(is_minus_0(x_2))
+          end))
           return Base.string(j"\\text{the } ", str(bound(e_0)), j" \\text{ where } ", str(bound(e_0)), j" = ", str(show(Expr, (truthy((length(rest_0) == 1.0)) ? (getat(rest_0, 0.0)) : (add(Expr, rest_0))))), j"")
         end
       end
@@ -3341,15 +3203,12 @@ end
       end)), filter(of(e_0), (function (x_2 = nothing, _...)
         return negative_0(x_2)
       end)))
-      out_0 = Base.string(j"")
-      for i1 in 0:(ceil(Int, Rt.num(length(ordered_0))) - 1)
-        i_1 = Float64(i1)
-        x_1 = getat(ordered_0, i_1)
-        t_1 = (truthy((kind(x_1) == Base.string(j"root"))) ? (Base.string(j"\\paren{", str(show(Expr, x_1)), j"}")) : (show(Expr, x_1)))
-        piece_1 = (truthy((i_1 == 0.0)) ? (t_1) : (((truthy(starts_with(t_1, Base.string(j"-"))) ? (Base.string(j" - ", str(drop(t_1, 1.0)), j"")) : (Base.string(j" + ", str(t_1), j""))))))
-        out_0 = Base.string(j"", str(out_0), j"", str(piece_1), j"")
-      end
-      return out_0
+      shown_0 = map(ordered_0, (function (x_2 = nothing, _...)
+        return (truthy((kind(x_2) == Base.string(j"root"))) ? (Base.string(j"\\paren{", str(show(Expr, x_2)), j"}")) : (show(Expr, x_2)))
+      end))
+      return join(map(rng(length(shown_0)), (function (i_2 = nothing, _...)
+        return (truthy((i_2 == 0.0)) ? (getat(shown_0, i_2)) : (((truthy(starts_with(getat(shown_0, i_2), Base.string(j"-"))) ? (Base.string(j" - ", str(drop(getat(shown_0, i_2), 1.0)), j"")) : (Base.string(j" + ", str(getat(shown_0, i_2)), j""))))))
+      end)), Base.string(j""))
     end
     return Base.string(j"")
   end
@@ -3390,14 +3249,11 @@ end
     end
     if truthy((k_0 == Base.string(j"mul")))
       return add(Expr, map(rng(length(of(e_0))), (function (i_2 = nothing, _...)
-        others_2 = Any[]
-        for i3 in 0:(ceil(Int, Rt.num(length(of(e_0)))) - 1)
-          j_3 = Float64(i3)
-          if truthy((j_3 != i_2))
-            push(others_2, getat(of(e_0), j_3))
-          end
-        end
-        return mul(Expr, concat(Any[d(Expr, getat(of(e_0), i_2), wrt_0)], others_2))
+        return mul(Expr, concat(Any[d(Expr, getat(of(e_0), i_2), wrt_0)], map(filter(rng(length(of(e_0))), (function (j_5 = nothing, _...)
+          return (j_5 != i_2)
+        end)), (function (j_4 = nothing, _...)
+          return getat(of(e_0), j_4)
+        end))))
       end)))
     end
     if truthy((k_0 == Base.string(j"pow")))
@@ -3672,18 +3528,14 @@ end
       return (truthy((v_0 == nothing)) ? (NAN(Expr)) : (v_0))
     end
     if truthy((k_0 == Base.string(j"add")))
-      total__0 = 0.0
-      for x_1 in items(of(e_0))
-        total__0 = (total__0 + numeric(Expr, x_1, at_0))
-      end
-      return total__0
+      return reduce(of(e_0), 0.0, (function (total__2 = nothing, x_2 = nothing, _...)
+        return (total__2 + numeric(Expr, x_2, at_0))
+      end))
     end
     if truthy((k_0 == Base.string(j"mul")))
-      prod_0 = 1.0
-      for x_1 in items(of(e_0))
-        prod_0 = (prod_0 * numeric(Expr, x_1, at_0))
-      end
-      return prod_0
+      return reduce(of(e_0), 1.0, (function (prod_2 = nothing, x_2 = nothing, _...)
+        return (prod_2 * numeric(Expr, x_2, at_0))
+      end))
     end
     if truthy((k_0 == Base.string(j"pow")))
       return (numeric(Expr, base(e_0), at_0) ^ numeric(Expr, power(e_0), at_0))
@@ -3754,22 +3606,7 @@ end
     if truthy((truthy((truthy(!(finite(Expr, f_0(0.5)))) && truthy(!(finite(Expr, f_0(1.0)))))) && truthy(!(finite(Expr, f_0(0.1))))))
       return NAN(Expr)
     end
-    points_0 = Any[]
-    i_0 = 1.0
-    while truthy((i_0 <= 120.0))
-      push(points_0, (i_0 / 120.0))
-      i_0 = (i_0 + 1.0)
-    end
-    ex_0 = 0.0
-    while truthy((ex_0 <= 24.0))
-      k_0 = 1.0
-      while truthy((k_0 < 8.0))
-        push(points_0, (((10.0 ^ ((ex_0 - 12.0)))) * ((1.0 + (k_0 / 2.0)))))
-        k_0 = (k_0 + 1.0)
-      end
-      ex_0 = (ex_0 + 1.0)
-    end
-    points_0 = sorted(Expr, points_0)
+    points_0 = bracket_points(Expr)
     lo_0 = nothing
     hi_0 = nothing
     px_0 = getat(points_0, 0.0)
@@ -3810,16 +3647,21 @@ end
     end
     return (((lo_0 + hi_0)) / 2.0)
   end
+  function bracket_points(self::Type{<:__class__})
+    even_0 = map(rng(120.0), (function (i_2 = nothing, _...)
+      return (((i_2 + 1.0)) / 120.0)
+    end))
+    decades_0 = reduce(rng(25.0), Any[], (function (out_2 = nothing, ex_2 = nothing, _...)
+      return reduce(rng(7.0), out_2, (function (o_4 = nothing, k_4 = nothing, _...)
+        return push(o_4, (((10.0 ^ ((ex_2 - 12.0)))) * ((1.0 + (((k_4 + 1.0)) / 2.0)))))
+      end))
+    end))
+    return sorted(Expr, concat(even_0, decades_0))
+  end
   function sorted(self::Type{<:__class__}, xs_0 = nothing, _...)
-    out_0 = Any[]
-    for x_1 in items(xs_0)
-      i_1 = 0.0
-      while truthy((truthy((i_1 < length(out_0))) && truthy((getat(out_0, i_1) <= x_1))))
-        i_1 = (i_1 + 1.0)
-      end
-      out_0 = concat(concat(take(out_0, i_1), Any[x_1]), drop(out_0, i_1))
-    end
-    return out_0
+    return sorted_by(xs_0, (function (x_2 = nothing, _...)
+      return x_2
+    end))
   end
   function integrate(self::Type{<:__class__}, e_0 = nothing, of_0 = nothing, _...)
     s_0 = spread(Expr, e_0)
@@ -3933,24 +3775,14 @@ end
         ok_1 = true
         k_1 = getat(head__1, 1.0)
         if truthy((nums_1 != nothing))
-          lo_1 = getat(nums_1, 0.0)
-          hi_1 = getat(nums_1, 0.0)
-          for v_2 in items(nums_1)
-            if truthy((v_2 < lo_1))
-              lo_1 = v_2
-            end
-            if truthy((v_2 > hi_1))
-              hi_1 = v_2
-            end
-          end
-          ok_1 = (((lo_1 <= 0.0)) == ((hi_1 <= 0.0)))
-          least_1 = getat(nums_1, 0.0)
-          for v_2 in items(nums_1)
-            if truthy((abs(v_2) < abs(least_1)))
-              least_1 = v_2
-            end
-          end
-          k_1 = num(Expr, least_1)
+          ok_1 = (truthy(every(nums_1, (function (v_3 = nothing, _...)
+            return (v_3 <= 0.0)
+          end))) || truthy(every(nums_1, (function (v_3 = nothing, _...)
+            return (v_3 > 0.0)
+          end))))
+          k_1 = num(Expr, reduce(nums_1, getat(nums_1, 0.0), (function (least_3 = nothing, v_3 = nothing, _...)
+            return (truthy((abs(v_3) < abs(least_3))) ? (v_3) : (least_3))
+          end)))
         end
         if truthy(ok_1)
           push(common_0, Any[getat(head__1, 0.0), k_1])
@@ -4166,20 +3998,15 @@ end
       end))))
     end
     if truthy((kind(t_0) == Base.string(j"mul")))
-      parts_0 = map(of(t_0), (function (x_2 = nothing, _...)
-        return expand(Expr, x_2)
+      out_0 = reduce(map(of(t_0), (function (x_3 = nothing, _...)
+        return expand(Expr, x_3)
+      end)), Any[num(Expr, 1.0)], (function (out_2 = nothing, p_2 = nothing, _...)
+        return reduce(out_2, Any[], (function (next_4 = nothing, a_4 = nothing, _...)
+          return reduce(((truthy((kind(p_2) == Base.string(j"add"))) ? (of(p_2)) : (Any[p_2]))), next_4, (function (n_6 = nothing, b_6 = nothing, _...)
+            return push(n_6, mul(Expr, Any[a_4, b_6]))
+          end))
+        end))
       end))
-      out_0 = Any[num(Expr, 1.0)]
-      for p_1 in items(parts_0)
-        terms_1 = (truthy((kind(p_1) == Base.string(j"add"))) ? (of(p_1)) : (Any[p_1]))
-        next_1 = Any[]
-        for a_2 in items(out_0)
-          for b_3 in items(terms_1)
-            push(next_1, mul(Expr, Any[a_2, b_3]))
-          end
-        end
-        out_0 = next_1
-      end
       return simplify(Expr, add(Expr, out_0))
     end
     return t_0
@@ -4342,6 +4169,13 @@ end
   function starts(self::__class__, s_0 = nothing, _...)
     return (sub_(Notation, text(self), at(self), (at(self) + length(s_0))) == s_0)
   end
+  function take_while(self::__class__, keep_0 = nothing, _...)
+    k_0 = at(self)
+    while truthy((truthy((k_0 < length(text(self)))) && truthy(keep_0(getat(chars(text(self)), k_0)))))
+      k_0 = (k_0 + 1.0)
+    end
+    return eat(self, (k_0 - at(self)))
+  end
   function addition(self::__class__)
     left_0 = product(self)
     skip(self)
@@ -4392,18 +4226,19 @@ end
     return e_0
   end
   function word(self::__class__)
-    k_0 = at(self)
-    while truthy((truthy((k_0 < length(text(self)))) && truthy(((truthy(is_name(Notation, getat(chars(text(self)), k_0))) || truthy((getat(chars(text(self)), k_0) > 127.0)))))))
-      k_0 = (k_0 + 1.0)
-    end
-    return eat(self, (k_0 - at(self)))
+    return take_while(self, (function (c_2 = nothing, _...)
+      return (truthy(is_name(Notation, c_2)) || truthy((c_2 > 127.0)))
+    end))
   end
   function number(self::__class__)
-    k_0 = at(self)
-    while truthy((truthy((k_0 < length(text(self)))) && truthy(((truthy(is_digit(Notation, getat(chars(text(self)), k_0))) || truthy((getat(chars(text(self)), k_0) == 46.0)))))))
-      k_0 = (k_0 + 1.0)
-    end
-    return num(Expr, tonumber(eat(self, (k_0 - at(self)))))
+    return num(Expr, tonumber(take_while(self, (function (c_2 = nothing, _...)
+      return (truthy(is_digit(Notation, c_2)) || truthy((c_2 == 46.0)))
+    end))))
+  end
+  function quoted(self::__class__)
+    return take_while(self, (function (c_2 = nothing, _...)
+      return (c_2 != 34.0)
+    end))
   end
   function primary(self::__class__)
     skip(self)
@@ -4420,11 +4255,7 @@ end
     end
     if truthy((c_0 == 34.0))
       eat(self, 1.0)
-      k_0 = at(self)
-      while truthy((truthy((k_0 < length(text(self)))) && truthy((getat(chars(text(self)), k_0) != 34.0))))
-        k_0 = (k_0 + 1.0)
-      end
-      name_0 = eat(self, (k_0 - at(self)))
+      name_0 = quoted(self)
       eat(self, 1.0)
       return field(Expr, name_of(Expr, name_0))
     end
@@ -4436,11 +4267,7 @@ end
       eat(self, 1.0)
       skip(self)
       eat(self, 1.0)
-      k_0 = at(self)
-      while truthy((truthy((k_0 < length(text(self)))) && truthy((getat(chars(text(self)), k_0) != 34.0))))
-        k_0 = (k_0 + 1.0)
-      end
-      name_0 = eat(self, (k_0 - at(self)))
+      name_0 = quoted(self)
       eat(self, 1.0)
       skip(self)
       eat(self, 1.0)
@@ -4462,11 +4289,7 @@ end
     end
     if truthy((truthy((name_0 == Base.string(j"s"))) && truthy((peek(self) == 91.0))))
       eat(self, 2.0)
-      k_0 = at(self)
-      while truthy((truthy((k_0 < length(text(self)))) && truthy((getat(chars(text(self)), k_0) != 34.0))))
-        k_0 = (k_0 + 1.0)
-      end
-      key_0 = eat(self, (k_0 - at(self)))
+      key_0 = quoted(self)
       eat(self, 2.0)
       return field(Expr, name_of(Expr, key_0))
     end
@@ -5023,21 +4846,18 @@ end
       sw_0.derivation = Any[inner_0]
       push(out_0, sw_0)
     end
-    rates_0 = Any[]
-    for t_1 in items(infos_0)
-      if truthy((truthy((rate(t_1) != nothing)) && truthy(!(contains(rates_0, rate(t_1))))))
-        push(rates_0, rate(t_1))
-      end
-    end
+    rates_0 = reduce(filter(infos_0, (function (t_3 = nothing, _...)
+      return (rate(t_3) != nothing)
+    end)), Any[], (function (out_2 = nothing, t_2 = nothing, _...)
+      return (truthy(contains(out_2, rate(t_2))) ? (out_2) : (push(out_2, rate(t_2))))
+    end))
     for name_1 in items(rates_0)
       push(out_0, of(Step, stands(Fact, name_1, num(Expr, 1.0)), Base.string(j"the rewrite"), Any[], Base.string(j"a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit"), Any[Base.string(j"", str(name_1), j" = 1 per match per tick")]))
     end
     for ledger_1 in items(Any[Base.string(j"rays"), Base.string(j"space"), Base.string(j"folds")])
-      parts_1 = Any[]
-      for t_2 in items(acting_0)
-        c_2 = (truthy((ledger_1 == Base.string(j"rays"))) ? (ray_count(t_2)) : (((truthy((ledger_1 == Base.string(j"space"))) ? (space_count(t_2)) : (fold_count(t_2))))))
-        push(parts_1, simplify(Expr, mul(Expr, Any[body_of(Prover, t_2), c_2])))
-      end
+      parts_1 = map(acting_0, (function (t_3 = nothing, _...)
+        return simplify(Expr, mul(Expr, Any[body_of(Prover, t_3), (truthy((ledger_1 == Base.string(j"rays"))) ? (ray_count(t_3)) : (((truthy((ledger_1 == Base.string(j"space"))) ? (space_count(t_3)) : (fold_count(t_3))))))]))
+      end))
       if !truthy(empty(parts_1))
         push(out_0, of(Step, stands(Fact, Base.string(j"the ", str(ledger_1), j" line nets"), simplify(Expr, add(Expr, parts_1))), Base.string(j"the line"), Any[], Base.string(j"every term of the line does something to the ", str(ledger_1), j" ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted"), map(acting_0, (function (t_3 = nothing, _...)
           c_3 = (truthy((ledger_1 == Base.string(j"rays"))) ? (ray_count(t_3)) : (((truthy((ledger_1 == Base.string(j"space"))) ? (space_count(t_3)) : (fold_count(t_3))))))
@@ -6589,23 +6409,17 @@ end
         if truthy((kind(t_3) != Base.string(j"mul")))
           return t_3
         end
-        at_3 = nothing
-        for i4 in 0:(ceil(Int, Rt.num(length(of(t_3)))) - 1)
-          i_4 = Float64(i4)
-          if truthy((truthy((at_3 == nothing)) && truthy((kind(getat(of(t_3), i_4)) == Base.string(j"add")))))
-            at_3 = i_4
-          end
-        end
+        at_3 = first(filter(rng(length(of(t_3))), (function (i_5 = nothing, _...)
+          return (kind(getat(of(t_3), i_5)) == Base.string(j"add"))
+        end)))
         if truthy((at_3 == nothing))
           return t_3
         end
-        rest_3 = Any[]
-        for i4 in 0:(ceil(Int, Rt.num(length(of(t_3)))) - 1)
-          i_4 = Float64(i4)
-          if truthy((i_4 != at_3))
-            push(rest_3, getat(of(t_3), i_4))
-          end
-        end
+        rest_3 = map(filter(rng(length(of(t_3))), (function (i_6 = nothing, _...)
+          return (i_6 != at_3)
+        end)), (function (i_5 = nothing, _...)
+          return getat(of(t_3), i_5)
+        end))
         spread_3 = simplify(Expr, add(Expr, map(of(getat(of(t_3), at_3)), (function (x_5 = nothing, _...)
           return simplify(Expr, mul(Expr, concat(rest_3, Any[x_5])))
         end))))
@@ -7263,18 +7077,14 @@ end
       return (truthy((v_0 == nothing)) ? (NaN) : (v_0))
     end
     if truthy((k_0 == Base.string(j"add")))
-      total_0 = 0.0
-      for p_1 in items(of(e_0))
-        total_0 = (total_0 + value(self, p_1, at_0, masses_0, Rs_0, skip_0))
-      end
-      return total_0
+      return sum(map(of(e_0), (function (p_2 = nothing, _...)
+        return value(self, p_2, at_0, masses_0, Rs_0, skip_0)
+      end)))
     end
     if truthy((k_0 == Base.string(j"mul")))
-      prod_0 = 1.0
-      for p_1 in items(of(e_0))
-        prod_0 = (prod_0 * value(self, p_1, at_0, masses_0, Rs_0, skip_0))
-      end
-      return prod_0
+      return reduce(of(e_0), 1.0, (function (prod_2 = nothing, p_2 = nothing, _...)
+        return (prod_2 * value(self, p_2, at_0, masses_0, Rs_0, skip_0))
+      end))
     end
     if truthy((k_0 == Base.string(j"pow")))
       return (value(self, base(e_0), at_0, masses_0, Rs_0, skip_0) ^ value(self, power(e_0), at_0, masses_0, Rs_0, skip_0))
@@ -7571,18 +7381,13 @@ end
     return (truthy((f_0 == nothing)) ? (num(Expr, 0.0)) : (to(f_0)))
   end
   function names(self::__class__)
-    out_0 = map(per_body(self), (function (n_2 = nothing, _...)
-      return n_2
+    return reduce(Any[outer_(self), summand(self), shell_expr(self), reach_expr(self)], concat(per_body(self), Any[Base.string(j"SUM")]), (function (out_2 = nothing, e_2 = nothing, _...)
+      return reduce(filter(unbound(Model, e_2), (function (n_5 = nothing, _...)
+        return (truthy((n_5 != Base.string(j"\\bar{R}"))) && truthy(!(ends_with(n_5, Base.string(j"\\paren{...}")))))
+      end)), out_2, (function (o_4 = nothing, n_4 = nothing, _...)
+        return (truthy(contains(o_4, n_4)) ? (o_4) : (push(o_4, n_4)))
+      end))
     end))
-    push(out_0, Base.string(j"SUM"))
-    for e_1 in items(Any[outer_(self), summand(self), shell_expr(self), reach_expr(self)])
-      for n_2 in items(unbound(Model, e_1))
-        if truthy((truthy((truthy(!(contains(out_0, n_2))) && truthy((n_2 != Base.string(j"\\bar{R}"))))) && truthy(!(ends_with(n_2, Base.string(j"\\paren{...}"))))))
-          push(out_0, n_2)
-        end
-      end
-    end
-    return out_0
   end
   function constants(self::__class__)
     return map(names(self), (function (n_2 = nothing, _...)
@@ -7790,7 +7595,7 @@ end
     end)))))
   end
   function terms(self::__class__)
-    return terms(equation(theory(self)))
+    return terms_read(theory(self))
   end
   @field meets::List = filter(terms(self), (function (t_1 = nothing, _...)
     return (truthy((truthy((truthy((truthy(!(settles(t_1))) && truthy(!(transport(t_1))))) && truthy(!(outside(t_1))))) && truthy(!(trades(doing(t_1)))))) && truthy((degree(t_1) == 2.0)))
@@ -7945,18 +7750,11 @@ end
   end
   function under(self::__class__, h_0 = nothing, _...)
     half_0 = floor(((((K(self) - 1.0)) / 2.0)))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(K(self))) - 1)
-      dy_1 = Float64(i1)
-      for i2 in 0:(ceil(Int, Rt.num(K(self))) - 1)
-        dx_2 = Float64(i2)
-        c_2 = at(self, ((round(x(h_0)) - half_0) + dx_2), ((round(y(h_0)) - half_0) + dy_1))
-        if truthy((c_2 >= 0.0))
-          push(out_0, c_2)
-        end
-      end
-    end
-    return out_0
+    return filter(map(rng((K(self) * K(self))), (function (i_3 = nothing, _...)
+      return at(self, ((round(x(h_0)) - half_0) + (i_3 % K(self))), ((round(y(h_0)) - half_0) + floor(((i_3 / K(self))))))
+    end)), (function (c_2 = nothing, _...)
+      return (c_2 >= 0.0)
+    end))
   end
   function spread(self::__class__, h_0 = nothing, _...)
     half_0 = ((K(self) - 1.0) / 2.0)
@@ -9225,6 +9023,12 @@ end
   function gradient_stroke(self::__class__, _...)
     fail(j"gradient_stroke is declared but not defined by anyone")
   end
+  function image(self::__class__, _...)
+    fail(j"image is declared but not defined by anyone")
+  end
+  function field(self::__class__, _...)
+    fail(j"field is declared but not defined by anyone")
+  end
 end
 
 @class Measured <: Node begin
@@ -9269,13 +9073,9 @@ end
   @field sizes::List
   function at(self::__class__, frame_at_0 = nothing, _...)
     out_0 = Node()
-    all_0 = getat(columns(film(self)), Base.string(j"frames"))
-    width_0 = sum(sizes(self))
-    from_at_0 = (frame_at_0 * width_0)
     for i1 in 0:(ceil(Int, Rt.num(length(names(self)))) - 1)
       i_1 = Float64(i1)
-      setat!(out_0, getat(names(self), i_1), take(drop(all_0, from_at_0), getat(sizes(self), i_1)))
-      from_at_0 = (from_at_0 + getat(sizes(self), i_1))
+      setat!(out_0, getat(names(self), i_1), take(drop(getat(columns(film(self)), Base.string(j"frames")), ((frame_at_0 * sum(sizes(self))) + sum(take(sizes(self), i_1)))), getat(sizes(self), i_1)))
     end
     return out_0
   end
@@ -9341,6 +9141,9 @@ end
   @field record::Recording = nothing
   @field panes::List = Any[]
   @field on_request::Bool = false
+  @field images::List = Any[]
+  @field parts::List = Any[]
+  @field uses::List = Any[]
   @field paint::Function
   function played(self::__class__)
     r_0 = record(self)
@@ -9535,14 +9338,15 @@ end
     return ((cy_0 * coarse_side(self)) + cx_0)
   end
   function middle(self::Type{<:__class__}, holes_0 = nothing, _...)
-    m_0 = 0.0
-    x_0 = 0.0
-    y_0 = 0.0
-    for h_1 in items(holes_0)
-      m_0 = (m_0 + mass(h_1))
-      x_0 = (x_0 + (x(h_1) * mass(h_1)))
-      y_0 = (y_0 + (y(h_1) * mass(h_1)))
-    end
+    m_0 = sum(map(holes_0, (function (h_2 = nothing, _...)
+      return mass(h_2)
+    end)))
+    x_0 = sum(map(holes_0, (function (h_2 = nothing, _...)
+      return (x(h_2) * mass(h_2))
+    end)))
+    y_0 = sum(map(holes_0, (function (h_2 = nothing, _...)
+      return (y(h_2) * mass(h_2))
+    end)))
     return (truthy((m_0 > 0.0)) ? (Any[(x_0 / m_0), (y_0 / m_0)]) : (Any[0.0, 0.0]))
   end
   function rest_of(self::Type{<:__class__}, holes_0 = nothing, k_0 = nothing, _...)
@@ -10050,11 +9854,9 @@ end
         centre_0 = k_1
       end
     end
-    weight_0 = 0.0
-    for i1 in 0:(ceil(Int, Rt.num(bodies(p_0))) - 1)
-      k_1 = Float64(i1)
-      weight_0 = (weight_0 + getat(marks_0, ((k_1 * 6.0) + 5.0)))
-    end
+    weight_0 = sum(map(rng(bodies(p_0)), (function (k_2 = nothing, _...)
+      return getat(marks_0, ((k_2 * 6.0) + 5.0))
+    end)))
     frames_0 = (length(getat(trail_0, centre_0)) / 2.0)
     midx_0 = map(rng(frames_0), (function (i_2 = nothing, _...)
       return 0.0
@@ -10332,14 +10134,13 @@ end
     pts_0 = map(live(w_0), (function (v_2 = nothing, _...)
       return getat(components(at(v_2)), 0.0)
     end))
-    sides_0 = Any[]
-    for v_1 in items(live(w_0))
-      for r_2 in items(rays(v_1))
-        if truthy(active(r_2))
-          push(sides_0, Side(at = getat(components(at(v_1)), 0.0), sign = getat(components(along(r_2)), 0.0), ink = ink_of(ink_0, r_2)))
-        end
-      end
-    end
+    sides_0 = reduce(live(w_0), Any[], (function (out_2 = nothing, v_2 = nothing, _...)
+      return reduce(filter(rays(v_2), (function (r_5 = nothing, _...)
+        return active(r_5)
+      end)), out_2, (function (o_4 = nothing, r_4 = nothing, _...)
+        return push(o_4, Side(at = getat(components(at(v_2)), 0.0), sign = getat(components(along(r_4)), 0.0), ink = ink_of(ink_0, r_4)))
+      end))
+    end))
     l_0 = Lane(points = pts_0, sides = sides_0)
     for s_1 in items(sources(w_0))
       for c_2 in items(cells(s_1))
@@ -10427,15 +10228,12 @@ end
     return rel_0
   end
   function centre_of(self::Type{<:__class__}, lanes_0 = nothing, _...)
-    xs_0 = Any[]
-    for l_1 in items(lanes_0)
-      for p_2 in items(sources(l_1))
-        push(xs_0, p_2)
-      end
-    end
-    if truthy(empty(xs_0))
-      xs_0 = points(first(lanes_0))
-    end
+    sourced_0 = reduce(lanes_0, Any[], (function (out_2 = nothing, l_2 = nothing, _...)
+      return reduce(sources(l_2), out_2, (function (o_4 = nothing, p_4 = nothing, _...)
+        return push(o_4, p_4)
+      end))
+    end))
+    xs_0 = (truthy(empty(sourced_0)) ? (points(first(lanes_0))) : (sourced_0))
     if truthy(empty(xs_0))
       return 0.0
     end
@@ -10756,17 +10554,14 @@ end
         setat!(best_0, galaxy(p_1), p_1)
       end
     end
-    out_0 = Any[]
     names_0 = names(Sparc)
-    for i1 in 0:(ceil(Int, Rt.num(length(names_0))) - 1)
-      g_1 = Float64(i1)
-      p_1 = getat(best_0, g_1)
-      if truthy((p_1 != nothing))
-        q_1 = RarPoint(gbar = gbar(p_1), gobs = gobs(p_1), galaxy = galaxy(p_1), R = R(p_1))
-        q_1.name = getat(names_0, g_1)
-        push(out_0, q_1)
-      end
-    end
+    out_0 = map(filter(rng(length(names_0)), (function (g_3 = nothing, _...)
+      return (getat(best_0, g_3) != nothing)
+    end)), (function (g_2 = nothing, _...)
+      q_2 = RarPoint(gbar = gbar(getat(best_0, g_2)), gobs = gobs(getat(best_0, g_2)), galaxy = galaxy(getat(best_0, g_2)), R = R(getat(best_0, g_2)))
+      q_2.name = getat(names_0, g_2)
+      return q_2
+    end))
     setat!(CACHE(Sparc), Base.string(j"flat"), out_0)
     return out_0
   end
@@ -10780,13 +10575,11 @@ end
     end
     c_0 = columns(t_0)
     names_0 = getat(header(t_0), Base.string(j"names"))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(rows(t_0))) - 1)
-      i_1 = Float64(i1)
-      if truthy((getat(getat(c_0, Base.string(j"Vf")), i_1) > 0.0))
-        push(out_0, Btfr(name = getat(names_0, i_1), galaxy = getat(getat(c_0, Base.string(j"galaxy")), i_1), vf = getat(getat(c_0, Base.string(j"Vf")), i_1), err = getat(getat(c_0, Base.string(j"e_Vf")), i_1), mass = ((10.0 ^ getat(getat(c_0, Base.string(j"log(Mb)")), i_1)) * MSUN(Sparc)), err_mass = getat(getat(c_0, Base.string(j"e_log(Mb)")), i_1)))
-      end
-    end
+    out_0 = map(filter(rng(rows(t_0)), (function (i_3 = nothing, _...)
+      return (getat(getat(c_0, Base.string(j"Vf")), i_3) > 0.0)
+    end)), (function (i_2 = nothing, _...)
+      return Btfr(name = getat(names_0, i_2), galaxy = getat(getat(c_0, Base.string(j"galaxy")), i_2), vf = getat(getat(c_0, Base.string(j"Vf")), i_2), err = getat(getat(c_0, Base.string(j"e_Vf")), i_2), mass = ((10.0 ^ getat(getat(c_0, Base.string(j"log(Mb)")), i_2)) * MSUN(Sparc)), err_mass = getat(getat(c_0, Base.string(j"e_log(Mb)")), i_2))
+    end))
     setat!(CACHE(Sparc), Base.string(j"btfr"), out_0)
     return out_0
   end
@@ -10904,36 +10697,22 @@ end
     return (((floor(((mask_0 / (2.0 ^ at_0)))) % 2.0)) == 1.0)
   end
   function tint_of(self::Type{<:__class__}, mask_0 = nothing, _...)
-    if truthy((mask_0 == 0.0))
-      return SEVERAL(Galaxies)
-    end
-    r_0 = 0.0
-    g_0 = 0.0
-    bl_0 = 0.0
-    n_0 = 0.0
-    for i1 in 0:(ceil(Int, Rt.num(length(FREEDOMS(Galaxies)))) - 1)
-      i_1 = Float64(i1)
-      if truthy(bit(Galaxies, mask_0, i_1))
-        r_0 = (r_0 + getat(getat(TINTS(Galaxies), i_1), 0.0))
-        g_0 = (g_0 + getat(getat(TINTS(Galaxies), i_1), 1.0))
-        bl_0 = (bl_0 + getat(getat(TINTS(Galaxies), i_1), 2.0))
-        n_0 = (n_0 + 1.0)
-      end
-    end
-    return (truthy((n_0 > 0.0)) ? (Any[(r_0 / n_0), (g_0 / n_0), (bl_0 / n_0)]) : (SEVERAL(Galaxies)))
+    on_0 = freedoms_in(Galaxies, mask_0)
+    return (truthy((truthy((mask_0 == 0.0)) || truthy(empty(on_0)))) ? (SEVERAL(Galaxies)) : (map(Any[0.0, 1.0, 2.0], (function (c_2 = nothing, _...)
+      return (sum(map(on_0, (function (i_4 = nothing, _...)
+        return getat(getat(TINTS(Galaxies), i_4), c_2)
+      end))) / length(on_0))
+    end))))
   end
   function name_of(self::Type{<:__class__}, mask_0 = nothing, _...)
     if truthy((mask_0 == 0.0))
       return Base.string(j"the source as it starts")
     end
-    parts_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(NAMES_NOW(Galaxies)))) - 1)
-      i_1 = Float64(i1)
-      if truthy(bit(Galaxies, mask_0, i_1))
-        push(parts_0, getat(NAMES_NOW(Galaxies), i_1))
-      end
-    end
-    joined_0 = join(parts_0, Base.string(j" + "))
+    joined_0 = join(map(filter(rng(length(NAMES_NOW(Galaxies))), (function (i_3 = nothing, _...)
+      return bit(Galaxies, mask_0, i_3)
+    end)), (function (i_2 = nothing, _...)
+      return getat(NAMES_NOW(Galaxies), i_2)
+    end)), Base.string(j" + "))
     return Base.string(j"needs ", str(joined_0), j"")
   end
   function rgb(self::Type{<:__class__}, c_0 = nothing, _...)
@@ -11045,6 +10824,40 @@ end
     got_0 = ((getat(ys__0, lo_0) * ((1.0 - f_0))) + (getat(ys__0, hi_0) * f_0))
     return (truthy((got_0 > 0.0)) ? (log10(Fmt, (got_0 / a0_0))) : (NaN))
   end
+  function decades(self::Type{<:__class__}, s_0 = nothing, X_0 = nothing, Y_0 = nothing, box_0 = nothing, range_0 = nothing, under_0 = nothing, _...)
+    for l_1 in items(map(rng(((getat(range_0, 1.0) - getat(range_0, 0.0)) + 1.0)), (function (i_3 = nothing, _...)
+      return (getat(range_0, 0.0) + i_3)
+    end)))
+      begin_path(s_0)
+      move_to(s_0, X_0(l_1), getat(box_0, 1.0))
+      line_to(s_0, X_0(l_1), getat(box_0, 3.0))
+      stroke(s_0)
+      fill_text(s_0, Base.string(j"10^", str(l_1), j""), X_0(l_1), (getat(box_0, 3.0) + under_0))
+    end
+    text_align(s_0, Base.string(j"right"))
+    for l_1 in items(map(rng(((getat(range_0, 3.0) - getat(range_0, 2.0)) + 1.0)), (function (i_3 = nothing, _...)
+      return (getat(range_0, 2.0) + i_3)
+    end)))
+      begin_path(s_0)
+      move_to(s_0, getat(box_0, 0.0), Y_0(l_1))
+      line_to(s_0, getat(box_0, 2.0), Y_0(l_1))
+      stroke(s_0)
+      fill_text(s_0, Base.string(j"10^", str(l_1), j""), (getat(box_0, 0.0) - 8.0), (Y_0(l_1) + 4.0))
+    end
+  end
+  function curve(self::Type{<:__class__}, s_0 = nothing, X_0 = nothing, Y_0 = nothing, f_0 = nothing, low_0 = nothing, high_0 = nothing, step_0 = nothing, _...)
+    begin_path(s_0)
+    l_0 = low_0
+    while truthy((l_0 <= (high_0 + 0.000001)))
+      if truthy((l_0 == low_0))
+        move_to(s_0, X_0(l_0), Y_0(f_0(l_0)))
+      else
+        line_to(s_0, X_0(l_0), Y_0(f_0(l_0)))
+      end
+      l_0 = (l_0 + step_0)
+    end
+    return stroke(s_0)
+  end
   function along(self::Type{<:__class__}, s_0 = nothing, at_0 = nothing, t_0 = nothing, text_0 = nothing, colour_0 = nothing, lift_0 = nothing, leans_0 = nothing, _...)
     p0_0 = leans_0((t_0 - 0.01))
     p1_0 = leans_0((t_0 + 0.01))
@@ -11137,34 +10950,13 @@ end
     line_width(s_0, 1.0)
     fill_style(s_0, FAINT(Galaxies))
     text_align(s_0, Base.string(j"center"))
-    l_0 = XMIN_0
-    while truthy((l_0 <= XMAX_0))
-      begin_path(s_0)
-      move_to(s_0, X_0(l_0), by0_0)
-      line_to(s_0, X_0(l_0), by1_0)
-      stroke(s_0)
-      fill_text(s_0, Base.string(j"10^", str(l_0), j""), X_0(l_0), (by1_0 + 17.0))
-      l_0 = (l_0 + 1.0)
-    end
-    text_align(s_0, Base.string(j"right"))
-    l_0 = YMIN_0
-    while truthy((l_0 <= YMAX_0))
-      begin_path(s_0)
-      move_to(s_0, bx0_0, Y_0(l_0))
-      line_to(s_0, bx1_0, Y_0(l_0))
-      stroke(s_0)
-      fill_text(s_0, Base.string(j"10^", str(l_0), j""), (bx0_0 - 8.0), (Y_0(l_0) + 4.0))
-      l_0 = (l_0 + 1.0)
-    end
-    implied_0 = Any[]
-    for g_1 in items(btfr(Sparc))
-      M_1 = mass(g_1)
-      v_1 = (vf(g_1) * 1000.0)
-      if truthy((truthy((M_1 > 0.0)) && truthy((v_1 > 0.0))))
-        push(implied_0, log10(Fmt, (((((v_1 * v_1) * v_1) * v_1) / ((G_NEWTON(Sparc) * M_1))) / A0_DATA(Galaxies))))
-      end
-    end
-    implied_0 = sorted(Expr, implied_0)
+    decades(Galaxies, s_0, X_0, Y_0, Any[bx0_0, by0_0, bx1_0, by1_0], Any[XMIN_0, XMAX_0, YMIN_0, YMAX_0], 17.0)
+    implied_0 = sorted(Expr, map(filter(btfr(Sparc), (function (g_3 = nothing, _...)
+      return (truthy((mass(g_3) > 0.0)) && truthy((vf(g_3) > 0.0)))
+    end)), (function (g_2 = nothing, _...)
+      v_2 = (vf(g_2) * 1000.0)
+      return log10(Fmt, (((((v_2 * v_2) * v_2) * v_2) / ((G_NEWTON(Sparc) * mass(g_2)))) / A0_DATA(Galaxies)))
+    end)))
     med_0 = (truthy(empty(implied_0)) ? (NaN) : (getat(implied_0, floor(((length(implied_0) / 2.0))))))
     line_width(s_0, 1.0)
     for o_1 in items(implied_0)
@@ -11333,33 +11125,17 @@ end
     stroke_style(s_0, BTFRC(Galaxies))
     line_width(s_0, 1.5)
     dash(s_0, Any[2.0, 4.0])
-    begin_path(s_0)
-    l_0 = XMIN_0
-    while truthy((l_0 <= (XMAX_0 + 0.000001)))
-      if truthy((l_0 == XMIN_0))
-        move_to(s_0, X_0(l_0), Y_0((0.5 * l_0)))
-      else
-        line_to(s_0, X_0(l_0), Y_0((0.5 * l_0)))
-      end
-      l_0 = (l_0 + 0.05)
-    end
-    stroke(s_0)
+    curve(Galaxies, s_0, X_0, Y_0, (function (l_2 = nothing, _...)
+      return (0.5 * l_2)
+    end), XMIN_0, XMAX_0, 0.05)
     dash(s_0, Any[])
     stroke_style(s_0, MODEL(Galaxies))
     line_width(s_0, 1.2)
     alpha(s_0, 0.4)
     dash(s_0, Any[5.0, 4.0])
-    begin_path(s_0)
-    l_0 = XMIN_0
-    while truthy((l_0 <= (XMAX_0 + 0.000001)))
-      if truthy((l_0 == XMIN_0))
-        move_to(s_0, X_0(l_0), Y_0(law_drawn_0(l_0)))
-      else
-        line_to(s_0, X_0(l_0), Y_0(law_drawn_0(l_0)))
-      end
-      l_0 = (l_0 + 0.02)
-    end
-    stroke(s_0)
+    curve(Galaxies, s_0, X_0, Y_0, (function (l_2 = nothing, _...)
+      return law_drawn_0(l_2)
+    end), XMIN_0, XMAX_0, 0.02)
     dash(s_0, Any[])
     alpha(s_0, 1.0)
     landed_0 = getat(possible_0, 0.0)
@@ -11486,13 +11262,9 @@ end
         end
       end
     end
-    total_0 = 0.0
-    for m_1 in items(masks_0)
-      total_0 = (total_0 + getat(tally_0, m_1))
-    end
-    if truthy((total_0 == 0.0))
-      total_0 = 1.0
-    end
+    total_0 = max(Fmt, reduce(masks_0, 0.0, (function (t_2 = nothing, m_2 = nothing, _...)
+      return (t_2 + getat(tally_0, m_2))
+    end)), 1.0)
     counts_0 = sorted(Expr, map(masks_0, (function (m_2 = nothing, _...)
       return (0.0 - getat(tally_0, m_2))
     end)))
@@ -11565,14 +11337,12 @@ end
     return text_align(s_0, Base.string(j"left"))
   end
   function single(self::Type{<:__class__}, m_0 = nothing, _...)
-    n_0 = 0.0
-    for i1 in 0:(ceil(Int, Rt.num(length(FREEDOMS(Galaxies)))) - 1)
-      i_1 = Float64(i1)
-      if truthy(bit(Galaxies, m_0, i_1))
-        n_0 = (n_0 + 1.0)
-      end
-    end
-    return (n_0 == 1.0)
+    return (length(freedoms_in(Galaxies, m_0)) == 1.0)
+  end
+  function freedoms_in(self::Type{<:__class__}, m_0 = nothing, _...)
+    return filter(rng(length(FREEDOMS(Galaxies))), (function (i_2 = nothing, _...)
+      return bit(Galaxies, m_0, i_2)
+    end))
   end
   function ratio_at(self::Type{<:__class__}, data_0 = nothing, deg_0 = nothing, _...)
     table_0 = getat(header(data_0), Base.string(j"coincidence"))
@@ -11714,17 +11484,13 @@ end
         rest_0 = k_1
       end
     end
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
-      k_1 = Float64(i1)
-      push(out_0, ((n_0 - 1.0) - k_1))
-    end
-    for i1 in 0:(ceil(Int, Rt.num(SETTLE(Galaxies))) - 1)
-      k_1 = Float64(i1)
-      f_1 = (((k_1 + 1.0)) / SETTLE(Galaxies))
-      push(out_0, round(((((rest_0 * f_1) * f_1) * ((3.0 - (2.0 * f_1)))))))
-    end
-    return out_0
+    down_0 = map(rng(n_0), (function (k_2 = nothing, _...)
+      return ((n_0 - 1.0) - k_2)
+    end))
+    return concat(down_0, map(rng(SETTLE(Galaxies)), (function (k_2 = nothing, _...)
+      f_2 = (((k_2 + 1.0)) / SETTLE(Galaxies))
+      return round(((((rest_0 * f_2) * f_2) * ((3.0 - (2.0 * f_2))))))
+    end)))
   end
   function of(self::Type{<:__class__}, id_0 = nothing, what_0 = nothing, title_0 = nothing, _...)
     solved_0 = of(Measured, Base.string(j"", str(id_0), j".solved"))
@@ -11758,13 +11524,9 @@ end
         setat!(counts_0, Base.string(j"", str(g_1), j""), (((let q_ = getat(counts_0, Base.string(j"", str(g_1), j"")); q_ === nothing ? (0.0) : q_ end)) + 1.0))
       end
     end
-    ids_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(names(Sparc)))) - 1)
-      g_1 = Float64(i1)
-      if truthy((((let q_ = getat(counts_0, Base.string(j"", str(g_1), j"")); q_ === nothing ? (0.0) : q_ end)) >= 12.0))
-        push(ids_0, g_1)
-      end
-    end
+    ids_0 = filter(rng(length(names(Sparc))), (function (g_2 = nothing, _...)
+      return (((let q_ = getat(counts_0, Base.string(j"", str(g_2), j"")); q_ === nothing ? (0.0) : q_ end)) >= 12.0)
+    end))
     tops_0 = Node()
     for i1 in 0:(ceil(Int, Rt.num(rows(t_0))) - 1)
       i_1 = Float64(i1)
@@ -11774,12 +11536,9 @@ end
     sorted_0 = sorted_by(ids_0, (function (g_2 = nothing, _...)
       return getat(tops_0, Base.string(j"", str(g_2), j""))
     end))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(want_0)) - 1)
-      k_1 = Float64(i1)
-      push(out_0, getat(sorted_0, round((((((length(sorted_0) - 1.0)) * k_1) / ((want_0 - 1.0)))))))
-    end
-    return out_0
+    return map(rng(want_0), (function (k_2 = nothing, _...)
+      return getat(sorted_0, round((((((length(sorted_0) - 1.0)) * k_2) / ((want_0 - 1.0))))))
+    end))
   end
   function simulated(self::Type{<:__class__})
     got_0 = of(Measured, Base.string(j"galaxy.simulated"))
@@ -11796,15 +11555,9 @@ end
     return got_0
   end
   function rows_in(self::Type{<:__class__}, m_0 = nothing, g_0 = nothing, _...)
-    col_0 = getat(columns(m_0), Base.string(j"galaxy"))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(rows(m_0))) - 1)
-      i_1 = Float64(i1)
-      if truthy((getat(col_0, i_1) == g_0))
-        push(out_0, i_1)
-      end
-    end
-    return out_0
+    return filter(rng(rows(m_0)), (function (i_2 = nothing, _...)
+      return (getat(getat(columns(m_0), Base.string(j"galaxy")), i_2) == g_0)
+    end))
   end
   function off_of(self::Type{<:__class__}, g_0 = nothing, fitted_0 = nothing, _...)
     sim_0 = simulated(Galaxies)
@@ -12354,25 +12107,7 @@ end
     fill_style(s_0, FAINT(Galaxies))
     font(s_0, Base.string(j"11px ui-monospace, monospace"))
     text_align(s_0, Base.string(j"center"))
-    l_0 = XMIN_0
-    while truthy((l_0 <= XMAX_0))
-      begin_path(s_0)
-      move_to(s_0, X_0(l_0), by0_0)
-      line_to(s_0, X_0(l_0), by1_0)
-      stroke(s_0)
-      fill_text(s_0, Base.string(j"10^", str(l_0), j""), X_0(l_0), (by1_0 + 16.0))
-      l_0 = (l_0 + 1.0)
-    end
-    text_align(s_0, Base.string(j"right"))
-    l_0 = YMIN_0
-    while truthy((l_0 <= YMAX_0))
-      begin_path(s_0)
-      move_to(s_0, bx0_0, Y_0(l_0))
-      line_to(s_0, bx1_0, Y_0(l_0))
-      stroke(s_0)
-      fill_text(s_0, Base.string(j"10^", str(l_0), j""), (bx0_0 - 8.0), (Y_0(l_0) + 4.0))
-      l_0 = (l_0 + 1.0)
-    end
+    decades(Galaxies, s_0, X_0, Y_0, Any[bx0_0, by0_0, bx1_0, by1_0], Any[XMIN_0, XMAX_0, YMIN_0, YMAX_0], 16.0)
     lg_0 = (function (v_1 = nothing, _...)
       return log10(Fmt, (v_1 / A0_DATA(Galaxies)))
     end)
@@ -12410,19 +12145,9 @@ end
     a0_0 = getat(header(sim_0), Base.string(j"a0"))
     stroke_style(s_0, MODEL(Galaxies))
     line_width(s_0, 2.0)
-    begin_path(s_0)
-    l_0 = XMIN_0
-    while truthy((l_0 <= (XMAX_0 + 0.000001)))
-      gN_0 = ((10.0 ^ l_0) * A0_DATA(Galaxies))
-      y_0 = lg_0(boost(Law, gN_0, a0_0))
-      if truthy((l_0 == XMIN_0))
-        move_to(s_0, X_0(l_0), Y_0(y_0))
-      else
-        line_to(s_0, X_0(l_0), Y_0(y_0))
-      end
-      l_0 = (l_0 + 0.02)
-    end
-    stroke(s_0)
+    curve(Galaxies, s_0, X_0, Y_0, (function (l_2 = nothing, _...)
+      return lg_0(boost(Law, ((10.0 ^ l_2) * A0_DATA(Galaxies)), a0_0))
+    end), XMIN_0, XMAX_0, 0.02)
     stroke_style(s_0, NEWT(Galaxies))
     dash(s_0, Any[6.0, 5.0])
     begin_path(s_0)
@@ -12598,11 +12323,9 @@ end
     end)))
   end
   function total(self::__class__)
-    sum_0 = 0.0
-    for p_1 in items(parts(self))
-      sum_0 = (sum_0 + getat(p_1, 1.0))
-    end
-    return sum_0
+    return sum(map(parts(self), (function (p_2 = nothing, _...)
+      return getat(p_2, 1.0)
+    end)))
   end
   function per_source(self::__class__)
     return (truthy(compact(budget(self))) ? (12.0) : ((((((12.0 + 4.0) + 2.0) + 1.0) + 1.0) * 4.0)))
@@ -12755,37 +12478,26 @@ end
         setat!(counts_0, Base.string(j"", str(g_1), j""), (((let q_ = getat(counts_0, Base.string(j"", str(g_1), j"")); q_ === nothing ? (0.0) : q_ end)) + 1.0))
       end
     end
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(names(Sparc)))) - 1)
-      g_1 = Float64(i1)
-      if truthy((((let q_ = getat(counts_0, Base.string(j"", str(g_1), j"")); q_ === nothing ? (0.0) : q_ end)) >= 3.0))
-        push(out_0, g_1)
-      end
-    end
-    return out_0
+    return filter(rng(length(names(Sparc))), (function (g_2 = nothing, _...)
+      return (((let q_ = getat(counts_0, Base.string(j"", str(g_2), j"")); q_ === nothing ? (0.0) : q_ end)) >= 3.0)
+    end))
   end
   function rows_of(self::Type{<:__class__}, g_0 = nothing, _...)
     C_0 = columns(curves(Sparc))
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(rows(curves(Sparc)))) - 1)
-      i_1 = Float64(i1)
-      if truthy((truthy((truthy((getat(getat(C_0, Base.string(j"galaxy")), i_1) == g_0)) && truthy((getat(getat(C_0, Base.string(j"R")), i_1) > 0.0)))) && truthy((getat(getat(C_0, Base.string(j"Vobs")), i_1) > 0.0))))
-        push(out_0, Any[getat(getat(C_0, Base.string(j"R")), i_1), getat(getat(C_0, Base.string(j"Vobs")), i_1), getat(getat(C_0, Base.string(j"e_Vobs")), i_1), getat(getat(C_0, Base.string(j"Vgas")), i_1), getat(getat(C_0, Base.string(j"Vdisk")), i_1), getat(getat(C_0, Base.string(j"Vbul")), i_1), (truthy(kept(Simulation, g_0, getat(getat(C_0, Base.string(j"Vobs")), i_1), getat(getat(C_0, Base.string(j"e_Vobs")), i_1))) ? (1.0) : (0.0))])
-      end
-    end
-    return sorted_by(out_0, (function (r_2 = nothing, _...)
+    mine_0 = filter(rng(rows(curves(Sparc))), (function (i_2 = nothing, _...)
+      return (truthy((truthy((getat(getat(C_0, Base.string(j"galaxy")), i_2) == g_0)) && truthy((getat(getat(C_0, Base.string(j"R")), i_2) > 0.0)))) && truthy((getat(getat(C_0, Base.string(j"Vobs")), i_2) > 0.0)))
+    end))
+    return sorted_by(map(mine_0, (function (i_3 = nothing, _...)
+      return Any[getat(getat(C_0, Base.string(j"R")), i_3), getat(getat(C_0, Base.string(j"Vobs")), i_3), getat(getat(C_0, Base.string(j"e_Vobs")), i_3), getat(getat(C_0, Base.string(j"Vgas")), i_3), getat(getat(C_0, Base.string(j"Vdisk")), i_3), getat(getat(C_0, Base.string(j"Vbul")), i_3), (truthy(kept(Simulation, g_0, getat(getat(C_0, Base.string(j"Vobs")), i_3), getat(getat(C_0, Base.string(j"e_Vobs")), i_3))) ? (1.0) : (0.0))]
+    end)), (function (r_2 = nothing, _...)
       return getat(r_2, 0.0)
     end))
   end
   function edges_of(self::Type{<:__class__}, rs_0 = nothing, _...)
     n_0 = length(rs_0)
-    out_0 = Any[0.0, (getat(getat(rs_0, 0.0), 0.0) / 2.0)]
-    for i1 in 0:(ceil(Int, Rt.num((n_0 - 1.0))) - 1)
-      i_1 = Float64(i1)
-      push(out_0, (((getat(getat(rs_0, i_1), 0.0) + getat(getat(rs_0, (i_1 + 1.0)), 0.0))) / 2.0))
-    end
-    push(out_0, (getat(getat(rs_0, (n_0 - 1.0)), 0.0) + (((getat(getat(rs_0, (n_0 - 1.0)), 0.0) - getat(getat(rs_0, (n_0 - 2.0)), 0.0))) / 2.0)))
-    return out_0
+    return concat(concat(Any[0.0, (getat(getat(rs_0, 0.0), 0.0) / 2.0)], map(rng((n_0 - 1.0)), (function (i_2 = nothing, _...)
+      return (((getat(getat(rs_0, i_2), 0.0) + getat(getat(rs_0, (i_2 + 1.0)), 0.0))) / 2.0)
+    end))), Any[(getat(getat(rs_0, (n_0 - 1.0)), 0.0) + (((getat(getat(rs_0, (n_0 - 1.0)), 0.0) - getat(getat(rs_0, (n_0 - 2.0)), 0.0))) / 2.0))])
   end
   function bulge_arrives(self::Type{<:__class__}, rs_0 = nothing, r_0 = nothing, h_0 = nothing, _...)
     got_0 = 0.0
@@ -13081,12 +12793,9 @@ end
       w_gas_1 = nnls(Simulation, K_1, want_gas_1)
       w_disc_1 = nnls(Simulation, K_1, want_disc_1)
       sum_at_1 = (function (row_of_2 = nothing, w_2 = nothing, _...)
-        s_2 = 0.0
-        for i3 in 0:(ceil(Int, Rt.num(n_1)) - 1)
-          a_3 = Float64(i3)
-          s_2 = (s_2 + (row_of_2(a_3) * getat(w_2, a_3)))
-        end
-        return s_2
+        return reduce(rng(n_1), 0.0, (function (s_4 = nothing, a_4 = nothing, _...)
+          return (s_4 + (row_of_2(a_4) * getat(w_2, a_4)))
+        end))
       end)
       here_1 = Any[]
       worst_1 = 0.0
@@ -13112,19 +12821,14 @@ end
       push(w_discs(self), w_disc_1)
       push(w_gases(self), w_gas_1)
       push(repro(self), (truthy((top_1 > 0.0)) ? ((worst_1 / top_1)) : (0.0)))
-      tab_1 = Any[]
-      for i2 in 0:(ceil(Int, Rt.num(TABLE(Simulation))) - 1)
-        t_2 = Float64(i2)
-        base_2 = (getat(tabled_at(self), j_1) + (t_2 * n_1))
-        gd_2 = sum_at_1((function (a_4 = nothing, _...)
-          return getat(pulls_0, (base_2 + a_4))
-        end), w_disc_1)
-        gg_2 = sum_at_1((function (a_4 = nothing, _...)
-          return getat(pulls_0, (base_2 + a_4))
-        end), w_gas_1)
-        push(tab_1, Any[table_r(self, j_1, t_2), gd_2, gg_2, bulge_at(Simulation, rs_1, table_r(self, j_1, t_2))])
-      end
-      push(tables(self), tab_1)
+      push(tables(self), map(rng(TABLE(Simulation)), (function (t_3 = nothing, _...)
+        base_3 = (getat(tabled_at(self), j_1) + (t_3 * n_1))
+        return Any[table_r(self, j_1, t_3), sum_at_1((function (a_5 = nothing, _...)
+          return getat(pulls_0, (base_3 + a_5))
+        end), w_disc_1), sum_at_1((function (a_5 = nothing, _...)
+          return getat(pulls_0, (base_3 + a_5))
+        end), w_gas_1), bulge_at(Simulation, rs_1, table_r(self, j_1, t_3))]
+      end)))
     end
   end
   @field seen_rows::List = Any[]
@@ -13134,20 +12838,14 @@ end
       j_1 = Float64(i1)
       rs_1 = getat(rows(self), j_1)
       n_1 = (length(getat(edges(self), j_1)) - 1.0)
-      here_1 = Any[]
-      for i2 in 0:(ceil(Int, Rt.num(length(rs_1))) - 1)
-        i_2 = Float64(i2)
-        sd_2 = 0.0
-        sg_2 = 0.0
-        for i3 in 0:(ceil(Int, Rt.num(n_1)) - 1)
-          a_3 = Float64(i3)
-          k_3 = getat(spulls_0, ((getat(measured_at(self), j_1) + (i_2 * n_1)) + a_3))
-          sd_2 = (sd_2 + (k_3 * getat(getat(w_discs(self), j_1), a_3)))
-          sg_2 = (sg_2 + (k_3 * getat(getat(w_gases(self), j_1), a_3)))
-        end
-        push(here_1, Any[sd_2, sg_2, bulge_arrives(Simulation, rs_1, getat(getat(rs_1, i_2), 0.0), getat(thick(self), j_1))])
-      end
-      push(seen_rows(self), here_1)
+      seen_1 = (function (i_2 = nothing, w_2 = nothing, _...)
+        return reduce(rng(n_1), 0.0, (function (s_4 = nothing, a_4 = nothing, _...)
+          return (s_4 + (getat(spulls_0, ((getat(measured_at(self), j_1) + (i_2 * n_1)) + a_4)) * getat(w_2, a_4)))
+        end))
+      end)
+      push(seen_rows(self), map(rng(length(rs_1)), (function (i_3 = nothing, _...)
+        return Any[seen_1(i_3, getat(w_discs(self), j_1)), seen_1(i_3, getat(w_gases(self), j_1)), bulge_arrives(Simulation, rs_1, getat(getat(rs_1, i_3), 0.0), getat(thick(self), j_1))]
+      end)))
     end
   end
   function lift_coefficients(self::Type{<:__class__}, theory_0 = nothing, deg_0 = nothing, _...)
@@ -13234,38 +12932,30 @@ end
   function felt(self::__class__, gN_0 = nothing, _...)
     return (truthy((gN_0 > 0.0)) ? (boost(Law, gN_0, a0(self))) : (((truthy((gN_0 < 0.0)) ? ((0.0 - boost(Law, (0.0 - gN_0), a0(self)))) : (0.0)))))
   end
+  function laid(self::Type{<:__class__}, records_0 = nothing, _...)
+    return reduce(records_0, Any[], (function (out_2 = nothing, r_2 = nothing, _...)
+      return reduce(r_2, out_2, (function (o_4 = nothing, v_4 = nothing, _...)
+        return push(o_4, v_4)
+      end))
+    end))
+  end
   function points(self::__class__)
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
-      j_1 = Float64(i1)
-      for i2 in 0:(ceil(Int, Rt.num(length(getat(rows(self), j_1)))) - 1)
-        i_2 = Float64(i2)
-        p_2 = getat(getat(at_rows(self), j_1), i_2)
-        for v_3 in items(Any[j_1, getat(getat(getat(rows(self), j_1), i_2), 0.0), getat(p_2, 0.0), getat(p_2, 1.0), getat(p_2, 2.0), 0.0])
-          push(out_0, v_3)
-        end
-      end
-    end
-    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
-      j_1 = Float64(i1)
-      for t_2 in items(getat(tables(self), j_1))
-        for v_3 in items(Any[j_1, getat(t_2, 0.0), getat(t_2, 1.0), getat(t_2, 2.0), getat(t_2, 3.0), 0.0])
-          push(out_0, v_3)
-        end
-      end
-    end
-    return out_0
+    measured_0 = reduce(rng(length(ids(self))), Any[], (function (out_2 = nothing, j_2 = nothing, _...)
+      return reduce(rng(length(getat(rows(self), j_2))), out_2, (function (o_4 = nothing, i_4 = nothing, _...)
+        return push(o_4, Any[j_2, getat(getat(getat(rows(self), j_2), i_4), 0.0), getat(getat(getat(at_rows(self), j_2), i_4), 0.0), getat(getat(getat(at_rows(self), j_2), i_4), 1.0), getat(getat(getat(at_rows(self), j_2), i_4), 2.0), 0.0])
+      end))
+    end))
+    tabled_0 = reduce(rng(length(ids(self))), Any[], (function (out_2 = nothing, j_2 = nothing, _...)
+      return reduce(getat(tables(self), j_2), out_2, (function (o_4 = nothing, t_4 = nothing, _...)
+        return push(o_4, Any[j_2, getat(t_4, 0.0), getat(t_4, 1.0), getat(t_4, 2.0), getat(t_4, 3.0), 0.0])
+      end))
+    end))
+    return laid(Simulation, concat(measured_0, tabled_0))
   end
   function nuisances(self::__class__, fitted_0 = nothing, _...)
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
-      j_1 = Float64(i1)
-      push(out_0, (truthy(fitted_0) ? (getat(best_y(self), j_1)) : (YD(Sparc))))
-      push(out_0, (truthy(fitted_0) ? (getat(best_b(self), j_1)) : (YB(Sparc))))
-      push(out_0, a0(self))
-      push(out_0, 0.0)
-    end
-    return out_0
+    return laid(Simulation, map(rng(length(ids(self))), (function (j_2 = nothing, _...)
+      return Any[(truthy(fitted_0) ? (getat(best_y(self), j_2)) : (YD(Sparc))), (truthy(fitted_0) ? (getat(best_b(self), j_2)) : (YB(Sparc))), a0(self), 0.0]
+    end)))
   end
   @field best_y::List = Any[]
   @field best_b::List = Any[]
@@ -13320,16 +13010,11 @@ end
   function searches(self::__class__)
     S_0 = columns(sample(Sparc))
     pts_0 = fit_points(self)
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
-      j_1 = Float64(i1)
-      g_1 = getat(ids(self), j_1)
-      stop_1 = (truthy(((j_1 + 1.0) < length(ids(self)))) ? (getat(fit_at(self), (j_1 + 1.0))) : (floor(((length(pts_0) / 8.0)))))
-      for v_2 in items(Any[getat(fit_at(self), j_1), (stop_1 - getat(fit_at(self), j_1)), getat(getat(S_0, Base.string(j"D")), g_1), getat(getat(S_0, Base.string(j"e_D")), g_1), getat(getat(S_0, Base.string(j"Inc")), g_1), getat(getat(S_0, Base.string(j"e_Inc")), g_1), a0(self), (truthy(has_bulge(self, j_1)) ? (1.0) : (0.0)), getat(centre_y(self), j_1), getat(centre_b(self), j_1), getat(centre_d(self), j_1), getat(centre_i(self), j_1), (STEP_Y(Simulation) * spacing(self)), (STEP_D(Simulation) * spacing(self)), (STEP_I(Simulation) * spacing(self)), 0.0])
-        push(out_0, v_2)
-      end
-    end
-    return out_0
+    return laid(Simulation, map(rng(length(ids(self))), (function (j_2 = nothing, _...)
+      g_2 = getat(ids(self), j_2)
+      stop_2 = (truthy(((j_2 + 1.0) < length(ids(self)))) ? (getat(fit_at(self), (j_2 + 1.0))) : (floor(((length(pts_0) / 8.0)))))
+      return Any[getat(fit_at(self), j_2), (stop_2 - getat(fit_at(self), j_2)), getat(getat(S_0, Base.string(j"D")), g_2), getat(getat(S_0, Base.string(j"e_D")), g_2), getat(getat(S_0, Base.string(j"Inc")), g_2), getat(getat(S_0, Base.string(j"e_Inc")), g_2), a0(self), (truthy(has_bulge(self, j_2)) ? (1.0) : (0.0)), getat(centre_y(self), j_2), getat(centre_b(self), j_2), getat(centre_d(self), j_2), getat(centre_i(self), j_2), (STEP_Y(Simulation) * spacing(self)), (STEP_D(Simulation) * spacing(self)), (STEP_I(Simulation) * spacing(self)), 0.0]
+    end)))
   end
   function combo(self::__class__, j_0 = nothing, c_0 = nothing, n_0 = nothing, _...)
     S_0 = columns(sample(Sparc))
@@ -13459,11 +13144,9 @@ end
     return out_0
   end
   function most_steps(self::__class__)
-    m_0 = 0.0
-    for n_1 in items(steps(self))
-      m_0 = max(Fmt, m_0, n_1)
-    end
-    return m_0
+    return reduce(steps(self), 0.0, (function (m_2 = nothing, n_2 = nothing, _...)
+      return max(Fmt, m_2, n_2)
+    end))
   end
   @field film_sources::List = Any[]
   @field film_angles::List = Any[]
@@ -13496,17 +13179,14 @@ end
     per_pixel_0 = (((((fov_0 / P_0) * 3.141592653589793) / 180.0) * D_0) * 1000.0)
     light_0 = getat(columns(I_0), Base.string(j"light"))
     base_0 = ((g_0 * P_0) * P_0)
-    edge_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(P_0)) - 1)
-      r_1 = Float64(i1)
-      for i2 in 0:(ceil(Int, Rt.num(P_0)) - 1)
-        c_2 = Float64(i2)
-        if truthy((truthy((truthy((truthy((r_1 < SKY_EDGE(Simulation))) || truthy((c_2 < SKY_EDGE(Simulation))))) || truthy((r_1 >= (P_0 - SKY_EDGE(Simulation)))))) || truthy((c_2 >= (P_0 - SKY_EDGE(Simulation))))))
-          push(edge_0, getat(light_0, ((base_0 + (r_1 * P_0)) + c_2)))
-        end
-      end
-    end
-    sky_0 = median(Fmt, edge_0)
+    on_edge_0 = (function (r_1 = nothing, c_1 = nothing, _...)
+      return (truthy((truthy((truthy((r_1 < SKY_EDGE(Simulation))) || truthy((c_1 < SKY_EDGE(Simulation))))) || truthy((r_1 >= (P_0 - SKY_EDGE(Simulation)))))) || truthy((c_1 >= (P_0 - SKY_EDGE(Simulation)))))
+    end)
+    sky_0 = median(Fmt, map(filter(rng((P_0 * P_0)), (function (k_3 = nothing, _...)
+      return on_edge_0(floor(((k_3 / P_0))), (k_3 % P_0))
+    end)), (function (k_2 = nothing, _...)
+      return getat(light_0, (base_0 + k_2))
+    end)))
     reach_0 = getat(reach(self), j_0)
     east_0 = (function (c_1 = nothing, _...)
       return (0.0 - ((((c_1 + 0.5) - (P_0 / 2.0))) * per_pixel_0))
@@ -13609,11 +13289,9 @@ end
         push(film_angles(self), NaN)
         es_1 = getat(edges(self), j_1)
         rs_1 = getat(rows(self), j_1)
-        masses_1 = Any[]
-        for i2 in 0:(ceil(Int, Rt.num((length(es_1) - 1.0))) - 1)
-          a_2 = Float64(i2)
-          push(masses_1, Any[getat(es_1, a_2), getat(es_1, (a_2 + 1.0)), ((YD(Sparc) * getat(getat(w_discs(self), j_1), a_2)) + getat(getat(w_gases(self), j_1), a_2))])
-        end
+        masses_1 = map(rng((length(es_1) - 1.0)), (function (a_3 = nothing, _...)
+          return Any[getat(es_1, a_3), getat(es_1, (a_3 + 1.0)), ((YD(Sparc) * getat(getat(w_discs(self), j_1), a_3)) + getat(getat(w_gases(self), j_1), a_3))]
+        end))
         last_1 = 0.0
         for i2 in 0:(ceil(Int, Rt.num(length(rs_1))) - 1)
           i_2 = Float64(i2)
@@ -13623,12 +13301,10 @@ end
             last_1 = inside_2
           end
         end
-        run_1 = Any[]
-        total_1 = 0.0
-        for m_2 in items(masses_1)
-          total_1 = (total_1 + max(Fmt, getat(m_2, 2.0), 0.0))
-          push(run_1, total_1)
-        end
+        run_1 = reduce(masses_1, Any[], (function (run_3 = nothing, m_3 = nothing, _...)
+          return push(run_3, (((let q_ = last(run_3); q_ === nothing ? (0.0) : q_ end)) + max(Fmt, getat(m_3, 2.0), 0.0)))
+        end))
+        total_1 = (let q_ = last(run_1); q_ === nothing ? (0.0) : q_ end)
         for i2 in 0:(ceil(Int, Rt.num(FILM_STARS(Simulation))) - 1)
           k_2 = Float64(i2)
           want_2 = (next(rng_0) * total_1)
@@ -13649,15 +13325,11 @@ end
     return out_0
   end
   function film_table(self::__class__, felt_table_0 = nothing, _...)
-    out_0 = Any[]
-    for g_1 in items(film_ids(self))
-      j_1 = index_of(ids(self), g_1)
-      for i2 in 0:(ceil(Int, Rt.num(TABLE(Simulation))) - 1)
-        t_2 = Float64(i2)
-        push(out_0, getat(felt_table_0, ((j_1 * TABLE(Simulation)) + t_2)))
-      end
-    end
-    return out_0
+    return reduce(film_ids(self), Any[], (function (out_2 = nothing, g_2 = nothing, _...)
+      return reduce(rng(TABLE(Simulation)), out_2, (function (o_4 = nothing, t_4 = nothing, _...)
+        return push(o_4, getat(felt_table_0, ((index_of(ids(self), g_2) * TABLE(Simulation)) + t_4)))
+      end))
+    end))
   end
   function film_runs(self::__class__, felt_table_0 = nothing, _...)
     out_0 = Any[]
@@ -13685,19 +13357,16 @@ end
     return out_0
   end
   function most_film_steps(self::__class__)
-    m_0 = 0.0
-    for n_1 in items(film_steps(self))
-      m_0 = max(Fmt, m_0, n_1)
-    end
-    return m_0
+    return reduce(film_steps(self), 0.0, (function (m_2 = nothing, n_2 = nothing, _...)
+      return max(Fmt, m_2, n_2)
+    end))
   end
   function save(self::__class__, felt0_0 = nothing, felt1_0 = nothing, stars_0 = nothing, frames_0 = nothing, _...)
     S_0 = columns(sample(Sparc))
     T_0 = TABLE(Simulation)
-    nrows_0 = 0.0
-    for rs_1 in items(rows(self))
-      nrows_0 = (nrows_0 + length(rs_1))
-    end
+    nrows_0 = reduce(rows(self), 0.0, (function (n_2 = nothing, rs_2 = nothing, _...)
+      return (n_2 + length(rs_2))
+    end))
     cols_0 = Node()
     names_0 = Any[Base.string(j"galaxy"), Base.string(j"R"), Base.string(j"Vobs"), Base.string(j"e_Vobs"), Base.string(j"gd"), Base.string(j"gg"), Base.string(j"gb"), Base.string(j"v0"), Base.string(j"v1"), Base.string(j"vs"), Base.string(j"kept")]
     for nm__1 in items(names_0)
@@ -14023,14 +13692,11 @@ end
     return out_0
   end
   function constants(self::__class__)
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(discs_n(self))) - 1)
-      g_1 = Float64(i1)
-      for v_2 in items(Any[(GM(self, g_1) / N(Formed)), soft(self, g_1), scale_a0(self), DT(Formed)])
-        push(out_0, v_2)
-      end
-    end
-    return out_0
+    return reduce(rng(discs_n(self)), Any[], (function (out_2 = nothing, g_2 = nothing, _...)
+      return reduce(Any[(GM(self, g_2) / N(Formed)), soft(self, g_2), scale_a0(self), DT(Formed)], out_2, (function (o_4 = nothing, v_4 = nothing, _...)
+        return push(o_4, v_4)
+      end))
+    end))
   end
   function accel_cpu(self::__class__, state_0 = nothing, i_0 = nothing, _...)
     g_0 = floor(((i_0 / N(Formed))))
@@ -14169,16 +13835,13 @@ end
   end
   function save(self::__class__, frames_0 = nothing, _...)
     G_0 = GRID(Formed)
-    density_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(discs_n(self))) - 1)
-      g_1 = Float64(i1)
-      for f_2 in items(frames_0)
-        for i3 in 0:(ceil(Int, Rt.num((G_0 * G_0))) - 1)
-          c_3 = Float64(i3)
-          push(density_0, getat(f_2, (((g_1 * G_0) * G_0) + c_3)))
-        end
-      end
-    end
+    density_0 = reduce(rng(discs_n(self)), Any[], (function (out_2 = nothing, g_2 = nothing, _...)
+      return reduce(frames_0, out_2, (function (o_4 = nothing, f_4 = nothing, _...)
+        return reduce(rng((G_0 * G_0)), o_4, (function (oo_6 = nothing, c_6 = nothing, _...)
+          return push(oo_6, getat(f_4, (((g_2 * G_0) * G_0) + c_6)))
+        end))
+      end))
+    end))
     cols_0 = Node()
     setat!(cols_0, Base.string(j"density"), density_0)
     extra_0 = Node()
@@ -14268,39 +13931,12 @@ end
     return out_0
   end
   function walk_names(self::Type{<:__class__}, e_0 = nothing, out_0 = nothing, _...)
-    k_0 = kind(e_0)
-    if truthy((truthy((k_0 == Base.string(j"sym"))) || truthy((k_0 == Base.string(j"field")))))
-      if truthy(!(contains(out_0, label(e_0))))
-        push(out_0, label(e_0))
-      end
-    else
-      if truthy((truthy((k_0 == Base.string(j"add"))) || truthy((k_0 == Base.string(j"mul")))))
-        for x_1 in items(of(e_0))
-          walk_names(Model, x_1, out_0)
-        end
-      else
-        if truthy((k_0 == Base.string(j"pow")))
-          walk_names(Model, base(e_0), out_0)
-          return walk_names(Model, power(e_0), out_0)
-        else
-          if truthy((truthy((truthy((truthy((truthy((k_0 == Base.string(j"grad"))) || truthy((k_0 == Base.string(j"log"))))) || truthy((k_0 == Base.string(j"exp"))))) || truthy((k_0 == Base.string(j"root"))))) || truthy((k_0 == Base.string(j"limit")))))
-            return walk_names(Model, base(e_0), out_0)
-          else
-            if truthy((truthy((k_0 == Base.string(j"choose"))) || truthy((k_0 == Base.string(j"gammaInc")))))
-              walk_names(Model, first_(e_0), out_0)
-              return walk_names(Model, second_(e_0), out_0)
-            else
-              if truthy((k_0 == Base.string(j"call")))
-                called_0 = Base.string(j"", str(label(e_0)), j"\\paren{...}")
-                if truthy(!(contains(out_0, called_0)))
-                  push(out_0, called_0)
-                end
-                return walk_names(Model, base(e_0), out_0)
-              end
-            end
-          end
-        end
-      end
+    name_0 = (truthy(named(e_0)) ? (label(e_0)) : (((truthy((kind(e_0) == Base.string(j"call"))) ? (Base.string(j"", str(label(e_0)), j"\\paren{...}")) : (nothing)))))
+    if truthy((truthy((name_0 != nothing)) && truthy(!(contains(out_0, name_0)))))
+      push(out_0, name_0)
+    end
+    for x_1 in items(subtrees(e_0))
+      walk_names(Model, x_1, out_0)
     end
   end
   function resolved(self::__class__, e_0 = nothing, env_0 = nothing, seen_0 = nothing, _...)
@@ -14601,22 +14237,7 @@ end
     return Base.string(j"fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }")
   end
   function points(self::Type{<:__class__})
-    points_0 = Any[]
-    i_0 = 1.0
-    while truthy((i_0 <= 120.0))
-      push(points_0, (i_0 / 120.0))
-      i_0 = (i_0 + 1.0)
-    end
-    ex_0 = 0.0
-    while truthy((ex_0 <= 24.0))
-      k_0 = 1.0
-      while truthy((k_0 < 8.0))
-        push(points_0, (((10.0 ^ ((ex_0 - 12.0)))) * ((1.0 + (k_0 / 2.0)))))
-        k_0 = (k_0 + 1.0)
-      end
-      ex_0 = (ex_0 + 1.0)
-    end
-    return sorted(Expr, points_0)
+    return bracket_points(Expr)
   end
   function solver(self::Type{<:__class__}, name_0 = nothing, f_0 = nothing, _...)
     pts_0 = points(Shaded)
@@ -14837,31 +14458,23 @@ end
     return need_0
   end
   function save(self::__class__, id_0 = nothing, grid_0 = nothing, need_0 = nothing, _...)
-    x_0 = Any[]
-    y_0 = Any[]
-    p_0 = Any[]
-    by_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(YS(self))) - 1)
-      gy_1 = Float64(i1)
-      for i2 in 0:(ceil(Int, Rt.num(XS(self))) - 1)
-        gx_2 = Float64(i2)
-        push(x_0, (X0(self) + (gx_2 * dx(self))))
-        push(y_0, (Y0(self) + (gy_1 * dy(self))))
-        push(p_0, getat(grid_0, ((gy_1 * XS(self)) + gx_2)))
-        push(by_0, getat(need_0, ((gy_1 * XS(self)) + gx_2)))
-      end
-    end
-    most_0 = 0.0
-    for v_1 in items(p_0)
-      if truthy((v_1 > most_0))
-        most_0 = v_1
-      end
-    end
+    cells_0 = rng((YS(self) * XS(self)))
     columns_0 = Node()
-    setat!(columns_0, Base.string(j"x"), x_0)
-    setat!(columns_0, Base.string(j"y"), y_0)
-    setat!(columns_0, Base.string(j"p"), p_0)
-    setat!(columns_0, Base.string(j"by"), by_0)
+    setat!(columns_0, Base.string(j"x"), map(cells_0, (function (i_2 = nothing, _...)
+      return (X0(self) + (((i_2 % XS(self))) * dx(self)))
+    end)))
+    setat!(columns_0, Base.string(j"y"), map(cells_0, (function (i_2 = nothing, _...)
+      return (Y0(self) + (floor(((i_2 / XS(self)))) * dy(self)))
+    end)))
+    setat!(columns_0, Base.string(j"p"), map(cells_0, (function (i_2 = nothing, _...)
+      return getat(grid_0, i_2)
+    end)))
+    setat!(columns_0, Base.string(j"by"), map(cells_0, (function (i_2 = nothing, _...)
+      return getat(need_0, i_2)
+    end)))
+    most_0 = reduce(getat(columns_0, Base.string(j"p")), 0.0, (function (m_2 = nothing, v_2 = nothing, _...)
+      return (truthy((v_2 > m_2)) ? (v_2) : (m_2))
+    end))
     extra_0 = Node()
     setat!(extra_0, Base.string(j"a0"), a0(self))
     setat!(extra_0, Base.string(j"arrangement"), how(self))
@@ -14916,16 +14529,11 @@ end
     return (truthy((i_0 == nothing)) ? ((-1.0)) : (i_0))
   end
   function radii(self::__class__)
-    out_0 = Any[]
-    for i1 in 0:(ceil(Int, Rt.num(RS(self))) - 1)
-      k_1 = Float64(i1)
-      e_1 = getat(env(self), k_1)
-      push(out_0, getat(rad(self), k_1))
-      push(out_0, (let q_ = getat(e_1, Base.string(j"n_{f}")); q_ === nothing ? (NaN) : q_ end))
-      push(out_0, (let q_ = getat(e_1, Base.string(j"\\sigma_{tr}")); q_ === nothing ? (NaN) : q_ end))
-      push(out_0, (let q_ = getat(e_1, Base.string(j"L")); q_ === nothing ? (NaN) : q_ end))
-    end
-    return out_0
+    return reduce(rng(RS(self)), Any[], (function (out_2 = nothing, k_2 = nothing, _...)
+      return reduce(Any[getat(rad(self), k_2), (let q_ = getat(getat(env(self), k_2), Base.string(j"n_{f}")); q_ === nothing ? (NaN) : q_ end), (let q_ = getat(getat(env(self), k_2), Base.string(j"\\sigma_{tr}")); q_ === nothing ? (NaN) : q_ end), (let q_ = getat(getat(env(self), k_2), Base.string(j"L")); q_ === nothing ? (NaN) : q_ end)], out_2, (function (o_4 = nothing, v_4 = nothing, _...)
+        return push(o_4, v_4)
+      end))
+    end))
   end
   function kernel(self::__class__)
     names_0 = names(self)
@@ -15077,6 +14685,993 @@ end
   end
 end
 
+@class Sighted <: Node begin
+  @field name::String
+  @field disc_mass::Float64
+  @field disc_scale::Float64
+  @field bulge_mass::Float64
+  @field bulge_scale::Float64
+  @field circling::Float64
+  @field sun::Float64
+  @field inclination::Float64
+  @field position_angle::Float64
+  @field distance::Float64
+  @field approach::Float64
+  @field across::Float64
+  @field source::String
+  function mass(self::__class__)
+    return (disc_mass(self) + bulge_mass(self))
+  end
+end
+
+@class Video <: Node begin
+  @static_field WIDTH = 2560.0
+  @static_field HEIGHT = 1440.0
+  @static_field FPS = 60.0
+  @static_field FILM_RD = 6.0
+  @static_field PER_MYR = 0.0010227
+  @static_field LIGHT = 299792.458
+  @static_field ANDROMEDA = Sighted(name = Base.string(j"Andromeda (M31)"), disc_mass = 8.4, disc_scale = 5.4, bulge_mass = 3.3, bulge_scale = 0.61, circling = 250.0, sun = 0.0, inclination = 77.0, position_angle = 38.0, distance = 785.0, approach = 110.0, across = 17.0, source = Base.string(j"Geehan et al. 2006, van der Marel et al. 2012"))
+  @static_field MW_ORBITS = Any[5.5, 0.25]
+  @static_field MW_ORBIT_TRIALS = Any[10.0, 7.0]
+  @static_field MW_ORBIT_TEMPER = 0.1
+  @static_field MW_ARM_END = Any[0.0, 0.0, 0.0, 0.0, 140.0]
+  @static_field MW_ARM_OLD = Any[0.0, 1.0, 0.0, 1.0, 0.0]
+  @static_field MW_ARM_FADE = 12.0
+  @static_field MW_ARM_FADE_IN = 45.0
+  @static_field MW_YOUNG = 0.1
+  @static_field MW_CLUSTERS = Any[0.5, 50.0, 0.1]
+  @static_field LIGHT_STARS = Any[0.95, 2.4, 3.2]
+  @static_field ANDROMEDA_IMAGE = 512.0
+  @static_field ANDROMEDA_FOV = 3.2
+  @static_field SOURCE = Base.string(j"74,168,235")
+  @static_field STRIP_TOP = 570.0
+  @static_field STRIP_TALL = 300.0
+  @static_field PLANET_INK = Any[Base.string(j"#9a9a9a"), Base.string(j"#e8d3a0"), Base.string(j"#4a90e2"), Base.string(j"#c1440e")]
+  @static_field SOLAR_FROM = 160.0
+  @static_field SOLAR_TO = 280.0
+  @static_field LOGO = Base.string(j"../orbitmines.com/orbitmines.com/public/logo.png")
+  @static_field PARTS = Any[Base.string(j"video.transport"), Base.string(j"video.to-source"), Base.string(j"video.to-solar"), Base.string(j"video.to-milkyway"), Base.string(j"video.milkyway"), Base.string(j"video.to-andromeda"), Base.string(j"video.collision"), Base.string(j"video.end")]
+  function MILKY_WAY(self::Type{<:__class__})
+    return Sighted(name = Base.string(j"Milky Way"), disc_mass = mw_discs_mass(Video), disc_scale = measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_scale")), bulge_mass = sum(MW_BAR_MASSES(Video)), bulge_scale = 0.6, circling = measured(Video, Base.string(j"milkyway-discs"), Base.string(j"circling")), sun = measured(Video, Base.string(j"milkyway-discs"), Base.string(j"sun_distance")), inclination = 0.0, position_angle = 0.0, distance = 0.0, approach = 0.0, across = 0.0, source = Base.string(j"Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)"))
+  end
+  function measured(self::Type{<:__class__}, id_0 = nothing, name_0 = nothing, _...)
+    m_0 = of(Measured, id_0)
+    if truthy((m_0 == nothing))
+      fail(Base.string(j"no data/", str(id_0), j": run npx ray data ", str(id_0), j""))
+    end
+    names_0 = getat(header(m_0), Base.string(j"names"))
+    k_0 = first(filter(rng(length(names_0)), (function (i_2 = nothing, _...)
+      return (getat(names_0, i_2) == name_0)
+    end)))
+    if truthy((k_0 == nothing))
+      fail(Base.string(j"data/", str(id_0), j" has no ", str(quoted(name_0)), j""))
+    end
+    return getat(getat(columns(m_0), Base.string(j"value")), k_0)
+  end
+  function MW_BAR1(self::Type{<:__class__})
+    return map(Any[Base.string(j"rho_1"), Base.string(j"x_1"), Base.string(j"y_1"), Base.string(j"z_1"), Base.string(j"c_parallel"), Base.string(j"c_perp"), Base.string(j"m"), Base.string(j"alpha"), Base.string(j"n"), Base.string(j"c"), Base.string(j"x_c"), Base.string(j"y_c"), Base.string(j"r_cut")], (function (n_2 = nothing, _...)
+      return measured(Video, Base.string(j"milkyway-bar"), n_2)
+    end))
+  end
+  function mw_bar(self::Type{<:__class__}, i_0 = nothing, _...)
+    return map(Any[Base.string(j"rho_", str(i_0), j""), Base.string(j"x_", str(i_0), j""), Base.string(j"y_", str(i_0), j""), Base.string(j"z_", str(i_0), j""), Base.string(j"n_", str(i_0), j""), Base.string(j"c_perp,", str(i_0), j""), Base.string(j"R_", str(i_0), j",out"), Base.string(j"R_", str(i_0), j",in"), Base.string(j"n_", str(i_0), j",out"), Base.string(j"n_", str(i_0), j",in")], (function (n_2 = nothing, _...)
+      return measured(Video, Base.string(j"milkyway-bar"), n_2)
+    end))
+  end
+  function MW_BAR2(self::Type{<:__class__})
+    return mw_bar(Video, Base.string(j"2"))
+  end
+  function MW_BAR3(self::Type{<:__class__})
+    return mw_bar(Video, Base.string(j"3"))
+  end
+  function MW_BAR_MASSES(self::Type{<:__class__})
+    return map(Any[Base.string(j"M_bar1"), Base.string(j"M_bar2"), Base.string(j"M_bar3")], (function (n_2 = nothing, _...)
+      return measured(Video, Base.string(j"milkyway-bar"), n_2)
+    end))
+  end
+  function MW_BAR_ANGLE(self::Type{<:__class__})
+    return measured(Video, Base.string(j"milkyway-discs"), Base.string(j"bar_angle"))
+  end
+  function MW_PATTERN_SPEED(self::Type{<:__class__})
+    return measured(Video, Base.string(j"milkyway-bar"), Base.string(j"pattern_speed"))
+  end
+  function mw_discs_mass(self::Type{<:__class__})
+    return (((measured(Video, Base.string(j"milkyway-discs"), Base.string(j"bulge_region_mass")) + measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_mass"))) + measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thick_mass"))) - sum(MW_BAR_MASSES(Video)))
+  end
+  function MW_DISCS(self::Type{<:__class__})
+    thin_0 = measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_mass"))
+    thick_0 = measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thick_mass"))
+    return Any[Any[((mw_discs_mass(Video) * thin_0) / ((thin_0 + thick_0))), measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_scale")), 1.0], Any[((mw_discs_mass(Video) * thick_0) / ((thin_0 + thick_0))), measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thick_scale")), 0.0]]
+  end
+  function MW_DISC_HOLE(self::Type{<:__class__})
+    return measured(Video, Base.string(j"milkyway-bar"), Base.string(j"R_cut"))
+  end
+  function MW_ARMS(self::Type{<:__class__})
+    m_0 = of(Measured, Base.string(j"milkyway-arms"))
+    if truthy((m_0 == nothing))
+      fail(Base.string(j"no data/milkyway-arms: run npx ray data milkyway-arms"))
+    end
+    return map(rng(5.0), (function (k_2 = nothing, _...)
+      return Any[getat(getat(columns(m_0), Base.string(j"R")), k_2), getat(getat(columns(m_0), Base.string(j"theta")), k_2), getat(getat(columns(m_0), Base.string(j"psi")), k_2), getat(MW_ARM_END(Video), k_2), getat(MW_ARM_OLD(Video), k_2)]
+    end))
+  end
+  function MW_ARM_WIDTH(self::Type{<:__class__})
+    return Any[(measured(Video, Base.string(j"milkyway-arm-widths"), Base.string(j"w0")) / 1000.0), (measured(Video, Base.string(j"milkyway-arm-widths"), Base.string(j"slope")) / 1000.0), measured(Video, Base.string(j"milkyway-arm-widths"), Base.string(j"R0"))]
+  end
+  function MW_ARM_CONTRAST(self::Type{<:__class__})
+    return measured(Video, Base.string(j"milkyway-arm-contrast"), Base.string(j"K"))
+  end
+  function MW_DUST(self::Type{<:__class__})
+    return Any[(measured(Video, Base.string(j"milkyway-dust-lane"), Base.string(j"hot")) / 1000.0), 0.12, 0.1]
+  end
+  function MW_STIR(self::Type{<:__class__})
+    return Any[Any[measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_sigma_R")), measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_sigma_scale"))], Any[measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thick_sigma_R")), measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thick_sigma_scale"))], Any[measured(Video, Base.string(j"milkyway-arm-widths"), Base.string(j"young_spread")), measured(Video, Base.string(j"milkyway-discs"), Base.string(j"thin_sigma_scale"))]]
+  end
+  function MW_SUN_MOTION(self::Type{<:__class__})
+    return Any[measured(Video, Base.string(j"milkyway-arm-widths"), Base.string(j"U_sun")), (measured(Video, Base.string(j"milkyway-discs"), Base.string(j"sun_tangential")) - measured(Video, Base.string(j"milkyway-discs"), Base.string(j"circling")))]
+  end
+  function galaxy(self::Type{<:__class__}, name_0 = nothing, _...)
+    return (truthy((name_0 == Base.string(j"andromeda"))) ? (ANDROMEDA(Video)) : (MILKY_WAY(Video)))
+  end
+  function per_kpc(self::Type{<:__class__})
+    return (FILM_RD(Video) / disc_scale(MILKY_WAY(Video)))
+  end
+  function myr_per_tick(self::Type{<:__class__}, film_0 = nothing, _...)
+    c_0 = getat(header(film_0), Base.string(j"clock"))
+    return (((getat(c_0, 1.0) / getat(c_0, 0.0))) / (((getat(c_0, 3.0) / getat(c_0, 2.0)) * PER_MYR(Video))))
+  end
+  function faster(self::Type{<:__class__}, film_0 = nothing, _...)
+    return (getat(getat(header(film_0), Base.string(j"clock")), 1.0) / ((getat(getat(header(film_0), Base.string(j"clock")), 3.0) / LIGHT(Video))))
+  end
+  function smooth(self::Type{<:__class__}, t_0 = nothing, _...)
+    u_0 = min(Fmt, 1.0, max(Fmt, 0.0, t_0))
+    return ((u_0 * u_0) * ((3.0 - (2.0 * u_0))))
+  end
+  function shot(self::Type{<:__class__}, id_0 = nothing, what_0 = nothing, shot_0 = nothing, _...)
+    pic_0 = Picture(id = id_0, what = what_0, width = WIDTH(Video), height = HEIGHT(Video), frames = frames(shot_0), paint = (function (played_2 = nothing, _...)
+      return Sky(shot = shot_0)
+    end))
+    pic_0.on_request = true
+    return pic_0
+  end
+  function solar_meta(self::Type{<:__class__}, theory_0 = nothing, _...)
+    r_0 = record(solar(theory_0))
+    at_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(length(names(r_0)))) - 1)
+      k_1 = Float64(i1)
+      at_0 = (truthy((getat(names(r_0), k_1) == Base.string(j"marks"))) ? (k_1) : (at_0))
+    end
+    off_0 = sum(take(sizes(r_0), at_0))
+    SOLAR_0 = of(Measured, Base.string(j"solar-inner"))
+    NAMES_0 = getat(header(SOLAR_0), Base.string(j"names"))
+    PER_0 = getat(columns(SOLAR_0), Base.string(j"period"))
+    PLANETS_0 = filter(rng(length(NAMES_0)), (function (i_2 = nothing, _...)
+      return (getat(PER_0, i_2) > 0.0)
+    end))
+    earth_body_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(length(PLANETS_0))) - 1)
+      k_1 = Float64(i1)
+      earth_body_0 = (truthy((getat(NAMES_0, getat(PLANETS_0, k_1)) == Base.string(j"Earth"))) ? ((k_1 + 1.0)) : (earth_body_0))
+    end
+    return Any[off_0, width(r_0), round(((((getat(sizes(r_0), at_0) - 1.0)) / 6.0))), earth_body_0]
+  end
+  function shot_after_solar(self::Type{<:__class__}, theory_0 = nothing, id_0 = nothing, what_0 = nothing, shot_0 = nothing, _...)
+    meta_0 = solar_meta(Video, theory_0)
+    stamp_0 = stamp(record(solar(theory_0)))
+    pic_0 = Picture(id = id_0, what = what_0, width = WIDTH(Video), height = HEIGHT(Video), frames = frames(shot_0), paint = (function (played_2 = nothing, _...)
+      sky_2 = Sky(shot = shot_0)
+      sky_2.meta = meta_0
+      sky_2.sol_stamp = stamp_0
+      return sky_2
+    end))
+    pic_0.uses = Any[Base.string(j"solar.inner")]
+    pic_0.on_request = true
+    return pic_0
+  end
+  function light(self::Type{<:__class__}, s_0 = nothing, film_0 = nothing, b0_0 = nothing, b1_0 = nothing, w_0 = nothing, G_0 = nothing, span_0 = nothing, cx_0 = nothing, cy_0 = nothing, px_0 = nothing, ci_0 = nothing, side_0 = nothing, _...)
+    D_0 = getat(columns(film_0), Base.string(j"density"))
+    Y_0 = getat(columns(film_0), Base.string(j"young"))
+    U_0 = getat(columns(film_0), Base.string(j"dust"))
+    top_0 = 0.0
+    ytop_0 = 0.0
+    utop_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num((G_0 * G_0))) - 1)
+      c_1 = Float64(i1)
+      top_0 = max(Fmt, top_0, (getat(D_0, (b0_0 + c_1)) + (w_0 * ((getat(D_0, (b1_0 + c_1)) - getat(D_0, (b0_0 + c_1)))))))
+      ytop_0 = max(Fmt, ytop_0, (getat(Y_0, (b0_0 + c_1)) + (w_0 * ((getat(Y_0, (b1_0 + c_1)) - getat(Y_0, (b0_0 + c_1)))))))
+      utop_0 = max(Fmt, utop_0, (getat(U_0, (b0_0 + c_1)) + (w_0 * ((getat(U_0, (b1_0 + c_1)) - getat(U_0, (b0_0 + c_1)))))))
+    end
+    lt_0 = ln(((1.0 + top_0)))
+    rgb_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(G_0)) - 1)
+      row_1 = Float64(i1)
+      gy_1 = ((G_0 - 1.0) - row_1)
+      for i2 in 0:(ceil(Int, Rt.num(G_0)) - 1)
+        gx_2 = Float64(i2)
+        c_2 = ((gy_1 * G_0) + gx_2)
+        o_2 = min(Fmt, 1.0, (ln((((1.0 + getat(D_0, (b0_0 + c_2))) + (w_0 * ((getat(D_0, (b1_0 + c_2)) - getat(D_0, (b0_0 + c_2)))))))) / lt_0))
+        y_2 = min(Fmt, 1.0, sqrt(((((getat(Y_0, (b0_0 + c_2)) + (w_0 * ((getat(Y_0, (b1_0 + c_2)) - getat(Y_0, (b0_0 + c_2))))))) / ytop_0))))
+        lo_2 = (sqrt(o_2) * o_2)
+        hii_2 = max(Fmt, 0.0, (((y_2 - 0.7)) / 0.3))
+        dim_2 = (1.0 - (0.7 * min(Fmt, 1.0, sqrt(((((getat(U_0, (b0_0 + c_2)) + (w_0 * ((getat(U_0, (b1_0 + c_2)) - getat(U_0, (b0_0 + c_2))))))) / utop_0))))))
+        push(rgb_0, min(Fmt, 255.0, (dim_2 * ((((lo_2 * ((130.0 + (125.0 * o_2)))) + ((95.0 * y_2) * y_2)) + (110.0 * hii_2))))))
+        push(rgb_0, min(Fmt, 255.0, (dim_2 * ((((lo_2 * ((140.0 + (85.0 * o_2)))) + ((120.0 * y_2) * y_2)) + (25.0 * hii_2))))))
+        push(rgb_0, min(Fmt, 255.0, (dim_2 * ((((lo_2 * ((175.0 - (55.0 * o_2)))) + ((165.0 * y_2) * y_2)) + (70.0 * hii_2))))))
+      end
+    end
+    x0_0 = ((((0.0 - span_0) - cx_0)) * px_0)
+    y0_0 = (0.0 - ((((span_0 - cy_0)) * px_0) * ci_0))
+    bw_0 = ((2.0 * span_0) * px_0)
+    bh_0 = (((2.0 * span_0) * px_0) * ci_0)
+    fade_0 = min(Fmt, 1.0, max(Fmt, 0.0, (((90.0 - side_0)) / 50.0)))
+    alpha(s_0, (0.3 * fade_0))
+    field(s_0, rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, max(Fmt, 2.0, (2.0 * side_0)))
+    alpha(s_0, (0.9 * fade_0))
+    field(s_0, rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, 0.0)
+    return alpha(s_0, 1.0)
+  end
+  function sky(self::Type{<:__class__}, s_0 = nothing, shot_0 = nothing, film_0 = nothing, tracks_0 = nothing, i_0 = nothing, sol_0 = nothing, meta_0 = nothing, _...)
+    fill_style(s_0, BACK(Galaxies))
+    fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+    H_0 = header(film_0)
+    n_0 = frames(shot_0)
+    t_0 = (truthy((n_0 > 1.0)) ? ((i_0 / ((n_0 - 1.0)))) : (0.0))
+    e_0 = smooth(Video, t_0)
+    FR_0 = getat(H_0, Base.string(j"frames"))
+    u_0 = (((from_at(shot_0) + (((to_at(shot_0) - from_at(shot_0))) * t_0))) * ((FR_0 - 1.0)))
+    f0_0 = min(Fmt, floor(u_0), (FR_0 - 1.0))
+    f1_0 = min(Fmt, (f0_0 + 1.0), (FR_0 - 1.0))
+    w_0 = (u_0 - f0_0)
+    ez_0 = (truthy((from_zoom(shot_0) < 1.0)) ? ((1.0 - (((1.0 - smooth(Video, (t_0 / 0.6)))) * ((1.0 - smooth(Video, (t_0 / 0.6))))))) : (e_0))
+    across_0 = exp(((ln(from_zoom(shot_0)) + (((ln(to_zoom(shot_0)) - ln(from_zoom(shot_0)))) * ez_0))))
+    px_0 = (height(s_0) / across_0)
+    has_sun_0 = (truthy((tracks_0 != nothing)) && truthy((getat(header(tracks_0), Base.string(j"sun")) == 0.0)))
+    sx_0 = 0.0
+    sy_0 = 0.0
+    if truthy(has_sun_0)
+      XY_0 = getat(columns(tracks_0), Base.string(j"xy"))
+      m_0 = getat(header(tracks_0), Base.string(j"shown"))
+      sx_0 = (getat(XY_0, ((f0_0 * m_0) * 2.0)) + (w_0 * ((getat(XY_0, ((f1_0 * m_0) * 2.0)) - getat(XY_0, ((f0_0 * m_0) * 2.0))))))
+      sy_0 = (getat(XY_0, (((f0_0 * m_0) * 2.0) + 1.0)) + (w_0 * ((getat(XY_0, (((f1_0 * m_0) * 2.0) + 1.0)) - getat(XY_0, (((f0_0 * m_0) * 2.0) + 1.0))))))
+    end
+    look_0 = (truthy(has_sun_0) ? ((from_sun(shot_0) + (((to_sun(shot_0) - from_sun(shot_0))) * e_0))) : (0.0))
+    px_end_0 = (height(s_0) / to_zoom(shot_0))
+    away_0 = (truthy(has_sun_0) ? (((((1.0 - look_0)) * px_end_0) / px_0)) : (0.0))
+    cx_0 = (sx_0 * ((1.0 - away_0)))
+    cy_0 = (sy_0 * ((1.0 - away_0)))
+    ci_0 = cos((((tilt(shot_0) * 3.141592653589793) / 180.0)))
+    SF_0 = (truthy((sol_0 != nothing)) ? (getat(columns(sol_0), Base.string(j"frames"))) : (Any[]))
+    sys_0 = Any[0.0, 0.0, 0.0, 0.0, 0.0]
+    if truthy((sol_0 != nothing))
+      FRS_0 = getat(header(sol_0), Base.string(j"frames"))
+      at_f_0 = min(Fmt, (FRS_0 - 1.0), SOLAR_TO(Video))
+      mk_0 = (function (f_1 = nothing, k_1 = nothing, c_1 = nothing, _...)
+        return getat(SF_0, ((((f_1 * getat(meta_0, 1.0)) + getat(meta_0, 0.0)) + (6.0 * k_1)) + c_1))
+      end)
+      reach_0 = 0.0
+      for i1 in 0:(ceil(Int, Rt.num(FRS_0)) - 1)
+        f_1 = Float64(i1)
+        for i2 in 0:(ceil(Int, Rt.num((getat(meta_0, 2.0) - 1.0))) - 1)
+          k_2 = Float64(i2)
+          reach_0 = max(Fmt, reach_0, hypot(Fmt, (mk_0(f_1, (k_2 + 1.0), 0.0) - mk_0(f_1, 0.0, 0.0)), (mk_0(f_1, (k_2 + 1.0), 1.0) - mk_0(f_1, 0.0, 1.0))))
+        end
+      end
+      eb_0 = getat(meta_0, 3.0)
+      ex_0 = mk_0(at_f_0, eb_0, 0.0)
+      ey_0 = mk_0(at_f_0, eb_0, 1.0)
+      last_0 = (2.1 * ((reach_0 + hypot(Fmt, (ex_0 - mk_0(at_f_0, 0.0, 0.0)), (ey_0 - mk_0(at_f_0, 0.0, 1.0))))))
+      pxs_0 = ((height(s_0) / last_0) * ((from_zoom(shot_0) / across_0)))
+      sun_x_0 = (((mk_0(at_f_0, 0.0, 0.0) - ex_0)) * pxs_0)
+      sun_y_0 = (((mk_0(at_f_0, 0.0, 1.0) - ey_0)) * pxs_0)
+      cx_0 = (cx_0 - (sun_x_0 / px_0))
+      cy_0 = (cy_0 - (sun_y_0 / ((px_0 * ci_0))))
+      sys_0 = Any[pxs_0, mk_0(at_f_0, 0.0, 0.0), mk_0(at_f_0, 0.0, 1.0), at_f_0, (1.0 - smooth(Video, (e_0 / 0.3)))]
+    end
+    save(s_0)
+    translate(s_0, (width(s_0) / 2.0), (height(s_0) / 2.0))
+    rotate(s_0, (0.0 - ((turn(shot_0) * 3.141592653589793) / 180.0)))
+    G_0 = getat(H_0, Base.string(j"grid"))
+    span_0 = getat(getat(H_0, Base.string(j"span")), 0.0)
+    D_0 = getat(columns(film_0), Base.string(j"density"))
+    cs_0 = ((2.0 * span_0) / G_0)
+    b0_0 = ((f0_0 * G_0) * G_0)
+    b1_0 = ((f1_0 * G_0) * G_0)
+    top_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num((G_0 * G_0))) - 1)
+      c_1 = Float64(i1)
+      top_0 = max(Fmt, top_0, (getat(D_0, (b0_0 + c_1)) + (w_0 * ((getat(D_0, (b1_0 + c_1)) - getat(D_0, (b0_0 + c_1)))))))
+    end
+    side_0 = ((cs_0 * px_0) + 0.6)
+    half_w_0 = ((width(s_0) / 2.0) + side_0)
+    if truthy((getat(H_0, Base.string(j"young")) == 1.0))
+      light(Video, s_0, film_0, b0_0, b1_0, w_0, G_0, span_0, cx_0, cy_0, px_0, ci_0, side_0)
+    else
+      alpha(s_0, min(Fmt, 1.0, max(Fmt, 0.0, (((24.0 - side_0)) / 14.0))))
+      for i1 in 0:(ceil(Int, Rt.num(G_0)) - 1)
+        gy_1 = Float64(i1)
+        y_1 = ((((((0.0 - span_0) + (((gy_1 + 0.5)) * cs_0)) - cy_0)) * px_0) * ci_0)
+        if truthy((abs(y_1) < half_w_0))
+          for i2 in 0:(ceil(Int, Rt.num(G_0)) - 1)
+            gx_2 = Float64(i2)
+            c_2 = ((gy_1 * G_0) + gx_2)
+            v_2 = (getat(D_0, (b0_0 + c_2)) + (w_0 * ((getat(D_0, (b1_0 + c_2)) - getat(D_0, (b0_0 + c_2))))))
+            if truthy((v_2 > 0.0))
+              x_2 = (((((0.0 - span_0) + (((gx_2 + 0.5)) * cs_0)) - cx_0)) * px_0)
+              if truthy((abs(x_2) < half_w_0))
+                k_2 = min(Fmt, 1.0, (ln(((1.0 + v_2))) / ln(((1.0 + top_0)))))
+                r_2 = round(((40.0 + ((215.0 * k_2) * k_2))))
+                gr_2 = round(((60.0 + (190.0 * k_2))))
+                b_2 = round(((110.0 + (145.0 * min(Fmt, 1.0, (1.6 * k_2))))))
+                fill_style(s_0, Base.string(j"rgb(", str(r_2), j",", str(gr_2), j",", str(b_2), j")"))
+                fill_rect(s_0, (x_2 - (side_0 / 2.0)), ((0.0 - y_1) - ((side_0 * ci_0) / 2.0)), side_0, ((side_0 * ci_0) + 0.6))
+              end
+            end
+          end
+        end
+      end
+      alpha(s_0, 1.0)
+    end
+    lit_0 = (getat(H_0, Base.string(j"young")) == 1.0)
+    if truthy((truthy((tracks_0 != nothing)) && truthy((px_0 > ((truthy(lit_0) ? (6.0) : (12.0)))))))
+      XY_0 = getat(columns(tracks_0), Base.string(j"xy"))
+      m_0 = getat(header(tracks_0), Base.string(j"shown"))
+      tags_0 = getat(header(tracks_0), Base.string(j"tags"))
+      alpha(s_0, (truthy(lit_0) ? (min(Fmt, getat(LIGHT_STARS(Video), 0.0), (((px_0 - 6.0)) / 14.0))) : (min(Fmt, 0.85, (((px_0 - 12.0)) / 40.0)))))
+      for i1 in 0:(ceil(Int, Rt.num(m_0)) - 1)
+        k_1 = Float64(i1)
+        x_1 = ((((getat(XY_0, ((((f0_0 * m_0) + k_1)) * 2.0)) + (w_0 * ((getat(XY_0, ((((f1_0 * m_0) + k_1)) * 2.0)) - getat(XY_0, ((((f0_0 * m_0) + k_1)) * 2.0)))))) - cx_0)) * px_0)
+        y_1 = (((((getat(XY_0, (((((f0_0 * m_0) + k_1)) * 2.0) + 1.0)) + (w_0 * ((getat(XY_0, (((((f1_0 * m_0) + k_1)) * 2.0) + 1.0)) - getat(XY_0, (((((f0_0 * m_0) + k_1)) * 2.0) + 1.0)))))) - cy_0)) * px_0) * ci_0)
+        if truthy((truthy((abs(x_1) < half_w_0)) && truthy((abs(y_1) < half_w_0))))
+          tg_1 = getat(tags_0, k_1)
+          fill_style(s_0, (truthy((tg_1 >= 4.0)) ? (Base.string(j"#d4e6ff")) : ((truthy((truthy((tg_1 == 1.0)) || truthy((tg_1 == 3.0)))) ? (Base.string(j"#ffd9a0")) : ((truthy((tg_1 == 2.0)) ? (Base.string(j"#ffc7e0")) : (Base.string(j"#dfe8ff"))))))))
+          sz_1 = (truthy(lit_0) ? (((truthy((tg_1 >= 4.0)) ? (getat(LIGHT_STARS(Video), 2.0)) : (getat(LIGHT_STARS(Video), 1.0))))) : (2.4))
+          fill_rect(s_0, (x_1 - (sz_1 / 2.0)), ((0.0 - y_1) - (sz_1 / 2.0)), sz_1, sz_1)
+        end
+      end
+      alpha(s_0, 1.0)
+    end
+    if truthy((truthy((sol_0 != nothing)) && truthy((getat(sys_0, 4.0) > 0.004))))
+      ax_0 = (((sx_0 - cx_0)) * px_0)
+      ay_0 = ((((sy_0 - cy_0)) * px_0) * ci_0)
+      FRS_0 = getat(header(sol_0), Base.string(j"frames"))
+      mk_0 = (function (f_1 = nothing, k_1 = nothing, c_1 = nothing, _...)
+        return getat(SF_0, ((((f_1 * getat(meta_0, 1.0)) + getat(meta_0, 0.0)) + (6.0 * k_1)) + c_1))
+      end)
+      for i1 in 0:(ceil(Int, Rt.num((getat(meta_0, 2.0) - 1.0))) - 1)
+        k_1 = Float64(i1)
+        b_1 = (k_1 + 1.0)
+        ink_1 = getat(PLANET_INK(Video), min(Fmt, 3.0, k_1))
+        alpha(s_0, (0.85 * getat(sys_0, 4.0)))
+        stroke_style(s_0, ink_1)
+        line_width(s_0, 2.0)
+        begin_path(s_0)
+        for i2 in 0:(ceil(Int, Rt.num(FRS_0)) - 1)
+          f_2 = Float64(i2)
+          x_2 = (ax_0 + (((mk_0(f_2, b_1, 0.0) - getat(sys_0, 1.0))) * getat(sys_0, 0.0)))
+          y_2 = (ay_0 + (((mk_0(f_2, b_1, 1.0) - getat(sys_0, 2.0))) * getat(sys_0, 0.0)))
+          if truthy((f_2 == 0.0))
+            move_to(s_0, x_2, (0.0 - y_2))
+          else
+            line_to(s_0, x_2, (0.0 - y_2))
+          end
+        end
+        stroke(s_0)
+        alpha(s_0, getat(sys_0, 4.0))
+        x_1 = (ax_0 + (((mk_0(getat(sys_0, 3.0), b_1, 0.0) - getat(sys_0, 1.0))) * getat(sys_0, 0.0)))
+        y_1 = (ay_0 + (((mk_0(getat(sys_0, 3.0), b_1, 1.0) - getat(sys_0, 2.0))) * getat(sys_0, 0.0)))
+        line_width(s_0, 2.5)
+        begin_path(s_0)
+        arc(s_0, x_1, (0.0 - y_1), 13.0, 0.0, 6.283185307179586)
+        stroke(s_0)
+        fill_style(s_0, Base.string(j"#000000"))
+        begin_path(s_0)
+        arc(s_0, x_1, (0.0 - y_1), 2.5, 0.0, 6.283185307179586)
+        fill(s_0)
+      end
+      alpha(s_0, 1.0)
+    end
+    if truthy(has_sun_0)
+      x_0 = (((sx_0 - cx_0)) * px_0)
+      y_0 = ((((sy_0 - cy_0)) * px_0) * ci_0)
+      big_0 = (truthy((from_zoom(shot_0) < 1.0)) ? ((1.0 - smooth(Video, (e_0 * 3.0)))) : (0.0))
+      fill_style(s_0, Base.string(j"#ffd23f"))
+      begin_path(s_0)
+      arc(s_0, x_0, (0.0 - y_0), (4.0 * ((1.0 - big_0))), 0.0, 6.283185307179586)
+      fill(s_0)
+      if truthy((big_0 > 0.0))
+        alpha(s_0, big_0)
+        stroke_style(s_0, Base.string(j"#e0a526"))
+        line_width(s_0, 3.0)
+        begin_path(s_0)
+        arc(s_0, x_0, (0.0 - y_0), 26.0, 0.0, 6.283185307179586)
+        stroke(s_0)
+        alpha(s_0, 1.0)
+      end
+    end
+    restore(s_0)
+    fade_0 = max(Fmt, (truthy((fade_in(shot_0) > 0.0)) ? ((1.0 - (i_0 / ((fade_in(shot_0) * FPS(Video)))))) : (0.0)), (truthy((fade_out(shot_0) > 0.0)) ? ((1.0 - ((((n_0 - 1.0) - i_0)) / ((fade_out(shot_0) * FPS(Video)))))) : (0.0)))
+    if truthy((fade_0 > 0.0))
+      alpha(s_0, min(Fmt, 1.0, fade_0))
+      fill_style(s_0, BACK(Galaxies))
+      fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+      return alpha(s_0, 1.0)
+    end
+  end
+  function transport(self::Type{<:__class__}, theory_0 = nothing, _...)
+    ink_0 = Ink()
+    lanes_0 = transport_lanes(Video, theory_0, ink_0)
+    n_0 = round(((14.0 * FPS(Video))))
+    pic_0 = Picture(id = Base.string(j"video.transport"), what = Base.string(j"G/S.v, Transport: a source carrying a quarter of a step a tick, on a line"), width = WIDTH(Video), height = HEIGHT(Video), frames = n_0, paint = (function (played_2 = nothing, _...)
+      return Banded(inner = Unrolling(lanes = lanes_0, ink = ink_0, per = per_tick(Video, lanes_0)), top = STRIP_TOP(Video), tall = STRIP_TALL(Video))
+    end))
+    pic_0.on_request = true
+    return pic_0
+  end
+  function transport_lanes(self::Type{<:__class__}, theory_0 = nothing, ink_0 = nothing, _...)
+    ink_0.every = true
+    ink_0.top = 36.0
+    lanes_0 = transport_lanes(theory_0, ink_0)
+    for l_1 in items(lanes_0)
+      l_1.says = Base.string(j"")
+    end
+    ink_0.centre = centre_of(Strip, lanes_0)
+    return lanes_0
+  end
+  function per_tick(self::Type{<:__class__}, lanes_0 = nothing, _...)
+    return floor(((round(((14.0 * FPS(Video)))) / ((length(lanes_0) + 1.0)))))
+  end
+  function look(self::Type{<:__class__}, width_0 = nothing, lane_0 = nothing, ink_0 = nothing, _...)
+    seen_0 = false
+    lo_0 = 0.0
+    hi_0 = 0.0
+    for sd_1 in items(sides(lane_0))
+      to_1 = (at(sd_1) + sign(sd_1))
+      if !truthy(seen_0)
+        lo_0 = at(sd_1)
+        hi_0 = at(sd_1)
+        seen_0 = true
+      end
+      lo_0 = min(Fmt, lo_0, min(Fmt, at(sd_1), to_1))
+      hi_0 = max(Fmt, hi_0, max(Fmt, at(sd_1), to_1))
+    end
+    for p_1 in items(sources(lane_0))
+      if !truthy(seen_0)
+        lo_0 = p_1
+        hi_0 = p_1
+        seen_0 = true
+      end
+      lo_0 = min(Fmt, lo_0, (p_1 - 1.0))
+      hi_0 = max(Fmt, hi_0, (p_1 + 1.0))
+    end
+    ext_0 = (max(Fmt, (centre(ink_0) - lo_0), (hi_0 - centre(ink_0))) + 0.4)
+    lanew_0 = (width_0 - (2.0 * PAD(Strip)))
+    cell_0 = (lanew_0 / (((2.0 * ext_0) + 1.0)))
+    mid_0 = (PAD(Strip) + (lanew_0 / 2.0))
+    src_0 = first(sources(lane_0))
+    x0_0 = (mid_0 + (((src_0 - centre(ink_0))) * cell_0))
+    return Any[x0_0, ((STRIP_TOP(Video) + top(ink_0)) + (((STRIP_TALL(Video) - top(ink_0))) / 2.0)), cell_0, src_0, (((PAD(Strip) - x0_0)) / cell_0), ((((width_0 - PAD(Strip)) - x0_0)) / cell_0)]
+  end
+  function seen(self::Type{<:__class__}, p_0 = nothing, yaw_0 = nothing, pitch_0 = nothing, ox_0 = nothing, oy_0 = nothing, cell_0 = nothing, _...)
+    x1_0 = ((getat(p_0, 0.0) * cos(yaw_0)) - (getat(p_0, 2.0) * sin(yaw_0)))
+    z1_0 = ((getat(p_0, 0.0) * sin(yaw_0)) + (getat(p_0, 2.0) * cos(yaw_0)))
+    y1_0 = ((getat(p_0, 1.0) * cos(pitch_0)) - (z1_0 * sin(pitch_0)))
+    z2_0 = ((getat(p_0, 1.0) * sin(pitch_0)) + (z1_0 * cos(pitch_0)))
+    f_0 = (60.0 / ((60.0 + z2_0)))
+    return Any[(ox_0 + ((cell_0 * f_0) * x1_0)), (oy_0 - ((cell_0 * f_0) * y1_0)), f_0]
+  end
+  function arrow(self::Type{<:__class__}, s_0 = nothing, x_0 = nothing, y_0 = nothing, ux_0 = nothing, uy_0 = nothing, cell_0 = nothing, a_0 = nothing, _...)
+    HEADW_0 = max(Fmt, 7.0, min(Fmt, 12.0, (cell_0 * 0.20)))
+    REACH_0 = (cell_0 * 0.25)
+    BAR_0 = max(Fmt, 2.5, min(Fmt, 4.5, (cell_0 * 0.075)))
+    BASE_0 = (HEADW_0 * 0.45)
+    TIP_0 = (HEADW_0 * 0.55)
+    LEN_0 = (REACH_0 - BASE_0)
+    SEEN_0 = (TIP_0 - (BAR_0 / 0.84))
+    line_width(s_0, BAR_0)
+    stroke_style(s_0, Base.string(j"rgba(", str(NEUTRAL(Ink)), j",", str((0.32 * a_0)), j")"))
+    begin_path(s_0)
+    move_to(s_0, (x_0 - (ux_0 * ((BASE_0 + LEN_0)))), (y_0 - (uy_0 * ((BASE_0 + LEN_0)))))
+    line_to(s_0, (x_0 - (ux_0 * BASE_0)), (y_0 - (uy_0 * BASE_0)))
+    stroke(s_0)
+    stroke_style(s_0, Base.string(j"rgba(", str(NEUTRAL(Ink)), j",", str(a_0), j")"))
+    begin_path(s_0)
+    move_to(s_0, x_0, y_0)
+    line_to(s_0, (x_0 + (ux_0 * ((SEEN_0 + LEN_0)))), (y_0 + (uy_0 * ((SEEN_0 + LEN_0)))))
+    stroke(s_0)
+    fill_style(s_0, Base.string(j"rgba(", str(NEUTRAL(Ink)), j",", str((0.97 * a_0)), j")"))
+    begin_path(s_0)
+    move_to(s_0, (x_0 + (ux_0 * TIP_0)), (y_0 + (uy_0 * TIP_0)))
+    line_to(s_0, ((x_0 - (ux_0 * BASE_0)) - ((uy_0 * HEADW_0) * 0.42)), ((y_0 - (uy_0 * BASE_0)) + ((ux_0 * HEADW_0) * 0.42)))
+    line_to(s_0, ((x_0 - (ux_0 * BASE_0)) + ((uy_0 * HEADW_0) * 0.42)), ((y_0 - (uy_0 * BASE_0)) - ((ux_0 * HEADW_0) * 0.42)))
+    return fill(s_0)
+  end
+  function way(self::Type{<:__class__}, k_0 = nothing, space_0 = nothing, _...)
+    q_0 = floor(((k_0 / 2.0)))
+    o_0 = getat(Any[Any[1.0, 0.0], Any[1.0, 1.0], Any[0.0, 1.0], Any[(0.0 - 1.0), 1.0], Any[(0.0 - 1.0), 0.0], Any[(0.0 - 1.0), (0.0 - 1.0)], Any[0.0, (0.0 - 1.0)], Any[1.0, (0.0 - 1.0)]], k_0)
+    b_0 = getat(Any[Any[0.5, 0.5], Any[(0.0 - 0.5), 0.5], Any[(0.0 - 0.5), (0.0 - 0.5)], Any[0.5, (0.0 - 0.5)]], q_0)
+    bz_0 = (truthy(((k_0 % 2.0) == 0.0)) ? (0.5) : ((0.0 - 0.5)))
+    return Any[(getat(o_0, 0.0) + (((getat(b_0, 0.0) - getat(o_0, 0.0))) * space_0)), (getat(o_0, 1.0) + (((getat(b_0, 1.0) - getat(o_0, 1.0))) * space_0)), (bz_0 * space_0)]
+  end
+  function lattice(self::Type{<:__class__}, s_0 = nothing, lane_0 = nothing, look_0 = nothing, grow_0 = nothing, ticks_0 = nothing, fade_0 = nothing, earth_0 = nothing, ox_0 = nothing, oy_0 = nothing, cell_0 = nothing, rays_0 = nothing, dense_from_0 = nothing, far_0 = nothing, _...)
+    plane_0 = smooth(Video, (((grow_0 - 0.25)) / 0.3))
+    space_0 = smooth(Video, (((grow_0 - 0.55)) / 0.35))
+    yaw_0 = (0.55 * space_0)
+    pitch_0 = (0.42 * space_0)
+    src_0 = getat(look_0, 3.0)
+    lo_0 = getat(look_0, 4.0)
+    hi_0 = getat(look_0, 5.0)
+    R_0 = 7.0
+    a_0 = (R_0 * plane_0)
+    b_0 = (R_0 * space_0)
+    pt_0 = (function (p_1 = nothing, _...)
+      return seen(Video, p_1, yaw_0, pitch_0, ox_0, oy_0, cell_0)
+    end)
+    line_0 = (function (p_1 = nothing, q_1 = nothing, al_1 = nothing, _...)
+      if truthy((al_1 > 0.004))
+        P_1 = pt_0(p_1)
+        Q_1 = pt_0(q_1)
+        stroke_style(s_0, Base.string(j"rgba(", str(NEUTRAL(Ink)), j",", str((0.16 * al_1)), j")"))
+        line_width(s_0, 1.0)
+        begin_path(s_0)
+        move_to(s_0, getat(P_1, 0.0), getat(P_1, 1.0))
+        line_to(s_0, getat(Q_1, 0.0), getat(Q_1, 1.0))
+        return stroke(s_0)
+      end
+    end)
+    dot_0 = (function (p_1 = nothing, al_1 = nothing, _...)
+      if truthy((al_1 > 0.004))
+        P_1 = pt_0(p_1)
+        fill_style(s_0, Base.string(j"rgba(", str(NEUTRAL(Ink)), j",", str((0.6 * al_1)), j")"))
+        begin_path(s_0)
+        arc(s_0, getat(P_1, 0.0), getat(P_1, 1.0), (2.6 * getat(P_1, 2.0)), 0.0, 6.283185307179586)
+        return fill(s_0)
+      end
+    end)
+    ilo_0 = round(((reduce(points(lane_0), first(points(lane_0)), (function (p_2 = nothing, q_2 = nothing, _...)
+      return min(Fmt, p_2, q_2)
+    end)) - src_0)))
+    ihi_0 = round(((reduce(points(lane_0), first(points(lane_0)), (function (p_2 = nothing, q_2 = nothing, _...)
+      return max(Fmt, p_2, q_2)
+    end)) - src_0)))
+    for i1 in 0:(ceil(Int, Rt.num(((2.0 * R_0) + 1.0))) - 1)
+      jj_1 = Float64(i1)
+      j_1 = (jj_1 - R_0)
+      for i2 in 0:(ceil(Int, Rt.num(((2.0 * R_0) + 1.0))) - 1)
+        ll_2 = Float64(i2)
+        l_2 = (ll_2 - R_0)
+        vis_2 = ((fade_0 * min(Fmt, 1.0, max(Fmt, 0.0, ((a_0 + 1.0) - abs(j_1))))) * min(Fmt, 1.0, max(Fmt, 0.0, ((b_0 + 1.0) - abs(l_2)))))
+        if truthy((vis_2 > 0.004))
+          line_0(Any[lo_0, j_1, l_2], Any[hi_0, j_1, l_2], vis_2)
+          for i3 in 0:(ceil(Int, Rt.num(((ihi_0 - ilo_0) + 1.0))) - 1)
+            ii_3 = Float64(i3)
+            dot_0(Any[(ilo_0 + ii_3), j_1, l_2], vis_2)
+          end
+          if truthy((truthy((truthy((space_0 > 0.01)) && truthy((j_1 < R_0)))) && truthy((l_2 < R_0))))
+            for i3 in 0:(ceil(Int, Rt.num((ihi_0 - ilo_0))) - 1)
+              ii_3 = Float64(i3)
+              dot_0(Any[((ilo_0 + ii_3) + 0.5), (j_1 + 0.5), (l_2 + 0.5)], (vis_2 * space_0))
+            end
+          end
+        end
+      end
+    end
+    for i1 in 0:(ceil(Int, Rt.num(((ihi_0 - ilo_0) + 1.0))) - 1)
+      ii_1 = Float64(i1)
+      i_1 = (ilo_0 + ii_1)
+      for i2 in 0:(ceil(Int, Rt.num(((2.0 * R_0) + 1.0))) - 1)
+        ll_2 = Float64(i2)
+        l_2 = (ll_2 - R_0)
+        line_0(Any[i_1, (0.0 - a_0), l_2], Any[i_1, a_0, l_2], ((fade_0 * plane_0) * min(Fmt, 1.0, max(Fmt, 0.0, ((b_0 + 1.0) - abs(l_2))))))
+      end
+      for i2 in 0:(ceil(Int, Rt.num(((2.0 * R_0) + 1.0))) - 1)
+        jj_2 = Float64(i2)
+        j_2 = (jj_2 - R_0)
+        line_0(Any[i_1, j_2, (0.0 - b_0)], Any[i_1, j_2, b_0], ((fade_0 * space_0) * min(Fmt, 1.0, max(Fmt, 0.0, ((a_0 + 1.0) - abs(j_2))))))
+      end
+    end
+    T_0 = floor(ticks_0)
+    ray_0 = (function (k_1 = nothing, r_1 = nothing, w_1 = nothing, _...)
+      if truthy((truthy((truthy((w_1 > 0.004)) && truthy((r_1 >= 1.0)))) && truthy((r_1 <= far_0))))
+        d_1 = way(Video, k_1, space_0)
+        P_1 = pt_0(Any[(getat(d_1, 0.0) * r_1), (getat(d_1, 1.0) * r_1), (getat(d_1, 2.0) * r_1)])
+        Q_1 = pt_0(Any[(getat(d_1, 0.0) * ((r_1 + 0.25))), (getat(d_1, 1.0) * ((r_1 + 0.25))), (getat(d_1, 2.0) * ((r_1 + 0.25)))])
+        len_1 = hypot(Fmt, (getat(Q_1, 0.0) - getat(P_1, 0.0)), (getat(Q_1, 1.0) - getat(P_1, 1.0)))
+        if truthy((len_1 > 0.01))
+          return arrow(Video, s_0, getat(P_1, 0.0), getat(P_1, 1.0), (((getat(Q_1, 0.0) - getat(P_1, 0.0))) / len_1), (((getat(Q_1, 1.0) - getat(P_1, 1.0))) / len_1), (len_1 * 4.0), ((w_1 * rays_0) * min(Fmt, 1.0, (far_0 - r_1))))
+        end
+      end
+    end)
+    for sd_1 in items(sides(lane_0))
+      ray_0((truthy((sign(sd_1) > 0.0)) ? (0.0) : (4.0)), (abs(((at(sd_1) - src_0))) + T_0), 1.0)
+    end
+    for i1 in 0:(ceil(Int, Rt.num(T_0)) - 1)
+      m_1 = Float64(i1)
+      e_1 = (m_1 + 1.0)
+      if truthy((truthy(((e_1 % 2.0) == 1.0)) || truthy((e_1 > dense_from_0))))
+        for i2 in 0:(ceil(Int, Rt.num(8.0)) - 1)
+          k_2 = Float64(i2)
+          ray_0(k_2, ((1.0 + T_0) - e_1), (truthy(((k_2 % 4.0) == 0.0)) ? (1.0) : (plane_0)))
+        end
+      end
+    end
+    P_0 = pt_0(Any[0.0, 0.0, 0.0])
+    half_0 = max(Fmt, 9.0, min(Fmt, 18.0, (cell_0 * 0.3)))
+    fill_style(s_0, Base.string(j"rgba(", str(SOURCE(Ink)), j",", str((0.14 * ((1.0 - earth_0)))), j")"))
+    fill_rect(s_0, (getat(P_0, 0.0) - half_0), (getat(P_0, 1.0) - half_0), (2.0 * half_0), (2.0 * half_0))
+    stroke_style(s_0, Base.string(j"rgba(", str(SOURCE(Ink)), j",", str((0.9 * ((1.0 - earth_0)))), j")"))
+    line_width(s_0, 1.5)
+    stroke_rect(s_0, (getat(P_0, 0.0) - half_0), (getat(P_0, 1.0) - half_0), (2.0 * half_0), (2.0 * half_0))
+    if truthy((earth_0 > 0.0))
+      fill_style(s_0, Base.string(j"rgba(", str(SOURCE(Ink)), j",", str(earth_0), j")"))
+      begin_path(s_0)
+      arc(s_0, getat(P_0, 0.0), getat(P_0, 1.0), (2.6 + (7.4 * earth_0)), 0.0, 6.283185307179586)
+      return fill(s_0)
+    end
+  end
+  function source_camera(self::Type{<:__class__}, s_0 = nothing, look_0 = nothing, grow_0 = nothing, _...)
+    e_0 = smooth(Video, (grow_0 / 0.3))
+    return Any[(getat(look_0, 0.0) + ((((width(s_0) / 2.0) - getat(look_0, 0.0))) * e_0)), (getat(look_0, 1.0) + ((((height(s_0) / 2.0) - getat(look_0, 1.0))) * e_0)), exp(((ln(getat(look_0, 2.0)) + (((ln(95.0) - ln(getat(look_0, 2.0)))) * e_0))))]
+  end
+  function to_source(self::Type{<:__class__}, theory_0 = nothing, _...)
+    ink_0 = Ink()
+    lanes_0 = transport_lanes(Video, theory_0, ink_0)
+    n_0 = round(((4.0 * FPS(Video))))
+    pic_0 = Picture(id = Base.string(j"video.to-source"), what = Base.string(j"one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)"), width = WIDTH(Video), height = HEIGHT(Video), frames = n_0, paint = (function (played_2 = nothing, _...)
+      return Growing(n = n_0, lane = last(lanes_0), ink = ink_0, per = per_tick(Video, lanes_0))
+    end))
+    pic_0.on_request = true
+    return pic_0
+  end
+  function to_solar(self::Type{<:__class__}, theory_0 = nothing, _...)
+    ink_0 = Ink()
+    lanes_0 = transport_lanes(Video, theory_0, ink_0)
+    sol_0 = solar(theory_0)
+    r_0 = record(sol_0)
+    at_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(length(names(r_0)))) - 1)
+      k_1 = Float64(i1)
+      at_0 = (truthy((getat(names(r_0), k_1) == Base.string(j"marks"))) ? (k_1) : (at_0))
+    end
+    off_0 = sum(take(sizes(r_0), at_0))
+    n_0 = round(((8.0 * FPS(Video))))
+    pic_0 = Picture(id = Base.string(j"video.to-solar"), what = Base.string(j"the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it"), width = WIDTH(Video), height = HEIGHT(Video), frames = n_0, paint = (function (played_2 = nothing, _...)
+      return Planets(n = n_0, lane = last(lanes_0), ink = ink_0, per = per_tick(Video, lanes_0), stamp = stamp(r_0), off = off_0, width = width(r_0), bodies = round(((((getat(sizes(r_0), at_0) - 1.0)) / 6.0))))
+    end))
+    pic_0.uses = Any[Base.string(j"solar.inner")]
+    pic_0.on_request = true
+    return pic_0
+  end
+  function planets(self::Type{<:__class__}, s_0 = nothing, t_0 = nothing, lane_0 = nothing, look_0 = nothing, ticks_0 = nothing, film_0 = nothing, off_0 = nothing, width_0 = nothing, bodies_0 = nothing, _...)
+    SOLAR_0 = of(Measured, Base.string(j"solar-inner"))
+    if truthy((SOLAR_0 == nothing))
+      fail(Base.string(j"solar-inner is not on disk - run `npx ray data` and try again"))
+    end
+    NAMES_0 = getat(header(SOLAR_0), Base.string(j"names"))
+    PER_0 = getat(columns(SOLAR_0), Base.string(j"period"))
+    PLANETS_0 = filter(rng(length(NAMES_0)), (function (i_2 = nothing, _...)
+      return (getat(PER_0, i_2) > 0.0)
+    end))
+    F_0 = getat(columns(film_0), Base.string(j"frames"))
+    FR_0 = getat(header(film_0), Base.string(j"frames"))
+    fill_style(s_0, BACK(Galaxies))
+    fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+    fade_0 = (1.0 - smooth(Video, (((t_0 - 0.05)) / 0.4)))
+    rays_0 = (1.0 - smooth(Video, (((t_0 - 0.45)) / 0.35)))
+    earth_0 = smooth(Video, (((t_0 - 0.3)) / 0.3))
+    e_0 = smooth(Video, (t_0 / 0.92))
+    come_0 = smooth(Video, (((t_0 - 0.45)) / 0.35))
+    u_0 = min(Fmt, (FR_0 - 1.0), (SOLAR_FROM(Video) + (((SOLAR_TO(Video) - SOLAR_FROM(Video))) * t_0)))
+    f0_0 = floor(u_0)
+    f1_0 = min(Fmt, (f0_0 + 1.0), (FR_0 - 1.0))
+    w_0 = (u_0 - f0_0)
+    mark_0 = (function (f_1 = nothing, k_1 = nothing, c_1 = nothing, _...)
+      return getat(F_0, ((((f_1 * width_0) + off_0) + (6.0 * k_1)) + c_1))
+    end)
+    where__0 = (function (k_1 = nothing, _...)
+      return Any[(mark_0(f0_0, k_1, 0.0) + (w_0 * ((mark_0(f1_0, k_1, 0.0) - mark_0(f0_0, k_1, 0.0))))), (mark_0(f0_0, k_1, 1.0) + (w_0 * ((mark_0(f1_0, k_1, 1.0) - mark_0(f0_0, k_1, 1.0)))))]
+    end)
+    reach_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(FR_0)) - 1)
+      f_1 = Float64(i1)
+      for i2 in 0:(ceil(Int, Rt.num((bodies_0 - 1.0))) - 1)
+        k_2 = Float64(i2)
+        reach_0 = max(Fmt, reach_0, hypot(Fmt, (mark_0(f_1, (k_2 + 1.0), 0.0) - mark_0(f_1, 0.0, 0.0)), (mark_0(f_1, (k_2 + 1.0), 1.0) - mark_0(f_1, 0.0, 1.0))))
+      end
+    end
+    earth_body_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(length(PLANETS_0))) - 1)
+      k_1 = Float64(i1)
+      earth_body_0 = (truthy((getat(NAMES_0, getat(PLANETS_0, k_1)) == Base.string(j"Earth"))) ? ((k_1 + 1.0)) : (earth_body_0))
+    end
+    E_0 = where__0(earth_body_0)
+    O_0 = where__0(0.0)
+    last_0 = (2.1 * ((reach_0 + hypot(Fmt, (getat(E_0, 0.0) - getat(O_0, 0.0)), (getat(E_0, 1.0) - getat(O_0, 1.0))))))
+    across_0 = exp(((ln(((last_0 / 180.0))) + (((ln(last_0) - ln(((last_0 / 180.0))))) * e_0))))
+    px_0 = (height(s_0) / across_0)
+    cx_0 = getat(E_0, 0.0)
+    cy_0 = getat(E_0, 1.0)
+    X_0 = (function (x_1 = nothing, _...)
+      return ((width(s_0) / 2.0) + (((x_1 - cx_0)) * px_0))
+    end)
+    Y_0 = (function (y_1 = nothing, _...)
+      return ((height(s_0) / 2.0) - (((y_1 - cy_0)) * px_0))
+    end)
+    if truthy((truthy((fade_0 > 0.004)) || truthy((rays_0 > 0.004))))
+      lattice(Video, s_0, lane_0, look_0, 1.0, (ticks_0 + ((300.0 * t_0) * t_0)), fade_0, earth_0, X_0(getat(E_0, 0.0)), Y_0(getat(E_0, 1.0)), ((95.0 * ((last_0 / 180.0))) / across_0), rays_0, floor(ticks_0), (16.0 + (40.0 * smooth(Video, (t_0 / 0.4)))))
+    end
+    for i1 in 0:(ceil(Int, Rt.num((bodies_0 - 1.0))) - 1)
+      k_1 = Float64(i1)
+      b_1 = (k_1 + 1.0)
+      ink_1 = getat(PLANET_INK(Video), min(Fmt, 3.0, k_1))
+      alpha(s_0, (0.85 * come_0))
+      stroke_style(s_0, ink_1)
+      line_width(s_0, 2.0)
+      begin_path(s_0)
+      for i2 in 0:(ceil(Int, Rt.num(FR_0)) - 1)
+        f_2 = Float64(i2)
+        if truthy((f_2 == 0.0))
+          move_to(s_0, X_0(mark_0(f_2, b_1, 0.0)), Y_0(mark_0(f_2, b_1, 1.0)))
+        else
+          line_to(s_0, X_0(mark_0(f_2, b_1, 0.0)), Y_0(mark_0(f_2, b_1, 1.0)))
+        end
+      end
+      stroke(s_0)
+      P_1 = where__0(b_1)
+      x_1 = X_0(getat(P_1, 0.0))
+      y_1 = Y_0(getat(P_1, 1.0))
+      alpha(s_0, (truthy((b_1 == earth_body_0)) ? (earth_0) : (come_0)))
+      stroke_style(s_0, ink_1)
+      line_width(s_0, 2.5)
+      begin_path(s_0)
+      arc(s_0, x_1, y_1, 13.0, 0.0, 6.283185307179586)
+      stroke(s_0)
+      fill_style(s_0, (truthy((b_1 == earth_body_0)) ? (Base.string(j"rgba(", str(SOURCE(Ink)), j",", str((1.0 - come_0)), j")")) : (Base.string(j"#000000"))))
+      begin_path(s_0)
+      arc(s_0, x_1, y_1, (truthy((b_1 == earth_body_0)) ? (((10.0 * ((1.0 - come_0))) + (2.5 * come_0))) : (2.5)), 0.0, 6.283185307179586)
+      fill(s_0)
+    end
+    alpha(s_0, come_0)
+    stroke_style(s_0, Base.string(j"#e0a526"))
+    line_width(s_0, 3.0)
+    begin_path(s_0)
+    arc(s_0, X_0(getat(O_0, 0.0)), Y_0(getat(O_0, 1.0)), 26.0, 0.0, 6.283185307179586)
+    stroke(s_0)
+    fill_style(s_0, Base.string(j"#000000"))
+    begin_path(s_0)
+    arc(s_0, X_0(getat(O_0, 0.0)), Y_0(getat(O_0, 1.0)), 3.0, 0.0, 6.283185307179586)
+    fill(s_0)
+    return alpha(s_0, 1.0)
+  end
+  function end_(self::Type{<:__class__})
+    n_0 = round(((20.0 * FPS(Video))))
+    pic_0 = Picture(id = Base.string(j"video.end"), what = Base.string(j"the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics"), width = WIDTH(Video), height = HEIGHT(Video), frames = n_0, paint = (function (played_2 = nothing, _...)
+      return EndCard(n = n_0)
+    end))
+    pic_0.images = Any[LOGO(Video)]
+    pic_0.on_request = true
+    return pic_0
+  end
+  function end_card(self::Type{<:__class__}, s_0 = nothing, i_0 = nothing, n_0 = nothing, _...)
+    fill_style(s_0, BACK(Galaxies))
+    fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+    alpha(s_0, smooth(Video, (i_0 / FPS(Video))))
+    w_0 = 1500.0
+    image(s_0, LOGO(Video), (((width(s_0) - w_0)) / 2.0), 330.0, w_0, (w_0 / 3.0))
+    text_align(s_0, Base.string(j"center"))
+    fill_style(s_0, SEEN(Galaxies))
+    font(s_0, Base.string(j"600 72px ui-sans-serif, system-ui, sans-serif"))
+    fill_text(s_0, Base.string(j"Physics Project"), (width(s_0) / 2.0), 960.0)
+    fill_style(s_0, Base.string(j"#3ddcff"))
+    font(s_0, Base.string(j"44px ui-sans-serif, system-ui, sans-serif"))
+    fill_text(s_0, Base.string(j"orbitmines.com/physics"), (width(s_0) / 2.0), 1060.0)
+    return alpha(s_0, 1.0)
+  end
+  function montage(self::Type{<:__class__})
+    pic_0 = still(Picture, Base.string(j"video"), Base.string(j"the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined"), WIDTH(Video), HEIGHT(Video), (function (s_2 = nothing, _...)
+      nothing
+    end))
+    pic_0.parts = PARTS(Video)
+    pic_0.on_request = true
+    return pic_0
+  end
+end
+
+@class Shot <: Node begin
+  @field film_id::String
+  @field seconds::Float64
+  @field from_zoom::Float64
+  @field to_zoom::Float64
+  @field from_sun::Float64
+  @field to_sun::Float64
+  @field from_at::Float64
+  @field to_at::Float64
+  @field tilt::Float64
+  @field turn::Float64
+  @field title::String
+  @field fade_in::Float64
+  @field fade_out::Float64
+  function frames(self::__class__)
+    return round(((seconds(self) * FPS(Video))))
+  end
+end
+
+@class Sky <: Painter begin
+  @field shot::Shot
+  @field sol::Measured = nothing
+  @field meta::List = Any[]
+  @field sol_stamp::String = Base.string(j"")
+  @field shown_frames::Float64 = 0.0
+  @field film::Measured = nothing
+  @field tracks::Measured = nothing
+  function frame(self::__class__, s_0 = nothing, dt_0 = nothing, _...)
+    if truthy((film(self) == nothing))
+      self.film = of(Measured, film_id(shot(self)))
+      self.tracks = of(Measured, Base.string(j"", str(film_id(shot(self))), j".stars"))
+    end
+    if truthy((film(self) == nothing))
+      fail(Base.string(j"", str(film_id(shot(self))), j" is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=", str(film_id(shot(self))), j" deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ."))
+    end
+    if truthy((truthy((length(meta(self)) > 0.0)) && truthy((sol(self) == nothing))))
+      self.sol = of(Measured, Base.string(j"solar.inner.frames"))
+      if truthy((sol(self) == nothing))
+        fail(Base.string(j"solar.inner is not recorded - run `npx ray visuals solar.inner` first"))
+      end
+      if truthy((getat(header(sol(self)), Base.string(j"stamp")) != sol_stamp(self)))
+        fail(Base.string(j"solar.inner's recording is stale - run `npx ray visuals solar.inner` again"))
+      end
+    end
+    sky(Video, s_0, shot(self), film(self), tracks(self), shown_frames(self), sol(self), meta(self))
+    self.shown_frames = (shown_frames(self) + 1.0)
+  end
+end
+
+@class Band <: Surface begin
+  @field inner::Surface
+  function fill_style(self::__class__, colour_0 = nothing, _...)
+    return fill_style(inner(self), colour_0)
+  end
+  function stroke_style(self::__class__, colour_0 = nothing, _...)
+    return stroke_style(inner(self), colour_0)
+  end
+  function line_width(self::__class__, w_0 = nothing, _...)
+    return line_width(inner(self), w_0)
+  end
+  function alpha(self::__class__, v_0 = nothing, _...)
+    return alpha(inner(self), v_0)
+  end
+  function fill_rect(self::__class__, x_0 = nothing, y_0 = nothing, w_0 = nothing, h_0 = nothing, _...)
+    return fill_rect(inner(self), x_0, y_0, w_0, h_0)
+  end
+  function stroke_rect(self::__class__, x_0 = nothing, y_0 = nothing, w_0 = nothing, h_0 = nothing, _...)
+    return stroke_rect(inner(self), x_0, y_0, w_0, h_0)
+  end
+  function clear_rect(self::__class__, x_0 = nothing, y_0 = nothing, w_0 = nothing, h_0 = nothing, _...)
+    return clear_rect(inner(self), x_0, y_0, w_0, h_0)
+  end
+  function begin_path(self::__class__)
+    return begin_path(inner(self))
+  end
+  function move_to(self::__class__, x_0 = nothing, y_0 = nothing, _...)
+    return move_to(inner(self), x_0, y_0)
+  end
+  function line_to(self::__class__, x_0 = nothing, y_0 = nothing, _...)
+    return line_to(inner(self), x_0, y_0)
+  end
+  function arc(self::__class__, x_0 = nothing, y_0 = nothing, r_0 = nothing, start_at_0 = nothing, end_at_0 = nothing, _...)
+    return arc(inner(self), x_0, y_0, r_0, start_at_0, end_at_0)
+  end
+  function stroke(self::__class__)
+    return stroke(inner(self))
+  end
+  function fill(self::__class__)
+    return fill(inner(self))
+  end
+  function font(self::__class__, name_0 = nothing, _...)
+    return font(inner(self), name_0)
+  end
+  function text_align(self::__class__, how_0 = nothing, _...)
+    return text_align(inner(self), how_0)
+  end
+  function text_baseline(self::__class__, how_0 = nothing, _...)
+    return text_baseline(inner(self), how_0)
+  end
+  function fill_text(self::__class__, t_0 = nothing, x_0 = nothing, y_0 = nothing, _...)
+    return fill_text(inner(self), t_0, x_0, y_0)
+  end
+  function measure(self::__class__, t_0 = nothing, _...)
+    return measure(inner(self), t_0)
+  end
+  function save(self::__class__)
+    return save(inner(self))
+  end
+  function restore(self::__class__)
+    return restore(inner(self))
+  end
+  function translate(self::__class__, x_0 = nothing, y_0 = nothing, _...)
+    return translate(inner(self), x_0, y_0)
+  end
+  function rotate(self::__class__, angle_0 = nothing, _...)
+    return rotate(inner(self), angle_0)
+  end
+  function dash(self::__class__, segments_0 = nothing, _...)
+    return dash(inner(self), segments_0)
+  end
+  function gradient_stroke(self::__class__, x0_0 = nothing, x1_0 = nothing, stops_0 = nothing, at_0 = nothing, _...)
+    return gradient_stroke(inner(self), x0_0, x1_0, stops_0, at_0)
+  end
+  function image(self::__class__, src_0 = nothing, x_0 = nothing, y_0 = nothing, w_0 = nothing, h_0 = nothing, _...)
+    return image(inner(self), src_0, x_0, y_0, w_0, h_0)
+  end
+end
+
+@class Banded <: Painter begin
+  @field inner::Painter
+  @field top::Float64
+  @field tall::Float64
+  function frame(self::__class__, s_0 = nothing, dt_0 = nothing, _...)
+    fill_style(s_0, BACK(Galaxies))
+    fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+    save(s_0)
+    translate(s_0, 0.0, top(self))
+    frame(inner(self), Band(width = width(s_0), height = tall(self), inner = s_0), dt_0)
+    return restore(s_0)
+  end
+end
+
+@class Growing <: Painter begin
+  @field n::Float64
+  @field lane::Lane
+  @field ink::Ink
+  @field per::Float64
+  @field shown_frames::Float64 = 0.0
+  function frame(self::__class__, s_0 = nothing, dt_0 = nothing, _...)
+    fill_style(s_0, BACK(Galaxies))
+    fill_rect(s_0, 0.0, 0.0, width(s_0), height(s_0))
+    look_0 = look(Video, width(s_0), lane(self), ink(self))
+    grow_0 = (shown_frames(self) / max(Fmt, 1.0, (n(self) - 1.0)))
+    cam_0 = source_camera(Video, s_0, look_0, grow_0)
+    lattice(Video, s_0, lane(self), look_0, grow_0, (shown_frames(self) / per(self)), 1.0, 0.0, getat(cam_0, 0.0), getat(cam_0, 1.0), getat(cam_0, 2.0), 1.0, 1000000.0, 16.0)
+    self.shown_frames = (shown_frames(self) + 1.0)
+  end
+end
+
+@class Planets <: Painter begin
+  @field n::Float64
+  @field lane::Lane
+  @field ink::Ink
+  @field per::Float64
+  @field stamp::String
+  @field off::Float64
+  @field width::Float64
+  @field bodies::Float64
+  @field shown_frames::Float64 = 0.0
+  @field film::Measured = nothing
+  function frame(self::__class__, s_0 = nothing, dt_0 = nothing, _...)
+    if truthy((film(self) == nothing))
+      self.film = of(Measured, Base.string(j"solar.inner.frames"))
+    end
+    if truthy((film(self) == nothing))
+      fail(Base.string(j"solar.inner is not recorded - run `npx ray visuals solar.inner` first"))
+    end
+    if truthy((getat(header(film(self)), Base.string(j"stamp")) != stamp(self)))
+      fail(Base.string(j"solar.inner's recording is stale - run `npx ray visuals solar.inner` again"))
+    end
+    look_0 = look(Video, width(s_0), lane(self), ink(self))
+    planets(Video, s_0, (shown_frames(self) / max(Fmt, 1.0, (n(self) - 1.0))), lane(self), look_0, ((((round(((4.0 * FPS(Video)))) - 1.0) + shown_frames(self))) / per(self)), film(self), off(self), width(self), bodies(self))
+    self.shown_frames = (shown_frames(self) + 1.0)
+  end
+end
+
+@class EndCard <: Painter begin
+  @field n::Float64
+  @field shown_frames::Float64 = 0.0
+  function frame(self::__class__, s_0 = nothing, dt_0 = nothing, _...)
+    end_card(Video, s_0, shown_frames(self), n(self))
+    self.shown_frames = (shown_frames(self) + 1.0)
+  end
+end
+
 @theory G <: Theory begin
   @field name::Any = Base.string(j"G")
   function lattice(self::__class__)
@@ -15124,13 +15719,11 @@ end
     ink_0.every = true
     w_0 = line(Strip, self, 10.0)
     light(Strip, w_0, 0.0, 1.0)
-    lanes_0 = Any[lane(Strip, w_0, ink_0)]
-    for i1 in 0:(ceil(Int, Rt.num(8.0)) - 1)
-      t_1 = Float64(i1)
+    lanes_0 = concat(Any[lane(Strip, w_0, ink_0)], map(rng(8.0), (function (t_2 = nothing, _...)
       begin_(Strip, w_0)
       run(Strip, w_0, Any[Base.string(j"/c"), Base.string(j"/4")])
-      push(lanes_0, lane(Strip, w_0, ink_0))
-    end
+      return lane(Strip, w_0, ink_0)
+    end)))
     return tell(Strip, Base.string(j"rule.movement"), Base.string(j"every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)"), lanes_0, ink_0)
   end
   function emission_film(self::__class__)
@@ -15139,45 +15732,40 @@ end
     ink_0.top = 36.0
     w_0 = line(Strip, self, 17.0)
     add(w_0, Scripted(at = Vector(components = Any[8.0]), plan = Any[Base.string(j""), Base.string(j"+"), Base.string(j"-"), Base.string(j""), Base.string(j"+-"), Base.string(j""), Base.string(j"+"), Base.string(j"-")], weight = 1.0))
-    lanes_0 = Any[lane(Strip, w_0, ink_0)]
-    for i1 in 0:(ceil(Int, Rt.num(8.0)) - 1)
-      t_1 = Float64(i1)
+    lanes_0 = concat(Any[lane(Strip, w_0, ink_0)], map(rng(8.0), (function (t_2 = nothing, _...)
       begin_(Strip, w_0)
       run(Strip, w_0, Any[Base.string(j"/c"), Base.string(j"/4")])
-      moved_1 = lane(Strip, w_0, ink_0)
+      moved_2 = lane(Strip, w_0, ink_0)
       run(Strip, w_0, Any[Base.string(j"/S.1")])
-      now_1 = lane(Strip, w_0, ink_0)
-      now_1.says = emitting(Strip, moved_1, now_1)
-      push(lanes_0, now_1)
-    end
+      now_2 = lane(Strip, w_0, ink_0)
+      now_2.says = emitting(Strip, moved_2, now_2)
+      return now_2
+    end)))
     return tell(Strip, Base.string(j"rule.emission"), Base.string(j"a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)"), lanes_0, ink_0)
   end
   function transport_film(self::__class__)
     ink_0 = Ink()
     ink_0.every = true
     ink_0.top = 36.0
+    return tell(Strip, Base.string(j"rule.transport"), Base.string(j"a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)"), transport_lanes(self, ink_0), ink_0)
+  end
+  function transport_lanes(self::__class__, ink_0 = nothing, _...)
     w_0 = line(Strip, self, 21.0)
     s_0 = add(w_0, Scripted(at = Vector(components = Any[9.0]), plan = Any[Base.string(j"+-"), Base.string(j""), Base.string(j""), Base.string(j""), Base.string(j"+-")], weight = 4.0))
     s_0.moves = true
     s_0.momentum = Vector(components = Any[1.0])
-    lanes_0 = Any[lane(Strip, w_0, ink_0)]
-    for i1 in 0:(ceil(Int, Rt.num(9.0)) - 1)
-      t_1 = Float64(i1)
+    return concat(Any[lane(Strip, w_0, ink_0)], map(rng(9.0), (function (t_2 = nothing, _...)
       begin_(Strip, w_0)
       run(Strip, w_0, Any[Base.string(j"/c"), Base.string(j"/4")])
-      moved_1 = lane(Strip, w_0, ink_0)
+      moved_2 = lane(Strip, w_0, ink_0)
       run(Strip, w_0, Any[Base.string(j"/S.1")])
-      emitted_1 = emitting(Strip, moved_1, lane(Strip, w_0, ink_0))
+      emitted_2 = emitting(Strip, moved_2, lane(Strip, w_0, ink_0))
       run(Strip, w_0, Any[Base.string(j"/S.v")])
-      now_1 = lane(Strip, w_0, ink_0)
-      went_1 = Base.string(j"")
-      if truthy(stepped(s_0))
-        went_1 = (truthy((getat(components(V(geometry(w_0), moved_along(s_0))), 0.0) > 0.0)) ? (Base.string(j"steps right")) : (Base.string(j"steps left")))
-      end
-      now_1.says = (truthy(empty(went_1)) ? (emitted_1) : (((truthy(empty(emitted_1)) ? (went_1) : (Base.string(j"", str(went_1), j", ", str(emitted_1), j""))))))
-      push(lanes_0, now_1)
-    end
-    return tell(Strip, Base.string(j"rule.transport"), Base.string(j"a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)"), lanes_0, ink_0)
+      now_2 = lane(Strip, w_0, ink_0)
+      went_2 = (truthy(!(stepped(s_0))) ? (Base.string(j"")) : (((truthy((getat(components(V(geometry(w_0), moved_along(s_0))), 0.0) > 0.0)) ? (Base.string(j"steps right")) : (Base.string(j"steps left"))))))
+      now_2.says = (truthy(empty(went_2)) ? (emitted_2) : (((truthy(empty(emitted_2)) ? (went_2) : (Base.string(j"", str(went_2), j", ", str(emitted_2), j""))))))
+      return now_2
+    end)))
   end
   function expansion(self::__class__)
     ink_0 = Ink()
@@ -15386,21 +15974,18 @@ end
     end), place = (function (setup_2 = nothing, _...)
       sun_2 = Body(x = 0.0, y = 0.0, mx = pulse_0(0.0), ways = ways_0(0.0))
       sun_2.tag = 1.0
-      out_2 = Any[sun_2]
-      for i3 in 0:(ceil(Int, Rt.num(length(PLANETS_0))) - 1)
-        k_3 = Float64(i3)
-        i_3 = getat(PLANETS_0, k_3)
-        b__3 = Body(x = cells_0((getat(AX_0, i_3) * ((1.0 + getat(EC_0, i_3))))), y = 0.0, mx = pulse_0(i_3), ways = ways_0(i_3))
-        b__3.tag = (2.0 + k_3)
-        b__3.moves = true
-        v_3 = (truthy((truthy((length(found(setup_2)) > k_3)) && truthy(finite(Fmt, getat(getat(found(setup_2), k_3), 1.0))))) ? (getat(getat(found(setup_2), k_3), 1.0)) : (0.0))
-        b__3.py = (0.0 - ((v_3 * pulse_0(i_3)) * ways_0(i_3)))
-        b__3.launch = Base.string(j"orbit")
-        b__3.ecc = getat(EC_0, i_3)
-        b__3.py = (0.0 - 1.0)
-        push(out_2, b__3)
-      end
-      return out_2
+      return concat(Any[sun_2], map(rng(length(PLANETS_0)), (function (k_4 = nothing, _...)
+        i_4 = getat(PLANETS_0, k_4)
+        b__4 = Body(x = cells_0((getat(AX_0, i_4) * ((1.0 + getat(EC_0, i_4))))), y = 0.0, mx = pulse_0(i_4), ways = ways_0(i_4))
+        b__4.tag = (2.0 + k_4)
+        b__4.moves = true
+        v_4 = (truthy((truthy((length(found(setup_2)) > k_4)) && truthy(finite(Fmt, getat(getat(found(setup_2), k_4), 1.0))))) ? (getat(getat(found(setup_2), k_4), 1.0)) : (0.0))
+        b__4.py = (0.0 - ((v_4 * pulse_0(i_4)) * ways_0(i_4)))
+        b__4.launch = Base.string(j"orbit")
+        b__4.ecc = getat(EC_0, i_4)
+        b__4.py = (0.0 - 1.0)
+        return b__4
+      end)))
     end))
     BURN_0 = (2.0 * ((VIEW_0 + MARGIN_0)))
     LAW_0 = of(Aggregate, self)

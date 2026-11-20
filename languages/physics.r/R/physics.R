@@ -411,18 +411,25 @@ Vertex <- ray_class("Vertex", Ray, function(cl) {
 
 Vector <- ray_class("Vector", Node, function(cl) {
   field(cl, "components", NULL)
-  method(cl, "plus", function(b = NULL, ...) {
+  method(cl, "zipped", function(b = NULL, f = NULL, ...) {
     return(Vector$new(components = m_map(rng(len(self$components)), function(i = NULL, ...) {
-      return(r_add(elem(self$components, i), elem(b$components, i)))
+      return((f)(elem(self$components, i), elem(b$components, i)))
       NULL
     })))
     NULL
   })
-  method(cl, "minus", function(b = NULL, ...) {
-    return(Vector$new(components = m_map(rng(len(self$components)), function(i = NULL, ...) {
-      return(r_sub(elem(self$components, i), elem(b$components, i)))
+  method(cl, "plus", function(b = NULL, ...) {
+    return(self$zipped(b, function(x = NULL, y = NULL, ...) {
+      return(r_add(x, y))
       NULL
-    })))
+    }))
+    NULL
+  })
+  method(cl, "minus", function(b = NULL, ...) {
+    return(self$zipped(b, function(x = NULL, y = NULL, ...) {
+      return(r_sub(x, y))
+      NULL
+    }))
     NULL
   })
   method(cl, "times", function(k = NULL, ...) {
@@ -433,10 +440,10 @@ Vector <- ray_class("Vector", Node, function(cl) {
     NULL
   })
   method(cl, "dot", function(b = NULL, ...) {
-    return(m_sum(m_map(rng(len(self$components)), function(i = NULL, ...) {
-      return(r_mul(elem(self$components, i), elem(b$components, i)))
+    return(m_sum(self$zipped(b, function(x = NULL, y = NULL, ...) {
+      return(r_mul(x, y))
       NULL
-    })))
+    })$components))
     NULL
   })
   getter(cl, "norm", function() {
@@ -507,18 +514,13 @@ Geometry <- ray_class("Geometry", Node, function(cl) {
       return(v$norm)
       NULL
     })
-    chosen <- lst()
-    .r <- for_each(squared, function(s) {
-      .r <- for_each(all, function(v) {
-        if (truthy(eq(v$dot(v), s))) {
-          m_push(chosen, v)
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    chosen <- m_reduce(squared, lst(), function(out = NULL, s = NULL, ...) {
+      return(m_concat(out, filt(all, function(v = NULL, ...) {
+        return(eq(v$dot(v), s))
+        NULL
+      })))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     joined <- m_join(squared, "+")
     return(Geometry$new(name = "shells-" %+% text_of(D) %+% "-" %+% text_of(joined) %+% "", offsets = chosen))
     NULL
@@ -546,24 +548,21 @@ Geometry <- ray_class("Geometry", Node, function(cl) {
     return(Geometry$new(name = "nearest-" %+% text_of(D) %+% "-" %+% text_of(DEG) %+% "", offsets = chosen))
     NULL
   })
+  statik(cl, "grid", function(D = NULL, low = NULL, count = NULL, ...) {
+    return(m_reduce(rng(D), lst(Vector$new(components = lst())), function(points = NULL, v__ = NULL, ...) {
+      return(m_reduce(points, lst(), function(grown = NULL, p = NULL, ...) {
+        return(m_reduce(rng(count), grown, function(out = NULL, k = NULL, ...) {
+          return(m_push(out, Vector$new(components = m_concat(p$components, lst(r_add(low, k))))))
+          NULL
+        }))
+        NULL
+      }))
+      NULL
+    }))
+    NULL
+  })
   statik(cl, "box", function(D = NULL, radius = NULL, ...) {
-    points <- lst(Vector$new(components = lst()))
-    i <- 0
-    while (truthy(lt(i, D))) {
-      grown <- lst()
-      .r <- for_each(points, function(p) {
-        k <- r_sub(0, radius)
-        while (truthy(le(k, radius))) {
-          m_push(grown, Vector$new(components = m_concat(p$components, lst(k))))
-          .w("k", r_add(k, 1))
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      .w("points", grown)
-      .w("i", r_add(i, 1))
-    }
-    return(points)
+    return(Geometry$grid(D, r_sub(0, radius), r_add(r_mul(2, radius), 1)))
     NULL
   })
 })
@@ -624,6 +623,7 @@ Rule <- ray_class("Rule", Node, function(cl) {
 })
 
 Theory <- ray_class("Theory", Node, function(cl) {
+  static_field(cl, "TERMS", function() Node$new())
   field(cl, "name", NULL)
   field(cl, "rules", function() lst())
   field(cl, "visuals", function() lst())
@@ -688,6 +688,13 @@ Theory <- ray_class("Theory", Node, function(cl) {
     return(Medium$new(theory = self, N = N, A = A, K = K, DEG = or_else(DEG, self$lattice$DEG), tags = tags, D = or_else(D, self$lattice$D)))
     NULL
   })
+  getter(cl, "terms_read", function() {
+    if (truthy(eq(elem(Theory$TERMS, self$name), NULL))) {
+      set_at(Theory$TERMS, self$name, self$equation$terms)
+    }
+    return(elem(Theory$TERMS, self$name))
+    NULL
+  })
   getter(cl, "proved", function() {
     if (truthy(eq(elem(Prover$PROOFS, self$name), NULL))) {
       set_at(Prover$PROOFS, self$name, Prover$new(theory = self)$proof)
@@ -721,23 +728,7 @@ World <- ray_class("World", Node, function(cl) {
     NULL
   })
   method(cl, "positions", function(N = NULL, ...) {
-    points <- lst(Vector$new(components = lst()))
-    i <- 0
-    while (truthy(lt(i, self$geometry$D))) {
-      grown <- lst()
-      .r <- for_each(points, function(p) {
-        k <- 0
-        while (truthy(lt(k, N))) {
-          m_push(grown, Vector$new(components = m_concat(p$components, lst(k))))
-          .w("k", r_add(k, 1))
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      .w("points", grown)
-      .w("i", r_add(i, 1))
-    }
-    return(points)
+    return(Geometry$grid(self$geometry$D, 0, N))
     NULL
   })
   method(cl, "place", function(at = NULL, ...) {
@@ -836,16 +827,13 @@ World <- ray_class("World", Node, function(cl) {
         NULL
       }))
     }
-    rays <- lst()
-    .r <- for_each(self$live, function(v) {
-      .r <- for_each(v$rays, function(r) {
-        m_push(rays, r)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    rays <- m_reduce(self$live, lst(), function(out = NULL, v = NULL, ...) {
+      return(m_reduce(v$rays, out, function(o = NULL, r = NULL, ...) {
+        return(m_push(o, r))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     if (truthy(eq(kind, "Boundary"))) {
       return(m_map(rays, function(r = NULL, ...) {
         return(r$terminal)
@@ -853,16 +841,13 @@ World <- ray_class("World", Node, function(cl) {
       }))
     }
     if (truthy(eq(kind, "Edge"))) {
-      edges <- lst()
-      .r <- for_each(rays, function(r) {
-        there <- r$ahead
-        if (truthy((if (truthy(.x <- (!eq(there, NULL)))) lt(r$vertex$ordinal, there$ordinal) else .x))) {
-          m_push(edges, r$terminal$edge)
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(edges)
+      return(m_map(filt(rays, function(r = NULL, ...) {
+        return((if (truthy(.x <- (!eq(r$ahead, NULL)))) lt(r$vertex$ordinal, r$ahead$ordinal) else .x))
+        NULL
+      }), function(r = NULL, ...) {
+        return(r$terminal$edge)
+        NULL
+      }))
     }
     return(lst())
     NULL
@@ -1313,16 +1298,14 @@ Field <- ray_class("Field", Node, function(cl) {
     y0 <- m_floor(py)
     fx <- r_sub(px, x0)
     fy <- r_sub(py, y0)
-    out <- lst()
-    .r <- for_each(lst(lst(x0, y0, r_mul((r_sub(1, fx)), (r_sub(1, fy)))), lst(r_add(x0, 1), y0, r_mul(fx, (r_sub(1, fy)))), lst(x0, r_add(y0, 1), r_mul((r_sub(1, fx)), fy)), lst(r_add(x0, 1), r_add(y0, 1), r_mul(fx, fy))), function(t) {
-      c <- self$at(elem(t, 0), elem(t, 1))
-      if (truthy((if (truthy(.x <- ge(c, 0))) gt(elem(t, 2), 0) else .x))) {
-        m_push(out, lst(c, elem(t, 2)))
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    corners <- lst(lst(x0, y0, r_mul((r_sub(1, fx)), (r_sub(1, fy)))), lst(r_add(x0, 1), y0, r_mul(fx, (r_sub(1, fy)))), lst(x0, r_add(y0, 1), r_mul((r_sub(1, fx)), fy)), lst(r_add(x0, 1), r_add(y0, 1), r_mul(fx, fy)))
+    return(filt(m_map(corners, function(t = NULL, ...) {
+      return(lst(self$at(elem(t, 0), elem(t, 1)), elem(t, 2)))
+      NULL
+    }), function(p = NULL, ...) {
+      return((if (truthy(.x <- ge(elem(p, 0), 0))) gt(elem(p, 1), 0) else .x))
+      NULL
+    }))
     NULL
   })
   method(cl, "hop", function(c = NULL, a = NULL, ...) {
@@ -1348,7 +1331,7 @@ Field <- ray_class("Field", Node, function(cl) {
     NULL
   })
   getter(cl, "terms", function() {
-    return(self$theory$equation$terms)
+    return(self$theory$terms_read)
     NULL
   })
   getter(cl, "acting", function() {
@@ -1941,20 +1924,13 @@ Field <- ray_class("Field", Node, function(cl) {
     x <- self$column_of(c)
     y <- self$row_of(c)
     half <- m_floor((r_div((r_sub(self$K, 1)), 2)))
-    out <- lst()
-    .r <- for_range(self$K, function(dy) {
-      .r <- for_range(self$K, function(dx) {
-        cell <- self$at(r_add(r_sub(x, half), dx), r_add(r_sub(y, half), dy))
-        if (truthy(ge(cell, 0))) {
-          m_push(out, cell)
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(filt(m_map(rng(r_mul(self$K, self$K)), function(i = NULL, ...) {
+      return(self$at(r_add(r_sub(x, half), r_mod(i, self$K)), r_add(r_sub(y, half), m_floor((r_div(i, self$K))))))
+      NULL
+    }), function(cell = NULL, ...) {
+      return(ge(cell, 0))
+      NULL
+    }))
     NULL
   })
   getter(cl, "block", function() {
@@ -2356,41 +2332,27 @@ Piece <- ray_class("Piece", Node, function(cl) {
   field(cl, "lowered", function() NULL)
   field(cl, "key", function() "")
   statik(cl, "text_", function(t = NULL, ...) {
-    p <- Piece$new(kind = "text")
-    .set(p, "text", t)
-    return(p)
+    return(Piece$new(kind = "text", text = t))
     NULL
   })
   statik(cl, "wrap", function(kind = NULL, of = NULL, ...) {
-    p <- Piece$new(kind = kind)
-    .set(p, "of", of)
-    return(p)
+    return(Piece$new(kind = kind, of = of))
     NULL
   })
   statik(cl, "words", function(t = NULL, ...) {
-    p <- Piece$new(kind = "words")
-    .set(p, "text", t)
-    return(p)
+    return(Piece$new(kind = "words", text = t))
     NULL
   })
   statik(cl, "big", function(kind = NULL, lo = NULL, hi = NULL, ...) {
-    p <- Piece$new(kind = kind)
-    .set(p, "lo", lo)
-    .set(p, "hi", hi)
-    return(p)
+    return(Piece$new(kind = kind, lo = lo, hi = hi))
     NULL
   })
   statik(cl, "stacked", function(kind = NULL, over = NULL, under = NULL, ...) {
-    p <- Piece$new(kind = kind)
-    .set(p, "over", over)
-    .set(p, "under", under)
-    return(p)
+    return(Piece$new(kind = kind, over = over, under = under))
     NULL
   })
   statik(cl, "cite", function(key = NULL, ...) {
-    p <- Piece$new(kind = "ref")
-    .set(p, "key", key)
-    return(p)
+    return(Piece$new(kind = "ref", key = key))
     NULL
   })
 })
@@ -2416,6 +2378,9 @@ Reference <- ray_class("Reference", Node, function(cl) {
 })
 
 Setter <- ray_class("Setter", Node, function(cl) {
+  static_field(cl, "KINDS", function() lst("var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren"))
+  static_field(cl, "OPENS", function() lst("<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">"))
+  static_field(cl, "CLOSES", function() lst("</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>"))
   method(cl, "together", function(parts = NULL, ...) {
     return(m_join(parts, ""))
     NULL
@@ -2429,58 +2394,8 @@ Setter <- ray_class("Setter", Node, function(cl) {
     NULL
   })
   method(cl, "wrap", function(kind = NULL, c = NULL, ...) {
-    if (truthy(eq(kind, "var"))) {
-      return("<i>" %+% text_of(c) %+% "</i>")
-    }
-    if (truthy(eq(kind, "count"))) {
-      return("<b class=\"k\">" %+% text_of(c) %+% "</b>")
-    }
-    if (truthy(eq(kind, "fn"))) {
-      return("<b class=\"d\">" %+% text_of(c) %+% "</b>")
-    }
-    if (truthy(eq(kind, "muted"))) {
-      return("<span class=\"mu\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "bar"))) {
-      return("<span class=\"bar\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "hat"))) {
-      return("<span class=\"acc hat\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "tilde"))) {
-      return("<span class=\"acc tld\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "vec"))) {
-      return("<span class=\"acc vec\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "dot"))) {
-      return("<span class=\"acc dot\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "ddot"))) {
-      return("<span class=\"acc ddot\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "bold"))) {
-      return("<b class=\"bf\">" %+% text_of(c) %+% "</b>")
-    }
-    if (truthy(eq(kind, "cal"))) {
-      return("<span class=\"cal\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "bb"))) {
-      return("<span class=\"bb\">" %+% text_of(c) %+% "</span>")
-    }
-    if (truthy(eq(kind, "sqrt"))) {
-      return("<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" %+% text_of(c) %+% "</span></span>")
-    }
-    if (truthy(eq(kind, "sup"))) {
-      return("<sup>" %+% text_of(c) %+% "</sup>")
-    }
-    if (truthy(eq(kind, "sub"))) {
-      return("<sub>" %+% text_of(c) %+% "</sub>")
-    }
-    if (truthy(eq(kind, "paren"))) {
-      return("<span class=\"paren\">" %+% text_of(c) %+% "</span>")
-    }
-    return("<span class=\"" %+% text_of(kind) %+% "\">" %+% text_of(c) %+% "</span>")
+    i <- m_index_of(Setter$KINDS, kind)
+    return((if (truthy(eq(i, NULL))) "<span class=\"" %+% text_of(kind) %+% "\">" %+% text_of(c) %+% "</span>" else "" %+% text_of(elem(Setter$OPENS, i)) %+% "" %+% text_of(c) %+% "" %+% text_of(elem(Setter$CLOSES, i)) %+% ""))
     NULL
   })
   method(cl, "big", function(kind = NULL, lo = NULL, hi = NULL, ...) {
@@ -2588,20 +2503,26 @@ Notation <- ray_class("Notation", Node, function(cl) {
     return((if (truthy(lt(i, len(s)))) elem(m_chars(s), i) else 0))
     NULL
   })
-  statik(cl, "letters", function(s = NULL, at = NULL, ...) {
+  statik(cl, "run", function(s = NULL, at = NULL, keep = NULL, ...) {
     k <- at
-    while (truthy((if (truthy(.x <- lt(k, len(s)))) Notation$is_letter(elem(m_chars(s), k)) else .x))) {
+    while (truthy((if (truthy(.x <- lt(k, len(s)))) (keep)(elem(m_chars(s), k)) else .x))) {
       .w("k", r_add(k, 1))
     }
     return(Notation$sub_(s, at, k))
     NULL
   })
+  statik(cl, "letters", function(s = NULL, at = NULL, ...) {
+    return(Notation$run(s, at, function(c = NULL, ...) {
+      return(Notation$is_letter(c))
+      NULL
+    }))
+    NULL
+  })
   statik(cl, "alnums", function(s = NULL, at = NULL, ...) {
-    k <- at
-    while (truthy((if (truthy(.x <- lt(k, len(s)))) Notation$is_alnum(elem(m_chars(s), k)) else .x))) {
-      .w("k", r_add(k, 1))
-    }
-    return(Notation$sub_(s, at, k))
+    return(Notation$run(s, at, function(c = NULL, ...) {
+      return(Notation$is_alnum(c))
+      NULL
+    }))
     NULL
   })
   statik(cl, "counted", function(w = NULL, ...) {
@@ -2652,6 +2573,10 @@ Notation <- ray_class("Notation", Node, function(cl) {
     return(Args$new(got = got, end = k))
     NULL
   })
+  statik(cl, "scripted", function(base = NULL, kind = NULL, of = NULL, ...) {
+    return(Piece$new(kind = "scripted", base = base, raised = (if (truthy(eq(kind, "sup"))) of else NULL), lowered = (if (truthy(eq(kind, "sup"))) NULL else of)))
+    NULL
+  })
   statik(cl, "attach", function(out = NULL, kind = NULL, of = NULL, ...) {
     if (truthy(m_empty(out))) {
       m_push(out, Piece$wrap(kind, of))
@@ -2679,25 +2604,11 @@ Notation <- ray_class("Notation", Node, function(cl) {
       } else {
         .set(tail, "text", head)
       }
-      s <- Piece$new(kind = "scripted")
-      .set(s, "base", Piece$text_(last_char))
-      if (truthy(eq(kind, "sup"))) {
-        .set(s, "raised", of)
-      } else {
-        .set(s, "lowered", of)
-      }
-      m_push(out, s)
+      m_push(out, Notation$scripted(Piece$text_(last_char), kind, of))
       return(NULL)
     }
     m_pop(out)
-    s <- Piece$new(kind = "scripted")
-    .set(s, "base", tail)
-    if (truthy(eq(kind, "sup"))) {
-      .set(s, "raised", of)
-    } else {
-      .set(s, "lowered", of)
-    }
-    return(m_push(out, s))
+    return(m_push(out, Notation$scripted(tail, kind, of)))
     NULL
   })
   statik(cl, "parse", function(src = NULL, ...) {
@@ -2852,25 +2763,22 @@ Notation <- ray_class("Notation", Node, function(cl) {
       }
       NULL
     }
+    starts_name <- function(c = NULL, ...) {
+      return((if (truthy(.x <- Notation$is_letter(c))) .x else eq(c, 95)))
+      NULL
+    }
     bits <- lst()
     k <- 0
     while (truthy(lt(k, len(s)))) {
-      c <- elem(m_chars(s), k)
-      if (truthy((if (truthy(.x <- Notation$is_letter(c))) .x else eq(c, 95)))) {
-        j <- k
-        while (truthy((if (truthy(.x <- lt(j, len(s)))) Notation$is_name(elem(m_chars(s), j)) else .x))) {
-          .w("j", r_add(j, 1))
-        }
-        m_push(bits, Notation$sub_(s, k, j))
-        .w("k", j)
-      } else {
-        j <- k
-        while (truthy((if (truthy(.x <- lt(j, len(s)))) (!truthy(((if (truthy(.x <- Notation$is_letter(elem(m_chars(s), j)))) .x else eq(elem(m_chars(s), j), 95))))) else .x))) {
-          .w("j", r_add(j, 1))
-        }
-        m_push(bits, Notation$sub_(s, k, j))
-        .w("k", j)
-      }
+      bit <- (if (truthy((starts_name)(elem(m_chars(s), k)))) Notation$run(s, k, function(c = NULL, ...) {
+        return(Notation$is_name(c))
+        NULL
+      }) else Notation$run(s, k, function(c = NULL, ...) {
+        return((!truthy((starts_name)(c))))
+        NULL
+      }))
+      m_push(bits, bit)
+      .w("k", r_add(k, len(bit)))
     }
     i <- 0
     while (truthy(lt(i, len(bits)))) {
@@ -3075,21 +2983,15 @@ Expr <- ray_class("Expr", Node, function(cl) {
   field(cl, "shown", function() NULL)
   field(cl, "simple", function() NULL)
   statik(cl, "num", function(n = NULL, ...) {
-    e <- Expr$new(kind = "num")
-    .set(e, "value", n)
-    return(e)
+    return(Expr$new(kind = "num", value = n))
     NULL
   })
   statik(cl, "sym", function(name = NULL, ...) {
-    e <- Expr$new(kind = "sym")
-    .set(e, "label", name)
-    return(e)
+    return(Expr$new(kind = "sym", label = name))
     NULL
   })
   statik(cl, "field", function(name = NULL, ...) {
-    e <- Expr$new(kind = "field")
-    .set(e, "label", name)
-    return(e)
+    return(Expr$new(kind = "field", label = name))
     NULL
   })
   statik(cl, "add", function(xs = NULL, ...) {
@@ -3101,10 +3003,7 @@ Expr <- ray_class("Expr", Node, function(cl) {
     NULL
   })
   statik(cl, "to_power", function(base = NULL, by = NULL, ...) {
-    e <- Expr$new(kind = "pow")
-    .set(e, "base", base)
-    .set(e, "power", by)
-    return(e)
+    return(Expr$new(kind = "pow", base = base, power = by))
     NULL
   })
   statik(cl, "pown", function(base = NULL, by = NULL, ...) {
@@ -3112,56 +3011,35 @@ Expr <- ray_class("Expr", Node, function(cl) {
     NULL
   })
   statik(cl, "grad", function(x = NULL, ...) {
-    e <- Expr$new(kind = "grad")
-    .set(e, "base", x)
-    return(e)
+    return(Expr$new(kind = "grad", base = x))
     NULL
   })
   statik(cl, "log", function(x = NULL, ...) {
-    e <- Expr$new(kind = "log")
-    .set(e, "base", x)
-    return(e)
+    return(Expr$new(kind = "log", base = x))
     NULL
   })
   statik(cl, "exp", function(x = NULL, ...) {
-    e <- Expr$new(kind = "exp")
-    .set(e, "base", x)
-    return(e)
+    return(Expr$new(kind = "exp", base = x))
     NULL
   })
   statik(cl, "choose", function(n = NULL, k = NULL, ...) {
-    e <- Expr$new(kind = "choose")
-    .set(e, "first_", n)
-    .set(e, "second_", k)
-    return(e)
+    return(Expr$new(kind = "choose", first_ = n, second_ = k))
     NULL
   })
   statik(cl, "gamma_inc", function(s = NULL, x = NULL, ...) {
-    e <- Expr$new(kind = "gammaInc")
-    .set(e, "first_", s)
-    .set(e, "second_", x)
-    return(e)
+    return(Expr$new(kind = "gammaInc", first_ = s, second_ = x))
     NULL
   })
   statik(cl, "root", function(x = NULL, name = NULL, ...) {
-    e <- Expr$new(kind = "root")
-    .set(e, "base", x)
-    .set(e, "bound", name)
-    return(e)
+    return(Expr$new(kind = "root", base = x, bound = name))
     NULL
   })
   statik(cl, "limit", function(x = NULL, name = NULL, ...) {
-    e <- Expr$new(kind = "limit")
-    .set(e, "base", x)
-    .set(e, "bound", name)
-    return(e)
+    return(Expr$new(kind = "limit", base = x, bound = name))
     NULL
   })
   statik(cl, "call", function(name = NULL, x = NULL, ...) {
-    e <- Expr$new(kind = "call")
-    .set(e, "label", name)
-    .set(e, "base", x)
-    return(e)
+    return(Expr$new(kind = "call", label = name, base = x))
     NULL
   })
   statik(cl, "neg", function(x = NULL, ...) {
@@ -3200,28 +3078,31 @@ Expr <- ray_class("Expr", Node, function(cl) {
     return((if (truthy(.x <- eq(self$kind, "sym"))) .x else eq(self$kind, "field")))
     NULL
   })
+  getter(cl, "subtrees", function() {
+    if (truthy((if (truthy(.x <- eq(self$kind, "add"))) .x else eq(self$kind, "mul")))) {
+      return(self$of)
+    }
+    if (truthy(eq(self$kind, "pow"))) {
+      return(lst(self$base, self$power))
+    }
+    if (truthy((if (truthy(.x <- eq(self$kind, "choose"))) .x else eq(self$kind, "gammaInc")))) {
+      return(lst(self$first_, self$second_))
+    }
+    return((if (truthy(eq(self$base, NULL))) lst() else lst(self$base)))
+    NULL
+  })
   getter(cl, "by_num", function() {
     return((if (truthy(eq(self$power$kind, "num"))) self$power$value else NULL))
     NULL
   })
   statik(cl, "flatten", function(kind = NULL, xs = NULL, ...) {
-    e <- Expr$new(kind = kind)
-    out <- lst()
-    .r <- for_each(xs, function(x) {
-      if (truthy(eq(x$kind, kind))) {
-        .r <- for_each(x$of, function(y) {
-          m_push(out, y)
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-      } else {
-        m_push(out, x)
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    .set(e, "of", out)
-    return(e)
+    return(Expr$new(kind = kind, of = m_reduce(xs, lst(), function(out = NULL, x = NULL, ...) {
+      return((if (truthy(eq(x$kind, kind))) m_reduce(x$of, out, function(o = NULL, y = NULL, ...) {
+        return(m_push(o, y))
+        NULL
+      }) else m_push(out, x)))
+      NULL
+    })))
     NULL
   })
   statik(cl, "is_integer", function(x = NULL, ...) {
@@ -3259,12 +3140,10 @@ Expr <- ray_class("Expr", Node, function(cl) {
       return(r_sub(m_ln((r_div(pi, m_sin((r_mul(pi, z)))))), Expr$lgamma(r_sub(1, z))))
     }
     .w("z", r_sub(z, 1))
-    x <- 0.99999999999980993
-    .r <- for_range(len(g), function(i) {
-      .w("x", r_add(x, r_div(elem(g, i), (r_add(r_add(z, i), 1)))))
-      CONTINUE
+    x <- m_reduce(rng(len(g)), 0.99999999999980993, function(x = NULL, i = NULL, ...) {
+      return(r_add(x, r_div(elem(g, i), (r_add(r_add(z, i), 1)))))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     t <- r_sub(r_add(z, len(g)), 0.5)
     return(r_add(r_sub(r_add(r_mul(0.5, m_ln((r_mul(2, pi)))), r_mul((r_add(z, 0.5)), m_ln(t))), t), m_ln(x)))
     NULL
@@ -3711,14 +3590,13 @@ Expr <- ray_class("Expr", Node, function(cl) {
         CONTINUE
       })
       if (!is.null(.r)) return(.r[[1]])
-      kept <- lst()
-      .r <- for_each(like$values, function(v) {
-        if (truthy((!eq(elem(v, 1), 0)))) {
-          m_push(kept, (if (truthy(eq(elem(v, 1), 1))) elem(v, 0) else Expr$mul(lst(Expr$num(elem(v, 1)), elem(v, 0)))))
-        }
-        CONTINUE
+      kept <- m_map(filt(like$values, function(v = NULL, ...) {
+        return((!eq(elem(v, 1), 0)))
+        NULL
+      }), function(v = NULL, ...) {
+        return((if (truthy(eq(elem(v, 1), 1))) elem(v, 0) else Expr$mul(lst(Expr$num(elem(v, 1)), elem(v, 0)))))
+        NULL
       })
-      if (!is.null(.r)) return(.r[[1]])
       if (truthy(m_empty(kept))) {
         return(Expr$num(c))
       }
@@ -3821,26 +3699,14 @@ Expr <- ray_class("Expr", Node, function(cl) {
           }) else .x))
           NULL
         }
-        at <- NULL
-        .r <- for_range(len(body$of), function(i) {
-          if (truthy((if (truthy(.x <- eq(at, NULL))) (is_minus)(elem(body$of, i)) else .x))) {
-            .w("at", i)
-          }
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        if (truthy((if (truthy(.x <- (!eq(at, NULL)))) eq(len(filt(body$of, function(x = NULL, ...) {
+        if (truthy(eq(len(filt(body$of, function(x = NULL, ...) {
           return((is_minus)(x))
           NULL
-        })), 1) else .x))) {
-          rest <- lst()
-          .r <- for_range(len(body$of), function(i) {
-            if (truthy((!eq(i, at)))) {
-              m_push(rest, elem(body$of, i))
-            }
-            CONTINUE
+        })), 1))) {
+          rest <- filt(body$of, function(x = NULL, ...) {
+            return((!truthy((is_minus)(x))))
+            NULL
           })
-          if (!is.null(.r)) return(.r[[1]])
           return("\\text{the } " %+% text_of(e$bound) %+% " \\text{ where } " %+% text_of(e$bound) %+% " = " %+% text_of(Expr$show((if (truthy(eq(len(rest), 1))) elem(rest, 0) else Expr$add(rest)))) %+% "")
         }
       }
@@ -3952,16 +3818,14 @@ Expr <- ray_class("Expr", Node, function(cl) {
         return((negative)(x))
         NULL
       }))
-      out <- ""
-      .r <- for_range(len(ordered), function(i) {
-        x <- elem(ordered, i)
-        t <- (if (truthy(eq(x$kind, "root"))) "\\paren{" %+% text_of(Expr$show(x)) %+% "}" else Expr$show(x))
-        piece <- (if (truthy(eq(i, 0))) t else ((if (truthy(m_starts_with(t, "-"))) " - " %+% text_of(m_drop(t, 1)) %+% "" else " + " %+% text_of(t) %+% "")))
-        .w("out", "" %+% text_of(out) %+% "" %+% text_of(piece) %+% "")
-        CONTINUE
+      shown <- m_map(ordered, function(x = NULL, ...) {
+        return((if (truthy(eq(x$kind, "root"))) "\\paren{" %+% text_of(Expr$show(x)) %+% "}" else Expr$show(x)))
+        NULL
       })
-      if (!is.null(.r)) return(.r[[1]])
-      return(out)
+      return(m_join(m_map(rng(len(shown)), function(i = NULL, ...) {
+        return((if (truthy(eq(i, 0))) elem(shown, i) else ((if (truthy(m_starts_with(elem(shown, i), "-"))) " - " %+% text_of(m_drop(elem(shown, i), 1)) %+% "" else " + " %+% text_of(elem(shown, i)) %+% ""))))
+        NULL
+      }), ""))
     }
     return("")
     NULL
@@ -4005,15 +3869,13 @@ Expr <- ray_class("Expr", Node, function(cl) {
     }
     if (truthy(eq(k, "mul"))) {
       return(Expr$add(m_map(rng(len(e$of)), function(i = NULL, ...) {
-        others <- lst()
-        .r <- for_range(len(e$of), function(j) {
-          if (truthy((!eq(j, i)))) {
-            m_push(others, elem(e$of, j))
-          }
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        return(Expr$mul(m_concat(lst(Expr$d(elem(e$of, i), wrt)), others)))
+        return(Expr$mul(m_concat(lst(Expr$d(elem(e$of, i), wrt)), m_map(filt(rng(len(e$of)), function(j = NULL, ...) {
+          return((!eq(j, i)))
+          NULL
+        }), function(j = NULL, ...) {
+          return(elem(e$of, j))
+          NULL
+        }))))
         NULL
       })))
     }
@@ -4315,22 +4177,16 @@ Expr <- ray_class("Expr", Node, function(cl) {
       return((if (truthy(eq(v, NULL))) Expr$NAN else v))
     }
     if (truthy(eq(k, "add"))) {
-      total_ <- 0
-      .r <- for_each(e$of, function(x) {
-        .w("total_", r_add(total_, Expr$numeric(x, at)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(total_)
+      return(m_reduce(e$of, 0, function(total_ = NULL, x = NULL, ...) {
+        return(r_add(total_, Expr$numeric(x, at)))
+        NULL
+      }))
     }
     if (truthy(eq(k, "mul"))) {
-      prod <- 1
-      .r <- for_each(e$of, function(x) {
-        .w("prod", r_mul(prod, Expr$numeric(x, at)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(prod)
+      return(m_reduce(e$of, 1, function(prod = NULL, x = NULL, ...) {
+        return(r_mul(prod, Expr$numeric(x, at)))
+        NULL
+      }))
     }
     if (truthy(eq(k, "pow"))) {
       return(r_pow(Expr$numeric(e$base, at), Expr$numeric(e$power, at)))
@@ -4405,22 +4261,7 @@ Expr <- ray_class("Expr", Node, function(cl) {
     if (truthy((if (truthy(.x <- (if (truthy(.x <- (!truthy(Expr$finite((f)(0.5)))))) (!truthy(Expr$finite((f)(1)))) else .x))) (!truthy(Expr$finite((f)(0.1)))) else .x))) {
       return(Expr$NAN)
     }
-    points <- lst()
-    i <- 1
-    while (truthy(le(i, 120))) {
-      m_push(points, r_div(i, 120))
-      .w("i", r_add(i, 1))
-    }
-    ex <- 0
-    while (truthy(le(ex, 24))) {
-      k <- 1
-      while (truthy(lt(k, 8))) {
-        m_push(points, r_mul((r_pow(10, (r_sub(ex, 12)))), (r_add(1, r_div(k, 2)))))
-        .w("k", r_add(k, 1))
-      }
-      .w("ex", r_add(ex, 1))
-    }
-    .w("points", Expr$sorted(points))
+    points <- Expr$bracket_points
     lo <- NULL
     hi <- NULL
     px <- elem(points, 0)
@@ -4462,18 +4303,26 @@ Expr <- ray_class("Expr", Node, function(cl) {
     return(r_div((r_add(lo, hi)), 2))
     NULL
   })
-  statik(cl, "sorted", function(xs = NULL, ...) {
-    out <- lst()
-    .r <- for_each(xs, function(x) {
-      i <- 0
-      while (truthy((if (truthy(.x <- lt(i, len(out)))) le(elem(out, i), x) else .x))) {
-        .w("i", r_add(i, 1))
-      }
-      .w("out", m_concat(m_concat(m_take(out, i), lst(x)), m_drop(out, i)))
-      CONTINUE
+  static_getter(cl, "bracket_points", function() {
+    even <- m_map(rng(120), function(i = NULL, ...) {
+      return(r_div((r_add(i, 1)), 120))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    decades <- m_reduce(rng(25), lst(), function(out = NULL, ex = NULL, ...) {
+      return(m_reduce(rng(7), out, function(o = NULL, k = NULL, ...) {
+        return(m_push(o, r_mul((r_pow(10, (r_sub(ex, 12)))), (r_add(1, r_div((r_add(k, 1)), 2))))))
+        NULL
+      }))
+      NULL
+    })
+    return(Expr$sorted(m_concat(even, decades)))
+    NULL
+  })
+  statik(cl, "sorted", function(xs = NULL, ...) {
+    return(m_sorted_by(xs, function(x = NULL, ...) {
+      return(x)
+      NULL
+    }))
     NULL
   })
   statik(cl, "integrate", function(e = NULL, of = NULL, ...) {
@@ -4605,28 +4454,17 @@ Expr <- ray_class("Expr", Node, function(cl) {
         ok <- TRUE
         k <- elem(head_, 1)
         if (truthy((!eq(nums, NULL)))) {
-          lo <- elem(nums, 0)
-          hi <- elem(nums, 0)
-          .r <- for_each(nums, function(v) {
-            if (truthy(lt(v, lo))) {
-              .w("lo", v)
-            }
-            if (truthy(gt(v, hi))) {
-              .w("hi", v)
-            }
-            CONTINUE
-          })
-          if (!is.null(.r)) return(.r[[1]])
-          .w("ok", eq((le(lo, 0)), (le(hi, 0))))
-          least <- elem(nums, 0)
-          .r <- for_each(nums, function(v) {
-            if (truthy(lt(m_abs(v), m_abs(least)))) {
-              .w("least", v)
-            }
-            CONTINUE
-          })
-          if (!is.null(.r)) return(.r[[1]])
-          .w("k", Expr$num(least))
+          .w("ok", (if (truthy(.x <- m_every(nums, function(v = NULL, ...) {
+            return(le(v, 0))
+            NULL
+          }))) .x else m_every(nums, function(v = NULL, ...) {
+            return(gt(v, 0))
+            NULL
+          })))
+          .w("k", Expr$num(m_reduce(nums, elem(nums, 0), function(least = NULL, v = NULL, ...) {
+            return((if (truthy(lt(m_abs(v), m_abs(least)))) v else least))
+            NULL
+          })))
         }
         if (truthy(ok)) {
           m_push(common, lst(elem(head_, 0), k))
@@ -4883,27 +4721,19 @@ Expr <- ray_class("Expr", Node, function(cl) {
       }))))
     }
     if (truthy(eq(t$kind, "mul"))) {
-      parts <- m_map(t$of, function(x = NULL, ...) {
+      out <- m_reduce(m_map(t$of, function(x = NULL, ...) {
         return(Expr$expand(x))
         NULL
+      }), lst(Expr$num(1)), function(out = NULL, p = NULL, ...) {
+        return(m_reduce(out, lst(), function(v_next = NULL, a = NULL, ...) {
+          return(m_reduce(((if (truthy(eq(p$kind, "add"))) p$of else lst(p))), v_next, function(n = NULL, b = NULL, ...) {
+            return(m_push(n, Expr$mul(lst(a, b))))
+            NULL
+          }))
+          NULL
+        }))
+        NULL
       })
-      out <- lst(Expr$num(1))
-      .r <- for_each(parts, function(p) {
-        terms <- (if (truthy(eq(p$kind, "add"))) p$of else lst(p))
-        v_next <- lst()
-        .r <- for_each(out, function(a) {
-          .r <- for_each(terms, function(b) {
-            m_push(v_next, Expr$mul(lst(a, b)))
-            CONTINUE
-          })
-          if (!is.null(.r)) return(.r[[1]])
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        .w("out", v_next)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
       return(Expr$simplify(Expr$add(out)))
     }
     return(t)
@@ -5087,6 +4917,14 @@ ExprReader <- ray_class("ExprReader", Node, function(cl) {
     return(eq(Notation$sub_(self$text, self$at, r_add(self$at, len(s))), s))
     NULL
   })
+  method(cl, "take_while", function(keep = NULL, ...) {
+    k <- self$at
+    while (truthy((if (truthy(.x <- lt(k, len(self$text)))) (keep)(elem(m_chars(self$text), k)) else .x))) {
+      .w("k", r_add(k, 1))
+    }
+    return(self$eat(r_sub(k, self$at)))
+    NULL
+  })
   getter(cl, "addition", function() {
     left <- self$product
     self$skip
@@ -5142,19 +4980,24 @@ ExprReader <- ray_class("ExprReader", Node, function(cl) {
     NULL
   })
   getter(cl, "word", function() {
-    k <- self$at
-    while (truthy((if (truthy(.x <- lt(k, len(self$text)))) ((if (truthy(.x <- Notation$is_name(elem(m_chars(self$text), k)))) .x else gt(elem(m_chars(self$text), k), 127))) else .x))) {
-      .w("k", r_add(k, 1))
-    }
-    return(self$eat(r_sub(k, self$at)))
+    return(self$take_while(function(c = NULL, ...) {
+      return((if (truthy(.x <- Notation$is_name(c))) .x else gt(c, 127)))
+      NULL
+    }))
     NULL
   })
   getter(cl, "number", function() {
-    k <- self$at
-    while (truthy((if (truthy(.x <- lt(k, len(self$text)))) ((if (truthy(.x <- Notation$is_digit(elem(m_chars(self$text), k)))) .x else eq(elem(m_chars(self$text), k), 46))) else .x))) {
-      .w("k", r_add(k, 1))
-    }
-    return(Expr$num(number(self$eat(r_sub(k, self$at)))))
+    return(Expr$num(number(self$take_while(function(c = NULL, ...) {
+      return((if (truthy(.x <- Notation$is_digit(c))) .x else eq(c, 46)))
+      NULL
+    }))))
+    NULL
+  })
+  getter(cl, "quoted", function() {
+    return(self$take_while(function(c = NULL, ...) {
+      return((!eq(c, 34)))
+      NULL
+    }))
     NULL
   })
   getter(cl, "primary", function() {
@@ -5172,11 +5015,7 @@ ExprReader <- ray_class("ExprReader", Node, function(cl) {
     }
     if (truthy(eq(c, 34))) {
       self$eat(1)
-      k <- self$at
-      while (truthy((if (truthy(.x <- lt(k, len(self$text)))) (!eq(elem(m_chars(self$text), k), 34)) else .x))) {
-        .w("k", r_add(k, 1))
-      }
-      name <- self$eat(r_sub(k, self$at))
+      name <- quoted(self)
       self$eat(1)
       return(Expr$field(Expr$name_of(name)))
     }
@@ -5188,11 +5027,7 @@ ExprReader <- ray_class("ExprReader", Node, function(cl) {
       self$eat(1)
       self$skip
       self$eat(1)
-      k <- self$at
-      while (truthy((if (truthy(.x <- lt(k, len(self$text)))) (!eq(elem(m_chars(self$text), k), 34)) else .x))) {
-        .w("k", r_add(k, 1))
-      }
-      name <- self$eat(r_sub(k, self$at))
+      name <- quoted(self)
       self$eat(1)
       self$skip
       self$eat(1)
@@ -5214,11 +5049,7 @@ ExprReader <- ray_class("ExprReader", Node, function(cl) {
     }
     if (truthy((if (truthy(.x <- eq(name, "s"))) eq(self$peek, 91) else .x))) {
       self$eat(2)
-      k <- self$at
-      while (truthy((if (truthy(.x <- lt(k, len(self$text)))) (!eq(elem(m_chars(self$text), k), 34)) else .x))) {
-        .w("k", r_add(k, 1))
-      }
-      key <- self$eat(r_sub(k, self$at))
+      key <- quoted(self)
       self$eat(2)
       return(Expr$field(Expr$name_of(key)))
     }
@@ -5886,27 +5717,23 @@ Prover <- ray_class("Prover", Node, function(cl) {
       .set(sw, "derivation", lst(inner))
       m_push(out, sw)
     }
-    rates <- lst()
-    .r <- for_each(infos, function(t) {
-      if (truthy((if (truthy(.x <- (!eq(t$rate, NULL)))) (!truthy(m_contains(rates, t$rate))) else .x))) {
-        m_push(rates, t$rate)
-      }
-      CONTINUE
+    rates <- m_reduce(filt(infos, function(t = NULL, ...) {
+      return((!eq(t$rate, NULL)))
+      NULL
+    }), lst(), function(out = NULL, t = NULL, ...) {
+      return((if (truthy(m_contains(out, t$rate))) out else m_push(out, t$rate)))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     .r <- for_each(rates, function(name) {
       m_push(out, Step$of(Fact$stands(name, Expr$num(1)), "the rewrite", lst(), "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit", lst("" %+% text_of(name) %+% " = 1 per match per tick")))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
     .r <- for_each(lst("rays", "space", "folds"), function(ledger) {
-      parts <- lst()
-      .r <- for_each(acting, function(t) {
-        c <- (if (truthy(eq(ledger, "rays"))) t$ray_count else ((if (truthy(eq(ledger, "space"))) t$space_count else t$fold_count)))
-        m_push(parts, Expr$simplify(Expr$mul(lst(Prover$body_of(t), c))))
-        CONTINUE
+      parts <- m_map(acting, function(t = NULL, ...) {
+        return(Expr$simplify(Expr$mul(lst(Prover$body_of(t), (if (truthy(eq(ledger, "rays"))) t$ray_count else ((if (truthy(eq(ledger, "space"))) t$space_count else t$fold_count)))))))
+        NULL
       })
-      if (!is.null(.r)) return(.r[[1]])
       if (!truthy(m_empty(parts))) {
         m_push(out, Step$of(Fact$stands("the " %+% text_of(ledger) %+% " line nets", Expr$simplify(Expr$add(parts))), "the line", lst(), "every term of the line does something to the " %+% text_of(ledger) %+% " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted", m_map(acting, function(t = NULL, ...) {
           c <- (if (truthy(eq(ledger, "rays"))) t$ray_count else ((if (truthy(eq(ledger, "space"))) t$space_count else t$fold_count)))
@@ -7736,25 +7563,20 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
         if (truthy((!eq(t$kind, "mul")))) {
           return(t)
         }
-        at <- NULL
-        .r <- for_range(len(t$of), function(i) {
-          if (truthy((if (truthy(.x <- eq(at, NULL))) eq(elem(t$of, i)$kind, "add") else .x))) {
-            .w("at", i)
-          }
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
+        at <- m_first(filt(rng(len(t$of)), function(i = NULL, ...) {
+          return(eq(elem(t$of, i)$kind, "add"))
+          NULL
+        }))
         if (truthy(eq(at, NULL))) {
           return(t)
         }
-        rest <- lst()
-        .r <- for_range(len(t$of), function(i) {
-          if (truthy((!eq(i, at)))) {
-            m_push(rest, elem(t$of, i))
-          }
-          CONTINUE
+        rest <- m_map(filt(rng(len(t$of)), function(i = NULL, ...) {
+          return((!eq(i, at)))
+          NULL
+        }), function(i = NULL, ...) {
+          return(elem(t$of, i))
+          NULL
         })
-        if (!is.null(.r)) return(.r[[1]])
         spread <- Expr$simplify(Expr$add(m_map(elem(t$of, at)$of, function(x = NULL, ...) {
           return(Expr$simplify(Expr$mul(m_concat(rest, lst(x)))))
           NULL
@@ -8528,22 +8350,16 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
       return((if (truthy(eq(v, NULL))) NaN else v))
     }
     if (truthy(eq(k, "add"))) {
-      total <- 0
-      .r <- for_each(e$of, function(p) {
-        .w("total", r_add(total, self$value(p, at, masses, Rs, skip)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(total)
+      return(m_sum(m_map(e$of, function(p = NULL, ...) {
+        return(self$value(p, at, masses, Rs, skip))
+        NULL
+      })))
     }
     if (truthy(eq(k, "mul"))) {
-      prod <- 1
-      .r <- for_each(e$of, function(p) {
-        .w("prod", r_mul(prod, self$value(p, at, masses, Rs, skip)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(prod)
+      return(m_reduce(e$of, 1, function(prod = NULL, p = NULL, ...) {
+        return(r_mul(prod, self$value(p, at, masses, Rs, skip)))
+        NULL
+      }))
     }
     if (truthy(eq(k, "pow"))) {
       return(r_pow(self$value(e$base, at, masses, Rs, skip), self$value(e$power, at, masses, Rs, skip)))
@@ -8888,23 +8704,16 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
     NULL
   })
   getter(cl, "names", function() {
-    out <- m_map(self$per_body, function(n = NULL, ...) {
-      return(n)
+    return(m_reduce(lst(self$outer, self$summand, self$shell_expr, self$reach_expr), m_concat(self$per_body, lst("SUM")), function(out = NULL, e = NULL, ...) {
+      return(m_reduce(filt(Model$unbound(e), function(n = NULL, ...) {
+        return((if (truthy(.x <- (!eq(n, "\\bar{R}")))) (!truthy(m_ends_with(n, "\\paren{...}"))) else .x))
+        NULL
+      }), out, function(o = NULL, n = NULL, ...) {
+        return((if (truthy(m_contains(o, n))) o else m_push(o, n)))
+        NULL
+      }))
       NULL
-    })
-    m_push(out, "SUM")
-    .r <- for_each(lst(self$outer, self$summand, self$shell_expr, self$reach_expr), function(e) {
-      .r <- for_each(Model$unbound(e), function(n) {
-        if (truthy((if (truthy(.x <- (if (truthy(.x <- (!truthy(m_contains(out, n))))) (!eq(n, "\\bar{R}")) else .x))) (!truthy(m_ends_with(n, "\\paren{...}"))) else .x))) {
-          m_push(out, n)
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    }))
     NULL
   })
   getter(cl, "constants", function() {
@@ -9141,7 +8950,7 @@ Medium <- ray_class("Medium", Node, function(cl) {
     NULL
   })
   getter(cl, "terms", function() {
-    return(self$theory$equation$terms)
+    return(self$theory$terms_read)
     NULL
   })
   field(cl, "meets", function() filt(self$terms, function(t = NULL, ...) {
@@ -9325,20 +9134,13 @@ Medium <- ray_class("Medium", Node, function(cl) {
   })
   method(cl, "under", function(h = NULL, ...) {
     half <- m_floor((r_div((r_sub(self$K, 1)), 2)))
-    out <- lst()
-    .r <- for_range(self$K, function(dy) {
-      .r <- for_range(self$K, function(dx) {
-        c <- self$at(r_add(r_sub(m_round(h$x), half), dx), r_add(r_sub(m_round(h$y), half), dy))
-        if (truthy(ge(c, 0))) {
-          m_push(out, c)
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(filt(m_map(rng(r_mul(self$K, self$K)), function(i = NULL, ...) {
+      return(self$at(r_add(r_sub(m_round(h$x), half), r_mod(i, self$K)), r_add(r_sub(m_round(h$y), half), m_floor((r_div(i, self$K))))))
+      NULL
+    }), function(c = NULL, ...) {
+      return(ge(c, 0))
+      NULL
+    }))
     NULL
   })
   method(cl, "spread", function(h = NULL, ...) {
@@ -10772,6 +10574,8 @@ Surface <- ray_class("Surface", Node, function(cl) {
   method(cl, "rotate", function(...) stop("rotate is declared but not defined by anyone"))
   method(cl, "dash", function(...) stop("dash is declared but not defined by anyone"))
   method(cl, "gradient_stroke", function(...) stop("gradient_stroke is declared but not defined by anyone"))
+  method(cl, "image", function(...) stop("image is declared but not defined by anyone"))
+  method(cl, "field", function(...) stop("field is declared but not defined by anyone"))
 })
 
 Measured <- ray_class("Measured", Node, function(cl) {
@@ -10814,12 +10618,8 @@ Cached <- ray_class("Cached", Played, function(cl) {
   field(cl, "sizes", NULL)
   method(cl, "at", function(frame_at = NULL, ...) {
     out <- Node$new()
-    all <- mem(self$film$columns, key_("frames"))
-    width <- m_sum(self$sizes)
-    from_at <- r_mul(frame_at, width)
     .r <- for_range(len(self$names), function(i) {
-      set_at(out, elem(self$names, i), m_take(m_drop(all, from_at), elem(self$sizes, i)))
-      .w("from_at", r_add(from_at, elem(self$sizes, i)))
+      set_at(out, elem(self$names, i), m_take(m_drop(mem(self$film$columns, key_("frames")), r_add(r_mul(frame_at, m_sum(self$sizes)), m_sum(m_take(self$sizes, i)))), elem(self$sizes, i)))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -10894,6 +10694,9 @@ Picture <- ray_class("Picture", Node, function(cl) {
   field(cl, "record", function() NULL)
   field(cl, "panes", function() lst())
   field(cl, "on_request", function() FALSE)
+  field(cl, "images", function() lst())
+  field(cl, "parts", function() lst())
+  field(cl, "uses", function() lst())
   field(cl, "paint", NULL)
   getter(cl, "played", function() {
     r <- self$record
@@ -11107,16 +10910,18 @@ Setup <- ray_class("Setup", Node, function(cl) {
     NULL
   })
   statik(cl, "middle", function(holes = NULL, ...) {
-    m <- 0
-    x <- 0
-    y <- 0
-    .r <- for_each(holes, function(h) {
-      .w("m", r_add(m, h$mass))
-      .w("x", r_add(x, r_mul(h$x, h$mass)))
-      .w("y", r_add(y, r_mul(h$y, h$mass)))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
+    m <- m_sum(m_map(holes, function(h = NULL, ...) {
+      return(h$mass)
+      NULL
+    }))
+    x <- m_sum(m_map(holes, function(h = NULL, ...) {
+      return(r_mul(h$x, h$mass))
+      NULL
+    }))
+    y <- m_sum(m_map(holes, function(h = NULL, ...) {
+      return(r_mul(h$y, h$mass))
+      NULL
+    }))
     return((if (truthy(gt(m, 0))) lst(r_div(x, m), r_div(y, m)) else lst(0, 0)))
     NULL
   })
@@ -11689,12 +11494,10 @@ Panel <- ray_class("Panel", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
-    weight <- 0
-    .r <- for_range(p$bodies, function(k) {
-      .w("weight", r_add(weight, elem(marks, r_add(r_mul(k, 6), 5))))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
+    weight <- m_sum(m_map(rng(p$bodies), function(k = NULL, ...) {
+      return(elem(marks, r_add(r_mul(k, 6), 5)))
+      NULL
+    }))
     frames <- r_div(len(elem(trail, centre)), 2)
     midx <- m_map(rng(frames), function(i = NULL, ...) {
       return(0)
@@ -12019,18 +11822,16 @@ Strip <- ray_class("Strip", Node, function(cl) {
       return(elem(v$at$components, 0))
       NULL
     })
-    sides <- lst()
-    .r <- for_each(w$live, function(v) {
-      .r <- for_each(v$rays, function(r) {
-        if (truthy(r$active)) {
-          m_push(sides, Side$new(at = elem(v$at$components, 0), sign = elem(r$along$components, 0), ink = ink$ink_of(r)))
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    sides <- m_reduce(w$live, lst(), function(out = NULL, v = NULL, ...) {
+      return(m_reduce(filt(v$rays, function(r = NULL, ...) {
+        return(r$active)
+        NULL
+      }), out, function(o = NULL, r = NULL, ...) {
+        return(m_push(o, Side$new(at = elem(v$at$components, 0), sign = elem(r$along$components, 0), ink = ink$ink_of(r))))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     l <- Lane$new(points = pts, sides = sides)
     .r <- for_each(w$sources, function(s) {
       .r <- for_each(s$cells, function(c) {
@@ -12151,19 +11952,14 @@ Strip <- ray_class("Strip", Node, function(cl) {
     NULL
   })
   statik(cl, "centre_of", function(lanes = NULL, ...) {
-    xs <- lst()
-    .r <- for_each(lanes, function(l) {
-      .r <- for_each(l$sources, function(p) {
-        m_push(xs, p)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    sourced <- m_reduce(lanes, lst(), function(out = NULL, l = NULL, ...) {
+      return(m_reduce(l$sources, out, function(o = NULL, p = NULL, ...) {
+        return(m_push(o, p))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    if (truthy(m_empty(xs))) {
-      .w("xs", m_first(lanes)$points)
-    }
+    xs <- (if (truthy(m_empty(sourced))) m_first(lanes)$points else sourced)
     if (truthy(m_empty(xs))) {
       return(0)
     }
@@ -12539,18 +12335,16 @@ Sparc <- ray_class("Sparc", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
-    out <- lst()
     names <- Sparc$names
-    .r <- for_range(len(names), function(g) {
-      p <- elem(best, g)
-      if (truthy((!eq(p, NULL)))) {
-        q <- RarPoint$new(gbar = p$gbar, gobs = p$gobs, galaxy = p$galaxy, R = p$R)
-        .set(q, "name", elem(names, g))
-        m_push(out, q)
-      }
-      CONTINUE
+    out <- m_map(filt(rng(len(names)), function(g = NULL, ...) {
+      return((!eq(elem(best, g), NULL)))
+      NULL
+    }), function(g = NULL, ...) {
+      q <- RarPoint$new(gbar = elem(best, g)$gbar, gobs = elem(best, g)$gobs, galaxy = elem(best, g)$galaxy, R = elem(best, g)$R)
+      .set(q, "name", elem(names, g))
+      return(q)
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     .set(Sparc$CACHE, key_("flat"), out)
     return(out)
     NULL
@@ -12565,14 +12359,13 @@ Sparc <- ray_class("Sparc", Node, function(cl) {
     }
     c <- t$columns
     names <- mem(t$header, key_("names"))
-    out <- lst()
-    .r <- for_range(t$rows, function(i) {
-      if (truthy(gt(elem(mem(c, key_("Vf")), i), 0))) {
-        m_push(out, Btfr$new(name = elem(names, i), galaxy = elem(mem(c, key_("galaxy")), i), vf = elem(mem(c, key_("Vf")), i), err = elem(mem(c, key_("e_Vf")), i), mass = r_mul(r_pow(10, elem(mem(c, key_("log(Mb)")), i)), Sparc$MSUN), err_mass = elem(mem(c, key_("e_log(Mb)")), i)))
-      }
-      CONTINUE
+    out <- m_map(filt(rng(t$rows), function(i = NULL, ...) {
+      return(gt(elem(mem(c, key_("Vf")), i), 0))
+      NULL
+    }), function(i = NULL, ...) {
+      return(Btfr$new(name = elem(names, i), galaxy = elem(mem(c, key_("galaxy")), i), vf = elem(mem(c, key_("Vf")), i), err = elem(mem(c, key_("e_Vf")), i), mass = r_mul(r_pow(10, elem(mem(c, key_("log(Mb)")), i)), Sparc$MSUN), err_mass = elem(mem(c, key_("e_log(Mb)")), i)))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     .set(Sparc$CACHE, key_("btfr"), out)
     return(out)
     NULL
@@ -12702,39 +12495,27 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     NULL
   })
   statik(cl, "tint_of", function(mask = NULL, ...) {
-    if (truthy(eq(mask, 0))) {
-      return(Galaxies$SEVERAL)
-    }
-    r <- 0
-    g <- 0
-    bl <- 0
-    n <- 0
-    .r <- for_range(len(Galaxies$FREEDOMS), function(i) {
-      if (truthy(Galaxies$bit(mask, i))) {
-        .w("r", r_add(r, elem(elem(Galaxies$TINTS, i), 0)))
-        .w("g", r_add(g, elem(elem(Galaxies$TINTS, i), 1)))
-        .w("bl", r_add(bl, elem(elem(Galaxies$TINTS, i), 2)))
-        .w("n", r_add(n, 1))
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return((if (truthy(gt(n, 0))) lst(r_div(r, n), r_div(g, n), r_div(bl, n)) else Galaxies$SEVERAL))
+    on <- Galaxies$freedoms_in(mask)
+    return((if (truthy((if (truthy(.x <- eq(mask, 0))) .x else m_empty(on)))) Galaxies$SEVERAL else m_map(lst(0, 1, 2), function(c = NULL, ...) {
+      return(r_div(m_sum(m_map(on, function(i = NULL, ...) {
+        return(elem(elem(Galaxies$TINTS, i), c))
+        NULL
+      })), len(on)))
+      NULL
+    })))
     NULL
   })
   statik(cl, "name_of", function(mask = NULL, ...) {
     if (truthy(eq(mask, 0))) {
       return("the source as it starts")
     }
-    parts <- lst()
-    .r <- for_range(len(Galaxies$NAMES_NOW), function(i) {
-      if (truthy(Galaxies$bit(mask, i))) {
-        m_push(parts, elem(Galaxies$NAMES_NOW, i))
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    joined <- m_join(parts, " + ")
+    joined <- m_join(m_map(filt(rng(len(Galaxies$NAMES_NOW)), function(i = NULL, ...) {
+      return(Galaxies$bit(mask, i))
+      NULL
+    }), function(i = NULL, ...) {
+      return(elem(Galaxies$NAMES_NOW, i))
+      NULL
+    }), " + ")
     return("needs " %+% text_of(joined) %+% "")
     NULL
   })
@@ -12861,6 +12642,48 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     return((if (truthy(gt(got, 0))) Fmt$log10(r_div(got, a0)) else NaN))
     NULL
   })
+  statik(cl, "decades", function(s = NULL, X = NULL, Y = NULL, box = NULL, range = NULL, under = NULL, ...) {
+    .r <- for_each(m_map(rng(r_add(r_sub(elem(range, 1), elem(range, 0)), 1)), function(i = NULL, ...) {
+      return(r_add(elem(range, 0), i))
+      NULL
+    }), function(l) {
+      s$begin_path
+      s$move_to((X)(l), elem(box, 1))
+      s$line_to((X)(l), elem(box, 3))
+      s$stroke
+      s$fill_text("10^" %+% text_of(l) %+% "", (X)(l), r_add(elem(box, 3), under))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    s$text_align("right")
+    .r <- for_each(m_map(rng(r_add(r_sub(elem(range, 3), elem(range, 2)), 1)), function(i = NULL, ...) {
+      return(r_add(elem(range, 2), i))
+      NULL
+    }), function(l) {
+      s$begin_path
+      s$move_to(elem(box, 0), (Y)(l))
+      s$line_to(elem(box, 2), (Y)(l))
+      s$stroke
+      s$fill_text("10^" %+% text_of(l) %+% "", r_sub(elem(box, 0), 8), r_add((Y)(l), 4))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    NULL
+  })
+  statik(cl, "curve", function(s = NULL, X = NULL, Y = NULL, f = NULL, low = NULL, high = NULL, step = NULL, ...) {
+    s$begin_path
+    l <- low
+    while (truthy(le(l, r_add(high, 0.000001)))) {
+      if (truthy(eq(l, low))) {
+        s$move_to((X)(l), (Y)((f)(l)))
+      } else {
+        s$line_to((X)(l), (Y)((f)(l)))
+      }
+      .w("l", r_add(l, step))
+    }
+    return(s$stroke)
+    NULL
+  })
   statik(cl, "along", function(s = NULL, at = NULL, t = NULL, text = NULL, colour = NULL, lift = NULL, leans = NULL, ...) {
     p0 <- (leans)(r_sub(t, 0.01))
     p1 <- (leans)(r_add(t, 0.01))
@@ -12962,36 +12785,15 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     s$line_width(1)
     s$fill_style(Galaxies$FAINT)
     s$text_align("center")
-    l <- XMIN
-    while (truthy(le(l, XMAX))) {
-      s$begin_path
-      s$move_to((X)(l), by0)
-      s$line_to((X)(l), by1)
-      s$stroke
-      s$fill_text("10^" %+% text_of(l) %+% "", (X)(l), r_add(by1, 17))
-      .w("l", r_add(l, 1))
-    }
-    s$text_align("right")
-    .w("l", YMIN)
-    while (truthy(le(l, YMAX))) {
-      s$begin_path
-      s$move_to(bx0, (Y)(l))
-      s$line_to(bx1, (Y)(l))
-      s$stroke
-      s$fill_text("10^" %+% text_of(l) %+% "", r_sub(bx0, 8), r_add((Y)(l), 4))
-      .w("l", r_add(l, 1))
-    }
-    implied <- lst()
-    .r <- for_each(Sparc$btfr, function(g) {
-      M <- g$mass
+    Galaxies$decades(s, X, Y, lst(bx0, by0, bx1, by1), lst(XMIN, XMAX, YMIN, YMAX), 17)
+    implied <- Expr$sorted(m_map(filt(Sparc$btfr, function(g = NULL, ...) {
+      return((if (truthy(.x <- gt(g$mass, 0))) gt(g$vf, 0) else .x))
+      NULL
+    }), function(g = NULL, ...) {
       v <- r_mul(g$vf, 1000)
-      if (truthy((if (truthy(.x <- gt(M, 0))) gt(v, 0) else .x))) {
-        m_push(implied, Fmt$log10(r_div(r_div(r_mul(r_mul(r_mul(v, v), v), v), (r_mul(Sparc$G_NEWTON, M))), Galaxies$A0_DATA)))
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    .w("implied", Expr$sorted(implied))
+      return(Fmt$log10(r_div(r_div(r_mul(r_mul(r_mul(v, v), v), v), (r_mul(Sparc$G_NEWTON, g$mass))), Galaxies$A0_DATA)))
+      NULL
+    }))
     med <- (if (truthy(m_empty(implied))) NaN else elem(implied, m_floor((r_div(len(implied), 2)))))
     s$line_width(1)
     .r <- for_each(implied, function(o) {
@@ -13181,33 +12983,19 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     s$stroke_style(Galaxies$BTFRC)
     s$line_width(1.5)
     s$dash(lst(2, 4))
-    s$begin_path
-    .w("l", XMIN)
-    while (truthy(le(l, r_add(XMAX, 0.000001)))) {
-      if (truthy(eq(l, XMIN))) {
-        s$move_to((X)(l), (Y)(r_mul(0.5, l)))
-      } else {
-        s$line_to((X)(l), (Y)(r_mul(0.5, l)))
-      }
-      .w("l", r_add(l, 0.05))
-    }
-    s$stroke
+    Galaxies$curve(s, X, Y, function(l = NULL, ...) {
+      return(r_mul(0.5, l))
+      NULL
+    }, XMIN, XMAX, 0.05)
     s$dash(lst())
     s$stroke_style(Galaxies$MODEL)
     s$line_width(1.2)
     s$alpha(0.4)
     s$dash(lst(5, 4))
-    s$begin_path
-    .w("l", XMIN)
-    while (truthy(le(l, r_add(XMAX, 0.000001)))) {
-      if (truthy(eq(l, XMIN))) {
-        s$move_to((X)(l), (Y)((law_drawn)(l)))
-      } else {
-        s$line_to((X)(l), (Y)((law_drawn)(l)))
-      }
-      .w("l", r_add(l, 0.02))
-    }
-    s$stroke
+    Galaxies$curve(s, X, Y, function(l = NULL, ...) {
+      return((law_drawn)(l))
+      NULL
+    }, XMIN, XMAX, 0.02)
     s$dash(lst())
     s$alpha(1)
     landed <- elem(possible, 0)
@@ -13352,15 +13140,10 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
       })
       if (!is.null(.r)) return(.r[[1]])
     }
-    total <- 0
-    .r <- for_each(masks, function(m) {
-      .w("total", r_add(total, elem(tally, m)))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    if (truthy(eq(total, 0))) {
-      .w("total", 1)
-    }
+    total <- Fmt$max(m_reduce(masks, 0, function(t = NULL, m = NULL, ...) {
+      return(r_add(t, elem(tally, m)))
+      NULL
+    }), 1)
     counts <- Expr$sorted(m_map(masks, function(m = NULL, ...) {
       return(r_sub(0, elem(tally, m)))
       NULL
@@ -13445,15 +13228,14 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     NULL
   })
   statik(cl, "single", function(m = NULL, ...) {
-    n <- 0
-    .r <- for_range(len(Galaxies$FREEDOMS), function(i) {
-      if (truthy(Galaxies$bit(m, i))) {
-        .w("n", r_add(n, 1))
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(eq(n, 1))
+    return(eq(len(Galaxies$freedoms_in(m)), 1))
+    NULL
+  })
+  statik(cl, "freedoms_in", function(m = NULL, ...) {
+    return(filt(rng(len(Galaxies$FREEDOMS)), function(i = NULL, ...) {
+      return(Galaxies$bit(m, i))
+      NULL
+    }))
     NULL
   })
   statik(cl, "ratio_at", function(data = NULL, deg = NULL, ...) {
@@ -13608,19 +13390,15 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
-    out <- lst()
-    .r <- for_range(n, function(k) {
-      m_push(out, r_sub(r_sub(n, 1), k))
-      CONTINUE
+    down <- m_map(rng(n), function(k = NULL, ...) {
+      return(r_sub(r_sub(n, 1), k))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    .r <- for_range(Galaxies$SETTLE, function(k) {
+    return(m_concat(down, m_map(rng(Galaxies$SETTLE), function(k = NULL, ...) {
       f <- r_div((r_add(k, 1)), Galaxies$SETTLE)
-      m_push(out, m_round((r_mul(r_mul(r_mul(rest, f), f), (r_sub(3, r_mul(2, f)))))))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+      return(m_round((r_mul(r_mul(r_mul(rest, f), f), (r_sub(3, r_mul(2, f)))))))
+      NULL
+    })))
     NULL
   })
   statik(cl, "of", function(id = NULL, what = NULL, title = NULL, ...) {
@@ -13660,14 +13438,10 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
-    ids <- lst()
-    .r <- for_range(len(Sparc$names), function(g) {
-      if (truthy(ge((or_else(mem(counts, key_("" %+% text_of(g) %+% "")), 0)), 12))) {
-        m_push(ids, g)
-      }
-      CONTINUE
+    ids <- filt(rng(len(Sparc$names)), function(g = NULL, ...) {
+      return(ge((or_else(mem(counts, key_("" %+% text_of(g) %+% "")), 0)), 12))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     tops <- Node$new()
     .r <- for_range(t$rows, function(i) {
       g <- elem(mem(C, key_("galaxy")), i)
@@ -13679,13 +13453,10 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
       return(mem(tops, key_("" %+% text_of(g) %+% "")))
       NULL
     })
-    out <- lst()
-    .r <- for_range(want, function(k) {
-      m_push(out, elem(sorted, m_round((r_div(r_mul((r_sub(len(sorted), 1)), k), (r_sub(want, 1)))))))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(m_map(rng(want), function(k = NULL, ...) {
+      return(elem(sorted, m_round((r_div(r_mul((r_sub(len(sorted), 1)), k), (r_sub(want, 1)))))))
+      NULL
+    }))
     NULL
   })
   static_getter(cl, "simulated", function() {
@@ -13705,16 +13476,10 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     NULL
   })
   statik(cl, "rows_in", function(m = NULL, g = NULL, ...) {
-    col <- mem(m$columns, key_("galaxy"))
-    out <- lst()
-    .r <- for_range(m$rows, function(i) {
-      if (truthy(eq(elem(col, i), g))) {
-        m_push(out, i)
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(filt(rng(m$rows), function(i = NULL, ...) {
+      return(eq(elem(mem(m$columns, key_("galaxy")), i), g))
+      NULL
+    }))
     NULL
   })
   statik(cl, "off_of", function(g = NULL, fitted = NULL, ...) {
@@ -14320,25 +14085,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     s$fill_style(Galaxies$FAINT)
     s$font("11px ui-monospace, monospace")
     s$text_align("center")
-    l <- XMIN
-    while (truthy(le(l, XMAX))) {
-      s$begin_path
-      s$move_to((X)(l), by0)
-      s$line_to((X)(l), by1)
-      s$stroke
-      s$fill_text("10^" %+% text_of(l) %+% "", (X)(l), r_add(by1, 16))
-      .w("l", r_add(l, 1))
-    }
-    s$text_align("right")
-    .w("l", YMIN)
-    while (truthy(le(l, YMAX))) {
-      s$begin_path
-      s$move_to(bx0, (Y)(l))
-      s$line_to(bx1, (Y)(l))
-      s$stroke
-      s$fill_text("10^" %+% text_of(l) %+% "", r_sub(bx0, 8), r_add((Y)(l), 4))
-      .w("l", r_add(l, 1))
-    }
+    Galaxies$decades(s, X, Y, lst(bx0, by0, bx1, by1), lst(XMIN, XMAX, YMIN, YMAX), 16)
     lg <- function(v = NULL, ...) {
       return(Fmt$log10(r_div(v, Galaxies$A0_DATA)))
       NULL
@@ -14378,19 +14125,10 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     a0 <- mem(sim$header, key_("a0"))
     s$stroke_style(Galaxies$MODEL)
     s$line_width(2)
-    s$begin_path
-    .w("l", XMIN)
-    while (truthy(le(l, r_add(XMAX, 0.000001)))) {
-      gN <- r_mul(r_pow(10, l), Galaxies$A0_DATA)
-      y <- (lg)(Law$boost(gN, a0))
-      if (truthy(eq(l, XMIN))) {
-        s$move_to((X)(l), (Y)(y))
-      } else {
-        s$line_to((X)(l), (Y)(y))
-      }
-      .w("l", r_add(l, 0.02))
-    }
-    s$stroke
+    Galaxies$curve(s, X, Y, function(l = NULL, ...) {
+      return((lg)(Law$boost(r_mul(r_pow(10, l), Galaxies$A0_DATA), a0)))
+      NULL
+    }, XMIN, XMAX, 0.02)
     s$stroke_style(Galaxies$NEWT)
     s$dash(lst(6, 5))
     s$begin_path
@@ -14586,13 +14324,10 @@ Plan <- ray_class("Plan", Node, function(cl) {
     NULL
   })
   getter(cl, "total", function() {
-    sum <- 0
-    .r <- for_each(self$parts, function(p) {
-      .w("sum", r_add(sum, elem(p, 1)))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(sum)
+    return(m_sum(m_map(self$parts, function(p = NULL, ...) {
+      return(elem(p, 1))
+      NULL
+    })))
     NULL
   })
   getter(cl, "per_source", function() {
@@ -14766,28 +14501,22 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
-    out <- lst()
-    .r <- for_range(len(Sparc$names), function(g) {
-      if (truthy(ge((or_else(mem(counts, key_("" %+% text_of(g) %+% "")), 0)), 3))) {
-        m_push(out, g)
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(filt(rng(len(Sparc$names)), function(g = NULL, ...) {
+      return(ge((or_else(mem(counts, key_("" %+% text_of(g) %+% "")), 0)), 3))
+      NULL
+    }))
     NULL
   })
   statik(cl, "rows_of", function(g = NULL, ...) {
     C <- Sparc$curves$columns
-    out <- lst()
-    .r <- for_range(Sparc$curves$rows, function(i) {
-      if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(elem(mem(C, key_("galaxy")), i), g))) gt(elem(mem(C, key_("R")), i), 0) else .x))) gt(elem(mem(C, key_("Vobs")), i), 0) else .x))) {
-        m_push(out, lst(elem(mem(C, key_("R")), i), elem(mem(C, key_("Vobs")), i), elem(mem(C, key_("e_Vobs")), i), elem(mem(C, key_("Vgas")), i), elem(mem(C, key_("Vdisk")), i), elem(mem(C, key_("Vbul")), i), (if (truthy(Simulation$kept(g, elem(mem(C, key_("Vobs")), i), elem(mem(C, key_("e_Vobs")), i)))) 1 else 0)))
-      }
-      CONTINUE
+    mine <- filt(rng(Sparc$curves$rows), function(i = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- eq(elem(mem(C, key_("galaxy")), i), g))) gt(elem(mem(C, key_("R")), i), 0) else .x))) gt(elem(mem(C, key_("Vobs")), i), 0) else .x))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    return(m_sorted_by(out, function(r = NULL, ...) {
+    return(m_sorted_by(m_map(mine, function(i = NULL, ...) {
+      return(lst(elem(mem(C, key_("R")), i), elem(mem(C, key_("Vobs")), i), elem(mem(C, key_("e_Vobs")), i), elem(mem(C, key_("Vgas")), i), elem(mem(C, key_("Vdisk")), i), elem(mem(C, key_("Vbul")), i), (if (truthy(Simulation$kept(g, elem(mem(C, key_("Vobs")), i), elem(mem(C, key_("e_Vobs")), i)))) 1 else 0)))
+      NULL
+    }), function(r = NULL, ...) {
       return(elem(r, 0))
       NULL
     }))
@@ -14795,14 +14524,10 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
   })
   statik(cl, "edges_of", function(rs = NULL, ...) {
     n <- len(rs)
-    out <- lst(0, r_div(elem(elem(rs, 0), 0), 2))
-    .r <- for_range(r_sub(n, 1), function(i) {
-      m_push(out, r_div((r_add(elem(elem(rs, i), 0), elem(elem(rs, r_add(i, 1)), 0))), 2))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    m_push(out, r_add(elem(elem(rs, r_sub(n, 1)), 0), r_div((r_sub(elem(elem(rs, r_sub(n, 1)), 0), elem(elem(rs, r_sub(n, 2)), 0))), 2)))
-    return(out)
+    return(m_concat(m_concat(lst(0, r_div(elem(elem(rs, 0), 0), 2)), m_map(rng(r_sub(n, 1)), function(i = NULL, ...) {
+      return(r_div((r_add(elem(elem(rs, i), 0), elem(elem(rs, r_add(i, 1)), 0))), 2))
+      NULL
+    })), lst(r_add(elem(elem(rs, r_sub(n, 1)), 0), r_div((r_sub(elem(elem(rs, r_sub(n, 1)), 0), elem(elem(rs, r_sub(n, 2)), 0))), 2)))))
     NULL
   })
   statik(cl, "bulge_arrives", function(rs = NULL, r = NULL, h = NULL, ...) {
@@ -15158,13 +14883,10 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
       w_gas <- Simulation$nnls(K, want_gas)
       w_disc <- Simulation$nnls(K, want_disc)
       sum_at <- function(row_of = NULL, w = NULL, ...) {
-        s <- 0
-        .r <- for_range(n, function(a) {
-          .w("s", r_add(s, r_mul((row_of)(a), elem(w, a))))
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        return(s)
+        return(m_reduce(rng(n), 0, function(s = NULL, a = NULL, ...) {
+          return(r_add(s, r_mul((row_of)(a), elem(w, a))))
+          NULL
+        }))
         NULL
       }
       here <- lst()
@@ -15195,22 +14917,17 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
       m_push(self$w_discs, w_disc)
       m_push(self$w_gases, w_gas)
       m_push(self$repro, (if (truthy(gt(top, 0))) r_div(worst, top) else 0))
-      tab <- lst()
-      .r <- for_range(Simulation$TABLE, function(t) {
+      m_push(self$tables, m_map(rng(Simulation$TABLE), function(t = NULL, ...) {
         base <- r_add(elem(self$tabled_at, j), r_mul(t, n))
-        gd <- (sum_at)(function(a = NULL, ...) {
+        return(lst(self$table_r(j, t), (sum_at)(function(a = NULL, ...) {
           return(elem(pulls, r_add(base, a)))
           NULL
-        }, w_disc)
-        gg <- (sum_at)(function(a = NULL, ...) {
+        }, w_disc), (sum_at)(function(a = NULL, ...) {
           return(elem(pulls, r_add(base, a)))
           NULL
-        }, w_gas)
-        m_push(tab, lst(self$table_r(j, t), gd, gg, Simulation$bulge_at(rs, self$table_r(j, t))))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      m_push(self$tables, tab)
+        }, w_gas), Simulation$bulge_at(rs, self$table_r(j, t))))
+        NULL
+      }))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -15222,22 +14939,17 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     .r <- for_range(len(self$ids), function(j) {
       rs <- elem(self$rows, j)
       n <- r_sub(len(elem(self$edges, j)), 1)
-      here <- lst()
-      .r <- for_range(len(rs), function(i) {
-        sd <- 0
-        sg <- 0
-        .r <- for_range(n, function(a) {
-          k <- elem(spulls, r_add(r_add(elem(self$measured_at, j), r_mul(i, n)), a))
-          .w("sd", r_add(sd, r_mul(k, elem(elem(self$w_discs, j), a))))
-          .w("sg", r_add(sg, r_mul(k, elem(elem(self$w_gases, j), a))))
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        m_push(here, lst(sd, sg, Simulation$bulge_arrives(rs, elem(elem(rs, i), 0), elem(self$thick, j))))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      m_push(self$seen_rows, here)
+      seen <- function(i = NULL, w = NULL, ...) {
+        return(m_reduce(rng(n), 0, function(s = NULL, a = NULL, ...) {
+          return(r_add(s, r_mul(elem(spulls, r_add(r_add(elem(self$measured_at, j), r_mul(i, n)), a)), elem(w, a))))
+          NULL
+        }))
+        NULL
+      }
+      m_push(self$seen_rows, m_map(rng(len(rs)), function(i = NULL, ...) {
+        return(lst((seen)(i, elem(self$w_discs, j)), (seen)(i, elem(self$w_gases, j)), Simulation$bulge_arrives(rs, elem(elem(rs, i), 0), elem(self$thick, j))))
+        NULL
+      }))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -15343,49 +15055,39 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     return((if (truthy(gt(gN, 0))) Law$boost(gN, self$a0) else ((if (truthy(lt(gN, 0))) r_sub(0, Law$boost(r_sub(0, gN), self$a0)) else 0))))
     NULL
   })
+  statik(cl, "laid", function(records = NULL, ...) {
+    return(m_reduce(records, lst(), function(out = NULL, r = NULL, ...) {
+      return(m_reduce(r, out, function(o = NULL, v = NULL, ...) {
+        return(m_push(o, v))
+        NULL
+      }))
+      NULL
+    }))
+    NULL
+  })
   getter(cl, "points", function() {
-    out <- lst()
-    .r <- for_range(len(self$ids), function(j) {
-      .r <- for_range(len(elem(self$rows, j)), function(i) {
-        p <- elem(elem(self$at_rows, j), i)
-        .r <- for_each(lst(j, elem(elem(elem(self$rows, j), i), 0), elem(p, 0), elem(p, 1), elem(p, 2), 0), function(v) {
-          m_push(out, v)
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    measured <- m_reduce(rng(len(self$ids)), lst(), function(out = NULL, j = NULL, ...) {
+      return(m_reduce(rng(len(elem(self$rows, j))), out, function(o = NULL, i = NULL, ...) {
+        return(m_push(o, lst(j, elem(elem(elem(self$rows, j), i), 0), elem(elem(elem(self$at_rows, j), i), 0), elem(elem(elem(self$at_rows, j), i), 1), elem(elem(elem(self$at_rows, j), i), 2), 0)))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    .r <- for_range(len(self$ids), function(j) {
-      .r <- for_each(elem(self$tables, j), function(t) {
-        .r <- for_each(lst(j, elem(t, 0), elem(t, 1), elem(t, 2), elem(t, 3), 0), function(v) {
-          m_push(out, v)
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    tabled <- m_reduce(rng(len(self$ids)), lst(), function(out = NULL, j = NULL, ...) {
+      return(m_reduce(elem(self$tables, j), out, function(o = NULL, t = NULL, ...) {
+        return(m_push(o, lst(j, elem(t, 0), elem(t, 1), elem(t, 2), elem(t, 3), 0)))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(Simulation$laid(m_concat(measured, tabled)))
     NULL
   })
   method(cl, "nuisances", function(fitted = NULL, ...) {
-    out <- lst()
-    .r <- for_range(len(self$ids), function(j) {
-      m_push(out, (if (truthy(fitted)) elem(self$best_y, j) else Sparc$YD))
-      m_push(out, (if (truthy(fitted)) elem(self$best_b, j) else Sparc$YB))
-      m_push(out, self$a0)
-      m_push(out, 0)
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(Simulation$laid(m_map(rng(len(self$ids)), function(j = NULL, ...) {
+      return(lst((if (truthy(fitted)) elem(self$best_y, j) else Sparc$YD), (if (truthy(fitted)) elem(self$best_b, j) else Sparc$YB), self$a0, 0))
+      NULL
+    })))
     NULL
   })
   field(cl, "best_y", function() lst())
@@ -15453,19 +15155,12 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
   getter(cl, "searches", function() {
     S <- Sparc$sample$columns
     pts <- self$fit_points
-    out <- lst()
-    .r <- for_range(len(self$ids), function(j) {
+    return(Simulation$laid(m_map(rng(len(self$ids)), function(j = NULL, ...) {
       g <- elem(self$ids, j)
       stop <- (if (truthy(lt(r_add(j, 1), len(self$ids)))) elem(self$fit_at, r_add(j, 1)) else m_floor((r_div(len(pts), 8))))
-      .r <- for_each(lst(elem(self$fit_at, j), r_sub(stop, elem(self$fit_at, j)), elem(mem(S, key_("D")), g), elem(mem(S, key_("e_D")), g), elem(mem(S, key_("Inc")), g), elem(mem(S, key_("e_Inc")), g), self$a0, (if (truthy(self$has_bulge(j))) 1 else 0), elem(self$centre_y, j), elem(self$centre_b, j), elem(self$centre_d, j), elem(self$centre_i, j), r_mul(Simulation$STEP_Y, self$spacing), r_mul(Simulation$STEP_D, self$spacing), r_mul(Simulation$STEP_I, self$spacing), 0), function(v) {
-        m_push(out, v)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+      return(lst(elem(self$fit_at, j), r_sub(stop, elem(self$fit_at, j)), elem(mem(S, key_("D")), g), elem(mem(S, key_("e_D")), g), elem(mem(S, key_("Inc")), g), elem(mem(S, key_("e_Inc")), g), self$a0, (if (truthy(self$has_bulge(j))) 1 else 0), elem(self$centre_y, j), elem(self$centre_b, j), elem(self$centre_d, j), elem(self$centre_i, j), r_mul(Simulation$STEP_Y, self$spacing), r_mul(Simulation$STEP_D, self$spacing), r_mul(Simulation$STEP_I, self$spacing), 0))
+      NULL
+    })))
     NULL
   })
   method(cl, "combo", function(j = NULL, c = NULL, n = NULL, ...) {
@@ -15619,13 +15314,10 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     NULL
   })
   getter(cl, "most_steps", function() {
-    m <- 0
-    .r <- for_each(self$steps, function(n) {
-      .w("m", Fmt$max(m, n))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(m)
+    return(m_reduce(self$steps, 0, function(m = NULL, n = NULL, ...) {
+      return(Fmt$max(m, n))
+      NULL
+    }))
     NULL
   })
   field(cl, "film_sources", function() lst())
@@ -15662,19 +15354,17 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     per_pixel <- r_mul(r_mul(r_div(r_mul(r_div(fov, P), pi), 180), D), 1000)
     light <- mem(I$columns, key_("light"))
     base <- r_mul(r_mul(g, P), P)
-    edge <- lst()
-    .r <- for_range(P, function(r) {
-      .r <- for_range(P, function(c) {
-        if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- lt(r, Simulation$SKY_EDGE))) .x else lt(c, Simulation$SKY_EDGE)))) .x else ge(r, r_sub(P, Simulation$SKY_EDGE))))) .x else ge(c, r_sub(P, Simulation$SKY_EDGE))))) {
-          m_push(edge, elem(light, r_add(r_add(base, r_mul(r, P)), c)))
-        }
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    sky <- Fmt$median(edge)
+    on_edge <- function(r = NULL, c = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- lt(r, Simulation$SKY_EDGE))) .x else lt(c, Simulation$SKY_EDGE)))) .x else ge(r, r_sub(P, Simulation$SKY_EDGE))))) .x else ge(c, r_sub(P, Simulation$SKY_EDGE))))
+      NULL
+    }
+    sky <- Fmt$median(m_map(filt(rng(r_mul(P, P)), function(k = NULL, ...) {
+      return((on_edge)(m_floor((r_div(k, P))), r_mod(k, P)))
+      NULL
+    }), function(k = NULL, ...) {
+      return(elem(light, r_add(base, k)))
+      NULL
+    }))
     reach <- elem(self$reach, j)
     east <- function(c = NULL, ...) {
       return(r_sub(0, r_mul((r_sub(r_add(c, 0.5), r_div(P, 2))), per_pixel)))
@@ -15791,12 +15481,10 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
         m_push(self$film_angles, NaN)
         es <- elem(self$edges, j)
         rs <- elem(self$rows, j)
-        masses <- lst()
-        .r <- for_range(r_sub(len(es), 1), function(a) {
-          m_push(masses, lst(elem(es, a), elem(es, r_add(a, 1)), r_add(r_mul(Sparc$YD, elem(elem(self$w_discs, j), a)), elem(elem(self$w_gases, j), a))))
-          CONTINUE
+        masses <- m_map(rng(r_sub(len(es), 1)), function(a = NULL, ...) {
+          return(lst(elem(es, a), elem(es, r_add(a, 1)), r_add(r_mul(Sparc$YD, elem(elem(self$w_discs, j), a)), elem(elem(self$w_gases, j), a))))
+          NULL
         })
-        if (!is.null(.r)) return(.r[[1]])
         last <- 0
         .r <- for_range(len(rs), function(i) {
           inside <- r_mul(r_mul(r_mul(Sparc$YB, elem(elem(rs, i), 5)), m_abs(elem(elem(rs, i), 5))), elem(elem(rs, i), 0))
@@ -15807,14 +15495,11 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
           CONTINUE
         })
         if (!is.null(.r)) return(.r[[1]])
-        run <- lst()
-        total <- 0
-        .r <- for_each(masses, function(m) {
-          .w("total", r_add(total, Fmt$max(elem(m, 2), 0)))
-          m_push(run, total)
-          CONTINUE
+        run <- m_reduce(masses, lst(), function(run = NULL, m = NULL, ...) {
+          return(m_push(run, r_add((or_else(m_last(run), 0)), Fmt$max(elem(m, 2), 0))))
+          NULL
         })
-        if (!is.null(.r)) return(.r[[1]])
+        total <- or_else(m_last(run), 0)
         .r <- for_range(Simulation$FILM_STARS, function(k) {
           want <- r_mul(rng$v_next, total)
           a <- 0
@@ -15841,18 +15526,13 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     NULL
   })
   method(cl, "film_table", function(felt_table = NULL, ...) {
-    out <- lst()
-    .r <- for_each(self$film_ids, function(g) {
-      j <- m_index_of(self$ids, g)
-      .r <- for_range(Simulation$TABLE, function(t) {
-        m_push(out, elem(felt_table, r_add(r_mul(j, Simulation$TABLE), t)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(m_reduce(self$film_ids, lst(), function(out = NULL, g = NULL, ...) {
+      return(m_reduce(rng(Simulation$TABLE), out, function(o = NULL, t = NULL, ...) {
+        return(m_push(o, elem(felt_table, r_add(r_mul(m_index_of(self$ids, g), Simulation$TABLE), t))))
+        NULL
+      }))
+      NULL
+    }))
     NULL
   })
   method(cl, "film_runs", function(felt_table = NULL, ...) {
@@ -15885,24 +15565,19 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     NULL
   })
   getter(cl, "most_film_steps", function() {
-    m <- 0
-    .r <- for_each(self$film_steps, function(n) {
-      .w("m", Fmt$max(m, n))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(m)
+    return(m_reduce(self$film_steps, 0, function(m = NULL, n = NULL, ...) {
+      return(Fmt$max(m, n))
+      NULL
+    }))
     NULL
   })
   method(cl, "save", function(felt0 = NULL, felt1 = NULL, stars = NULL, frames = NULL, ...) {
     S <- Sparc$sample$columns
     T <- Simulation$TABLE
-    nrows <- 0
-    .r <- for_each(self$rows, function(rs) {
-      .w("nrows", r_add(nrows, len(rs)))
-      CONTINUE
+    nrows <- m_reduce(self$rows, 0, function(n = NULL, rs = NULL, ...) {
+      return(r_add(n, len(rs)))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     cols <- Node$new()
     names <- lst("galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept")
     .r <- for_each(names, function(nm_) {
@@ -16289,17 +15964,13 @@ Formed <- ray_class("Formed", Node, function(cl) {
     NULL
   })
   getter(cl, "constants", function() {
-    out <- lst()
-    .r <- for_range(self$discs_n, function(g) {
-      .r <- for_each(lst(r_div(self$GM(g), Formed$N), self$soft(g), self$scale_a0, Formed$DT), function(v) {
-        m_push(out, v)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(m_reduce(rng(self$discs_n), lst(), function(out = NULL, g = NULL, ...) {
+      return(m_reduce(lst(r_div(self$GM(g), Formed$N), self$soft(g), self$scale_a0, Formed$DT), out, function(o = NULL, v = NULL, ...) {
+        return(m_push(o, v))
+        NULL
+      }))
+      NULL
+    }))
     NULL
   })
   method(cl, "accel_cpu", function(state = NULL, i = NULL, ...) {
@@ -16458,20 +16129,16 @@ Formed <- ray_class("Formed", Node, function(cl) {
   })
   method(cl, "save", function(frames = NULL, ...) {
     G <- Formed$GRID
-    density <- lst()
-    .r <- for_range(self$discs_n, function(g) {
-      .r <- for_each(frames, function(f) {
-        .r <- for_range(r_mul(G, G), function(c) {
-          m_push(density, elem(f, r_add(r_mul(r_mul(g, G), G), c)))
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
+    density <- m_reduce(rng(self$discs_n), lst(), function(out = NULL, g = NULL, ...) {
+      return(m_reduce(frames, out, function(o = NULL, f = NULL, ...) {
+        return(m_reduce(rng(r_mul(G, G)), o, function(oo = NULL, c = NULL, ...) {
+          return(m_push(oo, elem(f, r_add(r_mul(r_mul(g, G), G), c))))
+          NULL
+        }))
+        NULL
+      }))
+      NULL
     })
-    if (!is.null(.r)) return(.r[[1]])
     cols <- Node$new()
     .set(cols, key_("density"), density)
     extra <- Node$new()
@@ -16575,42 +16242,15 @@ Model <- ray_class("Model", Node, function(cl) {
     NULL
   })
   statik(cl, "walk_names", function(e = NULL, out = NULL, ...) {
-    k <- e$kind
-    if (truthy((if (truthy(.x <- eq(k, "sym"))) .x else eq(k, "field")))) {
-      if (truthy((!truthy(m_contains(out, e$label))))) {
-        m_push(out, e$label)
-      }
-    } else {
-      if (truthy((if (truthy(.x <- eq(k, "add"))) .x else eq(k, "mul")))) {
-        .r <- for_each(e$of, function(x) {
-          Model$walk_names(x, out)
-          CONTINUE
-        })
-        if (!is.null(.r)) return(.r[[1]])
-      } else {
-        if (truthy(eq(k, "pow"))) {
-          Model$walk_names(e$base, out)
-          return(Model$walk_names(e$power, out))
-        } else {
-          if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- eq(k, "grad"))) .x else eq(k, "log")))) .x else eq(k, "exp")))) .x else eq(k, "root")))) .x else eq(k, "limit")))) {
-            return(Model$walk_names(e$base, out))
-          } else {
-            if (truthy((if (truthy(.x <- eq(k, "choose"))) .x else eq(k, "gammaInc")))) {
-              Model$walk_names(e$first_, out)
-              return(Model$walk_names(e$second_, out))
-            } else {
-              if (truthy(eq(k, "call"))) {
-                called <- "" %+% text_of(e$label) %+% "\\paren{...}"
-                if (truthy((!truthy(m_contains(out, called))))) {
-                  m_push(out, called)
-                }
-                return(Model$walk_names(e$base, out))
-              }
-            }
-          }
-        }
-      }
+    name <- (if (truthy(e$named)) e$label else ((if (truthy(eq(e$kind, "call"))) "" %+% text_of(e$label) %+% "\\paren{...}" else NULL)))
+    if (truthy((if (truthy(.x <- (!eq(name, NULL)))) (!truthy(m_contains(out, name))) else .x))) {
+      m_push(out, name)
     }
+    .r <- for_each(e$subtrees, function(x) {
+      Model$walk_names(x, out)
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
     NULL
   })
   method(cl, "resolved", function(e = NULL, env = NULL, seen = NULL, ...) {
@@ -16946,22 +16586,7 @@ Shaded <- ray_class("Shaded", Node, function(cl) {
     NULL
   })
   static_getter(cl, "points", function() {
-    points <- lst()
-    i <- 1
-    while (truthy(le(i, 120))) {
-      m_push(points, r_div(i, 120))
-      .w("i", r_add(i, 1))
-    }
-    ex <- 0
-    while (truthy(le(ex, 24))) {
-      k <- 1
-      while (truthy(lt(k, 8))) {
-        m_push(points, r_mul((r_pow(10, (r_sub(ex, 12)))), (r_add(1, r_div(k, 2)))))
-        .w("k", r_add(k, 1))
-      }
-      .w("ex", r_add(ex, 1))
-    }
-    return(Expr$sorted(points))
+    return(Expr$bracket_points)
     NULL
   })
   statik(cl, "solver", function(name = NULL, f = NULL, ...) {
@@ -17214,35 +16839,28 @@ Sweep <- ray_class("Sweep", Node, function(cl) {
     NULL
   })
   method(cl, "save", function(id = NULL, grid = NULL, need = NULL, ...) {
-    x <- lst()
-    y <- lst()
-    p <- lst()
-    by <- lst()
-    .r <- for_range(self$YS, function(gy) {
-      .r <- for_range(self$XS, function(gx) {
-        m_push(x, r_add(self$X0, r_mul(gx, self$dx)))
-        m_push(y, r_add(self$Y0, r_mul(gy, self$dy)))
-        m_push(p, elem(grid, r_add(r_mul(gy, self$XS), gx)))
-        m_push(by, elem(need, r_add(r_mul(gy, self$XS), gx)))
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    most <- 0
-    .r <- for_each(p, function(v) {
-      if (truthy(gt(v, most))) {
-        .w("most", v)
-      }
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
+    cells <- rng(r_mul(self$YS, self$XS))
     columns <- Node$new()
-    .set(columns, key_("x"), x)
-    .set(columns, key_("y"), y)
-    .set(columns, key_("p"), p)
-    .set(columns, key_("by"), by)
+    .set(columns, key_("x"), m_map(cells, function(i = NULL, ...) {
+      return(r_add(self$X0, r_mul((r_mod(i, self$XS)), self$dx)))
+      NULL
+    }))
+    .set(columns, key_("y"), m_map(cells, function(i = NULL, ...) {
+      return(r_add(self$Y0, r_mul(m_floor((r_div(i, self$XS))), self$dy)))
+      NULL
+    }))
+    .set(columns, key_("p"), m_map(cells, function(i = NULL, ...) {
+      return(elem(grid, i))
+      NULL
+    }))
+    .set(columns, key_("by"), m_map(cells, function(i = NULL, ...) {
+      return(elem(need, i))
+      NULL
+    }))
+    most <- m_reduce(mem(columns, key_("p")), 0, function(m = NULL, v = NULL, ...) {
+      return((if (truthy(gt(v, m))) v else m))
+      NULL
+    })
     extra <- Node$new()
     .set(extra, key_("a0"), self$a0)
     .set(extra, key_("arrangement"), self$how)
@@ -17309,17 +16927,13 @@ Sweep <- ray_class("Sweep", Node, function(cl) {
     NULL
   })
   getter(cl, "radii", function() {
-    out <- lst()
-    .r <- for_range(self$RS, function(k) {
-      e <- elem(self$env, k)
-      m_push(out, elem(self$rad, k))
-      m_push(out, or_else(mem(e, key_("n_{f}")), NaN))
-      m_push(out, or_else(mem(e, key_("\\sigma_{tr}")), NaN))
-      m_push(out, or_else(mem(e, key_("L")), NaN))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(out)
+    return(m_reduce(rng(self$RS), lst(), function(out = NULL, k = NULL, ...) {
+      return(m_reduce(lst(elem(self$rad, k), or_else(mem(elem(self$env, k), key_("n_{f}")), NaN), or_else(mem(elem(self$env, k), key_("\\sigma_{tr}")), NaN), or_else(mem(elem(self$env, k), key_("L")), NaN)), out, function(o = NULL, v = NULL, ...) {
+        return(m_push(o, v))
+        NULL
+      }))
+      NULL
+    }))
     NULL
   })
   getter(cl, "kernel", function() {
@@ -17489,6 +17103,1130 @@ Measure <- ray_class("Measure", Node, function(cl) {
   })
 })
 
+Sighted <- ray_class("Sighted", Node, function(cl) {
+  field(cl, "name", NULL)
+  field(cl, "disc_mass", NULL)
+  field(cl, "disc_scale", NULL)
+  field(cl, "bulge_mass", NULL)
+  field(cl, "bulge_scale", NULL)
+  field(cl, "circling", NULL)
+  field(cl, "sun", NULL)
+  field(cl, "inclination", NULL)
+  field(cl, "position_angle", NULL)
+  field(cl, "distance", NULL)
+  field(cl, "approach", NULL)
+  field(cl, "across", NULL)
+  field(cl, "source", NULL)
+  getter(cl, "mass", function() {
+    return(r_add(self$disc_mass, self$bulge_mass))
+    NULL
+  })
+})
+
+Video <- ray_class("Video", Node, function(cl) {
+  static_field(cl, "WIDTH", function() 2560)
+  static_field(cl, "HEIGHT", function() 1440)
+  static_field(cl, "FPS", function() 60)
+  static_field(cl, "FILM_RD", function() 6)
+  static_field(cl, "PER_MYR", function() 0.0010227)
+  static_field(cl, "LIGHT", function() 299792.458)
+  static_field(cl, "ANDROMEDA", function() Sighted$new(name = "Andromeda (M31)", disc_mass = 8.4, disc_scale = 5.4, bulge_mass = 3.3, bulge_scale = 0.61, circling = 250, sun = 0, inclination = 77, position_angle = 38, distance = 785, approach = 110, across = 17, source = "Geehan et al. 2006, van der Marel et al. 2012"))
+  static_field(cl, "MW_ORBITS", function() lst(5.5, 0.25))
+  static_field(cl, "MW_ORBIT_TRIALS", function() lst(10, 7))
+  static_field(cl, "MW_ORBIT_TEMPER", function() 0.1)
+  static_field(cl, "MW_ARM_END", function() lst(0, 0, 0, 0, 140))
+  static_field(cl, "MW_ARM_OLD", function() lst(0, 1, 0, 1, 0))
+  static_field(cl, "MW_ARM_FADE", function() 12)
+  static_field(cl, "MW_ARM_FADE_IN", function() 45)
+  static_field(cl, "MW_YOUNG", function() 0.1)
+  static_field(cl, "MW_CLUSTERS", function() lst(0.5, 50, 0.1))
+  static_field(cl, "LIGHT_STARS", function() lst(0.95, 2.4, 3.2))
+  static_field(cl, "ANDROMEDA_IMAGE", function() 512)
+  static_field(cl, "ANDROMEDA_FOV", function() 3.2)
+  static_field(cl, "SOURCE", function() "74,168,235")
+  static_field(cl, "STRIP_TOP", function() 570)
+  static_field(cl, "STRIP_TALL", function() 300)
+  static_field(cl, "PLANET_INK", function() lst("#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e"))
+  static_field(cl, "SOLAR_FROM", function() 160)
+  static_field(cl, "SOLAR_TO", function() 280)
+  static_field(cl, "LOGO", function() "../orbitmines.com/orbitmines.com/public/logo.png")
+  static_field(cl, "PARTS", function() lst("video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end"))
+  static_getter(cl, "MILKY_WAY", function() {
+    return(Sighted$new(name = "Milky Way", disc_mass = Video$mw_discs_mass, disc_scale = Video$measured("milkyway-discs", "thin_scale"), bulge_mass = m_sum(Video$MW_BAR_MASSES), bulge_scale = 0.6, circling = Video$measured("milkyway-discs", "circling"), sun = Video$measured("milkyway-discs", "sun_distance"), inclination = 0, position_angle = 0, distance = 0, approach = 0, across = 0, source = "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)"))
+    NULL
+  })
+  statik(cl, "measured", function(id = NULL, name = NULL, ...) {
+    m <- Measured$of(id)
+    if (truthy(eq(m, NULL))) {
+      (fail)("no data/" %+% text_of(id) %+% ": run npx ray data " %+% text_of(id) %+% "")
+    }
+    names <- mem(m$header, key_("names"))
+    k <- m_first(filt(rng(len(names)), function(i = NULL, ...) {
+      return(eq(elem(names, i), name))
+      NULL
+    }))
+    if (truthy(eq(k, NULL))) {
+      (fail)("data/" %+% text_of(id) %+% " has no " %+% text_of(quoted(name)) %+% "")
+    }
+    return(elem(mem(m$columns, key_("value")), k))
+    NULL
+  })
+  static_getter(cl, "MW_BAR1", function() {
+    return(m_map(lst("rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut"), function(n = NULL, ...) {
+      return(Video$measured("milkyway-bar", n))
+      NULL
+    }))
+    NULL
+  })
+  statik(cl, "mw_bar", function(i = NULL, ...) {
+    return(m_map(lst("rho_" %+% text_of(i) %+% "", "x_" %+% text_of(i) %+% "", "y_" %+% text_of(i) %+% "", "z_" %+% text_of(i) %+% "", "n_" %+% text_of(i) %+% "", "c_perp," %+% text_of(i) %+% "", "R_" %+% text_of(i) %+% ",out", "R_" %+% text_of(i) %+% ",in", "n_" %+% text_of(i) %+% ",out", "n_" %+% text_of(i) %+% ",in"), function(n = NULL, ...) {
+      return(Video$measured("milkyway-bar", n))
+      NULL
+    }))
+    NULL
+  })
+  static_getter(cl, "MW_BAR2", function() {
+    return(Video$mw_bar("2"))
+    NULL
+  })
+  static_getter(cl, "MW_BAR3", function() {
+    return(Video$mw_bar("3"))
+    NULL
+  })
+  static_getter(cl, "MW_BAR_MASSES", function() {
+    return(m_map(lst("M_bar1", "M_bar2", "M_bar3"), function(n = NULL, ...) {
+      return(Video$measured("milkyway-bar", n))
+      NULL
+    }))
+    NULL
+  })
+  static_getter(cl, "MW_BAR_ANGLE", function() {
+    return(Video$measured("milkyway-discs", "bar_angle"))
+    NULL
+  })
+  static_getter(cl, "MW_PATTERN_SPEED", function() {
+    return(Video$measured("milkyway-bar", "pattern_speed"))
+    NULL
+  })
+  static_getter(cl, "mw_discs_mass", function() {
+    return(r_sub(r_add(r_add(Video$measured("milkyway-discs", "bulge_region_mass"), Video$measured("milkyway-discs", "thin_mass")), Video$measured("milkyway-discs", "thick_mass")), m_sum(Video$MW_BAR_MASSES)))
+    NULL
+  })
+  static_getter(cl, "MW_DISCS", function() {
+    thin <- Video$measured("milkyway-discs", "thin_mass")
+    thick <- Video$measured("milkyway-discs", "thick_mass")
+    return(lst(lst(r_div(r_mul(Video$mw_discs_mass, thin), (r_add(thin, thick))), Video$measured("milkyway-discs", "thin_scale"), 1), lst(r_div(r_mul(Video$mw_discs_mass, thick), (r_add(thin, thick))), Video$measured("milkyway-discs", "thick_scale"), 0)))
+    NULL
+  })
+  static_getter(cl, "MW_DISC_HOLE", function() {
+    return(Video$measured("milkyway-bar", "R_cut"))
+    NULL
+  })
+  static_getter(cl, "MW_ARMS", function() {
+    m <- Measured$of("milkyway-arms")
+    if (truthy(eq(m, NULL))) {
+      (fail)("no data/milkyway-arms: run npx ray data milkyway-arms")
+    }
+    return(m_map(rng(5), function(k = NULL, ...) {
+      return(lst(elem(mem(m$columns, key_("R")), k), elem(mem(m$columns, key_("theta")), k), elem(mem(m$columns, key_("psi")), k), elem(Video$MW_ARM_END, k), elem(Video$MW_ARM_OLD, k)))
+      NULL
+    }))
+    NULL
+  })
+  static_getter(cl, "MW_ARM_WIDTH", function() {
+    return(lst(r_div(Video$measured("milkyway-arm-widths", "w0"), 1000), r_div(Video$measured("milkyway-arm-widths", "slope"), 1000), Video$measured("milkyway-arm-widths", "R0")))
+    NULL
+  })
+  static_getter(cl, "MW_ARM_CONTRAST", function() {
+    return(Video$measured("milkyway-arm-contrast", "K"))
+    NULL
+  })
+  static_getter(cl, "MW_DUST", function() {
+    return(lst(r_div(Video$measured("milkyway-dust-lane", "hot"), 1000), 0.12, 0.1))
+    NULL
+  })
+  static_getter(cl, "MW_STIR", function() {
+    return(lst(lst(Video$measured("milkyway-discs", "thin_sigma_R"), Video$measured("milkyway-discs", "thin_sigma_scale")), lst(Video$measured("milkyway-discs", "thick_sigma_R"), Video$measured("milkyway-discs", "thick_sigma_scale")), lst(Video$measured("milkyway-arm-widths", "young_spread"), Video$measured("milkyway-discs", "thin_sigma_scale"))))
+    NULL
+  })
+  static_getter(cl, "MW_SUN_MOTION", function() {
+    return(lst(Video$measured("milkyway-arm-widths", "U_sun"), r_sub(Video$measured("milkyway-discs", "sun_tangential"), Video$measured("milkyway-discs", "circling"))))
+    NULL
+  })
+  statik(cl, "galaxy", function(name = NULL, ...) {
+    return((if (truthy(eq(name, "andromeda"))) Video$ANDROMEDA else Video$MILKY_WAY))
+    NULL
+  })
+  static_getter(cl, "per_kpc", function() {
+    return(r_div(Video$FILM_RD, Video$MILKY_WAY$disc_scale))
+    NULL
+  })
+  statik(cl, "myr_per_tick", function(film = NULL, ...) {
+    c <- mem(film$header, key_("clock"))
+    return(r_div((r_div(elem(c, 1), elem(c, 0))), (r_mul(r_div(elem(c, 3), elem(c, 2)), Video$PER_MYR))))
+    NULL
+  })
+  statik(cl, "faster", function(film = NULL, ...) {
+    return(r_div(elem(mem(film$header, key_("clock")), 1), (r_div(elem(mem(film$header, key_("clock")), 3), Video$LIGHT))))
+    NULL
+  })
+  statik(cl, "smooth", function(t = NULL, ...) {
+    u <- Fmt$min(1, Fmt$max(0, t))
+    return(r_mul(r_mul(u, u), (r_sub(3, r_mul(2, u)))))
+    NULL
+  })
+  statik(cl, "shot", function(id = NULL, what = NULL, shot = NULL, ...) {
+    pic <- Picture$new(id = id, what = what, width = Video$WIDTH, height = Video$HEIGHT, frames = shot$frames, paint = function(played = NULL, ...) {
+      return(Sky$new(shot = shot))
+      NULL
+    })
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "solar_meta", function(theory = NULL, ...) {
+    r <- theory$solar$record
+    at <- 0
+    .r <- for_range(len(r$names), function(k) {
+      .w("at", (if (truthy(eq(elem(r$names, k), "marks"))) k else at))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    off <- m_sum(m_take(r$sizes, at))
+    SOLAR <- Measured$of("solar-inner")
+    NAMES <- mem(SOLAR$header, key_("names"))
+    PER <- mem(SOLAR$columns, key_("period"))
+    PLANETS <- filt(rng(len(NAMES)), function(i = NULL, ...) {
+      return(gt(elem(PER, i), 0))
+      NULL
+    })
+    earth_body <- 0
+    .r <- for_range(len(PLANETS), function(k) {
+      .w("earth_body", (if (truthy(eq(elem(NAMES, elem(PLANETS, k)), "Earth"))) r_add(k, 1) else earth_body))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(lst(off, r$width, m_round((r_div((r_sub(elem(r$sizes, at), 1)), 6))), earth_body))
+    NULL
+  })
+  statik(cl, "shot_after_solar", function(theory = NULL, id = NULL, what = NULL, shot = NULL, ...) {
+    meta <- Video$solar_meta(theory)
+    stamp <- theory$solar$record$stamp
+    pic <- Picture$new(id = id, what = what, width = Video$WIDTH, height = Video$HEIGHT, frames = shot$frames, paint = function(played = NULL, ...) {
+      sky <- Sky$new(shot = shot)
+      .set(sky, "meta", meta)
+      .set(sky, "sol_stamp", stamp)
+      return(sky)
+      NULL
+    })
+    .set(pic, "uses", lst("solar.inner"))
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "light", function(s = NULL, film = NULL, b0 = NULL, b1 = NULL, w = NULL, G = NULL, span = NULL, cx = NULL, cy = NULL, px = NULL, ci = NULL, side = NULL, ...) {
+    D <- mem(film$columns, key_("density"))
+    Y <- mem(film$columns, key_("young"))
+    U <- mem(film$columns, key_("dust"))
+    top <- 0
+    ytop <- 0
+    utop <- 0
+    .r <- for_range(r_mul(G, G), function(c) {
+      .w("top", Fmt$max(top, r_add(elem(D, r_add(b0, c)), r_mul(w, (r_sub(elem(D, r_add(b1, c)), elem(D, r_add(b0, c))))))))
+      .w("ytop", Fmt$max(ytop, r_add(elem(Y, r_add(b0, c)), r_mul(w, (r_sub(elem(Y, r_add(b1, c)), elem(Y, r_add(b0, c))))))))
+      .w("utop", Fmt$max(utop, r_add(elem(U, r_add(b0, c)), r_mul(w, (r_sub(elem(U, r_add(b1, c)), elem(U, r_add(b0, c))))))))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    lt <- m_ln((r_add(1, top)))
+    rgb <- lst()
+    .r <- for_range(G, function(row) {
+      gy <- r_sub(r_sub(G, 1), row)
+      .r <- for_range(G, function(gx) {
+        c <- r_add(r_mul(gy, G), gx)
+        o <- Fmt$min(1, r_div(m_ln((r_add(r_add(1, elem(D, r_add(b0, c))), r_mul(w, (r_sub(elem(D, r_add(b1, c)), elem(D, r_add(b0, c)))))))), lt))
+        y <- Fmt$min(1, m_sqrt((r_div((r_add(elem(Y, r_add(b0, c)), r_mul(w, (r_sub(elem(Y, r_add(b1, c)), elem(Y, r_add(b0, c))))))), ytop))))
+        lo <- r_mul(m_sqrt(o), o)
+        hii <- Fmt$max(0, r_div((r_sub(y, 0.7)), 0.3))
+        dim <- r_sub(1, r_mul(0.7, Fmt$min(1, m_sqrt((r_div((r_add(elem(U, r_add(b0, c)), r_mul(w, (r_sub(elem(U, r_add(b1, c)), elem(U, r_add(b0, c))))))), utop))))))
+        m_push(rgb, Fmt$min(255, r_mul(dim, (r_add(r_add(r_mul(lo, (r_add(130, r_mul(125, o)))), r_mul(r_mul(95, y), y)), r_mul(110, hii))))))
+        m_push(rgb, Fmt$min(255, r_mul(dim, (r_add(r_add(r_mul(lo, (r_add(140, r_mul(85, o)))), r_mul(r_mul(120, y), y)), r_mul(25, hii))))))
+        m_push(rgb, Fmt$min(255, r_mul(dim, (r_add(r_add(r_mul(lo, (r_sub(175, r_mul(55, o)))), r_mul(r_mul(165, y), y)), r_mul(70, hii))))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    x0 <- r_mul((r_sub(r_sub(0, span), cx)), px)
+    y0 <- r_sub(0, r_mul(r_mul((r_sub(span, cy)), px), ci))
+    bw <- r_mul(r_mul(2, span), px)
+    bh <- r_mul(r_mul(r_mul(2, span), px), ci)
+    fade <- Fmt$min(1, Fmt$max(0, r_div((r_sub(90, side)), 50)))
+    s$alpha(r_mul(0.3, fade))
+    s$field(rgb, G, G, x0, y0, bw, bh, Fmt$max(2, r_mul(2, side)))
+    s$alpha(r_mul(0.9, fade))
+    s$field(rgb, G, G, x0, y0, bw, bh, 0)
+    return(s$alpha(1))
+    NULL
+  })
+  statik(cl, "sky", function(s = NULL, shot = NULL, film = NULL, tracks = NULL, i = NULL, sol = NULL, meta = NULL, ...) {
+    s$fill_style(Galaxies$BACK)
+    s$fill_rect(0, 0, s$width, s$height)
+    H <- film$header
+    n <- shot$frames
+    t <- (if (truthy(gt(n, 1))) r_div(i, (r_sub(n, 1))) else 0)
+    e <- Video$smooth(t)
+    FR <- mem(H, key_("frames"))
+    u <- r_mul((r_add(shot$from_at, r_mul((r_sub(shot$to_at, shot$from_at)), t))), (r_sub(FR, 1)))
+    f0 <- Fmt$min(m_floor(u), r_sub(FR, 1))
+    f1 <- Fmt$min(r_add(f0, 1), r_sub(FR, 1))
+    w <- r_sub(u, f0)
+    ez <- (if (truthy(lt(shot$from_zoom, 1))) r_sub(1, r_mul((r_sub(1, Video$smooth(r_div(t, 0.6)))), (r_sub(1, Video$smooth(r_div(t, 0.6)))))) else e)
+    across <- m_exp((r_add(m_ln(shot$from_zoom), r_mul((r_sub(m_ln(shot$to_zoom), m_ln(shot$from_zoom))), ez))))
+    px <- r_div(s$height, across)
+    has_sun <- (if (truthy(.x <- (!eq(tracks, NULL)))) eq(mem(tracks$header, key_("sun")), 0) else .x)
+    sx <- 0
+    sy <- 0
+    if (truthy(has_sun)) {
+      XY <- mem(tracks$columns, key_("xy"))
+      m <- mem(tracks$header, key_("shown"))
+      .w("sx", r_add(elem(XY, r_mul(r_mul(f0, m), 2)), r_mul(w, (r_sub(elem(XY, r_mul(r_mul(f1, m), 2)), elem(XY, r_mul(r_mul(f0, m), 2)))))))
+      .w("sy", r_add(elem(XY, r_add(r_mul(r_mul(f0, m), 2), 1)), r_mul(w, (r_sub(elem(XY, r_add(r_mul(r_mul(f1, m), 2), 1)), elem(XY, r_add(r_mul(r_mul(f0, m), 2), 1)))))))
+    }
+    look <- (if (truthy(has_sun)) r_add(shot$from_sun, r_mul((r_sub(shot$to_sun, shot$from_sun)), e)) else 0)
+    px_end <- r_div(s$height, shot$to_zoom)
+    away <- (if (truthy(has_sun)) r_div(r_mul((r_sub(1, look)), px_end), px) else 0)
+    cx <- r_mul(sx, (r_sub(1, away)))
+    cy <- r_mul(sy, (r_sub(1, away)))
+    ci <- m_cos((r_div(r_mul(shot$tilt, pi), 180)))
+    SF <- (if (truthy((!eq(sol, NULL)))) mem(sol$columns, key_("frames")) else lst())
+    sys <- lst(0, 0, 0, 0, 0)
+    if (truthy((!eq(sol, NULL)))) {
+      FRS <- mem(sol$header, key_("frames"))
+      at_f <- Fmt$min(r_sub(FRS, 1), Video$SOLAR_TO)
+      mk <- function(f = NULL, k = NULL, c = NULL, ...) {
+        return(elem(SF, r_add(r_add(r_add(r_mul(f, elem(meta, 1)), elem(meta, 0)), r_mul(6, k)), c)))
+        NULL
+      }
+      reach <- 0
+      .r <- for_range(FRS, function(f) {
+        .r <- for_range(r_sub(elem(meta, 2), 1), function(k) {
+          .w("reach", Fmt$max(reach, Fmt$hypot(r_sub((mk)(f, r_add(k, 1), 0), (mk)(f, 0, 0)), r_sub((mk)(f, r_add(k, 1), 1), (mk)(f, 0, 1)))))
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      eb <- elem(meta, 3)
+      ex <- (mk)(at_f, eb, 0)
+      ey <- (mk)(at_f, eb, 1)
+      last <- r_mul(2.1, (r_add(reach, Fmt$hypot(r_sub(ex, (mk)(at_f, 0, 0)), r_sub(ey, (mk)(at_f, 0, 1))))))
+      pxs <- r_mul(r_div(s$height, last), (r_div(shot$from_zoom, across)))
+      sun_x <- r_mul((r_sub((mk)(at_f, 0, 0), ex)), pxs)
+      sun_y <- r_mul((r_sub((mk)(at_f, 0, 1), ey)), pxs)
+      .w("cx", r_sub(cx, r_div(sun_x, px)))
+      .w("cy", r_sub(cy, r_div(sun_y, (r_mul(px, ci)))))
+      .w("sys", lst(pxs, (mk)(at_f, 0, 0), (mk)(at_f, 0, 1), at_f, r_sub(1, Video$smooth(r_div(e, 0.3)))))
+    }
+    s$save
+    s$translate(r_div(s$width, 2), r_div(s$height, 2))
+    s$rotate(r_sub(0, r_div(r_mul(shot$turn, pi), 180)))
+    G <- mem(H, key_("grid"))
+    span <- elem(mem(H, key_("span")), 0)
+    D <- mem(film$columns, key_("density"))
+    cs <- r_div(r_mul(2, span), G)
+    b0 <- r_mul(r_mul(f0, G), G)
+    b1 <- r_mul(r_mul(f1, G), G)
+    top <- 0
+    .r <- for_range(r_mul(G, G), function(c) {
+      .w("top", Fmt$max(top, r_add(elem(D, r_add(b0, c)), r_mul(w, (r_sub(elem(D, r_add(b1, c)), elem(D, r_add(b0, c))))))))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    side <- r_add(r_mul(cs, px), 0.6)
+    half_w <- r_add(r_div(s$width, 2), side)
+    if (truthy(eq(mem(H, key_("young")), 1))) {
+      Video$light(s, film, b0, b1, w, G, span, cx, cy, px, ci, side)
+    } else {
+      s$alpha(Fmt$min(1, Fmt$max(0, r_div((r_sub(24, side)), 14))))
+      .r <- for_range(G, function(gy) {
+        y <- r_mul(r_mul((r_sub(r_add(r_sub(0, span), r_mul((r_add(gy, 0.5)), cs)), cy)), px), ci)
+        if (truthy(lt(m_abs(y), half_w))) {
+          .r <- for_range(G, function(gx) {
+            c <- r_add(r_mul(gy, G), gx)
+            v <- r_add(elem(D, r_add(b0, c)), r_mul(w, (r_sub(elem(D, r_add(b1, c)), elem(D, r_add(b0, c))))))
+            if (truthy(gt(v, 0))) {
+              x <- r_mul((r_sub(r_add(r_sub(0, span), r_mul((r_add(gx, 0.5)), cs)), cx)), px)
+              if (truthy(lt(m_abs(x), half_w))) {
+                k <- Fmt$min(1, r_div(m_ln((r_add(1, v))), m_ln((r_add(1, top)))))
+                r <- m_round((r_add(40, r_mul(r_mul(215, k), k))))
+                gr <- m_round((r_add(60, r_mul(190, k))))
+                b <- m_round((r_add(110, r_mul(145, Fmt$min(1, r_mul(1.6, k))))))
+                s$fill_style("rgb(" %+% text_of(r) %+% "," %+% text_of(gr) %+% "," %+% text_of(b) %+% ")")
+                s$fill_rect(r_sub(x, r_div(side, 2)), r_sub(r_sub(0, y), r_div(r_mul(side, ci), 2)), side, r_add(r_mul(side, ci), 0.6))
+              }
+            }
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      s$alpha(1)
+    }
+    lit <- eq(mem(H, key_("young")), 1)
+    if (truthy((if (truthy(.x <- (!eq(tracks, NULL)))) gt(px, ((if (truthy(lit)) 6 else 12))) else .x))) {
+      XY <- mem(tracks$columns, key_("xy"))
+      m <- mem(tracks$header, key_("shown"))
+      tags <- mem(tracks$header, key_("tags"))
+      s$alpha((if (truthy(lit)) Fmt$min(elem(Video$LIGHT_STARS, 0), r_div((r_sub(px, 6)), 14)) else Fmt$min(0.85, r_div((r_sub(px, 12)), 40))))
+      .r <- for_range(m, function(k) {
+        x <- r_mul((r_sub(r_add(elem(XY, r_mul((r_add(r_mul(f0, m), k)), 2)), r_mul(w, (r_sub(elem(XY, r_mul((r_add(r_mul(f1, m), k)), 2)), elem(XY, r_mul((r_add(r_mul(f0, m), k)), 2)))))), cx)), px)
+        y <- r_mul(r_mul((r_sub(r_add(elem(XY, r_add(r_mul((r_add(r_mul(f0, m), k)), 2), 1)), r_mul(w, (r_sub(elem(XY, r_add(r_mul((r_add(r_mul(f1, m), k)), 2), 1)), elem(XY, r_add(r_mul((r_add(r_mul(f0, m), k)), 2), 1)))))), cy)), px), ci)
+        if (truthy((if (truthy(.x <- lt(m_abs(x), half_w))) lt(m_abs(y), half_w) else .x))) {
+          tg <- elem(tags, k)
+          s$fill_style((if (truthy(ge(tg, 4))) "#d4e6ff" else (if (truthy((if (truthy(.x <- eq(tg, 1))) .x else eq(tg, 3)))) "#ffd9a0" else (if (truthy(eq(tg, 2))) "#ffc7e0" else "#dfe8ff"))))
+          sz <- (if (truthy(lit)) ((if (truthy(ge(tg, 4))) elem(Video$LIGHT_STARS, 2) else elem(Video$LIGHT_STARS, 1))) else 2.4)
+          s$fill_rect(r_sub(x, r_div(sz, 2)), r_sub(r_sub(0, y), r_div(sz, 2)), sz, sz)
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      s$alpha(1)
+    }
+    if (truthy((if (truthy(.x <- (!eq(sol, NULL)))) gt(elem(sys, 4), 0.004) else .x))) {
+      ax <- r_mul((r_sub(sx, cx)), px)
+      ay <- r_mul(r_mul((r_sub(sy, cy)), px), ci)
+      FRS <- mem(sol$header, key_("frames"))
+      mk <- function(f = NULL, k = NULL, c = NULL, ...) {
+        return(elem(SF, r_add(r_add(r_add(r_mul(f, elem(meta, 1)), elem(meta, 0)), r_mul(6, k)), c)))
+        NULL
+      }
+      .r <- for_range(r_sub(elem(meta, 2), 1), function(k) {
+        b <- r_add(k, 1)
+        ink <- elem(Video$PLANET_INK, Fmt$min(3, k))
+        s$alpha(r_mul(0.85, elem(sys, 4)))
+        s$stroke_style(ink)
+        s$line_width(2)
+        s$begin_path
+        .r <- for_range(FRS, function(f) {
+          x <- r_add(ax, r_mul((r_sub((mk)(f, b, 0), elem(sys, 1))), elem(sys, 0)))
+          y <- r_add(ay, r_mul((r_sub((mk)(f, b, 1), elem(sys, 2))), elem(sys, 0)))
+          if (truthy(eq(f, 0))) {
+            s$move_to(x, r_sub(0, y))
+          } else {
+            s$line_to(x, r_sub(0, y))
+          }
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        s$stroke
+        s$alpha(elem(sys, 4))
+        x <- r_add(ax, r_mul((r_sub((mk)(elem(sys, 3), b, 0), elem(sys, 1))), elem(sys, 0)))
+        y <- r_add(ay, r_mul((r_sub((mk)(elem(sys, 3), b, 1), elem(sys, 2))), elem(sys, 0)))
+        s$line_width(2.5)
+        s$begin_path
+        s$arc(x, r_sub(0, y), 13, 0, (2 * pi))
+        s$stroke
+        s$fill_style("#000000")
+        s$begin_path
+        s$arc(x, r_sub(0, y), 2.5, 0, (2 * pi))
+        s$fill
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      s$alpha(1)
+    }
+    if (truthy(has_sun)) {
+      x <- r_mul((r_sub(sx, cx)), px)
+      y <- r_mul(r_mul((r_sub(sy, cy)), px), ci)
+      big <- (if (truthy(lt(shot$from_zoom, 1))) r_sub(1, Video$smooth(r_mul(e, 3))) else 0)
+      s$fill_style("#ffd23f")
+      s$begin_path
+      s$arc(x, r_sub(0, y), r_mul(4, (r_sub(1, big))), 0, (2 * pi))
+      s$fill
+      if (truthy(gt(big, 0))) {
+        s$alpha(big)
+        s$stroke_style("#e0a526")
+        s$line_width(3)
+        s$begin_path
+        s$arc(x, r_sub(0, y), 26, 0, (2 * pi))
+        s$stroke
+        s$alpha(1)
+      }
+    }
+    s$restore
+    fade <- Fmt$max((if (truthy(gt(shot$fade_in, 0))) r_sub(1, r_div(i, (r_mul(shot$fade_in, Video$FPS)))) else 0), (if (truthy(gt(shot$fade_out, 0))) r_sub(1, r_div((r_sub(r_sub(n, 1), i)), (r_mul(shot$fade_out, Video$FPS)))) else 0))
+    if (truthy(gt(fade, 0))) {
+      s$alpha(Fmt$min(1, fade))
+      s$fill_style(Galaxies$BACK)
+      s$fill_rect(0, 0, s$width, s$height)
+      return(s$alpha(1))
+    }
+    NULL
+  })
+  statik(cl, "transport", function(theory = NULL, ...) {
+    ink <- Ink$new()
+    lanes <- Video$transport_lanes(theory, ink)
+    n <- m_round((r_mul(14, Video$FPS)))
+    pic <- Picture$new(id = "video.transport", what = "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line", width = Video$WIDTH, height = Video$HEIGHT, frames = n, paint = function(played = NULL, ...) {
+      return(Banded$new(inner = Unrolling$new(lanes = lanes, ink = ink, per = Video$per_tick(lanes)), top = Video$STRIP_TOP, tall = Video$STRIP_TALL))
+      NULL
+    })
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "transport_lanes", function(theory = NULL, ink = NULL, ...) {
+    .set(ink, "every", TRUE)
+    .set(ink, "top", 36)
+    lanes <- theory$transport_lanes(ink)
+    .r <- for_each(lanes, function(l) {
+      .set(l, "says", "")
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .set(ink, "centre", Strip$centre_of(lanes))
+    return(lanes)
+    NULL
+  })
+  statik(cl, "per_tick", function(lanes = NULL, ...) {
+    return(m_floor((r_div(m_round((r_mul(14, Video$FPS))), (r_add(len(lanes), 1))))))
+    NULL
+  })
+  statik(cl, "look", function(width = NULL, lane = NULL, ink = NULL, ...) {
+    seen <- FALSE
+    lo <- 0
+    hi <- 0
+    .r <- for_each(lane$sides, function(sd) {
+      to <- r_add(sd$at, sd$sign)
+      if (!truthy(seen)) {
+        .w("lo", sd$at)
+        .w("hi", sd$at)
+        .w("seen", TRUE)
+      }
+      .w("lo", Fmt$min(lo, Fmt$min(sd$at, to)))
+      .w("hi", Fmt$max(hi, Fmt$max(sd$at, to)))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .r <- for_each(lane$sources, function(p) {
+      if (!truthy(seen)) {
+        .w("lo", p)
+        .w("hi", p)
+        .w("seen", TRUE)
+      }
+      .w("lo", Fmt$min(lo, r_sub(p, 1)))
+      .w("hi", Fmt$max(hi, r_add(p, 1)))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    ext <- r_add(Fmt$max(r_sub(ink$centre, lo), r_sub(hi, ink$centre)), 0.4)
+    lanew <- r_sub(width, r_mul(2, Strip$PAD))
+    cell <- r_div(lanew, (r_add(r_mul(2, ext), 1)))
+    mid <- r_add(Strip$PAD, r_div(lanew, 2))
+    src <- m_first(lane$sources)
+    x0 <- r_add(mid, r_mul((r_sub(src, ink$centre)), cell))
+    return(lst(x0, r_add(r_add(Video$STRIP_TOP, ink$top), r_div((r_sub(Video$STRIP_TALL, ink$top)), 2)), cell, src, r_div((r_sub(Strip$PAD, x0)), cell), r_div((r_sub(r_sub(width, Strip$PAD), x0)), cell)))
+    NULL
+  })
+  statik(cl, "seen", function(p = NULL, yaw = NULL, pitch = NULL, ox = NULL, oy = NULL, cell = NULL, ...) {
+    x1 <- r_sub(r_mul(elem(p, 0), m_cos(yaw)), r_mul(elem(p, 2), m_sin(yaw)))
+    z1 <- r_add(r_mul(elem(p, 0), m_sin(yaw)), r_mul(elem(p, 2), m_cos(yaw)))
+    y1 <- r_sub(r_mul(elem(p, 1), m_cos(pitch)), r_mul(z1, m_sin(pitch)))
+    z2 <- r_add(r_mul(elem(p, 1), m_sin(pitch)), r_mul(z1, m_cos(pitch)))
+    f <- r_div(60, (r_add(60, z2)))
+    return(lst(r_add(ox, r_mul(r_mul(cell, f), x1)), r_sub(oy, r_mul(r_mul(cell, f), y1)), f))
+    NULL
+  })
+  statik(cl, "arrow", function(s = NULL, x = NULL, y = NULL, ux = NULL, uy = NULL, cell = NULL, a = NULL, ...) {
+    HEADW <- Fmt$max(7, Fmt$min(12, r_mul(cell, 0.20)))
+    REACH <- r_mul(cell, 0.25)
+    BAR <- Fmt$max(2.5, Fmt$min(4.5, r_mul(cell, 0.075)))
+    BASE <- r_mul(HEADW, 0.45)
+    TIP <- r_mul(HEADW, 0.55)
+    LEN <- r_sub(REACH, BASE)
+    SEEN <- r_sub(TIP, r_div(BAR, 0.84))
+    s$line_width(BAR)
+    s$stroke_style("rgba(" %+% text_of(Ink$NEUTRAL) %+% "," %+% text_of(r_mul(0.32, a)) %+% ")")
+    s$begin_path
+    s$move_to(r_sub(x, r_mul(ux, (r_add(BASE, LEN)))), r_sub(y, r_mul(uy, (r_add(BASE, LEN)))))
+    s$line_to(r_sub(x, r_mul(ux, BASE)), r_sub(y, r_mul(uy, BASE)))
+    s$stroke
+    s$stroke_style("rgba(" %+% text_of(Ink$NEUTRAL) %+% "," %+% text_of(a) %+% ")")
+    s$begin_path
+    s$move_to(x, y)
+    s$line_to(r_add(x, r_mul(ux, (r_add(SEEN, LEN)))), r_add(y, r_mul(uy, (r_add(SEEN, LEN)))))
+    s$stroke
+    s$fill_style("rgba(" %+% text_of(Ink$NEUTRAL) %+% "," %+% text_of(r_mul(0.97, a)) %+% ")")
+    s$begin_path
+    s$move_to(r_add(x, r_mul(ux, TIP)), r_add(y, r_mul(uy, TIP)))
+    s$line_to(r_sub(r_sub(x, r_mul(ux, BASE)), r_mul(r_mul(uy, HEADW), 0.42)), r_add(r_sub(y, r_mul(uy, BASE)), r_mul(r_mul(ux, HEADW), 0.42)))
+    s$line_to(r_add(r_sub(x, r_mul(ux, BASE)), r_mul(r_mul(uy, HEADW), 0.42)), r_sub(r_sub(y, r_mul(uy, BASE)), r_mul(r_mul(ux, HEADW), 0.42)))
+    return(s$fill)
+    NULL
+  })
+  statik(cl, "way", function(k = NULL, space = NULL, ...) {
+    q <- m_floor((r_div(k, 2)))
+    o <- elem(lst(lst(1, 0), lst(1, 1), lst(0, 1), lst(r_sub(0, 1), 1), lst(r_sub(0, 1), 0), lst(r_sub(0, 1), r_sub(0, 1)), lst(0, r_sub(0, 1)), lst(1, r_sub(0, 1))), k)
+    b <- elem(lst(lst(0.5, 0.5), lst(r_sub(0, 0.5), 0.5), lst(r_sub(0, 0.5), r_sub(0, 0.5)), lst(0.5, r_sub(0, 0.5))), q)
+    bz <- (if (truthy(eq(r_mod(k, 2), 0))) 0.5 else r_sub(0, 0.5))
+    return(lst(r_add(elem(o, 0), r_mul((r_sub(elem(b, 0), elem(o, 0))), space)), r_add(elem(o, 1), r_mul((r_sub(elem(b, 1), elem(o, 1))), space)), r_mul(bz, space)))
+    NULL
+  })
+  statik(cl, "lattice", function(s = NULL, lane = NULL, look = NULL, grow = NULL, ticks = NULL, fade = NULL, earth = NULL, ox = NULL, oy = NULL, cell = NULL, rays = NULL, dense_from = NULL, far = NULL, ...) {
+    plane <- Video$smooth(r_div((r_sub(grow, 0.25)), 0.3))
+    space <- Video$smooth(r_div((r_sub(grow, 0.55)), 0.35))
+    yaw <- r_mul(0.55, space)
+    pitch <- r_mul(0.42, space)
+    src <- elem(look, 3)
+    lo <- elem(look, 4)
+    hi <- elem(look, 5)
+    R <- 7
+    a <- r_mul(R, plane)
+    b <- r_mul(R, space)
+    pt <- function(p = NULL, ...) {
+      return(Video$seen(p, yaw, pitch, ox, oy, cell))
+      NULL
+    }
+    line <- function(p = NULL, q = NULL, al = NULL, ...) {
+      if (truthy(gt(al, 0.004))) {
+        P <- (pt)(p)
+        Q <- (pt)(q)
+        s$stroke_style("rgba(" %+% text_of(Ink$NEUTRAL) %+% "," %+% text_of(r_mul(0.16, al)) %+% ")")
+        s$line_width(1)
+        s$begin_path
+        s$move_to(elem(P, 0), elem(P, 1))
+        s$line_to(elem(Q, 0), elem(Q, 1))
+        return(s$stroke)
+      }
+      NULL
+    }
+    dot <- function(p = NULL, al = NULL, ...) {
+      if (truthy(gt(al, 0.004))) {
+        P <- (pt)(p)
+        s$fill_style("rgba(" %+% text_of(Ink$NEUTRAL) %+% "," %+% text_of(r_mul(0.6, al)) %+% ")")
+        s$begin_path
+        s$arc(elem(P, 0), elem(P, 1), r_mul(2.6, elem(P, 2)), 0, (2 * pi))
+        return(s$fill)
+      }
+      NULL
+    }
+    ilo <- m_round((r_sub(m_reduce(lane$points, m_first(lane$points), function(p = NULL, q = NULL, ...) {
+      return(Fmt$min(p, q))
+      NULL
+    }), src)))
+    ihi <- m_round((r_sub(m_reduce(lane$points, m_first(lane$points), function(p = NULL, q = NULL, ...) {
+      return(Fmt$max(p, q))
+      NULL
+    }), src)))
+    .r <- for_range(r_add(r_mul(2, R), 1), function(jj) {
+      j <- r_sub(jj, R)
+      .r <- for_range(r_add(r_mul(2, R), 1), function(ll) {
+        l <- r_sub(ll, R)
+        vis <- r_mul(r_mul(fade, Fmt$min(1, Fmt$max(0, r_sub(r_add(a, 1), m_abs(j))))), Fmt$min(1, Fmt$max(0, r_sub(r_add(b, 1), m_abs(l)))))
+        if (truthy(gt(vis, 0.004))) {
+          (line)(lst(lo, j, l), lst(hi, j, l), vis)
+          .r <- for_range(r_add(r_sub(ihi, ilo), 1), function(ii) {
+            (dot)(lst(r_add(ilo, ii), j, l), vis)
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+          if (truthy((if (truthy(.x <- (if (truthy(.x <- gt(space, 0.01))) lt(j, R) else .x))) lt(l, R) else .x))) {
+            .r <- for_range(r_sub(ihi, ilo), function(ii) {
+              (dot)(lst(r_add(r_add(ilo, ii), 0.5), r_add(j, 0.5), r_add(l, 0.5)), r_mul(vis, space))
+              CONTINUE
+            })
+            if (!is.null(.r)) return(.r[[1]])
+          }
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .r <- for_range(r_add(r_sub(ihi, ilo), 1), function(ii) {
+      i <- r_add(ilo, ii)
+      .r <- for_range(r_add(r_mul(2, R), 1), function(ll) {
+        l <- r_sub(ll, R)
+        (line)(lst(i, r_sub(0, a), l), lst(i, a, l), r_mul(r_mul(fade, plane), Fmt$min(1, Fmt$max(0, r_sub(r_add(b, 1), m_abs(l))))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      .r <- for_range(r_add(r_mul(2, R), 1), function(jj) {
+        j <- r_sub(jj, R)
+        (line)(lst(i, j, r_sub(0, b)), lst(i, j, b), r_mul(r_mul(fade, space), Fmt$min(1, Fmt$max(0, r_sub(r_add(a, 1), m_abs(j))))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    T <- m_floor(ticks)
+    ray <- function(k = NULL, r = NULL, w = NULL, ...) {
+      if (truthy((if (truthy(.x <- (if (truthy(.x <- gt(w, 0.004))) ge(r, 1) else .x))) le(r, far) else .x))) {
+        d <- Video$way(k, space)
+        P <- (pt)(lst(r_mul(elem(d, 0), r), r_mul(elem(d, 1), r), r_mul(elem(d, 2), r)))
+        Q <- (pt)(lst(r_mul(elem(d, 0), (r_add(r, 0.25))), r_mul(elem(d, 1), (r_add(r, 0.25))), r_mul(elem(d, 2), (r_add(r, 0.25)))))
+        len <- Fmt$hypot(r_sub(elem(Q, 0), elem(P, 0)), r_sub(elem(Q, 1), elem(P, 1)))
+        if (truthy(gt(len, 0.01))) {
+          return(Video$arrow(s, elem(P, 0), elem(P, 1), r_div((r_sub(elem(Q, 0), elem(P, 0))), len), r_div((r_sub(elem(Q, 1), elem(P, 1))), len), r_mul(len, 4), r_mul(r_mul(w, rays), Fmt$min(1, r_sub(far, r)))))
+        }
+      }
+      NULL
+    }
+    .r <- for_each(lane$sides, function(sd) {
+      (ray)((if (truthy(gt(sd$sign, 0))) 0 else 4), r_add(m_abs((r_sub(sd$at, src))), T), 1)
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .r <- for_range(T, function(m) {
+      e <- r_add(m, 1)
+      if (truthy((if (truthy(.x <- eq(r_mod(e, 2), 1))) .x else gt(e, dense_from)))) {
+        .r <- for_range(8, function(k) {
+          (ray)(k, r_sub(r_add(1, T), e), (if (truthy(eq(r_mod(k, 4), 0))) 1 else plane))
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    P <- (pt)(lst(0, 0, 0))
+    half <- Fmt$max(9, Fmt$min(18, r_mul(cell, 0.3)))
+    s$fill_style("rgba(" %+% text_of(Ink$SOURCE) %+% "," %+% text_of(r_mul(0.14, (r_sub(1, earth)))) %+% ")")
+    s$fill_rect(r_sub(elem(P, 0), half), r_sub(elem(P, 1), half), r_mul(2, half), r_mul(2, half))
+    s$stroke_style("rgba(" %+% text_of(Ink$SOURCE) %+% "," %+% text_of(r_mul(0.9, (r_sub(1, earth)))) %+% ")")
+    s$line_width(1.5)
+    s$stroke_rect(r_sub(elem(P, 0), half), r_sub(elem(P, 1), half), r_mul(2, half), r_mul(2, half))
+    if (truthy(gt(earth, 0))) {
+      s$fill_style("rgba(" %+% text_of(Ink$SOURCE) %+% "," %+% text_of(earth) %+% ")")
+      s$begin_path
+      s$arc(elem(P, 0), elem(P, 1), r_add(2.6, r_mul(7.4, earth)), 0, (2 * pi))
+      return(s$fill)
+    }
+    NULL
+  })
+  statik(cl, "source_camera", function(s = NULL, look = NULL, grow = NULL, ...) {
+    e <- Video$smooth(r_div(grow, 0.3))
+    return(lst(r_add(elem(look, 0), r_mul((r_sub(r_div(s$width, 2), elem(look, 0))), e)), r_add(elem(look, 1), r_mul((r_sub(r_div(s$height, 2), elem(look, 1))), e)), m_exp((r_add(m_ln(elem(look, 2)), r_mul((r_sub(m_ln(95), m_ln(elem(look, 2)))), e))))))
+    NULL
+  })
+  statik(cl, "to_source", function(theory = NULL, ...) {
+    ink <- Ink$new()
+    lanes <- Video$transport_lanes(theory, ink)
+    n <- m_round((r_mul(4, Video$FPS)))
+    pic <- Picture$new(id = "video.to-source", what = "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)", width = Video$WIDTH, height = Video$HEIGHT, frames = n, paint = function(played = NULL, ...) {
+      return(Growing$new(n = n, lane = m_last(lanes), ink = ink, per = Video$per_tick(lanes)))
+      NULL
+    })
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "to_solar", function(theory = NULL, ...) {
+    ink <- Ink$new()
+    lanes <- Video$transport_lanes(theory, ink)
+    sol <- theory$solar
+    r <- sol$record
+    at <- 0
+    .r <- for_range(len(r$names), function(k) {
+      .w("at", (if (truthy(eq(elem(r$names, k), "marks"))) k else at))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    off <- m_sum(m_take(r$sizes, at))
+    n <- m_round((r_mul(8, Video$FPS)))
+    pic <- Picture$new(id = "video.to-solar", what = "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it", width = Video$WIDTH, height = Video$HEIGHT, frames = n, paint = function(played = NULL, ...) {
+      return(Planets$new(n = n, lane = m_last(lanes), ink = ink, per = Video$per_tick(lanes), stamp = r$stamp, off = off, width = r$width, bodies = m_round((r_div((r_sub(elem(r$sizes, at), 1)), 6)))))
+      NULL
+    })
+    .set(pic, "uses", lst("solar.inner"))
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "planets", function(s = NULL, t = NULL, lane = NULL, look = NULL, ticks = NULL, film = NULL, off = NULL, width = NULL, bodies = NULL, ...) {
+    SOLAR <- Measured$of("solar-inner")
+    if (truthy(eq(SOLAR, NULL))) {
+      (fail)("solar-inner is not on disk - run `npx ray data` and try again")
+    }
+    NAMES <- mem(SOLAR$header, key_("names"))
+    PER <- mem(SOLAR$columns, key_("period"))
+    PLANETS <- filt(rng(len(NAMES)), function(i = NULL, ...) {
+      return(gt(elem(PER, i), 0))
+      NULL
+    })
+    F <- mem(film$columns, key_("frames"))
+    FR <- mem(film$header, key_("frames"))
+    s$fill_style(Galaxies$BACK)
+    s$fill_rect(0, 0, s$width, s$height)
+    fade <- r_sub(1, Video$smooth(r_div((r_sub(t, 0.05)), 0.4)))
+    rays <- r_sub(1, Video$smooth(r_div((r_sub(t, 0.45)), 0.35)))
+    earth <- Video$smooth(r_div((r_sub(t, 0.3)), 0.3))
+    e <- Video$smooth(r_div(t, 0.92))
+    come <- Video$smooth(r_div((r_sub(t, 0.45)), 0.35))
+    u <- Fmt$min(r_sub(FR, 1), r_add(Video$SOLAR_FROM, r_mul((r_sub(Video$SOLAR_TO, Video$SOLAR_FROM)), t)))
+    f0 <- m_floor(u)
+    f1 <- Fmt$min(r_add(f0, 1), r_sub(FR, 1))
+    w <- r_sub(u, f0)
+    mark <- function(f = NULL, k = NULL, c = NULL, ...) {
+      return(elem(F, r_add(r_add(r_add(r_mul(f, width), off), r_mul(6, k)), c)))
+      NULL
+    }
+    where <- function(k = NULL, ...) {
+      return(lst(r_add((mark)(f0, k, 0), r_mul(w, (r_sub((mark)(f1, k, 0), (mark)(f0, k, 0))))), r_add((mark)(f0, k, 1), r_mul(w, (r_sub((mark)(f1, k, 1), (mark)(f0, k, 1)))))))
+      NULL
+    }
+    reach <- 0
+    .r <- for_range(FR, function(f) {
+      .r <- for_range(r_sub(bodies, 1), function(k) {
+        .w("reach", Fmt$max(reach, Fmt$hypot(r_sub((mark)(f, r_add(k, 1), 0), (mark)(f, 0, 0)), r_sub((mark)(f, r_add(k, 1), 1), (mark)(f, 0, 1)))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    earth_body <- 0
+    .r <- for_range(len(PLANETS), function(k) {
+      .w("earth_body", (if (truthy(eq(elem(NAMES, elem(PLANETS, k)), "Earth"))) r_add(k, 1) else earth_body))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    E <- (where)(earth_body)
+    O <- (where)(0)
+    last <- r_mul(2.1, (r_add(reach, Fmt$hypot(r_sub(elem(E, 0), elem(O, 0)), r_sub(elem(E, 1), elem(O, 1))))))
+    across <- m_exp((r_add(m_ln((r_div(last, 180))), r_mul((r_sub(m_ln(last), m_ln((r_div(last, 180))))), e))))
+    px <- r_div(s$height, across)
+    cx <- elem(E, 0)
+    cy <- elem(E, 1)
+    X <- function(x = NULL, ...) {
+      return(r_add(r_div(s$width, 2), r_mul((r_sub(x, cx)), px)))
+      NULL
+    }
+    Y <- function(y = NULL, ...) {
+      return(r_sub(r_div(s$height, 2), r_mul((r_sub(y, cy)), px)))
+      NULL
+    }
+    if (truthy((if (truthy(.x <- gt(fade, 0.004))) .x else gt(rays, 0.004)))) {
+      Video$lattice(s, lane, look, 1, r_add(ticks, r_mul(r_mul(300, t), t)), fade, earth, (X)(elem(E, 0)), (Y)(elem(E, 1)), r_div(r_mul(95, (r_div(last, 180))), across), rays, m_floor(ticks), r_add(16, r_mul(40, Video$smooth(r_div(t, 0.4)))))
+    }
+    .r <- for_range(r_sub(bodies, 1), function(k) {
+      b <- r_add(k, 1)
+      ink <- elem(Video$PLANET_INK, Fmt$min(3, k))
+      s$alpha(r_mul(0.85, come))
+      s$stroke_style(ink)
+      s$line_width(2)
+      s$begin_path
+      .r <- for_range(FR, function(f) {
+        if (truthy(eq(f, 0))) {
+          s$move_to((X)((mark)(f, b, 0)), (Y)((mark)(f, b, 1)))
+        } else {
+          s$line_to((X)((mark)(f, b, 0)), (Y)((mark)(f, b, 1)))
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      s$stroke
+      P <- (where)(b)
+      x <- (X)(elem(P, 0))
+      y <- (Y)(elem(P, 1))
+      s$alpha((if (truthy(eq(b, earth_body))) earth else come))
+      s$stroke_style(ink)
+      s$line_width(2.5)
+      s$begin_path
+      s$arc(x, y, 13, 0, (2 * pi))
+      s$stroke
+      s$fill_style((if (truthy(eq(b, earth_body))) "rgba(" %+% text_of(Ink$SOURCE) %+% "," %+% text_of(r_sub(1, come)) %+% ")" else "#000000"))
+      s$begin_path
+      s$arc(x, y, (if (truthy(eq(b, earth_body))) r_add(r_mul(10, (r_sub(1, come))), r_mul(2.5, come)) else 2.5), 0, (2 * pi))
+      s$fill
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    s$alpha(come)
+    s$stroke_style("#e0a526")
+    s$line_width(3)
+    s$begin_path
+    s$arc((X)(elem(O, 0)), (Y)(elem(O, 1)), 26, 0, (2 * pi))
+    s$stroke
+    s$fill_style("#000000")
+    s$begin_path
+    s$arc((X)(elem(O, 0)), (Y)(elem(O, 1)), 3, 0, (2 * pi))
+    s$fill
+    return(s$alpha(1))
+    NULL
+  })
+  static_getter(cl, "end", function() {
+    n <- m_round((r_mul(20, Video$FPS)))
+    pic <- Picture$new(id = "video.end", what = "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics", width = Video$WIDTH, height = Video$HEIGHT, frames = n, paint = function(played = NULL, ...) {
+      return(EndCard$new(n = n))
+      NULL
+    })
+    .set(pic, "images", lst(Video$LOGO))
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+  statik(cl, "end_card", function(s = NULL, i = NULL, n = NULL, ...) {
+    s$fill_style(Galaxies$BACK)
+    s$fill_rect(0, 0, s$width, s$height)
+    s$alpha(Video$smooth(r_div(i, Video$FPS)))
+    w <- 1500
+    s$image(Video$LOGO, r_div((r_sub(s$width, w)), 2), 330, w, r_div(w, 3))
+    s$text_align("center")
+    s$fill_style(Galaxies$SEEN)
+    s$font("600 72px ui-sans-serif, system-ui, sans-serif")
+    s$fill_text("Physics Project", r_div(s$width, 2), 960)
+    s$fill_style("#3ddcff")
+    s$font("44px ui-sans-serif, system-ui, sans-serif")
+    s$fill_text("orbitmines.com/physics", r_div(s$width, 2), 1060)
+    return(s$alpha(1))
+    NULL
+  })
+  static_getter(cl, "montage", function() {
+    pic <- Picture$still("video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", Video$WIDTH, Video$HEIGHT, function(s = NULL, ...) {
+
+      NULL
+    })
+    .set(pic, "parts", Video$PARTS)
+    .set(pic, "on_request", TRUE)
+    return(pic)
+    NULL
+  })
+})
+
+Shot <- ray_class("Shot", Node, function(cl) {
+  field(cl, "film_id", NULL)
+  field(cl, "seconds", NULL)
+  field(cl, "from_zoom", NULL)
+  field(cl, "to_zoom", NULL)
+  field(cl, "from_sun", NULL)
+  field(cl, "to_sun", NULL)
+  field(cl, "from_at", NULL)
+  field(cl, "to_at", NULL)
+  field(cl, "tilt", NULL)
+  field(cl, "turn", NULL)
+  field(cl, "title", NULL)
+  field(cl, "fade_in", NULL)
+  field(cl, "fade_out", NULL)
+  getter(cl, "frames", function() {
+    return(m_round((r_mul(self$seconds, Video$FPS))))
+    NULL
+  })
+})
+
+Sky <- ray_class("Sky", Painter, function(cl) {
+  field(cl, "shot", NULL)
+  field(cl, "sol", function() NULL)
+  field(cl, "meta", function() lst())
+  field(cl, "sol_stamp", function() "")
+  field(cl, "shown_frames", function() 0)
+  field(cl, "film", function() NULL)
+  field(cl, "tracks", function() NULL)
+  method(cl, "frame", function(s = NULL, dt = NULL, ...) {
+    if (truthy(eq(self$film, NULL))) {
+      self$film <- Measured$of(self$shot$film_id)
+      self$tracks <- Measured$of("" %+% text_of(self$shot$film_id) %+% ".stars")
+    }
+    if (truthy(eq(self$film, NULL))) {
+      (fail)("" %+% text_of(self$shot$film_id) %+% " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" %+% text_of(self$shot$film_id) %+% " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts .")
+    }
+    if (truthy((if (truthy(.x <- gt(len(self$meta), 0))) eq(self$sol, NULL) else .x))) {
+      self$sol <- Measured$of("solar.inner.frames")
+      if (truthy(eq(self$sol, NULL))) {
+        (fail)("solar.inner is not recorded - run `npx ray visuals solar.inner` first")
+      }
+      if (truthy((!eq(mem(self$sol$header, key_("stamp")), self$sol_stamp)))) {
+        (fail)("solar.inner's recording is stale - run `npx ray visuals solar.inner` again")
+      }
+    }
+    Video$sky(s, self$shot, self$film, self$tracks, self$shown_frames, self$sol, self$meta)
+    self$shown_frames <- r_add(self$shown_frames, 1)
+    NULL
+  })
+})
+
+Band <- ray_class("Band", Surface, function(cl) {
+  field(cl, "inner", NULL)
+  method(cl, "fill_style", function(colour = NULL, ...) {
+    return(self$inner$fill_style(colour))
+    NULL
+  })
+  method(cl, "stroke_style", function(colour = NULL, ...) {
+    return(self$inner$stroke_style(colour))
+    NULL
+  })
+  method(cl, "line_width", function(w = NULL, ...) {
+    return(self$inner$line_width(w))
+    NULL
+  })
+  method(cl, "alpha", function(v = NULL, ...) {
+    return(self$inner$alpha(v))
+    NULL
+  })
+  method(cl, "fill_rect", function(x = NULL, y = NULL, w = NULL, h = NULL, ...) {
+    return(self$inner$fill_rect(x, y, w, h))
+    NULL
+  })
+  method(cl, "stroke_rect", function(x = NULL, y = NULL, w = NULL, h = NULL, ...) {
+    return(self$inner$stroke_rect(x, y, w, h))
+    NULL
+  })
+  method(cl, "clear_rect", function(x = NULL, y = NULL, w = NULL, h = NULL, ...) {
+    return(self$inner$clear_rect(x, y, w, h))
+    NULL
+  })
+  getter(cl, "begin_path", function() {
+    return(self$inner$begin_path)
+    NULL
+  })
+  method(cl, "move_to", function(x = NULL, y = NULL, ...) {
+    return(self$inner$move_to(x, y))
+    NULL
+  })
+  method(cl, "line_to", function(x = NULL, y = NULL, ...) {
+    return(self$inner$line_to(x, y))
+    NULL
+  })
+  method(cl, "arc", function(x = NULL, y = NULL, r = NULL, start_at = NULL, end_at = NULL, ...) {
+    return(self$inner$arc(x, y, r, start_at, end_at))
+    NULL
+  })
+  getter(cl, "stroke", function() {
+    return(self$inner$stroke)
+    NULL
+  })
+  getter(cl, "fill", function() {
+    return(self$inner$fill)
+    NULL
+  })
+  method(cl, "font", function(name = NULL, ...) {
+    return(self$inner$font(name))
+    NULL
+  })
+  method(cl, "text_align", function(how = NULL, ...) {
+    return(self$inner$text_align(how))
+    NULL
+  })
+  method(cl, "text_baseline", function(how = NULL, ...) {
+    return(self$inner$text_baseline(how))
+    NULL
+  })
+  method(cl, "fill_text", function(t = NULL, x = NULL, y = NULL, ...) {
+    return(self$inner$fill_text(t, x, y))
+    NULL
+  })
+  method(cl, "measure", function(t = NULL, ...) {
+    return(self$inner$measure(t))
+    NULL
+  })
+  getter(cl, "save", function() {
+    return(self$inner$save)
+    NULL
+  })
+  getter(cl, "restore", function() {
+    return(self$inner$restore)
+    NULL
+  })
+  method(cl, "translate", function(x = NULL, y = NULL, ...) {
+    return(self$inner$translate(x, y))
+    NULL
+  })
+  method(cl, "rotate", function(angle = NULL, ...) {
+    return(self$inner$rotate(angle))
+    NULL
+  })
+  method(cl, "dash", function(segments = NULL, ...) {
+    return(self$inner$dash(segments))
+    NULL
+  })
+  method(cl, "gradient_stroke", function(x0 = NULL, x1 = NULL, stops = NULL, at = NULL, ...) {
+    return(self$inner$gradient_stroke(x0, x1, stops, at))
+    NULL
+  })
+  method(cl, "image", function(src = NULL, x = NULL, y = NULL, w = NULL, h = NULL, ...) {
+    return(self$inner$image(src, x, y, w, h))
+    NULL
+  })
+})
+
+Banded <- ray_class("Banded", Painter, function(cl) {
+  field(cl, "inner", NULL)
+  field(cl, "top", NULL)
+  field(cl, "tall", NULL)
+  method(cl, "frame", function(s = NULL, dt = NULL, ...) {
+    s$fill_style(Galaxies$BACK)
+    s$fill_rect(0, 0, s$width, s$height)
+    s$save
+    s$translate(0, self$top)
+    self$inner$frame(Band$new(width = s$width, height = self$tall, inner = s), dt)
+    return(s$restore)
+    NULL
+  })
+})
+
+Growing <- ray_class("Growing", Painter, function(cl) {
+  field(cl, "n", NULL)
+  field(cl, "lane", NULL)
+  field(cl, "ink", NULL)
+  field(cl, "per", NULL)
+  field(cl, "shown_frames", function() 0)
+  method(cl, "frame", function(s = NULL, dt = NULL, ...) {
+    s$fill_style(Galaxies$BACK)
+    s$fill_rect(0, 0, s$width, s$height)
+    look <- Video$look(s$width, self$lane, self$ink)
+    grow <- r_div(self$shown_frames, Fmt$max(1, r_sub(self$n, 1)))
+    cam <- Video$source_camera(s, look, grow)
+    Video$lattice(s, self$lane, look, grow, r_div(self$shown_frames, self$per), 1, 0, elem(cam, 0), elem(cam, 1), elem(cam, 2), 1, 1000000, 16)
+    self$shown_frames <- r_add(self$shown_frames, 1)
+    NULL
+  })
+})
+
+Planets <- ray_class("Planets", Painter, function(cl) {
+  field(cl, "n", NULL)
+  field(cl, "lane", NULL)
+  field(cl, "ink", NULL)
+  field(cl, "per", NULL)
+  field(cl, "stamp", NULL)
+  field(cl, "off", NULL)
+  field(cl, "width", NULL)
+  field(cl, "bodies", NULL)
+  field(cl, "shown_frames", function() 0)
+  field(cl, "film", function() NULL)
+  method(cl, "frame", function(s = NULL, dt = NULL, ...) {
+    if (truthy(eq(self$film, NULL))) {
+      self$film <- Measured$of("solar.inner.frames")
+    }
+    if (truthy(eq(self$film, NULL))) {
+      (fail)("solar.inner is not recorded - run `npx ray visuals solar.inner` first")
+    }
+    if (truthy((!eq(mem(self$film$header, key_("stamp")), self$stamp)))) {
+      (fail)("solar.inner's recording is stale - run `npx ray visuals solar.inner` again")
+    }
+    look <- Video$look(s$width, self$lane, self$ink)
+    Video$planets(s, r_div(self$shown_frames, Fmt$max(1, r_sub(self$n, 1))), self$lane, look, r_div((r_add(r_sub(m_round((r_mul(4, Video$FPS))), 1), self$shown_frames)), self$per), self$film, self$off, self$width, self$bodies)
+    self$shown_frames <- r_add(self$shown_frames, 1)
+    NULL
+  })
+})
+
+EndCard <- ray_class("EndCard", Painter, function(cl) {
+  field(cl, "n", NULL)
+  field(cl, "shown_frames", function() 0)
+  method(cl, "frame", function(s = NULL, dt = NULL, ...) {
+    Video$end_card(s, self$shown_frames, self$n)
+    self$shown_frames <- r_add(self$shown_frames, 1)
+    NULL
+  })
+})
+
 GTheory <- ray_class("G", Theory, function(cl) {
   field(cl, "name", function() "G")
   getter(cl, "lattice", function() {
@@ -17548,14 +18286,12 @@ GTheory <- ray_class("G", Theory, function(cl) {
     .set(ink, "every", TRUE)
     w <- Strip$line(self, 10)
     Strip$light(w, 0, 1)
-    lanes <- lst(Strip$lane(w, ink))
-    .r <- for_range(8, function(t) {
+    lanes <- m_concat(lst(Strip$lane(w, ink)), m_map(rng(8), function(t = NULL, ...) {
       Strip$begin(w)
       Strip$run(w, lst("/c", "/4"))
-      m_push(lanes, Strip$lane(w, ink))
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
+      return(Strip$lane(w, ink))
+      NULL
+    }))
     return(Strip$tell("rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", lanes, ink))
     NULL
   })
@@ -17565,18 +18301,16 @@ GTheory <- ray_class("G", Theory, function(cl) {
     .set(ink, "top", 36)
     w <- Strip$line(self, 17)
     w$add(Scripted$new(at = Vector$new(components = lst(8)), plan = lst("", "+", "-", "", "+-", "", "+", "-"), weight = 1))
-    lanes <- lst(Strip$lane(w, ink))
-    .r <- for_range(8, function(t) {
+    lanes <- m_concat(lst(Strip$lane(w, ink)), m_map(rng(8), function(t = NULL, ...) {
       Strip$begin(w)
       Strip$run(w, lst("/c", "/4"))
       moved <- Strip$lane(w, ink)
       Strip$run(w, lst("/S.1"))
       now <- Strip$lane(w, ink)
       .set(now, "says", Strip$emitting(moved, now))
-      m_push(lanes, now)
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
+      return(now)
+      NULL
+    }))
     return(Strip$tell("rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", lanes, ink))
     NULL
   })
@@ -17584,12 +18318,15 @@ GTheory <- ray_class("G", Theory, function(cl) {
     ink <- Ink$new()
     .set(ink, "every", TRUE)
     .set(ink, "top", 36)
+    return(Strip$tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", self$transport_lanes(ink), ink))
+    NULL
+  })
+  method(cl, "transport_lanes", function(ink = NULL, ...) {
     w <- Strip$line(self, 21)
     s <- w$add(Scripted$new(at = Vector$new(components = lst(9)), plan = lst("+-", "", "", "", "+-"), weight = 4))
     .set(s, "moves", TRUE)
     .set(s, "momentum", Vector$new(components = lst(1)))
-    lanes <- lst(Strip$lane(w, ink))
-    .r <- for_range(9, function(t) {
+    return(m_concat(lst(Strip$lane(w, ink)), m_map(rng(9), function(t = NULL, ...) {
       Strip$begin(w)
       Strip$run(w, lst("/c", "/4"))
       moved <- Strip$lane(w, ink)
@@ -17597,16 +18334,11 @@ GTheory <- ray_class("G", Theory, function(cl) {
       emitted <- Strip$emitting(moved, Strip$lane(w, ink))
       Strip$run(w, lst("/S.v"))
       now <- Strip$lane(w, ink)
-      went <- ""
-      if (truthy(s$stepped)) {
-        .w("went", (if (truthy(gt(elem(w$geometry$V(s$moved_along)$components, 0), 0))) "steps right" else "steps left"))
-      }
+      went <- (if (truthy((!truthy(s$stepped)))) "" else ((if (truthy(gt(elem(w$geometry$V(s$moved_along)$components, 0), 0))) "steps right" else "steps left")))
       .set(now, "says", (if (truthy(m_empty(went))) emitted else ((if (truthy(m_empty(emitted))) went else "" %+% text_of(went) %+% ", " %+% text_of(emitted) %+% ""))))
-      m_push(lanes, now)
-      CONTINUE
-    })
-    if (!is.null(.r)) return(.r[[1]])
-    return(Strip$tell("rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", lanes, ink))
+      return(now)
+      NULL
+    })))
     NULL
   })
   getter(cl, "expansion", function() {
@@ -17837,8 +18569,7 @@ GTheory <- ray_class("G", Theory, function(cl) {
     }, place = function(setup = NULL, ...) {
       sun <- Body$new(x = 0, y = 0, mx = (pulse)(0), ways = (ways)(0))
       .set(sun, "tag", 1)
-      out <- lst(sun)
-      .r <- for_range(len(PLANETS), function(k) {
+      return(m_concat(lst(sun), m_map(rng(len(PLANETS)), function(k = NULL, ...) {
         i <- elem(PLANETS, k)
         b_ <- Body$new(x = (cells)(r_mul(elem(AX, i), (r_add(1, elem(EC, i))))), y = 0, mx = (pulse)(i), ways = (ways)(i))
         .set(b_, "tag", r_add(2, k))
@@ -17848,11 +18579,9 @@ GTheory <- ray_class("G", Theory, function(cl) {
         .set(b_, "launch", "orbit")
         .set(b_, "ecc", elem(EC, i))
         .set(b_, "py", r_sub(0, 1))
-        m_push(out, b_)
-        CONTINUE
-      })
-      if (!is.null(.r)) return(.r[[1]])
-      return(out)
+        return(b_)
+        NULL
+      })))
       NULL
     })
     BURN <- r_mul(2, (r_add(VIEW, MARGIN)))

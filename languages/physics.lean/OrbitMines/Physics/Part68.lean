@@ -128,12 +128,9 @@ ray_impl_static "paint" (p_0 : Setup) (s_0 : Surface) (ch_0 : object) (t_0 : Flo
       pure ()
     pure ()
   Value.null |> ωsink
-  let weight_0 ← IO.mkRef (0 : Float)
-  for i1 in [0:ωrangeN (← ωget (← p_0.get) "bodies")] do
-    let k_1 ← IO.mkRef (ωnatF i1)
-    (← ωwr weight_0 (← ωadd (← weight_0.get) (← ωelem (← marks_0.get) (← ωadd (← ωmul (← k_1.get) (6 : Float)) (5 : Float))))) |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let weight_0 ← IO.mkRef (← dot! (← dot! (← ωrrange (← ωget (← p_0.get) "bodies")) rmap ((fn! [k_2] do
+    if true then return (← ωelem (← marks_0.get) (← ωadd (← ωmul (← k_2.get) (6 : Float)) (5 : Float)))
+    return ωnull))) rsum ())
   let frames_0 ← IO.mkRef (← ωdiv (← dot! (← ωelem (← trail_0.get) (← centre_0.get)) rlength ()) (2 : Float))
   let midx_0 ← IO.mkRef (← dot! (← ωrrange (← frames_0.get)) rmap ((fn! [i_2] do
     if true then return (0 : Float)

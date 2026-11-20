@@ -130,12 +130,7 @@ Strip := class {
   /* the world as a lane: every live point, every active ray, every node a source owns */
   static lane (w: World, ink: Ink): Lane => {
     pts := w.live.map(v => v.at.components[0])
-    sides := []
-    w.live.for(v => {
-      v.rays.for(r => {
-        sides.push(Side(at: v.at.components[0], sign: r.along.components[0], ink: ink.ink_of(r))) if r.active
-      })
-    })
+    sides := w.live.reduce([], (out, v) => v.rays.filter(r => r.active).reduce(out, (o, r) => o.push(Side(at: v.at.components[0], sign: r.along.components[0], ink: ink.ink_of(r)))))
     l := Lane(points: pts, sides: sides)
     w.sources.for(s => { s.cells.for(c => { l.sources.push(c.at.components[0]) }) })
     l
@@ -207,9 +202,8 @@ Strip := class {
 
   /* where a film is centred: the middle of where its sources go, or of the seed's points where it has none - so the line does not move under the reader */
   static centre_of (lanes: Lane[]): Real => {
-    xs := []
-    lanes.for(l => { l.sources.for(p => { xs.push(p) }) })
-    xs = lanes.first.points if xs.empty
+    sourced := lanes.reduce([], (out, l) => l.sources.reduce(out, (o, p) => o.push(p)))
+    xs := sourced.empty ? lanes.first.points : sourced
     return 0 if xs.empty
     (xs.reduce(xs.first, (a_, b_) => Fmt.min(a_, b_)) + xs.reduce(xs.first, (a_, b_) => Fmt.max(a_, b_))) / 2
   }

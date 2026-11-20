@@ -352,14 +352,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   /* the c-bar a body stands on: the K by K cells round its cell */
   under (h: Hole): N[] => {
     half := ((this.K - 1) / 2).floor
-    out := []
-    Array.range(this.K).for(dy => {
-      Array.range(this.K).for(dx => {
-        c := this.at(h.x.round - half + dx, h.y.round - half + dy)
-        out.push(c) if c >= 0
-      })
-    })
-    out
+    /* the K x K cells round it, row by row, those inside the box */
+    Array.range(this.K * this.K).map(i => this.at(h.x.round - half + i % this.K, h.y.round - half + (i / this.K).floor)).filter(c => c >= 0)
   }
   /*
    * THE CELLS A BODY'S POINT COVERS, BY AREA: its c-bar is K by K cells about where it truly stands, and each of those

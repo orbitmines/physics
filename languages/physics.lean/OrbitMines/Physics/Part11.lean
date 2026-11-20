@@ -43,23 +43,7 @@ ray_impl_getter "laid" : World := do
   if true then return self
   return ωnull
 ray_impl_method "positions" (N_0 : Float) : (RList Vector) := do
-  let points_0 ← IO.mkRef (← ωlst #[(← new! Vector («components» := (← ωlst #[])))])
-  let i_0 ← IO.mkRef (0 : Float)
-  while ωtruthy (← ωlt (← i_0.get) (← ωget (← ωget self "geometry") "D")) do
-    let grown_0 ← IO.mkRef (← ωlst #[])
-    for e1 in (← ωitems (← points_0.get)) do
-      let p_1 ← IO.mkRef e1
-      let k_1 ← IO.mkRef (0 : Float)
-      while ωtruthy (← ωlt (← k_1.get) (← N_0.get)) do
-        (← dot! (← grown_0.get) rpush ((← new! Vector («components» := (← dot! (← ωget (← p_1.get) "components") rconcat ((← ωlst #[(← k_1.get)]))))))) |> ωsink
-        (← ωwr k_1 (← ωadd (← k_1.get) (1 : Float))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    (← ωwr points_0 (← grown_0.get)) |> ωsink
-    (← ωwr i_0 (← ωadd (← i_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← points_0.get)
+  if true then return (← call! (← cls% Geometry) "grid" ((← ωget (← ωget self "geometry") "D"), (0 : Float), (← N_0.get)))
   return ωnull
 ray_impl_method "place" (at__0 : Vector) : Vertex := do
   if ωtruthy (← ωge (← dot! (← ωget self "vertices") rlength ()) (← ωget self "bound")) then
@@ -145,32 +129,22 @@ ray_impl_method "all" (kind_0 : String) : (RList Value) := do
       if true then return (← ωmany (← ωget (← v_2.get) "rays"))
       return ωnull)))
     pure ()
-  let rays_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← ωget self "live")) do
-    let v_1 ← IO.mkRef e1
-    for e2 in (← ωitems (← ωget (← v_1.get) "rays")) do
-      let r_2 ← IO.mkRef e2
-      (← dot! (← rays_0.get) rpush ((← r_2.get))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let rays_0 ← IO.mkRef (← dot! (← ωget self "live") rreduce ((← ωlst #[]), (fn! [out_2 v_2] do
+    if true then return (← dot! (← ωget (← v_2.get) "rays") rreduce ((← out_2.get), (fn! [o_4 r_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← r_4.get)))
+      return ωnull)))
+    return ωnull)))
   if ωtruthy (← ωeqv (← kind_0.get) ("Boundary" : String)) then
     if true then return (← dot! (← rays_0.get) rmap ((fn! [r_2] do
       if true then return (← ωget (← r_2.get) "terminal")
       return ωnull)))
     pure ()
   if ωtruthy (← ωeqv (← kind_0.get) ("Edge" : String)) then
-    let edges_0 ← IO.mkRef (← ωlst #[])
-    for e1 in (← ωitems (← rays_0.get)) do
-      let r_1 ← IO.mkRef e1
-      let there_1 ← IO.mkRef (← ωget (← r_1.get) "ahead")
-      if ωtruthy (← ωandV (!ωisNull (← there_1.get)) (do pure (← ωlt (← ωget (← ωget (← r_1.get) "vertex") "ordinal") (← ωget (← there_1.get) "ordinal")))) then
-        (← dot! (← edges_0.get) rpush ((← ωget (← ωget (← r_1.get) "terminal") "edge"))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    if true then return (← edges_0.get)
+    if true then return (← dot! (← dot! (← rays_0.get) rfilter ((fn! [r_3] do
+      if true then return (← ωandV (!ωisNull (← ωget (← r_3.get) "ahead")) (do pure (← ωlt (← ωget (← ωget (← r_3.get) "vertex") "ordinal") (← ωget (← ωget (← r_3.get) "ahead") "ordinal"))))
+      return ωnull))) rmap ((fn! [r_2] do
+      if true then return (← ωget (← ωget (← r_2.get) "terminal") "edge")
+      return ωnull)))
     pure ()
   if true then return (← ωlst #[])
   return ωnull

@@ -43,21 +43,21 @@ Expr := class < kind: String {
   shown: String? = None
   simple: Expr? = None
 
-  static num (n: Real): Expr => { e := Expr(kind: "num"); e.value = n; e }
-  static sym (name: String): Expr => { e := Expr(kind: "sym"); e.label = name; e }
-  static field (name: String): Expr => { e := Expr(kind: "field"); e.label = name; e }
+  static num (n: Real): Expr => Expr(kind: "num", value: n)
+  static sym (name: String): Expr => Expr(kind: "sym", label: name)
+  static field (name: String): Expr => Expr(kind: "field", label: name)
   static add (xs: Expr[]): Expr => Expr.flatten("add", xs)
   static mul (xs: Expr[]): Expr => Expr.flatten("mul", xs)
-  static to_power (base: Expr, by: Expr): Expr => { e := Expr(kind: "pow"); e.base = base; e.power = by; e }
+  static to_power (base: Expr, by: Expr): Expr => Expr(kind: "pow", base: base, power: by)
   static pown (base: Expr, by: Real): Expr => Expr.to_power(base, Expr.num(by))
-  static grad (x: Expr): Expr => { e := Expr(kind: "grad"); e.base = x; e }
-  static log (x: Expr): Expr => { e := Expr(kind: "log"); e.base = x; e }
-  static exp (x: Expr): Expr => { e := Expr(kind: "exp"); e.base = x; e }
-  static choose (n: Expr, k: Expr): Expr => { e := Expr(kind: "choose"); e.first_ = n; e.second_ = k; e }
-  static gamma_inc (s: Expr, x: Expr): Expr => { e := Expr(kind: "gammaInc"); e.first_ = s; e.second_ = x; e }
-  static root (x: Expr, name: String): Expr => { e := Expr(kind: "root"); e.base = x; e.bound = name; e }
-  static limit (x: Expr, name: String): Expr => { e := Expr(kind: "limit"); e.base = x; e.bound = name; e }
-  static call (name: String, x: Expr): Expr => { e := Expr(kind: "call"); e.label = name; e.base = x; e }
+  static grad (x: Expr): Expr => Expr(kind: "grad", base: x)
+  static log (x: Expr): Expr => Expr(kind: "log", base: x)
+  static exp (x: Expr): Expr => Expr(kind: "exp", base: x)
+  static choose (n: Expr, k: Expr): Expr => Expr(kind: "choose", first_: n, second_: k)
+  static gamma_inc (s: Expr, x: Expr): Expr => Expr(kind: "gammaInc", first_: s, second_: x)
+  static root (x: Expr, name: String): Expr => Expr(kind: "root", base: x, bound: name)
+  static limit (x: Expr, name: String): Expr => Expr(kind: "limit", base: x, bound: name)
+  static call (name: String, x: Expr): Expr => Expr(kind: "call", label: name, base: x)
   static neg (x: Expr): Expr => Expr.mul([Expr.num(-1), x])
   static sub (a: Expr, b: Expr): Expr => Expr.add([a, Expr.neg(b)])
   static div (a: Expr, b: Expr): Expr => Expr.mul([a, Expr.pown(b, -1)])
@@ -68,16 +68,18 @@ Expr := class < kind: String {
   is_zero (): boolean => this.kind == "num" & this.value == 0
   is_one (): boolean => this.kind == "num" & this.value == 1
   named (): boolean => this.kind == "sym" | this.kind == "field"
+  /* what a tree is made of, in order: a sum's or a product's terms, a power's base and exponent, a choice's or a gamma's two halves, anything else its one part */
+  subtrees (): Expr[] => {
+    return this.of if this.kind == "add" | this.kind == "mul"
+    return [this.base, this.power] if this.kind == "pow"
+    return [this.first_, this.second_] if this.kind == "choose" | this.kind == "gammaInc"
+    this.base == None ? [] : [this.base]
+  }
   /* a numeric exponent, or None */
   by_num (): Real? => this.power.kind == "num" ? this.power.value : None
 
-  static flatten (kind: String, xs: Expr[]): Expr => {
-    e := Expr(kind: kind)
-    out := []
-    xs.for(x => { if x.kind == kind { x.of.for(y => { out.push(y) }) } else { out.push(x) } })
-    e.of = out
-    e
-  }
+  /* a sum of sums is one sum, a product of products one product */
+  static flatten (kind: String, xs: Expr[]): Expr => Expr(kind: kind, of: xs.reduce([], (out, x) => x.kind == kind ? x.of.reduce(out, (o, y) => o.push(y)) : out.push(x)))
 
   static is_integer (x: Real): boolean => x == x.floor
   static finite (x: Real): boolean => x == x & x.abs < 10 ^ 300
@@ -97,8 +99,7 @@ Expr := class < kind: String {
     g := [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 0.0000099843695780195716, 0.00000015056327351493116]
     return (Real.PI / (Real.PI * z).sin).ln - Expr.lgamma(1 - z) if z < 0.5
     z = z - 1
-    x := 0.99999999999980993
-    Array.range(g.length).for(i => { x = x + g[i] / (z + i + 1) })
+    x := Array.range(g.length).reduce(0.99999999999980993, (x, i) => x + g[i] / (z + i + 1))
     t := z + g.length - 0.5
     0.5 * (2 * Real.PI).ln + (z + 0.5) * t.ln - t + x.ln
   }
@@ -328,8 +329,7 @@ Expr := class < kind: String {
         at := like.get(id)
         if at != None { at[1] = at[1] + kk } else { like.set(id, [body, kk]) }
       })
-      kept := []
-      like.values.for(v => { kept.push(v[1] == 1 ? v[0] : Expr.mul([Expr.num(v[1]), v[0]])) if v[1] != 0 })
+      kept := like.values.filter(v => v[1] != 0).map(v => v[1] == 1 ? v[0] : Expr.mul([Expr.num(v[1]), v[0]]))
       return Expr.num(c) if kept.empty
       return (kept.length == 1 ? kept[0] : Expr.add(kept)) if c == 0
       return Expr.add(kept.concat([Expr.num(c)]))
@@ -389,11 +389,8 @@ Expr := class < kind: String {
       body := e.base
       if body.kind == "add" {
         is_minus := (x: Expr): boolean => x.kind == "mul" & x.of.length == 2 & x.of.some(y => y.kind == "num" & y.value == -1) & x.of.some(y => y.named & y.label == e.bound)
-        at := None
-        Array.range(body.of.length).for(i => { at = i if at == None & is_minus(body.of[i]) })
-        if at != None & body.of.filter(x => is_minus(x)).length == 1 {
-          rest := []
-          Array.range(body.of.length).for(i => { rest.push(body.of[i]) if i != at })
+        if body.of.filter(x => is_minus(x)).length == 1 {
+          rest := body.of.filter(x => !is_minus(x))
           return "\\text{{the }} {e.bound} \\text{{ where }} {e.bound} = {Expr.show(rest.length == 1 ? rest[0] : Expr.add(rest))}"
         }
       }
@@ -448,14 +445,8 @@ Expr := class < kind: String {
     if k == "add" {
       negative := (x: Expr): boolean => Expr.show(x).starts_with("-")
       ordered := e.of.filter(x => !negative(x)).concat(e.of.filter(x => negative(x)))
-      out := ""
-      Array.range(ordered.length).for(i => {
-        x := ordered[i]
-        t := x.kind == "root" ? "\\paren{{{Expr.show(x)}}}" : Expr.show(x)
-        piece := i == 0 ? t : (t.starts_with("-") ? " - {t.drop(1)}" : " + {t}")
-        out = "{out}{piece}"
-      })
-      return out
+      shown := ordered.map(x => x.kind == "root" ? "\\paren{{{Expr.show(x)}}}" : Expr.show(x))
+      return Array.range(shown.length).map(i => i == 0 ? shown[i] : (shown[i].starts_with("-") ? " - {shown[i].drop(1)}" : " + {shown[i]}")).join("")
     }
     ""
   }
@@ -487,11 +478,8 @@ Expr := class < kind: String {
     return Expr.num(e.label == wrt ? 1 : 0) if k == "sym" | k == "field"
     return Expr.add(e.of.map(x => Expr.d(x, wrt))) if k == "add"
     if k == "mul" {
-      return Expr.add(Array.range(e.of.length).map(i => {
-        others := []
-        Array.range(e.of.length).for(j => { others.push(e.of[j]) if j != i })
-        Expr.mul([Expr.d(e.of[i], wrt)].concat(others))
-      }))
+      /* the product rule: each factor differentiated in turn, the others kept */
+      return Expr.add(Array.range(e.of.length).map(i => Expr.mul([Expr.d(e.of[i], wrt)].concat(Array.range(e.of.length).filter(j => j != i).map(j => e.of[j])))))
     }
     if k == "pow" {
       return Expr.mul([e.power, Expr.pown(e.base, e.power.value - 1), Expr.d(e.base, wrt)]) if e.power.kind == "num"
@@ -631,16 +619,8 @@ Expr := class < kind: String {
       v := at[e.label]
       return v == None ? Expr.NAN : v
     }
-    if k == "add" {
-      total_ := 0
-      e.of.for(x => { total_ = total_ + Expr.numeric(x, at) })
-      return total_
-    }
-    if k == "mul" {
-      prod := 1
-      e.of.for(x => { prod = prod * Expr.numeric(x, at) })
-      return prod
-    }
+    return e.of.reduce(0, (total_, x) => total_ + Expr.numeric(x, at)) if k == "add"
+    return e.of.reduce(1, (prod, x) => prod * Expr.numeric(x, at)) if k == "mul"
     return Expr.numeric(e.base, at) ^ Expr.numeric(e.power, at) if k == "pow"
     return Expr.numeric(e.base, at).ln if k == "log"
     return Expr.numeric(e.base, at).exp if k == "exp"
@@ -684,16 +664,7 @@ Expr := class < kind: String {
   static solving (of: Expr, name: String, env: {}): Real => {
     f := (v: Real): Real => { env[name] = v; Expr.numeric(of, env) }
     return Expr.NAN if !Expr.finite(f(0.5)) & !Expr.finite(f(1)) & !Expr.finite(f(0.1))
-    points := []
-    i := 1
-    while i <= 120 { points.push(i / 120); i = i + 1 }
-    ex := 0
-    while ex <= 24 {
-      k := 1
-      while k < 8 { points.push((10 ^ (ex - 12)) * (1 + k / 2)); k = k + 1 }
-      ex = ex + 1
-    }
-    points = Expr.sorted(points)
+    points := Expr.bracket_points
     lo := None
     hi := None
     px := points[0]
@@ -723,15 +694,15 @@ Expr := class < kind: String {
     }
     (lo + hi) / 2
   }
-  static sorted (xs: Real[]): Real[] => {
-    out := []
-    xs.for(x => {
-      i := 0
-      while i < out.length & out[i] <= x { i = i + 1 }
-      out = out.take(i).concat([x]).concat(out.drop(i))
-    })
-    out
+
+  /* where a root is looked for: a grid across (0, 1], and 1.5, 2, ..., 4.5 at every decade from 1e-12 to 1e12 */
+  static bracket_points (): Real[] => {
+    even := Array.range(120).map(i => (i + 1) / 120)
+    decades := Array.range(25).reduce([], (out, ex) => Array.range(7).reduce(out, (o, k) => o.push((10 ^ (ex - 12)) * (1 + (k + 1) / 2))))
+    Expr.sorted(even.concat(decades))
   }
+  /* ascending, equal values kept in the order they came */
+  static sorted (xs: Real[]): Real[] => xs.sorted_by(x => x)
 
   /* an antiderivative in a name, where one of the known shapes fits; None otherwise */
   static integrate (e: Expr, of: String): Expr? => {
@@ -804,13 +775,9 @@ Expr := class < kind: String {
         ok := true
         k := head_[1]
         if nums != None {
-          lo := nums[0]
-          hi := nums[0]
-          nums.for(v => { lo = v if v < lo; hi = v if v > hi })
-          ok = (lo <= 0) == (hi <= 0)
-          least := nums[0]
-          nums.for(v => { least = v if v.abs < least.abs })
-          k = Expr.num(least)
+          /* every power the same sign, and the smallest of them taken out */
+          ok = nums.every(v => v <= 0) | nums.every(v => v > 0)
+          k = Expr.num(nums.reduce(nums[0], (least, v) => v.abs < least.abs ? v : least))
         }
         common.push([head_[0], k]) if ok
       }
@@ -946,14 +913,8 @@ Expr := class < kind: String {
     t := Expr.simplify(e)
     return Expr.simplify(Expr.add(t.of.map(x => Expr.expand(x)))) if t.kind == "add"
     if t.kind == "mul" {
-      parts := t.of.map(x => Expr.expand(x))
-      out := [Expr.num(1)]
-      parts.for(p => {
-        terms := p.kind == "add" ? p.of : [p]
-        next := []
-        out.for(a => { terms.for(b => { next.push(Expr.mul([a, b])) }) })
-        out = next
-      })
+      /* every term of the first bracket times every term of the next, and so on */
+      out := t.of.map(x => Expr.expand(x)).reduce([Expr.num(1)], (out, p) => out.reduce([], (next, a) => (p.kind == "add" ? p.of : [p]).reduce(next, (n, b) => n.push(Expr.mul([a, b])))))
       return Expr.simplify(Expr.add(out))
     }
     t
@@ -1068,6 +1029,12 @@ ExprReader := class < text: String {
     got
   }
   starts (s: String): boolean => Notation.sub_(this.text, this.at, this.at + s.length) == s
+  /* the characters from here on for as long as they pass, taken */
+  take_while (keep: (c: Char): boolean): String => {
+    k := this.at
+    while k < this.text.length & keep(this.text.chars[k]) { k = k + 1 }
+    this.eat(k - this.at)
+  }
   /* a + b - c */
   addition (): Expr => {
     left := this.product
@@ -1121,16 +1088,10 @@ ExprReader := class < text: String {
     }
     e
   }
-  word (): String => {
-    k := this.at
-    while k < this.text.length & (Notation.is_name(this.text.chars[k]) | this.text.chars[k] > 127) { k = k + 1 }
-    this.eat(k - this.at)
-  }
-  number (): Expr => {
-    k := this.at
-    while k < this.text.length & (Notation.is_digit(this.text.chars[k]) | this.text.chars[k] == 46) { k = k + 1 }
-    Expr.num(Catalogue.number(this.eat(k - this.at)))
-  }
+  word (): String => this.take_while(c => Notation.is_name(c) | c > 127)
+  number (): Expr => Expr.num(Catalogue.number(this.take_while(c => Notation.is_digit(c) | c == 46)))
+  /* up to the closing quote */
+  quoted (): String => this.take_while(c => c != 34)
   primary (): Expr => {
     this.skip
     c := this.peek
@@ -1144,9 +1105,7 @@ ExprReader := class < text: String {
     return this.number if Notation.is_digit(c)
     if c == 34 {
       this.eat(1)
-      k := this.at
-      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
-      name := this.eat(k - this.at)
+      name := this.quoted
       this.eat(1)
       return Expr.field(Expr.name_of(name))
     }
@@ -1159,9 +1118,7 @@ ExprReader := class < text: String {
       this.eat(1)
       this.skip
       this.eat(1)
-      k := this.at
-      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
-      name := this.eat(k - this.at)
+      name := this.quoted
       this.eat(1)
       this.skip
       this.eat(1)
@@ -1183,9 +1140,7 @@ ExprReader := class < text: String {
     }
     if name == "s" & this.peek == 91 {
       this.eat(2)
-      k := this.at
-      while k < this.text.length & this.text.chars[k] != 34 { k = k + 1 }
-      key := this.eat(k - this.at)
+      key := this.quoted
       this.eat(2)
       return Expr.field(Expr.name_of(key))
     }

@@ -25,23 +25,17 @@ static void C_Expr(Cls& c) {
   c.field("simple", [](const Value& self) -> Value { return null; });
   c.statik("num", [](Value self, const Args& a1) -> Value {
     auto n_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "num") });
-    set(e_0->v, S<"value">(), n_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "num"), kw(S<"value">(), n_0->v) });
     return null;
   });
   c.statik("sym", [](Value self, const Args& a1) -> Value {
     auto name_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "sym") });
-    set(e_0->v, S<"label">(), name_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "sym"), kw(S<"label">(), name_0->v) });
     return null;
   });
   c.statik("field", [](Value self, const Args& a1) -> Value {
     auto name_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "field") });
-    set(e_0->v, S<"label">(), name_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "field"), kw(S<"label">(), name_0->v) });
     return null;
   });
   c.statik("add", [](Value self, const Args& a1) -> Value {
@@ -56,10 +50,7 @@ static void C_Expr(Cls& c) {
   });
   c.statik("to_power", [](Value self, const Args& a1) -> Value {
     auto base_0 = cell(arg(a1, 0)); auto by_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "pow") });
-    set(e_0->v, S<"base">(), base_0->v);
-    set(e_0->v, S<"power">(), by_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "pow"), kw(S<"base">(), base_0->v), kw(S<"power">(), by_0->v) });
     return null;
   });
   c.statik("pown", [](Value self, const Args& a1) -> Value {
@@ -69,63 +60,42 @@ static void C_Expr(Cls& c) {
   });
   c.statik("grad", [](Value self, const Args& a1) -> Value {
     auto x_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "grad") });
-    set(e_0->v, S<"base">(), x_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "grad"), kw(S<"base">(), x_0->v) });
     return null;
   });
   c.statik("log", [](Value self, const Args& a1) -> Value {
     auto x_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "log") });
-    set(e_0->v, S<"base">(), x_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "log"), kw(S<"base">(), x_0->v) });
     return null;
   });
   c.statik("exp", [](Value self, const Args& a1) -> Value {
     auto x_0 = cell(arg(a1, 0));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "exp") });
-    set(e_0->v, S<"base">(), x_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "exp"), kw(S<"base">(), x_0->v) });
     return null;
   });
   c.statik("choose", [](Value self, const Args& a1) -> Value {
     auto n_0 = cell(arg(a1, 0)); auto k_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "choose") });
-    set(e_0->v, S<"first_">(), n_0->v);
-    set(e_0->v, S<"second_">(), k_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "choose"), kw(S<"first_">(), n_0->v), kw(S<"second_">(), k_0->v) });
     return null;
   });
   c.statik("gamma_inc", [](Value self, const Args& a1) -> Value {
     auto s_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "gammaInc") });
-    set(e_0->v, S<"first_">(), s_0->v);
-    set(e_0->v, S<"second_">(), x_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "gammaInc"), kw(S<"first_">(), s_0->v), kw(S<"second_">(), x_0->v) });
     return null;
   });
   c.statik("root", [](Value self, const Args& a1) -> Value {
     auto x_0 = cell(arg(a1, 0)); auto name_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "root") });
-    set(e_0->v, S<"base">(), x_0->v);
-    set(e_0->v, S<"bound">(), name_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "root"), kw(S<"base">(), x_0->v), kw(S<"bound">(), name_0->v) });
     return null;
   });
   c.statik("limit", [](Value self, const Args& a1) -> Value {
     auto x_0 = cell(arg(a1, 0)); auto name_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "limit") });
-    set(e_0->v, S<"base">(), x_0->v);
-    set(e_0->v, S<"bound">(), name_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "limit"), kw(S<"base">(), x_0->v), kw(S<"bound">(), name_0->v) });
     return null;
   });
   c.statik("call", [](Value self, const Args& a1) -> Value {
     auto name_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), "call") });
-    set(e_0->v, S<"label">(), name_0->v);
-    set(e_0->v, S<"base">(), x_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), "call"), kw(S<"label">(), name_0->v), kw(S<"base">(), x_0->v) });
     return null;
   });
   c.statik("neg", [](Value self, const Args& a1) -> Value {
@@ -169,27 +139,34 @@ static void C_Expr(Cls& c) {
     return (truthy(eq(get(self, S<"kind">()), "sym")) || truthy(eq(get(self, S<"kind">()), "field")));
     return null;
   });
+  c.getter("subtrees", [](Value self, const Args& a1) -> Value {
+    if (truthy((truthy(eq(get(self, S<"kind">()), "add")) || truthy(eq(get(self, S<"kind">()), "mul"))))) {
+      return get(self, S<"of">());
+    }
+    if (truthy(eq(get(self, S<"kind">()), "pow"))) {
+      return list({ get(self, S<"base">()), get(self, S<"power">()) });
+    }
+    if (truthy((truthy(eq(get(self, S<"kind">()), "choose")) || truthy(eq(get(self, S<"kind">()), "gammaInc"))))) {
+      return list({ get(self, S<"first_">()), get(self, S<"second_">()) });
+    }
+    return (truthy(eq(get(self, S<"base">()), null)) ? Value(list({  })) : Value(list({ get(self, S<"base">()) })));
+    return null;
+  });
   c.getter("by_num", [](Value self, const Args& a1) -> Value {
     return (truthy(eq(get(get(self, S<"power">()), S<"kind">()), "num")) ? Value(get(get(self, S<"power">()), S<"value">())) : Value(null));
     return null;
   });
   c.statik("flatten", [](Value self, const Args& a1) -> Value {
     auto kind_0 = cell(arg(a1, 0)); auto xs_0 = cell(arg(a1, 1));
-    auto e_0 = cell(); e_0->v = make(S<"Expr">(), { kw(S<"kind">(), kind_0->v) });
-    auto out_0 = cell(); out_0->v = list({  });
-    for (const Value& e1 : Each(xs_0->v)) {
-      auto x_1 = cell(e1);
-      if (truthy(eq(get(x_1->v, S<"kind">()), kind_0->v))) {
-        for (const Value& e2 : Each(get(x_1->v, S<"of">()))) {
-          auto y_2 = cell(e2);
-          m_push(out_0->v, y_2->v);
-        };
-      } else {
-        m_push(out_0->v, x_1->v);
-      }
-    };
-    set(e_0->v, S<"of">(), out_0->v);
-    return e_0->v;
+    return make(S<"Expr">(), { kw(S<"kind">(), kind_0->v), kw(S<"of">(), m_reduce(xs_0->v, list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto x_2 = cell(arg(a3, 1));
+      return (truthy(eq(get(x_2->v, S<"kind">()), kind_0->v)) ? Value(m_reduce(get(x_2->v, S<"of">()), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto y_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, y_4->v);
+        return null;
+      }))) : Value(m_push(out_2->v, x_2->v)));
+      return null;
+    }))) });
     return null;
   });
   c.statik("is_integer", [](Value self, const Args& a1) -> Value {
@@ -231,11 +208,11 @@ static void C_Expr(Cls& c) {
       return sub(m_ln((div(RAY_PI, m_sin((mul(RAY_PI, z_0->v)))))), call(K(S<"Expr">()), S<"lgamma">(), { sub(1.0, z_0->v) }));
     }
     z_0->v = sub(z_0->v, 1.0);
-    auto x_0 = cell(); x_0->v = 0.99999999999980993;
-    for (double i1 = 0, n1 = num(len(g_0->v)); i1 < n1; i1++) {
-      auto i_1 = cell(i1);
-      x_0->v = add(x_0->v, div(elem(g_0->v, i_1->v), (add(add(z_0->v, i_1->v), 1.0))));
-    };
+    auto x_0 = cell(); x_0->v = m_reduce(rng(len(g_0->v)), 0.99999999999980993, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0)); auto i_2 = cell(arg(a3, 1));
+      return add(x_2->v, div(elem(g_0->v, i_2->v), (add(add(z_0->v, i_2->v), 1.0))));
+      return null;
+    }));
     auto t_0 = cell(); t_0->v = sub(add(z_0->v, len(g_0->v)), 0.5);
     return add(sub(add(mul(0.5, m_ln((mul(2.0, RAY_PI)))), mul((add(z_0->v, 0.5)), m_ln(t_0->v))), t_0->v), m_ln(x_0->v));
     return null;
@@ -689,13 +666,15 @@ static void C_Expr(Cls& c) {
           call(like_0->v, S<"set">(), { id_1->v, list({ body_1->v, kk_1->v }) });
         }
       };
-      auto kept_0 = cell(); kept_0->v = list({  });
-      for (const Value& e1 : Each(get(like_0->v, S<"values">()))) {
-        auto v_1 = cell(e1);
-        if (truthy((!eq(elem(v_1->v, 1.0), 0.0)))) {
-          m_push(kept_0->v, (truthy(eq(elem(v_1->v, 1.0), 1.0)) ? Value(elem(v_1->v, 0.0)) : Value(call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { elem(v_1->v, 1.0) }), elem(v_1->v, 0.0) }) }))));
-        }
-      };
+      auto kept_0 = cell(); kept_0->v = m_map(filt(get(like_0->v, S<"values">()), fn([=](const Args& a4) -> Value {
+        auto v_3 = cell(arg(a4, 0));
+        return (!eq(elem(v_3->v, 1.0), 0.0));
+        return null;
+      })), fn([=](const Args& a3) -> Value {
+        auto v_2 = cell(arg(a3, 0));
+        return (truthy(eq(elem(v_2->v, 1.0), 1.0)) ? Value(elem(v_2->v, 0.0)) : Value(call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { elem(v_2->v, 1.0) }), elem(v_2->v, 0.0) }) })));
+        return null;
+      }));
       if (truthy(m_empty(kept_0->v))) {
         return call(K(S<"Expr">()), S<"num">(), { c__0->v });
       }
@@ -808,25 +787,16 @@ static void C_Expr(Cls& c) {
           }))));
           return null;
         });
-        auto at_0 = cell(); at_0->v = null;
-        for (double i1 = 0, n1 = num(len(get(body_0->v, S<"of">()))); i1 < n1; i1++) {
-          auto i_1 = cell(i1);
-          if (truthy((truthy(eq(at_0->v, null)) && truthy(invoke(is_minus_0->v, { elem(get(body_0->v, S<"of">()), i_1->v) }))))) {
-            at_0->v = i_1->v;
-          }
-        };
-        if (truthy((truthy((!eq(at_0->v, null))) && truthy(eq(len(filt(get(body_0->v, S<"of">()), fn([=](const Args& a3) -> Value {
+        if (truthy(eq(len(filt(get(body_0->v, S<"of">()), fn([=](const Args& a3) -> Value {
           auto x_2 = cell(arg(a3, 0));
           return invoke(is_minus_0->v, { x_2->v });
           return null;
-        }))), 1.0))))) {
-          auto rest_0 = cell(); rest_0->v = list({  });
-          for (double i1 = 0, n1 = num(len(get(body_0->v, S<"of">()))); i1 < n1; i1++) {
-            auto i_1 = cell(i1);
-            if (truthy((!eq(i_1->v, at_0->v)))) {
-              m_push(rest_0->v, elem(get(body_0->v, S<"of">()), i_1->v));
-            }
-          };
+        }))), 1.0))) {
+          auto rest_0 = cell(); rest_0->v = filt(get(body_0->v, S<"of">()), fn([=](const Args& a3) -> Value {
+            auto x_2 = cell(arg(a3, 0));
+            return (!truthy(invoke(is_minus_0->v, { x_2->v })));
+            return null;
+          }));
           return "\\text{the } " + str(get(e_0->v, S<"bound">())) + " \\text{ where } " + str(get(e_0->v, S<"bound">())) + " = " + str(call(K(S<"Expr">()), S<"show">(), { (truthy(eq(len(rest_0->v), 1.0)) ? Value(elem(rest_0->v, 0.0)) : Value(call(K(S<"Expr">()), S<"add">(), { rest_0->v }))) })) + "";
         }
       }
@@ -950,15 +920,16 @@ static void C_Expr(Cls& c) {
         return invoke(negative_0->v, { x_2->v });
         return null;
       })));
-      auto out_0 = cell(); out_0->v = "";
-      for (double i1 = 0, n1 = num(len(ordered_0->v)); i1 < n1; i1++) {
-        auto i_1 = cell(i1);
-        auto x_1 = cell(); x_1->v = elem(ordered_0->v, i_1->v);
-        auto t_1 = cell(); t_1->v = (truthy(eq(get(x_1->v, S<"kind">()), "root")) ? Value("\\paren{" + str(call(K(S<"Expr">()), S<"show">(), { x_1->v })) + "}") : Value(call(K(S<"Expr">()), S<"show">(), { x_1->v })));
-        auto piece_1 = cell(); piece_1->v = (truthy(eq(i_1->v, 0.0)) ? Value(t_1->v) : Value(((truthy(m_starts_with(t_1->v, "-")) ? Value(" - " + str(m_drop(t_1->v, 1.0)) + "") : Value(" + " + str(t_1->v) + "")))));
-        out_0->v = "" + str(out_0->v) + "" + str(piece_1->v) + "";
-      };
-      return out_0->v;
+      auto shown_0 = cell(); shown_0->v = m_map(ordered_0->v, fn([=](const Args& a3) -> Value {
+        auto x_2 = cell(arg(a3, 0));
+        return (truthy(eq(get(x_2->v, S<"kind">()), "root")) ? Value("\\paren{" + str(call(K(S<"Expr">()), S<"show">(), { x_2->v })) + "}") : Value(call(K(S<"Expr">()), S<"show">(), { x_2->v })));
+        return null;
+      }));
+      return m_join(m_map(rng(len(shown_0->v)), fn([=](const Args& a3) -> Value {
+        auto i_2 = cell(arg(a3, 0));
+        return (truthy(eq(i_2->v, 0.0)) ? Value(elem(shown_0->v, i_2->v)) : Value(((truthy(m_starts_with(elem(shown_0->v, i_2->v), "-")) ? Value(" - " + str(m_drop(elem(shown_0->v, i_2->v), 1.0)) + "") : Value(" + " + str(elem(shown_0->v, i_2->v)) + "")))));
+        return null;
+      })), "");
     }
     return "";
     return null;
@@ -1006,14 +977,15 @@ static void C_Expr(Cls& c) {
     if (truthy(eq(k_0->v, "mul"))) {
       return call(K(S<"Expr">()), S<"add">(), { m_map(rng(len(get(e_0->v, S<"of">()))), fn([=](const Args& a3) -> Value {
         auto i_2 = cell(arg(a3, 0));
-        auto others_2 = cell(); others_2->v = list({  });
-        for (double i3 = 0, n3 = num(len(get(e_0->v, S<"of">()))); i3 < n3; i3++) {
-          auto j_3 = cell(i3);
-          if (truthy((!eq(j_3->v, i_2->v)))) {
-            m_push(others_2->v, elem(get(e_0->v, S<"of">()), j_3->v));
-          }
-        };
-        return call(K(S<"Expr">()), S<"mul">(), { m_concat(list({ call(K(S<"Expr">()), S<"d">(), { elem(get(e_0->v, S<"of">()), i_2->v), wrt_0->v }) }), others_2->v) });
+        return call(K(S<"Expr">()), S<"mul">(), { m_concat(list({ call(K(S<"Expr">()), S<"d">(), { elem(get(e_0->v, S<"of">()), i_2->v), wrt_0->v }) }), m_map(filt(rng(len(get(e_0->v, S<"of">()))), fn([=](const Args& a6) -> Value {
+          auto j_5 = cell(arg(a6, 0));
+          return (!eq(j_5->v, i_2->v));
+          return null;
+        })), fn([=](const Args& a5) -> Value {
+          auto j_4 = cell(arg(a5, 0));
+          return elem(get(e_0->v, S<"of">()), j_4->v);
+          return null;
+        }))) });
         return null;
       })) });
     }
@@ -1335,20 +1307,18 @@ static void C_Expr(Cls& c) {
       return (truthy(eq(v_0->v, null)) ? Value(get(K(S<"Expr">()), S<"NAN">())) : Value(v_0->v));
     }
     if (truthy(eq(k_0->v, "add"))) {
-      auto total__0 = cell(); total__0->v = 0.0;
-      for (const Value& e1 : Each(get(e_0->v, S<"of">()))) {
-        auto x_1 = cell(e1);
-        total__0->v = add(total__0->v, call(K(S<"Expr">()), S<"numeric">(), { x_1->v, at_0->v }));
-      };
-      return total__0->v;
+      return m_reduce(get(e_0->v, S<"of">()), 0.0, fn([=](const Args& a3) -> Value {
+        auto total__2 = cell(arg(a3, 0)); auto x_2 = cell(arg(a3, 1));
+        return add(total__2->v, call(K(S<"Expr">()), S<"numeric">(), { x_2->v, at_0->v }));
+        return null;
+      }));
     }
     if (truthy(eq(k_0->v, "mul"))) {
-      auto prod_0 = cell(); prod_0->v = 1.0;
-      for (const Value& e1 : Each(get(e_0->v, S<"of">()))) {
-        auto x_1 = cell(e1);
-        prod_0->v = mul(prod_0->v, call(K(S<"Expr">()), S<"numeric">(), { x_1->v, at_0->v }));
-      };
-      return prod_0->v;
+      return m_reduce(get(e_0->v, S<"of">()), 1.0, fn([=](const Args& a3) -> Value {
+        auto prod_2 = cell(arg(a3, 0)); auto x_2 = cell(arg(a3, 1));
+        return mul(prod_2->v, call(K(S<"Expr">()), S<"numeric">(), { x_2->v, at_0->v }));
+        return null;
+      }));
     }
     if (truthy(eq(k_0->v, "pow"))) {
       return power(call(K(S<"Expr">()), S<"numeric">(), { get(e_0->v, S<"base">()), at_0->v }), call(K(S<"Expr">()), S<"numeric">(), { get(e_0->v, S<"power">()), at_0->v }));
@@ -1427,22 +1397,7 @@ static void C_Expr(Cls& c) {
     if (truthy((truthy((truthy((!truthy(call(K(S<"Expr">()), S<"finite">(), { invoke(f_0->v, { 0.5 }) })))) && truthy((!truthy(call(K(S<"Expr">()), S<"finite">(), { invoke(f_0->v, { 1.0 }) })))))) && truthy((!truthy(call(K(S<"Expr">()), S<"finite">(), { invoke(f_0->v, { 0.1 }) }))))))) {
       return get(K(S<"Expr">()), S<"NAN">());
     }
-    auto points_0 = cell(); points_0->v = list({  });
-    auto i_0 = cell(); i_0->v = 1.0;
-    while (truthy(le(i_0->v, 120.0))) {
-      m_push(points_0->v, div(i_0->v, 120.0));
-      i_0->v = add(i_0->v, 1.0);
-    }
-    auto ex_0 = cell(); ex_0->v = 0.0;
-    while (truthy(le(ex_0->v, 24.0))) {
-      auto k_0 = cell(); k_0->v = 1.0;
-      while (truthy(lt(k_0->v, 8.0))) {
-        m_push(points_0->v, mul((power(10.0, (sub(ex_0->v, 12.0)))), (add(1.0, div(k_0->v, 2.0)))));
-        k_0->v = add(k_0->v, 1.0);
-      }
-      ex_0->v = add(ex_0->v, 1.0);
-    }
-    points_0->v = call(K(S<"Expr">()), S<"sorted">(), { points_0->v });
+    auto points_0 = cell(); points_0->v = get(K(S<"Expr">()), S<"bracket_points">());
     auto lo_0 = cell(); lo_0->v = null;
     auto hi_0 = cell(); hi_0->v = null;
     auto px_0 = cell(); px_0->v = elem(points_0->v, 0.0);
@@ -1484,18 +1439,31 @@ static void C_Expr(Cls& c) {
     return div((add(lo_0->v, hi_0->v)), 2.0);
     return null;
   });
+  c.statik("bracket_points", [](Value self, const Args& a1) -> Value {
+    auto even_0 = cell(); even_0->v = m_map(rng(120.0), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return div((add(i_2->v, 1.0)), 120.0);
+      return null;
+    }));
+    auto decades_0 = cell(); decades_0->v = m_reduce(rng(25.0), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto ex_2 = cell(arg(a3, 1));
+      return m_reduce(rng(7.0), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto k_4 = cell(arg(a5, 1));
+        return m_push(o_4->v, mul((power(10.0, (sub(ex_2->v, 12.0)))), (add(1.0, div((add(k_4->v, 1.0)), 2.0)))));
+        return null;
+      }));
+      return null;
+    }));
+    return call(K(S<"Expr">()), S<"sorted">(), { m_concat(even_0->v, decades_0->v) });
+    return null;
+  });
   c.statik("sorted", [](Value self, const Args& a1) -> Value {
     auto xs_0 = cell(arg(a1, 0));
-    auto out_0 = cell(); out_0->v = list({  });
-    for (const Value& e1 : Each(xs_0->v)) {
-      auto x_1 = cell(e1);
-      auto i_1 = cell(); i_1->v = 0.0;
-      while (truthy((truthy(lt(i_1->v, len(out_0->v))) && truthy(le(elem(out_0->v, i_1->v), x_1->v))))) {
-        i_1->v = add(i_1->v, 1.0);
-      }
-      out_0->v = m_concat(m_concat(m_take(out_0->v, i_1->v), list({ x_1->v })), m_drop(out_0->v, i_1->v));
-    };
-    return out_0->v;
+    return m_sorted_by(xs_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return x_2->v;
+      return null;
+    }));
     return null;
   });
   c.statik("integrate", [](Value self, const Args& a1) -> Value {
@@ -1643,26 +1611,20 @@ static void C_Expr(Cls& c) {
         auto ok_1 = cell(); ok_1->v = true;
         auto k_1 = cell(); k_1->v = elem(head__1->v, 1.0);
         if (truthy((!eq(nums_1->v, null)))) {
-          auto lo_1 = cell(); lo_1->v = elem(nums_1->v, 0.0);
-          auto hi_1 = cell(); hi_1->v = elem(nums_1->v, 0.0);
-          for (const Value& e2 : Each(nums_1->v)) {
-            auto v_2 = cell(e2);
-            if (truthy(lt(v_2->v, lo_1->v))) {
-              lo_1->v = v_2->v;
-            }
-            if (truthy(gt(v_2->v, hi_1->v))) {
-              hi_1->v = v_2->v;
-            }
-          };
-          ok_1->v = eq((le(lo_1->v, 0.0)), (le(hi_1->v, 0.0)));
-          auto least_1 = cell(); least_1->v = elem(nums_1->v, 0.0);
-          for (const Value& e2 : Each(nums_1->v)) {
-            auto v_2 = cell(e2);
-            if (truthy(lt(m_abs(v_2->v), m_abs(least_1->v)))) {
-              least_1->v = v_2->v;
-            }
-          };
-          k_1->v = call(K(S<"Expr">()), S<"num">(), { least_1->v });
+          ok_1->v = (truthy(m_every(nums_1->v, fn([=](const Args& a4) -> Value {
+            auto v_3 = cell(arg(a4, 0));
+            return le(v_3->v, 0.0);
+            return null;
+          }))) || truthy(m_every(nums_1->v, fn([=](const Args& a4) -> Value {
+            auto v_3 = cell(arg(a4, 0));
+            return gt(v_3->v, 0.0);
+            return null;
+          }))));
+          k_1->v = call(K(S<"Expr">()), S<"num">(), { m_reduce(nums_1->v, elem(nums_1->v, 0.0), fn([=](const Args& a4) -> Value {
+            auto least_3 = cell(arg(a4, 0)); auto v_3 = cell(arg(a4, 1));
+            return (truthy(lt(m_abs(v_3->v), m_abs(least_3->v))) ? Value(v_3->v) : Value(least_3->v));
+            return null;
+          })) });
         }
         if (truthy(ok_1->v)) {
           m_push(common_0->v, list({ elem(head__1->v, 0.0), k_1->v }));
@@ -1938,25 +1900,23 @@ static void C_Expr(Cls& c) {
       })) }) });
     }
     if (truthy(eq(get(t_0->v, S<"kind">()), "mul"))) {
-      auto parts_0 = cell(); parts_0->v = m_map(get(t_0->v, S<"of">()), fn([=](const Args& a3) -> Value {
-        auto x_2 = cell(arg(a3, 0));
-        return call(K(S<"Expr">()), S<"expand">(), { x_2->v });
+      auto out_0 = cell(); out_0->v = m_reduce(m_map(get(t_0->v, S<"of">()), fn([=](const Args& a4) -> Value {
+        auto x_3 = cell(arg(a4, 0));
+        return call(K(S<"Expr">()), S<"expand">(), { x_3->v });
+        return null;
+      })), list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }) }), fn([=](const Args& a3) -> Value {
+        auto out_2 = cell(arg(a3, 0)); auto p_2 = cell(arg(a3, 1));
+        return m_reduce(out_2->v, list({  }), fn([=](const Args& a5) -> Value {
+          auto next_4 = cell(arg(a5, 0)); auto a_4 = cell(arg(a5, 1));
+          return m_reduce(((truthy(eq(get(p_2->v, S<"kind">()), "add")) ? Value(get(p_2->v, S<"of">())) : Value(list({ p_2->v })))), next_4->v, fn([=](const Args& a7) -> Value {
+            auto n_6 = cell(arg(a7, 0)); auto b_6 = cell(arg(a7, 1));
+            return m_push(n_6->v, call(K(S<"Expr">()), S<"mul">(), { list({ a_4->v, b_6->v }) }));
+            return null;
+          }));
+          return null;
+        }));
         return null;
       }));
-      auto out_0 = cell(); out_0->v = list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }) });
-      for (const Value& e1 : Each(parts_0->v)) {
-        auto p_1 = cell(e1);
-        auto terms_1 = cell(); terms_1->v = (truthy(eq(get(p_1->v, S<"kind">()), "add")) ? Value(get(p_1->v, S<"of">())) : Value(list({ p_1->v })));
-        auto next_1 = cell(); next_1->v = list({  });
-        for (const Value& e2 : Each(out_0->v)) {
-          auto a_2 = cell(e2);
-          for (const Value& e3 : Each(terms_1->v)) {
-            auto b_3 = cell(e3);
-            m_push(next_1->v, call(K(S<"Expr">()), S<"mul">(), { list({ a_2->v, b_3->v }) }));
-          };
-        };
-        out_0->v = next_1->v;
-      };
       return call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"add">(), { out_0->v }) });
     }
     return t_0->v;

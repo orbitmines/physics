@@ -482,15 +482,20 @@ export class Vertex extends Ray {
 export class Vector extends Node {
   get components(): number[] { return this.read("components"); }
   set components(v: number[]) { this.write("components", v); }
-  plus(b: Vector): Vector {
+  zipped(b: Vector, f: ((...args: any[]) => any)): Vector {
     return new Vector({ components: range(this.components.length).map(((i: any) => {
-      return add(elem(this.components, i), elem(b.components, i));
+      return f(elem(this.components, i), elem(b.components, i));
     })) });
   }
+  plus(b: Vector): Vector {
+    return this.zipped(b, ((x: any, y: any) => {
+      return add(x, y);
+    }));
+  }
   minus(b: Vector): Vector {
-    return new Vector({ components: range(this.components.length).map(((i: any) => {
-      return sub(elem(this.components, i), elem(b.components, i));
-    })) });
+    return this.zipped(b, ((x: any, y: any) => {
+      return sub(x, y);
+    }));
   }
   times(k: number): Vector {
     return new Vector({ components: this.components.map(((c: any) => {
@@ -498,9 +503,9 @@ export class Vector extends Node {
     })) });
   }
   dot(b: Vector): number {
-    return sum(range(this.components.length).map(((i: any) => {
-      return mul(elem(this.components, i), elem(b.components, i));
-    })));
+    return sum(this.zipped(b, ((x: any, y: any) => {
+      return mul(x, y);
+    })).components);
   }
   get norm(): number {
     return Math.sqrt(this.dot(this));
@@ -556,14 +561,11 @@ export class Geometry extends Node {
     })), ((v: any) => {
       return v.norm;
     }));
-    let chosen = [];
-    for (const s of [...squared]) {
-      for (const v of [...all]) {
-        if (eq(v.dot(v), s)) {
-          push(chosen, v);
-        }
-      };
-    };
+    let chosen = squared.reduce(((out: any, s: any) => {
+      return out.concat(all.filter(((v: any) => {
+        return eq(v.dot(v), s);
+      })));
+    }), []);
     let joined = squared.join(`+`);
     return new Geometry({ name: `shells-${D}-${joined}`, offsets: chosen });
   }
@@ -586,22 +588,17 @@ export class Geometry extends Node {
     if (!eq(chosen.length, DEG)) throw new Error(`"chosen.length" == "DEG" — ${JSON.stringify(chosen.length)} against ${JSON.stringify(DEG)}`);
     return new Geometry({ name: `nearest-${D}-${DEG}`, offsets: chosen });
   }
+  static grid(D: number, low: number, count: number): Vector[] {
+    return range(D).reduce(((points: any, _: any) => {
+      return points.reduce(((grown: any, p: any) => {
+        return range(count).reduce(((out: any, k: any) => {
+          return push(out, new Vector({ components: p.components.concat([add(low, k)]) }));
+        }), grown);
+      }), []);
+    }), [new Vector({ components: [] })]);
+  }
   static box(D: number, radius: number): Vector[] {
-    let points = [new Vector({ components: [] })];
-    let i = 0;
-    while (lt(i, D)) {
-      let grown = [];
-      for (const p of [...points]) {
-        let k = sub(0, radius);
-        while (le(k, radius)) {
-          push(grown, new Vector({ components: p.components.concat([k]) }));
-          k = add(k, 1);
-        }
-      };
-      points = grown;
-      i = add(i, 1);
-    }
-    return points;
+    return Geometry.grid(D, sub(0, radius), add(mul(2, radius), 1));
   }
 }
 
@@ -663,6 +660,7 @@ export class Rule extends Node {
 }
 
 export class Theory extends Node {
+  static TERMS = ({});
   get name(): string { return this.read("name"); }
   set name(v: string) { this.write("name", v); }
   get rules(): Rule[] { return this.read("rules", () => []); }
@@ -687,6 +685,12 @@ export class Theory extends Node {
   }
   medium(N: number, A: number = 96, K: number = 3, DEG: (number | null) = null, tags: number = 1, D: (number | null) = null): Medium {
     return new Medium({ theory: this, N: N, A: A, K: K, DEG: (DEG ?? this.lattice.DEG), tags: tags, D: (D ?? this.lattice.D) });
+  }
+  get terms_read(): any[] {
+    if (eq(elem(Theory.TERMS, this.name), null)) {
+      Theory.TERMS[this.name] = this.equation.terms;
+    }
+    return elem(Theory.TERMS, this.name);
   }
   get proved(): Proof {
     if (eq(elem(Prover.PROOFS, this.name), null)) {
@@ -730,21 +734,7 @@ export class World extends Node {
     return this;
   }
   positions(N: number): Vector[] {
-    let points = [new Vector({ components: [] })];
-    let i = 0;
-    while (lt(i, this.geometry.D)) {
-      let grown = [];
-      for (const p of [...points]) {
-        let k = 0;
-        while (lt(k, N)) {
-          push(grown, new Vector({ components: p.components.concat([k]) }));
-          k = add(k, 1);
-        }
-      };
-      points = grown;
-      i = add(i, 1);
-    }
-    return points;
+    return Geometry.grid(this.geometry.D, 0, N);
   }
   place(at: Vector): (Vertex | null) {
     if (ge(this.vertices.length, this.bound)) {
@@ -826,26 +816,22 @@ export class World extends Node {
         return many(v.rays);
       }));
     }
-    let rays = [];
-    for (const v of [...this.live]) {
-      for (const r of [...v.rays]) {
-        push(rays, r);
-      };
-    };
+    let rays = this.live.reduce(((out: any, v: any) => {
+      return v.rays.reduce(((o: any, r: any) => {
+        return push(o, r);
+      }), out);
+    }), []);
     if (eq(kind, `Boundary`)) {
       return rays.map(((r: any) => {
         return r.terminal;
       }));
     }
     if (eq(kind, `Edge`)) {
-      let edges = [];
-      for (const r of [...rays]) {
-        let there = r.ahead;
-        if ((!eq(there, null) && lt(r.vertex.ordinal, there.ordinal))) {
-          push(edges, r.terminal.edge);
-        }
-      };
-      return edges;
+      return rays.filter(((r: any) => {
+        return (!eq(r.ahead, null) && lt(r.vertex.ordinal, r.ahead.ordinal));
+      })).map(((r: any) => {
+        return r.terminal.edge;
+      }));
     }
     return [];
   }
@@ -1286,14 +1272,12 @@ export class Field extends Node {
     let y0 = Math.floor(py);
     let fx = sub(px, x0);
     let fy = sub(py, y0);
-    let out = [];
-    for (const t of [...[[x0, y0, mul((sub(1, fx)), (sub(1, fy)))], [add(x0, 1), y0, mul(fx, (sub(1, fy)))], [x0, add(y0, 1), mul((sub(1, fx)), fy)], [add(x0, 1), add(y0, 1), mul(fx, fy)]]]) {
-      let c = this.at(elem(t, 0), elem(t, 1));
-      if ((ge(c, 0) && gt(elem(t, 2), 0))) {
-        push(out, [c, elem(t, 2)]);
-      }
-    };
-    return out;
+    let corners = [[x0, y0, mul((sub(1, fx)), (sub(1, fy)))], [add(x0, 1), y0, mul(fx, (sub(1, fy)))], [x0, add(y0, 1), mul((sub(1, fx)), fy)], [add(x0, 1), add(y0, 1), mul(fx, fy)]];
+    return corners.map(((t: any) => {
+      return [this.at(elem(t, 0), elem(t, 1)), elem(t, 2)];
+    })).filter(((p: any) => {
+      return (ge(elem(p, 0), 0) && gt(elem(p, 1), 0));
+    }));
   }
   hop(c: number, a: number): any[] {
     return this.taps(add(mod(c, this.N), mul(this.K, elem(this.ux, a))), add(div((sub(c, mod(c, this.N))), this.N), mul(this.K, elem(this.uy, a))));
@@ -1312,7 +1296,7 @@ export class Field extends Node {
     return total;
   }
   get terms(): any[] {
-    return this.theory.equation.terms;
+    return this.theory.terms_read;
   }
   get acting(): any[] {
     return this.terms.filter(((t: any) => {
@@ -1768,16 +1752,11 @@ export class Field extends Node {
     let x = this.column_of(c);
     let y = this.row_of(c);
     let half = Math.floor((div((sub(this.K, 1)), 2)));
-    let out = [];
-    for (let dy = 0; dy < this.K; dy++) {
-      for (let dx = 0; dx < this.K; dx++) {
-        let cell = this.at(add(sub(x, half), dx), add(sub(y, half), dy));
-        if (ge(cell, 0)) {
-          push(out, cell);
-        }
-      };
-    };
-    return out;
+    return range(mul(this.K, this.K)).map(((i: any) => {
+      return this.at(add(sub(x, half), mod(i, this.K)), add(sub(y, half), Math.floor((div(i, this.K)))));
+    })).filter(((cell: any) => {
+      return ge(cell, 0);
+    }));
   }
   get block() {
     for (let c = 0; c < this.cells; c++) {
@@ -2115,36 +2094,22 @@ export class Piece extends Node {
   get key(): string { return this.read("key", () => ``); }
   set key(v: string) { this.write("key", v); }
   static text_(t: string): Piece {
-    let p = new Piece({ kind: `text` });
-    p.text = t;
-    return p;
+    return new Piece({ kind: `text`, text: t });
   }
   static wrap(kind: string, of: Piece[]): Piece {
-    let p = new Piece({ kind: kind });
-    p.of = of;
-    return p;
+    return new Piece({ kind: kind, of: of });
   }
   static words(t: string): Piece {
-    let p = new Piece({ kind: `words` });
-    p.text = t;
-    return p;
+    return new Piece({ kind: `words`, text: t });
   }
   static big(kind: string, lo: Piece[], hi: Piece[]): Piece {
-    let p = new Piece({ kind: kind });
-    p.lo = lo;
-    p.hi = hi;
-    return p;
+    return new Piece({ kind: kind, lo: lo, hi: hi });
   }
   static stacked(kind: string, over: Piece[], under: Piece[]): Piece {
-    let p = new Piece({ kind: kind });
-    p.over = over;
-    p.under = under;
-    return p;
+    return new Piece({ kind: kind, over: over, under: under });
   }
   static cite(key: string): Piece {
-    let p = new Piece({ kind: `ref` });
-    p.key = key;
-    return p;
+    return new Piece({ kind: `ref`, key: key });
   }
 }
 
@@ -2180,6 +2145,9 @@ export class Reference extends Node {
 }
 
 export class Setter extends Node {
+  static KINDS = [`var`, `count`, `fn`, `muted`, `bar`, `hat`, `tilde`, `vec`, `dot`, `ddot`, `bold`, `cal`, `bb`, `sqrt`, `sup`, `sub`, `paren`];
+  static OPENS = [`<i>`, `<b class=\"k\">`, `<b class=\"d\">`, `<span class=\"mu\">`, `<span class=\"bar\">`, `<span class=\"acc hat\">`, `<span class=\"acc tld\">`, `<span class=\"acc vec\">`, `<span class=\"acc dot\">`, `<span class=\"acc ddot\">`, `<b class=\"bf\">`, `<span class=\"cal\">`, `<span class=\"bb\">`, `<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">`, `<sup>`, `<sub>`, `<span class=\"paren\">`];
+  static CLOSES = [`</i>`, `</b>`, `</b>`, `</span>`, `</span>`, `</span>`, `</span>`, `</span>`, `</span>`, `</span>`, `</b>`, `</span>`, `</span>`, `</span></span>`, `</sup>`, `</sub>`, `</span>`];
   together(parts: any[]): any {
     return parts.join(``);
   }
@@ -2190,58 +2158,8 @@ export class Setter extends Node {
     return `<span class=\"tx\">${Notation.escaped(t)}</span>`;
   }
   wrap(kind: string, c: any): any {
-    if (eq(kind, `var`)) {
-      return `<i>${c}</i>`;
-    }
-    if (eq(kind, `count`)) {
-      return `<b class=\"k\">${c}</b>`;
-    }
-    if (eq(kind, `fn`)) {
-      return `<b class=\"d\">${c}</b>`;
-    }
-    if (eq(kind, `muted`)) {
-      return `<span class=\"mu\">${c}</span>`;
-    }
-    if (eq(kind, `bar`)) {
-      return `<span class=\"bar\">${c}</span>`;
-    }
-    if (eq(kind, `hat`)) {
-      return `<span class=\"acc hat\">${c}</span>`;
-    }
-    if (eq(kind, `tilde`)) {
-      return `<span class=\"acc tld\">${c}</span>`;
-    }
-    if (eq(kind, `vec`)) {
-      return `<span class=\"acc vec\">${c}</span>`;
-    }
-    if (eq(kind, `dot`)) {
-      return `<span class=\"acc dot\">${c}</span>`;
-    }
-    if (eq(kind, `ddot`)) {
-      return `<span class=\"acc ddot\">${c}</span>`;
-    }
-    if (eq(kind, `bold`)) {
-      return `<b class=\"bf\">${c}</b>`;
-    }
-    if (eq(kind, `cal`)) {
-      return `<span class=\"cal\">${c}</span>`;
-    }
-    if (eq(kind, `bb`)) {
-      return `<span class=\"bb\">${c}</span>`;
-    }
-    if (eq(kind, `sqrt`)) {
-      return `<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">${c}</span></span>`;
-    }
-    if (eq(kind, `sup`)) {
-      return `<sup>${c}</sup>`;
-    }
-    if (eq(kind, `sub`)) {
-      return `<sub>${c}</sub>`;
-    }
-    if (eq(kind, `paren`)) {
-      return `<span class=\"paren\">${c}</span>`;
-    }
-    return `<span class=\"${kind}\">${c}</span>`;
+    let i = index_of(Setter.KINDS, kind);
+    return (eq(i, null) ? `<span class=\"${kind}\">${c}</span>` : `${elem(Setter.OPENS, i)}${c}${elem(Setter.CLOSES, i)}`);
   }
   big(kind: string, lo: any, hi: any): any {
     let sign = (eq(kind, `int`) ? `&#8747;` : ((eq(kind, `oint`) ? `&#8750;` : ((eq(kind, `sum`) ? `&#8721;` : `&#8719;`)))));
@@ -2331,19 +2249,22 @@ export class Notation extends Node {
   static char_at(s: string, i: number): number {
     return (lt(i, s.length) ? elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), i) : 0);
   }
-  static letters(s: string, at: number): string {
+  static run(s: string, at: number, keep: ((...args: any[]) => any)): string {
     let k = at;
-    while ((lt(k, s.length) && Notation.is_letter(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)))) {
+    while ((lt(k, s.length) && keep(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)))) {
       k = add(k, 1);
     }
     return Notation.sub_(s, at, k);
   }
+  static letters(s: string, at: number): string {
+    return Notation.run(s, at, ((c: any) => {
+      return Notation.is_letter(c);
+    }));
+  }
   static alnums(s: string, at: number): string {
-    let k = at;
-    while ((lt(k, s.length) && Notation.is_alnum(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)))) {
-      k = add(k, 1);
-    }
-    return Notation.sub_(s, at, k);
+    return Notation.run(s, at, ((c: any) => {
+      return Notation.is_alnum(c);
+    }));
   }
   static counted(w: string): Piece {
     let of = Piece.wrap(`count`, [Piece.text_(w)]);
@@ -2390,6 +2311,9 @@ export class Notation extends Node {
     }
     return new Args({ got: got, end: k });
   }
+  static scripted(base: Piece, kind: string, of: Piece[]): Piece {
+    return new Piece({ kind: `scripted`, base: base, raised: (eq(kind, `sup`) ? of : null), lowered: (eq(kind, `sup`) ? null : of) });
+  }
   static attach(out: Piece[], kind: string, of: Piece[]) {
     if ((out.length === 0)) {
       push(out, Piece.wrap(kind, of));
@@ -2417,25 +2341,11 @@ export class Notation extends Node {
       } else {
         tail.text = head;
       }
-      let s = new Piece({ kind: `scripted` });
-      s.base = Piece.text_(last_char);
-      if (eq(kind, `sup`)) {
-        s.raised = of;
-      } else {
-        s.lowered = of;
-      }
-      push(out, s);
+      push(out, Notation.scripted(Piece.text_(last_char), kind, of));
       return null;
     }
     out.pop();
-    let s = new Piece({ kind: `scripted` });
-    s.base = tail;
-    if (eq(kind, `sup`)) {
-      s.raised = of;
-    } else {
-      s.lowered = of;
-    }
-    return push(out, s);
+    return push(out, Notation.scripted(tail, kind, of));
   }
   static parse(src: string): Piece[] {
     let out = [];
@@ -2582,25 +2492,19 @@ export class Notation extends Node {
         buf = ``;
       }
     });
+    let starts_name = ((c: number) => {
+      return (Notation.is_letter(c) || eq(c, 95));
+    });
     let bits = [];
     let k = 0;
     while (lt(k, s.length)) {
-      let c = elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k);
-      if ((Notation.is_letter(c) || eq(c, 95))) {
-        let j = k;
-        while ((lt(j, s.length) && Notation.is_name(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j)))) {
-          j = add(j, 1);
-        }
-        push(bits, Notation.sub_(s, k, j));
-        k = j;
-      } else {
-        let j = k;
-        while ((lt(j, s.length) && !(((Notation.is_letter(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j)) || eq(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), j), 95)))))) {
-          j = add(j, 1);
-        }
-        push(bits, Notation.sub_(s, k, j));
-        k = j;
-      }
+      let bit = (starts_name(elem(Array.from(s, (ch: string) => ch.codePointAt(0) as number), k)) ? Notation.run(s, k, ((c: any) => {
+        return Notation.is_name(c);
+      })) : Notation.run(s, k, ((c: any) => {
+        return !(starts_name(c));
+      })));
+      push(bits, bit);
+      k = add(k, bit.length);
     }
     let i = 0;
     while (lt(i, bits.length)) {
@@ -2801,19 +2705,13 @@ export class Expr extends Node {
   get simple(): (Expr | null) { return this.read("simple", () => null); }
   set simple(v: (Expr | null)) { this.write("simple", v); }
   static num(n: number): Expr {
-    let e = new Expr({ kind: `num` });
-    e.value = n;
-    return e;
+    return new Expr({ kind: `num`, value: n });
   }
   static sym(name: string): Expr {
-    let e = new Expr({ kind: `sym` });
-    e.label = name;
-    return e;
+    return new Expr({ kind: `sym`, label: name });
   }
   static field(name: string): Expr {
-    let e = new Expr({ kind: `field` });
-    e.label = name;
-    return e;
+    return new Expr({ kind: `field`, label: name });
   }
   static add(xs: Expr[]): Expr {
     return Expr.flatten(`add`, xs);
@@ -2822,58 +2720,34 @@ export class Expr extends Node {
     return Expr.flatten(`mul`, xs);
   }
   static to_power(base: Expr, by: Expr): Expr {
-    let e = new Expr({ kind: `pow` });
-    e.base = base;
-    e.power = by;
-    return e;
+    return new Expr({ kind: `pow`, base: base, power: by });
   }
   static pown(base: Expr, by: number): Expr {
     return Expr.to_power(base, Expr.num(by));
   }
   static grad(x: Expr): Expr {
-    let e = new Expr({ kind: `grad` });
-    e.base = x;
-    return e;
+    return new Expr({ kind: `grad`, base: x });
   }
   static log(x: Expr): Expr {
-    let e = new Expr({ kind: `log` });
-    e.base = x;
-    return e;
+    return new Expr({ kind: `log`, base: x });
   }
   static exp(x: Expr): Expr {
-    let e = new Expr({ kind: `exp` });
-    e.base = x;
-    return e;
+    return new Expr({ kind: `exp`, base: x });
   }
   static choose(n: Expr, k: Expr): Expr {
-    let e = new Expr({ kind: `choose` });
-    e.first_ = n;
-    e.second_ = k;
-    return e;
+    return new Expr({ kind: `choose`, first_: n, second_: k });
   }
   static gamma_inc(s: Expr, x: Expr): Expr {
-    let e = new Expr({ kind: `gammaInc` });
-    e.first_ = s;
-    e.second_ = x;
-    return e;
+    return new Expr({ kind: `gammaInc`, first_: s, second_: x });
   }
   static root(x: Expr, name: string): Expr {
-    let e = new Expr({ kind: `root` });
-    e.base = x;
-    e.bound = name;
-    return e;
+    return new Expr({ kind: `root`, base: x, bound: name });
   }
   static limit(x: Expr, name: string): Expr {
-    let e = new Expr({ kind: `limit` });
-    e.base = x;
-    e.bound = name;
-    return e;
+    return new Expr({ kind: `limit`, base: x, bound: name });
   }
   static call(name: string, x: Expr): Expr {
-    let e = new Expr({ kind: `call` });
-    e.label = name;
-    e.base = x;
-    return e;
+    return new Expr({ kind: `call`, label: name, base: x });
   }
   static neg(x: Expr): Expr {
     return Expr.mul([Expr.num((-1)), x]);
@@ -2902,23 +2776,27 @@ export class Expr extends Node {
   get named(): boolean {
     return (eq(this.kind, `sym`) || eq(this.kind, `field`));
   }
+  get subtrees(): Expr[] {
+    if ((eq(this.kind, `add`) || eq(this.kind, `mul`))) {
+      return this.of;
+    }
+    if (eq(this.kind, `pow`)) {
+      return [this.base, this.power];
+    }
+    if ((eq(this.kind, `choose`) || eq(this.kind, `gammaInc`))) {
+      return [this.first_, this.second_];
+    }
+    return (eq(this.base, null) ? [] : [this.base]);
+  }
   get by_num(): (number | null) {
     return (eq(this.power.kind, `num`) ? this.power.value : null);
   }
   static flatten(kind: string, xs: Expr[]): Expr {
-    let e = new Expr({ kind: kind });
-    let out = [];
-    for (const x of [...xs]) {
-      if (eq(x.kind, kind)) {
-        for (const y of [...x.of]) {
-          push(out, y);
-        };
-      } else {
-        push(out, x);
-      }
-    };
-    e.of = out;
-    return e;
+    return new Expr({ kind: kind, of: xs.reduce(((out: any, x: any) => {
+      return (eq(x.kind, kind) ? x.of.reduce(((o: any, y: any) => {
+        return push(o, y);
+      }), out) : push(out, x));
+    }), []) });
   }
   static is_integer(x: number): boolean {
     return eq(x, Math.floor(x));
@@ -2950,10 +2828,9 @@ export class Expr extends Node {
       return sub(Math.log((div(Math.PI, Math.sin((mul(Math.PI, z)))))), Expr.lgamma(sub(1, z)));
     }
     z = sub(z, 1);
-    let x = 0.99999999999980993;
-    for (let i = 0; i < g.length; i++) {
-      x = add(x, div(elem(g, i), (add(add(z, i), 1))));
-    };
+    let x = range(g.length).reduce(((x: any, i: any) => {
+      return add(x, div(elem(g, i), (add(add(z, i), 1))));
+    }), 0.99999999999980993);
     let t = sub(add(z, g.length), 0.5);
     return add(sub(add(mul(0.5, Math.log((mul(2, Math.PI)))), mul((add(z, 0.5)), Math.log(t))), t), Math.log(x));
   }
@@ -3345,12 +3222,11 @@ export class Expr extends Node {
           like.set(id, [body, kk]);
         }
       };
-      let kept = [];
-      for (const v of [...like.values]) {
-        if (!eq(elem(v, 1), 0)) {
-          push(kept, (eq(elem(v, 1), 1) ? elem(v, 0) : Expr.mul([Expr.num(elem(v, 1)), elem(v, 0)])));
-        }
-      };
+      let kept = like.values.filter(((v: any) => {
+        return !eq(elem(v, 1), 0);
+      })).map(((v: any) => {
+        return (eq(elem(v, 1), 1) ? elem(v, 0) : Expr.mul([Expr.num(elem(v, 1)), elem(v, 0)]));
+      }));
       if ((kept.length === 0)) {
         return Expr.num(c);
       }
@@ -3443,21 +3319,12 @@ export class Expr extends Node {
             return (y.named && eq(y.label, e.bound));
           })));
         });
-        let at = null;
-        for (let i = 0; i < body.of.length; i++) {
-          if ((eq(at, null) && is_minus(elem(body.of, i)))) {
-            at = i;
-          }
-        };
-        if ((!eq(at, null) && eq(body.of.filter(((x: any) => {
+        if (eq(body.of.filter(((x: any) => {
           return is_minus(x);
-        })).length, 1))) {
-          let rest = [];
-          for (let i = 0; i < body.of.length; i++) {
-            if (!eq(i, at)) {
-              push(rest, elem(body.of, i));
-            }
-          };
+        })).length, 1)) {
+          let rest = body.of.filter(((x: any) => {
+            return !(is_minus(x));
+          }));
           return `\\text{the } ${e.bound} \\text{ where } ${e.bound} = ${Expr.show((eq(rest.length, 1) ? elem(rest, 0) : Expr.add(rest)))}`;
         }
       }
@@ -3554,14 +3421,12 @@ export class Expr extends Node {
       })).concat(e.of.filter(((x: any) => {
         return negative(x);
       })));
-      let out = ``;
-      for (let i = 0; i < ordered.length; i++) {
-        let x = elem(ordered, i);
-        let t = (eq(x.kind, `root`) ? `\\paren{${Expr.show(x)}}` : Expr.show(x));
-        let piece = (eq(i, 0) ? t : ((t.startsWith(`-`) ? ` - ${t.slice(1)}` : ` + ${t}`)));
-        out = `${out}${piece}`;
-      };
-      return out;
+      let shown = ordered.map(((x: any) => {
+        return (eq(x.kind, `root`) ? `\\paren{${Expr.show(x)}}` : Expr.show(x));
+      }));
+      return range(shown.length).map(((i: any) => {
+        return (eq(i, 0) ? elem(shown, i) : ((elem(shown, i).startsWith(`-`) ? ` - ${elem(shown, i).slice(1)}` : ` + ${elem(shown, i)}`)));
+      })).join(``);
     }
     return ``;
   }
@@ -3602,13 +3467,11 @@ export class Expr extends Node {
     }
     if (eq(k, `mul`)) {
       return Expr.add(range(e.of.length).map(((i: any) => {
-        let others = [];
-        for (let j = 0; j < e.of.length; j++) {
-          if (!eq(j, i)) {
-            push(others, elem(e.of, j));
-          }
-        };
-        return Expr.mul([Expr.d(elem(e.of, i), wrt)].concat(others));
+        return Expr.mul([Expr.d(elem(e.of, i), wrt)].concat(range(e.of.length).filter(((j: any) => {
+          return !eq(j, i);
+        })).map(((j: any) => {
+          return elem(e.of, j);
+        }))));
       })));
     }
     if (eq(k, `pow`)) {
@@ -3883,18 +3746,14 @@ export class Expr extends Node {
       return (eq(v, null) ? Expr.NAN : v);
     }
     if (eq(k, `add`)) {
-      let total_ = 0;
-      for (const x of [...e.of]) {
-        total_ = add(total_, Expr.numeric(x, at));
-      };
-      return total_;
+      return e.of.reduce(((total_: any, x: any) => {
+        return add(total_, Expr.numeric(x, at));
+      }), 0);
     }
     if (eq(k, `mul`)) {
-      let prod = 1;
-      for (const x of [...e.of]) {
-        prod = mul(prod, Expr.numeric(x, at));
-      };
-      return prod;
+      return e.of.reduce(((prod: any, x: any) => {
+        return mul(prod, Expr.numeric(x, at));
+      }), 1);
     }
     if (eq(k, `pow`)) {
       return Math.pow(Expr.numeric(e.base, at), Expr.numeric(e.power, at));
@@ -3965,22 +3824,7 @@ export class Expr extends Node {
     if (((!(Expr.finite(f(0.5))) && !(Expr.finite(f(1)))) && !(Expr.finite(f(0.1))))) {
       return Expr.NAN;
     }
-    let points = [];
-    let i = 1;
-    while (le(i, 120)) {
-      push(points, div(i, 120));
-      i = add(i, 1);
-    }
-    let ex = 0;
-    while (le(ex, 24)) {
-      let k = 1;
-      while (lt(k, 8)) {
-        push(points, mul((Math.pow(10, (sub(ex, 12)))), (add(1, div(k, 2)))));
-        k = add(k, 1);
-      }
-      ex = add(ex, 1);
-    }
-    points = Expr.sorted(points);
+    let points = Expr.bracket_points;
     let lo = null;
     let hi = null;
     let px = elem(points, 0);
@@ -4021,16 +3865,21 @@ export class Expr extends Node {
     }
     return div((add(lo, hi)), 2);
   }
+  static get bracket_points(): number[] {
+    let even = range(120).map(((i: any) => {
+      return div((add(i, 1)), 120);
+    }));
+    let decades = range(25).reduce(((out: any, ex: any) => {
+      return range(7).reduce(((o: any, k: any) => {
+        return push(o, mul((Math.pow(10, (sub(ex, 12)))), (add(1, div((add(k, 1)), 2)))));
+      }), out);
+    }), []);
+    return Expr.sorted(even.concat(decades));
+  }
   static sorted(xs: number[]): number[] {
-    let out = [];
-    for (const x of [...xs]) {
-      let i = 0;
-      while ((lt(i, out.length) && le(elem(out, i), x))) {
-        i = add(i, 1);
-      }
-      out = out.slice(0, i).concat([x]).concat(out.slice(i));
-    };
-    return out;
+    return sorted_by(xs, ((x: any) => {
+      return x;
+    }));
   }
   static integrate(e: Expr, of: string): (Expr | null) {
     let s = Expr.spread(e);
@@ -4144,24 +3993,14 @@ export class Expr extends Node {
         let ok = true;
         let k = elem(head_, 1);
         if (!eq(nums, null)) {
-          let lo = elem(nums, 0);
-          let hi = elem(nums, 0);
-          for (const v of [...nums]) {
-            if (lt(v, lo)) {
-              lo = v;
-            }
-            if (gt(v, hi)) {
-              hi = v;
-            }
-          };
-          ok = eq((le(lo, 0)), (le(hi, 0)));
-          let least = elem(nums, 0);
-          for (const v of [...nums]) {
-            if (lt(Math.abs(v), Math.abs(least))) {
-              least = v;
-            }
-          };
-          k = Expr.num(least);
+          ok = (nums.every(((v: any) => {
+            return le(v, 0);
+          })) || nums.every(((v: any) => {
+            return gt(v, 0);
+          })));
+          k = Expr.num(nums.reduce(((least: any, v: any) => {
+            return (lt(Math.abs(v), Math.abs(least)) ? v : least);
+          }), elem(nums, 0)));
         }
         if (ok) {
           push(common, [elem(head_, 0), k]);
@@ -4377,20 +4216,15 @@ export class Expr extends Node {
       }))));
     }
     if (eq(t.kind, `mul`)) {
-      let parts = t.of.map(((x: any) => {
+      let out = t.of.map(((x: any) => {
         return Expr.expand(x);
-      }));
-      let out = [Expr.num(1)];
-      for (const p of [...parts]) {
-        let terms = (eq(p.kind, `add`) ? p.of : [p]);
-        let next = [];
-        for (const a of [...out]) {
-          for (const b of [...terms]) {
-            push(next, Expr.mul([a, b]));
-          };
-        };
-        out = next;
-      };
+      })).reduce(((out: any, p: any) => {
+        return out.reduce(((next: any, a: any) => {
+          return ((eq(p.kind, `add`) ? p.of : [p])).reduce(((n: any, b: any) => {
+            return push(n, Expr.mul([a, b]));
+          }), next);
+        }), []);
+      }), [Expr.num(1)]);
       return Expr.simplify(Expr.add(out));
     }
     return t;
@@ -4555,6 +4389,13 @@ export class ExprReader extends Node {
   starts(s: string): boolean {
     return eq(Notation.sub_(this.text, this.at, add(this.at, s.length)), s);
   }
+  take_while(keep: ((...args: any[]) => any)): string {
+    let k = this.at;
+    while ((lt(k, this.text.length) && keep(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k)))) {
+      k = add(k, 1);
+    }
+    return this.eat(sub(k, this.at));
+  }
   get addition(): Expr {
     let left = this.product;
     this.skip;
@@ -4605,18 +4446,19 @@ export class ExprReader extends Node {
     return e;
   }
   get word(): string {
-    let k = this.at;
-    while ((lt(k, this.text.length) && ((Notation.is_name(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k)) || gt(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 127))))) {
-      k = add(k, 1);
-    }
-    return this.eat(sub(k, this.at));
+    return this.take_while(((c: any) => {
+      return (Notation.is_name(c) || gt(c, 127));
+    }));
   }
   get number(): Expr {
-    let k = this.at;
-    while ((lt(k, this.text.length) && ((Notation.is_digit(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k)) || eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 46))))) {
-      k = add(k, 1);
-    }
-    return Expr.num(Number(this.eat(sub(k, this.at))));
+    return Expr.num(Number(this.take_while(((c: any) => {
+      return (Notation.is_digit(c) || eq(c, 46));
+    }))));
+  }
+  get quoted(): string {
+    return this.take_while(((c: any) => {
+      return !eq(c, 34);
+    }));
   }
   get primary(): Expr {
     this.skip;
@@ -4633,11 +4475,7 @@ export class ExprReader extends Node {
     }
     if (eq(c, 34)) {
       this.eat(1);
-      let k = this.at;
-      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
-        k = add(k, 1);
-      }
-      let name = this.eat(sub(k, this.at));
+      let name = JSON.stringify(this);
       this.eat(1);
       return Expr.field(Expr.name_of(name));
     }
@@ -4649,11 +4487,7 @@ export class ExprReader extends Node {
       this.eat(1);
       this.skip;
       this.eat(1);
-      let k = this.at;
-      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
-        k = add(k, 1);
-      }
-      let name = this.eat(sub(k, this.at));
+      let name = JSON.stringify(this);
       this.eat(1);
       this.skip;
       this.eat(1);
@@ -4675,11 +4509,7 @@ export class ExprReader extends Node {
     }
     if ((eq(name, `s`) && eq(this.peek, 91))) {
       this.eat(2);
-      let k = this.at;
-      while ((lt(k, this.text.length) && !eq(elem(Array.from(this.text, (ch: string) => ch.codePointAt(0) as number), k), 34))) {
-        k = add(k, 1);
-      }
-      let key = this.eat(sub(k, this.at));
+      let key = JSON.stringify(this);
       this.eat(2);
       return Expr.field(Expr.name_of(key));
     }
@@ -5313,21 +5143,18 @@ export class Prover extends Node {
       sw.derivation = [inner];
       push(out, sw);
     }
-    let rates = [];
-    for (const t of [...infos]) {
-      if ((!eq(t.rate, null) && !(contains(rates, t.rate)))) {
-        push(rates, t.rate);
-      }
-    };
+    let rates = infos.filter(((t: any) => {
+      return !eq(t.rate, null);
+    })).reduce(((out: any, t: any) => {
+      return (contains(out, t.rate) ? out : push(out, t.rate));
+    }), []);
     for (const name of [...rates]) {
       push(out, Step.of(Fact.stands(name, Expr.num(1)), `the rewrite`, [], `a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit`, [`${name} = 1 per match per tick`]));
     };
     for (const ledger of [...[`rays`, `space`, `folds`]]) {
-      let parts = [];
-      for (const t of [...acting]) {
-        let c = (eq(ledger, `rays`) ? t.ray_count : ((eq(ledger, `space`) ? t.space_count : t.fold_count)));
-        push(parts, Expr.simplify(Expr.mul([Prover.body_of(t), c])));
-      };
+      let parts = acting.map(((t: any) => {
+        return Expr.simplify(Expr.mul([Prover.body_of(t), (eq(ledger, `rays`) ? t.ray_count : ((eq(ledger, `space`) ? t.space_count : t.fold_count)))]));
+      }));
       if (!((parts.length === 0))) {
         push(out, Step.of(Fact.stands(`the ${ledger} line nets`, Expr.simplify(Expr.add(parts))), `the line`, [], `every term of the line does something to the ${ledger} ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted`, acting.map(((t: any) => {
           let c = (eq(ledger, `rays`) ? t.ray_count : ((eq(ledger, `space`) ? t.space_count : t.fold_count)));
@@ -6873,21 +6700,17 @@ export class Inferences extends Node {
         if (!eq(t.kind, `mul`)) {
           return t;
         }
-        let at = null;
-        for (let i = 0; i < t.of.length; i++) {
-          if ((eq(at, null) && eq(elem(t.of, i).kind, `add`))) {
-            at = i;
-          }
-        };
+        let at = first(range(t.of.length).filter(((i: any) => {
+          return eq(elem(t.of, i).kind, `add`);
+        })));
         if (eq(at, null)) {
           return t;
         }
-        let rest = [];
-        for (let i = 0; i < t.of.length; i++) {
-          if (!eq(i, at)) {
-            push(rest, elem(t.of, i));
-          }
-        };
+        let rest = range(t.of.length).filter(((i: any) => {
+          return !eq(i, at);
+        })).map(((i: any) => {
+          return elem(t.of, i);
+        }));
         let spread = Expr.simplify(Expr.add(elem(t.of, at).of.map(((x: any) => {
           return Expr.simplify(Expr.mul(rest.concat([x])));
         }))));
@@ -7557,18 +7380,14 @@ export class Aggregate extends Node {
       return (eq(v, null) ? NaN : v);
     }
     if (eq(k, `add`)) {
-      let total = 0;
-      for (const p of [...e.of]) {
-        total = add(total, this.value(p, at, masses, Rs, skip));
-      };
-      return total;
+      return sum(e.of.map(((p: any) => {
+        return this.value(p, at, masses, Rs, skip);
+      })));
     }
     if (eq(k, `mul`)) {
-      let prod = 1;
-      for (const p of [...e.of]) {
-        prod = mul(prod, this.value(p, at, masses, Rs, skip));
-      };
-      return prod;
+      return e.of.reduce(((prod: any, p: any) => {
+        return mul(prod, this.value(p, at, masses, Rs, skip));
+      }), 1);
     }
     if (eq(k, `pow`)) {
       return Math.pow(this.value(e.base, at, masses, Rs, skip), this.value(e.power, at, masses, Rs, skip));
@@ -7859,18 +7678,13 @@ export class Aggregate extends Node {
     return (eq(f, null) ? Expr.num(0) : f.to);
   }
   get names(): string[] {
-    let out = this.per_body.map(((n: any) => {
-      return n;
-    }));
-    push(out, `SUM`);
-    for (const e of [...[this.outer, this.summand, this.shell_expr, this.reach_expr]]) {
-      for (const n of [...Model.unbound(e)]) {
-        if (((!(contains(out, n)) && !eq(n, `\\bar{R}`)) && !(n.endsWith(`\\paren{...}`)))) {
-          push(out, n);
-        }
-      };
-    };
-    return out;
+    return [this.outer, this.summand, this.shell_expr, this.reach_expr].reduce(((out: any, e: any) => {
+      return Model.unbound(e).filter(((n: any) => {
+        return (!eq(n, `\\bar{R}`) && !(n.endsWith(`\\paren{...}`)));
+      })).reduce(((o: any, n: any) => {
+        return (contains(o, n) ? o : push(o, n));
+      }), out);
+    }), this.per_body.concat([`SUM`]));
   }
   get constants(): number[] {
     return this.names.map(((n: any) => {
@@ -8099,7 +7913,7 @@ export class Medium extends Node {
     }))));
   }
   get terms(): any[] {
-    return this.theory.equation.terms;
+    return this.theory.terms_read;
   }
   get meets(): any[] { return this.read("meets", () => this.terms.filter(((t: any) => {
     return ((((!(t.settles) && !(t.transport)) && !(t.outside)) && !(t.doing.trades)) && eq(t.degree, 2));
@@ -8270,16 +8084,11 @@ export class Medium extends Node {
   }
   under(h: Hole): number[] {
     let half = Math.floor((div((sub(this.K, 1)), 2)));
-    let out = [];
-    for (let dy = 0; dy < this.K; dy++) {
-      for (let dx = 0; dx < this.K; dx++) {
-        let c = this.at(add(sub(Math.round(h.x), half), dx), add(sub(Math.round(h.y), half), dy));
-        if (ge(c, 0)) {
-          push(out, c);
-        }
-      };
-    };
-    return out;
+    return range(mul(this.K, this.K)).map(((i: any) => {
+      return this.at(add(sub(Math.round(h.x), half), mod(i, this.K)), add(sub(Math.round(h.y), half), Math.floor((div(i, this.K)))));
+    })).filter(((c: any) => {
+      return ge(c, 0);
+    }));
   }
   spread(h: Hole): number[][] {
     let half = div(sub(this.K, 1), 2);
@@ -9510,12 +9319,8 @@ export class Cached extends Played {
   set sizes(v: number[]) { this.write("sizes", v); }
   at(frame_at: number): object {
     let out = ({});
-    let all = this.film.columns[`frames`];
-    let width = sum(this.sizes);
-    let from_at = mul(frame_at, width);
     for (let i = 0; i < this.names.length; i++) {
-      out[elem(this.names, i)] = all.slice(from_at).slice(0, elem(this.sizes, i));
-      from_at = add(from_at, elem(this.sizes, i));
+      out[elem(this.names, i)] = this.film.columns[`frames`].slice(add(mul(frame_at, sum(this.sizes)), sum(this.sizes.slice(0, i)))).slice(0, elem(this.sizes, i));
     };
     return out;
   }
@@ -9859,14 +9664,15 @@ export class Setup extends Node {
     return add(mul(cy, this.coarse_side), cx);
   }
   static middle(holes: Hole[]): number[] {
-    let m = 0;
-    let x = 0;
-    let y = 0;
-    for (const h of [...holes]) {
-      m = add(m, h.mass);
-      x = add(x, mul(h.x, h.mass));
-      y = add(y, mul(h.y, h.mass));
-    };
+    let m = sum(holes.map(((h: any) => {
+      return h.mass;
+    })));
+    let x = sum(holes.map(((h: any) => {
+      return mul(h.x, h.mass);
+    })));
+    let y = sum(holes.map(((h: any) => {
+      return mul(h.y, h.mass);
+    })));
     return (gt(m, 0) ? [div(x, m), div(y, m)] : [0, 0]);
   }
   static rest_of(holes: Hole[], k: number): number[] {
@@ -10371,10 +10177,9 @@ export class Panel extends Node {
         centre = k;
       }
     };
-    let weight = 0;
-    for (let k = 0; k < p.bodies; k++) {
-      weight = add(weight, elem(marks, add(mul(k, 6), 5)));
-    };
+    let weight = sum(range(p.bodies).map(((k: any) => {
+      return elem(marks, add(mul(k, 6), 5));
+    })));
     let frames = div(elem(trail, centre).length, 2);
     let midx = range(frames).map(((i: any) => {
       return 0;
@@ -10657,14 +10462,13 @@ export class Strip extends Node {
     let pts = w.live.map(((v: any) => {
       return elem(v.at.components, 0);
     }));
-    let sides = [];
-    for (const v of [...w.live]) {
-      for (const r of [...v.rays]) {
-        if (r.active) {
-          push(sides, new Side({ at: elem(v.at.components, 0), sign: elem(r.along.components, 0), ink: ink.ink_of(r) }));
-        }
-      };
-    };
+    let sides = w.live.reduce(((out: any, v: any) => {
+      return v.rays.filter(((r: any) => {
+        return r.active;
+      })).reduce(((o: any, r: any) => {
+        return push(o, new Side({ at: elem(v.at.components, 0), sign: elem(r.along.components, 0), ink: ink.ink_of(r) }));
+      }), out);
+    }), []);
     let l = new Lane({ points: pts, sides: sides });
     for (const s of [...w.sources]) {
       for (const c of [...s.cells]) {
@@ -10751,15 +10555,12 @@ export class Strip extends Node {
     return rel;
   }
   static centre_of(lanes: Lane[]): number {
-    let xs = [];
-    for (const l of [...lanes]) {
-      for (const p of [...l.sources]) {
-        push(xs, p);
-      };
-    };
-    if ((xs.length === 0)) {
-      xs = first(lanes).points;
-    }
+    let sourced = lanes.reduce(((out: any, l: any) => {
+      return l.sources.reduce(((o: any, p: any) => {
+        return push(o, p);
+      }), out);
+    }), []);
+    let xs = ((sourced.length === 0) ? first(lanes).points : sourced);
     if ((xs.length === 0)) {
       return 0;
     }
@@ -11101,16 +10902,14 @@ export class Sparc extends Node {
         best[p.galaxy] = p;
       }
     };
-    let out = [];
     let names = Sparc.names;
-    for (let g = 0; g < names.length; g++) {
-      let p = elem(best, g);
-      if (!eq(p, null)) {
-        let q = new RarPoint({ gbar: p.gbar, gobs: p.gobs, galaxy: p.galaxy, R: p.R });
-        q.name = elem(names, g);
-        push(out, q);
-      }
-    };
+    let out = range(names.length).filter(((g: any) => {
+      return !eq(elem(best, g), null);
+    })).map(((g: any) => {
+      let q = new RarPoint({ gbar: elem(best, g).gbar, gobs: elem(best, g).gobs, galaxy: elem(best, g).galaxy, R: elem(best, g).R });
+      q.name = elem(names, g);
+      return q;
+    }));
     Sparc.CACHE[`flat`] = out;
     return out;
   }
@@ -11124,12 +10923,11 @@ export class Sparc extends Node {
     }
     let c = t.columns;
     let names = t.header[`names`];
-    let out = [];
-    for (let i = 0; i < t.rows; i++) {
-      if (gt(elem(c[`Vf`], i), 0)) {
-        push(out, new Btfr({ name: elem(names, i), galaxy: elem(c[`galaxy`], i), vf: elem(c[`Vf`], i), err: elem(c[`e_Vf`], i), mass: mul(Math.pow(10, elem(c[`log(Mb)`], i)), Sparc.MSUN), err_mass: elem(c[`e_log(Mb)`], i) }));
-      }
-    };
+    let out = range(t.rows).filter(((i: any) => {
+      return gt(elem(c[`Vf`], i), 0);
+    })).map(((i: any) => {
+      return new Btfr({ name: elem(names, i), galaxy: elem(c[`galaxy`], i), vf: elem(c[`Vf`], i), err: elem(c[`e_Vf`], i), mass: mul(Math.pow(10, elem(c[`log(Mb)`], i)), Sparc.MSUN), err_mass: elem(c[`e_log(Mb)`], i) });
+    }));
     Sparc.CACHE[`btfr`] = out;
     return out;
   }
@@ -11247,34 +11045,22 @@ export class Galaxies extends Node {
     return eq((mod(Math.floor((div(mask, Math.pow(2, at)))), 2)), 1);
   }
   static tint_of(mask: number): number[] {
-    if (eq(mask, 0)) {
-      return Galaxies.SEVERAL;
-    }
-    let r = 0;
-    let g = 0;
-    let bl = 0;
-    let n = 0;
-    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
-      if (Galaxies.bit(mask, i)) {
-        r = add(r, elem(elem(Galaxies.TINTS, i), 0));
-        g = add(g, elem(elem(Galaxies.TINTS, i), 1));
-        bl = add(bl, elem(elem(Galaxies.TINTS, i), 2));
-        n = add(n, 1);
-      }
-    };
-    return (gt(n, 0) ? [div(r, n), div(g, n), div(bl, n)] : Galaxies.SEVERAL);
+    let on = Galaxies.freedoms_in(mask);
+    return ((eq(mask, 0) || (on.length === 0)) ? Galaxies.SEVERAL : [0, 1, 2].map(((c: any) => {
+      return div(sum(on.map(((i: any) => {
+        return elem(elem(Galaxies.TINTS, i), c);
+      }))), on.length);
+    })));
   }
   static name_of(mask: number): string {
     if (eq(mask, 0)) {
       return `the source as it starts`;
     }
-    let parts = [];
-    for (let i = 0; i < Galaxies.NAMES_NOW.length; i++) {
-      if (Galaxies.bit(mask, i)) {
-        push(parts, elem(Galaxies.NAMES_NOW, i));
-      }
-    };
-    let joined = parts.join(` + `);
+    let joined = range(Galaxies.NAMES_NOW.length).filter(((i: any) => {
+      return Galaxies.bit(mask, i);
+    })).map(((i: any) => {
+      return elem(Galaxies.NAMES_NOW, i);
+    })).join(` + `);
     return `needs ${joined}`;
   }
   static rgb(c: number[]): string {
@@ -11384,6 +11170,40 @@ export class Galaxies extends Node {
     let got = add(mul(elem(ys_, lo), (sub(1, f))), mul(elem(ys_, hi), f));
     return (gt(got, 0) ? Fmt.log10(div(got, a0)) : NaN);
   }
+  static decades(s: Surface, X: Program, Y: Program, box: number[], range: number[], under: number) {
+    for (const l of [...range(add(sub(elem(range, 1), elem(range, 0)), 1)).map(((i: any) => {
+      return add(elem(range, 0), i);
+    }))]) {
+      s.begin_path;
+      s.move_to(X(l), elem(box, 1));
+      s.line_to(X(l), elem(box, 3));
+      s.stroke;
+      s.fill_text(`10^${l}`, X(l), add(elem(box, 3), under));
+    };
+    s.text_align(`right`);
+    for (const l of [...range(add(sub(elem(range, 3), elem(range, 2)), 1)).map(((i: any) => {
+      return add(elem(range, 2), i);
+    }))]) {
+      s.begin_path;
+      s.move_to(elem(box, 0), Y(l));
+      s.line_to(elem(box, 2), Y(l));
+      s.stroke;
+      s.fill_text(`10^${l}`, sub(elem(box, 0), 8), add(Y(l), 4));
+    };
+  }
+  static curve(s: Surface, X: Program, Y: Program, f: Program, low: number, high: number, step: number) {
+    s.begin_path;
+    let l = low;
+    while (le(l, add(high, 0.000001))) {
+      if (eq(l, low)) {
+        s.move_to(X(l), Y(f(l)));
+      } else {
+        s.line_to(X(l), Y(f(l)));
+      }
+      l = add(l, step);
+    }
+    return s.stroke;
+  }
   static along(s: Surface, at: Program, t: number, text: string, colour: string, lift: number, leans: Program) {
     let p0 = leans(sub(t, 0.01));
     let p1 = leans(add(t, 0.01));
@@ -11474,34 +11294,13 @@ export class Galaxies extends Node {
     s.line_width(1);
     s.fill_style(Galaxies.FAINT);
     s.text_align(`center`);
-    let l = XMIN;
-    while (le(l, XMAX)) {
-      s.begin_path;
-      s.move_to(X(l), by0);
-      s.line_to(X(l), by1);
-      s.stroke;
-      s.fill_text(`10^${l}`, X(l), add(by1, 17));
-      l = add(l, 1);
-    }
-    s.text_align(`right`);
-    l = YMIN;
-    while (le(l, YMAX)) {
-      s.begin_path;
-      s.move_to(bx0, Y(l));
-      s.line_to(bx1, Y(l));
-      s.stroke;
-      s.fill_text(`10^${l}`, sub(bx0, 8), add(Y(l), 4));
-      l = add(l, 1);
-    }
-    let implied = [];
-    for (const g of [...Sparc.btfr]) {
-      let M = g.mass;
+    Galaxies.decades(s, X, Y, [bx0, by0, bx1, by1], [XMIN, XMAX, YMIN, YMAX], 17);
+    let implied = Expr.sorted(Sparc.btfr.filter(((g: any) => {
+      return (gt(g.mass, 0) && gt(g.vf, 0));
+    })).map(((g: any) => {
       let v = mul(g.vf, 1000);
-      if ((gt(M, 0) && gt(v, 0))) {
-        push(implied, Fmt.log10(div(div(mul(mul(mul(v, v), v), v), (mul(Sparc.G_NEWTON, M))), Galaxies.A0_DATA)));
-      }
-    };
-    implied = Expr.sorted(implied);
+      return Fmt.log10(div(div(mul(mul(mul(v, v), v), v), (mul(Sparc.G_NEWTON, g.mass))), Galaxies.A0_DATA));
+    })));
     let med = ((implied.length === 0) ? NaN : elem(implied, Math.floor((div(implied.length, 2)))));
     s.line_width(1);
     for (const o of [...implied]) {
@@ -11668,33 +11467,17 @@ export class Galaxies extends Node {
     s.stroke_style(Galaxies.BTFRC);
     s.line_width(1.5);
     s.dash([2, 4]);
-    s.begin_path;
-    l = XMIN;
-    while (le(l, add(XMAX, 0.000001))) {
-      if (eq(l, XMIN)) {
-        s.move_to(X(l), Y(mul(0.5, l)));
-      } else {
-        s.line_to(X(l), Y(mul(0.5, l)));
-      }
-      l = add(l, 0.05);
-    }
-    s.stroke;
+    Galaxies.curve(s, X, Y, ((l: any) => {
+      return mul(0.5, l);
+    }), XMIN, XMAX, 0.05);
     s.dash([]);
     s.stroke_style(Galaxies.MODEL);
     s.line_width(1.2);
     s.alpha(0.4);
     s.dash([5, 4]);
-    s.begin_path;
-    l = XMIN;
-    while (le(l, add(XMAX, 0.000001))) {
-      if (eq(l, XMIN)) {
-        s.move_to(X(l), Y(law_drawn(l)));
-      } else {
-        s.line_to(X(l), Y(law_drawn(l)));
-      }
-      l = add(l, 0.02);
-    }
-    s.stroke;
+    Galaxies.curve(s, X, Y, ((l: any) => {
+      return law_drawn(l);
+    }), XMIN, XMAX, 0.02);
     s.dash([]);
     s.alpha(1);
     let landed = elem(possible, 0);
@@ -11818,13 +11601,9 @@ export class Galaxies extends Node {
         }
       };
     }
-    let total = 0;
-    for (const m of [...masks]) {
-      total = add(total, elem(tally, m));
-    };
-    if (eq(total, 0)) {
-      total = 1;
-    }
+    let total = Fmt.max(masks.reduce(((t: any, m: any) => {
+      return add(t, elem(tally, m));
+    }), 0), 1);
     let counts = Expr.sorted(masks.map(((m: any) => {
       return sub(0, elem(tally, m));
     })));
@@ -11897,13 +11676,12 @@ export class Galaxies extends Node {
     return s.text_align(`left`);
   }
   static single(m: number): boolean {
-    let n = 0;
-    for (let i = 0; i < Galaxies.FREEDOMS.length; i++) {
-      if (Galaxies.bit(m, i)) {
-        n = add(n, 1);
-      }
-    };
-    return eq(n, 1);
+    return eq(Galaxies.freedoms_in(m).length, 1);
+  }
+  static freedoms_in(m: number): number[] {
+    return range(Galaxies.FREEDOMS.length).filter(((i: any) => {
+      return Galaxies.bit(m, i);
+    }));
   }
   static ratio_at(data: Measured, deg: number): number {
     let table = data.header[`coincidence`];
@@ -12040,15 +11818,13 @@ export class Galaxies extends Node {
         rest = k;
       }
     };
-    let out = [];
-    for (let k = 0; k < n; k++) {
-      push(out, sub(sub(n, 1), k));
-    };
-    for (let k = 0; k < Galaxies.SETTLE; k++) {
+    let down = range(n).map(((k: any) => {
+      return sub(sub(n, 1), k);
+    }));
+    return down.concat(range(Galaxies.SETTLE).map(((k: any) => {
       let f = div((add(k, 1)), Galaxies.SETTLE);
-      push(out, Math.round((mul(mul(mul(rest, f), f), (sub(3, mul(2, f)))))));
-    };
-    return out;
+      return Math.round((mul(mul(mul(rest, f), f), (sub(3, mul(2, f))))));
+    })));
   }
   static of(id: string, what: string, title: string): Picture {
     let solved = Measured.of(`${id}.solved`);
@@ -12081,12 +11857,9 @@ export class Galaxies extends Node {
         counts[`${g}`] = add(((counts[`${g}`] ?? 0)), 1);
       }
     };
-    let ids = [];
-    for (let g = 0; g < Sparc.names.length; g++) {
-      if (ge(((counts[`${g}`] ?? 0)), 12)) {
-        push(ids, g);
-      }
-    };
+    let ids = range(Sparc.names.length).filter(((g: any) => {
+      return ge(((counts[`${g}`] ?? 0)), 12);
+    }));
     let tops = ({});
     for (let i = 0; i < t.rows; i++) {
       let g = elem(C[`galaxy`], i);
@@ -12095,11 +11868,9 @@ export class Galaxies extends Node {
     let sorted = sorted_by(ids, ((g: any) => {
       return tops[`${g}`];
     }));
-    let out = [];
-    for (let k = 0; k < want; k++) {
-      push(out, elem(sorted, Math.round((div(mul((sub(sorted.length, 1)), k), (sub(want, 1)))))));
-    };
-    return out;
+    return range(want).map(((k: any) => {
+      return elem(sorted, Math.round((div(mul((sub(sorted.length, 1)), k), (sub(want, 1))))));
+    }));
   }
   static get simulated(): Measured {
     let got = Measured.of(`galaxy.simulated`);
@@ -12116,14 +11887,9 @@ export class Galaxies extends Node {
     return got;
   }
   static rows_in(m: Measured, g: number): number[] {
-    let col = m.columns[`galaxy`];
-    let out = [];
-    for (let i = 0; i < m.rows; i++) {
-      if (eq(elem(col, i), g)) {
-        push(out, i);
-      }
-    };
-    return out;
+    return range(m.rows).filter(((i: any) => {
+      return eq(elem(m.columns[`galaxy`], i), g);
+    }));
   }
   static off_of(g: number, fitted: boolean): number {
     let sim = Galaxies.simulated;
@@ -12653,25 +12419,7 @@ export class Galaxies extends Node {
     s.fill_style(Galaxies.FAINT);
     s.font(`11px ui-monospace, monospace`);
     s.text_align(`center`);
-    let l = XMIN;
-    while (le(l, XMAX)) {
-      s.begin_path;
-      s.move_to(X(l), by0);
-      s.line_to(X(l), by1);
-      s.stroke;
-      s.fill_text(`10^${l}`, X(l), add(by1, 16));
-      l = add(l, 1);
-    }
-    s.text_align(`right`);
-    l = YMIN;
-    while (le(l, YMAX)) {
-      s.begin_path;
-      s.move_to(bx0, Y(l));
-      s.line_to(bx1, Y(l));
-      s.stroke;
-      s.fill_text(`10^${l}`, sub(bx0, 8), add(Y(l), 4));
-      l = add(l, 1);
-    }
+    Galaxies.decades(s, X, Y, [bx0, by0, bx1, by1], [XMIN, XMAX, YMIN, YMAX], 16);
     let lg = ((v: number) => {
       return Fmt.log10(div(v, Galaxies.A0_DATA));
     });
@@ -12708,19 +12456,9 @@ export class Galaxies extends Node {
     let a0 = sim.header[`a0`];
     s.stroke_style(Galaxies.MODEL);
     s.line_width(2);
-    s.begin_path;
-    l = XMIN;
-    while (le(l, add(XMAX, 0.000001))) {
-      let gN = mul(Math.pow(10, l), Galaxies.A0_DATA);
-      let y = lg(Law.boost(gN, a0));
-      if (eq(l, XMIN)) {
-        s.move_to(X(l), Y(y));
-      } else {
-        s.line_to(X(l), Y(y));
-      }
-      l = add(l, 0.02);
-    }
-    s.stroke;
+    Galaxies.curve(s, X, Y, ((l: any) => {
+      return lg(Law.boost(mul(Math.pow(10, l), Galaxies.A0_DATA), a0));
+    }), XMIN, XMAX, 0.02);
     s.stroke_style(Galaxies.NEWT);
     s.dash([6, 5]);
     s.begin_path;
@@ -12933,11 +12671,9 @@ export class Plan extends Node {
     })));
   }
   get total(): number {
-    let sum = 0;
-    for (const p of [...this.parts]) {
-      sum = add(sum, elem(p, 1));
-    };
-    return sum;
+    return sum(this.parts.map(((p: any) => {
+      return elem(p, 1);
+    })));
   }
   get per_source(): number {
     return (this.budget.compact ? 12 : mul(add(add(add(add(12, 4), 2), 1), 1), 4));
@@ -13089,34 +12825,26 @@ export class Simulation extends Node {
         counts[`${g}`] = add(((counts[`${g}`] ?? 0)), 1);
       }
     };
-    let out = [];
-    for (let g = 0; g < Sparc.names.length; g++) {
-      if (ge(((counts[`${g}`] ?? 0)), 3)) {
-        push(out, g);
-      }
-    };
-    return out;
+    return range(Sparc.names.length).filter(((g: any) => {
+      return ge(((counts[`${g}`] ?? 0)), 3);
+    }));
   }
   static rows_of(g: number): any[] {
     let C = Sparc.curves.columns;
-    let out = [];
-    for (let i = 0; i < Sparc.curves.rows; i++) {
-      if (((eq(elem(C[`galaxy`], i), g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0))) {
-        push(out, [elem(C[`R`], i), elem(C[`Vobs`], i), elem(C[`e_Vobs`], i), elem(C[`Vgas`], i), elem(C[`Vdisk`], i), elem(C[`Vbul`], i), (Simulation.kept(g, elem(C[`Vobs`], i), elem(C[`e_Vobs`], i)) ? 1 : 0)]);
-      }
-    };
-    return sorted_by(out, ((r: any) => {
+    let mine = range(Sparc.curves.rows).filter(((i: any) => {
+      return ((eq(elem(C[`galaxy`], i), g) && gt(elem(C[`R`], i), 0)) && gt(elem(C[`Vobs`], i), 0));
+    }));
+    return sorted_by(mine.map(((i: any) => {
+      return [elem(C[`R`], i), elem(C[`Vobs`], i), elem(C[`e_Vobs`], i), elem(C[`Vgas`], i), elem(C[`Vdisk`], i), elem(C[`Vbul`], i), (Simulation.kept(g, elem(C[`Vobs`], i), elem(C[`e_Vobs`], i)) ? 1 : 0)];
+    })), ((r: any) => {
       return elem(r, 0);
     }));
   }
   static edges_of(rs: any[]): number[] {
     let n = rs.length;
-    let out = [0, div(elem(elem(rs, 0), 0), 2)];
-    for (let i = 0; i < sub(n, 1); i++) {
-      push(out, div((add(elem(elem(rs, i), 0), elem(elem(rs, add(i, 1)), 0))), 2));
-    };
-    push(out, add(elem(elem(rs, sub(n, 1)), 0), div((sub(elem(elem(rs, sub(n, 1)), 0), elem(elem(rs, sub(n, 2)), 0))), 2)));
-    return out;
+    return [0, div(elem(elem(rs, 0), 0), 2)].concat(range(sub(n, 1)).map(((i: any) => {
+      return div((add(elem(elem(rs, i), 0), elem(elem(rs, add(i, 1)), 0))), 2);
+    }))).concat([add(elem(elem(rs, sub(n, 1)), 0), div((sub(elem(elem(rs, sub(n, 1)), 0), elem(elem(rs, sub(n, 2)), 0))), 2))]);
   }
   static bulge_arrives(rs: any[], r: number, h: number): number {
     let got = 0;
@@ -13406,11 +13134,9 @@ export class Simulation extends Node {
       let w_gas = Simulation.nnls(K, want_gas);
       let w_disc = Simulation.nnls(K, want_disc);
       let sum_at = ((row_of: Program, w: number[]) => {
-        let s = 0;
-        for (let a = 0; a < n; a++) {
-          s = add(s, mul(row_of(a), elem(w, a)));
-        };
-        return s;
+        return range(n).reduce(((s: any, a: any) => {
+          return add(s, mul(row_of(a), elem(w, a)));
+        }), 0);
       });
       let here = [];
       let worst = 0;
@@ -13435,18 +13161,14 @@ export class Simulation extends Node {
       push(this.w_discs, w_disc);
       push(this.w_gases, w_gas);
       push(this.repro, (gt(top, 0) ? div(worst, top) : 0));
-      let tab = [];
-      for (let t = 0; t < Simulation.TABLE; t++) {
+      push(this.tables, range(Simulation.TABLE).map(((t: any) => {
         let base = add(elem(this.tabled_at, j), mul(t, n));
-        let gd = sum_at(((a: number) => {
+        return [this.table_r(j, t), sum_at(((a: number) => {
           return elem(pulls, add(base, a));
-        }), w_disc);
-        let gg = sum_at(((a: number) => {
+        }), w_disc), sum_at(((a: number) => {
           return elem(pulls, add(base, a));
-        }), w_gas);
-        push(tab, [this.table_r(j, t), gd, gg, Simulation.bulge_at(rs, this.table_r(j, t))]);
-      };
-      push(this.tables, tab);
+        }), w_gas), Simulation.bulge_at(rs, this.table_r(j, t))];
+      })));
     };
   }
   get seen_rows(): any[] { return this.read("seen_rows", () => []); }
@@ -13456,18 +13178,14 @@ export class Simulation extends Node {
     for (let j = 0; j < this.ids.length; j++) {
       let rs = elem(this.rows, j);
       let n = sub(elem(this.edges, j).length, 1);
-      let here = [];
-      for (let i = 0; i < rs.length; i++) {
-        let sd = 0;
-        let sg = 0;
-        for (let a = 0; a < n; a++) {
-          let k = elem(spulls, add(add(elem(this.measured_at, j), mul(i, n)), a));
-          sd = add(sd, mul(k, elem(elem(this.w_discs, j), a)));
-          sg = add(sg, mul(k, elem(elem(this.w_gases, j), a)));
-        };
-        push(here, [sd, sg, Simulation.bulge_arrives(rs, elem(elem(rs, i), 0), elem(this.thick, j))]);
-      };
-      push(this.seen_rows, here);
+      let seen = ((i: number, w: number[]) => {
+        return range(n).reduce(((s: any, a: any) => {
+          return add(s, mul(elem(spulls, add(add(elem(this.measured_at, j), mul(i, n)), a)), elem(w, a)));
+        }), 0);
+      });
+      push(this.seen_rows, range(rs.length).map(((i: any) => {
+        return [seen(i, elem(this.w_discs, j)), seen(i, elem(this.w_gases, j)), Simulation.bulge_arrives(rs, elem(elem(rs, i), 0), elem(this.thick, j))];
+      })));
     };
   }
   static lift_coefficients(theory: Theory, deg: number): number[] {
@@ -13552,34 +13270,30 @@ export class Simulation extends Node {
   felt(gN: number): number {
     return (gt(gN, 0) ? Law.boost(gN, this.a0) : ((lt(gN, 0) ? sub(0, Law.boost(sub(0, gN), this.a0)) : 0)));
   }
+  static laid(records: any[]): number[] {
+    return records.reduce(((out: any, r: any) => {
+      return r.reduce(((o: any, v: any) => {
+        return push(o, v);
+      }), out);
+    }), []);
+  }
   get points(): number[] {
-    let out = [];
-    for (let j = 0; j < this.ids.length; j++) {
-      for (let i = 0; i < elem(this.rows, j).length; i++) {
-        let p = elem(elem(this.at_rows, j), i);
-        for (const v of [...[j, elem(elem(elem(this.rows, j), i), 0), elem(p, 0), elem(p, 1), elem(p, 2), 0]]) {
-          push(out, v);
-        };
-      };
-    };
-    for (let j = 0; j < this.ids.length; j++) {
-      for (const t of [...elem(this.tables, j)]) {
-        for (const v of [...[j, elem(t, 0), elem(t, 1), elem(t, 2), elem(t, 3), 0]]) {
-          push(out, v);
-        };
-      };
-    };
-    return out;
+    let measured = range(this.ids.length).reduce(((out: any, j: any) => {
+      return range(elem(this.rows, j).length).reduce(((o: any, i: any) => {
+        return push(o, [j, elem(elem(elem(this.rows, j), i), 0), elem(elem(elem(this.at_rows, j), i), 0), elem(elem(elem(this.at_rows, j), i), 1), elem(elem(elem(this.at_rows, j), i), 2), 0]);
+      }), out);
+    }), []);
+    let tabled = range(this.ids.length).reduce(((out: any, j: any) => {
+      return elem(this.tables, j).reduce(((o: any, t: any) => {
+        return push(o, [j, elem(t, 0), elem(t, 1), elem(t, 2), elem(t, 3), 0]);
+      }), out);
+    }), []);
+    return Simulation.laid(measured.concat(tabled));
   }
   nuisances(fitted: boolean): number[] {
-    let out = [];
-    for (let j = 0; j < this.ids.length; j++) {
-      push(out, (fitted ? elem(this.best_y, j) : Sparc.YD));
-      push(out, (fitted ? elem(this.best_b, j) : Sparc.YB));
-      push(out, this.a0);
-      push(out, 0);
-    };
-    return out;
+    return Simulation.laid(range(this.ids.length).map(((j: any) => {
+      return [(fitted ? elem(this.best_y, j) : Sparc.YD), (fitted ? elem(this.best_b, j) : Sparc.YB), this.a0, 0];
+    })));
   }
   get best_y(): number[] { return this.read("best_y", () => []); }
   set best_y(v: number[]) { this.write("best_y", v); }
@@ -13642,15 +13356,11 @@ export class Simulation extends Node {
   get searches(): number[] {
     let S = Sparc.sample.columns;
     let pts = this.fit_points;
-    let out = [];
-    for (let j = 0; j < this.ids.length; j++) {
+    return Simulation.laid(range(this.ids.length).map(((j: any) => {
       let g = elem(this.ids, j);
       let stop = (lt(add(j, 1), this.ids.length) ? elem(this.fit_at, add(j, 1)) : Math.floor((div(pts.length, 8))));
-      for (const v of [...[elem(this.fit_at, j), sub(stop, elem(this.fit_at, j)), elem(S[`D`], g), elem(S[`e_D`], g), elem(S[`Inc`], g), elem(S[`e_Inc`], g), this.a0, (this.has_bulge(j) ? 1 : 0), elem(this.centre_y, j), elem(this.centre_b, j), elem(this.centre_d, j), elem(this.centre_i, j), mul(Simulation.STEP_Y, this.spacing), mul(Simulation.STEP_D, this.spacing), mul(Simulation.STEP_I, this.spacing), 0]]) {
-        push(out, v);
-      };
-    };
-    return out;
+      return [elem(this.fit_at, j), sub(stop, elem(this.fit_at, j)), elem(S[`D`], g), elem(S[`e_D`], g), elem(S[`Inc`], g), elem(S[`e_Inc`], g), this.a0, (this.has_bulge(j) ? 1 : 0), elem(this.centre_y, j), elem(this.centre_b, j), elem(this.centre_d, j), elem(this.centre_i, j), mul(Simulation.STEP_Y, this.spacing), mul(Simulation.STEP_D, this.spacing), mul(Simulation.STEP_I, this.spacing), 0];
+    })));
   }
   combo(j: number, c: number, n: number): number[] {
     let S = Sparc.sample.columns;
@@ -13777,11 +13487,9 @@ export class Simulation extends Node {
     return out;
   }
   get most_steps(): number {
-    let m = 0;
-    for (const n of [...this.steps]) {
-      m = Fmt.max(m, n);
-    };
-    return m;
+    return this.steps.reduce(((m: any, n: any) => {
+      return Fmt.max(m, n);
+    }), 0);
   }
   get film_sources(): string[] { return this.read("film_sources", () => []); }
   set film_sources(v: string[]) { this.write("film_sources", v); }
@@ -13818,15 +13526,14 @@ export class Simulation extends Node {
     let per_pixel = mul(mul(div(mul(div(fov, P), Math.PI), 180), D), 1000);
     let light = I.columns[`light`];
     let base = mul(mul(g, P), P);
-    let edge = [];
-    for (let r = 0; r < P; r++) {
-      for (let c = 0; c < P; c++) {
-        if ((((lt(r, Simulation.SKY_EDGE) || lt(c, Simulation.SKY_EDGE)) || ge(r, sub(P, Simulation.SKY_EDGE))) || ge(c, sub(P, Simulation.SKY_EDGE)))) {
-          push(edge, elem(light, add(add(base, mul(r, P)), c)));
-        }
-      };
-    };
-    let sky = Fmt.median(edge);
+    let on_edge = ((r: number, c: number) => {
+      return (((lt(r, Simulation.SKY_EDGE) || lt(c, Simulation.SKY_EDGE)) || ge(r, sub(P, Simulation.SKY_EDGE))) || ge(c, sub(P, Simulation.SKY_EDGE)));
+    });
+    let sky = Fmt.median(range(mul(P, P)).filter(((k: any) => {
+      return on_edge(Math.floor((div(k, P))), mod(k, P));
+    })).map(((k: any) => {
+      return elem(light, add(base, k));
+    })));
     let reach = elem(this.reach, j);
     let east = ((c: number) => {
       return sub(0, mul((sub(add(c, 0.5), div(P, 2))), per_pixel));
@@ -13924,10 +13631,9 @@ export class Simulation extends Node {
         push(this.film_angles, NaN);
         let es = elem(this.edges, j);
         let rs = elem(this.rows, j);
-        let masses = [];
-        for (let a = 0; a < sub(es.length, 1); a++) {
-          push(masses, [elem(es, a), elem(es, add(a, 1)), add(mul(Sparc.YD, elem(elem(this.w_discs, j), a)), elem(elem(this.w_gases, j), a))]);
-        };
+        let masses = range(sub(es.length, 1)).map(((a: any) => {
+          return [elem(es, a), elem(es, add(a, 1)), add(mul(Sparc.YD, elem(elem(this.w_discs, j), a)), elem(elem(this.w_gases, j), a))];
+        }));
         let last = 0;
         for (let i = 0; i < rs.length; i++) {
           let inside = mul(mul(mul(Sparc.YB, elem(elem(rs, i), 5)), Math.abs(elem(elem(rs, i), 5))), elem(elem(rs, i), 0));
@@ -13936,12 +13642,10 @@ export class Simulation extends Node {
             last = inside;
           }
         };
-        let run = [];
-        let total = 0;
-        for (const m of [...masses]) {
-          total = add(total, Fmt.max(elem(m, 2), 0));
-          push(run, total);
-        };
+        let run = masses.reduce(((run: any, m: any) => {
+          return push(run, add(((last(run) ?? 0)), Fmt.max(elem(m, 2), 0)));
+        }), []);
+        let total = (last(run) ?? 0);
         for (let k = 0; k < Simulation.FILM_STARS; k++) {
           let want = mul(rng.next, total);
           let a = 0;
@@ -13961,14 +13665,11 @@ export class Simulation extends Node {
     return out;
   }
   film_table(felt_table: number[]): number[] {
-    let out = [];
-    for (const g of [...this.film_ids]) {
-      let j = index_of(this.ids, g);
-      for (let t = 0; t < Simulation.TABLE; t++) {
-        push(out, elem(felt_table, add(mul(j, Simulation.TABLE), t)));
-      };
-    };
-    return out;
+    return this.film_ids.reduce(((out: any, g: any) => {
+      return range(Simulation.TABLE).reduce(((o: any, t: any) => {
+        return push(o, elem(felt_table, add(mul(index_of(this.ids, g), Simulation.TABLE), t)));
+      }), out);
+    }), []);
   }
   film_runs(felt_table: number[]): number[] {
     let out = [];
@@ -13995,19 +13696,16 @@ export class Simulation extends Node {
     return out;
   }
   get most_film_steps(): number {
-    let m = 0;
-    for (const n of [...this.film_steps]) {
-      m = Fmt.max(m, n);
-    };
-    return m;
+    return this.film_steps.reduce(((m: any, n: any) => {
+      return Fmt.max(m, n);
+    }), 0);
   }
   save(felt0: number[], felt1: number[], stars: number[], frames: number[]) {
     let S = Sparc.sample.columns;
     let T = Simulation.TABLE;
-    let nrows = 0;
-    for (const rs of [...this.rows]) {
-      nrows = add(nrows, rs.length);
-    };
+    let nrows = this.rows.reduce(((n: any, rs: any) => {
+      return add(n, rs.length);
+    }), 0);
     let cols = ({});
     let names = [`galaxy`, `R`, `Vobs`, `e_Vobs`, `gd`, `gg`, `gb`, `v0`, `v1`, `vs`, `kept`];
     for (const nm_ of [...names]) {
@@ -14318,13 +14016,11 @@ export class Formed extends Node {
     return out;
   }
   get constants(): number[] {
-    let out = [];
-    for (let g = 0; g < this.discs_n; g++) {
-      for (const v of [...[div(this.GM(g), Formed.N), this.soft(g), this.scale_a0, Formed.DT]]) {
-        push(out, v);
-      };
-    };
-    return out;
+    return range(this.discs_n).reduce(((out: any, g: any) => {
+      return [div(this.GM(g), Formed.N), this.soft(g), this.scale_a0, Formed.DT].reduce(((o: any, v: any) => {
+        return push(o, v);
+      }), out);
+    }), []);
   }
   accel_cpu(state: number[], i: number): number[] {
     let g = Math.floor((div(i, Formed.N)));
@@ -14453,14 +14149,13 @@ export class Formed extends Node {
   }
   save(frames: any[]) {
     let G = Formed.GRID;
-    let density = [];
-    for (let g = 0; g < this.discs_n; g++) {
-      for (const f of [...frames]) {
-        for (let c = 0; c < mul(G, G); c++) {
-          push(density, elem(f, add(mul(mul(g, G), G), c)));
-        };
-      };
-    };
+    let density = range(this.discs_n).reduce(((out: any, g: any) => {
+      return frames.reduce(((o: any, f: any) => {
+        return range(mul(G, G)).reduce(((oo: any, c: any) => {
+          return push(oo, elem(f, add(mul(mul(g, G), G), c)));
+        }), o);
+      }), out);
+    }), []);
     let cols = ({});
     cols[`density`] = density;
     let extra = ({});
@@ -14553,40 +14248,13 @@ export class Model extends Node {
     return out;
   }
   static walk_names(e: Expr, out: string[]) {
-    let k = e.kind;
-    if ((eq(k, `sym`) || eq(k, `field`))) {
-      if (!(contains(out, e.label))) {
-        push(out, e.label);
-      }
-    } else {
-      if ((eq(k, `add`) || eq(k, `mul`))) {
-        for (const x of [...e.of]) {
-          Model.walk_names(x, out);
-        };
-      } else {
-        if (eq(k, `pow`)) {
-          Model.walk_names(e.base, out);
-          return Model.walk_names(e.power, out);
-        } else {
-          if (((((eq(k, `grad`) || eq(k, `log`)) || eq(k, `exp`)) || eq(k, `root`)) || eq(k, `limit`))) {
-            return Model.walk_names(e.base, out);
-          } else {
-            if ((eq(k, `choose`) || eq(k, `gammaInc`))) {
-              Model.walk_names(e.first_, out);
-              return Model.walk_names(e.second_, out);
-            } else {
-              if (eq(k, `call`)) {
-                let called = `${e.label}\\paren{...}`;
-                if (!(contains(out, called))) {
-                  push(out, called);
-                }
-                return Model.walk_names(e.base, out);
-              }
-            }
-          }
-        }
-      }
+    let name = (e.named ? e.label : ((eq(e.kind, `call`) ? `${e.label}\\paren{...}` : null)));
+    if ((!eq(name, null) && !(contains(out, name)))) {
+      push(out, name);
     }
+    for (const x of [...e.subtrees]) {
+      Model.walk_names(x, out);
+    };
   }
   resolved(e: Expr, env: object, seen: string[]): Expr {
     if (gt(seen.length, 8)) {
@@ -14889,22 +14557,7 @@ export class Shaded extends Node {
     return `fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }`;
   }
   static get points(): number[] {
-    let points = [];
-    let i = 1;
-    while (le(i, 120)) {
-      push(points, div(i, 120));
-      i = add(i, 1);
-    }
-    let ex = 0;
-    while (le(ex, 24)) {
-      let k = 1;
-      while (lt(k, 8)) {
-        push(points, mul((Math.pow(10, (sub(ex, 12)))), (add(1, div(k, 2)))));
-        k = add(k, 1);
-      }
-      ex = add(ex, 1);
-    }
-    return Expr.sorted(points);
+    return Expr.bracket_points;
   }
   static solver(name: string, f: string): string {
     let pts = Shaded.points;
@@ -15135,29 +14788,23 @@ export class Sweep extends Node {
     return need;
   }
   save(id: string, grid: number[], need: number[]) {
-    let x = [];
-    let y = [];
-    let p = [];
-    let by = [];
-    for (let gy = 0; gy < this.YS; gy++) {
-      for (let gx = 0; gx < this.XS; gx++) {
-        push(x, add(this.X0, mul(gx, this.dx)));
-        push(y, add(this.Y0, mul(gy, this.dy)));
-        push(p, elem(grid, add(mul(gy, this.XS), gx)));
-        push(by, elem(need, add(mul(gy, this.XS), gx)));
-      };
-    };
-    let most = 0;
-    for (const v of [...p]) {
-      if (gt(v, most)) {
-        most = v;
-      }
-    };
+    let cells = range(mul(this.YS, this.XS));
     let columns = ({});
-    columns[`x`] = x;
-    columns[`y`] = y;
-    columns[`p`] = p;
-    columns[`by`] = by;
+    columns[`x`] = cells.map(((i: any) => {
+      return add(this.X0, mul((mod(i, this.XS)), this.dx));
+    }));
+    columns[`y`] = cells.map(((i: any) => {
+      return add(this.Y0, mul(Math.floor((div(i, this.XS))), this.dy));
+    }));
+    columns[`p`] = cells.map(((i: any) => {
+      return elem(grid, i);
+    }));
+    columns[`by`] = cells.map(((i: any) => {
+      return elem(need, i);
+    }));
+    let most = columns[`p`].reduce(((m: any, v: any) => {
+      return (gt(v, m) ? v : m);
+    }), 0);
     let extra = ({});
     extra[`a0`] = this.a0;
     extra[`arrangement`] = this.how;
@@ -15212,15 +14859,11 @@ export class Sweep extends Node {
     return (eq(i, null) ? (-1) : i);
   }
   get radii(): number[] {
-    let out = [];
-    for (let k = 0; k < this.RS; k++) {
-      let e = elem(this.env, k);
-      push(out, elem(this.rad, k));
-      push(out, (e[`n_{f}`] ?? NaN));
-      push(out, (e[`\\sigma_{tr}`] ?? NaN));
-      push(out, (e[`L`] ?? NaN));
-    };
-    return out;
+    return range(this.RS).reduce(((out: any, k: any) => {
+      return [elem(this.rad, k), (elem(this.env, k)[`n_{f}`] ?? NaN), (elem(this.env, k)[`\\sigma_{tr}`] ?? NaN), (elem(this.env, k)[`L`] ?? NaN)].reduce(((o: any, v: any) => {
+        return push(o, v);
+      }), out);
+    }), []);
   }
   get kernel(): string {
     let names = this.names;
@@ -15540,10 +15183,7 @@ export class Video extends Node {
     for (let k = 0; k < r.names.length; k++) {
       at = (eq(elem(r.names, k), `marks`) ? k : at);
     };
-    let off = 0;
-    for (let k = 0; k < at; k++) {
-      off = add(off, elem(r.sizes, k));
-    };
+    let off = sum(r.sizes.slice(0, at));
     let SOLAR = Measured.of(`solar-inner`);
     let NAMES = SOLAR.header[`names`];
     let PER = SOLAR.columns[`period`];
@@ -16012,10 +15652,7 @@ export class Video extends Node {
     for (let k = 0; k < r.names.length; k++) {
       at = (eq(elem(r.names, k), `marks`) ? k : at);
     };
-    let off = 0;
-    for (let k = 0; k < at; k++) {
-      off = add(off, elem(r.sizes, k));
-    };
+    let off = sum(r.sizes.slice(0, at));
     let n = Math.round((mul(8, Video.FPS)));
     let pic = new Picture({ id: `video.to-solar`, what: `the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it`, width: Video.WIDTH, height: Video.HEIGHT, frames: n, paint: ((played: (Played | null)) => {
       return new Planets({ n: n, lane: last(lanes), ink: ink, per: Video.per_tick(lanes), stamp: r.stamp, off: off, width: r.width, bodies: Math.round((div((sub(elem(r.sizes, at), 1)), 6))) });
@@ -16437,12 +16074,11 @@ export const G = new (class G extends Theory {
     ink.every = true;
     let w = Strip.line(this, 10);
     Strip.light(w, 0, 1);
-    let lanes = [Strip.lane(w, ink)];
-    for (let t = 0; t < 8; t++) {
+    let lanes = [Strip.lane(w, ink)].concat(range(8).map(((t: any) => {
       Strip.begin(w);
       Strip.run(w, [`/c`, `/4`]);
-      push(lanes, Strip.lane(w, ink));
-    };
+      return Strip.lane(w, ink);
+    })));
     return Strip.tell(`rule.movement`, `every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)`, lanes, ink);
   }
   get emission_film(): Picture {
@@ -16451,16 +16087,15 @@ export const G = new (class G extends Theory {
     ink.top = 36;
     let w = Strip.line(this, 17);
     w.add(new Scripted({ at: new Vector({ components: [8] }), plan: [``, `+`, `-`, ``, `+-`, ``, `+`, `-`], weight: 1 }));
-    let lanes = [Strip.lane(w, ink)];
-    for (let t = 0; t < 8; t++) {
+    let lanes = [Strip.lane(w, ink)].concat(range(8).map(((t: any) => {
       Strip.begin(w);
       Strip.run(w, [`/c`, `/4`]);
       let moved = Strip.lane(w, ink);
       Strip.run(w, [`/S.1`]);
       let now = Strip.lane(w, ink);
       now.says = Strip.emitting(moved, now);
-      push(lanes, now);
-    };
+      return now;
+    })));
     return Strip.tell(`rule.emission`, `a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)`, lanes, ink);
   }
   get transport_film(): Picture {
@@ -16474,8 +16109,7 @@ export const G = new (class G extends Theory {
     let s = w.add(new Scripted({ at: new Vector({ components: [9] }), plan: [`+-`, ``, ``, ``, `+-`], weight: 4 }));
     s.moves = true;
     s.momentum = new Vector({ components: [1] });
-    let lanes = [Strip.lane(w, ink)];
-    for (let t = 0; t < 9; t++) {
+    return [Strip.lane(w, ink)].concat(range(9).map(((t: any) => {
       Strip.begin(w);
       Strip.run(w, [`/c`, `/4`]);
       let moved = Strip.lane(w, ink);
@@ -16483,14 +16117,10 @@ export const G = new (class G extends Theory {
       let emitted = Strip.emitting(moved, Strip.lane(w, ink));
       Strip.run(w, [`/S.v`]);
       let now = Strip.lane(w, ink);
-      let went = ``;
-      if (s.stepped) {
-        went = (gt(elem(w.geometry.V(s.moved_along).components, 0), 0) ? `steps right` : `steps left`);
-      }
+      let went = (!(s.stepped) ? `` : ((gt(elem(w.geometry.V(s.moved_along).components, 0), 0) ? `steps right` : `steps left`)));
       now.says = ((went.length === 0) ? emitted : (((emitted.length === 0) ? went : `${went}, ${emitted}`)));
-      push(lanes, now);
-    };
-    return lanes;
+      return now;
+    })));
   }
   get expansion(): Picture {
     let ink = new Ink({  });
@@ -16697,8 +16327,7 @@ export const G = new (class G extends Theory {
     }), place: ((setup: Setup) => {
       let sun = new Body({ x: 0, y: 0, mx: pulse(0), ways: ways(0) });
       sun.tag = 1;
-      let out = [sun];
-      for (let k = 0; k < PLANETS.length; k++) {
+      return [sun].concat(range(PLANETS.length).map(((k: any) => {
         let i = elem(PLANETS, k);
         let b_ = new Body({ x: cells(mul(elem(AX, i), (add(1, elem(EC, i))))), y: 0, mx: pulse(i), ways: ways(i) });
         b_.tag = add(2, k);
@@ -16708,9 +16337,8 @@ export const G = new (class G extends Theory {
         b_.launch = `orbit`;
         b_.ecc = elem(EC, i);
         b_.py = sub(0, 1);
-        push(out, b_);
-      };
-      return out;
+        return b_;
+      })));
     }) });
     let BURN = mul(2, (add(VIEW, MARGIN)));
     let LAW = Aggregate.of(this);

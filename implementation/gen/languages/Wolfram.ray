@@ -245,13 +245,10 @@ Wolfram: Language = class {
   /* every class written `⟪Name⟫` given its head: its own name, or `Ray<Name>` where the Wolfram Language already has the name */
   heads (code: String): String => {
     parts := code.split("⟪")
-    out := [parts[0]]
-    parts.drop(1).for(p => {
+    [parts[0]].concat(parts.drop(1).map(p => {
       nm := p.split("⟫")[0]
-      out.push(Wolfram.head(nm))
-      out.push(p.drop(nm.length + 1))
-    })
-    out.join("")
+      "{Wolfram.head(nm)}{p.drop(nm.length + 1)}"
+    })).join("")
   }
   head (nm: String): String => {
     n := nm.split(".").last
@@ -330,16 +327,7 @@ Wolfram: Language = class {
   }
   /* every head the code names, once each: made in the package's own context before the code is read */
   head_names (code: String): String => {
-    seen := {}
-    out := []
-    code.split("⟪").drop(1).for(p => {
-      h := Wolfram.head(p.split("⟫")[0])
-      if seen[h] == None {
-        seen[h] = true
-        out.push(h)
-      }
-    })
-    out.join(", ")
+    code.split("⟪").drop(1).map(p => Wolfram.head(p.split("⟫")[0])).reduce([], (out, h) => out.contains(h) ? out : out.push(h)).join(", ")
   }
 
   test_case (r: Requirement, f: Fixture): String => {

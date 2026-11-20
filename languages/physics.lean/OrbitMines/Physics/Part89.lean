@@ -57,13 +57,9 @@ ray_impl_getter "parts" : (RList Value) := do
     return ωnull)))))
   return ωnull
 ray_impl_getter "total" : Float := do
-  let sum_0 ← IO.mkRef (0 : Float)
-  for e1 in (← ωitems (← ωget self "parts")) do
-    let p_1 ← IO.mkRef e1
-    (← ωwr sum_0 (← ωadd (← sum_0.get) (← ωelem (← p_1.get) (1 : Float)))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if true then return (← sum_0.get)
+  if true then return (← dot! (← dot! (← ωget self "parts") rmap ((fn! [p_2] do
+    if true then return (← ωelem (← p_2.get) (1 : Float))
+    return ωnull))) rsum ())
   return ωnull
 ray_impl_getter "per_source" : Float := do
   if true then return (← ωtern (ωtruthy (← ωget (← ωget self "budget") "compact")) (do pure (12 : Float)) (do pure (← ωmul (← ωadd (← ωadd (← ωadd (← ωadd (12 : Float) (4 : Float)) (2 : Float)) (1 : Float)) (1 : Float)) (4 : Float))))

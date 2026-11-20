@@ -81,6 +81,14 @@ def filt(xs, f):
     return [x for x in xs if f(x)]
 
 
+def fold(xs, z, f):
+    """a fold: z, then what f makes of it and each element in turn (a Many is its elements)"""
+    out = z
+    for x in xs:
+        out = f(out, x)
+    return out
+
+
 class classproperty:
     """a static of no arguments, read as a property of the class - `Expr.NAN` is a value, not a call"""
     def __init__(self, f): self.f = f

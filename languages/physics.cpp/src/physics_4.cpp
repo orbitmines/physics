@@ -121,25 +121,26 @@ static void C_Prover(Cls& c) {
       set(sw_0->v, S<"derivation">(), list({ inner_0->v }));
       m_push(out_0->v, sw_0->v);
     }
-    auto rates_0 = cell(); rates_0->v = list({  });
-    for (const Value& e1 : Each(infos_0->v)) {
-      auto t_1 = cell(e1);
-      if (truthy((truthy((!eq(get(t_1->v, S<"rate">()), null))) && truthy((!truthy(m_contains(rates_0->v, get(t_1->v, S<"rate">())))))))) {
-        m_push(rates_0->v, get(t_1->v, S<"rate">()));
-      }
-    };
+    auto rates_0 = cell(); rates_0->v = m_reduce(filt(infos_0->v, fn([=](const Args& a4) -> Value {
+      auto t_3 = cell(arg(a4, 0));
+      return (!eq(get(t_3->v, S<"rate">()), null));
+      return null;
+    })), list({  }), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto t_2 = cell(arg(a3, 1));
+      return (truthy(m_contains(out_2->v, get(t_2->v, S<"rate">()))) ? Value(out_2->v) : Value(m_push(out_2->v, get(t_2->v, S<"rate">()))));
+      return null;
+    }));
     for (const Value& e1 : Each(rates_0->v)) {
       auto name_1 = cell(e1);
       m_push(out_0->v, call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { name_1->v, call(K(S<"Expr">()), S<"num">(), { 1.0 }) }), "the rewrite", list({  }), "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit", list({ "" + str(name_1->v) + " = 1 per match per tick" }) }));
     };
     for (const Value& e1 : Each(list({ "rays", "space", "folds" }))) {
       auto ledger_1 = cell(e1);
-      auto parts_1 = cell(); parts_1->v = list({  });
-      for (const Value& e2 : Each(acting_0->v)) {
-        auto t_2 = cell(e2);
-        auto c__2 = cell(); c__2->v = (truthy(eq(ledger_1->v, "rays")) ? Value(get(t_2->v, S<"ray_count">())) : Value(((truthy(eq(ledger_1->v, "space")) ? Value(get(t_2->v, S<"space_count">())) : Value(get(t_2->v, S<"fold_count">()))))));
-        m_push(parts_1->v, call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Prover">()), S<"body_of">(), { t_2->v }), c__2->v }) }) }));
-      };
+      auto parts_1 = cell(); parts_1->v = m_map(acting_0->v, fn([=](const Args& a4) -> Value {
+        auto t_3 = cell(arg(a4, 0));
+        return call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Prover">()), S<"body_of">(), { t_3->v }), (truthy(eq(ledger_1->v, "rays")) ? Value(get(t_3->v, S<"ray_count">())) : Value(((truthy(eq(ledger_1->v, "space")) ? Value(get(t_3->v, S<"space_count">())) : Value(get(t_3->v, S<"fold_count">())))))) }) }) });
+        return null;
+      }));
       if (!truthy(m_empty(parts_1->v))) {
         m_push(out_0->v, call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "the " + str(ledger_1->v) + " line nets", call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"add">(), { parts_1->v }) }) }), "the line", list({  }), "every term of the line does something to the " + str(ledger_1->v) + " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted", m_map(acting_0->v, fn([=](const Args& a4) -> Value {
           auto t_3 = cell(arg(a4, 0));

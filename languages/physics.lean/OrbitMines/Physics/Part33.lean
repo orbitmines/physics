@@ -28,6 +28,13 @@ ray_impl_method "eat" (n_0 : Float) : String := do
 ray_impl_method "starts" (s_0 : String) : Bool := do
   if true then return (← ωeqv (← call! (← cls% Notation) "sub_" ((← ωget self "text"), (← ωget self "at"), (← ωadd (← ωget self "at") (← dot! (← s_0.get) rlength ())))) (← s_0.get))
   return ωnull
+ray_impl_method "take_while" (keep_0 : Value) : String := do
+  let k_0 ← IO.mkRef (← ωget self "at")
+  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure (← app! (← keep_0.get) ((← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)))))) do
+    (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
+    pure ()
+  if true then return (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))
+  return ωnull
 ray_impl_getter "addition" : Expr := do
   let left_0 ← IO.mkRef (← ωget self "product")
   (← ωget self "skip") |> ωsink
@@ -78,18 +85,19 @@ ray_impl_getter "postfix" : Expr := do
   if true then return (← e_0.get)
   return ωnull
 ray_impl_getter "word" : String := do
-  let k_0 ← IO.mkRef (← ωget self "at")
-  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure ((← ωorV (← call! (← cls% Notation) "is_name" ((← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)))) (do pure (← ωgt (← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)) (127 : Float))))))) do
-    (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))
+  if true then return (← call! self "take_while" ((fn! [c_2] do
+    if true then return (← ωorV (← call! (← cls% Notation) "is_name" ((← c_2.get))) (do pure (← ωgt (← c_2.get) (127 : Float))))
+    return ωnull)))
   return ωnull
 ray_impl_getter "number" : Expr := do
-  let k_0 ← IO.mkRef (← ωget self "at")
-  while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure ((← ωorV (← call! (← cls% Notation) "is_digit" ((← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)))) (do pure (← ωeqv (← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)) (46 : Float))))))) do
-    (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-    pure ()
-  if true then return (← call! (← cls% Expr) "num" ((ωparseNumber (← ωtoStr (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))))))
+  if true then return (← call! (← cls% Expr) "num" ((ωparseNumber (← ωtoStr (← call! self "take_while" ((fn! [c_2] do
+    if true then return (← ωorV (← call! (← cls% Notation) "is_digit" ((← c_2.get))) (do pure (← ωeqv (← c_2.get) (46 : Float))))
+    return ωnull)))))))
+  return ωnull
+ray_impl_getter "quoted" : String := do
+  if true then return (← call! self "take_while" ((fn! [c_2] do
+    if true then return (← ωnev (← c_2.get) (34 : Float))
+    return ωnull)))
   return ωnull
 ray_impl_getter "primary" : Expr := do
   (← ωget self "skip") |> ωsink
@@ -106,11 +114,7 @@ ray_impl_getter "primary" : Expr := do
     pure ()
   if ωtruthy (← ωeqv (← c_0.get) (34 : Float)) then
     (← call! self "eat" ((1 : Float))) |> ωsink
-    let k_0 ← IO.mkRef (← ωget self "at")
-    while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure (← ωnev (← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)) (34 : Float)))) do
-      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-      pure ()
-    let name_0 ← IO.mkRef (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))
+    let name_0 ← IO.mkRef (← dot! self rquoted ())
     (← call! self "eat" ((1 : Float))) |> ωsink
     if true then return (← call! (← cls% Expr) "field" ((← call! (← cls% Expr) "name_of" ((← name_0.get)))))
     pure ()
@@ -122,11 +126,7 @@ ray_impl_getter "primary" : Expr := do
     (← call! self "eat" ((1 : Float))) |> ωsink
     (← ωget self "skip") |> ωsink
     (← call! self "eat" ((1 : Float))) |> ωsink
-    let k_0 ← IO.mkRef (← ωget self "at")
-    while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure (← ωnev (← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)) (34 : Float)))) do
-      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-      pure ()
-    let name_0 ← IO.mkRef (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))
+    let name_0 ← IO.mkRef (← dot! self rquoted ())
     (← call! self "eat" ((1 : Float))) |> ωsink
     (← ωget self "skip") |> ωsink
     (← call! self "eat" ((1 : Float))) |> ωsink
@@ -148,11 +148,7 @@ ray_impl_getter "primary" : Expr := do
     pure ()
   if ωtruthy (← ωandV (← ωeqv (← name_0.get) ("s" : String)) (do pure (← ωeqv (← ωget self "peek") (91 : Float)))) then
     (← call! self "eat" ((2 : Float))) |> ωsink
-    let k_0 ← IO.mkRef (← ωget self "at")
-    while ωtruthy (← ωandV (← ωlt (← k_0.get) (← dot! (← ωget self "text") rlength ())) (do pure (← ωnev (← ωelem (← dot! (← ωget self "text") rchars ()) (← k_0.get)) (34 : Float)))) do
-      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
-      pure ()
-    let key_0 ← IO.mkRef (← call! self "eat" ((← ωsub (← k_0.get) (← ωget self "at"))))
+    let key_0 ← IO.mkRef (← dot! self rquoted ())
     (← call! self "eat" ((2 : Float))) |> ωsink
     if true then return (← call! (← cls% Expr) "field" ((← call! (← cls% Expr) "name_of" ((← key_0.get)))))
     pure ()

@@ -103,10 +103,9 @@ Setup := class < id: String, what: String, width: N, height: N, theory: Theory {
   }
   /* the bodies' middle, by their masses, in cells */
   static middle (holes: Hole[]): Real[] => {
-    m := 0
-    x := 0
-    y := 0
-    holes.for(h => { m = m + h.mass; x = x + h.x * h.mass; y = y + h.y * h.mass })
+    m := holes.map(h => h.mass).sum
+    x := holes.map(h => h.x * h.mass).sum
+    y := holes.map(h => h.y * h.mass).sum
     m > 0 ? [x / m, y / m] : [0, 0]
   }
   /* what the rest of the bodies come to: their mass, and where their middle is */
@@ -569,8 +568,7 @@ Panel := class {
     centre := 0
     Array.range(p.bodies).for(k => { centre = k if marks[k * 6 + 5] > marks[centre * 6 + 5] })
     /* the paths are read against the middle they all keep to, which is where the heavy one stands when it is held */
-    weight := 0
-    Array.range(p.bodies).for(k => { weight = weight + marks[k * 6 + 5] })
+    weight := Array.range(p.bodies).map(k => marks[k * 6 + 5]).sum
     frames := trail[centre].length / 2
     midx := Array.range(frames).map(i => 0)
     midy := Array.range(frames).map(i => 0)

@@ -245,20 +245,18 @@ static void C_Aggregate(Cls& c) {
       return (truthy(eq(v_0->v, null)) ? Value(RAY_NAN) : Value(v_0->v));
     }
     if (truthy(eq(k_0->v, "add"))) {
-      auto total_0 = cell(); total_0->v = 0.0;
-      for (const Value& e1 : Each(get(e_0->v, S<"of">()))) {
-        auto p_1 = cell(e1);
-        total_0->v = add(total_0->v, call(self, S<"value">(), { p_1->v, at_0->v, masses_0->v, Rs_0->v, skip_0->v }));
-      };
-      return total_0->v;
+      return m_sum(m_map(get(e_0->v, S<"of">()), fn([=](const Args& a3) -> Value {
+        auto p_2 = cell(arg(a3, 0));
+        return call(self, S<"value">(), { p_2->v, at_0->v, masses_0->v, Rs_0->v, skip_0->v });
+        return null;
+      })));
     }
     if (truthy(eq(k_0->v, "mul"))) {
-      auto prod_0 = cell(); prod_0->v = 1.0;
-      for (const Value& e1 : Each(get(e_0->v, S<"of">()))) {
-        auto p_1 = cell(e1);
-        prod_0->v = mul(prod_0->v, call(self, S<"value">(), { p_1->v, at_0->v, masses_0->v, Rs_0->v, skip_0->v }));
-      };
-      return prod_0->v;
+      return m_reduce(get(e_0->v, S<"of">()), 1.0, fn([=](const Args& a3) -> Value {
+        auto prod_2 = cell(arg(a3, 0)); auto p_2 = cell(arg(a3, 1));
+        return mul(prod_2->v, call(self, S<"value">(), { p_2->v, at_0->v, masses_0->v, Rs_0->v, skip_0->v }));
+        return null;
+      }));
     }
     if (truthy(eq(k_0->v, "pow"))) {
       return power(call(self, S<"value">(), { get(e_0->v, S<"base">()), at_0->v, masses_0->v, Rs_0->v, skip_0->v }), call(self, S<"value">(), { get(e_0->v, S<"power">()), at_0->v, masses_0->v, Rs_0->v, skip_0->v }));
@@ -624,22 +622,19 @@ static void C_Aggregate(Cls& c) {
     return null;
   });
   c.getter("names", [](Value self, const Args& a1) -> Value {
-    auto out_0 = cell(); out_0->v = m_map(get(self, S<"per_body">()), fn([=](const Args& a3) -> Value {
-      auto n_2 = cell(arg(a3, 0));
-      return n_2->v;
+    return m_reduce(list({ get(self, S<"outer">()), get(self, S<"summand">()), get(self, S<"shell_expr">()), get(self, S<"reach_expr">()) }), m_concat(get(self, S<"per_body">()), list({ "SUM" })), fn([=](const Args& a3) -> Value {
+      auto out_2 = cell(arg(a3, 0)); auto e_2 = cell(arg(a3, 1));
+      return m_reduce(filt(call(K(S<"Model">()), S<"unbound">(), { e_2->v }), fn([=](const Args& a6) -> Value {
+        auto n_5 = cell(arg(a6, 0));
+        return (truthy((!eq(n_5->v, "\\bar{R}"))) && truthy((!truthy(m_ends_with(n_5->v, "\\paren{...}")))));
+        return null;
+      })), out_2->v, fn([=](const Args& a5) -> Value {
+        auto o_4 = cell(arg(a5, 0)); auto n_4 = cell(arg(a5, 1));
+        return (truthy(m_contains(o_4->v, n_4->v)) ? Value(o_4->v) : Value(m_push(o_4->v, n_4->v)));
+        return null;
+      }));
       return null;
     }));
-    m_push(out_0->v, "SUM");
-    for (const Value& e1 : Each(list({ get(self, S<"outer">()), get(self, S<"summand">()), get(self, S<"shell_expr">()), get(self, S<"reach_expr">()) }))) {
-      auto e_1 = cell(e1);
-      for (const Value& e2 : Each(call(K(S<"Model">()), S<"unbound">(), { e_1->v }))) {
-        auto n_2 = cell(e2);
-        if (truthy((truthy((truthy((!truthy(m_contains(out_0->v, n_2->v)))) && truthy((!eq(n_2->v, "\\bar{R}"))))) && truthy((!truthy(m_ends_with(n_2->v, "\\paren{...}"))))))) {
-          m_push(out_0->v, n_2->v);
-        }
-      };
-    };
-    return out_0->v;
     return null;
   });
   c.getter("constants", [](Value self, const Args& a1) -> Value {

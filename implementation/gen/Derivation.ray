@@ -488,12 +488,8 @@ Derivations := class {
   static bound_in (e: Expr): String[] => {
     out := []
     walk := (x: Expr) => {
-      k := x.kind
-      out.push(x.bound) if (k == "root" | k == "limit") & !out.contains(x.bound)
-      if k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
-      elsif k == "pow" { walk(x.base); walk(x.power) }
-      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
-      elsif x.base != None { walk(x.base) }
+      out.push(x.bound) if (x.kind == "root" | x.kind == "limit") & !out.contains(x.bound)
+      x.subtrees.for(y => { walk(y) })
     }
     walk(e)
     out
@@ -568,12 +564,8 @@ Derivations := class {
   static names_in (e: Expr): String[] => {
     out := []
     walk := (x: Expr) => {
-      k := x.kind
-      if k == "sym" | k == "field" { out.push(x.label) if !out.contains(x.label) }
-      elsif k == "add" | k == "mul" { x.of.for(y => { walk(y) }) }
-      elsif k == "pow" { walk(x.base); walk(x.power) }
-      elsif k == "choose" | k == "gammaInc" { walk(x.first_); walk(x.second_) }
-      elsif x.base != None { walk(x.base) }
+      out.push(x.label) if x.named & !out.contains(x.label)
+      x.subtrees.for(y => { walk(y) })
     }
     walk(e)
     out

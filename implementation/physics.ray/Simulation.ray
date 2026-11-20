@@ -378,28 +378,18 @@ Simulation := class < deg: Real {
       g := C["galaxy"][i]
       counts["{g}"] = (counts["{g}"] ?? 0) + 1 if C["R"][i] > 0 & C["Vobs"][i] > 0
     })
-    out := []
-    Array.range(Sparc.names.length).for(g => { out.push(g) if (counts["{g}"] ?? 0) >= 3 })
-    out
+    Array.range(Sparc.names.length).filter(g => (counts["{g}"] ?? 0) >= 3)
   }
   /* one galaxy's rows, inside out: radius (kpc), measured speed and its error, then gas, disc and bulge (km/s, SPARC's signs), and whether it is kept */
   static rows_of (g: N): Array => {
     C := Sparc.curves.columns
-    out := []
-    Array.range(Sparc.curves.rows).for(i => {
-      if C["galaxy"][i] == g & C["R"][i] > 0 & C["Vobs"][i] > 0 {
-        out.push([C["R"][i], C["Vobs"][i], C["e_Vobs"][i], C["Vgas"][i], C["Vdisk"][i], C["Vbul"][i], Simulation.kept(g, C["Vobs"][i], C["e_Vobs"][i]) ? 1 : 0])
-      }
-    })
-    out.sorted_by(r => r[0])
+    mine := Array.range(Sparc.curves.rows).filter(i => C["galaxy"][i] == g & C["R"][i] > 0 & C["Vobs"][i] > 0)
+    mine.map(i => [C["R"][i], C["Vobs"][i], C["e_Vobs"][i], C["Vgas"][i], C["Vdisk"][i], C["Vbul"][i], Simulation.kept(g, C["Vobs"][i], C["e_Vobs"][i]) ? 1 : 0]).sorted_by(r => r[0])
   }
   /* the annuli's edges: from the middle, half way to the first measured radius (so what lies inside it can gather there), midway between measured radii, and half a spacing past the last */
   static edges_of (rs: Array): Real[] => {
     n := rs.length
-    out := [0, rs[0][0] / 2]
-    Array.range(n - 1).for(i => { out.push((rs[i][0] + rs[i + 1][0]) / 2) })
-    out.push(rs[n - 1][0] + (rs[n - 1][0] - rs[n - 2][0]) / 2)
-    out
+    [0, rs[0][0] / 2].concat(Array.range(n - 1).map(i => (rs[i][0] + rs[i + 1][0]) / 2)).concat([rs[n - 1][0] + (rs[n - 1][0] - rs[n - 2][0]) / 2])
   }
   /* the bulge as shells: the mass inside each measured radius off its own speed (G M = V^2 R), never shrinking outward */
   /* the bulge's shells, what ARRIVES at r from them whichever way: a shell of radius a and mass m at r gives m ln((r + a)/|r - a|) / (2 a r) */
@@ -594,11 +584,7 @@ Simulation := class < deg: Real {
       want_disc := rs.map(row => row[4] * row[4].abs / row[0])
       w_gas := Simulation.nnls(K, want_gas)
       w_disc := Simulation.nnls(K, want_disc)
-      sum_at := (row_of: Program, w: Real[]): Real => {
-        s := 0
-        Array.range(n).for(a => { s = s + row_of(a) * w[a] })
-        s
-      }
+      sum_at := (row_of: Program, w: Real[]): Real => Array.range(n).reduce(0, (s, a) => s + row_of(a) * w[a])
       here := []
       worst := 0
       top := 0
@@ -616,14 +602,10 @@ Simulation := class < deg: Real {
       this.w_discs.push(w_disc)
       this.w_gases.push(w_gas)
       this.repro.push(top > 0 ? worst / top : 0)
-      tab := []
-      Array.range(Simulation.TABLE).for(t => {
+      this.tables.push(Array.range(Simulation.TABLE).map(t => {
         base := this.tabled_at[j] + t * n
-        gd := sum_at((a: N): Real => pulls[base + a], w_disc)
-        gg := sum_at((a: N): Real => pulls[base + a], w_gas)
-        tab.push([this.table_r(j, t), gd, gg, Simulation.bulge_at(rs, this.table_r(j, t))])
-      })
-      this.tables.push(tab)
+        [this.table_r(j, t), sum_at((a: N): Real => pulls[base + a], w_disc), sum_at((a: N): Real => pulls[base + a], w_gas), Simulation.bulge_at(rs, this.table_r(j, t))]
+      }))
     })
   }
 
@@ -638,18 +620,9 @@ Simulation := class < deg: Real {
     Array.range(this.ids.length).for(j => {
       rs := this.rows[j]
       n := this.edges[j].length - 1
-      here := []
-      Array.range(rs.length).for(i => {
-        sd := 0
-        sg := 0
-        Array.range(n).for(a => {
-          k := spulls[this.measured_at[j] + i * n + a]
-          sd = sd + k * this.w_discs[j][a]
-          sg = sg + k * this.w_gases[j][a]
-        })
-        here.push([sd, sg, Simulation.bulge_arrives(rs, rs[i][0], this.thick[j])])
-      })
-      this.seen_rows.push(here)
+      /* each annulus's arrival at the radius, weighed by the mass it holds */
+      seen := (i: N, w: Real[]): Real => Array.range(n).reduce(0, (s, a) => s + spulls[this.measured_at[j] + i * n + a] * w[a])
+      this.seen_rows.push(Array.range(rs.length).map(i => [seen(i, this.w_discs[j]), seen(i, this.w_gases[j]), Simulation.bulge_arrives(rs, rs[i][0], this.thick[j])]))
     })
   }
 
@@ -741,31 +714,17 @@ Simulation := class < deg: Real {
   /* what is felt at an arrival, either way along it (the pull keeps its direction; the law sets its size) */
   felt (gN: Real): Real => gN > 0 ? Law.boost(gN, this.a0) : (gN < 0 ? 0 - Law.boost(0 - gN, this.a0) : 0)
 
+  /* records laid end to end in one buffer, as a device reads them */
+  static laid (records: Array): Real[] => records.reduce([], (out, r) => r.reduce(out, (o, v) => o.push(v)))
+
   /* LAW's work: [galaxy slot, r, disc, gas, bulge, 0] at every measured radius; the table's the same after them */
   points (): Real[] => {
-    out := []
-    Array.range(this.ids.length).for(j => {
-      Array.range(this.rows[j].length).for(i => {
-        p := this.at_rows[j][i]
-        [j, this.rows[j][i][0], p[0], p[1], p[2], 0].for(v => { out.push(v) })
-      })
-    })
-    Array.range(this.ids.length).for(j => {
-      this.tables[j].for(t => { [j, t[0], t[1], t[2], t[3], 0].for(v => { out.push(v) }) })
-    })
-    out
+    measured := Array.range(this.ids.length).reduce([], (out, j) => Array.range(this.rows[j].length).reduce(out, (o, i) => o.push([j, this.rows[j][i][0], this.at_rows[j][i][0], this.at_rows[j][i][1], this.at_rows[j][i][2], 0])))
+    tabled := Array.range(this.ids.length).reduce([], (out, j) => this.tables[j].reduce(out, (o, t) => o.push([j, t[0], t[1], t[2], t[3], 0])))
+    Simulation.laid(measured.concat(tabled))
   }
   /* the freedoms a galaxy is read at: [Y_disc, Y_bulge, a_0, 0] a slot - SPARC's own, or the fitted */
-  nuisances (fitted: boolean): Real[] => {
-    out := []
-    Array.range(this.ids.length).for(j => {
-      out.push(fitted ? this.best_y[j] : Sparc.YD)
-      out.push(fitted ? this.best_b[j] : Sparc.YB)
-      out.push(this.a0)
-      out.push(0)
-    })
-    out
-  }
+  nuisances (fitted: boolean): Real[] => Simulation.laid(Array.range(this.ids.length).map(j => [fitted ? this.best_y[j] : Sparc.YD, fitted ? this.best_b[j] : Sparc.YB, this.a0, 0]))
 
   /*
    * THE DATA'S OWN FREEDOMS. The model has none left here; the measurement has four - what the disc's and the bulge's
@@ -811,13 +770,11 @@ Simulation := class < deg: Real {
   searches (): Real[] => {
     S := Sparc.sample.columns
     pts := this.fit_points
-    out := []
-    Array.range(this.ids.length).for(j => {
+    Simulation.laid(Array.range(this.ids.length).map(j => {
       g := this.ids[j]
       stop := j + 1 < this.ids.length ? this.fit_at[j + 1] : (pts.length / 8).floor
-      [this.fit_at[j], stop - this.fit_at[j], S["D"][g], S["e_D"][g], S["Inc"][g], S["e_Inc"][g], this.a0, this.has_bulge(j) ? 1 : 0, this.centre_y[j], this.centre_b[j], this.centre_d[j], this.centre_i[j], Simulation.STEP_Y * this.spacing, Simulation.STEP_D * this.spacing, Simulation.STEP_I * this.spacing, 0].for(v => { out.push(v) })
-    })
-    out
+      [this.fit_at[j], stop - this.fit_at[j], S["D"][g], S["e_D"][g], S["Inc"][g], S["e_Inc"][g], this.a0, this.has_bulge(j) ? 1 : 0, this.centre_y[j], this.centre_b[j], this.centre_d[j], this.centre_i[j], Simulation.STEP_Y * this.spacing, Simulation.STEP_D * this.spacing, Simulation.STEP_I * this.spacing, 0]
+    }))
   }
   /* the grid point `c` of a search n a side, as [log Y_d, log Y_b, D, i] */
   combo (j: N, c: N, n: N): Real[] => {
@@ -932,11 +889,7 @@ Simulation := class < deg: Real {
     })
     out
   }
-  most_steps (): N => {
-    m := 0
-    this.steps.for(n => { m = Fmt.max(m, n) })
-    m
-  }
+  most_steps (): N => this.steps.reduce(0, (m, n) => Fmt.max(m, n))
 
   /*
    * THE FILM'S STARS ARE THE GALAXY'S OWN. Where there is an image of it (`sparc-images`), the stars are laid where its
@@ -977,11 +930,9 @@ Simulation := class < deg: Real {
     per_pixel := fov / P * Real.PI / 180 * D * 1000
     light := I.columns["light"]
     base := g * P * P
-    edge := []
-    Array.range(P).for(r => {
-      Array.range(P).for(c => { edge.push(light[base + r * P + c]) if r < Simulation.SKY_EDGE | c < Simulation.SKY_EDGE | r >= P - Simulation.SKY_EDGE | c >= P - Simulation.SKY_EDGE })
-    })
-    sky := Fmt.median(edge)
+    /* the sky: the middle of the light in the image's border, SKY_EDGE pixels deep */
+    on_edge := (r: N, c: N): boolean => r < Simulation.SKY_EDGE | c < Simulation.SKY_EDGE | r >= P - Simulation.SKY_EDGE | c >= P - Simulation.SKY_EDGE
+    sky := Fmt.median(Array.range(P * P).filter(k => on_edge((k / P).floor, k % P)).map(k => light[base + k]))
     reach := this.reach[j]
     /* east and north of the middle, kpc, and the light above the sky */
     east := (c: Real): Real => 0 - (c + 0.5 - P / 2) * per_pixel
@@ -1067,8 +1018,7 @@ Simulation := class < deg: Real {
         this.film_angles.push(Real.NAN)
         es := this.edges[j]
         rs := this.rows[j]
-        masses := []
-        Array.range(es.length - 1).for(a => { masses.push([es[a], es[a + 1], Sparc.YD * this.w_discs[j][a] + this.w_gases[j][a]]) })
+        masses := Array.range(es.length - 1).map(a => [es[a], es[a + 1], Sparc.YD * this.w_discs[j][a] + this.w_gases[j][a]])
         /* the bulge's shells, seen face on as rings of their own */
         last := 0
         Array.range(rs.length).for(i => {
@@ -1078,12 +1028,9 @@ Simulation := class < deg: Real {
             last = inside
           }
         })
-        run := []
-        total := 0
-        masses.for(m => {
-          total = total + Fmt.max(m[2], 0)
-          run.push(total)
-        })
+        /* the mass inside each ring and every ring before it */
+        run := masses.reduce([], (run, m) => run.push((run.last ?? 0) + Fmt.max(m[2], 0)))
+        total := run.last ?? 0
         Array.range(Simulation.FILM_STARS).for(k => {
           want := rng.next * total
           a := 0
@@ -1099,14 +1046,7 @@ Simulation := class < deg: Real {
     out
   }
   /* the filmed galaxies' own tables and runs, slot after slot, as STARS reads them */
-  film_table (felt_table: Real[]): Real[] => {
-    out := []
-    this.film_ids.for(g => {
-      j := this.ids.index_of(g)
-      Array.range(Simulation.TABLE).for(t => { out.push(felt_table[j * Simulation.TABLE + t]) })
-    })
-    out
-  }
+  film_table (felt_table: Real[]): Real[] => this.film_ids.reduce([], (out, g) => Array.range(Simulation.TABLE).reduce(out, (o, t) => o.push(felt_table[this.ids.index_of(g) * Simulation.TABLE + t])))
   film_runs (felt_table: Real[]): Real[] => {
     out := []
     this.film_steps = []
@@ -1129,11 +1069,7 @@ Simulation := class < deg: Real {
     })
     out
   }
-  most_film_steps (): N => {
-    m := 0
-    this.film_steps.for(n => { m = Fmt.max(m, n) })
-    m
-  }
+  most_film_steps (): N => this.film_steps.reduce(0, (m, n) => Fmt.max(m, n))
   /* one kpc / (km/s), in millions of years */
   static MYR = Sparc.KPC / Sparc.KMS / (3.15576 * 10 ^ 13)
 
@@ -1146,8 +1082,7 @@ Simulation := class < deg: Real {
   save (felt0: Real[], felt1: Real[], stars: Real[], frames: Real[]) => {
     S := Sparc.sample.columns
     T := Simulation.TABLE
-    nrows := 0
-    this.rows.for(rs => { nrows = nrows + rs.length })
+    nrows := this.rows.reduce(0, (n, rs) => n + rs.length)
     cols := { }
     names := ["galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept"]
     names.for(nm_ => { cols[nm_] = [] })

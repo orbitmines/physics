@@ -455,22 +455,31 @@ extension Physics { public static var Vector: V { get throws { return try K("Vec
 enum C_Vector {
   static func define(_ c: Cls) throws {
     c.field("components", nil)
-    c.method("plus", { (this_: V, a1: [V]) throws -> V in
-      var b_0: V = arg(a1, 0);
+    c.method("zipped", { (this_: V, a1: [V]) throws -> V in
+      var b_0: V = arg(a1, 0); var f_0: V = arg(a1, 1);
       return try makeNamed("Vector", [kw("components", try m_map(rng(try len(try get(this_, "components"))), V.fn({ (a3: [V]) throws -> V in
         var i_2: V = arg(a3, 0);
-        return try add(try elem(try get(this_, "components"), i_2), try elem(try get(b_0, "components"), i_2))
+        return try invoke(f_0, [try elem(try get(this_, "components"), i_2), try elem(try get(b_0, "components"), i_2)])
         return V.null
       })))])
       return V.null
     })
+    c.method("plus", { (this_: V, a1: [V]) throws -> V in
+      var b_0: V = arg(a1, 0);
+      return try call(this_, "zipped", [b_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0); var y_2: V = arg(a3, 1);
+        return try add(x_2, y_2)
+        return V.null
+      })])
+      return V.null
+    })
     c.method("minus", { (this_: V, a1: [V]) throws -> V in
       var b_0: V = arg(a1, 0);
-      return try makeNamed("Vector", [kw("components", try m_map(rng(try len(try get(this_, "components"))), V.fn({ (a3: [V]) throws -> V in
-        var i_2: V = arg(a3, 0);
-        return try sub(try elem(try get(this_, "components"), i_2), try elem(try get(b_0, "components"), i_2))
+      return try call(this_, "zipped", [b_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0); var y_2: V = arg(a3, 1);
+        return try sub(x_2, y_2)
         return V.null
-      })))])
+      })])
       return V.null
     })
     c.method("times", { (this_: V, a1: [V]) throws -> V in
@@ -484,11 +493,11 @@ enum C_Vector {
     })
     c.method("dot", { (this_: V, a1: [V]) throws -> V in
       var b_0: V = arg(a1, 0);
-      return try m_sum(try m_map(rng(try len(try get(this_, "components"))), V.fn({ (a3: [V]) throws -> V in
-        var i_2: V = arg(a3, 0);
-        return try mul(try elem(try get(this_, "components"), i_2), try elem(try get(b_0, "components"), i_2))
+      return try m_sum(try get(try call(this_, "zipped", [b_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0); var y_2: V = arg(a3, 1);
+        return try mul(x_2, y_2)
         return V.null
-      })))
+      })]), "components"))
       return V.null
     })
     c.getter("norm", { (this_: V, a1: [V]) throws -> V in
@@ -574,16 +583,15 @@ enum C_Geometry {
         return try get(v_2, "norm")
         return V.null
       }))
-      var chosen_0: V = V.null; chosen_0 = list()
-      for e1 in try items(squared_0) {
-        var s_1: V = e1
-        for e2 in try items(all_0) {
-          var v_2: V = e2
-          if truthy(V.b(try eq(try call(v_2, "dot", [v_2]), s_1))) {
-            try m_push(chosen_0, v_2)
-          }
-        }
-      }
+      var chosen_0: V = V.null; chosen_0 = try m_reduce(squared_0, list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var s_2: V = arg(a3, 1);
+        return try m_concat(out_2, try filt(all_0, V.fn({ (a5: [V]) throws -> V in
+          var v_4: V = arg(a5, 0);
+          return V.b(try eq(try call(v_4, "dot", [v_4]), s_2))
+          return V.null
+        })))
+        return V.null
+      }))
       var joined_0: V = V.null; joined_0 = try m_join(squared_0, V.s(cat("+")))
       return try makeNamed("Geometry", [kw("name", V.s(cat("shells-", try str(D_0), "-", try str(joined_0), ""))), kw("offsets", chosen_0)])
       return V.null
@@ -615,24 +623,26 @@ enum C_Geometry {
       return try makeNamed("Geometry", [kw("name", V.s(cat("nearest-", try str(D_0), "-", try str(DEG_0), ""))), kw("offsets", chosen_0)])
       return V.null
     })
+    c.statik("grid", { (this_: V, a1: [V]) throws -> V in
+      var D_0: V = arg(a1, 0); var low_0: V = arg(a1, 1); var count_0: V = arg(a1, 2);
+      return try m_reduce(rng(D_0), list(try makeNamed("Vector", [kw("components", list())])), V.fn({ (a3: [V]) throws -> V in
+        var points_2: V = arg(a3, 0); var __2: V = arg(a3, 1);
+        return try m_reduce(points_2, list(), V.fn({ (a5: [V]) throws -> V in
+          var grown_4: V = arg(a5, 0); var p_4: V = arg(a5, 1);
+          return try m_reduce(rng(count_0), grown_4, V.fn({ (a7: [V]) throws -> V in
+            var out_6: V = arg(a7, 0); var k_6: V = arg(a7, 1);
+            return try m_push(out_6, try makeNamed("Vector", [kw("components", try m_concat(try get(p_4, "components"), list(try add(low_0, k_6))))]))
+            return V.null
+          }))
+          return V.null
+        }))
+        return V.null
+      }))
+      return V.null
+    })
     c.statik("box", { (this_: V, a1: [V]) throws -> V in
       var D_0: V = arg(a1, 0); var radius_0: V = arg(a1, 1);
-      var points_0: V = V.null; points_0 = list(try makeNamed("Vector", [kw("components", list())]))
-      var i_0: V = V.null; i_0 = 0.0
-      while truthy(try lt(i_0, D_0)) {
-        var grown_0: V = V.null; grown_0 = list()
-        for e1 in try items(points_0) {
-          var p_1: V = e1
-          var k_1: V = V.null; k_1 = try sub(0.0, radius_0)
-          while truthy(try le(k_1, radius_0)) {
-            try m_push(grown_0, try makeNamed("Vector", [kw("components", try m_concat(try get(p_1, "components"), list(k_1)))]))
-            k_1 = try add(k_1, 1.0)
-          }
-        }
-        points_0 = grown_0
-        i_0 = try add(i_0, 1.0)
-      }
-      return points_0
+      return try call((try K("Geometry")), "grid", [D_0, try sub(0.0, radius_0), try add(try mul(2.0, radius_0), 1.0)])
       return V.null
     })
   }
@@ -712,6 +722,7 @@ func def_Theory() throws { try cls("Theory", Physics.Node, C_Theory.define) }
 extension Physics { public static var Theory: V { get throws { return try K("Theory") } } }
 enum C_Theory {
   static func define(_ c: Cls) throws {
+    c.staticField("TERMS", { (this_: V) throws -> V in return makeNode() })
     c.field("name", nil)
     c.field("rules", { (this_: V) throws -> V in return list() })
     c.field("visuals", { (this_: V) throws -> V in return list() })
@@ -779,6 +790,13 @@ enum C_Theory {
       return try makeNamed("Medium", [kw("theory", this_), kw("N", N_0), kw("A", A_0), kw("K", K_0), kw("DEG", try orElse(DEG_0, try get(try get(this_, "lattice"), "DEG"))), kw("tags", tags_0), kw("D", try orElse(D_0, try get(try get(this_, "lattice"), "D")))])
       return V.null
     })
+    c.getter("terms_read", { (this_: V, a1: [V]) throws -> V in
+      if truthy(V.b(try eq(try elem(try get((try K("Theory")), "TERMS"), try get(this_, "name")), V.null))) {
+        try setAt(try get((try K("Theory")), "TERMS"), try get(this_, "name"), try get(try get(this_, "equation"), "terms"))
+      }
+      return try elem(try get((try K("Theory")), "TERMS"), try get(this_, "name"))
+      return V.null
+    })
     c.getter("proved", { (this_: V, a1: [V]) throws -> V in
       if truthy(V.b(try eq(try elem(try get((try K("Prover")), "PROOFS"), try get(this_, "name")), V.null))) {
         try setAt(try get((try K("Prover")), "PROOFS"), try get(this_, "name"), try get(try makeNamed("Prover", [kw("theory", this_)]), "proof"))
@@ -816,22 +834,7 @@ enum C_World {
     })
     c.method("positions", { (this_: V, a1: [V]) throws -> V in
       var N_0: V = arg(a1, 0);
-      var points_0: V = V.null; points_0 = list(try makeNamed("Vector", [kw("components", list())]))
-      var i_0: V = V.null; i_0 = 0.0
-      while truthy(try lt(i_0, try get(try get(this_, "geometry"), "D"))) {
-        var grown_0: V = V.null; grown_0 = list()
-        for e1 in try items(points_0) {
-          var p_1: V = e1
-          var k_1: V = V.null; k_1 = 0.0
-          while truthy(try lt(k_1, N_0)) {
-            try m_push(grown_0, try makeNamed("Vector", [kw("components", try m_concat(try get(p_1, "components"), list(k_1)))]))
-            k_1 = try add(k_1, 1.0)
-          }
-        }
-        points_0 = grown_0
-        i_0 = try add(i_0, 1.0)
-      }
-      return points_0
+      return try call((try K("Geometry")), "grid", [try get(try get(this_, "geometry"), "D"), 0.0, N_0])
       return V.null
     })
     c.method("place", { (this_: V, a1: [V]) throws -> V in
@@ -948,14 +951,15 @@ enum C_World {
           return V.null
         }))
       }
-      var rays_0: V = V.null; rays_0 = list()
-      for e1 in try items(try get(this_, "live")) {
-        var v_1: V = e1
-        for e2 in try items(try get(v_1, "rays")) {
-          var r_2: V = e2
-          try m_push(rays_0, r_2)
-        }
-      }
+      var rays_0: V = V.null; rays_0 = try m_reduce(try get(this_, "live"), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try m_reduce(try get(v_2, "rays"), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var r_4: V = arg(a5, 1);
+          return try m_push(o_4, r_4)
+          return V.null
+        }))
+        return V.null
+      }))
       if truthy(V.b(try eq(kind_0, V.s(cat("Boundary"))))) {
         return try m_map(rays_0, V.fn({ (a3: [V]) throws -> V in
           var r_2: V = arg(a3, 0);
@@ -964,15 +968,15 @@ enum C_World {
         }))
       }
       if truthy(V.b(try eq(kind_0, V.s(cat("Edge"))))) {
-        var edges_0: V = V.null; edges_0 = list()
-        for e1 in try items(rays_0) {
-          var r_1: V = e1
-          var there_1: V = V.null; there_1 = try get(r_1, "ahead")
-          if truthy(try and_(V.b(!(try eq(there_1, V.null))), try lt(try get(try get(r_1, "vertex"), "ordinal"), try get(there_1, "ordinal")))) {
-            try m_push(edges_0, try get(try get(r_1, "terminal"), "edge"))
-          }
-        }
-        return edges_0
+        return try m_map(try filt(rays_0, V.fn({ (a4: [V]) throws -> V in
+          var r_3: V = arg(a4, 0);
+          return try and_(V.b(!(try eq(try get(r_3, "ahead"), V.null))), try lt(try get(try get(r_3, "vertex"), "ordinal"), try get(try get(r_3, "ahead"), "ordinal")))
+          return V.null
+        })), V.fn({ (a3: [V]) throws -> V in
+          var r_2: V = arg(a3, 0);
+          return try get(try get(r_2, "terminal"), "edge")
+          return V.null
+        }))
       }
       return list()
       return V.null
@@ -1500,15 +1504,16 @@ enum C_Field {
       var y0_0: V = V.null; y0_0 = try m_floor(py_0)
       var fx_0: V = V.null; fx_0 = try sub(px_0, x0_0)
       var fy_0: V = V.null; fy_0 = try sub(py_0, y0_0)
-      var out_0: V = V.null; out_0 = list()
-      for e1 in try items(list(list(x0_0, y0_0, try mul((try sub(1.0, fx_0)), (try sub(1.0, fy_0)))), list(try add(x0_0, 1.0), y0_0, try mul(fx_0, (try sub(1.0, fy_0)))), list(x0_0, try add(y0_0, 1.0), try mul((try sub(1.0, fx_0)), fy_0)), list(try add(x0_0, 1.0), try add(y0_0, 1.0), try mul(fx_0, fy_0)))) {
-        var t_1: V = e1
-        var c_1: V = V.null; c_1 = try call(this_, "at", [try elem(t_1, 0.0), try elem(t_1, 1.0)])
-        if truthy(try and_(try ge(c_1, 0.0), try gt(try elem(t_1, 2.0), 0.0))) {
-          try m_push(out_0, list(c_1, try elem(t_1, 2.0)))
-        }
-      }
-      return out_0
+      var corners_0: V = V.null; corners_0 = list(list(x0_0, y0_0, try mul((try sub(1.0, fx_0)), (try sub(1.0, fy_0)))), list(try add(x0_0, 1.0), y0_0, try mul(fx_0, (try sub(1.0, fy_0)))), list(x0_0, try add(y0_0, 1.0), try mul((try sub(1.0, fx_0)), fy_0)), list(try add(x0_0, 1.0), try add(y0_0, 1.0), try mul(fx_0, fy_0)))
+      return try filt(try m_map(corners_0, V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return list(try call(this_, "at", [try elem(t_3, 0.0), try elem(t_3, 1.0)]), try elem(t_3, 2.0))
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0);
+        return try and_(try ge(try elem(p_2, 0.0), 0.0), try gt(try elem(p_2, 1.0), 0.0))
+        return V.null
+      }))
       return V.null
     })
     c.method("hop", { (this_: V, a1: [V]) throws -> V in
@@ -1537,7 +1542,7 @@ enum C_Field {
       return V.null
     })
     c.getter("terms", { (this_: V, a1: [V]) throws -> V in
-      return try get(try get(try get(this_, "theory"), "equation"), "terms")
+      return try get(try get(this_, "theory"), "terms_read")
       return V.null
     })
     c.getter("acting", { (this_: V, a1: [V]) throws -> V in
@@ -2267,26 +2272,15 @@ enum C_Field {
       var x_0: V = V.null; x_0 = try call(this_, "column_of", [c_0])
       var y_0: V = V.null; y_0 = try call(this_, "row_of", [c_0])
       var half_0: V = V.null; half_0 = try m_floor((try div((try sub(try get(this_, "K"), 1.0)), 2.0)))
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "K")) {
-          var dy_1: V = V.num(i1)
-          do {
-            var i2: Double = 0
-            while i2 < num(try get(this_, "K")) {
-              var dx_2: V = V.num(i2)
-              var cell_2: V = V.null; cell_2 = try call(this_, "at", [try add(try sub(x_0, half_0), dx_2), try add(try sub(y_0, half_0), dy_1)])
-              if truthy(try ge(cell_2, 0.0)) {
-                try m_push(out_0, cell_2)
-              }
-              i2 += 1
-            }
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try filt(try m_map(rng(try mul(try get(this_, "K"), try get(this_, "K"))), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try call(this_, "at", [try add(try sub(x_0, half_0), try mod(i_3, try get(this_, "K"))), try add(try sub(y_0, half_0), try m_floor((try div(i_3, try get(this_, "K")))))])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var cell_2: V = arg(a3, 0);
+        return try ge(cell_2, 0.0)
+        return V.null
+      }))
       return V.null
     })
     c.getter("block", { (this_: V, a1: [V]) throws -> V in
@@ -2791,46 +2785,32 @@ enum C_Piece {
     c.field("key", { (this_: V) throws -> V in return V.s(cat("")) })
     c.statik("text_", { (this_: V, a1: [V]) throws -> V in
       var t_0: V = arg(a1, 0);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", V.s(cat("text")))])
-      try set(p_0, "text", t_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", V.s(cat("text"))), kw("text", t_0)])
       return V.null
     })
     c.statik("wrap", { (this_: V, a1: [V]) throws -> V in
       var kind_0: V = arg(a1, 0); var of_0: V = arg(a1, 1);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", kind_0)])
-      try set(p_0, "of", of_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", kind_0), kw("of", of_0)])
       return V.null
     })
     c.statik("words", { (this_: V, a1: [V]) throws -> V in
       var t_0: V = arg(a1, 0);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", V.s(cat("words")))])
-      try set(p_0, "text", t_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", V.s(cat("words"))), kw("text", t_0)])
       return V.null
     })
     c.statik("big", { (this_: V, a1: [V]) throws -> V in
       var kind_0: V = arg(a1, 0); var lo_0: V = arg(a1, 1); var hi_0: V = arg(a1, 2);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", kind_0)])
-      try set(p_0, "lo", lo_0)
-      try set(p_0, "hi", hi_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", kind_0), kw("lo", lo_0), kw("hi", hi_0)])
       return V.null
     })
     c.statik("stacked", { (this_: V, a1: [V]) throws -> V in
       var kind_0: V = arg(a1, 0); var over_0: V = arg(a1, 1); var under_0: V = arg(a1, 2);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", kind_0)])
-      try set(p_0, "over", over_0)
-      try set(p_0, "under", under_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", kind_0), kw("over", over_0), kw("under", under_0)])
       return V.null
     })
     c.statik("cite", { (this_: V, a1: [V]) throws -> V in
       var key_0: V = arg(a1, 0);
-      var p_0: V = V.null; p_0 = try makeNamed("Piece", [kw("kind", V.s(cat("ref")))])
-      try set(p_0, "key", key_0)
-      return p_0
+      return try makeNamed("Piece", [kw("kind", V.s(cat("ref"))), kw("key", key_0)])
       return V.null
     })
   }
@@ -2872,6 +2852,9 @@ func def_Setter() throws { try cls("Setter", Physics.Node, C_Setter.define) }
 extension Physics { public static var Setter: V { get throws { return try K("Setter") } } }
 enum C_Setter {
   static func define(_ c: Cls) throws {
+    c.staticField("KINDS", { (this_: V) throws -> V in return list(V.s(cat("var")), V.s(cat("count")), V.s(cat("fn")), V.s(cat("muted")), V.s(cat("bar")), V.s(cat("hat")), V.s(cat("tilde")), V.s(cat("vec")), V.s(cat("dot")), V.s(cat("ddot")), V.s(cat("bold")), V.s(cat("cal")), V.s(cat("bb")), V.s(cat("sqrt")), V.s(cat("sup")), V.s(cat("sub")), V.s(cat("paren"))) })
+    c.staticField("OPENS", { (this_: V) throws -> V in return list(V.s(cat("<i>")), V.s(cat("<b class=\"k\">")), V.s(cat("<b class=\"d\">")), V.s(cat("<span class=\"mu\">")), V.s(cat("<span class=\"bar\">")), V.s(cat("<span class=\"acc hat\">")), V.s(cat("<span class=\"acc tld\">")), V.s(cat("<span class=\"acc vec\">")), V.s(cat("<span class=\"acc dot\">")), V.s(cat("<span class=\"acc ddot\">")), V.s(cat("<b class=\"bf\">")), V.s(cat("<span class=\"cal\">")), V.s(cat("<span class=\"bb\">")), V.s(cat("<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">")), V.s(cat("<sup>")), V.s(cat("<sub>")), V.s(cat("<span class=\"paren\">"))) })
+    c.staticField("CLOSES", { (this_: V) throws -> V in return list(V.s(cat("</i>")), V.s(cat("</b>")), V.s(cat("</b>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</b>")), V.s(cat("</span>")), V.s(cat("</span>")), V.s(cat("</span></span>")), V.s(cat("</sup>")), V.s(cat("</sub>")), V.s(cat("</span>"))) })
     c.method("together", { (this_: V, a1: [V]) throws -> V in
       var parts_0: V = arg(a1, 0);
       return try m_join(parts_0, V.s(cat("")))
@@ -2889,58 +2872,8 @@ enum C_Setter {
     })
     c.method("wrap", { (this_: V, a1: [V]) throws -> V in
       var kind_0: V = arg(a1, 0); var c_0: V = arg(a1, 1);
-      if truthy(V.b(try eq(kind_0, V.s(cat("var"))))) {
-        return V.s(cat("<i>", try str(c_0), "</i>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("count"))))) {
-        return V.s(cat("<b class=\"k\">", try str(c_0), "</b>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("fn"))))) {
-        return V.s(cat("<b class=\"d\">", try str(c_0), "</b>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("muted"))))) {
-        return V.s(cat("<span class=\"mu\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("bar"))))) {
-        return V.s(cat("<span class=\"bar\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("hat"))))) {
-        return V.s(cat("<span class=\"acc hat\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("tilde"))))) {
-        return V.s(cat("<span class=\"acc tld\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("vec"))))) {
-        return V.s(cat("<span class=\"acc vec\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("dot"))))) {
-        return V.s(cat("<span class=\"acc dot\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("ddot"))))) {
-        return V.s(cat("<span class=\"acc ddot\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("bold"))))) {
-        return V.s(cat("<b class=\"bf\">", try str(c_0), "</b>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("cal"))))) {
-        return V.s(cat("<span class=\"cal\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("bb"))))) {
-        return V.s(cat("<span class=\"bb\">", try str(c_0), "</span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("sqrt"))))) {
-        return V.s(cat("<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", try str(c_0), "</span></span>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("sup"))))) {
-        return V.s(cat("<sup>", try str(c_0), "</sup>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("sub"))))) {
-        return V.s(cat("<sub>", try str(c_0), "</sub>"))
-      }
-      if truthy(V.b(try eq(kind_0, V.s(cat("paren"))))) {
-        return V.s(cat("<span class=\"paren\">", try str(c_0), "</span>"))
-      }
-      return V.s(cat("<span class=\"", try str(kind_0), "\">", try str(c_0), "</span>"))
+      var i_0: V = V.null; i_0 = try m_index_of(try get((try K("Setter")), "KINDS"), kind_0)
+      return try sel(truthy(V.b(try eq(i_0, V.null))), V.s(cat("<span class=\"", try str(kind_0), "\">", try str(c_0), "</span>")), V.s(cat("", try str(try elem(try get((try K("Setter")), "OPENS"), i_0)), "", try str(c_0), "", try str(try elem(try get((try K("Setter")), "CLOSES"), i_0)), "")))
       return V.null
     })
     c.method("big", { (this_: V, a1: [V]) throws -> V in
@@ -3069,22 +3002,31 @@ enum C_Notation {
       return try sel(truthy(try lt(i_0, try len(s_0))), try elem(try m_chars(s_0), i_0), 0.0)
       return V.null
     })
-    c.statik("letters", { (this_: V, a1: [V]) throws -> V in
-      var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1);
+    c.statik("run", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1); var keep_0: V = arg(a1, 2);
       var k_0: V = V.null; k_0 = at_0
-      while truthy(try and_(try lt(k_0, try len(s_0)), try call((try K("Notation")), "is_letter", [try elem(try m_chars(s_0), k_0)]))) {
+      while truthy(try and_(try lt(k_0, try len(s_0)), try invoke(keep_0, [try elem(try m_chars(s_0), k_0)]))) {
         k_0 = try add(k_0, 1.0)
       }
       return try call((try K("Notation")), "sub_", [s_0, at_0, k_0])
       return V.null
     })
+    c.statik("letters", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1);
+      return try call((try K("Notation")), "run", [s_0, at_0, V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try call((try K("Notation")), "is_letter", [c_2])
+        return V.null
+      })])
+      return V.null
+    })
     c.statik("alnums", { (this_: V, a1: [V]) throws -> V in
       var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1);
-      var k_0: V = V.null; k_0 = at_0
-      while truthy(try and_(try lt(k_0, try len(s_0)), try call((try K("Notation")), "is_alnum", [try elem(try m_chars(s_0), k_0)]))) {
-        k_0 = try add(k_0, 1.0)
-      }
-      return try call((try K("Notation")), "sub_", [s_0, at_0, k_0])
+      return try call((try K("Notation")), "run", [s_0, at_0, V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try call((try K("Notation")), "is_alnum", [c_2])
+        return V.null
+      })])
       return V.null
     })
     c.statik("counted", { (this_: V, a1: [V]) throws -> V in
@@ -3138,6 +3080,11 @@ enum C_Notation {
       return try makeNamed("Args", [kw("got", got_0), kw("end", k_0)])
       return V.null
     })
+    c.statik("scripted", { (this_: V, a1: [V]) throws -> V in
+      var base_0: V = arg(a1, 0); var kind_0: V = arg(a1, 1); var of_0: V = arg(a1, 2);
+      return try makeNamed("Piece", [kw("kind", V.s(cat("scripted"))), kw("base", base_0), kw("raised", try sel(truthy(V.b(try eq(kind_0, V.s(cat("sup"))))), of_0, V.null)), kw("lowered", try sel(truthy(V.b(try eq(kind_0, V.s(cat("sup"))))), V.null, of_0))])
+      return V.null
+    })
     c.statik("attach", { (this_: V, a1: [V]) throws -> V in
       var out_0: V = arg(a1, 0); var kind_0: V = arg(a1, 1); var of_0: V = arg(a1, 2);
       if truthy(try m_empty(out_0)) {
@@ -3166,25 +3113,11 @@ enum C_Notation {
         } else {
           try set(tail_0, "text", head_0)
         }
-        var s_0: V = V.null; s_0 = try makeNamed("Piece", [kw("kind", V.s(cat("scripted")))])
-        try set(s_0, "base", try call((try K("Piece")), "text_", [last_char_0]))
-        if truthy(V.b(try eq(kind_0, V.s(cat("sup"))))) {
-          try set(s_0, "raised", of_0)
-        } else {
-          try set(s_0, "lowered", of_0)
-        }
-        try m_push(out_0, s_0)
+        try m_push(out_0, try call((try K("Notation")), "scripted", [try call((try K("Piece")), "text_", [last_char_0]), kind_0, of_0]))
         return V.null
       }
       try m_pop(out_0)
-      var s_0: V = V.null; s_0 = try makeNamed("Piece", [kw("kind", V.s(cat("scripted")))])
-      try set(s_0, "base", tail_0)
-      if truthy(V.b(try eq(kind_0, V.s(cat("sup"))))) {
-        try set(s_0, "raised", of_0)
-      } else {
-        try set(s_0, "lowered", of_0)
-      }
-      return try m_push(out_0, s_0)
+      return try m_push(out_0, try call((try K("Notation")), "scripted", [tail_0, kind_0, of_0]))
       return V.null
     })
     c.statik("parse", { (this_: V, a1: [V]) throws -> V in
@@ -3344,25 +3277,25 @@ enum C_Notation {
         }
         return V.null
       })
+      var starts_name_0: V = V.null; starts_name_0 = V.fn({ (a2: [V]) throws -> V in
+        var c_1: V = arg(a2, 0);
+        return try or_(try call((try K("Notation")), "is_letter", [c_1]), V.b(try eq(c_1, 95.0)))
+        return V.null
+      })
       var bits_0: V = V.null; bits_0 = list()
       var k_0: V = V.null; k_0 = 0.0
       while truthy(try lt(k_0, try len(s_0))) {
-        var c_0: V = V.null; c_0 = try elem(try m_chars(s_0), k_0)
-        if truthy(try or_(try call((try K("Notation")), "is_letter", [c_0]), V.b(try eq(c_0, 95.0)))) {
-          var j_0: V = V.null; j_0 = k_0
-          while truthy(try and_(try lt(j_0, try len(s_0)), try call((try K("Notation")), "is_name", [try elem(try m_chars(s_0), j_0)]))) {
-            j_0 = try add(j_0, 1.0)
-          }
-          try m_push(bits_0, try call((try K("Notation")), "sub_", [s_0, k_0, j_0]))
-          k_0 = j_0
-        } else {
-          var j_0: V = V.null; j_0 = k_0
-          while truthy(try and_(try lt(j_0, try len(s_0)), not((try or_(try call((try K("Notation")), "is_letter", [try elem(try m_chars(s_0), j_0)]), V.b(try eq(try elem(try m_chars(s_0), j_0), 95.0))))))) {
-            j_0 = try add(j_0, 1.0)
-          }
-          try m_push(bits_0, try call((try K("Notation")), "sub_", [s_0, k_0, j_0]))
-          k_0 = j_0
-        }
+        var bit_0: V = V.null; bit_0 = try sel(truthy(try invoke(starts_name_0, [try elem(try m_chars(s_0), k_0)])), try call((try K("Notation")), "run", [s_0, k_0, V.fn({ (a3: [V]) throws -> V in
+          var c_2: V = arg(a3, 0);
+          return try call((try K("Notation")), "is_name", [c_2])
+          return V.null
+        })]), try call((try K("Notation")), "run", [s_0, k_0, V.fn({ (a3: [V]) throws -> V in
+          var c_2: V = arg(a3, 0);
+          return not(try invoke(starts_name_0, [c_2]))
+          return V.null
+        })]))
+        try m_push(bits_0, bit_0)
+        k_0 = try add(k_0, try len(bit_0))
       }
       var i_0: V = V.null; i_0 = 0.0
       while truthy(try lt(i_0, try len(bits_0))) {
@@ -3591,23 +3524,17 @@ enum C_Expr {
     c.field("simple", { (this_: V) throws -> V in return V.null })
     c.statik("num", { (this_: V, a1: [V]) throws -> V in
       var n_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("num")))])
-      try set(e_0, "value", n_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("num"))), kw("value", n_0)])
       return V.null
     })
     c.statik("sym", { (this_: V, a1: [V]) throws -> V in
       var name_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("sym")))])
-      try set(e_0, "label", name_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("sym"))), kw("label", name_0)])
       return V.null
     })
     c.statik("field", { (this_: V, a1: [V]) throws -> V in
       var name_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("field")))])
-      try set(e_0, "label", name_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("field"))), kw("label", name_0)])
       return V.null
     })
     c.statik("add", { (this_: V, a1: [V]) throws -> V in
@@ -3622,10 +3549,7 @@ enum C_Expr {
     })
     c.statik("to_power", { (this_: V, a1: [V]) throws -> V in
       var base_0: V = arg(a1, 0); var by_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("pow")))])
-      try set(e_0, "base", base_0)
-      try set(e_0, "power", by_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("pow"))), kw("base", base_0), kw("power", by_0)])
       return V.null
     })
     c.statik("pown", { (this_: V, a1: [V]) throws -> V in
@@ -3635,63 +3559,42 @@ enum C_Expr {
     })
     c.statik("grad", { (this_: V, a1: [V]) throws -> V in
       var x_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("grad")))])
-      try set(e_0, "base", x_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("grad"))), kw("base", x_0)])
       return V.null
     })
     c.statik("log", { (this_: V, a1: [V]) throws -> V in
       var x_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("log")))])
-      try set(e_0, "base", x_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("log"))), kw("base", x_0)])
       return V.null
     })
     c.statik("exp", { (this_: V, a1: [V]) throws -> V in
       var x_0: V = arg(a1, 0);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("exp")))])
-      try set(e_0, "base", x_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("exp"))), kw("base", x_0)])
       return V.null
     })
     c.statik("choose", { (this_: V, a1: [V]) throws -> V in
       var n_0: V = arg(a1, 0); var k_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("choose")))])
-      try set(e_0, "first_", n_0)
-      try set(e_0, "second_", k_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("choose"))), kw("first_", n_0), kw("second_", k_0)])
       return V.null
     })
     c.statik("gamma_inc", { (this_: V, a1: [V]) throws -> V in
       var s_0: V = arg(a1, 0); var x_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("gammaInc")))])
-      try set(e_0, "first_", s_0)
-      try set(e_0, "second_", x_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("gammaInc"))), kw("first_", s_0), kw("second_", x_0)])
       return V.null
     })
     c.statik("root", { (this_: V, a1: [V]) throws -> V in
       var x_0: V = arg(a1, 0); var name_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("root")))])
-      try set(e_0, "base", x_0)
-      try set(e_0, "bound", name_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("root"))), kw("base", x_0), kw("bound", name_0)])
       return V.null
     })
     c.statik("limit", { (this_: V, a1: [V]) throws -> V in
       var x_0: V = arg(a1, 0); var name_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("limit")))])
-      try set(e_0, "base", x_0)
-      try set(e_0, "bound", name_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("limit"))), kw("base", x_0), kw("bound", name_0)])
       return V.null
     })
     c.statik("call", { (this_: V, a1: [V]) throws -> V in
       var name_0: V = arg(a1, 0); var x_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", V.s(cat("call")))])
-      try set(e_0, "label", name_0)
-      try set(e_0, "base", x_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", V.s(cat("call"))), kw("label", name_0), kw("base", x_0)])
       return V.null
     })
     c.statik("neg", { (this_: V, a1: [V]) throws -> V in
@@ -3735,27 +3638,34 @@ enum C_Expr {
       return try or_(V.b(try eq(try get(this_, "kind"), V.s(cat("sym")))), V.b(try eq(try get(this_, "kind"), V.s(cat("field")))))
       return V.null
     })
+    c.getter("subtrees", { (this_: V, a1: [V]) throws -> V in
+      if truthy(try or_(V.b(try eq(try get(this_, "kind"), V.s(cat("add")))), V.b(try eq(try get(this_, "kind"), V.s(cat("mul")))))) {
+        return try get(this_, "of")
+      }
+      if truthy(V.b(try eq(try get(this_, "kind"), V.s(cat("pow"))))) {
+        return list(try get(this_, "base"), try get(this_, "power"))
+      }
+      if truthy(try or_(V.b(try eq(try get(this_, "kind"), V.s(cat("choose")))), V.b(try eq(try get(this_, "kind"), V.s(cat("gammaInc")))))) {
+        return list(try get(this_, "first_"), try get(this_, "second_"))
+      }
+      return try sel(truthy(V.b(try eq(try get(this_, "base"), V.null))), list(), list(try get(this_, "base")))
+      return V.null
+    })
     c.getter("by_num", { (this_: V, a1: [V]) throws -> V in
       return try sel(truthy(V.b(try eq(try get(try get(this_, "power"), "kind"), V.s(cat("num"))))), try get(try get(this_, "power"), "value"), V.null)
       return V.null
     })
     c.statik("flatten", { (this_: V, a1: [V]) throws -> V in
       var kind_0: V = arg(a1, 0); var xs_0: V = arg(a1, 1);
-      var e_0: V = V.null; e_0 = try makeNamed("Expr", [kw("kind", kind_0)])
-      var out_0: V = V.null; out_0 = list()
-      for e1 in try items(xs_0) {
-        var x_1: V = e1
-        if truthy(V.b(try eq(try get(x_1, "kind"), kind_0))) {
-          for e2 in try items(try get(x_1, "of")) {
-            var y_2: V = e2
-            try m_push(out_0, y_2)
-          }
-        } else {
-          try m_push(out_0, x_1)
-        }
-      }
-      try set(e_0, "of", out_0)
-      return e_0
+      return try makeNamed("Expr", [kw("kind", kind_0), kw("of", try m_reduce(xs_0, list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var x_2: V = arg(a3, 1);
+        return try sel(truthy(V.b(try eq(try get(x_2, "kind"), kind_0))), try m_reduce(try get(x_2, "of"), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var y_4: V = arg(a5, 1);
+          return try m_push(o_4, y_4)
+          return V.null
+        })), try m_push(out_2, x_2))
+        return V.null
+      })))])
       return V.null
     })
     c.statik("is_integer", { (this_: V, a1: [V]) throws -> V in
@@ -3797,15 +3707,11 @@ enum C_Expr {
         return try sub(try m_ln((try div(V.num(Double.pi), try m_sin((try mul(V.num(Double.pi), z_0)))))), try call((try K("Expr")), "lgamma", [try sub(1.0, z_0)]))
       }
       z_0 = try sub(z_0, 1.0)
-      var x_0: V = V.null; x_0 = 0.99999999999980993
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(g_0)) {
-          var i_1: V = V.num(i1)
-          x_0 = try add(x_0, try div(try elem(g_0, i_1), (try add(try add(z_0, i_1), 1.0))))
-          i1 += 1
-        }
-      }
+      var x_0: V = V.null; x_0 = try m_reduce(rng(try len(g_0)), 0.99999999999980993, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0); var i_2: V = arg(a3, 1);
+        return try add(x_2, try div(try elem(g_0, i_2), (try add(try add(z_0, i_2), 1.0))))
+        return V.null
+      }))
       var t_0: V = V.null; t_0 = try sub(try add(z_0, try len(g_0)), 0.5)
       return try add(try sub(try add(try mul(0.5, try m_ln((try mul(2.0, V.num(Double.pi))))), try mul((try add(z_0, 0.5)), try m_ln(t_0))), t_0), try m_ln(x_0))
       return V.null
@@ -4259,13 +4165,15 @@ enum C_Expr {
             try call(like_0, "set", [id_1, list(body_1, kk_1)])
           }
         }
-        var kept_0: V = V.null; kept_0 = list()
-        for e1 in try items(try get(like_0, "values")) {
-          var v_1: V = e1
-          if truthy(V.b(!(try eq(try elem(v_1, 1.0), 0.0)))) {
-            try m_push(kept_0, try sel(truthy(V.b(try eq(try elem(v_1, 1.0), 1.0))), try elem(v_1, 0.0), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [try elem(v_1, 1.0)]), try elem(v_1, 0.0))])))
-          }
-        }
+        var kept_0: V = V.null; kept_0 = try m_map(try filt(try get(like_0, "values"), V.fn({ (a4: [V]) throws -> V in
+          var v_3: V = arg(a4, 0);
+          return V.b(!(try eq(try elem(v_3, 1.0), 0.0)))
+          return V.null
+        })), V.fn({ (a3: [V]) throws -> V in
+          var v_2: V = arg(a3, 0);
+          return try sel(truthy(V.b(try eq(try elem(v_2, 1.0), 1.0))), try elem(v_2, 0.0), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [try elem(v_2, 1.0)]), try elem(v_2, 0.0))]))
+          return V.null
+        }))
         if truthy(try m_empty(kept_0)) {
           return try call((try K("Expr")), "num", [c_0])
         }
@@ -4378,33 +4286,16 @@ enum C_Expr {
             })))
             return V.null
           })
-          var at_0: V = V.null; at_0 = V.null
-          do {
-            var i1: Double = 0
-            while i1 < num(try len(try get(body_0, "of"))) {
-              var i_1: V = V.num(i1)
-              if truthy(try and_(V.b(try eq(at_0, V.null)), try invoke(is_minus_0, [try elem(try get(body_0, "of"), i_1)]))) {
-                at_0 = i_1
-              }
-              i1 += 1
-            }
-          }
-          if truthy(try and_(V.b(!(try eq(at_0, V.null))), V.b(try eq(try len(try filt(try get(body_0, "of"), V.fn({ (a3: [V]) throws -> V in
+          if truthy(V.b(try eq(try len(try filt(try get(body_0, "of"), V.fn({ (a3: [V]) throws -> V in
             var x_2: V = arg(a3, 0);
             return try invoke(is_minus_0, [x_2])
             return V.null
-          }))), 1.0)))) {
-            var rest_0: V = V.null; rest_0 = list()
-            do {
-              var i1: Double = 0
-              while i1 < num(try len(try get(body_0, "of"))) {
-                var i_1: V = V.num(i1)
-                if truthy(V.b(!(try eq(i_1, at_0)))) {
-                  try m_push(rest_0, try elem(try get(body_0, "of"), i_1))
-                }
-                i1 += 1
-              }
-            }
+          }))), 1.0))) {
+            var rest_0: V = V.null; rest_0 = try filt(try get(body_0, "of"), V.fn({ (a3: [V]) throws -> V in
+              var x_2: V = arg(a3, 0);
+              return not(try invoke(is_minus_0, [x_2]))
+              return V.null
+            }))
             return V.s(cat("\\text{the } ", try str(try get(e_0, "bound")), " \\text{ where } ", try str(try get(e_0, "bound")), " = ", try str(try call((try K("Expr")), "show", [try sel(truthy(V.b(try eq(try len(rest_0), 1.0))), try elem(rest_0, 0.0), try call((try K("Expr")), "add", [rest_0]))])), ""))
           }
         }
@@ -4528,19 +4419,16 @@ enum C_Expr {
           return try invoke(negative_0, [x_2])
           return V.null
         })))
-        var out_0: V = V.null; out_0 = V.s(cat(""))
-        do {
-          var i1: Double = 0
-          while i1 < num(try len(ordered_0)) {
-            var i_1: V = V.num(i1)
-            var x_1: V = V.null; x_1 = try elem(ordered_0, i_1)
-            var t_1: V = V.null; t_1 = try sel(truthy(V.b(try eq(try get(x_1, "kind"), V.s(cat("root"))))), V.s(cat("\\paren{", try str(try call((try K("Expr")), "show", [x_1])), "}")), try call((try K("Expr")), "show", [x_1]))
-            var piece_1: V = V.null; piece_1 = try sel(truthy(V.b(try eq(i_1, 0.0))), t_1, (try sel(truthy(try m_starts_with(t_1, V.s(cat("-")))), V.s(cat(" - ", try str(try m_drop(t_1, 1.0)), "")), V.s(cat(" + ", try str(t_1), "")))))
-            out_0 = V.s(cat("", try str(out_0), "", try str(piece_1), ""))
-            i1 += 1
-          }
-        }
-        return out_0
+        var shown_0: V = V.null; shown_0 = try m_map(ordered_0, V.fn({ (a3: [V]) throws -> V in
+          var x_2: V = arg(a3, 0);
+          return try sel(truthy(V.b(try eq(try get(x_2, "kind"), V.s(cat("root"))))), V.s(cat("\\paren{", try str(try call((try K("Expr")), "show", [x_2])), "}")), try call((try K("Expr")), "show", [x_2]))
+          return V.null
+        }))
+        return try m_join(try m_map(rng(try len(shown_0)), V.fn({ (a3: [V]) throws -> V in
+          var i_2: V = arg(a3, 0);
+          return try sel(truthy(V.b(try eq(i_2, 0.0))), try elem(shown_0, i_2), (try sel(truthy(try m_starts_with(try elem(shown_0, i_2), V.s(cat("-")))), V.s(cat(" - ", try str(try m_drop(try elem(shown_0, i_2), 1.0)), "")), V.s(cat(" + ", try str(try elem(shown_0, i_2)), "")))))
+          return V.null
+        })), V.s(cat("")))
       }
       return V.s(cat(""))
       return V.null
@@ -4588,18 +4476,15 @@ enum C_Expr {
       if truthy(V.b(try eq(k_0, V.s(cat("mul"))))) {
         return try call((try K("Expr")), "add", [try m_map(rng(try len(try get(e_0, "of"))), V.fn({ (a3: [V]) throws -> V in
           var i_2: V = arg(a3, 0);
-          var others_2: V = V.null; others_2 = list()
-          do {
-            var i3: Double = 0
-            while i3 < num(try len(try get(e_0, "of"))) {
-              var j_3: V = V.num(i3)
-              if truthy(V.b(!(try eq(j_3, i_2)))) {
-                try m_push(others_2, try elem(try get(e_0, "of"), j_3))
-              }
-              i3 += 1
-            }
-          }
-          return try call((try K("Expr")), "mul", [try m_concat(list(try call((try K("Expr")), "d", [try elem(try get(e_0, "of"), i_2), wrt_0])), others_2)])
+          return try call((try K("Expr")), "mul", [try m_concat(list(try call((try K("Expr")), "d", [try elem(try get(e_0, "of"), i_2), wrt_0])), try m_map(try filt(rng(try len(try get(e_0, "of"))), V.fn({ (a6: [V]) throws -> V in
+            var j_5: V = arg(a6, 0);
+            return V.b(!(try eq(j_5, i_2)))
+            return V.null
+          })), V.fn({ (a5: [V]) throws -> V in
+            var j_4: V = arg(a5, 0);
+            return try elem(try get(e_0, "of"), j_4)
+            return V.null
+          })))])
           return V.null
         }))])
       }
@@ -4921,20 +4806,18 @@ enum C_Expr {
         return try sel(truthy(V.b(try eq(v_0, V.null))), try get((try K("Expr")), "NAN"), v_0)
       }
       if truthy(V.b(try eq(k_0, V.s(cat("add"))))) {
-        var total__0: V = V.null; total__0 = 0.0
-        for e1 in try items(try get(e_0, "of")) {
-          var x_1: V = e1
-          total__0 = try add(total__0, try call((try K("Expr")), "numeric", [x_1, at_0]))
-        }
-        return total__0
+        return try m_reduce(try get(e_0, "of"), 0.0, V.fn({ (a3: [V]) throws -> V in
+          var total__2: V = arg(a3, 0); var x_2: V = arg(a3, 1);
+          return try add(total__2, try call((try K("Expr")), "numeric", [x_2, at_0]))
+          return V.null
+        }))
       }
       if truthy(V.b(try eq(k_0, V.s(cat("mul"))))) {
-        var prod_0: V = V.null; prod_0 = 1.0
-        for e1 in try items(try get(e_0, "of")) {
-          var x_1: V = e1
-          prod_0 = try mul(prod_0, try call((try K("Expr")), "numeric", [x_1, at_0]))
-        }
-        return prod_0
+        return try m_reduce(try get(e_0, "of"), 1.0, V.fn({ (a3: [V]) throws -> V in
+          var prod_2: V = arg(a3, 0); var x_2: V = arg(a3, 1);
+          return try mul(prod_2, try call((try K("Expr")), "numeric", [x_2, at_0]))
+          return V.null
+        }))
       }
       if truthy(V.b(try eq(k_0, V.s(cat("pow"))))) {
         return try power(try call((try K("Expr")), "numeric", [try get(e_0, "base"), at_0]), try call((try K("Expr")), "numeric", [try get(e_0, "power"), at_0]))
@@ -5013,22 +4896,7 @@ enum C_Expr {
       if truthy(try and_(try and_(not(try call((try K("Expr")), "finite", [try invoke(f_0, [0.5])])), not(try call((try K("Expr")), "finite", [try invoke(f_0, [1.0])]))), not(try call((try K("Expr")), "finite", [try invoke(f_0, [0.1])])))) {
         return try get((try K("Expr")), "NAN")
       }
-      var points_0: V = V.null; points_0 = list()
-      var i_0: V = V.null; i_0 = 1.0
-      while truthy(try le(i_0, 120.0)) {
-        try m_push(points_0, try div(i_0, 120.0))
-        i_0 = try add(i_0, 1.0)
-      }
-      var ex_0: V = V.null; ex_0 = 0.0
-      while truthy(try le(ex_0, 24.0)) {
-        var k_0: V = V.null; k_0 = 1.0
-        while truthy(try lt(k_0, 8.0)) {
-          try m_push(points_0, try mul((try power(10.0, (try sub(ex_0, 12.0)))), (try add(1.0, try div(k_0, 2.0)))))
-          k_0 = try add(k_0, 1.0)
-        }
-        ex_0 = try add(ex_0, 1.0)
-      }
-      points_0 = try call((try K("Expr")), "sorted", [points_0])
+      var points_0: V = V.null; points_0 = try get((try K("Expr")), "bracket_points")
       var lo_0: V = V.null; lo_0 = V.null
       var hi_0: V = V.null; hi_0 = V.null
       var px_0: V = V.null; px_0 = try elem(points_0, 0.0)
@@ -5070,18 +4938,31 @@ enum C_Expr {
       return try div((try add(lo_0, hi_0)), 2.0)
       return V.null
     })
+    c.statik("bracket_points", { (this_: V, a1: [V]) throws -> V in
+      var even_0: V = V.null; even_0 = try m_map(rng(120.0), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try div((try add(i_2, 1.0)), 120.0)
+        return V.null
+      }))
+      var decades_0: V = V.null; decades_0 = try m_reduce(rng(25.0), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var ex_2: V = arg(a3, 1);
+        return try m_reduce(rng(7.0), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var k_4: V = arg(a5, 1);
+          return try m_push(o_4, try mul((try power(10.0, (try sub(ex_2, 12.0)))), (try add(1.0, try div((try add(k_4, 1.0)), 2.0)))))
+          return V.null
+        }))
+        return V.null
+      }))
+      return try call((try K("Expr")), "sorted", [try m_concat(even_0, decades_0)])
+      return V.null
+    })
     c.statik("sorted", { (this_: V, a1: [V]) throws -> V in
       var xs_0: V = arg(a1, 0);
-      var out_0: V = V.null; out_0 = list()
-      for e1 in try items(xs_0) {
-        var x_1: V = e1
-        var i_1: V = V.null; i_1 = 0.0
-        while truthy(try and_(try lt(i_1, try len(out_0)), try le(try elem(out_0, i_1), x_1))) {
-          i_1 = try add(i_1, 1.0)
-        }
-        out_0 = try m_concat(try m_concat(try m_take(out_0, i_1), list(x_1)), try m_drop(out_0, i_1))
-      }
-      return out_0
+      return try m_sorted_by(xs_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return x_2
+        return V.null
+      }))
       return V.null
     })
     c.statik("integrate", { (this_: V, a1: [V]) throws -> V in
@@ -5229,26 +5110,20 @@ enum C_Expr {
           var ok_1: V = V.null; ok_1 = V.b(true)
           var k_1: V = V.null; k_1 = try elem(head__1, 1.0)
           if truthy(V.b(!(try eq(nums_1, V.null)))) {
-            var lo_1: V = V.null; lo_1 = try elem(nums_1, 0.0)
-            var hi_1: V = V.null; hi_1 = try elem(nums_1, 0.0)
-            for e2 in try items(nums_1) {
-              var v_2: V = e2
-              if truthy(try lt(v_2, lo_1)) {
-                lo_1 = v_2
-              }
-              if truthy(try gt(v_2, hi_1)) {
-                hi_1 = v_2
-              }
-            }
-            ok_1 = V.b(try eq((try le(lo_1, 0.0)), (try le(hi_1, 0.0))))
-            var least_1: V = V.null; least_1 = try elem(nums_1, 0.0)
-            for e2 in try items(nums_1) {
-              var v_2: V = e2
-              if truthy(try lt(try m_abs(v_2), try m_abs(least_1))) {
-                least_1 = v_2
-              }
-            }
-            k_1 = try call((try K("Expr")), "num", [least_1])
+            ok_1 = try or_(try m_every(nums_1, V.fn({ (a4: [V]) throws -> V in
+              var v_3: V = arg(a4, 0);
+              return try le(v_3, 0.0)
+              return V.null
+            })), try m_every(nums_1, V.fn({ (a4: [V]) throws -> V in
+              var v_3: V = arg(a4, 0);
+              return try gt(v_3, 0.0)
+              return V.null
+            })))
+            k_1 = try call((try K("Expr")), "num", [try m_reduce(nums_1, try elem(nums_1, 0.0), V.fn({ (a4: [V]) throws -> V in
+              var least_3: V = arg(a4, 0); var v_3: V = arg(a4, 1);
+              return try sel(truthy(try lt(try m_abs(v_3), try m_abs(least_3))), v_3, least_3)
+              return V.null
+            }))])
           }
           if truthy(ok_1) {
             try m_push(common_0, list(try elem(head__1, 0.0), k_1))
@@ -5524,25 +5399,23 @@ enum C_Expr {
         }))])])
       }
       if truthy(V.b(try eq(try get(t_0, "kind"), V.s(cat("mul"))))) {
-        var parts_0: V = V.null; parts_0 = try m_map(try get(t_0, "of"), V.fn({ (a3: [V]) throws -> V in
-          var x_2: V = arg(a3, 0);
-          return try call((try K("Expr")), "expand", [x_2])
+        var out_0: V = V.null; out_0 = try m_reduce(try m_map(try get(t_0, "of"), V.fn({ (a4: [V]) throws -> V in
+          var x_3: V = arg(a4, 0);
+          return try call((try K("Expr")), "expand", [x_3])
+          return V.null
+        })), list(try call((try K("Expr")), "num", [1.0])), V.fn({ (a3: [V]) throws -> V in
+          var out_2: V = arg(a3, 0); var p_2: V = arg(a3, 1);
+          return try m_reduce(out_2, list(), V.fn({ (a5: [V]) throws -> V in
+            var next_4: V = arg(a5, 0); var a_4: V = arg(a5, 1);
+            return try m_reduce((try sel(truthy(V.b(try eq(try get(p_2, "kind"), V.s(cat("add"))))), try get(p_2, "of"), list(p_2))), next_4, V.fn({ (a7: [V]) throws -> V in
+              var n_6: V = arg(a7, 0); var b_6: V = arg(a7, 1);
+              return try m_push(n_6, try call((try K("Expr")), "mul", [list(a_4, b_6)]))
+              return V.null
+            }))
+            return V.null
+          }))
           return V.null
         }))
-        var out_0: V = V.null; out_0 = list(try call((try K("Expr")), "num", [1.0]))
-        for e1 in try items(parts_0) {
-          var p_1: V = e1
-          var terms_1: V = V.null; terms_1 = try sel(truthy(V.b(try eq(try get(p_1, "kind"), V.s(cat("add"))))), try get(p_1, "of"), list(p_1))
-          var next_1: V = V.null; next_1 = list()
-          for e2 in try items(out_0) {
-            var a_2: V = e2
-            for e3 in try items(terms_1) {
-              var b_3: V = e3
-              try m_push(next_1, try call((try K("Expr")), "mul", [list(a_2, b_3)]))
-            }
-          }
-          out_0 = next_1
-        }
         return try call((try K("Expr")), "simplify", [try call((try K("Expr")), "add", [out_0])])
       }
       return t_0
@@ -5745,6 +5618,15 @@ enum C_ExprReader {
       return V.b(try eq(try call((try K("Notation")), "sub_", [try get(this_, "text"), try get(this_, "at"), try add(try get(this_, "at"), try len(s_0))]), s_0))
       return V.null
     })
+    c.method("take_while", { (this_: V, a1: [V]) throws -> V in
+      var keep_0: V = arg(a1, 0);
+      var k_0: V = V.null; k_0 = try get(this_, "at")
+      while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), try invoke(keep_0, [try elem(try m_chars(try get(this_, "text")), k_0)]))) {
+        k_0 = try add(k_0, 1.0)
+      }
+      return try call(this_, "eat", [try sub(k_0, try get(this_, "at"))])
+      return V.null
+    })
     c.getter("addition", { (this_: V, a1: [V]) throws -> V in
       var left_0: V = V.null; left_0 = try get(this_, "product")
       try get(this_, "skip")
@@ -5800,19 +5682,27 @@ enum C_ExprReader {
       return V.null
     })
     c.getter("word", { (this_: V, a1: [V]) throws -> V in
-      var k_0: V = V.null; k_0 = try get(this_, "at")
-      while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), (try or_(try call((try K("Notation")), "is_name", [try elem(try m_chars(try get(this_, "text")), k_0)]), try gt(try elem(try m_chars(try get(this_, "text")), k_0), 127.0))))) {
-        k_0 = try add(k_0, 1.0)
-      }
-      return try call(this_, "eat", [try sub(k_0, try get(this_, "at"))])
+      return try call(this_, "take_while", [V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try or_(try call((try K("Notation")), "is_name", [c_2]), try gt(c_2, 127.0))
+        return V.null
+      })])
       return V.null
     })
     c.getter("number", { (this_: V, a1: [V]) throws -> V in
-      var k_0: V = V.null; k_0 = try get(this_, "at")
-      while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), (try or_(try call((try K("Notation")), "is_digit", [try elem(try m_chars(try get(this_, "text")), k_0)]), V.b(try eq(try elem(try m_chars(try get(this_, "text")), k_0), 46.0)))))) {
-        k_0 = try add(k_0, 1.0)
-      }
-      return try call((try K("Expr")), "num", [try number(try call(this_, "eat", [try sub(k_0, try get(this_, "at"))]))])
+      return try call((try K("Expr")), "num", [try number(try call(this_, "take_while", [V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try or_(try call((try K("Notation")), "is_digit", [c_2]), V.b(try eq(c_2, 46.0)))
+        return V.null
+      })]))])
+      return V.null
+    })
+    c.getter("quoted", { (this_: V, a1: [V]) throws -> V in
+      return try call(this_, "take_while", [V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return V.b(!(try eq(c_2, 34.0)))
+        return V.null
+      })])
       return V.null
     })
     c.getter("primary", { (this_: V, a1: [V]) throws -> V in
@@ -5830,11 +5720,7 @@ enum C_ExprReader {
       }
       if truthy(V.b(try eq(c_0, 34.0))) {
         try call(this_, "eat", [1.0])
-        var k_0: V = V.null; k_0 = try get(this_, "at")
-        while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), V.b(!(try eq(try elem(try m_chars(try get(this_, "text")), k_0), 34.0))))) {
-          k_0 = try add(k_0, 1.0)
-        }
-        var name_0: V = V.null; name_0 = try call(this_, "eat", [try sub(k_0, try get(this_, "at"))])
+        var name_0: V = V.null; name_0 = try quoted(this_)
         try call(this_, "eat", [1.0])
         return try call((try K("Expr")), "field", [try call((try K("Expr")), "name_of", [name_0])])
       }
@@ -5846,11 +5732,7 @@ enum C_ExprReader {
         try call(this_, "eat", [1.0])
         try get(this_, "skip")
         try call(this_, "eat", [1.0])
-        var k_0: V = V.null; k_0 = try get(this_, "at")
-        while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), V.b(!(try eq(try elem(try m_chars(try get(this_, "text")), k_0), 34.0))))) {
-          k_0 = try add(k_0, 1.0)
-        }
-        var name_0: V = V.null; name_0 = try call(this_, "eat", [try sub(k_0, try get(this_, "at"))])
+        var name_0: V = V.null; name_0 = try quoted(this_)
         try call(this_, "eat", [1.0])
         try get(this_, "skip")
         try call(this_, "eat", [1.0])
@@ -5872,11 +5754,7 @@ enum C_ExprReader {
       }
       if truthy(try and_(V.b(try eq(name_0, V.s(cat("s")))), V.b(try eq(try get(this_, "peek"), 91.0)))) {
         try call(this_, "eat", [2.0])
-        var k_0: V = V.null; k_0 = try get(this_, "at")
-        while truthy(try and_(try lt(k_0, try len(try get(this_, "text"))), V.b(!(try eq(try elem(try m_chars(try get(this_, "text")), k_0), 34.0))))) {
-          k_0 = try add(k_0, 1.0)
-        }
-        var key_0: V = V.null; key_0 = try call(this_, "eat", [try sub(k_0, try get(this_, "at"))])
+        var key_0: V = V.null; key_0 = try quoted(this_)
         try call(this_, "eat", [2.0])
         return try call((try K("Expr")), "field", [try call((try K("Expr")), "name_of", [key_0])])
       }
@@ -6647,25 +6525,26 @@ enum C_Prover {
         try set(sw_0, "derivation", list(inner_0))
         try m_push(out_0, sw_0)
       }
-      var rates_0: V = V.null; rates_0 = list()
-      for e1 in try items(infos_0) {
-        var t_1: V = e1
-        if truthy(try and_(V.b(!(try eq(try get(t_1, "rate"), V.null))), not(try m_contains(rates_0, try get(t_1, "rate"))))) {
-          try m_push(rates_0, try get(t_1, "rate"))
-        }
-      }
+      var rates_0: V = V.null; rates_0 = try m_reduce(try filt(infos_0, V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return V.b(!(try eq(try get(t_3, "rate"), V.null)))
+        return V.null
+      })), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var t_2: V = arg(a3, 1);
+        return try sel(truthy(try m_contains(out_2, try get(t_2, "rate"))), out_2, try m_push(out_2, try get(t_2, "rate")))
+        return V.null
+      }))
       for e1 in try items(rates_0) {
         var name_1: V = e1
         try m_push(out_0, try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [name_1, try call((try K("Expr")), "num", [1.0])]), V.s(cat("the rewrite")), list(), V.s(cat("a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit")), list(V.s(cat("", try str(name_1), " = 1 per match per tick")))]))
       }
       for e1 in try items(list(V.s(cat("rays")), V.s(cat("space")), V.s(cat("folds")))) {
         var ledger_1: V = e1
-        var parts_1: V = V.null; parts_1 = list()
-        for e2 in try items(acting_0) {
-          var t_2: V = e2
-          var c_2: V = V.null; c_2 = try sel(truthy(V.b(try eq(ledger_1, V.s(cat("rays"))))), try get(t_2, "ray_count"), (try sel(truthy(V.b(try eq(ledger_1, V.s(cat("space"))))), try get(t_2, "space_count"), try get(t_2, "fold_count"))))
-          try m_push(parts_1, try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Prover")), "body_of", [t_2]), c_2)])]))
-        }
+        var parts_1: V = V.null; parts_1 = try m_map(acting_0, V.fn({ (a4: [V]) throws -> V in
+          var t_3: V = arg(a4, 0);
+          return try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Prover")), "body_of", [t_3]), try sel(truthy(V.b(try eq(ledger_1, V.s(cat("rays"))))), try get(t_3, "ray_count"), (try sel(truthy(V.b(try eq(ledger_1, V.s(cat("space"))))), try get(t_3, "space_count"), try get(t_3, "fold_count")))))])])
+          return V.null
+        }))
         if !truthy(try m_empty(parts_1)) {
           try m_push(out_0, try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("the ", try str(ledger_1), " line nets")), try call((try K("Expr")), "simplify", [try call((try K("Expr")), "add", [parts_1])])]), V.s(cat("the line")), list(), V.s(cat("every term of the line does something to the ", try str(ledger_1), " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted")), try m_map(acting_0, V.fn({ (a4: [V]) throws -> V in
             var t_3: V = arg(a4, 0);
@@ -8666,31 +8545,23 @@ enum C_Inferences {
           if truthy(V.b(!(try eq(try get(t_3, "kind"), V.s(cat("mul")))))) {
             return t_3
           }
-          var at_3: V = V.null; at_3 = V.null
-          do {
-            var i4: Double = 0
-            while i4 < num(try len(try get(t_3, "of"))) {
-              var i_4: V = V.num(i4)
-              if truthy(try and_(V.b(try eq(at_3, V.null)), V.b(try eq(try get(try elem(try get(t_3, "of"), i_4), "kind"), V.s(cat("add")))))) {
-                at_3 = i_4
-              }
-              i4 += 1
-            }
-          }
+          var at_3: V = V.null; at_3 = try m_first(try filt(rng(try len(try get(t_3, "of"))), V.fn({ (a6: [V]) throws -> V in
+            var i_5: V = arg(a6, 0);
+            return V.b(try eq(try get(try elem(try get(t_3, "of"), i_5), "kind"), V.s(cat("add"))))
+            return V.null
+          })))
           if truthy(V.b(try eq(at_3, V.null))) {
             return t_3
           }
-          var rest_3: V = V.null; rest_3 = list()
-          do {
-            var i4: Double = 0
-            while i4 < num(try len(try get(t_3, "of"))) {
-              var i_4: V = V.num(i4)
-              if truthy(V.b(!(try eq(i_4, at_3)))) {
-                try m_push(rest_3, try elem(try get(t_3, "of"), i_4))
-              }
-              i4 += 1
-            }
-          }
+          var rest_3: V = V.null; rest_3 = try m_map(try filt(rng(try len(try get(t_3, "of"))), V.fn({ (a7: [V]) throws -> V in
+            var i_6: V = arg(a7, 0);
+            return V.b(!(try eq(i_6, at_3)))
+            return V.null
+          })), V.fn({ (a6: [V]) throws -> V in
+            var i_5: V = arg(a6, 0);
+            return try elem(try get(t_3, "of"), i_5)
+            return V.null
+          }))
           var spread_3: V = V.null; spread_3 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "add", [try m_map(try get(try elem(try get(t_3, "of"), at_3), "of"), V.fn({ (a6: [V]) throws -> V in
             var x_5: V = arg(a6, 0);
             return try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [try m_concat(rest_3, list(x_5))])])
@@ -9521,20 +9392,18 @@ enum C_Aggregate {
         return try sel(truthy(V.b(try eq(v_0, V.null))), V.num(Double.nan), v_0)
       }
       if truthy(V.b(try eq(k_0, V.s(cat("add"))))) {
-        var total_0: V = V.null; total_0 = 0.0
-        for e1 in try items(try get(e_0, "of")) {
-          var p_1: V = e1
-          total_0 = try add(total_0, try call(this_, "value", [p_1, at_0, masses_0, Rs_0, skip_0]))
-        }
-        return total_0
+        return try m_sum(try m_map(try get(e_0, "of"), V.fn({ (a3: [V]) throws -> V in
+          var p_2: V = arg(a3, 0);
+          return try call(this_, "value", [p_2, at_0, masses_0, Rs_0, skip_0])
+          return V.null
+        })))
       }
       if truthy(V.b(try eq(k_0, V.s(cat("mul"))))) {
-        var prod_0: V = V.null; prod_0 = 1.0
-        for e1 in try items(try get(e_0, "of")) {
-          var p_1: V = e1
-          prod_0 = try mul(prod_0, try call(this_, "value", [p_1, at_0, masses_0, Rs_0, skip_0]))
-        }
-        return prod_0
+        return try m_reduce(try get(e_0, "of"), 1.0, V.fn({ (a3: [V]) throws -> V in
+          var prod_2: V = arg(a3, 0); var p_2: V = arg(a3, 1);
+          return try mul(prod_2, try call(this_, "value", [p_2, at_0, masses_0, Rs_0, skip_0]))
+          return V.null
+        }))
       }
       if truthy(V.b(try eq(k_0, V.s(cat("pow"))))) {
         return try power(try call(this_, "value", [try get(e_0, "base"), at_0, masses_0, Rs_0, skip_0]), try call(this_, "value", [try get(e_0, "power"), at_0, masses_0, Rs_0, skip_0]))
@@ -9932,22 +9801,19 @@ enum C_Aggregate {
       return V.null
     })
     c.getter("names", { (this_: V, a1: [V]) throws -> V in
-      var out_0: V = V.null; out_0 = try m_map(try get(this_, "per_body"), V.fn({ (a3: [V]) throws -> V in
-        var n_2: V = arg(a3, 0);
-        return n_2
+      return try m_reduce(list(try get(this_, "outer"), try get(this_, "summand"), try get(this_, "shell_expr"), try get(this_, "reach_expr")), try m_concat(try get(this_, "per_body"), list(V.s(cat("SUM")))), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var e_2: V = arg(a3, 1);
+        return try m_reduce(try filt(try call((try K("Model")), "unbound", [e_2]), V.fn({ (a6: [V]) throws -> V in
+          var n_5: V = arg(a6, 0);
+          return try and_(V.b(!(try eq(n_5, V.s(cat("\\bar{R}"))))), not(try m_ends_with(n_5, V.s(cat("\\paren{...}")))))
+          return V.null
+        })), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var n_4: V = arg(a5, 1);
+          return try sel(truthy(try m_contains(o_4, n_4)), o_4, try m_push(o_4, n_4))
+          return V.null
+        }))
         return V.null
       }))
-      try m_push(out_0, V.s(cat("SUM")))
-      for e1 in try items(list(try get(this_, "outer"), try get(this_, "summand"), try get(this_, "shell_expr"), try get(this_, "reach_expr"))) {
-        var e_1: V = e1
-        for e2 in try items(try call((try K("Model")), "unbound", [e_1])) {
-          var n_2: V = e2
-          if truthy(try and_(try and_(not(try m_contains(out_0, n_2)), V.b(!(try eq(n_2, V.s(cat("\\bar{R}")))))), not(try m_ends_with(n_2, V.s(cat("\\paren{...}")))))) {
-            try m_push(out_0, n_2)
-          }
-        }
-      }
-      return out_0
       return V.null
     })
     c.getter("constants", { (this_: V, a1: [V]) throws -> V in
@@ -10209,7 +10075,7 @@ enum C_Medium {
       return V.null
     })
     c.getter("terms", { (this_: V, a1: [V]) throws -> V in
-      return try get(try get(try get(this_, "theory"), "equation"), "terms")
+      return try get(try get(this_, "theory"), "terms_read")
       return V.null
     })
     c.field("meets", { (this_: V) throws -> V in return try filt(try get(this_, "terms"), V.fn({ (a2: [V]) throws -> V in
@@ -10416,26 +10282,15 @@ enum C_Medium {
     c.method("under", { (this_: V, a1: [V]) throws -> V in
       var h_0: V = arg(a1, 0);
       var half_0: V = V.null; half_0 = try m_floor((try div((try sub(try get(this_, "K"), 1.0)), 2.0)))
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "K")) {
-          var dy_1: V = V.num(i1)
-          do {
-            var i2: Double = 0
-            while i2 < num(try get(this_, "K")) {
-              var dx_2: V = V.num(i2)
-              var c_2: V = V.null; c_2 = try call(this_, "at", [try add(try sub(try m_round(try get(h_0, "x")), half_0), dx_2), try add(try sub(try m_round(try get(h_0, "y")), half_0), dy_1)])
-              if truthy(try ge(c_2, 0.0)) {
-                try m_push(out_0, c_2)
-              }
-              i2 += 1
-            }
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try filt(try m_map(rng(try mul(try get(this_, "K"), try get(this_, "K"))), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try call(this_, "at", [try add(try sub(try m_round(try get(h_0, "x")), half_0), try mod(i_3, try get(this_, "K"))), try add(try sub(try m_round(try get(h_0, "y")), half_0), try m_floor((try div(i_3, try get(this_, "K")))))])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try ge(c_2, 0.0)
+        return V.null
+      }))
       return V.null
     })
     c.method("spread", { (this_: V, a1: [V]) throws -> V in
@@ -12121,6 +11976,8 @@ enum C_Surface {
     c.method("rotate", { (this_: V, a0: [V]) throws -> V in throw RayError("rotate is declared but not defined by anyone") })
     c.method("dash", { (this_: V, a0: [V]) throws -> V in throw RayError("dash is declared but not defined by anyone") })
     c.method("gradient_stroke", { (this_: V, a0: [V]) throws -> V in throw RayError("gradient_stroke is declared but not defined by anyone") })
+    c.method("image", { (this_: V, a0: [V]) throws -> V in throw RayError("image is declared but not defined by anyone") })
+    c.method("field", { (this_: V, a0: [V]) throws -> V in throw RayError("field is declared but not defined by anyone") })
   }
 }
 
@@ -12181,15 +12038,11 @@ enum C_Cached {
     c.method("at", { (this_: V, a1: [V]) throws -> V in
       var frame_at_0: V = arg(a1, 0);
       var out_0: V = V.null; out_0 = makeNode()
-      var all_0: V = V.null; all_0 = try get(try get(try get(this_, "film"), "columns"), Name(try str(V.s(cat("frames")))))
-      var width_0: V = V.null; width_0 = try m_sum(try get(this_, "sizes"))
-      var from_at_0: V = V.null; from_at_0 = try mul(frame_at_0, width_0)
       do {
         var i1: Double = 0
         while i1 < num(try len(try get(this_, "names"))) {
           var i_1: V = V.num(i1)
-          try setAt(out_0, try elem(try get(this_, "names"), i_1), try m_take(try m_drop(all_0, from_at_0), try elem(try get(this_, "sizes"), i_1)))
-          from_at_0 = try add(from_at_0, try elem(try get(this_, "sizes"), i_1))
+          try setAt(out_0, try elem(try get(this_, "names"), i_1), try m_take(try m_drop(try get(try get(try get(this_, "film"), "columns"), Name(try str(V.s(cat("frames"))))), try add(try mul(frame_at_0, try m_sum(try get(this_, "sizes"))), try m_sum(try m_take(try get(this_, "sizes"), i_1)))), try elem(try get(this_, "sizes"), i_1)))
           i1 += 1
         }
       }
@@ -12291,6 +12144,9 @@ enum C_Picture {
     c.field("record", { (this_: V) throws -> V in return V.null })
     c.field("panes", { (this_: V) throws -> V in return list() })
     c.field("on_request", { (this_: V) throws -> V in return V.b(false) })
+    c.field("images", { (this_: V) throws -> V in return list() })
+    c.field("parts", { (this_: V) throws -> V in return list() })
+    c.field("uses", { (this_: V) throws -> V in return list() })
     c.field("paint", nil)
     c.getter("played", { (this_: V, a1: [V]) throws -> V in
       var r_0: V = V.null; r_0 = try get(this_, "record")
@@ -12537,15 +12393,21 @@ enum C_Setup {
     })
     c.statik("middle", { (this_: V, a1: [V]) throws -> V in
       var holes_0: V = arg(a1, 0);
-      var m_0: V = V.null; m_0 = 0.0
-      var x_0: V = V.null; x_0 = 0.0
-      var y_0: V = V.null; y_0 = 0.0
-      for e1 in try items(holes_0) {
-        var h_1: V = e1
-        m_0 = try add(m_0, try get(h_1, "mass"))
-        x_0 = try add(x_0, try mul(try get(h_1, "x"), try get(h_1, "mass")))
-        y_0 = try add(y_0, try mul(try get(h_1, "y"), try get(h_1, "mass")))
-      }
+      var m_0: V = V.null; m_0 = try m_sum(try m_map(holes_0, V.fn({ (a3: [V]) throws -> V in
+        var h_2: V = arg(a3, 0);
+        return try get(h_2, "mass")
+        return V.null
+      })))
+      var x_0: V = V.null; x_0 = try m_sum(try m_map(holes_0, V.fn({ (a3: [V]) throws -> V in
+        var h_2: V = arg(a3, 0);
+        return try mul(try get(h_2, "x"), try get(h_2, "mass"))
+        return V.null
+      })))
+      var y_0: V = V.null; y_0 = try m_sum(try m_map(holes_0, V.fn({ (a3: [V]) throws -> V in
+        var h_2: V = arg(a3, 0);
+        return try mul(try get(h_2, "y"), try get(h_2, "mass"))
+        return V.null
+      })))
       return try sel(truthy(try gt(m_0, 0.0)), list(try div(x_0, m_0), try div(y_0, m_0)), list(0.0, 0.0))
       return V.null
     })
@@ -13246,15 +13108,11 @@ enum C_Panel {
           i1 += 1
         }
       }
-      var weight_0: V = V.null; weight_0 = 0.0
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(p_0, "bodies")) {
-          var k_1: V = V.num(i1)
-          weight_0 = try add(weight_0, try elem(marks_0, try add(try mul(k_1, 6.0), 5.0)))
-          i1 += 1
-        }
-      }
+      var weight_0: V = V.null; weight_0 = try m_sum(try m_map(rng(try get(p_0, "bodies")), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return try elem(marks_0, try add(try mul(k_2, 6.0), 5.0))
+        return V.null
+      })))
       var frames_0: V = V.null; frames_0 = try div(try len(try elem(trail_0, centre_0)), 2.0)
       var midx_0: V = V.null; midx_0 = try m_map(rng(frames_0), V.fn({ (a3: [V]) throws -> V in
         var i_2: V = arg(a3, 0);
@@ -13652,16 +13510,19 @@ enum C_Strip {
         return try elem(try get(try get(v_2, "at"), "components"), 0.0)
         return V.null
       }))
-      var sides_0: V = V.null; sides_0 = list()
-      for e1 in try items(try get(w_0, "live")) {
-        var v_1: V = e1
-        for e2 in try items(try get(v_1, "rays")) {
-          var r_2: V = e2
-          if truthy(try get(r_2, "active")) {
-            try m_push(sides_0, try makeNamed("Side", [kw("at", try elem(try get(try get(v_1, "at"), "components"), 0.0)), kw("sign", try elem(try get(try get(r_2, "along"), "components"), 0.0)), kw("ink", try call(ink_0, "ink_of", [r_2]))]))
-          }
-        }
-      }
+      var sides_0: V = V.null; sides_0 = try m_reduce(try get(w_0, "live"), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try m_reduce(try filt(try get(v_2, "rays"), V.fn({ (a6: [V]) throws -> V in
+          var r_5: V = arg(a6, 0);
+          return try get(r_5, "active")
+          return V.null
+        })), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var r_4: V = arg(a5, 1);
+          return try m_push(o_4, try makeNamed("Side", [kw("at", try elem(try get(try get(v_2, "at"), "components"), 0.0)), kw("sign", try elem(try get(try get(r_4, "along"), "components"), 0.0)), kw("ink", try call(ink_0, "ink_of", [r_4]))]))
+          return V.null
+        }))
+        return V.null
+      }))
       var l_0: V = V.null; l_0 = try makeNamed("Lane", [kw("points", pts_0), kw("sides", sides_0)])
       for e1 in try items(try get(w_0, "sources")) {
         var s_1: V = e1
@@ -13787,17 +13648,16 @@ enum C_Strip {
     })
     c.statik("centre_of", { (this_: V, a1: [V]) throws -> V in
       var lanes_0: V = arg(a1, 0);
-      var xs_0: V = V.null; xs_0 = list()
-      for e1 in try items(lanes_0) {
-        var l_1: V = e1
-        for e2 in try items(try get(l_1, "sources")) {
-          var p_2: V = e2
-          try m_push(xs_0, p_2)
-        }
-      }
-      if truthy(try m_empty(xs_0)) {
-        xs_0 = try get(try m_first(lanes_0), "points")
-      }
+      var sourced_0: V = V.null; sourced_0 = try m_reduce(lanes_0, list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var l_2: V = arg(a3, 1);
+        return try m_reduce(try get(l_2, "sources"), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var p_4: V = arg(a5, 1);
+          return try m_push(o_4, p_4)
+          return V.null
+        }))
+        return V.null
+      }))
+      var xs_0: V = V.null; xs_0 = try sel(truthy(try m_empty(sourced_0)), try get(try m_first(lanes_0), "points"), sourced_0)
       if truthy(try m_empty(xs_0)) {
         return 0.0
       }
@@ -14202,21 +14062,18 @@ enum C_Sparc {
           try setAt(best_0, try get(p_1, "galaxy"), p_1)
         }
       }
-      var out_0: V = V.null; out_0 = list()
       var names_0: V = V.null; names_0 = try get((try K("Sparc")), "names")
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(names_0)) {
-          var g_1: V = V.num(i1)
-          var p_1: V = V.null; p_1 = try elem(best_0, g_1)
-          if truthy(V.b(!(try eq(p_1, V.null)))) {
-            var q_1: V = V.null; q_1 = try makeNamed("RarPoint", [kw("gbar", try get(p_1, "gbar")), kw("gobs", try get(p_1, "gobs")), kw("galaxy", try get(p_1, "galaxy")), kw("R", try get(p_1, "R"))])
-            try set(q_1, "name", try elem(names_0, g_1))
-            try m_push(out_0, q_1)
-          }
-          i1 += 1
-        }
-      }
+      var out_0: V = V.null; out_0 = try m_map(try filt(rng(try len(names_0)), V.fn({ (a4: [V]) throws -> V in
+        var g_3: V = arg(a4, 0);
+        return V.b(!(try eq(try elem(best_0, g_3), V.null)))
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        var q_2: V = V.null; q_2 = try makeNamed("RarPoint", [kw("gbar", try get(try elem(best_0, g_2), "gbar")), kw("gobs", try get(try elem(best_0, g_2), "gobs")), kw("galaxy", try get(try elem(best_0, g_2), "galaxy")), kw("R", try get(try elem(best_0, g_2), "R"))])
+        try set(q_2, "name", try elem(names_0, g_2))
+        return q_2
+        return V.null
+      }))
       try set(try get((try K("Sparc")), "CACHE"), Name(try str(V.s(cat("flat")))), out_0)
       return out_0
       return V.null
@@ -14231,17 +14088,15 @@ enum C_Sparc {
       }
       var c_0: V = V.null; c_0 = try get(t_0, "columns")
       var names_0: V = V.null; names_0 = try get(try get(t_0, "header"), Name(try str(V.s(cat("names")))))
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(t_0, "rows")) {
-          var i_1: V = V.num(i1)
-          if truthy(try gt(try elem(try get(c_0, Name(try str(V.s(cat("Vf"))))), i_1), 0.0)) {
-            try m_push(out_0, try makeNamed("Btfr", [kw("name", try elem(names_0, i_1)), kw("galaxy", try elem(try get(c_0, Name(try str(V.s(cat("galaxy"))))), i_1)), kw("vf", try elem(try get(c_0, Name(try str(V.s(cat("Vf"))))), i_1)), kw("err", try elem(try get(c_0, Name(try str(V.s(cat("e_Vf"))))), i_1)), kw("mass", try mul(try power(10.0, try elem(try get(c_0, Name(try str(V.s(cat("log(Mb)"))))), i_1)), try get((try K("Sparc")), "MSUN"))), kw("err_mass", try elem(try get(c_0, Name(try str(V.s(cat("e_log(Mb)"))))), i_1))]))
-          }
-          i1 += 1
-        }
-      }
+      var out_0: V = V.null; out_0 = try m_map(try filt(rng(try get(t_0, "rows")), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try gt(try elem(try get(c_0, Name(try str(V.s(cat("Vf"))))), i_3), 0.0)
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try makeNamed("Btfr", [kw("name", try elem(names_0, i_2)), kw("galaxy", try elem(try get(c_0, Name(try str(V.s(cat("galaxy"))))), i_2)), kw("vf", try elem(try get(c_0, Name(try str(V.s(cat("Vf"))))), i_2)), kw("err", try elem(try get(c_0, Name(try str(V.s(cat("e_Vf"))))), i_2)), kw("mass", try mul(try power(10.0, try elem(try get(c_0, Name(try str(V.s(cat("log(Mb)"))))), i_2)), try get((try K("Sparc")), "MSUN"))), kw("err_mass", try elem(try get(c_0, Name(try str(V.s(cat("e_log(Mb)"))))), i_2))])
+        return V.null
+      }))
       try set(try get((try K("Sparc")), "CACHE"), Name(try str(V.s(cat("btfr")))), out_0)
       return out_0
       return V.null
@@ -14386,27 +14241,16 @@ enum C_Galaxies {
     })
     c.statik("tint_of", { (this_: V, a1: [V]) throws -> V in
       var mask_0: V = arg(a1, 0);
-      if truthy(V.b(try eq(mask_0, 0.0))) {
-        return try get((try K("Galaxies")), "SEVERAL")
-      }
-      var r_0: V = V.null; r_0 = 0.0
-      var g_0: V = V.null; g_0 = 0.0
-      var bl_0: V = V.null; bl_0 = 0.0
-      var n_0: V = V.null; n_0 = 0.0
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get((try K("Galaxies")), "FREEDOMS"))) {
-          var i_1: V = V.num(i1)
-          if truthy(try call((try K("Galaxies")), "bit", [mask_0, i_1])) {
-            r_0 = try add(r_0, try elem(try elem(try get((try K("Galaxies")), "TINTS"), i_1), 0.0))
-            g_0 = try add(g_0, try elem(try elem(try get((try K("Galaxies")), "TINTS"), i_1), 1.0))
-            bl_0 = try add(bl_0, try elem(try elem(try get((try K("Galaxies")), "TINTS"), i_1), 2.0))
-            n_0 = try add(n_0, 1.0)
-          }
-          i1 += 1
-        }
-      }
-      return try sel(truthy(try gt(n_0, 0.0)), list(try div(r_0, n_0), try div(g_0, n_0), try div(bl_0, n_0)), try get((try K("Galaxies")), "SEVERAL"))
+      var on_0: V = V.null; on_0 = try call((try K("Galaxies")), "freedoms_in", [mask_0])
+      return try sel(truthy(try or_(V.b(try eq(mask_0, 0.0)), try m_empty(on_0))), try get((try K("Galaxies")), "SEVERAL"), try m_map(list(0.0, 1.0, 2.0), V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try div(try m_sum(try m_map(on_0, V.fn({ (a5: [V]) throws -> V in
+          var i_4: V = arg(a5, 0);
+          return try elem(try elem(try get((try K("Galaxies")), "TINTS"), i_4), c_2)
+          return V.null
+        }))), try len(on_0))
+        return V.null
+      })))
       return V.null
     })
     c.statik("name_of", { (this_: V, a1: [V]) throws -> V in
@@ -14414,18 +14258,15 @@ enum C_Galaxies {
       if truthy(V.b(try eq(mask_0, 0.0))) {
         return V.s(cat("the source as it starts"))
       }
-      var parts_0: V = V.null; parts_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get((try K("Galaxies")), "NAMES_NOW"))) {
-          var i_1: V = V.num(i1)
-          if truthy(try call((try K("Galaxies")), "bit", [mask_0, i_1])) {
-            try m_push(parts_0, try elem(try get((try K("Galaxies")), "NAMES_NOW"), i_1))
-          }
-          i1 += 1
-        }
-      }
-      var joined_0: V = V.null; joined_0 = try m_join(parts_0, V.s(cat(" + ")))
+      var joined_0: V = V.null; joined_0 = try m_join(try m_map(try filt(rng(try len(try get((try K("Galaxies")), "NAMES_NOW"))), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try call((try K("Galaxies")), "bit", [mask_0, i_3])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try elem(try get((try K("Galaxies")), "NAMES_NOW"), i_2)
+        return V.null
+      })), V.s(cat(" + ")))
       return V.s(cat("needs ", try str(joined_0), ""))
       return V.null
     })
@@ -14565,6 +14406,50 @@ enum C_Galaxies {
       return try sel(truthy(try gt(got_0, 0.0)), try call((try K("Fmt")), "log10", [try div(got_0, a0_0)]), V.num(Double.nan))
       return V.null
     })
+    c.statik("decades", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var X_0: V = arg(a1, 1); var Y_0: V = arg(a1, 2); var box_0: V = arg(a1, 3); var range_0: V = arg(a1, 4); var under_0: V = arg(a1, 5);
+      for e1 in try items(try m_map(rng(try add(try sub(try elem(range_0, 1.0), try elem(range_0, 0.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try add(try elem(range_0, 0.0), i_3)
+        return V.null
+      }))) {
+        var l_1: V = e1
+        try get(s_0, "begin_path")
+        try call(s_0, "move_to", [try invoke(X_0, [l_1]), try elem(box_0, 1.0)])
+        try call(s_0, "line_to", [try invoke(X_0, [l_1]), try elem(box_0, 3.0)])
+        try get(s_0, "stroke")
+        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_1), "")), try invoke(X_0, [l_1]), try add(try elem(box_0, 3.0), under_0)])
+      }
+      try call(s_0, "text_align", [V.s(cat("right"))])
+      for e1 in try items(try m_map(rng(try add(try sub(try elem(range_0, 3.0), try elem(range_0, 2.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return try add(try elem(range_0, 2.0), i_3)
+        return V.null
+      }))) {
+        var l_1: V = e1
+        try get(s_0, "begin_path")
+        try call(s_0, "move_to", [try elem(box_0, 0.0), try invoke(Y_0, [l_1])])
+        try call(s_0, "line_to", [try elem(box_0, 2.0), try invoke(Y_0, [l_1])])
+        try get(s_0, "stroke")
+        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_1), "")), try sub(try elem(box_0, 0.0), 8.0), try add(try invoke(Y_0, [l_1]), 4.0)])
+      }
+      return V.null
+    })
+    c.statik("curve", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var X_0: V = arg(a1, 1); var Y_0: V = arg(a1, 2); var f_0: V = arg(a1, 3); var low_0: V = arg(a1, 4); var high_0: V = arg(a1, 5); var step_0: V = arg(a1, 6);
+      try get(s_0, "begin_path")
+      var l_0: V = V.null; l_0 = low_0
+      while truthy(try le(l_0, try add(high_0, 0.000001))) {
+        if truthy(V.b(try eq(l_0, low_0))) {
+          try call(s_0, "move_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try invoke(f_0, [l_0])])])
+        } else {
+          try call(s_0, "line_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try invoke(f_0, [l_0])])])
+        }
+        l_0 = try add(l_0, step_0)
+      }
+      return try get(s_0, "stroke")
+      return V.null
+    })
     c.statik("along", { (this_: V, a1: [V]) throws -> V in
       var s_0: V = arg(a1, 0); var at_0: V = arg(a1, 1); var t_0: V = arg(a1, 2); var text_0: V = arg(a1, 3); var colour_0: V = arg(a1, 4); var lift_0: V = arg(a1, 5); var leans_0: V = arg(a1, 6);
       var p0_0: V = V.null; p0_0 = try invoke(leans_0, [try sub(t_0, 0.01)])
@@ -14680,35 +14565,17 @@ enum C_Galaxies {
       try call(s_0, "line_width", [1.0])
       try call(s_0, "fill_style", [try get((try K("Galaxies")), "FAINT")])
       try call(s_0, "text_align", [V.s(cat("center"))])
-      var l_0: V = V.null; l_0 = XMIN_0
-      while truthy(try le(l_0, XMAX_0)) {
-        try get(s_0, "begin_path")
-        try call(s_0, "move_to", [try invoke(X_0, [l_0]), by0_0])
-        try call(s_0, "line_to", [try invoke(X_0, [l_0]), by1_0])
-        try get(s_0, "stroke")
-        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_0), "")), try invoke(X_0, [l_0]), try add(by1_0, 17.0)])
-        l_0 = try add(l_0, 1.0)
-      }
-      try call(s_0, "text_align", [V.s(cat("right"))])
-      l_0 = YMIN_0
-      while truthy(try le(l_0, YMAX_0)) {
-        try get(s_0, "begin_path")
-        try call(s_0, "move_to", [bx0_0, try invoke(Y_0, [l_0])])
-        try call(s_0, "line_to", [bx1_0, try invoke(Y_0, [l_0])])
-        try get(s_0, "stroke")
-        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_0), "")), try sub(bx0_0, 8.0), try add(try invoke(Y_0, [l_0]), 4.0)])
-        l_0 = try add(l_0, 1.0)
-      }
-      var implied_0: V = V.null; implied_0 = list()
-      for e1 in try items(try get((try K("Sparc")), "btfr")) {
-        var g_1: V = e1
-        var M_1: V = V.null; M_1 = try get(g_1, "mass")
-        var v_1: V = V.null; v_1 = try mul(try get(g_1, "vf"), 1000.0)
-        if truthy(try and_(try gt(M_1, 0.0), try gt(v_1, 0.0))) {
-          try m_push(implied_0, try call((try K("Fmt")), "log10", [try div(try div(try mul(try mul(try mul(v_1, v_1), v_1), v_1), (try mul(try get((try K("Sparc")), "G_NEWTON"), M_1))), try get((try K("Galaxies")), "A0_DATA"))]))
-        }
-      }
-      implied_0 = try call((try K("Expr")), "sorted", [implied_0])
+      try call((try K("Galaxies")), "decades", [s_0, X_0, Y_0, list(bx0_0, by0_0, bx1_0, by1_0), list(XMIN_0, XMAX_0, YMIN_0, YMAX_0), 17.0])
+      var implied_0: V = V.null; implied_0 = try call((try K("Expr")), "sorted", [try m_map(try filt(try get((try K("Sparc")), "btfr"), V.fn({ (a4: [V]) throws -> V in
+        var g_3: V = arg(a4, 0);
+        return try and_(try gt(try get(g_3, "mass"), 0.0), try gt(try get(g_3, "vf"), 0.0))
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        var v_2: V = V.null; v_2 = try mul(try get(g_2, "vf"), 1000.0)
+        return try call((try K("Fmt")), "log10", [try div(try div(try mul(try mul(try mul(v_2, v_2), v_2), v_2), (try mul(try get((try K("Sparc")), "G_NEWTON"), try get(g_2, "mass")))), try get((try K("Galaxies")), "A0_DATA"))])
+        return V.null
+      }))])
       var med_0: V = V.null; med_0 = try sel(truthy(try m_empty(implied_0)), V.num(Double.nan), try elem(implied_0, try m_floor((try div(try len(implied_0), 2.0)))))
       try call(s_0, "line_width", [1.0])
       for e1 in try items(implied_0) {
@@ -14902,33 +14769,21 @@ enum C_Galaxies {
       try call(s_0, "stroke_style", [try get((try K("Galaxies")), "BTFRC")])
       try call(s_0, "line_width", [1.5])
       try call(s_0, "dash", [list(2.0, 4.0)])
-      try get(s_0, "begin_path")
-      l_0 = XMIN_0
-      while truthy(try le(l_0, try add(XMAX_0, 0.000001))) {
-        if truthy(V.b(try eq(l_0, XMIN_0))) {
-          try call(s_0, "move_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try mul(0.5, l_0)])])
-        } else {
-          try call(s_0, "line_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try mul(0.5, l_0)])])
-        }
-        l_0 = try add(l_0, 0.05)
-      }
-      try get(s_0, "stroke")
+      try call((try K("Galaxies")), "curve", [s_0, X_0, Y_0, V.fn({ (a3: [V]) throws -> V in
+        var l_2: V = arg(a3, 0);
+        return try mul(0.5, l_2)
+        return V.null
+      }), XMIN_0, XMAX_0, 0.05])
       try call(s_0, "dash", [list()])
       try call(s_0, "stroke_style", [try get((try K("Galaxies")), "MODEL")])
       try call(s_0, "line_width", [1.2])
       try call(s_0, "alpha", [0.4])
       try call(s_0, "dash", [list(5.0, 4.0)])
-      try get(s_0, "begin_path")
-      l_0 = XMIN_0
-      while truthy(try le(l_0, try add(XMAX_0, 0.000001))) {
-        if truthy(V.b(try eq(l_0, XMIN_0))) {
-          try call(s_0, "move_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try invoke(law_drawn_0, [l_0])])])
-        } else {
-          try call(s_0, "line_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [try invoke(law_drawn_0, [l_0])])])
-        }
-        l_0 = try add(l_0, 0.02)
-      }
-      try get(s_0, "stroke")
+      try call((try K("Galaxies")), "curve", [s_0, X_0, Y_0, V.fn({ (a3: [V]) throws -> V in
+        var l_2: V = arg(a3, 0);
+        return try invoke(law_drawn_0, [l_2])
+        return V.null
+      }), XMIN_0, XMAX_0, 0.02])
       try call(s_0, "dash", [list()])
       try call(s_0, "alpha", [1.0])
       var landed_0: V = V.null; landed_0 = try elem(possible_0, 0.0)
@@ -15088,14 +14943,11 @@ enum C_Galaxies {
           }
         }
       }
-      var total_0: V = V.null; total_0 = 0.0
-      for e1 in try items(masks_0) {
-        var m_1: V = e1
-        total_0 = try add(total_0, try elem(tally_0, m_1))
-      }
-      if truthy(V.b(try eq(total_0, 0.0))) {
-        total_0 = 1.0
-      }
+      var total_0: V = V.null; total_0 = try call((try K("Fmt")), "max", [try m_reduce(masks_0, 0.0, V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0); var m_2: V = arg(a3, 1);
+        return try add(t_2, try elem(tally_0, m_2))
+        return V.null
+      })), 1.0])
       var counts_0: V = V.null; counts_0 = try call((try K("Expr")), "sorted", [try m_map(masks_0, V.fn({ (a3: [V]) throws -> V in
         var m_2: V = arg(a3, 0);
         return try sub(0.0, try elem(tally_0, m_2))
@@ -15180,18 +15032,16 @@ enum C_Galaxies {
     })
     c.statik("single", { (this_: V, a1: [V]) throws -> V in
       var m_0: V = arg(a1, 0);
-      var n_0: V = V.null; n_0 = 0.0
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get((try K("Galaxies")), "FREEDOMS"))) {
-          var i_1: V = V.num(i1)
-          if truthy(try call((try K("Galaxies")), "bit", [m_0, i_1])) {
-            n_0 = try add(n_0, 1.0)
-          }
-          i1 += 1
-        }
-      }
-      return V.b(try eq(n_0, 1.0))
+      return V.b(try eq(try len(try call((try K("Galaxies")), "freedoms_in", [m_0])), 1.0))
+      return V.null
+    })
+    c.statik("freedoms_in", { (this_: V, a1: [V]) throws -> V in
+      var m_0: V = arg(a1, 0);
+      return try filt(rng(try len(try get((try K("Galaxies")), "FREEDOMS"))), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try call((try K("Galaxies")), "bit", [m_0, i_2])
+        return V.null
+      }))
       return V.null
     })
     c.statik("ratio_at", { (this_: V, a1: [V]) throws -> V in
@@ -15366,25 +15216,17 @@ enum C_Galaxies {
           i1 += 1
         }
       }
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(n_0) {
-          var k_1: V = V.num(i1)
-          try m_push(out_0, try sub(try sub(n_0, 1.0), k_1))
-          i1 += 1
-        }
-      }
-      do {
-        var i1: Double = 0
-        while i1 < num(try get((try K("Galaxies")), "SETTLE")) {
-          var k_1: V = V.num(i1)
-          var f_1: V = V.null; f_1 = try div((try add(k_1, 1.0)), try get((try K("Galaxies")), "SETTLE"))
-          try m_push(out_0, try m_round((try mul(try mul(try mul(rest_0, f_1), f_1), (try sub(3.0, try mul(2.0, f_1)))))))
-          i1 += 1
-        }
-      }
-      return out_0
+      var down_0: V = V.null; down_0 = try m_map(rng(n_0), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return try sub(try sub(n_0, 1.0), k_2)
+        return V.null
+      }))
+      return try m_concat(down_0, try m_map(rng(try get((try K("Galaxies")), "SETTLE")), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        var f_2: V = V.null; f_2 = try div((try add(k_2, 1.0)), try get((try K("Galaxies")), "SETTLE"))
+        return try m_round((try mul(try mul(try mul(rest_0, f_2), f_2), (try sub(3.0, try mul(2.0, f_2))))))
+        return V.null
+      })))
       return V.null
     })
     c.statik("of", { (this_: V, a1: [V]) throws -> V in
@@ -15431,17 +15273,11 @@ enum C_Galaxies {
           i1 += 1
         }
       }
-      var ids_0: V = V.null; ids_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get((try K("Sparc")), "names"))) {
-          var g_1: V = V.num(i1)
-          if truthy(try ge((try orElse(try get(counts_0, Name(try str(V.s(cat("", try str(g_1), ""))))), 0.0)), 12.0)) {
-            try m_push(ids_0, g_1)
-          }
-          i1 += 1
-        }
-      }
+      var ids_0: V = V.null; ids_0 = try filt(rng(try len(try get((try K("Sparc")), "names"))), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        return try ge((try orElse(try get(counts_0, Name(try str(V.s(cat("", try str(g_2), ""))))), 0.0)), 12.0)
+        return V.null
+      }))
       var tops_0: V = V.null; tops_0 = makeNode()
       do {
         var i1: Double = 0
@@ -15457,16 +15293,11 @@ enum C_Galaxies {
         return try get(tops_0, Name(try str(V.s(cat("", try str(g_2), "")))))
         return V.null
       }))
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(want_0) {
-          var k_1: V = V.num(i1)
-          try m_push(out_0, try elem(sorted_0, try m_round((try div(try mul((try sub(try len(sorted_0), 1.0)), k_1), (try sub(want_0, 1.0)))))))
-          i1 += 1
-        }
-      }
-      return out_0
+      return try m_map(rng(want_0), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return try elem(sorted_0, try m_round((try div(try mul((try sub(try len(sorted_0), 1.0)), k_2), (try sub(want_0, 1.0))))))
+        return V.null
+      }))
       return V.null
     })
     c.statik("simulated", { (this_: V, a1: [V]) throws -> V in
@@ -15487,19 +15318,11 @@ enum C_Galaxies {
     })
     c.statik("rows_in", { (this_: V, a1: [V]) throws -> V in
       var m_0: V = arg(a1, 0); var g_0: V = arg(a1, 1);
-      var col_0: V = V.null; col_0 = try get(try get(m_0, "columns"), Name(try str(V.s(cat("galaxy")))))
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(m_0, "rows")) {
-          var i_1: V = V.num(i1)
-          if truthy(V.b(try eq(try elem(col_0, i_1), g_0))) {
-            try m_push(out_0, i_1)
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try filt(rng(try get(m_0, "rows")), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return V.b(try eq(try elem(try get(try get(m_0, "columns"), Name(try str(V.s(cat("galaxy"))))), i_2), g_0))
+        return V.null
+      }))
       return V.null
     })
     c.statik("off_of", { (this_: V, a1: [V]) throws -> V in
@@ -16184,25 +16007,7 @@ enum C_Galaxies {
       try call(s_0, "fill_style", [try get((try K("Galaxies")), "FAINT")])
       try call(s_0, "font", [V.s(cat("11px ui-monospace, monospace"))])
       try call(s_0, "text_align", [V.s(cat("center"))])
-      var l_0: V = V.null; l_0 = XMIN_0
-      while truthy(try le(l_0, XMAX_0)) {
-        try get(s_0, "begin_path")
-        try call(s_0, "move_to", [try invoke(X_0, [l_0]), by0_0])
-        try call(s_0, "line_to", [try invoke(X_0, [l_0]), by1_0])
-        try get(s_0, "stroke")
-        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_0), "")), try invoke(X_0, [l_0]), try add(by1_0, 16.0)])
-        l_0 = try add(l_0, 1.0)
-      }
-      try call(s_0, "text_align", [V.s(cat("right"))])
-      l_0 = YMIN_0
-      while truthy(try le(l_0, YMAX_0)) {
-        try get(s_0, "begin_path")
-        try call(s_0, "move_to", [bx0_0, try invoke(Y_0, [l_0])])
-        try call(s_0, "line_to", [bx1_0, try invoke(Y_0, [l_0])])
-        try get(s_0, "stroke")
-        try call(s_0, "fill_text", [V.s(cat("10^", try str(l_0), "")), try sub(bx0_0, 8.0), try add(try invoke(Y_0, [l_0]), 4.0)])
-        l_0 = try add(l_0, 1.0)
-      }
+      try call((try K("Galaxies")), "decades", [s_0, X_0, Y_0, list(bx0_0, by0_0, bx1_0, by1_0), list(XMIN_0, XMAX_0, YMIN_0, YMAX_0), 16.0])
       var lg_0: V = V.null; lg_0 = V.fn({ (a2: [V]) throws -> V in
         var v_1: V = arg(a2, 0);
         return try call((try K("Fmt")), "log10", [try div(v_1, try get((try K("Galaxies")), "A0_DATA"))])
@@ -16246,19 +16051,11 @@ enum C_Galaxies {
       var a0_0: V = V.null; a0_0 = try get(try get(sim_0, "header"), Name(try str(V.s(cat("a0")))))
       try call(s_0, "stroke_style", [try get((try K("Galaxies")), "MODEL")])
       try call(s_0, "line_width", [2.0])
-      try get(s_0, "begin_path")
-      l_0 = XMIN_0
-      while truthy(try le(l_0, try add(XMAX_0, 0.000001))) {
-        var gN_0: V = V.null; gN_0 = try mul(try power(10.0, l_0), try get((try K("Galaxies")), "A0_DATA"))
-        var y_0: V = V.null; y_0 = try invoke(lg_0, [try call((try K("Law")), "boost", [gN_0, a0_0])])
-        if truthy(V.b(try eq(l_0, XMIN_0))) {
-          try call(s_0, "move_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [y_0])])
-        } else {
-          try call(s_0, "line_to", [try invoke(X_0, [l_0]), try invoke(Y_0, [y_0])])
-        }
-        l_0 = try add(l_0, 0.02)
-      }
-      try get(s_0, "stroke")
+      try call((try K("Galaxies")), "curve", [s_0, X_0, Y_0, V.fn({ (a3: [V]) throws -> V in
+        var l_2: V = arg(a3, 0);
+        return try invoke(lg_0, [try call((try K("Law")), "boost", [try mul(try power(10.0, l_2), try get((try K("Galaxies")), "A0_DATA")), a0_0])])
+        return V.null
+      }), XMIN_0, XMAX_0, 0.02])
       try call(s_0, "stroke_style", [try get((try K("Galaxies")), "NEWT")])
       try call(s_0, "dash", [list(6.0, 5.0)])
       try get(s_0, "begin_path")
@@ -16501,12 +16298,11 @@ enum C_Plan {
       return V.null
     })
     c.getter("total", { (this_: V, a1: [V]) throws -> V in
-      var sum_0: V = V.null; sum_0 = 0.0
-      for e1 in try items(try get(this_, "parts")) {
-        var p_1: V = e1
-        sum_0 = try add(sum_0, try elem(p_1, 1.0))
-      }
-      return sum_0
+      return try m_sum(try m_map(try get(this_, "parts"), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0);
+        return try elem(p_2, 1.0)
+        return V.null
+      })))
       return V.null
     })
     c.getter("per_source", { (this_: V, a1: [V]) throws -> V in
@@ -16711,35 +16507,26 @@ enum C_Simulation {
           i1 += 1
         }
       }
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get((try K("Sparc")), "names"))) {
-          var g_1: V = V.num(i1)
-          if truthy(try ge((try orElse(try get(counts_0, Name(try str(V.s(cat("", try str(g_1), ""))))), 0.0)), 3.0)) {
-            try m_push(out_0, g_1)
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try filt(rng(try len(try get((try K("Sparc")), "names"))), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        return try ge((try orElse(try get(counts_0, Name(try str(V.s(cat("", try str(g_2), ""))))), 0.0)), 3.0)
+        return V.null
+      }))
       return V.null
     })
     c.statik("rows_of", { (this_: V, a1: [V]) throws -> V in
       var g_0: V = arg(a1, 0);
       var C_0: V = V.null; C_0 = try get(try get((try K("Sparc")), "curves"), "columns")
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(try get((try K("Sparc")), "curves"), "rows")) {
-          var i_1: V = V.num(i1)
-          if truthy(try and_(try and_(V.b(try eq(try elem(try get(C_0, Name(try str(V.s(cat("galaxy"))))), i_1), g_0)), try gt(try elem(try get(C_0, Name(try str(V.s(cat("R"))))), i_1), 0.0)), try gt(try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_1), 0.0))) {
-            try m_push(out_0, list(try elem(try get(C_0, Name(try str(V.s(cat("R"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("e_Vobs"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("Vgas"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("Vdisk"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("Vbul"))))), i_1), try sel(truthy(try call((try K("Simulation")), "kept", [g_0, try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_1), try elem(try get(C_0, Name(try str(V.s(cat("e_Vobs"))))), i_1)])), 1.0, 0.0)))
-          }
-          i1 += 1
-        }
-      }
-      return try m_sorted_by(out_0, V.fn({ (a3: [V]) throws -> V in
+      var mine_0: V = V.null; mine_0 = try filt(rng(try get(try get((try K("Sparc")), "curves"), "rows")), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try and_(try and_(V.b(try eq(try elem(try get(C_0, Name(try str(V.s(cat("galaxy"))))), i_2), g_0)), try gt(try elem(try get(C_0, Name(try str(V.s(cat("R"))))), i_2), 0.0)), try gt(try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_2), 0.0))
+        return V.null
+      }))
+      return try m_sorted_by(try m_map(mine_0, V.fn({ (a4: [V]) throws -> V in
+        var i_3: V = arg(a4, 0);
+        return list(try elem(try get(C_0, Name(try str(V.s(cat("R"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("e_Vobs"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("Vgas"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("Vdisk"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("Vbul"))))), i_3), try sel(truthy(try call((try K("Simulation")), "kept", [g_0, try elem(try get(C_0, Name(try str(V.s(cat("Vobs"))))), i_3), try elem(try get(C_0, Name(try str(V.s(cat("e_Vobs"))))), i_3)])), 1.0, 0.0))
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
         var r_2: V = arg(a3, 0);
         return try elem(r_2, 0.0)
         return V.null
@@ -16749,17 +16536,11 @@ enum C_Simulation {
     c.statik("edges_of", { (this_: V, a1: [V]) throws -> V in
       var rs_0: V = arg(a1, 0);
       var n_0: V = V.null; n_0 = try len(rs_0)
-      var out_0: V = V.null; out_0 = list(0.0, try div(try elem(try elem(rs_0, 0.0), 0.0), 2.0))
-      do {
-        var i1: Double = 0
-        while i1 < num(try sub(n_0, 1.0)) {
-          var i_1: V = V.num(i1)
-          try m_push(out_0, try div((try add(try elem(try elem(rs_0, i_1), 0.0), try elem(try elem(rs_0, try add(i_1, 1.0)), 0.0))), 2.0))
-          i1 += 1
-        }
-      }
-      try m_push(out_0, try add(try elem(try elem(rs_0, try sub(n_0, 1.0)), 0.0), try div((try sub(try elem(try elem(rs_0, try sub(n_0, 1.0)), 0.0), try elem(try elem(rs_0, try sub(n_0, 2.0)), 0.0))), 2.0)))
-      return out_0
+      return try m_concat(try m_concat(list(0.0, try div(try elem(try elem(rs_0, 0.0), 0.0), 2.0)), try m_map(rng(try sub(n_0, 1.0)), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try div((try add(try elem(try elem(rs_0, i_2), 0.0), try elem(try elem(rs_0, try add(i_2, 1.0)), 0.0))), 2.0)
+        return V.null
+      }))), list(try add(try elem(try elem(rs_0, try sub(n_0, 1.0)), 0.0), try div((try sub(try elem(try elem(rs_0, try sub(n_0, 1.0)), 0.0), try elem(try elem(rs_0, try sub(n_0, 2.0)), 0.0))), 2.0))))
       return V.null
     })
     c.statik("bulge_arrives", { (this_: V, a1: [V]) throws -> V in
@@ -17199,16 +16980,11 @@ enum C_Simulation {
           var w_disc_1: V = V.null; w_disc_1 = try call((try K("Simulation")), "nnls", [K_1, want_disc_1])
           var sum_at_1: V = V.null; sum_at_1 = V.fn({ (a3: [V]) throws -> V in
             var row_of_2: V = arg(a3, 0); var w_2: V = arg(a3, 1);
-            var s_2: V = V.null; s_2 = 0.0
-            do {
-              var i3: Double = 0
-              while i3 < num(n_1) {
-                var a_3: V = V.num(i3)
-                s_2 = try add(s_2, try mul(try invoke(row_of_2, [a_3]), try elem(w_2, a_3)))
-                i3 += 1
-              }
-            }
-            return s_2
+            return try m_reduce(rng(n_1), 0.0, V.fn({ (a5: [V]) throws -> V in
+              var s_4: V = arg(a5, 0); var a_4: V = arg(a5, 1);
+              return try add(s_4, try mul(try invoke(row_of_2, [a_4]), try elem(w_2, a_4)))
+              return V.null
+            }))
             return V.null
           })
           var here_1: V = V.null; here_1 = list()
@@ -17245,27 +17021,20 @@ enum C_Simulation {
           try m_push(try get(this_, "w_discs"), w_disc_1)
           try m_push(try get(this_, "w_gases"), w_gas_1)
           try m_push(try get(this_, "repro"), try sel(truthy(try gt(top_1, 0.0)), try div(worst_1, top_1), 0.0))
-          var tab_1: V = V.null; tab_1 = list()
-          do {
-            var i2: Double = 0
-            while i2 < num(try get((try K("Simulation")), "TABLE")) {
-              var t_2: V = V.num(i2)
-              var base_2: V = V.null; base_2 = try add(try elem(try get(this_, "tabled_at"), j_1), try mul(t_2, n_1))
-              var gd_2: V = V.null; gd_2 = try invoke(sum_at_1, [V.fn({ (a5: [V]) throws -> V in
-                var a_4: V = arg(a5, 0);
-                return try elem(pulls_0, try add(base_2, a_4))
-                return V.null
-              }), w_disc_1])
-              var gg_2: V = V.null; gg_2 = try invoke(sum_at_1, [V.fn({ (a5: [V]) throws -> V in
-                var a_4: V = arg(a5, 0);
-                return try elem(pulls_0, try add(base_2, a_4))
-                return V.null
-              }), w_gas_1])
-              try m_push(tab_1, list(try call(this_, "table_r", [j_1, t_2]), gd_2, gg_2, try call((try K("Simulation")), "bulge_at", [rs_1, try call(this_, "table_r", [j_1, t_2])])))
-              i2 += 1
-            }
-          }
-          try m_push(try get(this_, "tables"), tab_1)
+          try m_push(try get(this_, "tables"), try m_map(rng(try get((try K("Simulation")), "TABLE")), V.fn({ (a4: [V]) throws -> V in
+            var t_3: V = arg(a4, 0);
+            var base_3: V = V.null; base_3 = try add(try elem(try get(this_, "tabled_at"), j_1), try mul(t_3, n_1))
+            return list(try call(this_, "table_r", [j_1, t_3]), try invoke(sum_at_1, [V.fn({ (a6: [V]) throws -> V in
+              var a_5: V = arg(a6, 0);
+              return try elem(pulls_0, try add(base_3, a_5))
+              return V.null
+            }), w_disc_1]), try invoke(sum_at_1, [V.fn({ (a6: [V]) throws -> V in
+              var a_5: V = arg(a6, 0);
+              return try elem(pulls_0, try add(base_3, a_5))
+              return V.null
+            }), w_gas_1]), try call((try K("Simulation")), "bulge_at", [rs_1, try call(this_, "table_r", [j_1, t_3])]))
+            return V.null
+          })))
           i1 += 1
         }
       }
@@ -17281,28 +17050,20 @@ enum C_Simulation {
           var j_1: V = V.num(i1)
           var rs_1: V = V.null; rs_1 = try elem(try get(this_, "rows"), j_1)
           var n_1: V = V.null; n_1 = try sub(try len(try elem(try get(this_, "edges"), j_1)), 1.0)
-          var here_1: V = V.null; here_1 = list()
-          do {
-            var i2: Double = 0
-            while i2 < num(try len(rs_1)) {
-              var i_2: V = V.num(i2)
-              var sd_2: V = V.null; sd_2 = 0.0
-              var sg_2: V = V.null; sg_2 = 0.0
-              do {
-                var i3: Double = 0
-                while i3 < num(n_1) {
-                  var a_3: V = V.num(i3)
-                  var k_3: V = V.null; k_3 = try elem(spulls_0, try add(try add(try elem(try get(this_, "measured_at"), j_1), try mul(i_2, n_1)), a_3))
-                  sd_2 = try add(sd_2, try mul(k_3, try elem(try elem(try get(this_, "w_discs"), j_1), a_3)))
-                  sg_2 = try add(sg_2, try mul(k_3, try elem(try elem(try get(this_, "w_gases"), j_1), a_3)))
-                  i3 += 1
-                }
-              }
-              try m_push(here_1, list(sd_2, sg_2, try call((try K("Simulation")), "bulge_arrives", [rs_1, try elem(try elem(rs_1, i_2), 0.0), try elem(try get(this_, "thick"), j_1)])))
-              i2 += 1
-            }
-          }
-          try m_push(try get(this_, "seen_rows"), here_1)
+          var seen_1: V = V.null; seen_1 = V.fn({ (a3: [V]) throws -> V in
+            var i_2: V = arg(a3, 0); var w_2: V = arg(a3, 1);
+            return try m_reduce(rng(n_1), 0.0, V.fn({ (a5: [V]) throws -> V in
+              var s_4: V = arg(a5, 0); var a_4: V = arg(a5, 1);
+              return try add(s_4, try mul(try elem(spulls_0, try add(try add(try elem(try get(this_, "measured_at"), j_1), try mul(i_2, n_1)), a_4)), try elem(w_2, a_4)))
+              return V.null
+            }))
+            return V.null
+          })
+          try m_push(try get(this_, "seen_rows"), try m_map(rng(try len(rs_1)), V.fn({ (a4: [V]) throws -> V in
+            var i_3: V = arg(a4, 0);
+            return list(try invoke(seen_1, [i_3, try elem(try get(this_, "w_discs"), j_1)]), try invoke(seen_1, [i_3, try elem(try get(this_, "w_gases"), j_1)]), try call((try K("Simulation")), "bulge_arrives", [rs_1, try elem(try elem(rs_1, i_3), 0.0), try elem(try get(this_, "thick"), j_1)]))
+            return V.null
+          })))
           i1 += 1
         }
       }
@@ -17423,59 +17184,48 @@ enum C_Simulation {
       return try sel(truthy(try gt(gN_0, 0.0)), try call((try K("Law")), "boost", [gN_0, try get(this_, "a0")]), (try sel(truthy(try lt(gN_0, 0.0)), try sub(0.0, try call((try K("Law")), "boost", [try sub(0.0, gN_0), try get(this_, "a0")])), 0.0)))
       return V.null
     })
+    c.statik("laid", { (this_: V, a1: [V]) throws -> V in
+      var records_0: V = arg(a1, 0);
+      return try m_reduce(records_0, list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var r_2: V = arg(a3, 1);
+        return try m_reduce(r_2, out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var v_4: V = arg(a5, 1);
+          return try m_push(o_4, v_4)
+          return V.null
+        }))
+        return V.null
+      }))
+      return V.null
+    })
     c.getter("points", { (this_: V, a1: [V]) throws -> V in
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get(this_, "ids"))) {
-          var j_1: V = V.num(i1)
-          do {
-            var i2: Double = 0
-            while i2 < num(try len(try elem(try get(this_, "rows"), j_1))) {
-              var i_2: V = V.num(i2)
-              var p_2: V = V.null; p_2 = try elem(try elem(try get(this_, "at_rows"), j_1), i_2)
-              for e3 in try items(list(j_1, try elem(try elem(try elem(try get(this_, "rows"), j_1), i_2), 0.0), try elem(p_2, 0.0), try elem(p_2, 1.0), try elem(p_2, 2.0), 0.0)) {
-                var v_3: V = e3
-                try m_push(out_0, v_3)
-              }
-              i2 += 1
-            }
-          }
-          i1 += 1
-        }
-      }
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get(this_, "ids"))) {
-          var j_1: V = V.num(i1)
-          for e2 in try items(try elem(try get(this_, "tables"), j_1)) {
-            var t_2: V = e2
-            for e3 in try items(list(j_1, try elem(t_2, 0.0), try elem(t_2, 1.0), try elem(t_2, 2.0), try elem(t_2, 3.0), 0.0)) {
-              var v_3: V = e3
-              try m_push(out_0, v_3)
-            }
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      var measured_0: V = V.null; measured_0 = try m_reduce(rng(try len(try get(this_, "ids"))), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var j_2: V = arg(a3, 1);
+        return try m_reduce(rng(try len(try elem(try get(this_, "rows"), j_2))), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var i_4: V = arg(a5, 1);
+          return try m_push(o_4, list(j_2, try elem(try elem(try elem(try get(this_, "rows"), j_2), i_4), 0.0), try elem(try elem(try elem(try get(this_, "at_rows"), j_2), i_4), 0.0), try elem(try elem(try elem(try get(this_, "at_rows"), j_2), i_4), 1.0), try elem(try elem(try elem(try get(this_, "at_rows"), j_2), i_4), 2.0), 0.0))
+          return V.null
+        }))
+        return V.null
+      }))
+      var tabled_0: V = V.null; tabled_0 = try m_reduce(rng(try len(try get(this_, "ids"))), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var j_2: V = arg(a3, 1);
+        return try m_reduce(try elem(try get(this_, "tables"), j_2), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var t_4: V = arg(a5, 1);
+          return try m_push(o_4, list(j_2, try elem(t_4, 0.0), try elem(t_4, 1.0), try elem(t_4, 2.0), try elem(t_4, 3.0), 0.0))
+          return V.null
+        }))
+        return V.null
+      }))
+      return try call((try K("Simulation")), "laid", [try m_concat(measured_0, tabled_0)])
       return V.null
     })
     c.method("nuisances", { (this_: V, a1: [V]) throws -> V in
       var fitted_0: V = arg(a1, 0);
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get(this_, "ids"))) {
-          var j_1: V = V.num(i1)
-          try m_push(out_0, try sel(truthy(fitted_0), try elem(try get(this_, "best_y"), j_1), try get((try K("Sparc")), "YD")))
-          try m_push(out_0, try sel(truthy(fitted_0), try elem(try get(this_, "best_b"), j_1), try get((try K("Sparc")), "YB")))
-          try m_push(out_0, try get(this_, "a0"))
-          try m_push(out_0, 0.0)
-          i1 += 1
-        }
-      }
-      return out_0
+      return try call((try K("Simulation")), "laid", [try m_map(rng(try len(try get(this_, "ids"))), V.fn({ (a3: [V]) throws -> V in
+        var j_2: V = arg(a3, 0);
+        return list(try sel(truthy(fitted_0), try elem(try get(this_, "best_y"), j_2), try get((try K("Sparc")), "YD")), try sel(truthy(fitted_0), try elem(try get(this_, "best_b"), j_2), try get((try K("Sparc")), "YB")), try get(this_, "a0"), 0.0)
+        return V.null
+      }))])
       return V.null
     })
     c.field("best_y", { (this_: V) throws -> V in return list() })
@@ -17554,21 +17304,13 @@ enum C_Simulation {
     c.getter("searches", { (this_: V, a1: [V]) throws -> V in
       var S_0: V = V.null; S_0 = try get(try get((try K("Sparc")), "sample"), "columns")
       var pts_0: V = V.null; pts_0 = try get(this_, "fit_points")
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try len(try get(this_, "ids"))) {
-          var j_1: V = V.num(i1)
-          var g_1: V = V.null; g_1 = try elem(try get(this_, "ids"), j_1)
-          var stop_1: V = V.null; stop_1 = try sel(truthy(try lt(try add(j_1, 1.0), try len(try get(this_, "ids")))), try elem(try get(this_, "fit_at"), try add(j_1, 1.0)), try m_floor((try div(try len(pts_0), 8.0))))
-          for e2 in try items(list(try elem(try get(this_, "fit_at"), j_1), try sub(stop_1, try elem(try get(this_, "fit_at"), j_1)), try elem(try get(S_0, Name(try str(V.s(cat("D"))))), g_1), try elem(try get(S_0, Name(try str(V.s(cat("e_D"))))), g_1), try elem(try get(S_0, Name(try str(V.s(cat("Inc"))))), g_1), try elem(try get(S_0, Name(try str(V.s(cat("e_Inc"))))), g_1), try get(this_, "a0"), try sel(truthy(try call(this_, "has_bulge", [j_1])), 1.0, 0.0), try elem(try get(this_, "centre_y"), j_1), try elem(try get(this_, "centre_b"), j_1), try elem(try get(this_, "centre_d"), j_1), try elem(try get(this_, "centre_i"), j_1), try mul(try get((try K("Simulation")), "STEP_Y"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_D"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_I"), try get(this_, "spacing")), 0.0)) {
-            var v_2: V = e2
-            try m_push(out_0, v_2)
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try call((try K("Simulation")), "laid", [try m_map(rng(try len(try get(this_, "ids"))), V.fn({ (a3: [V]) throws -> V in
+        var j_2: V = arg(a3, 0);
+        var g_2: V = V.null; g_2 = try elem(try get(this_, "ids"), j_2)
+        var stop_2: V = V.null; stop_2 = try sel(truthy(try lt(try add(j_2, 1.0), try len(try get(this_, "ids")))), try elem(try get(this_, "fit_at"), try add(j_2, 1.0)), try m_floor((try div(try len(pts_0), 8.0))))
+        return list(try elem(try get(this_, "fit_at"), j_2), try sub(stop_2, try elem(try get(this_, "fit_at"), j_2)), try elem(try get(S_0, Name(try str(V.s(cat("D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("Inc"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_Inc"))))), g_2), try get(this_, "a0"), try sel(truthy(try call(this_, "has_bulge", [j_2])), 1.0, 0.0), try elem(try get(this_, "centre_y"), j_2), try elem(try get(this_, "centre_b"), j_2), try elem(try get(this_, "centre_d"), j_2), try elem(try get(this_, "centre_i"), j_2), try mul(try get((try K("Simulation")), "STEP_Y"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_D"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_I"), try get(this_, "spacing")), 0.0)
+        return V.null
+      }))])
       return V.null
     })
     c.method("combo", { (this_: V, a1: [V]) throws -> V in
@@ -17748,12 +17490,11 @@ enum C_Simulation {
       return V.null
     })
     c.getter("most_steps", { (this_: V, a1: [V]) throws -> V in
-      var m_0: V = V.null; m_0 = 0.0
-      for e1 in try items(try get(this_, "steps")) {
-        var n_1: V = e1
-        m_0 = try call((try K("Fmt")), "max", [m_0, n_1])
-      }
-      return m_0
+      return try m_reduce(try get(this_, "steps"), 0.0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0); var n_2: V = arg(a3, 1);
+        return try call((try K("Fmt")), "max", [m_2, n_2])
+        return V.null
+      }))
       return V.null
     })
     c.field("film_sources", { (this_: V) throws -> V in return list() })
@@ -17791,25 +17532,20 @@ enum C_Simulation {
       var per_pixel_0: V = V.null; per_pixel_0 = try mul(try mul(try div(try mul(try div(fov_0, P_0), V.num(Double.pi)), 180.0), D_0), 1000.0)
       var light_0: V = V.null; light_0 = try get(try get(I_0, "columns"), Name(try str(V.s(cat("light")))))
       var base_0: V = V.null; base_0 = try mul(try mul(g_0, P_0), P_0)
-      var edge_0: V = V.null; edge_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(P_0) {
-          var r_1: V = V.num(i1)
-          do {
-            var i2: Double = 0
-            while i2 < num(P_0) {
-              var c_2: V = V.num(i2)
-              if truthy(try or_(try or_(try or_(try lt(r_1, try get((try K("Simulation")), "SKY_EDGE")), try lt(c_2, try get((try K("Simulation")), "SKY_EDGE"))), try ge(r_1, try sub(P_0, try get((try K("Simulation")), "SKY_EDGE")))), try ge(c_2, try sub(P_0, try get((try K("Simulation")), "SKY_EDGE"))))) {
-                try m_push(edge_0, try elem(light_0, try add(try add(base_0, try mul(r_1, P_0)), c_2)))
-              }
-              i2 += 1
-            }
-          }
-          i1 += 1
-        }
-      }
-      var sky_0: V = V.null; sky_0 = try call((try K("Fmt")), "median", [edge_0])
+      var on_edge_0: V = V.null; on_edge_0 = V.fn({ (a2: [V]) throws -> V in
+        var r_1: V = arg(a2, 0); var c_1: V = arg(a2, 1);
+        return try or_(try or_(try or_(try lt(r_1, try get((try K("Simulation")), "SKY_EDGE")), try lt(c_1, try get((try K("Simulation")), "SKY_EDGE"))), try ge(r_1, try sub(P_0, try get((try K("Simulation")), "SKY_EDGE")))), try ge(c_1, try sub(P_0, try get((try K("Simulation")), "SKY_EDGE"))))
+        return V.null
+      })
+      var sky_0: V = V.null; sky_0 = try call((try K("Fmt")), "median", [try m_map(try filt(rng(try mul(P_0, P_0)), V.fn({ (a4: [V]) throws -> V in
+        var k_3: V = arg(a4, 0);
+        return try invoke(on_edge_0, [try m_floor((try div(k_3, P_0))), try mod(k_3, P_0)])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return try elem(light_0, try add(base_0, k_2))
+        return V.null
+      }))])
       var reach_0: V = V.null; reach_0 = try elem(try get(this_, "reach"), j_0)
       var east_0: V = V.null; east_0 = V.fn({ (a2: [V]) throws -> V in
         var c_1: V = arg(a2, 0);
@@ -17944,15 +17680,11 @@ enum C_Simulation {
           try m_push(try get(this_, "film_angles"), V.num(Double.nan))
           var es_1: V = V.null; es_1 = try elem(try get(this_, "edges"), j_1)
           var rs_1: V = V.null; rs_1 = try elem(try get(this_, "rows"), j_1)
-          var masses_1: V = V.null; masses_1 = list()
-          do {
-            var i2: Double = 0
-            while i2 < num(try sub(try len(es_1), 1.0)) {
-              var a_2: V = V.num(i2)
-              try m_push(masses_1, list(try elem(es_1, a_2), try elem(es_1, try add(a_2, 1.0)), try add(try mul(try get((try K("Sparc")), "YD"), try elem(try elem(try get(this_, "w_discs"), j_1), a_2)), try elem(try elem(try get(this_, "w_gases"), j_1), a_2))))
-              i2 += 1
-            }
-          }
+          var masses_1: V = V.null; masses_1 = try m_map(rng(try sub(try len(es_1), 1.0)), V.fn({ (a4: [V]) throws -> V in
+            var a_3: V = arg(a4, 0);
+            return list(try elem(es_1, a_3), try elem(es_1, try add(a_3, 1.0)), try add(try mul(try get((try K("Sparc")), "YD"), try elem(try elem(try get(this_, "w_discs"), j_1), a_3)), try elem(try elem(try get(this_, "w_gases"), j_1), a_3)))
+            return V.null
+          }))
           var last_1: V = V.null; last_1 = 0.0
           do {
             var i2: Double = 0
@@ -17966,13 +17698,12 @@ enum C_Simulation {
               i2 += 1
             }
           }
-          var run_1: V = V.null; run_1 = list()
-          var total_1: V = V.null; total_1 = 0.0
-          for e2 in try items(masses_1) {
-            var m_2: V = e2
-            total_1 = try add(total_1, try call((try K("Fmt")), "max", [try elem(m_2, 2.0), 0.0]))
-            try m_push(run_1, total_1)
-          }
+          var run_1: V = V.null; run_1 = try m_reduce(masses_1, list(), V.fn({ (a4: [V]) throws -> V in
+            var run_3: V = arg(a4, 0); var m_3: V = arg(a4, 1);
+            return try m_push(run_3, try add((try orElse(try m_last(run_3), 0.0)), try call((try K("Fmt")), "max", [try elem(m_3, 2.0), 0.0])))
+            return V.null
+          }))
+          var total_1: V = V.null; total_1 = try orElse(try m_last(run_1), 0.0)
           do {
             var i2: Double = 0
             while i2 < num(try get((try K("Simulation")), "FILM_STARS")) {
@@ -18000,20 +17731,15 @@ enum C_Simulation {
     })
     c.method("film_table", { (this_: V, a1: [V]) throws -> V in
       var felt_table_0: V = arg(a1, 0);
-      var out_0: V = V.null; out_0 = list()
-      for e1 in try items(try get(this_, "film_ids")) {
-        var g_1: V = e1
-        var j_1: V = V.null; j_1 = try m_index_of(try get(this_, "ids"), g_1)
-        do {
-          var i2: Double = 0
-          while i2 < num(try get((try K("Simulation")), "TABLE")) {
-            var t_2: V = V.num(i2)
-            try m_push(out_0, try elem(felt_table_0, try add(try mul(j_1, try get((try K("Simulation")), "TABLE")), t_2)))
-            i2 += 1
-          }
-        }
-      }
-      return out_0
+      return try m_reduce(try get(this_, "film_ids"), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var g_2: V = arg(a3, 1);
+        return try m_reduce(rng(try get((try K("Simulation")), "TABLE")), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var t_4: V = arg(a5, 1);
+          return try m_push(o_4, try elem(felt_table_0, try add(try mul(try m_index_of(try get(this_, "ids"), g_2), try get((try K("Simulation")), "TABLE")), t_4)))
+          return V.null
+        }))
+        return V.null
+      }))
       return V.null
     })
     c.method("film_runs", { (this_: V, a1: [V]) throws -> V in
@@ -18049,23 +17775,22 @@ enum C_Simulation {
       return V.null
     })
     c.getter("most_film_steps", { (this_: V, a1: [V]) throws -> V in
-      var m_0: V = V.null; m_0 = 0.0
-      for e1 in try items(try get(this_, "film_steps")) {
-        var n_1: V = e1
-        m_0 = try call((try K("Fmt")), "max", [m_0, n_1])
-      }
-      return m_0
+      return try m_reduce(try get(this_, "film_steps"), 0.0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0); var n_2: V = arg(a3, 1);
+        return try call((try K("Fmt")), "max", [m_2, n_2])
+        return V.null
+      }))
       return V.null
     })
     c.method("save", { (this_: V, a1: [V]) throws -> V in
       var felt0_0: V = arg(a1, 0); var felt1_0: V = arg(a1, 1); var stars_0: V = arg(a1, 2); var frames_0: V = arg(a1, 3);
       var S_0: V = V.null; S_0 = try get(try get((try K("Sparc")), "sample"), "columns")
       var T_0: V = V.null; T_0 = try get((try K("Simulation")), "TABLE")
-      var nrows_0: V = V.null; nrows_0 = 0.0
-      for e1 in try items(try get(this_, "rows")) {
-        var rs_1: V = e1
-        nrows_0 = try add(nrows_0, try len(rs_1))
-      }
+      var nrows_0: V = V.null; nrows_0 = try m_reduce(try get(this_, "rows"), 0.0, V.fn({ (a3: [V]) throws -> V in
+        var n_2: V = arg(a3, 0); var rs_2: V = arg(a3, 1);
+        return try add(n_2, try len(rs_2))
+        return V.null
+      }))
       var cols_0: V = V.null; cols_0 = makeNode()
       var names_0: V = V.null; names_0 = list(V.s(cat("galaxy")), V.s(cat("R")), V.s(cat("Vobs")), V.s(cat("e_Vobs")), V.s(cat("gd")), V.s(cat("gg")), V.s(cat("gb")), V.s(cat("v0")), V.s(cat("v1")), V.s(cat("vs")), V.s(cat("kept")))
       for e1 in try items(names_0) {
@@ -18521,19 +18246,15 @@ enum C_Formed {
       return V.null
     })
     c.getter("constants", { (this_: V, a1: [V]) throws -> V in
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "discs_n")) {
-          var g_1: V = V.num(i1)
-          for e2 in try items(list(try div(try call(this_, "GM", [g_1]), try get((try K("Formed")), "N")), try call(this_, "soft", [g_1]), try get(this_, "scale_a0"), try get((try K("Formed")), "DT"))) {
-            var v_2: V = e2
-            try m_push(out_0, v_2)
-          }
-          i1 += 1
-        }
-      }
-      return out_0
+      return try m_reduce(rng(try get(this_, "discs_n")), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var g_2: V = arg(a3, 1);
+        return try m_reduce(list(try div(try call(this_, "GM", [g_2]), try get((try K("Formed")), "N")), try call(this_, "soft", [g_2]), try get(this_, "scale_a0"), try get((try K("Formed")), "DT")), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var v_4: V = arg(a5, 1);
+          return try m_push(o_4, v_4)
+          return V.null
+        }))
+        return V.null
+      }))
       return V.null
     })
     c.method("accel_cpu", { (this_: V, a1: [V]) throws -> V in
@@ -18734,25 +18455,19 @@ enum C_Formed {
     c.method("save", { (this_: V, a1: [V]) throws -> V in
       var frames_0: V = arg(a1, 0);
       var G_0: V = V.null; G_0 = try get((try K("Formed")), "GRID")
-      var density_0: V = V.null; density_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "discs_n")) {
-          var g_1: V = V.num(i1)
-          for e2 in try items(frames_0) {
-            var f_2: V = e2
-            do {
-              var i3: Double = 0
-              while i3 < num(try mul(G_0, G_0)) {
-                var c_3: V = V.num(i3)
-                try m_push(density_0, try elem(f_2, try add(try mul(try mul(g_1, G_0), G_0), c_3)))
-                i3 += 1
-              }
-            }
-          }
-          i1 += 1
-        }
-      }
+      var density_0: V = V.null; density_0 = try m_reduce(rng(try get(this_, "discs_n")), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var g_2: V = arg(a3, 1);
+        return try m_reduce(frames_0, out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var f_4: V = arg(a5, 1);
+          return try m_reduce(rng(try mul(G_0, G_0)), o_4, V.fn({ (a7: [V]) throws -> V in
+            var oo_6: V = arg(a7, 0); var c_6: V = arg(a7, 1);
+            return try m_push(oo_6, try elem(f_4, try add(try mul(try mul(g_2, G_0), G_0), c_6)))
+            return V.null
+          }))
+          return V.null
+        }))
+        return V.null
+      }))
       var cols_0: V = V.null; cols_0 = makeNode()
       try set(cols_0, Name(try str(V.s(cat("density")))), density_0)
       var extra_0: V = V.null; extra_0 = makeNode()
@@ -18867,40 +18582,13 @@ enum C_Model {
     })
     c.statik("walk_names", { (this_: V, a1: [V]) throws -> V in
       var e_0: V = arg(a1, 0); var out_0: V = arg(a1, 1);
-      var k_0: V = V.null; k_0 = try get(e_0, "kind")
-      if truthy(try or_(V.b(try eq(k_0, V.s(cat("sym")))), V.b(try eq(k_0, V.s(cat("field")))))) {
-        if truthy(not(try m_contains(out_0, try get(e_0, "label")))) {
-          try m_push(out_0, try get(e_0, "label"))
-        }
-      } else {
-        if truthy(try or_(V.b(try eq(k_0, V.s(cat("add")))), V.b(try eq(k_0, V.s(cat("mul")))))) {
-          for e1 in try items(try get(e_0, "of")) {
-            var x_1: V = e1
-            try call((try K("Model")), "walk_names", [x_1, out_0])
-          }
-        } else {
-          if truthy(V.b(try eq(k_0, V.s(cat("pow"))))) {
-            try call((try K("Model")), "walk_names", [try get(e_0, "base"), out_0])
-            return try call((try K("Model")), "walk_names", [try get(e_0, "power"), out_0])
-          } else {
-            if truthy(try or_(try or_(try or_(try or_(V.b(try eq(k_0, V.s(cat("grad")))), V.b(try eq(k_0, V.s(cat("log"))))), V.b(try eq(k_0, V.s(cat("exp"))))), V.b(try eq(k_0, V.s(cat("root"))))), V.b(try eq(k_0, V.s(cat("limit")))))) {
-              return try call((try K("Model")), "walk_names", [try get(e_0, "base"), out_0])
-            } else {
-              if truthy(try or_(V.b(try eq(k_0, V.s(cat("choose")))), V.b(try eq(k_0, V.s(cat("gammaInc")))))) {
-                try call((try K("Model")), "walk_names", [try get(e_0, "first_"), out_0])
-                return try call((try K("Model")), "walk_names", [try get(e_0, "second_"), out_0])
-              } else {
-                if truthy(V.b(try eq(k_0, V.s(cat("call"))))) {
-                  var called_0: V = V.null; called_0 = V.s(cat("", try str(try get(e_0, "label")), "\\paren{...}"))
-                  if truthy(not(try m_contains(out_0, called_0))) {
-                    try m_push(out_0, called_0)
-                  }
-                  return try call((try K("Model")), "walk_names", [try get(e_0, "base"), out_0])
-                }
-              }
-            }
-          }
-        }
+      var name_0: V = V.null; name_0 = try sel(truthy(try get(e_0, "named")), try get(e_0, "label"), (try sel(truthy(V.b(try eq(try get(e_0, "kind"), V.s(cat("call"))))), V.s(cat("", try str(try get(e_0, "label")), "\\paren{...}")), V.null)))
+      if truthy(try and_(V.b(!(try eq(name_0, V.null))), not(try m_contains(out_0, name_0)))) {
+        try m_push(out_0, name_0)
+      }
+      for e1 in try items(try get(e_0, "subtrees")) {
+        var x_1: V = e1
+        try call((try K("Model")), "walk_names", [x_1, out_0])
       }
       return V.null
     })
@@ -19268,22 +18956,7 @@ enum C_Shaded {
       return V.null
     })
     c.statik("points", { (this_: V, a1: [V]) throws -> V in
-      var points_0: V = V.null; points_0 = list()
-      var i_0: V = V.null; i_0 = 1.0
-      while truthy(try le(i_0, 120.0)) {
-        try m_push(points_0, try div(i_0, 120.0))
-        i_0 = try add(i_0, 1.0)
-      }
-      var ex_0: V = V.null; ex_0 = 0.0
-      while truthy(try le(ex_0, 24.0)) {
-        var k_0: V = V.null; k_0 = 1.0
-        while truthy(try lt(k_0, 8.0)) {
-          try m_push(points_0, try mul((try power(10.0, (try sub(ex_0, 12.0)))), (try add(1.0, try div(k_0, 2.0)))))
-          k_0 = try add(k_0, 1.0)
-        }
-        ex_0 = try add(ex_0, 1.0)
-      }
-      return try call((try K("Expr")), "sorted", [points_0])
+      return try get((try K("Expr")), "bracket_points")
       return V.null
     })
     c.statik("solver", { (this_: V, a1: [V]) throws -> V in
@@ -19585,40 +19258,33 @@ enum C_Sweep {
     })
     c.method("save", { (this_: V, a1: [V]) throws -> V in
       var id_0: V = arg(a1, 0); var grid_0: V = arg(a1, 1); var need_0: V = arg(a1, 2);
-      var x_0: V = V.null; x_0 = list()
-      var y_0: V = V.null; y_0 = list()
-      var p_0: V = V.null; p_0 = list()
-      var by_0: V = V.null; by_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "YS")) {
-          var gy_1: V = V.num(i1)
-          do {
-            var i2: Double = 0
-            while i2 < num(try get(this_, "XS")) {
-              var gx_2: V = V.num(i2)
-              try m_push(x_0, try add(try get(this_, "X0"), try mul(gx_2, try get(this_, "dx"))))
-              try m_push(y_0, try add(try get(this_, "Y0"), try mul(gy_1, try get(this_, "dy"))))
-              try m_push(p_0, try elem(grid_0, try add(try mul(gy_1, try get(this_, "XS")), gx_2)))
-              try m_push(by_0, try elem(need_0, try add(try mul(gy_1, try get(this_, "XS")), gx_2)))
-              i2 += 1
-            }
-          }
-          i1 += 1
-        }
-      }
-      var most_0: V = V.null; most_0 = 0.0
-      for e1 in try items(p_0) {
-        var v_1: V = e1
-        if truthy(try gt(v_1, most_0)) {
-          most_0 = v_1
-        }
-      }
+      var cells_0: V = V.null; cells_0 = rng(try mul(try get(this_, "YS"), try get(this_, "XS")))
       var columns_0: V = V.null; columns_0 = makeNode()
-      try set(columns_0, Name(try str(V.s(cat("x")))), x_0)
-      try set(columns_0, Name(try str(V.s(cat("y")))), y_0)
-      try set(columns_0, Name(try str(V.s(cat("p")))), p_0)
-      try set(columns_0, Name(try str(V.s(cat("by")))), by_0)
+      try set(columns_0, Name(try str(V.s(cat("x")))), try m_map(cells_0, V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try add(try get(this_, "X0"), try mul((try mod(i_2, try get(this_, "XS"))), try get(this_, "dx")))
+        return V.null
+      })))
+      try set(columns_0, Name(try str(V.s(cat("y")))), try m_map(cells_0, V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try add(try get(this_, "Y0"), try mul(try m_floor((try div(i_2, try get(this_, "XS")))), try get(this_, "dy")))
+        return V.null
+      })))
+      try set(columns_0, Name(try str(V.s(cat("p")))), try m_map(cells_0, V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try elem(grid_0, i_2)
+        return V.null
+      })))
+      try set(columns_0, Name(try str(V.s(cat("by")))), try m_map(cells_0, V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try elem(need_0, i_2)
+        return V.null
+      })))
+      var most_0: V = V.null; most_0 = try m_reduce(try get(columns_0, Name(try str(V.s(cat("p"))))), 0.0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try sel(truthy(try gt(v_2, m_2)), v_2, m_2)
+        return V.null
+      }))
       var extra_0: V = V.null; extra_0 = makeNode()
       try set(extra_0, Name(try str(V.s(cat("a0")))), try get(this_, "a0"))
       try set(extra_0, Name(try str(V.s(cat("arrangement")))), try get(this_, "how"))
@@ -19684,20 +19350,15 @@ enum C_Sweep {
       return V.null
     })
     c.getter("radii", { (this_: V, a1: [V]) throws -> V in
-      var out_0: V = V.null; out_0 = list()
-      do {
-        var i1: Double = 0
-        while i1 < num(try get(this_, "RS")) {
-          var k_1: V = V.num(i1)
-          var e_1: V = V.null; e_1 = try elem(try get(this_, "env"), k_1)
-          try m_push(out_0, try elem(try get(this_, "rad"), k_1))
-          try m_push(out_0, try orElse(try get(e_1, Name(try str(V.s(cat("n_{f}"))))), V.num(Double.nan)))
-          try m_push(out_0, try orElse(try get(e_1, Name(try str(V.s(cat("\\sigma_{tr}"))))), V.num(Double.nan)))
-          try m_push(out_0, try orElse(try get(e_1, Name(try str(V.s(cat("L"))))), V.num(Double.nan)))
-          i1 += 1
-        }
-      }
-      return out_0
+      return try m_reduce(rng(try get(this_, "RS")), list(), V.fn({ (a3: [V]) throws -> V in
+        var out_2: V = arg(a3, 0); var k_2: V = arg(a3, 1);
+        return try m_reduce(list(try elem(try get(this_, "rad"), k_2), try orElse(try get(try elem(try get(this_, "env"), k_2), Name(try str(V.s(cat("n_{f}"))))), V.num(Double.nan)), try orElse(try get(try elem(try get(this_, "env"), k_2), Name(try str(V.s(cat("\\sigma_{tr}"))))), V.num(Double.nan)), try orElse(try get(try elem(try get(this_, "env"), k_2), Name(try str(V.s(cat("L"))))), V.num(Double.nan))), out_2, V.fn({ (a5: [V]) throws -> V in
+          var o_4: V = arg(a5, 0); var v_4: V = arg(a5, 1);
+          return try m_push(o_4, v_4)
+          return V.null
+        }))
+        return V.null
+      }))
       return V.null
     })
     c.getter("kernel", { (this_: V, a1: [V]) throws -> V in
@@ -19884,6 +19545,1321 @@ enum C_Measure {
   }
 }
 
+func def_Sighted() throws { try cls("Sighted", Physics.Node, C_Sighted.define) }
+extension Physics { public static var Sighted: V { get throws { return try K("Sighted") } } }
+enum C_Sighted {
+  static func define(_ c: Cls) throws {
+    c.field("name", nil)
+    c.field("disc_mass", nil)
+    c.field("disc_scale", nil)
+    c.field("bulge_mass", nil)
+    c.field("bulge_scale", nil)
+    c.field("circling", nil)
+    c.field("sun", nil)
+    c.field("inclination", nil)
+    c.field("position_angle", nil)
+    c.field("distance", nil)
+    c.field("approach", nil)
+    c.field("across", nil)
+    c.field("source", nil)
+    c.getter("mass", { (this_: V, a1: [V]) throws -> V in
+      return try add(try get(this_, "disc_mass"), try get(this_, "bulge_mass"))
+      return V.null
+    })
+  }
+}
+
+func def_Video() throws { try cls("Video", Physics.Node, C_Video.define) }
+extension Physics { public static var Video: V { get throws { return try K("Video") } } }
+enum C_Video {
+  static func define(_ c: Cls) throws {
+    c.staticField("WIDTH", { (this_: V) throws -> V in return 2560.0 })
+    c.staticField("HEIGHT", { (this_: V) throws -> V in return 1440.0 })
+    c.staticField("FPS", { (this_: V) throws -> V in return 60.0 })
+    c.staticField("FILM_RD", { (this_: V) throws -> V in return 6.0 })
+    c.staticField("PER_MYR", { (this_: V) throws -> V in return 0.0010227 })
+    c.staticField("LIGHT", { (this_: V) throws -> V in return 299792.458 })
+    c.staticField("ANDROMEDA", { (this_: V) throws -> V in return try makeNamed("Sighted", [kw("name", V.s(cat("Andromeda (M31)"))), kw("disc_mass", 8.4), kw("disc_scale", 5.4), kw("bulge_mass", 3.3), kw("bulge_scale", 0.61), kw("circling", 250.0), kw("sun", 0.0), kw("inclination", 77.0), kw("position_angle", 38.0), kw("distance", 785.0), kw("approach", 110.0), kw("across", 17.0), kw("source", V.s(cat("Geehan et al. 2006, van der Marel et al. 2012")))]) })
+    c.staticField("MW_ORBITS", { (this_: V) throws -> V in return list(5.5, 0.25) })
+    c.staticField("MW_ORBIT_TRIALS", { (this_: V) throws -> V in return list(10.0, 7.0) })
+    c.staticField("MW_ORBIT_TEMPER", { (this_: V) throws -> V in return 0.1 })
+    c.staticField("MW_ARM_END", { (this_: V) throws -> V in return list(0.0, 0.0, 0.0, 0.0, 140.0) })
+    c.staticField("MW_ARM_OLD", { (this_: V) throws -> V in return list(0.0, 1.0, 0.0, 1.0, 0.0) })
+    c.staticField("MW_ARM_FADE", { (this_: V) throws -> V in return 12.0 })
+    c.staticField("MW_ARM_FADE_IN", { (this_: V) throws -> V in return 45.0 })
+    c.staticField("MW_YOUNG", { (this_: V) throws -> V in return 0.1 })
+    c.staticField("MW_CLUSTERS", { (this_: V) throws -> V in return list(0.5, 50.0, 0.1) })
+    c.staticField("LIGHT_STARS", { (this_: V) throws -> V in return list(0.95, 2.4, 3.2) })
+    c.staticField("ANDROMEDA_IMAGE", { (this_: V) throws -> V in return 512.0 })
+    c.staticField("ANDROMEDA_FOV", { (this_: V) throws -> V in return 3.2 })
+    c.staticField("SOURCE", { (this_: V) throws -> V in return V.s(cat("74,168,235")) })
+    c.staticField("STRIP_TOP", { (this_: V) throws -> V in return 570.0 })
+    c.staticField("STRIP_TALL", { (this_: V) throws -> V in return 300.0 })
+    c.staticField("PLANET_INK", { (this_: V) throws -> V in return list(V.s(cat("#9a9a9a")), V.s(cat("#e8d3a0")), V.s(cat("#4a90e2")), V.s(cat("#c1440e"))) })
+    c.staticField("SOLAR_FROM", { (this_: V) throws -> V in return 160.0 })
+    c.staticField("SOLAR_TO", { (this_: V) throws -> V in return 280.0 })
+    c.staticField("LOGO", { (this_: V) throws -> V in return V.s(cat("../orbitmines.com/orbitmines.com/public/logo.png")) })
+    c.staticField("PARTS", { (this_: V) throws -> V in return list(V.s(cat("video.transport")), V.s(cat("video.to-source")), V.s(cat("video.to-solar")), V.s(cat("video.to-milkyway")), V.s(cat("video.milkyway")), V.s(cat("video.to-andromeda")), V.s(cat("video.collision")), V.s(cat("video.end"))) })
+    c.statik("MILKY_WAY", { (this_: V, a1: [V]) throws -> V in
+      return try makeNamed("Sighted", [kw("name", V.s(cat("Milky Way"))), kw("disc_mass", try get((try K("Video")), "mw_discs_mass")), kw("disc_scale", try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_scale"))])), kw("bulge_mass", try m_sum(try get((try K("Video")), "MW_BAR_MASSES"))), kw("bulge_scale", 0.6), kw("circling", try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("circling"))])), kw("sun", try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("sun_distance"))])), kw("inclination", 0.0), kw("position_angle", 0.0), kw("distance", 0.0), kw("approach", 0.0), kw("across", 0.0), kw("source", V.s(cat("Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)")))])
+      return V.null
+    })
+    c.statik("measured", { (this_: V, a1: [V]) throws -> V in
+      var id_0: V = arg(a1, 0); var name_0: V = arg(a1, 1);
+      var m_0: V = V.null; m_0 = try call((try K("Measured")), "of", [id_0])
+      if truthy(V.b(try eq(m_0, V.null))) {
+        try invoke(fail, [V.s(cat("no data/", try str(id_0), ": run npx ray data ", try str(id_0), ""))])
+      }
+      var names_0: V = V.null; names_0 = try get(try get(m_0, "header"), Name(try str(V.s(cat("names")))))
+      var k_0: V = V.null; k_0 = try m_first(try filt(rng(try len(names_0)), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return V.b(try eq(try elem(names_0, i_2), name_0))
+        return V.null
+      })))
+      if truthy(V.b(try eq(k_0, V.null))) {
+        try invoke(fail, [V.s(cat("data/", try str(id_0), " has no ", try str(try quoted(name_0)), ""))])
+      }
+      return try elem(try get(try get(m_0, "columns"), Name(try str(V.s(cat("value"))))), k_0)
+      return V.null
+    })
+    c.statik("MW_BAR1", { (this_: V, a1: [V]) throws -> V in
+      return try m_map(list(V.s(cat("rho_1")), V.s(cat("x_1")), V.s(cat("y_1")), V.s(cat("z_1")), V.s(cat("c_parallel")), V.s(cat("c_perp")), V.s(cat("m")), V.s(cat("alpha")), V.s(cat("n")), V.s(cat("c")), V.s(cat("x_c")), V.s(cat("y_c")), V.s(cat("r_cut"))), V.fn({ (a3: [V]) throws -> V in
+        var n_2: V = arg(a3, 0);
+        return try call((try K("Video")), "measured", [V.s(cat("milkyway-bar")), n_2])
+        return V.null
+      }))
+      return V.null
+    })
+    c.statik("mw_bar", { (this_: V, a1: [V]) throws -> V in
+      var i_0: V = arg(a1, 0);
+      return try m_map(list(V.s(cat("rho_", try str(i_0), "")), V.s(cat("x_", try str(i_0), "")), V.s(cat("y_", try str(i_0), "")), V.s(cat("z_", try str(i_0), "")), V.s(cat("n_", try str(i_0), "")), V.s(cat("c_perp,", try str(i_0), "")), V.s(cat("R_", try str(i_0), ",out")), V.s(cat("R_", try str(i_0), ",in")), V.s(cat("n_", try str(i_0), ",out")), V.s(cat("n_", try str(i_0), ",in"))), V.fn({ (a3: [V]) throws -> V in
+        var n_2: V = arg(a3, 0);
+        return try call((try K("Video")), "measured", [V.s(cat("milkyway-bar")), n_2])
+        return V.null
+      }))
+      return V.null
+    })
+    c.statik("MW_BAR2", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "mw_bar", [V.s(cat("2"))])
+      return V.null
+    })
+    c.statik("MW_BAR3", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "mw_bar", [V.s(cat("3"))])
+      return V.null
+    })
+    c.statik("MW_BAR_MASSES", { (this_: V, a1: [V]) throws -> V in
+      return try m_map(list(V.s(cat("M_bar1")), V.s(cat("M_bar2")), V.s(cat("M_bar3"))), V.fn({ (a3: [V]) throws -> V in
+        var n_2: V = arg(a3, 0);
+        return try call((try K("Video")), "measured", [V.s(cat("milkyway-bar")), n_2])
+        return V.null
+      }))
+      return V.null
+    })
+    c.statik("MW_BAR_ANGLE", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("bar_angle"))])
+      return V.null
+    })
+    c.statik("MW_PATTERN_SPEED", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "measured", [V.s(cat("milkyway-bar")), V.s(cat("pattern_speed"))])
+      return V.null
+    })
+    c.statik("mw_discs_mass", { (this_: V, a1: [V]) throws -> V in
+      return try sub(try add(try add(try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("bulge_region_mass"))]), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_mass"))])), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thick_mass"))])), try m_sum(try get((try K("Video")), "MW_BAR_MASSES")))
+      return V.null
+    })
+    c.statik("MW_DISCS", { (this_: V, a1: [V]) throws -> V in
+      var thin_0: V = V.null; thin_0 = try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_mass"))])
+      var thick_0: V = V.null; thick_0 = try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thick_mass"))])
+      return list(list(try div(try mul(try get((try K("Video")), "mw_discs_mass"), thin_0), (try add(thin_0, thick_0))), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_scale"))]), 1.0), list(try div(try mul(try get((try K("Video")), "mw_discs_mass"), thick_0), (try add(thin_0, thick_0))), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thick_scale"))]), 0.0))
+      return V.null
+    })
+    c.statik("MW_DISC_HOLE", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "measured", [V.s(cat("milkyway-bar")), V.s(cat("R_cut"))])
+      return V.null
+    })
+    c.statik("MW_ARMS", { (this_: V, a1: [V]) throws -> V in
+      var m_0: V = V.null; m_0 = try call((try K("Measured")), "of", [V.s(cat("milkyway-arms"))])
+      if truthy(V.b(try eq(m_0, V.null))) {
+        try invoke(fail, [V.s(cat("no data/milkyway-arms: run npx ray data milkyway-arms"))])
+      }
+      return try m_map(rng(5.0), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return list(try elem(try get(try get(m_0, "columns"), Name(try str(V.s(cat("R"))))), k_2), try elem(try get(try get(m_0, "columns"), Name(try str(V.s(cat("theta"))))), k_2), try elem(try get(try get(m_0, "columns"), Name(try str(V.s(cat("psi"))))), k_2), try elem(try get((try K("Video")), "MW_ARM_END"), k_2), try elem(try get((try K("Video")), "MW_ARM_OLD"), k_2))
+        return V.null
+      }))
+      return V.null
+    })
+    c.statik("MW_ARM_WIDTH", { (this_: V, a1: [V]) throws -> V in
+      return list(try div(try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-widths")), V.s(cat("w0"))]), 1000.0), try div(try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-widths")), V.s(cat("slope"))]), 1000.0), try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-widths")), V.s(cat("R0"))]))
+      return V.null
+    })
+    c.statik("MW_ARM_CONTRAST", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-contrast")), V.s(cat("K"))])
+      return V.null
+    })
+    c.statik("MW_DUST", { (this_: V, a1: [V]) throws -> V in
+      return list(try div(try call((try K("Video")), "measured", [V.s(cat("milkyway-dust-lane")), V.s(cat("hot"))]), 1000.0), 0.12, 0.1)
+      return V.null
+    })
+    c.statik("MW_STIR", { (this_: V, a1: [V]) throws -> V in
+      return list(list(try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_sigma_R"))]), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_sigma_scale"))])), list(try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thick_sigma_R"))]), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thick_sigma_scale"))])), list(try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-widths")), V.s(cat("young_spread"))]), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("thin_sigma_scale"))])))
+      return V.null
+    })
+    c.statik("MW_SUN_MOTION", { (this_: V, a1: [V]) throws -> V in
+      return list(try call((try K("Video")), "measured", [V.s(cat("milkyway-arm-widths")), V.s(cat("U_sun"))]), try sub(try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("sun_tangential"))]), try call((try K("Video")), "measured", [V.s(cat("milkyway-discs")), V.s(cat("circling"))])))
+      return V.null
+    })
+    c.statik("galaxy", { (this_: V, a1: [V]) throws -> V in
+      var name_0: V = arg(a1, 0);
+      return try sel(truthy(V.b(try eq(name_0, V.s(cat("andromeda"))))), try get((try K("Video")), "ANDROMEDA"), try get((try K("Video")), "MILKY_WAY"))
+      return V.null
+    })
+    c.statik("per_kpc", { (this_: V, a1: [V]) throws -> V in
+      return try div(try get((try K("Video")), "FILM_RD"), try get(try get((try K("Video")), "MILKY_WAY"), "disc_scale"))
+      return V.null
+    })
+    c.statik("myr_per_tick", { (this_: V, a1: [V]) throws -> V in
+      var film_0: V = arg(a1, 0);
+      var c_0: V = V.null; c_0 = try get(try get(film_0, "header"), Name(try str(V.s(cat("clock")))))
+      return try div((try div(try elem(c_0, 1.0), try elem(c_0, 0.0))), (try mul(try div(try elem(c_0, 3.0), try elem(c_0, 2.0)), try get((try K("Video")), "PER_MYR"))))
+      return V.null
+    })
+    c.statik("faster", { (this_: V, a1: [V]) throws -> V in
+      var film_0: V = arg(a1, 0);
+      return try div(try elem(try get(try get(film_0, "header"), Name(try str(V.s(cat("clock"))))), 1.0), (try div(try elem(try get(try get(film_0, "header"), Name(try str(V.s(cat("clock"))))), 3.0), try get((try K("Video")), "LIGHT"))))
+      return V.null
+    })
+    c.statik("smooth", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0);
+      var u_0: V = V.null; u_0 = try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, t_0])])
+      return try mul(try mul(u_0, u_0), (try sub(3.0, try mul(2.0, u_0))))
+      return V.null
+    })
+    c.statik("shot", { (this_: V, a1: [V]) throws -> V in
+      var id_0: V = arg(a1, 0); var what_0: V = arg(a1, 1); var shot_0: V = arg(a1, 2);
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", id_0), kw("what", what_0), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", try get(shot_0, "frames")), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        return try makeNamed("Sky", [kw("shot", shot_0)])
+        return V.null
+      }))])
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("solar_meta", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0);
+      var r_0: V = V.null; r_0 = try get(try get(theory_0, "solar"), "record")
+      var at_0: V = V.null; at_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(try get(r_0, "names"))) {
+          var k_1: V = V.num(i1)
+          at_0 = try sel(truthy(V.b(try eq(try elem(try get(r_0, "names"), k_1), V.s(cat("marks"))))), k_1, at_0)
+          i1 += 1
+        }
+      }
+      var off_0: V = V.null; off_0 = try m_sum(try m_take(try get(r_0, "sizes"), at_0))
+      var SOLAR_0: V = V.null; SOLAR_0 = try call((try K("Measured")), "of", [V.s(cat("solar-inner"))])
+      var NAMES_0: V = V.null; NAMES_0 = try get(try get(SOLAR_0, "header"), Name(try str(V.s(cat("names")))))
+      var PER_0: V = V.null; PER_0 = try get(try get(SOLAR_0, "columns"), Name(try str(V.s(cat("period")))))
+      var PLANETS_0: V = V.null; PLANETS_0 = try filt(rng(try len(NAMES_0)), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try gt(try elem(PER_0, i_2), 0.0)
+        return V.null
+      }))
+      var earth_body_0: V = V.null; earth_body_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(PLANETS_0)) {
+          var k_1: V = V.num(i1)
+          earth_body_0 = try sel(truthy(V.b(try eq(try elem(NAMES_0, try elem(PLANETS_0, k_1)), V.s(cat("Earth"))))), try add(k_1, 1.0), earth_body_0)
+          i1 += 1
+        }
+      }
+      return list(off_0, try get(r_0, "width"), try m_round((try div((try sub(try elem(try get(r_0, "sizes"), at_0), 1.0)), 6.0))), earth_body_0)
+      return V.null
+    })
+    c.statik("shot_after_solar", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0); var id_0: V = arg(a1, 1); var what_0: V = arg(a1, 2); var shot_0: V = arg(a1, 3);
+      var meta_0: V = V.null; meta_0 = try call((try K("Video")), "solar_meta", [theory_0])
+      var stamp_0: V = V.null; stamp_0 = try get(try get(try get(theory_0, "solar"), "record"), "stamp")
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", id_0), kw("what", what_0), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", try get(shot_0, "frames")), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        var sky_2: V = V.null; sky_2 = try makeNamed("Sky", [kw("shot", shot_0)])
+        try set(sky_2, "meta", meta_0)
+        try set(sky_2, "sol_stamp", stamp_0)
+        return sky_2
+        return V.null
+      }))])
+      try set(pic_0, "uses", list(V.s(cat("solar.inner"))))
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("light", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var film_0: V = arg(a1, 1); var b0_0: V = arg(a1, 2); var b1_0: V = arg(a1, 3); var w_0: V = arg(a1, 4); var G_0: V = arg(a1, 5); var span_0: V = arg(a1, 6); var cx_0: V = arg(a1, 7); var cy_0: V = arg(a1, 8); var px_0: V = arg(a1, 9); var ci_0: V = arg(a1, 10); var side_0: V = arg(a1, 11);
+      var D_0: V = V.null; D_0 = try get(try get(film_0, "columns"), Name(try str(V.s(cat("density")))))
+      var Y_0: V = V.null; Y_0 = try get(try get(film_0, "columns"), Name(try str(V.s(cat("young")))))
+      var U_0: V = V.null; U_0 = try get(try get(film_0, "columns"), Name(try str(V.s(cat("dust")))))
+      var top_0: V = V.null; top_0 = 0.0
+      var ytop_0: V = V.null; ytop_0 = 0.0
+      var utop_0: V = V.null; utop_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try mul(G_0, G_0)) {
+          var c_1: V = V.num(i1)
+          top_0 = try call((try K("Fmt")), "max", [top_0, try add(try elem(D_0, try add(b0_0, c_1)), try mul(w_0, (try sub(try elem(D_0, try add(b1_0, c_1)), try elem(D_0, try add(b0_0, c_1))))))])
+          ytop_0 = try call((try K("Fmt")), "max", [ytop_0, try add(try elem(Y_0, try add(b0_0, c_1)), try mul(w_0, (try sub(try elem(Y_0, try add(b1_0, c_1)), try elem(Y_0, try add(b0_0, c_1))))))])
+          utop_0 = try call((try K("Fmt")), "max", [utop_0, try add(try elem(U_0, try add(b0_0, c_1)), try mul(w_0, (try sub(try elem(U_0, try add(b1_0, c_1)), try elem(U_0, try add(b0_0, c_1))))))])
+          i1 += 1
+        }
+      }
+      var lt_0: V = V.null; lt_0 = try m_ln((try add(1.0, top_0)))
+      var rgb_0: V = V.null; rgb_0 = list()
+      do {
+        var i1: Double = 0
+        while i1 < num(G_0) {
+          var row_1: V = V.num(i1)
+          var gy_1: V = V.null; gy_1 = try sub(try sub(G_0, 1.0), row_1)
+          do {
+            var i2: Double = 0
+            while i2 < num(G_0) {
+              var gx_2: V = V.num(i2)
+              var c_2: V = V.null; c_2 = try add(try mul(gy_1, G_0), gx_2)
+              var o_2: V = V.null; o_2 = try call((try K("Fmt")), "min", [1.0, try div(try m_ln((try add(try add(1.0, try elem(D_0, try add(b0_0, c_2))), try mul(w_0, (try sub(try elem(D_0, try add(b1_0, c_2)), try elem(D_0, try add(b0_0, c_2)))))))), lt_0)])
+              var y_2: V = V.null; y_2 = try call((try K("Fmt")), "min", [1.0, try m_sqrt((try div((try add(try elem(Y_0, try add(b0_0, c_2)), try mul(w_0, (try sub(try elem(Y_0, try add(b1_0, c_2)), try elem(Y_0, try add(b0_0, c_2))))))), ytop_0)))])
+              var lo_2: V = V.null; lo_2 = try mul(try m_sqrt(o_2), o_2)
+              var hii_2: V = V.null; hii_2 = try call((try K("Fmt")), "max", [0.0, try div((try sub(y_2, 0.7)), 0.3)])
+              var dim_2: V = V.null; dim_2 = try sub(1.0, try mul(0.7, try call((try K("Fmt")), "min", [1.0, try m_sqrt((try div((try add(try elem(U_0, try add(b0_0, c_2)), try mul(w_0, (try sub(try elem(U_0, try add(b1_0, c_2)), try elem(U_0, try add(b0_0, c_2))))))), utop_0)))])))
+              try m_push(rgb_0, try call((try K("Fmt")), "min", [255.0, try mul(dim_2, (try add(try add(try mul(lo_2, (try add(130.0, try mul(125.0, o_2)))), try mul(try mul(95.0, y_2), y_2)), try mul(110.0, hii_2))))]))
+              try m_push(rgb_0, try call((try K("Fmt")), "min", [255.0, try mul(dim_2, (try add(try add(try mul(lo_2, (try add(140.0, try mul(85.0, o_2)))), try mul(try mul(120.0, y_2), y_2)), try mul(25.0, hii_2))))]))
+              try m_push(rgb_0, try call((try K("Fmt")), "min", [255.0, try mul(dim_2, (try add(try add(try mul(lo_2, (try sub(175.0, try mul(55.0, o_2)))), try mul(try mul(165.0, y_2), y_2)), try mul(70.0, hii_2))))]))
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var x0_0: V = V.null; x0_0 = try mul((try sub(try sub(0.0, span_0), cx_0)), px_0)
+      var y0_0: V = V.null; y0_0 = try sub(0.0, try mul(try mul((try sub(span_0, cy_0)), px_0), ci_0))
+      var bw_0: V = V.null; bw_0 = try mul(try mul(2.0, span_0), px_0)
+      var bh_0: V = V.null; bh_0 = try mul(try mul(try mul(2.0, span_0), px_0), ci_0)
+      var fade_0: V = V.null; fade_0 = try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try div((try sub(90.0, side_0)), 50.0)])])
+      try call(s_0, "alpha", [try mul(0.3, fade_0)])
+      try call(s_0, "field", [rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, try call((try K("Fmt")), "max", [2.0, try mul(2.0, side_0)])])
+      try call(s_0, "alpha", [try mul(0.9, fade_0)])
+      try call(s_0, "field", [rgb_0, G_0, G_0, x0_0, y0_0, bw_0, bh_0, 0.0])
+      return try call(s_0, "alpha", [1.0])
+      return V.null
+    })
+    c.statik("sky", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var shot_0: V = arg(a1, 1); var film_0: V = arg(a1, 2); var tracks_0: V = arg(a1, 3); var i_0: V = arg(a1, 4); var sol_0: V = arg(a1, 5); var meta_0: V = arg(a1, 6);
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+      try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+      var H_0: V = V.null; H_0 = try get(film_0, "header")
+      var n_0: V = V.null; n_0 = try get(shot_0, "frames")
+      var t_0: V = V.null; t_0 = try sel(truthy(try gt(n_0, 1.0)), try div(i_0, (try sub(n_0, 1.0))), 0.0)
+      var e_0: V = V.null; e_0 = try call((try K("Video")), "smooth", [t_0])
+      var FR_0: V = V.null; FR_0 = try get(H_0, Name(try str(V.s(cat("frames")))))
+      var u_0: V = V.null; u_0 = try mul((try add(try get(shot_0, "from_at"), try mul((try sub(try get(shot_0, "to_at"), try get(shot_0, "from_at"))), t_0))), (try sub(FR_0, 1.0)))
+      var f0_0: V = V.null; f0_0 = try call((try K("Fmt")), "min", [try m_floor(u_0), try sub(FR_0, 1.0)])
+      var f1_0: V = V.null; f1_0 = try call((try K("Fmt")), "min", [try add(f0_0, 1.0), try sub(FR_0, 1.0)])
+      var w_0: V = V.null; w_0 = try sub(u_0, f0_0)
+      var ez_0: V = V.null; ez_0 = try sel(truthy(try lt(try get(shot_0, "from_zoom"), 1.0)), try sub(1.0, try mul((try sub(1.0, try call((try K("Video")), "smooth", [try div(t_0, 0.6)]))), (try sub(1.0, try call((try K("Video")), "smooth", [try div(t_0, 0.6)]))))), e_0)
+      var across_0: V = V.null; across_0 = try m_exp((try add(try m_ln(try get(shot_0, "from_zoom")), try mul((try sub(try m_ln(try get(shot_0, "to_zoom")), try m_ln(try get(shot_0, "from_zoom")))), ez_0))))
+      var px_0: V = V.null; px_0 = try div(try get(s_0, "height"), across_0)
+      var has_sun_0: V = V.null; has_sun_0 = try and_(V.b(!(try eq(tracks_0, V.null))), V.b(try eq(try get(try get(tracks_0, "header"), Name(try str(V.s(cat("sun"))))), 0.0)))
+      var sx_0: V = V.null; sx_0 = 0.0
+      var sy_0: V = V.null; sy_0 = 0.0
+      if truthy(has_sun_0) {
+        var XY_0: V = V.null; XY_0 = try get(try get(tracks_0, "columns"), Name(try str(V.s(cat("xy")))))
+        var m_0: V = V.null; m_0 = try get(try get(tracks_0, "header"), Name(try str(V.s(cat("shown")))))
+        sx_0 = try add(try elem(XY_0, try mul(try mul(f0_0, m_0), 2.0)), try mul(w_0, (try sub(try elem(XY_0, try mul(try mul(f1_0, m_0), 2.0)), try elem(XY_0, try mul(try mul(f0_0, m_0), 2.0))))))
+        sy_0 = try add(try elem(XY_0, try add(try mul(try mul(f0_0, m_0), 2.0), 1.0)), try mul(w_0, (try sub(try elem(XY_0, try add(try mul(try mul(f1_0, m_0), 2.0), 1.0)), try elem(XY_0, try add(try mul(try mul(f0_0, m_0), 2.0), 1.0))))))
+      }
+      var look_0: V = V.null; look_0 = try sel(truthy(has_sun_0), try add(try get(shot_0, "from_sun"), try mul((try sub(try get(shot_0, "to_sun"), try get(shot_0, "from_sun"))), e_0)), 0.0)
+      var px_end_0: V = V.null; px_end_0 = try div(try get(s_0, "height"), try get(shot_0, "to_zoom"))
+      var away_0: V = V.null; away_0 = try sel(truthy(has_sun_0), try div(try mul((try sub(1.0, look_0)), px_end_0), px_0), 0.0)
+      var cx_0: V = V.null; cx_0 = try mul(sx_0, (try sub(1.0, away_0)))
+      var cy_0: V = V.null; cy_0 = try mul(sy_0, (try sub(1.0, away_0)))
+      var ci_0: V = V.null; ci_0 = try m_cos((try div(try mul(try get(shot_0, "tilt"), V.num(Double.pi)), 180.0)))
+      var SF_0: V = V.null; SF_0 = try sel(truthy(V.b(!(try eq(sol_0, V.null)))), try get(try get(sol_0, "columns"), Name(try str(V.s(cat("frames"))))), list())
+      var sys_0: V = V.null; sys_0 = list(0.0, 0.0, 0.0, 0.0, 0.0)
+      if truthy(V.b(!(try eq(sol_0, V.null)))) {
+        var FRS_0: V = V.null; FRS_0 = try get(try get(sol_0, "header"), Name(try str(V.s(cat("frames")))))
+        var at_f_0: V = V.null; at_f_0 = try call((try K("Fmt")), "min", [try sub(FRS_0, 1.0), try get((try K("Video")), "SOLAR_TO")])
+        var mk_0: V = V.null; mk_0 = V.fn({ (a2: [V]) throws -> V in
+          var f_1: V = arg(a2, 0); var k_1: V = arg(a2, 1); var c_1: V = arg(a2, 2);
+          return try elem(SF_0, try add(try add(try add(try mul(f_1, try elem(meta_0, 1.0)), try elem(meta_0, 0.0)), try mul(6.0, k_1)), c_1))
+          return V.null
+        })
+        var reach_0: V = V.null; reach_0 = 0.0
+        do {
+          var i1: Double = 0
+          while i1 < num(FRS_0) {
+            var f_1: V = V.num(i1)
+            do {
+              var i2: Double = 0
+              while i2 < num(try sub(try elem(meta_0, 2.0), 1.0)) {
+                var k_2: V = V.num(i2)
+                reach_0 = try call((try K("Fmt")), "max", [reach_0, try call((try K("Fmt")), "hypot", [try sub(try invoke(mk_0, [f_1, try add(k_2, 1.0), 0.0]), try invoke(mk_0, [f_1, 0.0, 0.0])), try sub(try invoke(mk_0, [f_1, try add(k_2, 1.0), 1.0]), try invoke(mk_0, [f_1, 0.0, 1.0]))])])
+                i2 += 1
+              }
+            }
+            i1 += 1
+          }
+        }
+        var eb_0: V = V.null; eb_0 = try elem(meta_0, 3.0)
+        var ex_0: V = V.null; ex_0 = try invoke(mk_0, [at_f_0, eb_0, 0.0])
+        var ey_0: V = V.null; ey_0 = try invoke(mk_0, [at_f_0, eb_0, 1.0])
+        var last_0: V = V.null; last_0 = try mul(2.1, (try add(reach_0, try call((try K("Fmt")), "hypot", [try sub(ex_0, try invoke(mk_0, [at_f_0, 0.0, 0.0])), try sub(ey_0, try invoke(mk_0, [at_f_0, 0.0, 1.0]))]))))
+        var pxs_0: V = V.null; pxs_0 = try mul(try div(try get(s_0, "height"), last_0), (try div(try get(shot_0, "from_zoom"), across_0)))
+        var sun_x_0: V = V.null; sun_x_0 = try mul((try sub(try invoke(mk_0, [at_f_0, 0.0, 0.0]), ex_0)), pxs_0)
+        var sun_y_0: V = V.null; sun_y_0 = try mul((try sub(try invoke(mk_0, [at_f_0, 0.0, 1.0]), ey_0)), pxs_0)
+        cx_0 = try sub(cx_0, try div(sun_x_0, px_0))
+        cy_0 = try sub(cy_0, try div(sun_y_0, (try mul(px_0, ci_0))))
+        sys_0 = list(pxs_0, try invoke(mk_0, [at_f_0, 0.0, 0.0]), try invoke(mk_0, [at_f_0, 0.0, 1.0]), at_f_0, try sub(1.0, try call((try K("Video")), "smooth", [try div(e_0, 0.3)])))
+      }
+      try get(s_0, "save")
+      try call(s_0, "translate", [try div(try get(s_0, "width"), 2.0), try div(try get(s_0, "height"), 2.0)])
+      try call(s_0, "rotate", [try sub(0.0, try div(try mul(try get(shot_0, "turn"), V.num(Double.pi)), 180.0))])
+      var G_0: V = V.null; G_0 = try get(H_0, Name(try str(V.s(cat("grid")))))
+      var span_0: V = V.null; span_0 = try elem(try get(H_0, Name(try str(V.s(cat("span"))))), 0.0)
+      var D_0: V = V.null; D_0 = try get(try get(film_0, "columns"), Name(try str(V.s(cat("density")))))
+      var cs_0: V = V.null; cs_0 = try div(try mul(2.0, span_0), G_0)
+      var b0_0: V = V.null; b0_0 = try mul(try mul(f0_0, G_0), G_0)
+      var b1_0: V = V.null; b1_0 = try mul(try mul(f1_0, G_0), G_0)
+      var top_0: V = V.null; top_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try mul(G_0, G_0)) {
+          var c_1: V = V.num(i1)
+          top_0 = try call((try K("Fmt")), "max", [top_0, try add(try elem(D_0, try add(b0_0, c_1)), try mul(w_0, (try sub(try elem(D_0, try add(b1_0, c_1)), try elem(D_0, try add(b0_0, c_1))))))])
+          i1 += 1
+        }
+      }
+      var side_0: V = V.null; side_0 = try add(try mul(cs_0, px_0), 0.6)
+      var half_w_0: V = V.null; half_w_0 = try add(try div(try get(s_0, "width"), 2.0), side_0)
+      if truthy(V.b(try eq(try get(H_0, Name(try str(V.s(cat("young"))))), 1.0))) {
+        try call((try K("Video")), "light", [s_0, film_0, b0_0, b1_0, w_0, G_0, span_0, cx_0, cy_0, px_0, ci_0, side_0])
+      } else {
+        try call(s_0, "alpha", [try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try div((try sub(24.0, side_0)), 14.0)])])])
+        do {
+          var i1: Double = 0
+          while i1 < num(G_0) {
+            var gy_1: V = V.num(i1)
+            var y_1: V = V.null; y_1 = try mul(try mul((try sub(try add(try sub(0.0, span_0), try mul((try add(gy_1, 0.5)), cs_0)), cy_0)), px_0), ci_0)
+            if truthy(try lt(try m_abs(y_1), half_w_0)) {
+              do {
+                var i2: Double = 0
+                while i2 < num(G_0) {
+                  var gx_2: V = V.num(i2)
+                  var c_2: V = V.null; c_2 = try add(try mul(gy_1, G_0), gx_2)
+                  var v_2: V = V.null; v_2 = try add(try elem(D_0, try add(b0_0, c_2)), try mul(w_0, (try sub(try elem(D_0, try add(b1_0, c_2)), try elem(D_0, try add(b0_0, c_2))))))
+                  if truthy(try gt(v_2, 0.0)) {
+                    var x_2: V = V.null; x_2 = try mul((try sub(try add(try sub(0.0, span_0), try mul((try add(gx_2, 0.5)), cs_0)), cx_0)), px_0)
+                    if truthy(try lt(try m_abs(x_2), half_w_0)) {
+                      var k_2: V = V.null; k_2 = try call((try K("Fmt")), "min", [1.0, try div(try m_ln((try add(1.0, v_2))), try m_ln((try add(1.0, top_0))))])
+                      var r_2: V = V.null; r_2 = try m_round((try add(40.0, try mul(try mul(215.0, k_2), k_2))))
+                      var gr_2: V = V.null; gr_2 = try m_round((try add(60.0, try mul(190.0, k_2))))
+                      var b_2: V = V.null; b_2 = try m_round((try add(110.0, try mul(145.0, try call((try K("Fmt")), "min", [1.0, try mul(1.6, k_2)])))))
+                      try call(s_0, "fill_style", [V.s(cat("rgb(", try str(r_2), ",", try str(gr_2), ",", try str(b_2), ")"))])
+                      try call(s_0, "fill_rect", [try sub(x_2, try div(side_0, 2.0)), try sub(try sub(0.0, y_1), try div(try mul(side_0, ci_0), 2.0)), side_0, try add(try mul(side_0, ci_0), 0.6)])
+                    }
+                  }
+                  i2 += 1
+                }
+              }
+            }
+            i1 += 1
+          }
+        }
+        try call(s_0, "alpha", [1.0])
+      }
+      var lit_0: V = V.null; lit_0 = V.b(try eq(try get(H_0, Name(try str(V.s(cat("young"))))), 1.0))
+      if truthy(try and_(V.b(!(try eq(tracks_0, V.null))), try gt(px_0, (try sel(truthy(lit_0), 6.0, 12.0))))) {
+        var XY_0: V = V.null; XY_0 = try get(try get(tracks_0, "columns"), Name(try str(V.s(cat("xy")))))
+        var m_0: V = V.null; m_0 = try get(try get(tracks_0, "header"), Name(try str(V.s(cat("shown")))))
+        var tags_0: V = V.null; tags_0 = try get(try get(tracks_0, "header"), Name(try str(V.s(cat("tags")))))
+        try call(s_0, "alpha", [try sel(truthy(lit_0), try call((try K("Fmt")), "min", [try elem(try get((try K("Video")), "LIGHT_STARS"), 0.0), try div((try sub(px_0, 6.0)), 14.0)]), try call((try K("Fmt")), "min", [0.85, try div((try sub(px_0, 12.0)), 40.0)]))])
+        do {
+          var i1: Double = 0
+          while i1 < num(m_0) {
+            var k_1: V = V.num(i1)
+            var x_1: V = V.null; x_1 = try mul((try sub(try add(try elem(XY_0, try mul((try add(try mul(f0_0, m_0), k_1)), 2.0)), try mul(w_0, (try sub(try elem(XY_0, try mul((try add(try mul(f1_0, m_0), k_1)), 2.0)), try elem(XY_0, try mul((try add(try mul(f0_0, m_0), k_1)), 2.0)))))), cx_0)), px_0)
+            var y_1: V = V.null; y_1 = try mul(try mul((try sub(try add(try elem(XY_0, try add(try mul((try add(try mul(f0_0, m_0), k_1)), 2.0), 1.0)), try mul(w_0, (try sub(try elem(XY_0, try add(try mul((try add(try mul(f1_0, m_0), k_1)), 2.0), 1.0)), try elem(XY_0, try add(try mul((try add(try mul(f0_0, m_0), k_1)), 2.0), 1.0)))))), cy_0)), px_0), ci_0)
+            if truthy(try and_(try lt(try m_abs(x_1), half_w_0), try lt(try m_abs(y_1), half_w_0))) {
+              var tg_1: V = V.null; tg_1 = try elem(tags_0, k_1)
+              try call(s_0, "fill_style", [try sel(truthy(try ge(tg_1, 4.0)), V.s(cat("#d4e6ff")), try sel(truthy(try or_(V.b(try eq(tg_1, 1.0)), V.b(try eq(tg_1, 3.0)))), V.s(cat("#ffd9a0")), try sel(truthy(V.b(try eq(tg_1, 2.0))), V.s(cat("#ffc7e0")), V.s(cat("#dfe8ff")))))])
+              var sz_1: V = V.null; sz_1 = try sel(truthy(lit_0), (try sel(truthy(try ge(tg_1, 4.0)), try elem(try get((try K("Video")), "LIGHT_STARS"), 2.0), try elem(try get((try K("Video")), "LIGHT_STARS"), 1.0))), 2.4)
+              try call(s_0, "fill_rect", [try sub(x_1, try div(sz_1, 2.0)), try sub(try sub(0.0, y_1), try div(sz_1, 2.0)), sz_1, sz_1])
+            }
+            i1 += 1
+          }
+        }
+        try call(s_0, "alpha", [1.0])
+      }
+      if truthy(try and_(V.b(!(try eq(sol_0, V.null))), try gt(try elem(sys_0, 4.0), 0.004))) {
+        var ax_0: V = V.null; ax_0 = try mul((try sub(sx_0, cx_0)), px_0)
+        var ay_0: V = V.null; ay_0 = try mul(try mul((try sub(sy_0, cy_0)), px_0), ci_0)
+        var FRS_0: V = V.null; FRS_0 = try get(try get(sol_0, "header"), Name(try str(V.s(cat("frames")))))
+        var mk_0: V = V.null; mk_0 = V.fn({ (a2: [V]) throws -> V in
+          var f_1: V = arg(a2, 0); var k_1: V = arg(a2, 1); var c_1: V = arg(a2, 2);
+          return try elem(SF_0, try add(try add(try add(try mul(f_1, try elem(meta_0, 1.0)), try elem(meta_0, 0.0)), try mul(6.0, k_1)), c_1))
+          return V.null
+        })
+        do {
+          var i1: Double = 0
+          while i1 < num(try sub(try elem(meta_0, 2.0), 1.0)) {
+            var k_1: V = V.num(i1)
+            var b_1: V = V.null; b_1 = try add(k_1, 1.0)
+            var ink_1: V = V.null; ink_1 = try elem(try get((try K("Video")), "PLANET_INK"), try call((try K("Fmt")), "min", [3.0, k_1]))
+            try call(s_0, "alpha", [try mul(0.85, try elem(sys_0, 4.0))])
+            try call(s_0, "stroke_style", [ink_1])
+            try call(s_0, "line_width", [2.0])
+            try get(s_0, "begin_path")
+            do {
+              var i2: Double = 0
+              while i2 < num(FRS_0) {
+                var f_2: V = V.num(i2)
+                var x_2: V = V.null; x_2 = try add(ax_0, try mul((try sub(try invoke(mk_0, [f_2, b_1, 0.0]), try elem(sys_0, 1.0))), try elem(sys_0, 0.0)))
+                var y_2: V = V.null; y_2 = try add(ay_0, try mul((try sub(try invoke(mk_0, [f_2, b_1, 1.0]), try elem(sys_0, 2.0))), try elem(sys_0, 0.0)))
+                if truthy(V.b(try eq(f_2, 0.0))) {
+                  try call(s_0, "move_to", [x_2, try sub(0.0, y_2)])
+                } else {
+                  try call(s_0, "line_to", [x_2, try sub(0.0, y_2)])
+                }
+                i2 += 1
+              }
+            }
+            try get(s_0, "stroke")
+            try call(s_0, "alpha", [try elem(sys_0, 4.0)])
+            var x_1: V = V.null; x_1 = try add(ax_0, try mul((try sub(try invoke(mk_0, [try elem(sys_0, 3.0), b_1, 0.0]), try elem(sys_0, 1.0))), try elem(sys_0, 0.0)))
+            var y_1: V = V.null; y_1 = try add(ay_0, try mul((try sub(try invoke(mk_0, [try elem(sys_0, 3.0), b_1, 1.0]), try elem(sys_0, 2.0))), try elem(sys_0, 0.0)))
+            try call(s_0, "line_width", [2.5])
+            try get(s_0, "begin_path")
+            try call(s_0, "arc", [x_1, try sub(0.0, y_1), 13.0, 0.0, V.num(2.0 * Double.pi)])
+            try get(s_0, "stroke")
+            try call(s_0, "fill_style", [V.s(cat("#000000"))])
+            try get(s_0, "begin_path")
+            try call(s_0, "arc", [x_1, try sub(0.0, y_1), 2.5, 0.0, V.num(2.0 * Double.pi)])
+            try get(s_0, "fill")
+            i1 += 1
+          }
+        }
+        try call(s_0, "alpha", [1.0])
+      }
+      if truthy(has_sun_0) {
+        var x_0: V = V.null; x_0 = try mul((try sub(sx_0, cx_0)), px_0)
+        var y_0: V = V.null; y_0 = try mul(try mul((try sub(sy_0, cy_0)), px_0), ci_0)
+        var big_0: V = V.null; big_0 = try sel(truthy(try lt(try get(shot_0, "from_zoom"), 1.0)), try sub(1.0, try call((try K("Video")), "smooth", [try mul(e_0, 3.0)])), 0.0)
+        try call(s_0, "fill_style", [V.s(cat("#ffd23f"))])
+        try get(s_0, "begin_path")
+        try call(s_0, "arc", [x_0, try sub(0.0, y_0), try mul(4.0, (try sub(1.0, big_0))), 0.0, V.num(2.0 * Double.pi)])
+        try get(s_0, "fill")
+        if truthy(try gt(big_0, 0.0)) {
+          try call(s_0, "alpha", [big_0])
+          try call(s_0, "stroke_style", [V.s(cat("#e0a526"))])
+          try call(s_0, "line_width", [3.0])
+          try get(s_0, "begin_path")
+          try call(s_0, "arc", [x_0, try sub(0.0, y_0), 26.0, 0.0, V.num(2.0 * Double.pi)])
+          try get(s_0, "stroke")
+          try call(s_0, "alpha", [1.0])
+        }
+      }
+      try get(s_0, "restore")
+      var fade_0: V = V.null; fade_0 = try call((try K("Fmt")), "max", [try sel(truthy(try gt(try get(shot_0, "fade_in"), 0.0)), try sub(1.0, try div(i_0, (try mul(try get(shot_0, "fade_in"), try get((try K("Video")), "FPS"))))), 0.0), try sel(truthy(try gt(try get(shot_0, "fade_out"), 0.0)), try sub(1.0, try div((try sub(try sub(n_0, 1.0), i_0)), (try mul(try get(shot_0, "fade_out"), try get((try K("Video")), "FPS"))))), 0.0)])
+      if truthy(try gt(fade_0, 0.0)) {
+        try call(s_0, "alpha", [try call((try K("Fmt")), "min", [1.0, fade_0])])
+        try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+        try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+        return try call(s_0, "alpha", [1.0])
+      }
+      return V.null
+    })
+    c.statik("transport", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0);
+      var ink_0: V = V.null; ink_0 = try makeNamed("Ink", [])
+      var lanes_0: V = V.null; lanes_0 = try call((try K("Video")), "transport_lanes", [theory_0, ink_0])
+      var n_0: V = V.null; n_0 = try m_round((try mul(14.0, try get((try K("Video")), "FPS"))))
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", V.s(cat("video.transport"))), kw("what", V.s(cat("G/S.v, Transport: a source carrying a quarter of a step a tick, on a line"))), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", n_0), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        return try makeNamed("Banded", [kw("inner", try makeNamed("Unrolling", [kw("lanes", lanes_0), kw("ink", ink_0), kw("per", try call((try K("Video")), "per_tick", [lanes_0]))])), kw("top", try get((try K("Video")), "STRIP_TOP")), kw("tall", try get((try K("Video")), "STRIP_TALL"))])
+        return V.null
+      }))])
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("transport_lanes", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0); var ink_0: V = arg(a1, 1);
+      try set(ink_0, "every", V.b(true))
+      try set(ink_0, "top", 36.0)
+      var lanes_0: V = V.null; lanes_0 = try call(theory_0, "transport_lanes", [ink_0])
+      for e1 in try items(lanes_0) {
+        var l_1: V = e1
+        try set(l_1, "says", V.s(cat("")))
+      }
+      try set(ink_0, "centre", try call((try K("Strip")), "centre_of", [lanes_0]))
+      return lanes_0
+      return V.null
+    })
+    c.statik("per_tick", { (this_: V, a1: [V]) throws -> V in
+      var lanes_0: V = arg(a1, 0);
+      return try m_floor((try div(try m_round((try mul(14.0, try get((try K("Video")), "FPS")))), (try add(try len(lanes_0), 1.0)))))
+      return V.null
+    })
+    c.statik("look", { (this_: V, a1: [V]) throws -> V in
+      var width_0: V = arg(a1, 0); var lane_0: V = arg(a1, 1); var ink_0: V = arg(a1, 2);
+      var seen_0: V = V.null; seen_0 = V.b(false)
+      var lo_0: V = V.null; lo_0 = 0.0
+      var hi_0: V = V.null; hi_0 = 0.0
+      for e1 in try items(try get(lane_0, "sides")) {
+        var sd_1: V = e1
+        var to_1: V = V.null; to_1 = try add(try get(sd_1, "at"), try get(sd_1, "sign"))
+        if !truthy(seen_0) {
+          lo_0 = try get(sd_1, "at")
+          hi_0 = try get(sd_1, "at")
+          seen_0 = V.b(true)
+        }
+        lo_0 = try call((try K("Fmt")), "min", [lo_0, try call((try K("Fmt")), "min", [try get(sd_1, "at"), to_1])])
+        hi_0 = try call((try K("Fmt")), "max", [hi_0, try call((try K("Fmt")), "max", [try get(sd_1, "at"), to_1])])
+      }
+      for e1 in try items(try get(lane_0, "sources")) {
+        var p_1: V = e1
+        if !truthy(seen_0) {
+          lo_0 = p_1
+          hi_0 = p_1
+          seen_0 = V.b(true)
+        }
+        lo_0 = try call((try K("Fmt")), "min", [lo_0, try sub(p_1, 1.0)])
+        hi_0 = try call((try K("Fmt")), "max", [hi_0, try add(p_1, 1.0)])
+      }
+      var ext_0: V = V.null; ext_0 = try add(try call((try K("Fmt")), "max", [try sub(try get(ink_0, "centre"), lo_0), try sub(hi_0, try get(ink_0, "centre"))]), 0.4)
+      var lanew_0: V = V.null; lanew_0 = try sub(width_0, try mul(2.0, try get((try K("Strip")), "PAD")))
+      var cell_0: V = V.null; cell_0 = try div(lanew_0, (try add(try mul(2.0, ext_0), 1.0)))
+      var mid_0: V = V.null; mid_0 = try add(try get((try K("Strip")), "PAD"), try div(lanew_0, 2.0))
+      var src_0: V = V.null; src_0 = try m_first(try get(lane_0, "sources"))
+      var x0_0: V = V.null; x0_0 = try add(mid_0, try mul((try sub(src_0, try get(ink_0, "centre"))), cell_0))
+      return list(x0_0, try add(try add(try get((try K("Video")), "STRIP_TOP"), try get(ink_0, "top")), try div((try sub(try get((try K("Video")), "STRIP_TALL"), try get(ink_0, "top"))), 2.0)), cell_0, src_0, try div((try sub(try get((try K("Strip")), "PAD"), x0_0)), cell_0), try div((try sub(try sub(width_0, try get((try K("Strip")), "PAD")), x0_0)), cell_0))
+      return V.null
+    })
+    c.statik("seen", { (this_: V, a1: [V]) throws -> V in
+      var p_0: V = arg(a1, 0); var yaw_0: V = arg(a1, 1); var pitch_0: V = arg(a1, 2); var ox_0: V = arg(a1, 3); var oy_0: V = arg(a1, 4); var cell_0: V = arg(a1, 5);
+      var x1_0: V = V.null; x1_0 = try sub(try mul(try elem(p_0, 0.0), try m_cos(yaw_0)), try mul(try elem(p_0, 2.0), try m_sin(yaw_0)))
+      var z1_0: V = V.null; z1_0 = try add(try mul(try elem(p_0, 0.0), try m_sin(yaw_0)), try mul(try elem(p_0, 2.0), try m_cos(yaw_0)))
+      var y1_0: V = V.null; y1_0 = try sub(try mul(try elem(p_0, 1.0), try m_cos(pitch_0)), try mul(z1_0, try m_sin(pitch_0)))
+      var z2_0: V = V.null; z2_0 = try add(try mul(try elem(p_0, 1.0), try m_sin(pitch_0)), try mul(z1_0, try m_cos(pitch_0)))
+      var f_0: V = V.null; f_0 = try div(60.0, (try add(60.0, z2_0)))
+      return list(try add(ox_0, try mul(try mul(cell_0, f_0), x1_0)), try sub(oy_0, try mul(try mul(cell_0, f_0), y1_0)), f_0)
+      return V.null
+    })
+    c.statik("arrow", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var x_0: V = arg(a1, 1); var y_0: V = arg(a1, 2); var ux_0: V = arg(a1, 3); var uy_0: V = arg(a1, 4); var cell_0: V = arg(a1, 5); var a_0: V = arg(a1, 6);
+      var HEADW_0: V = V.null; HEADW_0 = try call((try K("Fmt")), "max", [7.0, try call((try K("Fmt")), "min", [12.0, try mul(cell_0, 0.20)])])
+      var REACH_0: V = V.null; REACH_0 = try mul(cell_0, 0.25)
+      var BAR_0: V = V.null; BAR_0 = try call((try K("Fmt")), "max", [2.5, try call((try K("Fmt")), "min", [4.5, try mul(cell_0, 0.075)])])
+      var BASE_0: V = V.null; BASE_0 = try mul(HEADW_0, 0.45)
+      var TIP_0: V = V.null; TIP_0 = try mul(HEADW_0, 0.55)
+      var LEN_0: V = V.null; LEN_0 = try sub(REACH_0, BASE_0)
+      var SEEN_0: V = V.null; SEEN_0 = try sub(TIP_0, try div(BAR_0, 0.84))
+      try call(s_0, "line_width", [BAR_0])
+      try call(s_0, "stroke_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "NEUTRAL")), ",", try str(try mul(0.32, a_0)), ")"))])
+      try get(s_0, "begin_path")
+      try call(s_0, "move_to", [try sub(x_0, try mul(ux_0, (try add(BASE_0, LEN_0)))), try sub(y_0, try mul(uy_0, (try add(BASE_0, LEN_0))))])
+      try call(s_0, "line_to", [try sub(x_0, try mul(ux_0, BASE_0)), try sub(y_0, try mul(uy_0, BASE_0))])
+      try get(s_0, "stroke")
+      try call(s_0, "stroke_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "NEUTRAL")), ",", try str(a_0), ")"))])
+      try get(s_0, "begin_path")
+      try call(s_0, "move_to", [x_0, y_0])
+      try call(s_0, "line_to", [try add(x_0, try mul(ux_0, (try add(SEEN_0, LEN_0)))), try add(y_0, try mul(uy_0, (try add(SEEN_0, LEN_0))))])
+      try get(s_0, "stroke")
+      try call(s_0, "fill_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "NEUTRAL")), ",", try str(try mul(0.97, a_0)), ")"))])
+      try get(s_0, "begin_path")
+      try call(s_0, "move_to", [try add(x_0, try mul(ux_0, TIP_0)), try add(y_0, try mul(uy_0, TIP_0))])
+      try call(s_0, "line_to", [try sub(try sub(x_0, try mul(ux_0, BASE_0)), try mul(try mul(uy_0, HEADW_0), 0.42)), try add(try sub(y_0, try mul(uy_0, BASE_0)), try mul(try mul(ux_0, HEADW_0), 0.42))])
+      try call(s_0, "line_to", [try add(try sub(x_0, try mul(ux_0, BASE_0)), try mul(try mul(uy_0, HEADW_0), 0.42)), try sub(try sub(y_0, try mul(uy_0, BASE_0)), try mul(try mul(ux_0, HEADW_0), 0.42))])
+      return try get(s_0, "fill")
+      return V.null
+    })
+    c.statik("way", { (this_: V, a1: [V]) throws -> V in
+      var k_0: V = arg(a1, 0); var space_0: V = arg(a1, 1);
+      var q_0: V = V.null; q_0 = try m_floor((try div(k_0, 2.0)))
+      var o_0: V = V.null; o_0 = try elem(list(list(1.0, 0.0), list(1.0, 1.0), list(0.0, 1.0), list(try sub(0.0, 1.0), 1.0), list(try sub(0.0, 1.0), 0.0), list(try sub(0.0, 1.0), try sub(0.0, 1.0)), list(0.0, try sub(0.0, 1.0)), list(1.0, try sub(0.0, 1.0))), k_0)
+      var b_0: V = V.null; b_0 = try elem(list(list(0.5, 0.5), list(try sub(0.0, 0.5), 0.5), list(try sub(0.0, 0.5), try sub(0.0, 0.5)), list(0.5, try sub(0.0, 0.5))), q_0)
+      var bz_0: V = V.null; bz_0 = try sel(truthy(V.b(try eq(try mod(k_0, 2.0), 0.0))), 0.5, try sub(0.0, 0.5))
+      return list(try add(try elem(o_0, 0.0), try mul((try sub(try elem(b_0, 0.0), try elem(o_0, 0.0))), space_0)), try add(try elem(o_0, 1.0), try mul((try sub(try elem(b_0, 1.0), try elem(o_0, 1.0))), space_0)), try mul(bz_0, space_0))
+      return V.null
+    })
+    c.statik("lattice", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var lane_0: V = arg(a1, 1); var look_0: V = arg(a1, 2); var grow_0: V = arg(a1, 3); var ticks_0: V = arg(a1, 4); var fade_0: V = arg(a1, 5); var earth_0: V = arg(a1, 6); var ox_0: V = arg(a1, 7); var oy_0: V = arg(a1, 8); var cell_0: V = arg(a1, 9); var rays_0: V = arg(a1, 10); var dense_from_0: V = arg(a1, 11); var far_0: V = arg(a1, 12);
+      var plane_0: V = V.null; plane_0 = try call((try K("Video")), "smooth", [try div((try sub(grow_0, 0.25)), 0.3)])
+      var space_0: V = V.null; space_0 = try call((try K("Video")), "smooth", [try div((try sub(grow_0, 0.55)), 0.35)])
+      var yaw_0: V = V.null; yaw_0 = try mul(0.55, space_0)
+      var pitch_0: V = V.null; pitch_0 = try mul(0.42, space_0)
+      var src_0: V = V.null; src_0 = try elem(look_0, 3.0)
+      var lo_0: V = V.null; lo_0 = try elem(look_0, 4.0)
+      var hi_0: V = V.null; hi_0 = try elem(look_0, 5.0)
+      var R_0: V = V.null; R_0 = 7.0
+      var a_0: V = V.null; a_0 = try mul(R_0, plane_0)
+      var b_0: V = V.null; b_0 = try mul(R_0, space_0)
+      var pt_0: V = V.null; pt_0 = V.fn({ (a2: [V]) throws -> V in
+        var p_1: V = arg(a2, 0);
+        return try call((try K("Video")), "seen", [p_1, yaw_0, pitch_0, ox_0, oy_0, cell_0])
+        return V.null
+      })
+      var line_0: V = V.null; line_0 = V.fn({ (a2: [V]) throws -> V in
+        var p_1: V = arg(a2, 0); var q_1: V = arg(a2, 1); var al_1: V = arg(a2, 2);
+        if truthy(try gt(al_1, 0.004)) {
+          var P_1: V = V.null; P_1 = try invoke(pt_0, [p_1])
+          var Q_1: V = V.null; Q_1 = try invoke(pt_0, [q_1])
+          try call(s_0, "stroke_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "NEUTRAL")), ",", try str(try mul(0.16, al_1)), ")"))])
+          try call(s_0, "line_width", [1.0])
+          try get(s_0, "begin_path")
+          try call(s_0, "move_to", [try elem(P_1, 0.0), try elem(P_1, 1.0)])
+          try call(s_0, "line_to", [try elem(Q_1, 0.0), try elem(Q_1, 1.0)])
+          return try get(s_0, "stroke")
+        }
+        return V.null
+      })
+      var dot_0: V = V.null; dot_0 = V.fn({ (a2: [V]) throws -> V in
+        var p_1: V = arg(a2, 0); var al_1: V = arg(a2, 1);
+        if truthy(try gt(al_1, 0.004)) {
+          var P_1: V = V.null; P_1 = try invoke(pt_0, [p_1])
+          try call(s_0, "fill_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "NEUTRAL")), ",", try str(try mul(0.6, al_1)), ")"))])
+          try get(s_0, "begin_path")
+          try call(s_0, "arc", [try elem(P_1, 0.0), try elem(P_1, 1.0), try mul(2.6, try elem(P_1, 2.0)), 0.0, V.num(2.0 * Double.pi)])
+          return try get(s_0, "fill")
+        }
+        return V.null
+      })
+      var ilo_0: V = V.null; ilo_0 = try m_round((try sub(try m_reduce(try get(lane_0, "points"), try m_first(try get(lane_0, "points")), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0); var q_2: V = arg(a3, 1);
+        return try call((try K("Fmt")), "min", [p_2, q_2])
+        return V.null
+      })), src_0)))
+      var ihi_0: V = V.null; ihi_0 = try m_round((try sub(try m_reduce(try get(lane_0, "points"), try m_first(try get(lane_0, "points")), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0); var q_2: V = arg(a3, 1);
+        return try call((try K("Fmt")), "max", [p_2, q_2])
+        return V.null
+      })), src_0)))
+      do {
+        var i1: Double = 0
+        while i1 < num(try add(try mul(2.0, R_0), 1.0)) {
+          var jj_1: V = V.num(i1)
+          var j_1: V = V.null; j_1 = try sub(jj_1, R_0)
+          do {
+            var i2: Double = 0
+            while i2 < num(try add(try mul(2.0, R_0), 1.0)) {
+              var ll_2: V = V.num(i2)
+              var l_2: V = V.null; l_2 = try sub(ll_2, R_0)
+              var vis_2: V = V.null; vis_2 = try mul(try mul(fade_0, try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try sub(try add(a_0, 1.0), try m_abs(j_1))])])), try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try sub(try add(b_0, 1.0), try m_abs(l_2))])]))
+              if truthy(try gt(vis_2, 0.004)) {
+                try invoke(line_0, [list(lo_0, j_1, l_2), list(hi_0, j_1, l_2), vis_2])
+                do {
+                  var i3: Double = 0
+                  while i3 < num(try add(try sub(ihi_0, ilo_0), 1.0)) {
+                    var ii_3: V = V.num(i3)
+                    try invoke(dot_0, [list(try add(ilo_0, ii_3), j_1, l_2), vis_2])
+                    i3 += 1
+                  }
+                }
+                if truthy(try and_(try and_(try gt(space_0, 0.01), try lt(j_1, R_0)), try lt(l_2, R_0))) {
+                  do {
+                    var i3: Double = 0
+                    while i3 < num(try sub(ihi_0, ilo_0)) {
+                      var ii_3: V = V.num(i3)
+                      try invoke(dot_0, [list(try add(try add(ilo_0, ii_3), 0.5), try add(j_1, 0.5), try add(l_2, 0.5)), try mul(vis_2, space_0)])
+                      i3 += 1
+                    }
+                  }
+                }
+              }
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      do {
+        var i1: Double = 0
+        while i1 < num(try add(try sub(ihi_0, ilo_0), 1.0)) {
+          var ii_1: V = V.num(i1)
+          var i_1: V = V.null; i_1 = try add(ilo_0, ii_1)
+          do {
+            var i2: Double = 0
+            while i2 < num(try add(try mul(2.0, R_0), 1.0)) {
+              var ll_2: V = V.num(i2)
+              var l_2: V = V.null; l_2 = try sub(ll_2, R_0)
+              try invoke(line_0, [list(i_1, try sub(0.0, a_0), l_2), list(i_1, a_0, l_2), try mul(try mul(fade_0, plane_0), try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try sub(try add(b_0, 1.0), try m_abs(l_2))])]))])
+              i2 += 1
+            }
+          }
+          do {
+            var i2: Double = 0
+            while i2 < num(try add(try mul(2.0, R_0), 1.0)) {
+              var jj_2: V = V.num(i2)
+              var j_2: V = V.null; j_2 = try sub(jj_2, R_0)
+              try invoke(line_0, [list(i_1, j_2, try sub(0.0, b_0)), list(i_1, j_2, b_0), try mul(try mul(fade_0, space_0), try call((try K("Fmt")), "min", [1.0, try call((try K("Fmt")), "max", [0.0, try sub(try add(a_0, 1.0), try m_abs(j_2))])]))])
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var T_0: V = V.null; T_0 = try m_floor(ticks_0)
+      var ray_0: V = V.null; ray_0 = V.fn({ (a2: [V]) throws -> V in
+        var k_1: V = arg(a2, 0); var r_1: V = arg(a2, 1); var w_1: V = arg(a2, 2);
+        if truthy(try and_(try and_(try gt(w_1, 0.004), try ge(r_1, 1.0)), try le(r_1, far_0))) {
+          var d_1: V = V.null; d_1 = try call((try K("Video")), "way", [k_1, space_0])
+          var P_1: V = V.null; P_1 = try invoke(pt_0, [list(try mul(try elem(d_1, 0.0), r_1), try mul(try elem(d_1, 1.0), r_1), try mul(try elem(d_1, 2.0), r_1))])
+          var Q_1: V = V.null; Q_1 = try invoke(pt_0, [list(try mul(try elem(d_1, 0.0), (try add(r_1, 0.25))), try mul(try elem(d_1, 1.0), (try add(r_1, 0.25))), try mul(try elem(d_1, 2.0), (try add(r_1, 0.25))))])
+          var len_1: V = V.null; len_1 = try call((try K("Fmt")), "hypot", [try sub(try elem(Q_1, 0.0), try elem(P_1, 0.0)), try sub(try elem(Q_1, 1.0), try elem(P_1, 1.0))])
+          if truthy(try gt(len_1, 0.01)) {
+            return try call((try K("Video")), "arrow", [s_0, try elem(P_1, 0.0), try elem(P_1, 1.0), try div((try sub(try elem(Q_1, 0.0), try elem(P_1, 0.0))), len_1), try div((try sub(try elem(Q_1, 1.0), try elem(P_1, 1.0))), len_1), try mul(len_1, 4.0), try mul(try mul(w_1, rays_0), try call((try K("Fmt")), "min", [1.0, try sub(far_0, r_1)]))])
+          }
+        }
+        return V.null
+      })
+      for e1 in try items(try get(lane_0, "sides")) {
+        var sd_1: V = e1
+        try invoke(ray_0, [try sel(truthy(try gt(try get(sd_1, "sign"), 0.0)), 0.0, 4.0), try add(try m_abs((try sub(try get(sd_1, "at"), src_0))), T_0), 1.0])
+      }
+      do {
+        var i1: Double = 0
+        while i1 < num(T_0) {
+          var m_1: V = V.num(i1)
+          var e_1: V = V.null; e_1 = try add(m_1, 1.0)
+          if truthy(try or_(V.b(try eq(try mod(e_1, 2.0), 1.0)), try gt(e_1, dense_from_0))) {
+            do {
+              var i2: Double = 0
+              while i2 < num(8.0) {
+                var k_2: V = V.num(i2)
+                try invoke(ray_0, [k_2, try sub(try add(1.0, T_0), e_1), try sel(truthy(V.b(try eq(try mod(k_2, 4.0), 0.0))), 1.0, plane_0)])
+                i2 += 1
+              }
+            }
+          }
+          i1 += 1
+        }
+      }
+      var P_0: V = V.null; P_0 = try invoke(pt_0, [list(0.0, 0.0, 0.0)])
+      var half_0: V = V.null; half_0 = try call((try K("Fmt")), "max", [9.0, try call((try K("Fmt")), "min", [18.0, try mul(cell_0, 0.3)])])
+      try call(s_0, "fill_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "SOURCE")), ",", try str(try mul(0.14, (try sub(1.0, earth_0)))), ")"))])
+      try call(s_0, "fill_rect", [try sub(try elem(P_0, 0.0), half_0), try sub(try elem(P_0, 1.0), half_0), try mul(2.0, half_0), try mul(2.0, half_0)])
+      try call(s_0, "stroke_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "SOURCE")), ",", try str(try mul(0.9, (try sub(1.0, earth_0)))), ")"))])
+      try call(s_0, "line_width", [1.5])
+      try call(s_0, "stroke_rect", [try sub(try elem(P_0, 0.0), half_0), try sub(try elem(P_0, 1.0), half_0), try mul(2.0, half_0), try mul(2.0, half_0)])
+      if truthy(try gt(earth_0, 0.0)) {
+        try call(s_0, "fill_style", [V.s(cat("rgba(", try str(try get((try K("Ink")), "SOURCE")), ",", try str(earth_0), ")"))])
+        try get(s_0, "begin_path")
+        try call(s_0, "arc", [try elem(P_0, 0.0), try elem(P_0, 1.0), try add(2.6, try mul(7.4, earth_0)), 0.0, V.num(2.0 * Double.pi)])
+        return try get(s_0, "fill")
+      }
+      return V.null
+    })
+    c.statik("source_camera", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var look_0: V = arg(a1, 1); var grow_0: V = arg(a1, 2);
+      var e_0: V = V.null; e_0 = try call((try K("Video")), "smooth", [try div(grow_0, 0.3)])
+      return list(try add(try elem(look_0, 0.0), try mul((try sub(try div(try get(s_0, "width"), 2.0), try elem(look_0, 0.0))), e_0)), try add(try elem(look_0, 1.0), try mul((try sub(try div(try get(s_0, "height"), 2.0), try elem(look_0, 1.0))), e_0)), try m_exp((try add(try m_ln(try elem(look_0, 2.0)), try mul((try sub(try m_ln(95.0), try m_ln(try elem(look_0, 2.0)))), e_0)))))
+      return V.null
+    })
+    c.statik("to_source", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0);
+      var ink_0: V = V.null; ink_0 = try makeNamed("Ink", [])
+      var lanes_0: V = V.null; lanes_0 = try call((try K("Video")), "transport_lanes", [theory_0, ink_0])
+      var n_0: V = V.null; n_0 = try m_round((try mul(4.0, try get((try K("Video")), "FPS"))))
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", V.s(cat("video.to-source"))), kw("what", V.s(cat("one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)"))), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", n_0), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        return try makeNamed("Growing", [kw("n", n_0), kw("lane", try m_last(lanes_0)), kw("ink", ink_0), kw("per", try call((try K("Video")), "per_tick", [lanes_0]))])
+        return V.null
+      }))])
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("to_solar", { (this_: V, a1: [V]) throws -> V in
+      var theory_0: V = arg(a1, 0);
+      var ink_0: V = V.null; ink_0 = try makeNamed("Ink", [])
+      var lanes_0: V = V.null; lanes_0 = try call((try K("Video")), "transport_lanes", [theory_0, ink_0])
+      var sol_0: V = V.null; sol_0 = try get(theory_0, "solar")
+      var r_0: V = V.null; r_0 = try get(sol_0, "record")
+      var at_0: V = V.null; at_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(try get(r_0, "names"))) {
+          var k_1: V = V.num(i1)
+          at_0 = try sel(truthy(V.b(try eq(try elem(try get(r_0, "names"), k_1), V.s(cat("marks"))))), k_1, at_0)
+          i1 += 1
+        }
+      }
+      var off_0: V = V.null; off_0 = try m_sum(try m_take(try get(r_0, "sizes"), at_0))
+      var n_0: V = V.null; n_0 = try m_round((try mul(8.0, try get((try K("Video")), "FPS"))))
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", V.s(cat("video.to-solar"))), kw("what", V.s(cat("the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it"))), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", n_0), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        return try makeNamed("Planets", [kw("n", n_0), kw("lane", try m_last(lanes_0)), kw("ink", ink_0), kw("per", try call((try K("Video")), "per_tick", [lanes_0])), kw("stamp", try get(r_0, "stamp")), kw("off", off_0), kw("width", try get(r_0, "width")), kw("bodies", try m_round((try div((try sub(try elem(try get(r_0, "sizes"), at_0), 1.0)), 6.0))))])
+        return V.null
+      }))])
+      try set(pic_0, "uses", list(V.s(cat("solar.inner"))))
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("planets", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var t_0: V = arg(a1, 1); var lane_0: V = arg(a1, 2); var look_0: V = arg(a1, 3); var ticks_0: V = arg(a1, 4); var film_0: V = arg(a1, 5); var off_0: V = arg(a1, 6); var width_0: V = arg(a1, 7); var bodies_0: V = arg(a1, 8);
+      var SOLAR_0: V = V.null; SOLAR_0 = try call((try K("Measured")), "of", [V.s(cat("solar-inner"))])
+      if truthy(V.b(try eq(SOLAR_0, V.null))) {
+        try invoke(fail, [V.s(cat("solar-inner is not on disk - run `npx ray data` and try again"))])
+      }
+      var NAMES_0: V = V.null; NAMES_0 = try get(try get(SOLAR_0, "header"), Name(try str(V.s(cat("names")))))
+      var PER_0: V = V.null; PER_0 = try get(try get(SOLAR_0, "columns"), Name(try str(V.s(cat("period")))))
+      var PLANETS_0: V = V.null; PLANETS_0 = try filt(rng(try len(NAMES_0)), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try gt(try elem(PER_0, i_2), 0.0)
+        return V.null
+      }))
+      var F_0: V = V.null; F_0 = try get(try get(film_0, "columns"), Name(try str(V.s(cat("frames")))))
+      var FR_0: V = V.null; FR_0 = try get(try get(film_0, "header"), Name(try str(V.s(cat("frames")))))
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+      try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+      var fade_0: V = V.null; fade_0 = try sub(1.0, try call((try K("Video")), "smooth", [try div((try sub(t_0, 0.05)), 0.4)]))
+      var rays_0: V = V.null; rays_0 = try sub(1.0, try call((try K("Video")), "smooth", [try div((try sub(t_0, 0.45)), 0.35)]))
+      var earth_0: V = V.null; earth_0 = try call((try K("Video")), "smooth", [try div((try sub(t_0, 0.3)), 0.3)])
+      var e_0: V = V.null; e_0 = try call((try K("Video")), "smooth", [try div(t_0, 0.92)])
+      var come_0: V = V.null; come_0 = try call((try K("Video")), "smooth", [try div((try sub(t_0, 0.45)), 0.35)])
+      var u_0: V = V.null; u_0 = try call((try K("Fmt")), "min", [try sub(FR_0, 1.0), try add(try get((try K("Video")), "SOLAR_FROM"), try mul((try sub(try get((try K("Video")), "SOLAR_TO"), try get((try K("Video")), "SOLAR_FROM"))), t_0))])
+      var f0_0: V = V.null; f0_0 = try m_floor(u_0)
+      var f1_0: V = V.null; f1_0 = try call((try K("Fmt")), "min", [try add(f0_0, 1.0), try sub(FR_0, 1.0)])
+      var w_0: V = V.null; w_0 = try sub(u_0, f0_0)
+      var mark_0: V = V.null; mark_0 = V.fn({ (a2: [V]) throws -> V in
+        var f_1: V = arg(a2, 0); var k_1: V = arg(a2, 1); var c_1: V = arg(a2, 2);
+        return try elem(F_0, try add(try add(try add(try mul(f_1, width_0), off_0), try mul(6.0, k_1)), c_1))
+        return V.null
+      })
+      var where_0: V = V.null; where_0 = V.fn({ (a2: [V]) throws -> V in
+        var k_1: V = arg(a2, 0);
+        return list(try add(try invoke(mark_0, [f0_0, k_1, 0.0]), try mul(w_0, (try sub(try invoke(mark_0, [f1_0, k_1, 0.0]), try invoke(mark_0, [f0_0, k_1, 0.0]))))), try add(try invoke(mark_0, [f0_0, k_1, 1.0]), try mul(w_0, (try sub(try invoke(mark_0, [f1_0, k_1, 1.0]), try invoke(mark_0, [f0_0, k_1, 1.0]))))))
+        return V.null
+      })
+      var reach_0: V = V.null; reach_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(FR_0) {
+          var f_1: V = V.num(i1)
+          do {
+            var i2: Double = 0
+            while i2 < num(try sub(bodies_0, 1.0)) {
+              var k_2: V = V.num(i2)
+              reach_0 = try call((try K("Fmt")), "max", [reach_0, try call((try K("Fmt")), "hypot", [try sub(try invoke(mark_0, [f_1, try add(k_2, 1.0), 0.0]), try invoke(mark_0, [f_1, 0.0, 0.0])), try sub(try invoke(mark_0, [f_1, try add(k_2, 1.0), 1.0]), try invoke(mark_0, [f_1, 0.0, 1.0]))])])
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var earth_body_0: V = V.null; earth_body_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(PLANETS_0)) {
+          var k_1: V = V.num(i1)
+          earth_body_0 = try sel(truthy(V.b(try eq(try elem(NAMES_0, try elem(PLANETS_0, k_1)), V.s(cat("Earth"))))), try add(k_1, 1.0), earth_body_0)
+          i1 += 1
+        }
+      }
+      var E_0: V = V.null; E_0 = try invoke(where_0, [earth_body_0])
+      var O_0: V = V.null; O_0 = try invoke(where_0, [0.0])
+      var last_0: V = V.null; last_0 = try mul(2.1, (try add(reach_0, try call((try K("Fmt")), "hypot", [try sub(try elem(E_0, 0.0), try elem(O_0, 0.0)), try sub(try elem(E_0, 1.0), try elem(O_0, 1.0))]))))
+      var across_0: V = V.null; across_0 = try m_exp((try add(try m_ln((try div(last_0, 180.0))), try mul((try sub(try m_ln(last_0), try m_ln((try div(last_0, 180.0))))), e_0))))
+      var px_0: V = V.null; px_0 = try div(try get(s_0, "height"), across_0)
+      var cx_0: V = V.null; cx_0 = try elem(E_0, 0.0)
+      var cy_0: V = V.null; cy_0 = try elem(E_0, 1.0)
+      var X_0: V = V.null; X_0 = V.fn({ (a2: [V]) throws -> V in
+        var x_1: V = arg(a2, 0);
+        return try add(try div(try get(s_0, "width"), 2.0), try mul((try sub(x_1, cx_0)), px_0))
+        return V.null
+      })
+      var Y_0: V = V.null; Y_0 = V.fn({ (a2: [V]) throws -> V in
+        var y_1: V = arg(a2, 0);
+        return try sub(try div(try get(s_0, "height"), 2.0), try mul((try sub(y_1, cy_0)), px_0))
+        return V.null
+      })
+      if truthy(try or_(try gt(fade_0, 0.004), try gt(rays_0, 0.004))) {
+        try call((try K("Video")), "lattice", [s_0, lane_0, look_0, 1.0, try add(ticks_0, try mul(try mul(300.0, t_0), t_0)), fade_0, earth_0, try invoke(X_0, [try elem(E_0, 0.0)]), try invoke(Y_0, [try elem(E_0, 1.0)]), try div(try mul(95.0, (try div(last_0, 180.0))), across_0), rays_0, try m_floor(ticks_0), try add(16.0, try mul(40.0, try call((try K("Video")), "smooth", [try div(t_0, 0.4)])))])
+      }
+      do {
+        var i1: Double = 0
+        while i1 < num(try sub(bodies_0, 1.0)) {
+          var k_1: V = V.num(i1)
+          var b_1: V = V.null; b_1 = try add(k_1, 1.0)
+          var ink_1: V = V.null; ink_1 = try elem(try get((try K("Video")), "PLANET_INK"), try call((try K("Fmt")), "min", [3.0, k_1]))
+          try call(s_0, "alpha", [try mul(0.85, come_0)])
+          try call(s_0, "stroke_style", [ink_1])
+          try call(s_0, "line_width", [2.0])
+          try get(s_0, "begin_path")
+          do {
+            var i2: Double = 0
+            while i2 < num(FR_0) {
+              var f_2: V = V.num(i2)
+              if truthy(V.b(try eq(f_2, 0.0))) {
+                try call(s_0, "move_to", [try invoke(X_0, [try invoke(mark_0, [f_2, b_1, 0.0])]), try invoke(Y_0, [try invoke(mark_0, [f_2, b_1, 1.0])])])
+              } else {
+                try call(s_0, "line_to", [try invoke(X_0, [try invoke(mark_0, [f_2, b_1, 0.0])]), try invoke(Y_0, [try invoke(mark_0, [f_2, b_1, 1.0])])])
+              }
+              i2 += 1
+            }
+          }
+          try get(s_0, "stroke")
+          var P_1: V = V.null; P_1 = try invoke(where_0, [b_1])
+          var x_1: V = V.null; x_1 = try invoke(X_0, [try elem(P_1, 0.0)])
+          var y_1: V = V.null; y_1 = try invoke(Y_0, [try elem(P_1, 1.0)])
+          try call(s_0, "alpha", [try sel(truthy(V.b(try eq(b_1, earth_body_0))), earth_0, come_0)])
+          try call(s_0, "stroke_style", [ink_1])
+          try call(s_0, "line_width", [2.5])
+          try get(s_0, "begin_path")
+          try call(s_0, "arc", [x_1, y_1, 13.0, 0.0, V.num(2.0 * Double.pi)])
+          try get(s_0, "stroke")
+          try call(s_0, "fill_style", [try sel(truthy(V.b(try eq(b_1, earth_body_0))), V.s(cat("rgba(", try str(try get((try K("Ink")), "SOURCE")), ",", try str(try sub(1.0, come_0)), ")")), V.s(cat("#000000")))])
+          try get(s_0, "begin_path")
+          try call(s_0, "arc", [x_1, y_1, try sel(truthy(V.b(try eq(b_1, earth_body_0))), try add(try mul(10.0, (try sub(1.0, come_0))), try mul(2.5, come_0)), 2.5), 0.0, V.num(2.0 * Double.pi)])
+          try get(s_0, "fill")
+          i1 += 1
+        }
+      }
+      try call(s_0, "alpha", [come_0])
+      try call(s_0, "stroke_style", [V.s(cat("#e0a526"))])
+      try call(s_0, "line_width", [3.0])
+      try get(s_0, "begin_path")
+      try call(s_0, "arc", [try invoke(X_0, [try elem(O_0, 0.0)]), try invoke(Y_0, [try elem(O_0, 1.0)]), 26.0, 0.0, V.num(2.0 * Double.pi)])
+      try get(s_0, "stroke")
+      try call(s_0, "fill_style", [V.s(cat("#000000"))])
+      try get(s_0, "begin_path")
+      try call(s_0, "arc", [try invoke(X_0, [try elem(O_0, 0.0)]), try invoke(Y_0, [try elem(O_0, 1.0)]), 3.0, 0.0, V.num(2.0 * Double.pi)])
+      try get(s_0, "fill")
+      return try call(s_0, "alpha", [1.0])
+      return V.null
+    })
+    c.statik("end", { (this_: V, a1: [V]) throws -> V in
+      var n_0: V = V.null; n_0 = try m_round((try mul(20.0, try get((try K("Video")), "FPS"))))
+      var pic_0: V = V.null; pic_0 = try makeNamed("Picture", [kw("id", V.s(cat("video.end"))), kw("what", V.s(cat("the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics"))), kw("width", try get((try K("Video")), "WIDTH")), kw("height", try get((try K("Video")), "HEIGHT")), kw("frames", n_0), kw("paint", V.fn({ (a3: [V]) throws -> V in
+        var played_2: V = arg(a3, 0);
+        return try makeNamed("EndCard", [kw("n", n_0)])
+        return V.null
+      }))])
+      try set(pic_0, "images", list(try get((try K("Video")), "LOGO")))
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+    c.statik("end_card", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var i_0: V = arg(a1, 1); var n_0: V = arg(a1, 2);
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+      try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+      try call(s_0, "alpha", [try call((try K("Video")), "smooth", [try div(i_0, try get((try K("Video")), "FPS"))])])
+      var w_0: V = V.null; w_0 = 1500.0
+      try call(s_0, "image", [try get((try K("Video")), "LOGO"), try div((try sub(try get(s_0, "width"), w_0)), 2.0), 330.0, w_0, try div(w_0, 3.0)])
+      try call(s_0, "text_align", [V.s(cat("center"))])
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "SEEN")])
+      try call(s_0, "font", [V.s(cat("600 72px ui-sans-serif, system-ui, sans-serif"))])
+      try call(s_0, "fill_text", [V.s(cat("Physics Project")), try div(try get(s_0, "width"), 2.0), 960.0])
+      try call(s_0, "fill_style", [V.s(cat("#3ddcff"))])
+      try call(s_0, "font", [V.s(cat("44px ui-sans-serif, system-ui, sans-serif"))])
+      try call(s_0, "fill_text", [V.s(cat("orbitmines.com/physics")), try div(try get(s_0, "width"), 2.0), 1060.0])
+      return try call(s_0, "alpha", [1.0])
+      return V.null
+    })
+    c.statik("montage", { (this_: V, a1: [V]) throws -> V in
+      var pic_0: V = V.null; pic_0 = try call((try K("Picture")), "still", [V.s(cat("video")), V.s(cat("the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined")), try get((try K("Video")), "WIDTH"), try get((try K("Video")), "HEIGHT"), V.fn({ (a3: [V]) throws -> V in
+        var s_2: V = arg(a3, 0);
+
+        return V.null
+      })])
+      try set(pic_0, "parts", try get((try K("Video")), "PARTS"))
+      try set(pic_0, "on_request", V.b(true))
+      return pic_0
+      return V.null
+    })
+  }
+}
+
+func def_Shot() throws { try cls("Shot", Physics.Node, C_Shot.define) }
+extension Physics { public static var Shot: V { get throws { return try K("Shot") } } }
+enum C_Shot {
+  static func define(_ c: Cls) throws {
+    c.field("film_id", nil)
+    c.field("seconds", nil)
+    c.field("from_zoom", nil)
+    c.field("to_zoom", nil)
+    c.field("from_sun", nil)
+    c.field("to_sun", nil)
+    c.field("from_at", nil)
+    c.field("to_at", nil)
+    c.field("tilt", nil)
+    c.field("turn", nil)
+    c.field("title", nil)
+    c.field("fade_in", nil)
+    c.field("fade_out", nil)
+    c.getter("frames", { (this_: V, a1: [V]) throws -> V in
+      return try m_round((try mul(try get(this_, "seconds"), try get((try K("Video")), "FPS"))))
+      return V.null
+    })
+  }
+}
+
+func def_Sky() throws { try cls("Sky", Physics.Painter, C_Sky.define) }
+extension Physics { public static var Sky: V { get throws { return try K("Sky") } } }
+enum C_Sky {
+  static func define(_ c: Cls) throws {
+    c.field("shot", nil)
+    c.field("sol", { (this_: V) throws -> V in return V.null })
+    c.field("meta", { (this_: V) throws -> V in return list() })
+    c.field("sol_stamp", { (this_: V) throws -> V in return V.s(cat("")) })
+    c.field("shown_frames", { (this_: V) throws -> V in return 0.0 })
+    c.field("film", { (this_: V) throws -> V in return V.null })
+    c.field("tracks", { (this_: V) throws -> V in return V.null })
+    c.method("frame", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var dt_0: V = arg(a1, 1);
+      if truthy(V.b(try eq(try get(this_, "film"), V.null))) {
+        try set(this_, "film", try call((try K("Measured")), "of", [try get(try get(this_, "shot"), "film_id")]))
+        try set(this_, "tracks", try call((try K("Measured")), "of", [V.s(cat("", try str(try get(try get(this_, "shot"), "film_id")), ".stars"))]))
+      }
+      if truthy(V.b(try eq(try get(this_, "film"), V.null))) {
+        try invoke(fail, [V.s(cat("", try str(try get(try get(this_, "shot"), "film_id")), " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=", try str(try get(try get(this_, "shot"), "film_id")), " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ."))])
+      }
+      if truthy(try and_(try gt(try len(try get(this_, "meta")), 0.0), V.b(try eq(try get(this_, "sol"), V.null)))) {
+        try set(this_, "sol", try call((try K("Measured")), "of", [V.s(cat("solar.inner.frames"))]))
+        if truthy(V.b(try eq(try get(this_, "sol"), V.null))) {
+          try invoke(fail, [V.s(cat("solar.inner is not recorded - run `npx ray visuals solar.inner` first"))])
+        }
+        if truthy(V.b(!(try eq(try get(try get(try get(this_, "sol"), "header"), Name(try str(V.s(cat("stamp"))))), try get(this_, "sol_stamp"))))) {
+          try invoke(fail, [V.s(cat("solar.inner's recording is stale - run `npx ray visuals solar.inner` again"))])
+        }
+      }
+      try call((try K("Video")), "sky", [s_0, try get(this_, "shot"), try get(this_, "film"), try get(this_, "tracks"), try get(this_, "shown_frames"), try get(this_, "sol"), try get(this_, "meta")])
+      try set(this_, "shown_frames", try add(try get(this_, "shown_frames"), 1.0))
+      return V.null
+    })
+  }
+}
+
+func def_Band() throws { try cls("Band", Physics.Surface, C_Band.define) }
+extension Physics { public static var Band: V { get throws { return try K("Band") } } }
+enum C_Band {
+  static func define(_ c: Cls) throws {
+    c.field("inner", nil)
+    c.method("fill_style", { (this_: V, a1: [V]) throws -> V in
+      var colour_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "fill_style", [colour_0])
+      return V.null
+    })
+    c.method("stroke_style", { (this_: V, a1: [V]) throws -> V in
+      var colour_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "stroke_style", [colour_0])
+      return V.null
+    })
+    c.method("line_width", { (this_: V, a1: [V]) throws -> V in
+      var w_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "line_width", [w_0])
+      return V.null
+    })
+    c.method("alpha", { (this_: V, a1: [V]) throws -> V in
+      var v_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "alpha", [v_0])
+      return V.null
+    })
+    c.method("fill_rect", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1); var w_0: V = arg(a1, 2); var h_0: V = arg(a1, 3);
+      return try call(try get(this_, "inner"), "fill_rect", [x_0, y_0, w_0, h_0])
+      return V.null
+    })
+    c.method("stroke_rect", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1); var w_0: V = arg(a1, 2); var h_0: V = arg(a1, 3);
+      return try call(try get(this_, "inner"), "stroke_rect", [x_0, y_0, w_0, h_0])
+      return V.null
+    })
+    c.method("clear_rect", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1); var w_0: V = arg(a1, 2); var h_0: V = arg(a1, 3);
+      return try call(try get(this_, "inner"), "clear_rect", [x_0, y_0, w_0, h_0])
+      return V.null
+    })
+    c.getter("begin_path", { (this_: V, a1: [V]) throws -> V in
+      return try get(try get(this_, "inner"), "begin_path")
+      return V.null
+    })
+    c.method("move_to", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1);
+      return try call(try get(this_, "inner"), "move_to", [x_0, y_0])
+      return V.null
+    })
+    c.method("line_to", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1);
+      return try call(try get(this_, "inner"), "line_to", [x_0, y_0])
+      return V.null
+    })
+    c.method("arc", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1); var r_0: V = arg(a1, 2); var start_at_0: V = arg(a1, 3); var end_at_0: V = arg(a1, 4);
+      return try call(try get(this_, "inner"), "arc", [x_0, y_0, r_0, start_at_0, end_at_0])
+      return V.null
+    })
+    c.getter("stroke", { (this_: V, a1: [V]) throws -> V in
+      return try get(try get(this_, "inner"), "stroke")
+      return V.null
+    })
+    c.getter("fill", { (this_: V, a1: [V]) throws -> V in
+      return try get(try get(this_, "inner"), "fill")
+      return V.null
+    })
+    c.method("font", { (this_: V, a1: [V]) throws -> V in
+      var name_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "font", [name_0])
+      return V.null
+    })
+    c.method("text_align", { (this_: V, a1: [V]) throws -> V in
+      var how_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "text_align", [how_0])
+      return V.null
+    })
+    c.method("text_baseline", { (this_: V, a1: [V]) throws -> V in
+      var how_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "text_baseline", [how_0])
+      return V.null
+    })
+    c.method("fill_text", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var x_0: V = arg(a1, 1); var y_0: V = arg(a1, 2);
+      return try call(try get(this_, "inner"), "fill_text", [t_0, x_0, y_0])
+      return V.null
+    })
+    c.method("measure", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "measure", [t_0])
+      return V.null
+    })
+    c.getter("save", { (this_: V, a1: [V]) throws -> V in
+      return try get(try get(this_, "inner"), "save")
+      return V.null
+    })
+    c.getter("restore", { (this_: V, a1: [V]) throws -> V in
+      return try get(try get(this_, "inner"), "restore")
+      return V.null
+    })
+    c.method("translate", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0); var y_0: V = arg(a1, 1);
+      return try call(try get(this_, "inner"), "translate", [x_0, y_0])
+      return V.null
+    })
+    c.method("rotate", { (this_: V, a1: [V]) throws -> V in
+      var angle_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "rotate", [angle_0])
+      return V.null
+    })
+    c.method("dash", { (this_: V, a1: [V]) throws -> V in
+      var segments_0: V = arg(a1, 0);
+      return try call(try get(this_, "inner"), "dash", [segments_0])
+      return V.null
+    })
+    c.method("gradient_stroke", { (this_: V, a1: [V]) throws -> V in
+      var x0_0: V = arg(a1, 0); var x1_0: V = arg(a1, 1); var stops_0: V = arg(a1, 2); var at_0: V = arg(a1, 3);
+      return try call(try get(this_, "inner"), "gradient_stroke", [x0_0, x1_0, stops_0, at_0])
+      return V.null
+    })
+    c.method("image", { (this_: V, a1: [V]) throws -> V in
+      var src_0: V = arg(a1, 0); var x_0: V = arg(a1, 1); var y_0: V = arg(a1, 2); var w_0: V = arg(a1, 3); var h_0: V = arg(a1, 4);
+      return try call(try get(this_, "inner"), "image", [src_0, x_0, y_0, w_0, h_0])
+      return V.null
+    })
+  }
+}
+
+func def_Banded() throws { try cls("Banded", Physics.Painter, C_Banded.define) }
+extension Physics { public static var Banded: V { get throws { return try K("Banded") } } }
+enum C_Banded {
+  static func define(_ c: Cls) throws {
+    c.field("inner", nil)
+    c.field("top", nil)
+    c.field("tall", nil)
+    c.method("frame", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var dt_0: V = arg(a1, 1);
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+      try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+      try get(s_0, "save")
+      try call(s_0, "translate", [0.0, try get(this_, "top")])
+      try call(try get(this_, "inner"), "frame", [try makeNamed("Band", [kw("width", try get(s_0, "width")), kw("height", try get(this_, "tall")), kw("inner", s_0)]), dt_0])
+      return try get(s_0, "restore")
+      return V.null
+    })
+  }
+}
+
+func def_Growing() throws { try cls("Growing", Physics.Painter, C_Growing.define) }
+extension Physics { public static var Growing: V { get throws { return try K("Growing") } } }
+enum C_Growing {
+  static func define(_ c: Cls) throws {
+    c.field("n", nil)
+    c.field("lane", nil)
+    c.field("ink", nil)
+    c.field("per", nil)
+    c.field("shown_frames", { (this_: V) throws -> V in return 0.0 })
+    c.method("frame", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var dt_0: V = arg(a1, 1);
+      try call(s_0, "fill_style", [try get((try K("Galaxies")), "BACK")])
+      try call(s_0, "fill_rect", [0.0, 0.0, try get(s_0, "width"), try get(s_0, "height")])
+      var look_0: V = V.null; look_0 = try call((try K("Video")), "look", [try get(s_0, "width"), try get(this_, "lane"), try get(this_, "ink")])
+      var grow_0: V = V.null; grow_0 = try div(try get(this_, "shown_frames"), try call((try K("Fmt")), "max", [1.0, try sub(try get(this_, "n"), 1.0)]))
+      var cam_0: V = V.null; cam_0 = try call((try K("Video")), "source_camera", [s_0, look_0, grow_0])
+      try call((try K("Video")), "lattice", [s_0, try get(this_, "lane"), look_0, grow_0, try div(try get(this_, "shown_frames"), try get(this_, "per")), 1.0, 0.0, try elem(cam_0, 0.0), try elem(cam_0, 1.0), try elem(cam_0, 2.0), 1.0, 1000000.0, 16.0])
+      try set(this_, "shown_frames", try add(try get(this_, "shown_frames"), 1.0))
+      return V.null
+    })
+  }
+}
+
+func def_Planets() throws { try cls("Planets", Physics.Painter, C_Planets.define) }
+extension Physics { public static var Planets: V { get throws { return try K("Planets") } } }
+enum C_Planets {
+  static func define(_ c: Cls) throws {
+    c.field("n", nil)
+    c.field("lane", nil)
+    c.field("ink", nil)
+    c.field("per", nil)
+    c.field("stamp", nil)
+    c.field("off", nil)
+    c.field("width", nil)
+    c.field("bodies", nil)
+    c.field("shown_frames", { (this_: V) throws -> V in return 0.0 })
+    c.field("film", { (this_: V) throws -> V in return V.null })
+    c.method("frame", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var dt_0: V = arg(a1, 1);
+      if truthy(V.b(try eq(try get(this_, "film"), V.null))) {
+        try set(this_, "film", try call((try K("Measured")), "of", [V.s(cat("solar.inner.frames"))]))
+      }
+      if truthy(V.b(try eq(try get(this_, "film"), V.null))) {
+        try invoke(fail, [V.s(cat("solar.inner is not recorded - run `npx ray visuals solar.inner` first"))])
+      }
+      if truthy(V.b(!(try eq(try get(try get(try get(this_, "film"), "header"), Name(try str(V.s(cat("stamp"))))), try get(this_, "stamp"))))) {
+        try invoke(fail, [V.s(cat("solar.inner's recording is stale - run `npx ray visuals solar.inner` again"))])
+      }
+      var look_0: V = V.null; look_0 = try call((try K("Video")), "look", [try get(s_0, "width"), try get(this_, "lane"), try get(this_, "ink")])
+      try call((try K("Video")), "planets", [s_0, try div(try get(this_, "shown_frames"), try call((try K("Fmt")), "max", [1.0, try sub(try get(this_, "n"), 1.0)])), try get(this_, "lane"), look_0, try div((try add(try sub(try m_round((try mul(4.0, try get((try K("Video")), "FPS")))), 1.0), try get(this_, "shown_frames"))), try get(this_, "per")), try get(this_, "film"), try get(this_, "off"), try get(this_, "width"), try get(this_, "bodies")])
+      try set(this_, "shown_frames", try add(try get(this_, "shown_frames"), 1.0))
+      return V.null
+    })
+  }
+}
+
+func def_EndCard() throws { try cls("EndCard", Physics.Painter, C_EndCard.define) }
+extension Physics { public static var EndCard: V { get throws { return try K("EndCard") } } }
+enum C_EndCard {
+  static func define(_ c: Cls) throws {
+    c.field("n", nil)
+    c.field("shown_frames", { (this_: V) throws -> V in return 0.0 })
+    c.method("frame", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var dt_0: V = arg(a1, 1);
+      try call((try K("Video")), "end_card", [s_0, try get(this_, "shown_frames"), try get(this_, "n")])
+      try set(this_, "shown_frames", try add(try get(this_, "shown_frames"), 1.0))
+      return V.null
+    })
+  }
+}
+
 func def_G() throws { try theory(cls("G", Physics.Theory, C_G.define)) }
 extension Physics { public static var G: V { get throws { return try K("G") } } }
 enum C_G {
@@ -19957,17 +20933,13 @@ enum C_G {
       try set(ink_0, "every", V.b(true))
       var w_0: V = V.null; w_0 = try call((try K("Strip")), "line", [this_, 10.0])
       try call((try K("Strip")), "light", [w_0, 0.0, 1.0])
-      var lanes_0: V = V.null; lanes_0 = list(try call((try K("Strip")), "lane", [w_0, ink_0]))
-      do {
-        var i1: Double = 0
-        while i1 < num(8.0) {
-          var t_1: V = V.num(i1)
-          try call((try K("Strip")), "begin", [w_0])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
-          try m_push(lanes_0, try call((try K("Strip")), "lane", [w_0, ink_0]))
-          i1 += 1
-        }
-      }
+      var lanes_0: V = V.null; lanes_0 = try m_concat(list(try call((try K("Strip")), "lane", [w_0, ink_0])), try m_map(rng(8.0), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        try call((try K("Strip")), "begin", [w_0])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
+        return try call((try K("Strip")), "lane", [w_0, ink_0])
+        return V.null
+      })))
       return try call((try K("Strip")), "tell", [V.s(cat("rule.movement")), V.s(cat("every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)")), lanes_0, ink_0])
       return V.null
     })
@@ -19977,21 +20949,17 @@ enum C_G {
       try set(ink_0, "top", 36.0)
       var w_0: V = V.null; w_0 = try call((try K("Strip")), "line", [this_, 17.0])
       try call(w_0, "add", [try makeNamed("Scripted", [kw("at", try makeNamed("Vector", [kw("components", list(8.0))])), kw("plan", list(V.s(cat("")), V.s(cat("+")), V.s(cat("-")), V.s(cat("")), V.s(cat("+-")), V.s(cat("")), V.s(cat("+")), V.s(cat("-")))), kw("weight", 1.0)])])
-      var lanes_0: V = V.null; lanes_0 = list(try call((try K("Strip")), "lane", [w_0, ink_0]))
-      do {
-        var i1: Double = 0
-        while i1 < num(8.0) {
-          var t_1: V = V.num(i1)
-          try call((try K("Strip")), "begin", [w_0])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
-          var moved_1: V = V.null; moved_1 = try call((try K("Strip")), "lane", [w_0, ink_0])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.1")))])
-          var now_1: V = V.null; now_1 = try call((try K("Strip")), "lane", [w_0, ink_0])
-          try set(now_1, "says", try call((try K("Strip")), "emitting", [moved_1, now_1]))
-          try m_push(lanes_0, now_1)
-          i1 += 1
-        }
-      }
+      var lanes_0: V = V.null; lanes_0 = try m_concat(list(try call((try K("Strip")), "lane", [w_0, ink_0])), try m_map(rng(8.0), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        try call((try K("Strip")), "begin", [w_0])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
+        var moved_2: V = V.null; moved_2 = try call((try K("Strip")), "lane", [w_0, ink_0])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.1")))])
+        var now_2: V = V.null; now_2 = try call((try K("Strip")), "lane", [w_0, ink_0])
+        try set(now_2, "says", try call((try K("Strip")), "emitting", [moved_2, now_2]))
+        return now_2
+        return V.null
+      })))
       return try call((try K("Strip")), "tell", [V.s(cat("rule.emission")), V.s(cat("a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)")), lanes_0, ink_0])
       return V.null
     })
@@ -19999,32 +20967,29 @@ enum C_G {
       var ink_0: V = V.null; ink_0 = try makeNamed("Ink", [])
       try set(ink_0, "every", V.b(true))
       try set(ink_0, "top", 36.0)
+      return try call((try K("Strip")), "tell", [V.s(cat("rule.transport")), V.s(cat("a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)")), try call(this_, "transport_lanes", [ink_0]), ink_0])
+      return V.null
+    })
+    c.method("transport_lanes", { (this_: V, a1: [V]) throws -> V in
+      var ink_0: V = arg(a1, 0);
       var w_0: V = V.null; w_0 = try call((try K("Strip")), "line", [this_, 21.0])
       var s_0: V = V.null; s_0 = try call(w_0, "add", [try makeNamed("Scripted", [kw("at", try makeNamed("Vector", [kw("components", list(9.0))])), kw("plan", list(V.s(cat("+-")), V.s(cat("")), V.s(cat("")), V.s(cat("")), V.s(cat("+-")))), kw("weight", 4.0)])])
       try set(s_0, "moves", V.b(true))
       try set(s_0, "momentum", try makeNamed("Vector", [kw("components", list(1.0))]))
-      var lanes_0: V = V.null; lanes_0 = list(try call((try K("Strip")), "lane", [w_0, ink_0]))
-      do {
-        var i1: Double = 0
-        while i1 < num(9.0) {
-          var t_1: V = V.num(i1)
-          try call((try K("Strip")), "begin", [w_0])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
-          var moved_1: V = V.null; moved_1 = try call((try K("Strip")), "lane", [w_0, ink_0])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.1")))])
-          var emitted_1: V = V.null; emitted_1 = try call((try K("Strip")), "emitting", [moved_1, try call((try K("Strip")), "lane", [w_0, ink_0])])
-          try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.v")))])
-          var now_1: V = V.null; now_1 = try call((try K("Strip")), "lane", [w_0, ink_0])
-          var went_1: V = V.null; went_1 = V.s(cat(""))
-          if truthy(try get(s_0, "stepped")) {
-            went_1 = try sel(truthy(try gt(try elem(try get(try call(try get(w_0, "geometry"), "V", [try get(s_0, "moved_along")]), "components"), 0.0), 0.0)), V.s(cat("steps right")), V.s(cat("steps left")))
-          }
-          try set(now_1, "says", try sel(truthy(try m_empty(went_1)), emitted_1, (try sel(truthy(try m_empty(emitted_1)), went_1, V.s(cat("", try str(went_1), ", ", try str(emitted_1), ""))))))
-          try m_push(lanes_0, now_1)
-          i1 += 1
-        }
-      }
-      return try call((try K("Strip")), "tell", [V.s(cat("rule.transport")), V.s(cat("a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)")), lanes_0, ink_0])
+      return try m_concat(list(try call((try K("Strip")), "lane", [w_0, ink_0])), try m_map(rng(9.0), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        try call((try K("Strip")), "begin", [w_0])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/c")), V.s(cat("/4")))])
+        var moved_2: V = V.null; moved_2 = try call((try K("Strip")), "lane", [w_0, ink_0])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.1")))])
+        var emitted_2: V = V.null; emitted_2 = try call((try K("Strip")), "emitting", [moved_2, try call((try K("Strip")), "lane", [w_0, ink_0])])
+        try call((try K("Strip")), "run", [w_0, list(V.s(cat("/S.v")))])
+        var now_2: V = V.null; now_2 = try call((try K("Strip")), "lane", [w_0, ink_0])
+        var went_2: V = V.null; went_2 = try sel(truthy(not(try get(s_0, "stepped"))), V.s(cat("")), (try sel(truthy(try gt(try elem(try get(try call(try get(w_0, "geometry"), "V", [try get(s_0, "moved_along")]), "components"), 0.0), 0.0)), V.s(cat("steps right")), V.s(cat("steps left")))))
+        try set(now_2, "says", try sel(truthy(try m_empty(went_2)), emitted_2, (try sel(truthy(try m_empty(emitted_2)), went_2, V.s(cat("", try str(went_2), ", ", try str(emitted_2), ""))))))
+        return now_2
+        return V.null
+      })))
       return V.null
     })
     c.getter("expansion", { (this_: V, a1: [V]) throws -> V in
@@ -20273,25 +21238,20 @@ enum C_G {
         var setup_2: V = arg(a3, 0);
         var sun_2: V = V.null; sun_2 = try makeNamed("Body", [kw("x", 0.0), kw("y", 0.0), kw("mx", try invoke(pulse_0, [0.0])), kw("ways", try invoke(ways_0, [0.0]))])
         try set(sun_2, "tag", 1.0)
-        var out_2: V = V.null; out_2 = list(sun_2)
-        do {
-          var i3: Double = 0
-          while i3 < num(try len(PLANETS_0)) {
-            var k_3: V = V.num(i3)
-            var i_3: V = V.null; i_3 = try elem(PLANETS_0, k_3)
-            var b__3: V = V.null; b__3 = try makeNamed("Body", [kw("x", try invoke(cells_0, [try mul(try elem(AX_0, i_3), (try add(1.0, try elem(EC_0, i_3))))])), kw("y", 0.0), kw("mx", try invoke(pulse_0, [i_3])), kw("ways", try invoke(ways_0, [i_3]))])
-            try set(b__3, "tag", try add(2.0, k_3))
-            try set(b__3, "moves", V.b(true))
-            var v_3: V = V.null; v_3 = try sel(truthy(try and_(try gt(try len(try get(setup_2, "found")), k_3), try call((try K("Fmt")), "finite", [try elem(try elem(try get(setup_2, "found"), k_3), 1.0)]))), try elem(try elem(try get(setup_2, "found"), k_3), 1.0), 0.0)
-            try set(b__3, "py", try sub(0.0, try mul(try mul(v_3, try invoke(pulse_0, [i_3])), try invoke(ways_0, [i_3]))))
-            try set(b__3, "launch", V.s(cat("orbit")))
-            try set(b__3, "ecc", try elem(EC_0, i_3))
-            try set(b__3, "py", try sub(0.0, 1.0))
-            try m_push(out_2, b__3)
-            i3 += 1
-          }
-        }
-        return out_2
+        return try m_concat(list(sun_2), try m_map(rng(try len(PLANETS_0)), V.fn({ (a5: [V]) throws -> V in
+          var k_4: V = arg(a5, 0);
+          var i_4: V = V.null; i_4 = try elem(PLANETS_0, k_4)
+          var b__4: V = V.null; b__4 = try makeNamed("Body", [kw("x", try invoke(cells_0, [try mul(try elem(AX_0, i_4), (try add(1.0, try elem(EC_0, i_4))))])), kw("y", 0.0), kw("mx", try invoke(pulse_0, [i_4])), kw("ways", try invoke(ways_0, [i_4]))])
+          try set(b__4, "tag", try add(2.0, k_4))
+          try set(b__4, "moves", V.b(true))
+          var v_4: V = V.null; v_4 = try sel(truthy(try and_(try gt(try len(try get(setup_2, "found")), k_4), try call((try K("Fmt")), "finite", [try elem(try elem(try get(setup_2, "found"), k_4), 1.0)]))), try elem(try elem(try get(setup_2, "found"), k_4), 1.0), 0.0)
+          try set(b__4, "py", try sub(0.0, try mul(try mul(v_4, try invoke(pulse_0, [i_4])), try invoke(ways_0, [i_4]))))
+          try set(b__4, "launch", V.s(cat("orbit")))
+          try set(b__4, "ecc", try elem(EC_0, i_4))
+          try set(b__4, "py", try sub(0.0, 1.0))
+          return b__4
+          return V.null
+        })))
         return V.null
       }))])
       var BURN_0: V = V.null; BURN_0 = try mul(2.0, (try add(VIEW_0, MARGIN_0)))
@@ -20870,6 +21830,15 @@ func loadAll() throws {
   try def_Shaded()
   try def_Sweep()
   try def_Measure()
+  try def_Sighted()
+  try def_Video()
+  try def_Shot()
+  try def_Sky()
+  try def_Band()
+  try def_Banded()
+  try def_Growing()
+  try def_Planets()
+  try def_EndCard()
   try def_G()
   try def_equation_G()
 }

@@ -645,23 +645,23 @@ static void C_Inferences(Cls& c) {
         if (truthy((!eq(get(t_3->v, S<"kind">()), "mul")))) {
           return t_3->v;
         }
-        auto at_3 = cell(); at_3->v = null;
-        for (double i4 = 0, n4 = num(len(get(t_3->v, S<"of">()))); i4 < n4; i4++) {
-          auto i_4 = cell(i4);
-          if (truthy((truthy(eq(at_3->v, null)) && truthy(eq(get(elem(get(t_3->v, S<"of">()), i_4->v), S<"kind">()), "add"))))) {
-            at_3->v = i_4->v;
-          }
-        };
+        auto at_3 = cell(); at_3->v = m_first(filt(rng(len(get(t_3->v, S<"of">()))), fn([=](const Args& a6) -> Value {
+          auto i_5 = cell(arg(a6, 0));
+          return eq(get(elem(get(t_3->v, S<"of">()), i_5->v), S<"kind">()), "add");
+          return null;
+        })));
         if (truthy(eq(at_3->v, null))) {
           return t_3->v;
         }
-        auto rest_3 = cell(); rest_3->v = list({  });
-        for (double i4 = 0, n4 = num(len(get(t_3->v, S<"of">()))); i4 < n4; i4++) {
-          auto i_4 = cell(i4);
-          if (truthy((!eq(i_4->v, at_3->v)))) {
-            m_push(rest_3->v, elem(get(t_3->v, S<"of">()), i_4->v));
-          }
-        };
+        auto rest_3 = cell(); rest_3->v = m_map(filt(rng(len(get(t_3->v, S<"of">()))), fn([=](const Args& a7) -> Value {
+          auto i_6 = cell(arg(a7, 0));
+          return (!eq(i_6->v, at_3->v));
+          return null;
+        })), fn([=](const Args& a6) -> Value {
+          auto i_5 = cell(arg(a6, 0));
+          return elem(get(t_3->v, S<"of">()), i_5->v);
+          return null;
+        }));
         auto spread_3 = cell(); spread_3->v = call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"add">(), { m_map(get(elem(get(t_3->v, S<"of">()), at_3->v), S<"of">()), fn([=](const Args& a6) -> Value {
           auto x_5 = cell(arg(a6, 0));
           return call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"mul">(), { m_concat(rest_3->v, list({ x_5->v })) }) });

@@ -321,8 +321,7 @@ Prover := class < theory: Theory {
       out.push(sw)
     }
     /* every rate is one: a rewrite fires on every match it has, once a tick */
-    rates := []
-    infos.for(t => { rates.push(t.rate) if t.rate != None & !rates.contains(t.rate) })
+    rates := infos.filter(t => t.rate != None).reduce([], (out, t) => out.contains(t.rate) ? out : out.push(t.rate))
     rates.for(name => {
       out.push(Step.of(Fact.stands(name, Expr.num(1)), "the rewrite", [],
         "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit",
@@ -330,11 +329,7 @@ Prover := class < theory: Theory {
     })
     /* what each ledger nets over the whole line */
     ["rays", "space", "folds"].for(ledger => {
-      parts := []
-      acting.for(t => {
-        c := ledger == "rays" ? t.ray_count : (ledger == "space" ? t.space_count : t.fold_count)
-        parts.push(Expr.simplify(Expr.mul([Prover.body_of(t), c])))
-      })
+      parts := acting.map(t => Expr.simplify(Expr.mul([Prover.body_of(t), ledger == "rays" ? t.ray_count : (ledger == "space" ? t.space_count : t.fold_count)])))
       unless parts.empty {
         out.push(Step.of(Fact.stands("the {ledger} line nets", Expr.simplify(Expr.add(parts))), "the line", [],
           "every term of the line does something to the {ledger} ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted",

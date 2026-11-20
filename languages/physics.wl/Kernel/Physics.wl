@@ -28,7 +28,7 @@ items::usage = "items[xs] is a Ray list (a DynamicArray), a text or a Many as a 
 list::usage = "list[a, b, ...] is a Ray list.";
 str::usage = "str[x] is a value as the bootstrap writes it.";
 (* the heads of the classes, made here in the package's own context *)
-{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Measure, Formed, RayAxis, Sweep, G};
+{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Measure, Formed, RayAxis, Sweep, Sighted, Video, Sky, Banded, Growing, Planets, EndCard, Shot, Band, G};
 
 Begin["`Private`"];
 
@@ -827,18 +827,21 @@ DefineClass[Vertex, "Vertex", Ray, Function[{klass},
 
 DefineClass[Vector, "Vector", Node, Function[{klass},
   field[klass, "components"];
+  method[klass, "zipped", mfn[1, { env0["b"] = arg[args1, 0], env0["f"] = arg[args1, 1] };
+    Throw[Vector[{ "components" -> mMap[rng[len[self["components"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[env0["f"][elem[self["components"], env2["i"]], elem[env0["b"]["components"], env2["i"]]], ret]]] }], ret]]];
   method[klass, "plus", mfn[1, { env0["b"] = arg[args1, 0] };
-    Throw[Vector[{ "components" -> mMap[rng[len[self["components"]]], lfn[3, { env2["i"] = arg[args3, 0] };
-      Throw[add[elem[self["components"], env2["i"]], elem[env0["b"]["components"], env2["i"]]], ret]]] }], ret]]];
+    Throw[self["zipped", env0["b"], lfn[3, { env2["x"] = arg[args3, 0], env2["y"] = arg[args3, 1] };
+      Throw[add[env2["x"], env2["y"]], ret]]], ret]]];
   method[klass, "minus", mfn[1, { env0["b"] = arg[args1, 0] };
-    Throw[Vector[{ "components" -> mMap[rng[len[self["components"]]], lfn[3, { env2["i"] = arg[args3, 0] };
-      Throw[sub[elem[self["components"], env2["i"]], elem[env0["b"]["components"], env2["i"]]], ret]]] }], ret]]];
+    Throw[self["zipped", env0["b"], lfn[3, { env2["x"] = arg[args3, 0], env2["y"] = arg[args3, 1] };
+      Throw[sub[env2["x"], env2["y"]], ret]]], ret]]];
   method[klass, "times", mfn[1, { env0["k"] = arg[args1, 0] };
     Throw[Vector[{ "components" -> mMap[self["components"], lfn[3, { env2["c"] = arg[args3, 0] };
       Throw[mul[env2["c"], env0["k"]], ret]]] }], ret]]];
   method[klass, "dot", mfn[1, { env0["b"] = arg[args1, 0] };
-    Throw[mSum[mMap[rng[len[self["components"]]], lfn[3, { env2["i"] = arg[args3, 0] };
-      Throw[mul[elem[self["components"], env2["i"]], elem[env0["b"]["components"], env2["i"]]], ret]]]], ret]]];
+    Throw[mSum[self["zipped", env0["b"], lfn[3, { env2["x"] = arg[args3, 0], env2["y"] = arg[args3, 1] };
+      Throw[mul[env2["x"], env2["y"]], ret]]]["components"]], ret]]];
   getter[klass, "norm", mfn[1,
     Throw[mSqrt[self["dot", self]], ret]]];
   getter[klass, "unit", mfn[1,
@@ -874,11 +877,9 @@ DefineClass[Geometry, "Geometry", Node, Function[{klass},
     env0["all"] = mSortedBy[filt[Geometry["box", env0["D"], env0["radius"]], lfn[4, { env3["v"] = arg[args4, 0] };
       Throw[gt[env3["v"]["norm"], 0.], ret]]], lfn[3, { env2["v"] = arg[args3, 0] };
       Throw[env2["v"]["norm"], ret]]];
-    env0["chosen"] = list[];
-    Do[loopScope[1, env1["s"] = iter1;
-      Do[loopScope[2, env2["v"] = iter2;
-        If[truthy[eq[env2["v"]["dot", env2["v"]], env1["s"]]],
-          mPush[env0["chosen"], env2["v"]]]], {iter2, items[env0["all"]]}]], {iter1, items[env0["squared"]]}];
+    env0["chosen"] = mReduce[env0["squared"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["s"] = arg[args3, 1] };
+      Throw[mConcat[env2["out"], filt[env0["all"], lfn[5, { env4["v"] = arg[args5, 0] };
+        Throw[eq[env4["v"]["dot", env4["v"]], env2["s"]], ret]]]], ret]]];
     env0["joined"] = mJoin[env0["squared"], "+"];
     Throw[Geometry[{ "name" -> "shells-" <> str[env0["D"]] <> "-" <> str[env0["joined"]] <> "", "offsets" -> env0["chosen"] }], ret]]];
   statik[klass, "nearest", mfn[1, { env0["D"] = arg[args1, 0], env0["DEG"] = arg[args1, 1] };
@@ -895,19 +896,13 @@ DefineClass[Geometry, "Geometry", Node, Function[{klass},
       Throw[le[env2["v"]["norm"], env0["cut"]], ret]]];
     If[!truthy[eq[len[env0["chosen"]], env0["DEG"]]], fail["eq[len[env0[\"chosen\"]], env0[\"DEG\"]]"]];
     Throw[Geometry[{ "name" -> "nearest-" <> str[env0["D"]] <> "-" <> str[env0["DEG"]] <> "", "offsets" -> env0["chosen"] }], ret]]];
+  statik[klass, "grid", mfn[1, { env0["D"] = arg[args1, 0], env0["low"] = arg[args1, 1], env0["count"] = arg[args1, 2] };
+    Throw[mReduce[rng[env0["D"]], list[Vector[{ "components" -> list[] }]], lfn[3, { env2["points"] = arg[args3, 0], env2["_"] = arg[args3, 1] };
+      Throw[mReduce[env2["points"], list[], lfn[5, { env4["grown"] = arg[args5, 0], env4["p"] = arg[args5, 1] };
+        Throw[mReduce[rng[env0["count"]], env4["grown"], lfn[7, { env6["out"] = arg[args7, 0], env6["k"] = arg[args7, 1] };
+          Throw[mPush[env6["out"], Vector[{ "components" -> mConcat[env4["p"]["components"], list[add[env0["low"], env6["k"]]]] }]], ret]]], ret]]], ret]]], ret]]];
   statik[klass, "box", mfn[1, { env0["D"] = arg[args1, 0], env0["radius"] = arg[args1, 1] };
-    env0["points"] = list[Vector[{ "components" -> list[] }]];
-    env0["i"] = 0.;
-    While[truthy[lt[env0["i"], env0["D"]]],
-      env0["grown"] = list[];
-      Do[loopScope[1, env1["p"] = iter1;
-        env1["k"] = sub[0., env0["radius"]];
-        While[truthy[le[env1["k"], env0["radius"]]],
-          mPush[env0["grown"], Vector[{ "components" -> mConcat[env1["p"]["components"], list[env1["k"]]] }]];
-          env1["k"] = add[env1["k"], 1.]]], {iter1, items[env0["points"]]}];
-      env0["points"] = env0["grown"];
-      env0["i"] = add[env0["i"], 1.]];
-    Throw[env0["points"], ret]]]]];
+    Throw[Geometry["grid", env0["D"], sub[0., env0["radius"]], add[mul[2., env0["radius"]], 1.]], ret]]]]];
 
 DefineClass[RayRandom, "Random", Node, Function[{klass},
   field[klass, "seed"];
@@ -945,6 +940,7 @@ DefineClass[RayRule, "Rule", Node, Function[{klass},
     Throw[self["body", env0["x"]], ret]]]]];
 
 DefineClass[Theory, "Theory", Node, Function[{klass},
+  staticField[klass, "TERMS", dfn[Node[{}]]];
   field[klass, "name"];
   field[klass, "rules", dfn[list[]]];
   field[klass, "visuals", dfn[list[]]];
@@ -986,6 +982,10 @@ DefineClass[Theory, "Theory", Node, Function[{klass},
     If[truthy[eq[env0["D"], Null]],
       env0["D"] = Null];
     Throw[RayMedium[{ "theory" -> self, "N" -> env0["N"], "A" -> env0["A"], "K" -> env0["K"], "DEG" -> orElse[env0["DEG"], self["lattice"]["DEG"]], "tags" -> env0["tags"], "D" -> orElse[env0["D"], self["lattice"]["D"]] }], ret]]];
+  getter[klass, "terms_read", mfn[1,
+    If[truthy[eq[elem[Theory["TERMS"], self["name"]], Null]],
+      setAt[Theory["TERMS"], self["name"], self["equation"]["terms"]]];
+    Throw[elem[Theory["TERMS"], self["name"]], ret]]];
   getter[klass, "proved", mfn[1,
     If[truthy[eq[elem[Prover["PROOFS"], self["name"]], Null]],
       setAt[Prover["PROOFS"], self["name"], Prover[{ "theory" -> self }]["proof"]]];
@@ -1010,18 +1010,7 @@ DefineClass[World, "World", Node, Function[{klass},
       self["place", env1["p"]]], {iter1, items[self["positions", self["N"]]]}];
     Throw[self, ret]]];
   method[klass, "positions", mfn[1, { env0["N"] = arg[args1, 0] };
-    env0["points"] = list[Vector[{ "components" -> list[] }]];
-    env0["i"] = 0.;
-    While[truthy[lt[env0["i"], self["geometry"]["D"]]],
-      env0["grown"] = list[];
-      Do[loopScope[1, env1["p"] = iter1;
-        env1["k"] = 0.;
-        While[truthy[lt[env1["k"], env0["N"]]],
-          mPush[env0["grown"], Vector[{ "components" -> mConcat[env1["p"]["components"], list[env1["k"]]] }]];
-          env1["k"] = add[env1["k"], 1.]]], {iter1, items[env0["points"]]}];
-      env0["points"] = env0["grown"];
-      env0["i"] = add[env0["i"], 1.]];
-    Throw[env0["points"], ret]]];
+    Throw[Geometry["grid", self["geometry"]["D"], 0., env0["N"]], ret]]];
   method[klass, "place", mfn[1, { env0["at"] = arg[args1, 0] };
     If[truthy[ge[len[self["vertices"]], self["bound"]]],
       Throw[Null, ret]];
@@ -1077,20 +1066,16 @@ DefineClass[World, "World", Node, Function[{klass},
     If[truthy[eq[env0["kind"], "Ray"]],
       Throw[mMap[self["live"], lfn[3, { env2["v"] = arg[args3, 0] };
         Throw[many[env2["v"]["rays"]], ret]]], ret]];
-    env0["rays"] = list[];
-    Do[loopScope[1, env1["v"] = iter1;
-      Do[loopScope[2, env2["r"] = iter2;
-        mPush[env0["rays"], env2["r"]]], {iter2, items[env1["v"]["rays"]]}]], {iter1, items[self["live"]]}];
+    env0["rays"] = mReduce[self["live"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[mReduce[env2["v"]["rays"], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["r"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["r"]], ret]]], ret]]];
     If[truthy[eq[env0["kind"], "Boundary"]],
       Throw[mMap[env0["rays"], lfn[3, { env2["r"] = arg[args3, 0] };
         Throw[env2["r"]["terminal"], ret]]], ret]];
     If[truthy[eq[env0["kind"], "Edge"]],
-      env0["edges"] = list[];
-      Do[loopScope[1, env1["r"] = iter1;
-        env1["there"] = env1["r"]["ahead"];
-        If[truthy[andV[(!eq[env1["there"], Null]), lt[env1["r"]["vertex"]["ordinal"], env1["there"]["ordinal"]]]],
-          mPush[env0["edges"], env1["r"]["terminal"]["edge"]]]], {iter1, items[env0["rays"]]}];
-      Throw[env0["edges"], ret]];
+      Throw[mMap[filt[env0["rays"], lfn[4, { env3["r"] = arg[args4, 0] };
+        Throw[andV[(!eq[env3["r"]["ahead"], Null]), lt[env3["r"]["vertex"]["ordinal"], env3["r"]["ahead"]["ordinal"]]], ret]]], lfn[3, { env2["r"] = arg[args3, 0] };
+        Throw[env2["r"]["terminal"]["edge"], ret]]], ret]];
     Throw[list[], ret]]];
   getter[klass, "tick", mfn[1,
     self["ticks" -> add[self["ticks"], 1.]];
@@ -1364,12 +1349,10 @@ DefineClass[Field, "Field", Node, Function[{klass},
     env0["y0"] = mFloor[env0["py"]];
     env0["fx"] = sub[env0["px"], env0["x0"]];
     env0["fy"] = sub[env0["py"], env0["y0"]];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["t"] = iter1;
-      env1["c"] = self["at", elem[env1["t"], 0.], elem[env1["t"], 1.]];
-      If[truthy[andV[ge[env1["c"], 0.], gt[elem[env1["t"], 2.], 0.]]],
-        mPush[env0["out"], list[env1["c"], elem[env1["t"], 2.]]]]], {iter1, items[list[list[env0["x0"], env0["y0"], mul[(sub[1., env0["fx"]]), (sub[1., env0["fy"]])]], list[add[env0["x0"], 1.], env0["y0"], mul[env0["fx"], (sub[1., env0["fy"]])]], list[env0["x0"], add[env0["y0"], 1.], mul[(sub[1., env0["fx"]]), env0["fy"]]], list[add[env0["x0"], 1.], add[env0["y0"], 1.], mul[env0["fx"], env0["fy"]]]]]}];
-    Throw[env0["out"], ret]]];
+    env0["corners"] = list[list[env0["x0"], env0["y0"], mul[(sub[1., env0["fx"]]), (sub[1., env0["fy"]])]], list[add[env0["x0"], 1.], env0["y0"], mul[env0["fx"], (sub[1., env0["fy"]])]], list[env0["x0"], add[env0["y0"], 1.], mul[(sub[1., env0["fx"]]), env0["fy"]]], list[add[env0["x0"], 1.], add[env0["y0"], 1.], mul[env0["fx"], env0["fy"]]]];
+    Throw[filt[mMap[env0["corners"], lfn[4, { env3["t"] = arg[args4, 0] };
+      Throw[list[self["at", elem[env3["t"], 0.], elem[env3["t"], 1.]], elem[env3["t"], 2.]], ret]]], lfn[3, { env2["p"] = arg[args3, 0] };
+      Throw[andV[ge[elem[env2["p"], 0.], 0.], gt[elem[env2["p"], 1.], 0.]], ret]]], ret]]];
   method[klass, "hop", mfn[1, { env0["c"] = arg[args1, 0], env0["a"] = arg[args1, 1] };
     Throw[self["taps", add[mod[env0["c"], self["N"]], mul[self["K"], elem[self["ux"], env0["a"]]]], add[div[(sub[env0["c"], mod[env0["c"], self["N"]]]), self["N"]], mul[self["K"], elem[self["uy"], env0["a"]]]]], ret]]];
   method[klass, "back", mfn[1, { env0["c"] = arg[args1, 0], env0["a"] = arg[args1, 1] };
@@ -1382,7 +1365,7 @@ DefineClass[Field, "Field", Node, Function[{klass},
       env0["total"] = add[env0["total"], elem[env1["t"], 1.]]], {iter1, items[env0["ts"]]}];
     Throw[env0["total"], ret]]];
   getter[klass, "terms", mfn[1,
-    Throw[self["theory"]["equation"]["terms"], ret]]];
+    Throw[self["theory"]["terms_read"], ret]]];
   getter[klass, "acting", mfn[1,
     Throw[filt[self["terms"], lfn[3, { env2["t"] = arg[args3, 0] };
       Throw[andV[not[env2["t"]["settles"]], not[env2["t"]["transport"]]], ret]]], ret]]];
@@ -1711,13 +1694,9 @@ DefineClass[Field, "Field", Node, Function[{klass},
     env0["x"] = self["column_of", env0["c"]];
     env0["y"] = self["row_of", env0["c"]];
     env0["half"] = mFloor[(div[(sub[self["K"], 1.]), 2.])];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["dy"] = iter1;
-      Do[loopScope[2, env2["dx"] = iter2;
-        env2["cell"] = self["at", add[sub[env0["x"], env0["half"]], env2["dx"]], add[sub[env0["y"], env0["half"]], env1["dy"]]];
-        If[truthy[ge[env2["cell"], 0.]],
-          mPush[env0["out"], env2["cell"]]]], {iter2, 0., num[self["K"]] - 1.}]], {iter1, 0., num[self["K"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[filt[mMap[rng[mul[self["K"], self["K"]]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[self["at", add[sub[env0["x"], env0["half"]], mod[env3["i"], self["K"]]], add[sub[env0["y"], env0["half"]], mFloor[(div[env3["i"], self["K"]])]]], ret]]], lfn[3, { env2["cell"] = arg[args3, 0] };
+      Throw[ge[env2["cell"], 0.], ret]]], ret]]];
   getter[klass, "block", mfn[1,
     Do[loopScope[1, env1["c"] = iter1;
       setAt[self["blocks"], env1["c"], 0.]], {iter1, 0., num[self["cells"]] - 1.}];
@@ -1958,31 +1937,17 @@ DefineClass[Piece, "Piece", Node, Function[{klass},
   field[klass, "lowered", dfn[Null]];
   field[klass, "key", dfn[""]];
   statik[klass, "text_", mfn[1, { env0["t"] = arg[args1, 0] };
-    env0["p"] = Piece[{ "kind" -> "text" }];
-    env0["p"]["text" -> env0["t"]];
-    Throw[env0["p"], ret]]];
+    Throw[Piece[{ "kind" -> "text", "text" -> env0["t"] }], ret]]];
   statik[klass, "wrap", mfn[1, { env0["kind"] = arg[args1, 0], env0["of"] = arg[args1, 1] };
-    env0["p"] = Piece[{ "kind" -> env0["kind"] }];
-    env0["p"]["of" -> env0["of"]];
-    Throw[env0["p"], ret]]];
+    Throw[Piece[{ "kind" -> env0["kind"], "of" -> env0["of"] }], ret]]];
   statik[klass, "words", mfn[1, { env0["t"] = arg[args1, 0] };
-    env0["p"] = Piece[{ "kind" -> "words" }];
-    env0["p"]["text" -> env0["t"]];
-    Throw[env0["p"], ret]]];
+    Throw[Piece[{ "kind" -> "words", "text" -> env0["t"] }], ret]]];
   statik[klass, "big", mfn[1, { env0["kind"] = arg[args1, 0], env0["lo"] = arg[args1, 1], env0["hi"] = arg[args1, 2] };
-    env0["p"] = Piece[{ "kind" -> env0["kind"] }];
-    env0["p"]["lo" -> env0["lo"]];
-    env0["p"]["hi" -> env0["hi"]];
-    Throw[env0["p"], ret]]];
+    Throw[Piece[{ "kind" -> env0["kind"], "lo" -> env0["lo"], "hi" -> env0["hi"] }], ret]]];
   statik[klass, "stacked", mfn[1, { env0["kind"] = arg[args1, 0], env0["over"] = arg[args1, 1], env0["under"] = arg[args1, 2] };
-    env0["p"] = Piece[{ "kind" -> env0["kind"] }];
-    env0["p"]["over" -> env0["over"]];
-    env0["p"]["under" -> env0["under"]];
-    Throw[env0["p"], ret]]];
+    Throw[Piece[{ "kind" -> env0["kind"], "over" -> env0["over"], "under" -> env0["under"] }], ret]]];
   statik[klass, "cite", mfn[1, { env0["key"] = arg[args1, 0] };
-    env0["p"] = Piece[{ "kind" -> "ref" }];
-    env0["p"]["key" -> env0["key"]];
-    Throw[env0["p"], ret]]]]];
+    Throw[Piece[{ "kind" -> "ref", "key" -> env0["key"] }], ret]]]]];
 
 DefineClass[Braced, "Braced", Node, Function[{klass},
   field[klass, "body"];
@@ -2002,6 +1967,9 @@ DefineClass[Reference, "Reference", Node, Function[{klass},
   field[klass, "link", dfn[Null]]]];
 
 DefineClass[RaySetter, "Setter", Node, Function[{klass},
+  staticField[klass, "KINDS", dfn[list["var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren"]]];
+  staticField[klass, "OPENS", dfn[list["<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">"]]];
+  staticField[klass, "CLOSES", dfn[list["</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>"]]];
   method[klass, "together", mfn[1, { env0["parts"] = arg[args1, 0] };
     Throw[mJoin[env0["parts"], ""], ret]]];
   method[klass, "text", mfn[1, { env0["t"] = arg[args1, 0] };
@@ -2009,41 +1977,8 @@ DefineClass[RaySetter, "Setter", Node, Function[{klass},
   method[klass, "words", mfn[1, { env0["t"] = arg[args1, 0] };
     Throw["<span class=\"tx\">" <> str[Notation["escaped", env0["t"]]] <> "</span>", ret]]];
   method[klass, "wrap", mfn[1, { env0["kind"] = arg[args1, 0], env0["c"] = arg[args1, 1] };
-    If[truthy[eq[env0["kind"], "var"]],
-      Throw["<i>" <> str[env0["c"]] <> "</i>", ret]];
-    If[truthy[eq[env0["kind"], "count"]],
-      Throw["<b class=\"k\">" <> str[env0["c"]] <> "</b>", ret]];
-    If[truthy[eq[env0["kind"], "fn"]],
-      Throw["<b class=\"d\">" <> str[env0["c"]] <> "</b>", ret]];
-    If[truthy[eq[env0["kind"], "muted"]],
-      Throw["<span class=\"mu\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "bar"]],
-      Throw["<span class=\"bar\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "hat"]],
-      Throw["<span class=\"acc hat\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "tilde"]],
-      Throw["<span class=\"acc tld\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "vec"]],
-      Throw["<span class=\"acc vec\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "dot"]],
-      Throw["<span class=\"acc dot\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "ddot"]],
-      Throw["<span class=\"acc ddot\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "bold"]],
-      Throw["<b class=\"bf\">" <> str[env0["c"]] <> "</b>", ret]];
-    If[truthy[eq[env0["kind"], "cal"]],
-      Throw["<span class=\"cal\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "bb"]],
-      Throw["<span class=\"bb\">" <> str[env0["c"]] <> "</span>", ret]];
-    If[truthy[eq[env0["kind"], "sqrt"]],
-      Throw["<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">" <> str[env0["c"]] <> "</span></span>", ret]];
-    If[truthy[eq[env0["kind"], "sup"]],
-      Throw["<sup>" <> str[env0["c"]] <> "</sup>", ret]];
-    If[truthy[eq[env0["kind"], "sub"]],
-      Throw["<sub>" <> str[env0["c"]] <> "</sub>", ret]];
-    If[truthy[eq[env0["kind"], "paren"]],
-      Throw["<span class=\"paren\">" <> str[env0["c"]] <> "</span>", ret]];
-    Throw["<span class=\"" <> str[env0["kind"]] <> "\">" <> str[env0["c"]] <> "</span>", ret]]];
+    env0["i"] = mIndexOf[RaySetter["KINDS"], env0["kind"]];
+    Throw[If[truthy[eq[env0["i"], Null]], "<span class=\"" <> str[env0["kind"]] <> "\">" <> str[env0["c"]] <> "</span>", "" <> str[elem[RaySetter["OPENS"], env0["i"]]] <> "" <> str[env0["c"]] <> "" <> str[elem[RaySetter["CLOSES"], env0["i"]]] <> ""], ret]]];
   method[klass, "big", mfn[1, { env0["kind"] = arg[args1, 0], env0["lo"] = arg[args1, 1], env0["hi"] = arg[args1, 2] };
     env0["sign"] = If[truthy[eq[env0["kind"], "int"]], "&#8747;", (If[truthy[eq[env0["kind"], "oint"]], "&#8750;", (If[truthy[eq[env0["kind"], "sum"]], "&#8721;", "&#8719;"])])];
     env0["limits"] = If[truthy[(andV[eq[env0["lo"], ""], eq[env0["hi"], ""]])], "", "<span class=\"lim\"><sup>" <> str[env0["hi"]] <> "</sup><sub>" <> str[env0["lo"]] <> "</sub></span>"];
@@ -2112,16 +2047,17 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
     Throw[fromCodepoints[mTake[mDrop[mChars[env0["s"]], env0["a"]], sub[env0["b"], env0["a"]]]], ret]]];
   statik[klass, "char_at", mfn[1, { env0["s"] = arg[args1, 0], env0["i"] = arg[args1, 1] };
     Throw[If[truthy[lt[env0["i"], len[env0["s"]]]], elem[mChars[env0["s"]], env0["i"]], 0.], ret]]];
+  statik[klass, "run", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1], env0["keep"] = arg[args1, 2] };
+    env0["k"] = env0["at"];
+    While[truthy[andV[lt[env0["k"], len[env0["s"]]], env0["keep"][elem[mChars[env0["s"]], env0["k"]]]]],
+      env0["k"] = add[env0["k"], 1.]];
+    Throw[Notation["sub_", env0["s"], env0["at"], env0["k"]], ret]]];
   statik[klass, "letters", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
-    env0["k"] = env0["at"];
-    While[truthy[andV[lt[env0["k"], len[env0["s"]]], Notation["is_letter", elem[mChars[env0["s"]], env0["k"]]]]],
-      env0["k"] = add[env0["k"], 1.]];
-    Throw[Notation["sub_", env0["s"], env0["at"], env0["k"]], ret]]];
+    Throw[Notation["run", env0["s"], env0["at"], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[Notation["is_letter", env2["c"]], ret]]], ret]]];
   statik[klass, "alnums", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
-    env0["k"] = env0["at"];
-    While[truthy[andV[lt[env0["k"], len[env0["s"]]], Notation["is_alnum", elem[mChars[env0["s"]], env0["k"]]]]],
-      env0["k"] = add[env0["k"], 1.]];
-    Throw[Notation["sub_", env0["s"], env0["at"], env0["k"]], ret]]];
+    Throw[Notation["run", env0["s"], env0["at"], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[Notation["is_alnum", env2["c"]], ret]]], ret]]];
   statik[klass, "counted", mfn[1, { env0["w"] = arg[args1, 0] };
     env0["of"] = Piece["wrap", "count", list[Piece["text_", env0["w"]]]];
     Throw[If[truthy[mContains[Notation["ALWAYS_BARRED"], env0["w"]]], Piece["wrap", "bar", list[env0["of"]]], env0["of"]], ret]]];
@@ -2156,6 +2092,8 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
       env0["k"] = env0["b"]["end"];
       env0["a"] = add[env0["a"], 1.]];
     Throw[Args[{ "got" -> env0["got"], "end" -> env0["k"] }], ret]]];
+  statik[klass, "scripted", mfn[1, { env0["base"] = arg[args1, 0], env0["kind"] = arg[args1, 1], env0["of"] = arg[args1, 2] };
+    Throw[Piece[{ "kind" -> "scripted", "base" -> env0["base"], "raised" -> If[truthy[eq[env0["kind"], "sup"]], env0["of"], Null], "lowered" -> If[truthy[eq[env0["kind"], "sup"]], Null, env0["of"]] }], ret]]];
   statik[klass, "attach", mfn[1, { env0["out"] = arg[args1, 0], env0["kind"] = arg[args1, 1], env0["of"] = arg[args1, 2] };
     If[truthy[mEmpty[env0["out"]]],
       mPush[env0["out"], Piece["wrap", env0["kind"], env0["of"]]];
@@ -2176,20 +2114,10 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
       If[truthy[mEmpty[env0["head"]]],
         mPop[env0["out"]],
         env0["tail"]["text" -> env0["head"]]];
-      env0["s"] = Piece[{ "kind" -> "scripted" }];
-      env0["s"]["base" -> Piece["text_", env0["last_char"]]];
-      If[truthy[eq[env0["kind"], "sup"]],
-        env0["s"]["raised" -> env0["of"]],
-        env0["s"]["lowered" -> env0["of"]]];
-      mPush[env0["out"], env0["s"]];
+      mPush[env0["out"], Notation["scripted", Piece["text_", env0["last_char"]], env0["kind"], env0["of"]]];
       Throw[Null, ret]];
     mPop[env0["out"]];
-    env0["s"] = Piece[{ "kind" -> "scripted" }];
-    env0["s"]["base" -> env0["tail"]];
-    If[truthy[eq[env0["kind"], "sup"]],
-      env0["s"]["raised" -> env0["of"]],
-      env0["s"]["lowered" -> env0["of"]]];
-    Throw[mPush[env0["out"], env0["s"]], ret]]];
+    Throw[mPush[env0["out"], Notation["scripted", env0["tail"], env0["kind"], env0["of"]]], ret]]];
   statik[klass, "parse", mfn[1, { env0["src"] = arg[args1, 0] };
     env0["out"] = list[];
     env0["plain_from"] = 0.;
@@ -2298,21 +2226,16 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
       If[truthy[not[mEmpty[env0["buf"]]]],
         mPush[env0["out"], Piece["text_", env0["buf"]]];
         env0["buf"] = ""]];
+    env0["starts_name"] = lfn[2, { env1["c"] = arg[args2, 0] };
+      Throw[orV[Notation["is_letter", env1["c"]], eq[env1["c"], 95.]], ret]];
     env0["bits"] = list[];
     env0["k"] = 0.;
     While[truthy[lt[env0["k"], len[env0["s"]]]],
-      env0["c"] = elem[mChars[env0["s"]], env0["k"]];
-      If[truthy[orV[Notation["is_letter", env0["c"]], eq[env0["c"], 95.]]],
-        env0["j"] = env0["k"];
-        While[truthy[andV[lt[env0["j"], len[env0["s"]]], Notation["is_name", elem[mChars[env0["s"]], env0["j"]]]]],
-          env0["j"] = add[env0["j"], 1.]];
-        mPush[env0["bits"], Notation["sub_", env0["s"], env0["k"], env0["j"]]];
-        env0["k"] = env0["j"],
-        env0["j"] = env0["k"];
-        While[truthy[andV[lt[env0["j"], len[env0["s"]]], not[(orV[Notation["is_letter", elem[mChars[env0["s"]], env0["j"]]], eq[elem[mChars[env0["s"]], env0["j"]], 95.]])]]],
-          env0["j"] = add[env0["j"], 1.]];
-        mPush[env0["bits"], Notation["sub_", env0["s"], env0["k"], env0["j"]]];
-        env0["k"] = env0["j"]]];
+      env0["bit"] = If[truthy[env0["starts_name"][elem[mChars[env0["s"]], env0["k"]]]], Notation["run", env0["s"], env0["k"], lfn[3, { env2["c"] = arg[args3, 0] };
+        Throw[Notation["is_name", env2["c"]], ret]]], Notation["run", env0["s"], env0["k"], lfn[3, { env2["c"] = arg[args3, 0] };
+        Throw[not[env0["starts_name"][env2["c"]]], ret]]]];
+      mPush[env0["bits"], env0["bit"]];
+      env0["k"] = add[env0["k"], len[env0["bit"]]]];
     env0["i"] = 0.;
     While[truthy[lt[env0["i"], len[env0["bits"]]]],
       env0["w"] = elem[env0["bits"], env0["i"]];
@@ -2442,65 +2365,35 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
   field[klass, "shown", dfn[Null]];
   field[klass, "simple", dfn[Null]];
   statik[klass, "num", mfn[1, { env0["n"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "num" }];
-    env0["e"]["value" -> env0["n"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "num", "value" -> env0["n"] }], ret]]];
   statik[klass, "sym", mfn[1, { env0["name"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "sym" }];
-    env0["e"]["label" -> env0["name"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "sym", "label" -> env0["name"] }], ret]]];
   statik[klass, "field", mfn[1, { env0["name"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "field" }];
-    env0["e"]["label" -> env0["name"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "field", "label" -> env0["name"] }], ret]]];
   statik[klass, "add", mfn[1, { env0["xs"] = arg[args1, 0] };
     Throw[Expr["flatten", "add", env0["xs"]], ret]]];
   statik[klass, "mul", mfn[1, { env0["xs"] = arg[args1, 0] };
     Throw[Expr["flatten", "mul", env0["xs"]], ret]]];
   statik[klass, "to_power", mfn[1, { env0["base"] = arg[args1, 0], env0["by"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "pow" }];
-    env0["e"]["base" -> env0["base"]];
-    env0["e"]["power" -> env0["by"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "pow", "base" -> env0["base"], "power" -> env0["by"] }], ret]]];
   statik[klass, "pown", mfn[1, { env0["base"] = arg[args1, 0], env0["by"] = arg[args1, 1] };
     Throw[Expr["to_power", env0["base"], Expr["num", env0["by"]]], ret]]];
   statik[klass, "grad", mfn[1, { env0["x"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "grad" }];
-    env0["e"]["base" -> env0["x"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "grad", "base" -> env0["x"] }], ret]]];
   statik[klass, "log", mfn[1, { env0["x"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "log" }];
-    env0["e"]["base" -> env0["x"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "log", "base" -> env0["x"] }], ret]]];
   statik[klass, "exp", mfn[1, { env0["x"] = arg[args1, 0] };
-    env0["e"] = Expr[{ "kind" -> "exp" }];
-    env0["e"]["base" -> env0["x"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "exp", "base" -> env0["x"] }], ret]]];
   statik[klass, "choose", mfn[1, { env0["n"] = arg[args1, 0], env0["k"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "choose" }];
-    env0["e"]["first_" -> env0["n"]];
-    env0["e"]["second_" -> env0["k"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "choose", "first_" -> env0["n"], "second_" -> env0["k"] }], ret]]];
   statik[klass, "gamma_inc", mfn[1, { env0["s"] = arg[args1, 0], env0["x"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "gammaInc" }];
-    env0["e"]["first_" -> env0["s"]];
-    env0["e"]["second_" -> env0["x"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "gammaInc", "first_" -> env0["s"], "second_" -> env0["x"] }], ret]]];
   statik[klass, "root", mfn[1, { env0["x"] = arg[args1, 0], env0["name"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "root" }];
-    env0["e"]["base" -> env0["x"]];
-    env0["e"]["bound" -> env0["name"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "root", "base" -> env0["x"], "bound" -> env0["name"] }], ret]]];
   statik[klass, "limit", mfn[1, { env0["x"] = arg[args1, 0], env0["name"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "limit" }];
-    env0["e"]["base" -> env0["x"]];
-    env0["e"]["bound" -> env0["name"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "limit", "base" -> env0["x"], "bound" -> env0["name"] }], ret]]];
   statik[klass, "call", mfn[1, { env0["name"] = arg[args1, 0], env0["x"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> "call" }];
-    env0["e"]["label" -> env0["name"]];
-    env0["e"]["base" -> env0["x"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> "call", "label" -> env0["name"], "base" -> env0["x"] }], ret]]];
   statik[klass, "neg", mfn[1, { env0["x"] = arg[args1, 0] };
     Throw[Expr["mul", list[Expr["num", neg[1.]], env0["x"]]], ret]]];
   statik[klass, "sub", mfn[1, { env0["a"] = arg[args1, 0], env0["b"] = arg[args1, 1] };
@@ -2519,18 +2412,20 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
     Throw[andV[eq[self["kind"], "num"], eq[self["value"], 1.]], ret]]];
   getter[klass, "named", mfn[1,
     Throw[orV[eq[self["kind"], "sym"], eq[self["kind"], "field"]], ret]]];
+  getter[klass, "subtrees", mfn[1,
+    If[truthy[orV[eq[self["kind"], "add"], eq[self["kind"], "mul"]]],
+      Throw[self["of"], ret]];
+    If[truthy[eq[self["kind"], "pow"]],
+      Throw[list[self["base"], self["power"]], ret]];
+    If[truthy[orV[eq[self["kind"], "choose"], eq[self["kind"], "gammaInc"]]],
+      Throw[list[self["first_"], self["second_"]], ret]];
+    Throw[If[truthy[eq[self["base"], Null]], list[], list[self["base"]]], ret]]];
   getter[klass, "by_num", mfn[1,
     Throw[If[truthy[eq[self["power"]["kind"], "num"]], self["power"]["value"], Null], ret]]];
   statik[klass, "flatten", mfn[1, { env0["kind"] = arg[args1, 0], env0["xs"] = arg[args1, 1] };
-    env0["e"] = Expr[{ "kind" -> env0["kind"] }];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["x"] = iter1;
-      If[truthy[eq[env1["x"]["kind"], env0["kind"]]],
-        Do[loopScope[2, env2["y"] = iter2;
-          mPush[env0["out"], env2["y"]]], {iter2, items[env1["x"]["of"]]}],
-        mPush[env0["out"], env1["x"]]]], {iter1, items[env0["xs"]]}];
-    env0["e"]["of" -> env0["out"]];
-    Throw[env0["e"], ret]]];
+    Throw[Expr[{ "kind" -> env0["kind"], "of" -> mReduce[env0["xs"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["x"] = arg[args3, 1] };
+      Throw[If[truthy[eq[env2["x"]["kind"], env0["kind"]]], mReduce[env2["x"]["of"], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["y"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["y"]], ret]]], mPush[env2["out"], env2["x"]]], ret]]] }], ret]]];
   statik[klass, "is_integer", mfn[1, { env0["x"] = arg[args1, 0] };
     Throw[eq[env0["x"], mFloor[env0["x"]]], ret]]];
   statik[klass, "finite", mfn[1, { env0["x"] = arg[args1, 0] };
@@ -2553,9 +2448,8 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
     If[truthy[lt[env0["z"], 0.5]],
       Throw[sub[mLn[(div[3.141592653589793, mSin[(mul[3.141592653589793, env0["z"]])]])], Expr["lgamma", sub[1., env0["z"]]]], ret]];
     env0["z"] = sub[env0["z"], 1.];
-    env0["x"] = 0.99999999999980993;
-    Do[loopScope[1, env1["i"] = iter1;
-      env0["x"] = add[env0["x"], div[elem[env0["g"], env1["i"]], (add[add[env0["z"], env1["i"]], 1.])]]], {iter1, 0., num[len[env0["g"]]] - 1.}];
+    env0["x"] = mReduce[rng[len[env0["g"]]], 0.99999999999980993, lfn[3, { env2["x"] = arg[args3, 0], env2["i"] = arg[args3, 1] };
+      Throw[add[env2["x"], div[elem[env0["g"], env2["i"]], (add[add[env0["z"], env2["i"]], 1.])]], ret]]];
     env0["t"] = sub[add[env0["z"], len[env0["g"]]], 0.5];
     Throw[add[sub[add[mul[0.5, mLn[(mul[2., 3.141592653589793])]], mul[(add[env0["z"], 0.5]), mLn[env0["t"]]]], env0["t"]], mLn[env0["x"]]], ret]]];
   statik[klass, "e1", mfn[1, { env0["x"] = arg[args1, 0] };
@@ -2830,10 +2724,9 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
         If[truthy[(!eq[env1["at"], Null])],
           setAt[env1["at"], 1., add[elem[env1["at"], 1.], env1["kk"]]],
           env0["like"]["set", env1["id"], list[env1["body"], env1["kk"]]]]], {iter1, items[env0["rest"]]}];
-      env0["kept"] = list[];
-      Do[loopScope[1, env1["v"] = iter1;
-        If[truthy[(!eq[elem[env1["v"], 1.], 0.])],
-          mPush[env0["kept"], If[truthy[eq[elem[env1["v"], 1.], 1.]], elem[env1["v"], 0.], Expr["mul", list[Expr["num", elem[env1["v"], 1.]], elem[env1["v"], 0.]]]]]]], {iter1, items[env0["like"]["values"]]}];
+      env0["kept"] = mMap[filt[env0["like"]["values"], lfn[4, { env3["v"] = arg[args4, 0] };
+        Throw[(!eq[elem[env3["v"], 1.], 0.]), ret]]], lfn[3, { env2["v"] = arg[args3, 0] };
+        Throw[If[truthy[eq[elem[env2["v"], 1.], 1.]], elem[env2["v"], 0.], Expr["mul", list[Expr["num", elem[env2["v"], 1.]], elem[env2["v"], 0.]]]], ret]]];
       If[truthy[mEmpty[env0["kept"]]],
         Throw[Expr["num", env0["c"]], ret]];
       If[truthy[eq[env0["c"], 0.]],
@@ -2898,16 +2791,10 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
           Throw[andV[andV[andV[eq[env1["x"]["kind"], "mul"], eq[len[env1["x"]["of"]], 2.]], mSome[env1["x"]["of"], lfn[4, { env3["y"] = arg[args4, 0] };
             Throw[andV[eq[env3["y"]["kind"], "num"], eq[env3["y"]["value"], neg[1.]]], ret]]]], mSome[env1["x"]["of"], lfn[4, { env3["y"] = arg[args4, 0] };
             Throw[andV[env3["y"]["named"], eq[env3["y"]["label"], env0["e"]["bound"]]], ret]]]], ret]];
-        env0["at"] = Null;
-        Do[loopScope[1, env1["i"] = iter1;
-          If[truthy[andV[eq[env0["at"], Null], env0["is_minus"][elem[env0["body"]["of"], env1["i"]]]]],
-            env0["at"] = env1["i"]]], {iter1, 0., num[len[env0["body"]["of"]]] - 1.}];
-        If[truthy[andV[(!eq[env0["at"], Null]), eq[len[filt[env0["body"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
-          Throw[env0["is_minus"][env2["x"]], ret]]]], 1.]]],
-          env0["rest"] = list[];
-          Do[loopScope[1, env1["i"] = iter1;
-            If[truthy[(!eq[env1["i"], env0["at"]])],
-              mPush[env0["rest"], elem[env0["body"]["of"], env1["i"]]]]], {iter1, 0., num[len[env0["body"]["of"]]] - 1.}];
+        If[truthy[eq[len[filt[env0["body"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
+          Throw[env0["is_minus"][env2["x"]], ret]]]], 1.]],
+          env0["rest"] = filt[env0["body"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
+            Throw[not[env0["is_minus"][env2["x"]]], ret]]];
           Throw["\\text{the } " <> str[env0["e"]["bound"]] <> " \\text{ where } " <> str[env0["e"]["bound"]] <> " = " <> str[Expr["show", If[truthy[eq[len[env0["rest"]], 1.]], elem[env0["rest"], 0.], Expr["add", env0["rest"]]]]] <> "", ret]]];
       Throw["\\text{the } " <> str[env0["e"]["bound"]] <> " \\text{ where } " <> str[Expr["show", env0["e"]["base"]]] <> " = 0", ret]];
     If[truthy[eq[env0["k"], "grad"]],
@@ -2975,13 +2862,10 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
       env0["ordered"] = mConcat[filt[env0["e"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
         Throw[not[env0["negative"][env2["x"]]], ret]]], filt[env0["e"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
         Throw[env0["negative"][env2["x"]], ret]]]];
-      env0["out"] = "";
-      Do[loopScope[1, env1["i"] = iter1;
-        env1["x"] = elem[env0["ordered"], env1["i"]];
-        env1["t"] = If[truthy[eq[env1["x"]["kind"], "root"]], "\\paren{" <> str[Expr["show", env1["x"]]] <> "}", Expr["show", env1["x"]]];
-        env1["piece"] = If[truthy[eq[env1["i"], 0.]], env1["t"], (If[truthy[mStartsWith[env1["t"], "-"]], " - " <> str[mDrop[env1["t"], 1.]] <> "", " + " <> str[env1["t"]] <> ""])];
-        env0["out"] = "" <> str[env0["out"]] <> "" <> str[env1["piece"]] <> ""], {iter1, 0., num[len[env0["ordered"]]] - 1.}];
-      Throw[env0["out"], ret]];
+      env0["shown"] = mMap[env0["ordered"], lfn[3, { env2["x"] = arg[args3, 0] };
+        Throw[If[truthy[eq[env2["x"]["kind"], "root"]], "\\paren{" <> str[Expr["show", env2["x"]]] <> "}", Expr["show", env2["x"]]], ret]]];
+      Throw[mJoin[mMap[rng[len[env0["shown"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+        Throw[If[truthy[eq[env2["i"], 0.]], elem[env0["shown"], env2["i"]], (If[truthy[mStartsWith[elem[env0["shown"], env2["i"]], "-"]], " - " <> str[mDrop[elem[env0["shown"], env2["i"]], 1.]] <> "", " + " <> str[elem[env0["shown"], env2["i"]]] <> ""])], ret]]], ""], ret]];
     Throw["", ret]]];
   statik[klass, "drawn", mfn[1, { env0["t"] = arg[args1, 0] };
     env0["s"] = mReplace[mReplace[mReplace[env0["t"], "\\paren{", "("], "\\frac{", "("], "\\sqrt{", "("];
@@ -3010,11 +2894,9 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
         Throw[Expr["d", env2["x"], env0["wrt"]], ret]]]], ret]];
     If[truthy[eq[env0["k"], "mul"]],
       Throw[Expr["add", mMap[rng[len[env0["e"]["of"]]], lfn[3, { env2["i"] = arg[args3, 0] };
-        env2["others"] = list[];
-        Do[loopScope[3, env3["j"] = iter3;
-          If[truthy[(!eq[env3["j"], env2["i"]])],
-            mPush[env2["others"], elem[env0["e"]["of"], env3["j"]]]]], {iter3, 0., num[len[env0["e"]["of"]]] - 1.}];
-        Throw[Expr["mul", mConcat[list[Expr["d", elem[env0["e"]["of"], env2["i"]], env0["wrt"]]], env2["others"]]], ret]]]], ret]];
+        Throw[Expr["mul", mConcat[list[Expr["d", elem[env0["e"]["of"], env2["i"]], env0["wrt"]]], mMap[filt[rng[len[env0["e"]["of"]]], lfn[6, { env5["j"] = arg[args6, 0] };
+          Throw[(!eq[env5["j"], env2["i"]]), ret]]], lfn[5, { env4["j"] = arg[args5, 0] };
+          Throw[elem[env0["e"]["of"], env4["j"]], ret]]]]], ret]]]], ret]];
     If[truthy[eq[env0["k"], "pow"]],
       If[truthy[eq[env0["e"]["power"]["kind"], "num"]],
         Throw[Expr["mul", list[env0["e"]["power"], Expr["pown", env0["e"]["base"], sub[env0["e"]["power"]["value"], 1.]], Expr["d", env0["e"]["base"], env0["wrt"]]]], ret]];
@@ -3197,15 +3079,11 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
       env0["v"] = elem[env0["at"], env0["e"]["label"]];
       Throw[If[truthy[eq[env0["v"], Null]], Expr["NAN"], env0["v"]], ret]];
     If[truthy[eq[env0["k"], "add"]],
-      env0["total_"] = 0.;
-      Do[loopScope[1, env1["x"] = iter1;
-        env0["total_"] = add[env0["total_"], Expr["numeric", env1["x"], env0["at"]]]], {iter1, items[env0["e"]["of"]]}];
-      Throw[env0["total_"], ret]];
+      Throw[mReduce[env0["e"]["of"], 0., lfn[3, { env2["total_"] = arg[args3, 0], env2["x"] = arg[args3, 1] };
+        Throw[add[env2["total_"], Expr["numeric", env2["x"], env0["at"]]], ret]]], ret]];
     If[truthy[eq[env0["k"], "mul"]],
-      env0["prod"] = 1.;
-      Do[loopScope[1, env1["x"] = iter1;
-        env0["prod"] = mul[env0["prod"], Expr["numeric", env1["x"], env0["at"]]]], {iter1, items[env0["e"]["of"]]}];
-      Throw[env0["prod"], ret]];
+      Throw[mReduce[env0["e"]["of"], 1., lfn[3, { env2["prod"] = arg[args3, 0], env2["x"] = arg[args3, 1] };
+        Throw[mul[env2["prod"], Expr["numeric", env2["x"], env0["at"]]], ret]]], ret]];
     If[truthy[eq[env0["k"], "pow"]],
       Throw[power[Expr["numeric", env0["e"]["base"], env0["at"]], Expr["numeric", env0["e"]["power"], env0["at"]]], ret]];
     If[truthy[eq[env0["k"], "log"]],
@@ -3257,19 +3135,7 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
       Throw[Expr["numeric", env0["of"], env0["env"]], ret]];
     If[truthy[andV[andV[not[Expr["finite", env0["f"][0.5]]], not[Expr["finite", env0["f"][1.]]]], not[Expr["finite", env0["f"][0.1]]]]],
       Throw[Expr["NAN"], ret]];
-    env0["points"] = list[];
-    env0["i"] = 1.;
-    While[truthy[le[env0["i"], 120.]],
-      mPush[env0["points"], div[env0["i"], 120.]];
-      env0["i"] = add[env0["i"], 1.]];
-    env0["ex"] = 0.;
-    While[truthy[le[env0["ex"], 24.]],
-      env0["k"] = 1.;
-      While[truthy[lt[env0["k"], 8.]],
-        mPush[env0["points"], mul[(power[10., (sub[env0["ex"], 12.])]), (add[1., div[env0["k"], 2.]])]];
-        env0["k"] = add[env0["k"], 1.]];
-      env0["ex"] = add[env0["ex"], 1.]];
-    env0["points"] = Expr["sorted", env0["points"]];
+    env0["points"] = Expr["bracket_points"];
     env0["lo"] = Null;
     env0["hi"] = Null;
     env0["px"] = elem[env0["points"], 0.];
@@ -3301,14 +3167,16 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
         env0["stop"] = le[sub[env0["hi"], env0["lo"]], mul[0.000000000000001, (If[truthy[gt[mAbs[env0["hi"]], 1.]], mAbs[env0["hi"]], 1.])]]];
       env0["n"] = add[env0["n"], 1.]];
     Throw[div[(add[env0["lo"], env0["hi"]]), 2.], ret]]];
+  statik[klass, "bracket_points", mfn[1,
+    env0["even"] = mMap[rng[120.], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[div[(add[env2["i"], 1.]), 120.], ret]]];
+    env0["decades"] = mReduce[rng[25.], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["ex"] = arg[args3, 1] };
+      Throw[mReduce[rng[7.], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["k"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], mul[(power[10., (sub[env2["ex"], 12.])]), (add[1., div[(add[env4["k"], 1.]), 2.]])]], ret]]], ret]]];
+    Throw[Expr["sorted", mConcat[env0["even"], env0["decades"]]], ret]]];
   statik[klass, "sorted", mfn[1, { env0["xs"] = arg[args1, 0] };
-    env0["out"] = list[];
-    Do[loopScope[1, env1["x"] = iter1;
-      env1["i"] = 0.;
-      While[truthy[andV[lt[env1["i"], len[env0["out"]]], le[elem[env0["out"], env1["i"]], env1["x"]]]],
-        env1["i"] = add[env1["i"], 1.]];
-      env0["out"] = mConcat[mConcat[mTake[env0["out"], env1["i"]], list[env1["x"]]], mDrop[env0["out"], env1["i"]]]], {iter1, items[env0["xs"]]}];
-    Throw[env0["out"], ret]]];
+    Throw[mSortedBy[env0["xs"], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw[env2["x"], ret]]], ret]]];
   statik[klass, "integrate", mfn[1, { env0["e"] = arg[args1, 0], env0["of"] = arg[args1, 1] };
     env0["s"] = Expr["spread", env0["e"]];
     If[truthy[eq[env0["s"]["kind"], "grad"]],
@@ -3388,19 +3256,11 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
         env1["ok"] = True;
         env1["k"] = elem[env1["head_"], 1.];
         If[truthy[(!eq[env1["nums"], Null])],
-          env1["lo"] = elem[env1["nums"], 0.];
-          env1["hi"] = elem[env1["nums"], 0.];
-          Do[loopScope[2, env2["v"] = iter2;
-            If[truthy[lt[env2["v"], env1["lo"]]],
-              env1["lo"] = env2["v"]];
-            If[truthy[gt[env2["v"], env1["hi"]]],
-              env1["hi"] = env2["v"]]], {iter2, items[env1["nums"]]}];
-          env1["ok"] = eq[(le[env1["lo"], 0.]), (le[env1["hi"], 0.])];
-          env1["least"] = elem[env1["nums"], 0.];
-          Do[loopScope[2, env2["v"] = iter2;
-            If[truthy[lt[mAbs[env2["v"]], mAbs[env1["least"]]]],
-              env1["least"] = env2["v"]]], {iter2, items[env1["nums"]]}];
-          env1["k"] = Expr["num", env1["least"]]];
+          env1["ok"] = orV[mEvery[env1["nums"], lfn[4, { env3["v"] = arg[args4, 0] };
+            Throw[le[env3["v"], 0.], ret]]], mEvery[env1["nums"], lfn[4, { env3["v"] = arg[args4, 0] };
+            Throw[gt[env3["v"], 0.], ret]]]];
+          env1["k"] = Expr["num", mReduce[env1["nums"], elem[env1["nums"], 0.], lfn[4, { env3["least"] = arg[args4, 0], env3["v"] = arg[args4, 1] };
+            Throw[If[truthy[lt[mAbs[env3["v"]], mAbs[env3["least"]]]], env3["v"], env3["least"]], ret]]]]];
         If[truthy[env1["ok"]],
           mPush[env0["common"], list[elem[env1["head_"], 0.], env1["k"]]]]]], {iter1, items[elem[env0["parts"], 0.]["keys"]]}];
     If[truthy[mEmpty[env0["common"]]],
@@ -3550,16 +3410,11 @@ DefineClass[Expr, "Expr", Node, Function[{klass},
       Throw[Expr["simplify", Expr["add", mMap[env0["t"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
         Throw[Expr["expand", env2["x"]], ret]]]]], ret]];
     If[truthy[eq[env0["t"]["kind"], "mul"]],
-      env0["parts"] = mMap[env0["t"]["of"], lfn[3, { env2["x"] = arg[args3, 0] };
-        Throw[Expr["expand", env2["x"]], ret]]];
-      env0["out"] = list[Expr["num", 1.]];
-      Do[loopScope[1, env1["p"] = iter1;
-        env1["terms"] = If[truthy[eq[env1["p"]["kind"], "add"]], env1["p"]["of"], list[env1["p"]]];
-        env1["next"] = list[];
-        Do[loopScope[2, env2["a"] = iter2;
-          Do[loopScope[3, env3["b"] = iter3;
-            mPush[env1["next"], Expr["mul", list[env2["a"], env3["b"]]]]], {iter3, items[env1["terms"]]}]], {iter2, items[env0["out"]]}];
-        env0["out"] = env1["next"]], {iter1, items[env0["parts"]]}];
+      env0["out"] = mReduce[mMap[env0["t"]["of"], lfn[4, { env3["x"] = arg[args4, 0] };
+        Throw[Expr["expand", env3["x"]], ret]]], list[Expr["num", 1.]], lfn[3, { env2["out"] = arg[args3, 0], env2["p"] = arg[args3, 1] };
+        Throw[mReduce[env2["out"], list[], lfn[5, { env4["next"] = arg[args5, 0], env4["a"] = arg[args5, 1] };
+          Throw[mReduce[(If[truthy[eq[env2["p"]["kind"], "add"]], env2["p"]["of"], list[env2["p"]]]), env4["next"], lfn[7, { env6["n"] = arg[args7, 0], env6["b"] = arg[args7, 1] };
+            Throw[mPush[env6["n"], Expr["mul", list[env4["a"], env6["b"]]]], ret]]], ret]]], ret]]];
       Throw[Expr["simplify", Expr["add", env0["out"]]], ret]];
     Throw[env0["t"], ret]]];
   statik[klass, "deep_factored", mfn[1, { env0["e"] = arg[args1, 0], env0["depth"] = arg[args1, 1] };
@@ -3672,6 +3527,11 @@ DefineClass[ExprReader, "ExprReader", Node, Function[{klass},
     Throw[env0["got"], ret]]];
   method[klass, "starts", mfn[1, { env0["s"] = arg[args1, 0] };
     Throw[eq[Notation["sub_", self["text"], self["at"], add[self["at"], len[env0["s"]]]], env0["s"]], ret]]];
+  method[klass, "take_while", mfn[1, { env0["keep"] = arg[args1, 0] };
+    env0["k"] = self["at"];
+    While[truthy[andV[lt[env0["k"], len[self["text"]]], env0["keep"][elem[mChars[self["text"]], env0["k"]]]]],
+      env0["k"] = add[env0["k"], 1.]];
+    Throw[self["eat", sub[env0["k"], self["at"]]], ret]]];
   getter[klass, "addition", mfn[1,
     env0["left"] = self["product"];
     self["skip"];
@@ -3712,15 +3572,14 @@ DefineClass[ExprReader, "ExprReader", Node, Function[{klass},
       env0["e"] = If[truthy[eq[env0["name"], "ln"]], Expr["log", env0["e"]], Expr["call", env0["name"], env0["e"]]]];
     Throw[env0["e"], ret]]];
   getter[klass, "word", mfn[1,
-    env0["k"] = self["at"];
-    While[truthy[andV[lt[env0["k"], len[self["text"]]], (orV[Notation["is_name", elem[mChars[self["text"]], env0["k"]]], gt[elem[mChars[self["text"]], env0["k"]], 127.]])]],
-      env0["k"] = add[env0["k"], 1.]];
-    Throw[self["eat", sub[env0["k"], self["at"]]], ret]]];
+    Throw[self["take_while", lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[orV[Notation["is_name", env2["c"]], gt[env2["c"], 127.]], ret]]], ret]]];
   getter[klass, "number", mfn[1,
-    env0["k"] = self["at"];
-    While[truthy[andV[lt[env0["k"], len[self["text"]]], (orV[Notation["is_digit", elem[mChars[self["text"]], env0["k"]]], eq[elem[mChars[self["text"]], env0["k"]], 46.]])]],
-      env0["k"] = add[env0["k"], 1.]];
-    Throw[Expr["num", number[self["eat", sub[env0["k"], self["at"]]]]], ret]]];
+    Throw[Expr["num", number[self["take_while", lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[orV[Notation["is_digit", env2["c"]], eq[env2["c"], 46.]], ret]]]]], ret]]];
+  getter[klass, "quoted", mfn[1,
+    Throw[self["take_while", lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[(!eq[env2["c"], 34.]), ret]]], ret]]];
   getter[klass, "primary", mfn[1,
     self["skip"];
     env0["c"] = self["peek"];
@@ -3734,10 +3593,7 @@ DefineClass[ExprReader, "ExprReader", Node, Function[{klass},
       Throw[self["number"], ret]];
     If[truthy[eq[env0["c"], 34.]],
       self["eat", 1.];
-      env0["k"] = self["at"];
-      While[truthy[andV[lt[env0["k"], len[self["text"]]], (!eq[elem[mChars[self["text"]], env0["k"]], 34.])]],
-        env0["k"] = add[env0["k"], 1.]];
-      env0["name"] = self["eat", sub[env0["k"], self["at"]]];
+      env0["name"] = quoted[self];
       self["eat", 1.];
       Throw[Expr["field", Expr["name_of", env0["name"]]], ret]];
     If[truthy[self["starts", "Solve.root("]],
@@ -3748,10 +3604,7 @@ DefineClass[ExprReader, "ExprReader", Node, Function[{klass},
       self["eat", 1.];
       self["skip"];
       self["eat", 1.];
-      env0["k"] = self["at"];
-      While[truthy[andV[lt[env0["k"], len[self["text"]]], (!eq[elem[mChars[self["text"]], env0["k"]], 34.])]],
-        env0["k"] = add[env0["k"], 1.]];
-      env0["name"] = self["eat", sub[env0["k"], self["at"]]];
+      env0["name"] = quoted[self];
       self["eat", 1.];
       self["skip"];
       self["eat", 1.];
@@ -3771,10 +3624,7 @@ DefineClass[ExprReader, "ExprReader", Node, Function[{klass},
       Throw[Expr["field", Expr["name_of", self["word"]]], ret]];
     If[truthy[andV[eq[env0["name"], "s"], eq[self["peek"], 91.]]],
       self["eat", 2.];
-      env0["k"] = self["at"];
-      While[truthy[andV[lt[env0["k"], len[self["text"]]], (!eq[elem[mChars[self["text"]], env0["k"]], 34.])]],
-        env0["k"] = add[env0["k"], 1.]];
-      env0["key"] = self["eat", sub[env0["k"], self["at"]]];
+      env0["key"] = quoted[self];
       self["eat", 2.];
       Throw[Expr["field", Expr["name_of", env0["key"]]], ret]];
     Throw[Expr["field", env0["name"]], ret]]]]];
@@ -4185,17 +4035,14 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
       env0["inner"]["rule" -> elem[env0["turning"]["rules"], 0.]];
       env0["sw"]["derivation" -> list[env0["inner"]]];
       mPush[env0["out"], env0["sw"]]];
-    env0["rates"] = list[];
-    Do[loopScope[1, env1["t"] = iter1;
-      If[truthy[andV[(!eq[env1["t"]["rate"], Null]), not[mContains[env0["rates"], env1["t"]["rate"]]]]],
-        mPush[env0["rates"], env1["t"]["rate"]]]], {iter1, items[env0["infos"]]}];
+    env0["rates"] = mReduce[filt[env0["infos"], lfn[4, { env3["t"] = arg[args4, 0] };
+      Throw[(!eq[env3["t"]["rate"], Null]), ret]]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["t"] = arg[args3, 1] };
+      Throw[If[truthy[mContains[env2["out"], env2["t"]["rate"]]], env2["out"], mPush[env2["out"], env2["t"]["rate"]]], ret]]];
     Do[loopScope[1, env1["name"] = iter1;
       mPush[env0["out"], Step["of", Fact["stands", env1["name"], Expr["num", 1.]], "the rewrite", list[], "a rewrite fires on every match it has, once a tick - that is what a rule of this model is. So its rate is ONE per match per tick, and the name on it says which rewrite rather than how often: there is nothing here to choose or to fit", list["" <> str[env1["name"]] <> " = 1 per match per tick"]]]], {iter1, items[env0["rates"]]}];
     Do[loopScope[1, env1["ledger"] = iter1;
-      env1["parts"] = list[];
-      Do[loopScope[2, env2["t"] = iter2;
-        env2["c"] = If[truthy[eq[env1["ledger"], "rays"]], env2["t"]["ray_count"], (If[truthy[eq[env1["ledger"], "space"]], env2["t"]["space_count"], env2["t"]["fold_count"]])];
-        mPush[env1["parts"], Expr["simplify", Expr["mul", list[Prover["body_of", env2["t"]], env2["c"]]]]]], {iter2, items[env0["acting"]]}];
+      env1["parts"] = mMap[env0["acting"], lfn[4, { env3["t"] = arg[args4, 0] };
+        Throw[Expr["simplify", Expr["mul", list[Prover["body_of", env3["t"]], If[truthy[eq[env1["ledger"], "rays"]], env3["t"]["ray_count"], (If[truthy[eq[env1["ledger"], "space"]], env3["t"]["space_count"], env3["t"]["fold_count"]])]]]], ret]]];
       If[!truthy[mEmpty[env1["parts"]]],
         mPush[env0["out"], Step["of", Fact["stands", "the " <> str[env1["ledger"]] <> " line nets", Expr["simplify", Expr["add", env1["parts"]]]], "the line", list[], "every term of the line does something to the " <> str[env1["ledger"]] <> " ledger - its rate, times what its gates let through, times the count one firing puts in - and what the ledger does per point per tick is those added up. Nothing is left out and nothing is counted twice, which is the whole reason for reading it off the line rather than assembling it again wherever it is wanted", mMap[env0["acting"], lfn[4, { env3["t"] = arg[args4, 0] };
           env3["c"] = If[truthy[eq[env1["ledger"], "rays"]], env3["t"]["ray_count"], (If[truthy[eq[env1["ledger"], "space"]], env3["t"]["space_count"], env3["t"]["fold_count"]])];
@@ -5370,16 +5217,13 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
         env3["t"] = Expr["simplify", Expr["div", env3["e"], env3["by"]]];
         If[truthy[(!eq[env3["t"]["kind"], "mul"])],
           Throw[env3["t"], ret]];
-        env3["at"] = Null;
-        Do[loopScope[4, env4["i"] = iter4;
-          If[truthy[andV[eq[env3["at"], Null], eq[elem[env3["t"]["of"], env4["i"]]["kind"], "add"]]],
-            env3["at"] = env4["i"]]], {iter4, 0., num[len[env3["t"]["of"]]] - 1.}];
+        env3["at"] = mFirst[filt[rng[len[env3["t"]["of"]]], lfn[6, { env5["i"] = arg[args6, 0] };
+          Throw[eq[elem[env3["t"]["of"], env5["i"]]["kind"], "add"], ret]]]];
         If[truthy[eq[env3["at"], Null]],
           Throw[env3["t"], ret]];
-        env3["rest"] = list[];
-        Do[loopScope[4, env4["i"] = iter4;
-          If[truthy[(!eq[env4["i"], env3["at"]])],
-            mPush[env3["rest"], elem[env3["t"]["of"], env4["i"]]]]], {iter4, 0., num[len[env3["t"]["of"]]] - 1.}];
+        env3["rest"] = mMap[filt[rng[len[env3["t"]["of"]]], lfn[7, { env6["i"] = arg[args7, 0] };
+          Throw[(!eq[env6["i"], env3["at"]]), ret]]], lfn[6, { env5["i"] = arg[args6, 0] };
+          Throw[elem[env3["t"]["of"], env5["i"]], ret]]];
         env3["spread"] = Expr["simplify", Expr["add", mMap[elem[env3["t"]["of"], env3["at"]]["of"], lfn[6, { env5["x"] = arg[args6, 0] };
           Throw[Expr["simplify", Expr["mul", mConcat[env3["rest"], list[env5["x"]]]]], ret]]]]];
         Throw[If[truthy[lt[len[Expr["show", env3["spread"]]], len[Expr["show", env3["t"]]]]], env3["spread"], env3["t"]], ret]];
@@ -5885,15 +5729,11 @@ DefineClass[Aggregate, "Aggregate", Node, Function[{klass},
       env0["v"] = elem[env0["at"], env0["e"]["label"]];
       Throw[If[truthy[eq[env0["v"], Null]], Indeterminate, env0["v"]], ret]];
     If[truthy[eq[env0["k"], "add"]],
-      env0["total"] = 0.;
-      Do[loopScope[1, env1["p"] = iter1;
-        env0["total"] = add[env0["total"], self["value", env1["p"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]]]], {iter1, items[env0["e"]["of"]]}];
-      Throw[env0["total"], ret]];
+      Throw[mSum[mMap[env0["e"]["of"], lfn[3, { env2["p"] = arg[args3, 0] };
+        Throw[self["value", env2["p"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]], ret]]]], ret]];
     If[truthy[eq[env0["k"], "mul"]],
-      env0["prod"] = 1.;
-      Do[loopScope[1, env1["p"] = iter1;
-        env0["prod"] = mul[env0["prod"], self["value", env1["p"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]]]], {iter1, items[env0["e"]["of"]]}];
-      Throw[env0["prod"], ret]];
+      Throw[mReduce[env0["e"]["of"], 1., lfn[3, { env2["prod"] = arg[args3, 0], env2["p"] = arg[args3, 1] };
+        Throw[mul[env2["prod"], self["value", env2["p"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]]], ret]]], ret]];
     If[truthy[eq[env0["k"], "pow"]],
       Throw[power[self["value", env0["e"]["base"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]], self["value", env0["e"]["power"], env0["at"], env0["masses"], env0["Rs"], env0["skip"]]], ret]];
     If[truthy[eq[env0["k"], "log"]],
@@ -6102,14 +5942,10 @@ DefineClass[Aggregate, "Aggregate", Node, Function[{klass},
     env0["f"] = self["store"]["fact", "is", "l.reach\\paren{\\bar{R}}"];
     Throw[If[truthy[eq[env0["f"], Null]], Expr["num", 0.], env0["f"]["to"]], ret]]];
   getter[klass, "names", mfn[1,
-    env0["out"] = mMap[self["per_body"], lfn[3, { env2["n"] = arg[args3, 0] };
-      Throw[env2["n"], ret]]];
-    mPush[env0["out"], "SUM"];
-    Do[loopScope[1, env1["e"] = iter1;
-      Do[loopScope[2, env2["n"] = iter2;
-        If[truthy[andV[andV[not[mContains[env0["out"], env2["n"]]], (!eq[env2["n"], "\\bar{R}"])], not[mEndsWith[env2["n"], "\\paren{...}"]]]],
-          mPush[env0["out"], env2["n"]]]], {iter2, items[Model["unbound", env1["e"]]]}]], {iter1, items[list[self["outer"], self["summand"], self["shell_expr"], self["reach_expr"]]]}];
-    Throw[env0["out"], ret]]];
+    Throw[mReduce[list[self["outer"], self["summand"], self["shell_expr"], self["reach_expr"]], mConcat[self["per_body"], list["SUM"]], lfn[3, { env2["out"] = arg[args3, 0], env2["e"] = arg[args3, 1] };
+      Throw[mReduce[filt[Model["unbound", env2["e"]], lfn[6, { env5["n"] = arg[args6, 0] };
+        Throw[andV[(!eq[env5["n"], "\\bar{R}"]), not[mEndsWith[env5["n"], "\\paren{...}"]]], ret]]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["n"] = arg[args5, 1] };
+        Throw[If[truthy[mContains[env4["o"], env4["n"]]], env4["o"], mPush[env4["o"], env4["n"]]], ret]]], ret]]], ret]]];
   getter[klass, "constants", mfn[1,
     Throw[mMap[self["names"], lfn[3, { env2["n"] = arg[args3, 0] };
       env2["v"] = If[truthy[(orV[eq[env2["n"], "SUM"], (!eq[Aggregate["kind_of", env2["n"]], "constant"])])], 0., elem[self["base"], env2["n"]]];
@@ -6273,7 +6109,7 @@ DefineClass[RayMedium, "Medium", Node, Function[{klass},
     Throw[If[truthy[self["apart"]], (If[truthy[andV[ge[env0["z"], 1.], le[env0["z"], len[self["holes"]]]]], elem[self["holes"], sub[env0["z"], 1.]], Null]), mFirst[filt[self["holes"], lfn[3, { env2["h"] = arg[args3, 0] };
       Throw[eq[self["plane_of", env2["h"]], env0["z"]], ret]]]]], ret]]];
   getter[klass, "terms", mfn[1,
-    Throw[self["theory"]["equation"]["terms"], ret]]];
+    Throw[self["theory"]["terms_read"], ret]]];
   field[klass, "meets", dfn[filt[self["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
     Throw[andV[andV[andV[andV[not[env1["t"]["settles"]], not[env1["t"]["transport"]]], not[env1["t"]["outside"]]], not[env1["t"]["doing"]["trades"]]], eq[env1["t"]["degree"], 2.]], ret]]]]];
   field[klass, "points", dfn[filt[self["terms"], lfn[2, { env1["t"] = arg[args2, 0] };
@@ -6390,13 +6226,9 @@ DefineClass[RayMedium, "Medium", Node, Function[{klass},
     Throw[env0["h"], ret]]];
   method[klass, "under", mfn[1, { env0["h"] = arg[args1, 0] };
     env0["half"] = mFloor[(div[(sub[self["K"], 1.]), 2.])];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["dy"] = iter1;
-      Do[loopScope[2, env2["dx"] = iter2;
-        env2["c"] = self["at", add[sub[mRound[env0["h"]["x"]], env0["half"]], env2["dx"]], add[sub[mRound[env0["h"]["y"]], env0["half"]], env1["dy"]]];
-        If[truthy[ge[env2["c"], 0.]],
-          mPush[env0["out"], env2["c"]]]], {iter2, 0., num[self["K"]] - 1.}]], {iter1, 0., num[self["K"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[filt[mMap[rng[mul[self["K"], self["K"]]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[self["at", add[sub[mRound[env0["h"]["x"]], env0["half"]], mod[env3["i"], self["K"]]], add[sub[mRound[env0["h"]["y"]], env0["half"]], mFloor[(div[env3["i"], self["K"]])]]], ret]]], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[ge[env2["c"], 0.], ret]]], ret]]];
   method[klass, "spread", mfn[1, { env0["h"] = arg[args1, 0] };
     env0["half"] = div[sub[self["K"], 1.], 2.];
     env0["out"] = list[];
@@ -7278,7 +7110,9 @@ DefineClass[Surface, "Surface", Node, Function[{klass},
   declaredOnly[klass, "translate", "method", "translate is declared but not defined by anyone"];
   declaredOnly[klass, "rotate", "method", "rotate is declared but not defined by anyone"];
   declaredOnly[klass, "dash", "method", "dash is declared but not defined by anyone"];
-  declaredOnly[klass, "gradient_stroke", "method", "gradient_stroke is declared but not defined by anyone"]]];
+  declaredOnly[klass, "gradient_stroke", "method", "gradient_stroke is declared but not defined by anyone"];
+  declaredOnly[klass, "image", "method", "image is declared but not defined by anyone"];
+  declaredOnly[klass, "field", "method", "field is declared but not defined by anyone"]]];
 
 DefineClass[Measured, "Measured", Node, Function[{klass},
   field[klass, "header"];
@@ -7309,12 +7143,8 @@ DefineClass[Cached, "Cached", Played, Function[{klass},
   field[klass, "sizes"];
   method[klass, "at", mfn[1, { env0["frame_at"] = arg[args1, 0] };
     env0["out"] = Node[{}];
-    env0["all"] = self["film"]["columns"][str["frames"]];
-    env0["width"] = mSum[self["sizes"]];
-    env0["from_at"] = mul[env0["frame_at"], env0["width"]];
     Do[loopScope[1, env1["i"] = iter1;
-      setAt[env0["out"], elem[self["names"], env1["i"]], mTake[mDrop[env0["all"], env0["from_at"]], elem[self["sizes"], env1["i"]]]];
-      env0["from_at"] = add[env0["from_at"], elem[self["sizes"], env1["i"]]]], {iter1, 0., num[len[self["names"]]] - 1.}];
+      setAt[env0["out"], elem[self["names"], env1["i"]], mTake[mDrop[self["film"]["columns"][str["frames"]], add[mul[env0["frame_at"], mSum[self["sizes"]]], mSum[mTake[self["sizes"], env1["i"]]]]], elem[self["sizes"], env1["i"]]]]], {iter1, 0., num[len[self["names"]]] - 1.}];
     Throw[env0["out"], ret]]]]];
 
 DefineClass[Live, "Live", Played, Function[{klass},
@@ -7363,6 +7193,9 @@ DefineClass[Picture, "Picture", Node, Function[{klass},
   field[klass, "record", dfn[Null]];
   field[klass, "panes", dfn[list[]]];
   field[klass, "on_request", dfn[False]];
+  field[klass, "images", dfn[list[]]];
+  field[klass, "parts", dfn[list[]]];
+  field[klass, "uses", dfn[list[]]];
   field[klass, "paint"];
   getter[klass, "played", mfn[1,
     env0["r"] = self["record"];
@@ -7519,13 +7352,12 @@ DefineClass[Setup, "Setup", Node, Function[{klass},
       env0["cy"] = sub[self["coarse_side"], 1.]];
     Throw[add[mul[env0["cy"], self["coarse_side"]], env0["cx"]], ret]]];
   statik[klass, "middle", mfn[1, { env0["holes"] = arg[args1, 0] };
-    env0["m"] = 0.;
-    env0["x"] = 0.;
-    env0["y"] = 0.;
-    Do[loopScope[1, env1["h"] = iter1;
-      env0["m"] = add[env0["m"], env1["h"]["mass"]];
-      env0["x"] = add[env0["x"], mul[env1["h"]["x"], env1["h"]["mass"]]];
-      env0["y"] = add[env0["y"], mul[env1["h"]["y"], env1["h"]["mass"]]]], {iter1, items[env0["holes"]]}];
+    env0["m"] = mSum[mMap[env0["holes"], lfn[3, { env2["h"] = arg[args3, 0] };
+      Throw[env2["h"]["mass"], ret]]]];
+    env0["x"] = mSum[mMap[env0["holes"], lfn[3, { env2["h"] = arg[args3, 0] };
+      Throw[mul[env2["h"]["x"], env2["h"]["mass"]], ret]]]];
+    env0["y"] = mSum[mMap[env0["holes"], lfn[3, { env2["h"] = arg[args3, 0] };
+      Throw[mul[env2["h"]["y"], env2["h"]["mass"]], ret]]]];
     Throw[If[truthy[gt[env0["m"], 0.]], list[div[env0["x"], env0["m"]], div[env0["y"], env0["m"]]], list[0., 0.]], ret]]];
   statik[klass, "rest_of", mfn[1, { env0["holes"] = arg[args1, 0], env0["k"] = arg[args1, 1] };
     env0["held"] = False;
@@ -7902,9 +7734,8 @@ DefineClass[RayPanel, "Panel", Node, Function[{klass},
     Do[loopScope[1, env1["k"] = iter1;
       If[truthy[gt[elem[env0["marks"], add[mul[env1["k"], 6.], 5.]], elem[env0["marks"], add[mul[env0["centre"], 6.], 5.]]]],
         env0["centre"] = env1["k"]]], {iter1, 0., num[env0["p"]["bodies"]] - 1.}];
-    env0["weight"] = 0.;
-    Do[loopScope[1, env1["k"] = iter1;
-      env0["weight"] = add[env0["weight"], elem[env0["marks"], add[mul[env1["k"], 6.], 5.]]]], {iter1, 0., num[env0["p"]["bodies"]] - 1.}];
+    env0["weight"] = mSum[mMap[rng[env0["p"]["bodies"]], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[elem[env0["marks"], add[mul[env2["k"], 6.], 5.]], ret]]]];
     env0["frames"] = div[len[elem[env0["trail"], env0["centre"]]], 2.];
     env0["midx"] = mMap[rng[env0["frames"]], lfn[3, { env2["i"] = arg[args3, 0] };
       Throw[0., ret]]];
@@ -8109,11 +7940,10 @@ DefineClass[Strip, "Strip", Node, Function[{klass},
   statik[klass, "lane", mfn[1, { env0["w"] = arg[args1, 0], env0["ink"] = arg[args1, 1] };
     env0["pts"] = mMap[env0["w"]["live"], lfn[3, { env2["v"] = arg[args3, 0] };
       Throw[elem[env2["v"]["at"]["components"], 0.], ret]]];
-    env0["sides"] = list[];
-    Do[loopScope[1, env1["v"] = iter1;
-      Do[loopScope[2, env2["r"] = iter2;
-        If[truthy[env2["r"]["active"]],
-          mPush[env0["sides"], Side[{ "at" -> elem[env1["v"]["at"]["components"], 0.], "sign" -> elem[env2["r"]["along"]["components"], 0.], "ink" -> env0["ink"]["ink_of", env2["r"]] }]]]], {iter2, items[env1["v"]["rays"]]}]], {iter1, items[env0["w"]["live"]]}];
+    env0["sides"] = mReduce[env0["w"]["live"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[mReduce[filt[env2["v"]["rays"], lfn[6, { env5["r"] = arg[args6, 0] };
+        Throw[env5["r"]["active"], ret]]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["r"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], Side[{ "at" -> elem[env2["v"]["at"]["components"], 0.], "sign" -> elem[env4["r"]["along"]["components"], 0.], "ink" -> env0["ink"]["ink_of", env4["r"]] }]], ret]]], ret]]];
     env0["l"] = Lane[{ "points" -> env0["pts"], "sides" -> env0["sides"] }];
     Do[loopScope[1, env1["s"] = iter1;
       Do[loopScope[2, env2["c"] = iter2;
@@ -8175,12 +8005,10 @@ DefineClass[Strip, "Strip", Node, Function[{klass},
         env0["rel"][str["" <> str[env1["p"]] <> ""] -> True]]], {iter1, items[elem[env0["pair"], 1.]["points"]]}];
     Throw[env0["rel"], ret]]];
   statik[klass, "centre_of", mfn[1, { env0["lanes"] = arg[args1, 0] };
-    env0["xs"] = list[];
-    Do[loopScope[1, env1["l"] = iter1;
-      Do[loopScope[2, env2["p"] = iter2;
-        mPush[env0["xs"], env2["p"]]], {iter2, items[env1["l"]["sources"]]}]], {iter1, items[env0["lanes"]]}];
-    If[truthy[mEmpty[env0["xs"]]],
-      env0["xs"] = mFirst[env0["lanes"]]["points"]];
+    env0["sourced"] = mReduce[env0["lanes"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["l"] = arg[args3, 1] };
+      Throw[mReduce[env2["l"]["sources"], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["p"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["p"]], ret]]], ret]]];
+    env0["xs"] = If[truthy[mEmpty[env0["sourced"]]], mFirst[env0["lanes"]]["points"], env0["sourced"]];
     If[truthy[mEmpty[env0["xs"]]],
       Throw[0., ret]];
     Throw[div[(add[mReduce[env0["xs"], mFirst[env0["xs"]], lfn[3, { env2["a_"] = arg[args3, 0], env2["b_"] = arg[args3, 1] };
@@ -8431,14 +8259,12 @@ DefineClass[Sparc, "Sparc", Node, Function[{klass},
       env1["had"] = elem[env0["best"], env1["p"]["galaxy"]];
       If[truthy[orV[eq[env1["had"], Null], gt[env1["p"]["R"], env1["had"]["R"]]]],
         setAt[env0["best"], env1["p"]["galaxy"], env1["p"]]]], {iter1, items[Sparc["rar"]]}];
-    env0["out"] = list[];
     env0["names"] = Sparc["names"];
-    Do[loopScope[1, env1["g"] = iter1;
-      env1["p"] = elem[env0["best"], env1["g"]];
-      If[truthy[(!eq[env1["p"], Null])],
-        env1["q"] = RarPoint[{ "gbar" -> env1["p"]["gbar"], "gobs" -> env1["p"]["gobs"], "galaxy" -> env1["p"]["galaxy"], "R" -> env1["p"]["R"] }];
-        env1["q"]["name" -> elem[env0["names"], env1["g"]]];
-        mPush[env0["out"], env1["q"]]]], {iter1, 0., num[len[env0["names"]]] - 1.}];
+    env0["out"] = mMap[filt[rng[len[env0["names"]]], lfn[4, { env3["g"] = arg[args4, 0] };
+      Throw[(!eq[elem[env0["best"], env3["g"]], Null]), ret]]], lfn[3, { env2["g"] = arg[args3, 0] };
+      env2["q"] = RarPoint[{ "gbar" -> elem[env0["best"], env2["g"]]["gbar"], "gobs" -> elem[env0["best"], env2["g"]]["gobs"], "galaxy" -> elem[env0["best"], env2["g"]]["galaxy"], "R" -> elem[env0["best"], env2["g"]]["R"] }];
+      env2["q"]["name" -> elem[env0["names"], env2["g"]]];
+      Throw[env2["q"], ret]]];
     Sparc["CACHE"][str["flat"] -> env0["out"]];
     Throw[env0["out"], ret]]];
   statik[klass, "btfr", mfn[1,
@@ -8449,10 +8275,9 @@ DefineClass[Sparc, "Sparc", Node, Function[{klass},
       fail["sparc-btfr is not on disk - run `npx ray data` and try again"]];
     env0["c"] = env0["t"]["columns"];
     env0["names"] = env0["t"]["header"][str["names"]];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[gt[elem[env0["c"][str["Vf"]], env1["i"]], 0.]],
-        mPush[env0["out"], Btfr[{ "name" -> elem[env0["names"], env1["i"]], "galaxy" -> elem[env0["c"][str["galaxy"]], env1["i"]], "vf" -> elem[env0["c"][str["Vf"]], env1["i"]], "err" -> elem[env0["c"][str["e_Vf"]], env1["i"]], "mass" -> mul[power[10., elem[env0["c"][str["log(Mb)"]], env1["i"]]], Sparc["MSUN"]], "err_mass" -> elem[env0["c"][str["e_log(Mb)"]], env1["i"]] }]]]], {iter1, 0., num[env0["t"]["rows"]] - 1.}];
+    env0["out"] = mMap[filt[rng[env0["t"]["rows"]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[gt[elem[env0["c"][str["Vf"]], env3["i"]], 0.], ret]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[Btfr[{ "name" -> elem[env0["names"], env2["i"]], "galaxy" -> elem[env0["c"][str["galaxy"]], env2["i"]], "vf" -> elem[env0["c"][str["Vf"]], env2["i"]], "err" -> elem[env0["c"][str["e_Vf"]], env2["i"]], "mass" -> mul[power[10., elem[env0["c"][str["log(Mb)"]], env2["i"]]], Sparc["MSUN"]], "err_mass" -> elem[env0["c"][str["e_log(Mb)"]], env2["i"]] }], ret]]];
     Sparc["CACHE"][str["btfr"] -> env0["out"]];
     Throw[env0["out"], ret]]];
   statik[klass, "discs", mfn[1,
@@ -8547,27 +8372,16 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
   statik[klass, "bit", mfn[1, { env0["mask"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
     Throw[eq[(mod[mFloor[(div[env0["mask"], power[2., env0["at"]]])], 2.]), 1.], ret]]];
   statik[klass, "tint_of", mfn[1, { env0["mask"] = arg[args1, 0] };
-    If[truthy[eq[env0["mask"], 0.]],
-      Throw[Galaxies["SEVERAL"], ret]];
-    env0["r"] = 0.;
-    env0["g"] = 0.;
-    env0["bl"] = 0.;
-    env0["n"] = 0.;
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[Galaxies["bit", env0["mask"], env1["i"]]],
-        env0["r"] = add[env0["r"], elem[elem[Galaxies["TINTS"], env1["i"]], 0.]];
-        env0["g"] = add[env0["g"], elem[elem[Galaxies["TINTS"], env1["i"]], 1.]];
-        env0["bl"] = add[env0["bl"], elem[elem[Galaxies["TINTS"], env1["i"]], 2.]];
-        env0["n"] = add[env0["n"], 1.]]], {iter1, 0., num[len[Galaxies["FREEDOMS"]]] - 1.}];
-    Throw[If[truthy[gt[env0["n"], 0.]], list[div[env0["r"], env0["n"]], div[env0["g"], env0["n"]], div[env0["bl"], env0["n"]]], Galaxies["SEVERAL"]], ret]]];
+    env0["on"] = Galaxies["freedoms_in", env0["mask"]];
+    Throw[If[truthy[orV[eq[env0["mask"], 0.], mEmpty[env0["on"]]]], Galaxies["SEVERAL"], mMap[list[0., 1., 2.], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[div[mSum[mMap[env0["on"], lfn[5, { env4["i"] = arg[args5, 0] };
+        Throw[elem[elem[Galaxies["TINTS"], env4["i"]], env2["c"]], ret]]]], len[env0["on"]]], ret]]]], ret]]];
   statik[klass, "name_of", mfn[1, { env0["mask"] = arg[args1, 0] };
     If[truthy[eq[env0["mask"], 0.]],
       Throw["the source as it starts", ret]];
-    env0["parts"] = list[];
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[Galaxies["bit", env0["mask"], env1["i"]]],
-        mPush[env0["parts"], elem[Galaxies["NAMES_NOW"], env1["i"]]]]], {iter1, 0., num[len[Galaxies["NAMES_NOW"]]] - 1.}];
-    env0["joined"] = mJoin[env0["parts"], " + "];
+    env0["joined"] = mJoin[mMap[filt[rng[len[Galaxies["NAMES_NOW"]]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[Galaxies["bit", env0["mask"], env3["i"]], ret]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[elem[Galaxies["NAMES_NOW"], env2["i"]], ret]]], " + "];
     Throw["needs " <> str[env0["joined"]] <> "", ret]]];
   statik[klass, "rgb", mfn[1, { env0["c"] = arg[args1, 0] };
     env0["r"] = mRound[elem[env0["c"], 0.]];
@@ -8650,6 +8464,31 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["f"] = If[truthy[gt[env0["span"], 0.]], div[(sub[env0["want"], elem[env0["xs_"], env0["lo"]]]), env0["span"]], 0.];
     env0["got"] = add[mul[elem[env0["ys_"], env0["lo"]], (sub[1., env0["f"]])], mul[elem[env0["ys_"], env0["hi"]], env0["f"]]];
     Throw[If[truthy[gt[env0["got"], 0.]], Fmt["log10", div[env0["got"], env0["a0"]]], Indeterminate], ret]]];
+  statik[klass, "decades", mfn[1, { env0["s"] = arg[args1, 0], env0["X"] = arg[args1, 1], env0["Y"] = arg[args1, 2], env0["box"] = arg[args1, 3], env0["range"] = arg[args1, 4], env0["under"] = arg[args1, 5] };
+    Do[loopScope[1, env1["l"] = iter1;
+      env0["s"]["begin_path"];
+      env0["s"]["move_to", env0["X"][env1["l"]], elem[env0["box"], 1.]];
+      env0["s"]["line_to", env0["X"][env1["l"]], elem[env0["box"], 3.]];
+      env0["s"]["stroke"];
+      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", env0["X"][env1["l"]], add[elem[env0["box"], 3.], env0["under"]]]], {iter1, items[mMap[rng[add[sub[elem[env0["range"], 1.], elem[env0["range"], 0.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[add[elem[env0["range"], 0.], env3["i"]], ret]]]]}];
+    env0["s"]["text_align", "right"];
+    Do[loopScope[1, env1["l"] = iter1;
+      env0["s"]["begin_path"];
+      env0["s"]["move_to", elem[env0["box"], 0.], env0["Y"][env1["l"]]];
+      env0["s"]["line_to", elem[env0["box"], 2.], env0["Y"][env1["l"]]];
+      env0["s"]["stroke"];
+      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", sub[elem[env0["box"], 0.], 8.], add[env0["Y"][env1["l"]], 4.]]], {iter1, items[mMap[rng[add[sub[elem[env0["range"], 3.], elem[env0["range"], 2.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[add[elem[env0["range"], 2.], env3["i"]], ret]]]]}]]];
+  statik[klass, "curve", mfn[1, { env0["s"] = arg[args1, 0], env0["X"] = arg[args1, 1], env0["Y"] = arg[args1, 2], env0["f"] = arg[args1, 3], env0["low"] = arg[args1, 4], env0["high"] = arg[args1, 5], env0["step"] = arg[args1, 6] };
+    env0["s"]["begin_path"];
+    env0["l"] = env0["low"];
+    While[truthy[le[env0["l"], add[env0["high"], 0.000001]]],
+      If[truthy[eq[env0["l"], env0["low"]]],
+        env0["s"]["move_to", env0["X"][env0["l"]], env0["Y"][env0["f"][env0["l"]]]],
+        env0["s"]["line_to", env0["X"][env0["l"]], env0["Y"][env0["f"][env0["l"]]]]];
+      env0["l"] = add[env0["l"], env0["step"]]];
+    Throw[env0["s"]["stroke"], ret]]];
   statik[klass, "along", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1], env0["t"] = arg[args1, 2], env0["text"] = arg[args1, 3], env0["colour"] = arg[args1, 4], env0["lift"] = arg[args1, 5], env0["leans"] = arg[args1, 6] };
     env0["p0"] = env0["leans"][sub[env0["t"], 0.01]];
     env0["p1"] = env0["leans"][add[env0["t"], 0.01]];
@@ -8725,30 +8564,11 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["s"]["line_width", 1.];
     env0["s"]["fill_style", Galaxies["FAINT"]];
     env0["s"]["text_align", "center"];
-    env0["l"] = env0["XMIN"];
-    While[truthy[le[env0["l"], env0["XMAX"]]],
-      env0["s"]["begin_path"];
-      env0["s"]["move_to", env0["X"][env0["l"]], env0["by0"]];
-      env0["s"]["line_to", env0["X"][env0["l"]], env0["by1"]];
-      env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env0["l"]] <> "", env0["X"][env0["l"]], add[env0["by1"], 17.]];
-      env0["l"] = add[env0["l"], 1.]];
-    env0["s"]["text_align", "right"];
-    env0["l"] = env0["YMIN"];
-    While[truthy[le[env0["l"], env0["YMAX"]]],
-      env0["s"]["begin_path"];
-      env0["s"]["move_to", env0["bx0"], env0["Y"][env0["l"]]];
-      env0["s"]["line_to", env0["bx1"], env0["Y"][env0["l"]]];
-      env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env0["l"]] <> "", sub[env0["bx0"], 8.], add[env0["Y"][env0["l"]], 4.]];
-      env0["l"] = add[env0["l"], 1.]];
-    env0["implied"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      env1["M"] = env1["g"]["mass"];
-      env1["v"] = mul[env1["g"]["vf"], 1000.];
-      If[truthy[andV[gt[env1["M"], 0.], gt[env1["v"], 0.]]],
-        mPush[env0["implied"], Fmt["log10", div[div[mul[mul[mul[env1["v"], env1["v"]], env1["v"]], env1["v"]], (mul[Sparc["G_NEWTON"], env1["M"]])], Galaxies["A0_DATA"]]]]]], {iter1, items[Sparc["btfr"]]}];
-    env0["implied"] = Expr["sorted", env0["implied"]];
+    Galaxies["decades", env0["s"], env0["X"], env0["Y"], list[env0["bx0"], env0["by0"], env0["bx1"], env0["by1"]], list[env0["XMIN"], env0["XMAX"], env0["YMIN"], env0["YMAX"]], 17.];
+    env0["implied"] = Expr["sorted", mMap[filt[Sparc["btfr"], lfn[4, { env3["g"] = arg[args4, 0] };
+      Throw[andV[gt[env3["g"]["mass"], 0.], gt[env3["g"]["vf"], 0.]], ret]]], lfn[3, { env2["g"] = arg[args3, 0] };
+      env2["v"] = mul[env2["g"]["vf"], 1000.];
+      Throw[Fmt["log10", div[div[mul[mul[mul[env2["v"], env2["v"]], env2["v"]], env2["v"]], (mul[Sparc["G_NEWTON"], env2["g"]["mass"]])], Galaxies["A0_DATA"]]], ret]]]];
     env0["med"] = If[truthy[mEmpty[env0["implied"]]], Indeterminate, elem[env0["implied"], mFloor[(div[len[env0["implied"]], 2.])]]];
     env0["s"]["line_width", 1.];
     Do[loopScope[1, env1["o"] = iter1;
@@ -8880,27 +8700,15 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["s"]["stroke_style", Galaxies["BTFRC"]];
     env0["s"]["line_width", 1.5];
     env0["s"]["dash", list[2., 4.]];
-    env0["s"]["begin_path"];
-    env0["l"] = env0["XMIN"];
-    While[truthy[le[env0["l"], add[env0["XMAX"], 0.000001]]],
-      If[truthy[eq[env0["l"], env0["XMIN"]]],
-        env0["s"]["move_to", env0["X"][env0["l"]], env0["Y"][mul[0.5, env0["l"]]]],
-        env0["s"]["line_to", env0["X"][env0["l"]], env0["Y"][mul[0.5, env0["l"]]]]];
-      env0["l"] = add[env0["l"], 0.05]];
-    env0["s"]["stroke"];
+    Galaxies["curve", env0["s"], env0["X"], env0["Y"], lfn[3, { env2["l"] = arg[args3, 0] };
+      Throw[mul[0.5, env2["l"]], ret]], env0["XMIN"], env0["XMAX"], 0.05];
     env0["s"]["dash", list[]];
     env0["s"]["stroke_style", Galaxies["MODEL"]];
     env0["s"]["line_width", 1.2];
     env0["s"]["alpha", 0.4];
     env0["s"]["dash", list[5., 4.]];
-    env0["s"]["begin_path"];
-    env0["l"] = env0["XMIN"];
-    While[truthy[le[env0["l"], add[env0["XMAX"], 0.000001]]],
-      If[truthy[eq[env0["l"], env0["XMIN"]]],
-        env0["s"]["move_to", env0["X"][env0["l"]], env0["Y"][env0["law_drawn"][env0["l"]]]],
-        env0["s"]["line_to", env0["X"][env0["l"]], env0["Y"][env0["law_drawn"][env0["l"]]]]];
-      env0["l"] = add[env0["l"], 0.02]];
-    env0["s"]["stroke"];
+    Galaxies["curve", env0["s"], env0["X"], env0["Y"], lfn[3, { env2["l"] = arg[args3, 0] };
+      Throw[env0["law_drawn"][env2["l"]], ret]], env0["XMIN"], env0["XMAX"], 0.02];
     env0["s"]["dash", list[]];
     env0["s"]["alpha", 1.];
     env0["landed"] = elem[env0["possible"], 0.];
@@ -9002,11 +8810,8 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
             setAt[env0["tally"], env1["m"], 0.];
             mPush[env0["masks"], env1["m"]]];
           setAt[env0["tally"], env1["m"], add[elem[env0["tally"], env1["m"]], 1.]]]], {iter1, 0., num[len[env0["p"]]] - 1.}]];
-    env0["total"] = 0.;
-    Do[loopScope[1, env1["m"] = iter1;
-      env0["total"] = add[env0["total"], elem[env0["tally"], env1["m"]]]], {iter1, items[env0["masks"]]}];
-    If[truthy[eq[env0["total"], 0.]],
-      env0["total"] = 1.];
+    env0["total"] = Fmt["max", mReduce[env0["masks"], 0., lfn[3, { env2["t"] = arg[args3, 0], env2["m"] = arg[args3, 1] };
+      Throw[add[env2["t"], elem[env0["tally"], env2["m"]]], ret]]], 1.];
     env0["counts"] = Expr["sorted", mMap[env0["masks"], lfn[3, { env2["m"] = arg[args3, 0] };
       Throw[sub[0., elem[env0["tally"], env2["m"]]], ret]]]];
     env0["ranked"] = list[];
@@ -9066,11 +8871,10 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["s"]["restore"];
     Throw[env0["s"]["text_align", "left"], ret]]];
   statik[klass, "single", mfn[1, { env0["m"] = arg[args1, 0] };
-    env0["n"] = 0.;
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[Galaxies["bit", env0["m"], env1["i"]]],
-        env0["n"] = add[env0["n"], 1.]]], {iter1, 0., num[len[Galaxies["FREEDOMS"]]] - 1.}];
-    Throw[eq[env0["n"], 1.], ret]]];
+    Throw[eq[len[Galaxies["freedoms_in", env0["m"]]], 1.], ret]]];
+  statik[klass, "freedoms_in", mfn[1, { env0["m"] = arg[args1, 0] };
+    Throw[filt[rng[len[Galaxies["FREEDOMS"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[Galaxies["bit", env0["m"], env2["i"]], ret]]], ret]]];
   statik[klass, "ratio_at", mfn[1, { env0["data"] = arg[args1, 0], env0["deg"] = arg[args1, 1] };
     env0["table"] = env0["data"]["header"][str["coincidence"]];
     If[truthy[eq[env0["table"], Null]],
@@ -9183,13 +8987,11 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     Do[loopScope[1, env1["k"] = iter1;
       If[truthy[lt[mAbs[(sub[elem[env0["ds"], env1["k"]], env0["home"]])], mAbs[(sub[elem[env0["ds"], env0["rest"]], env0["home"]])]]],
         env0["rest"] = env1["k"]]], {iter1, 0., num[env0["n"]] - 1.}];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["k"] = iter1;
-      mPush[env0["out"], sub[sub[env0["n"], 1.], env1["k"]]]], {iter1, 0., num[env0["n"]] - 1.}];
-    Do[loopScope[1, env1["k"] = iter1;
-      env1["f"] = div[(add[env1["k"], 1.]), Galaxies["SETTLE"]];
-      mPush[env0["out"], mRound[(mul[mul[mul[env0["rest"], env1["f"]], env1["f"]], (sub[3., mul[2., env1["f"]]])])]]], {iter1, 0., num[Galaxies["SETTLE"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    env0["down"] = mMap[rng[env0["n"]], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[sub[sub[env0["n"], 1.], env2["k"]], ret]]];
+    Throw[mConcat[env0["down"], mMap[rng[Galaxies["SETTLE"]], lfn[3, { env2["k"] = arg[args3, 0] };
+      env2["f"] = div[(add[env2["k"], 1.]), Galaxies["SETTLE"]];
+      Throw[mRound[(mul[mul[mul[env0["rest"], env2["f"]], env2["f"]], (sub[3., mul[2., env2["f"]]])])], ret]]]], ret]]];
   statik[klass, "of", mfn[1, { env0["id"] = arg[args1, 0], env0["what"] = arg[args1, 1], env0["title"] = arg[args1, 2] };
     env0["solved"] = Measured["of", "" <> str[env0["id"]] <> ".solved"];
     If[truthy[eq[env0["solved"], Null]],
@@ -9213,20 +9015,16 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
       env1["g"] = elem[env0["C"][str["galaxy"]], env1["i"]];
       If[truthy[andV[andV[Sparc["usable", env1["g"]], gt[elem[env0["C"][str["R"]], env1["i"]], 0.]], gt[elem[env0["C"][str["Vobs"]], env1["i"]], 0.]]],
         env0["counts"][str["" <> str[env1["g"]] <> ""] -> add[(orElse[env0["counts"][str["" <> str[env1["g"]] <> ""]], 0.]), 1.]]]], {iter1, 0., num[env0["t"]["rows"]] - 1.}];
-    env0["ids"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      If[truthy[ge[(orElse[env0["counts"][str["" <> str[env1["g"]] <> ""]], 0.]), 12.]],
-        mPush[env0["ids"], env1["g"]]]], {iter1, 0., num[len[Sparc["names"]]] - 1.}];
+    env0["ids"] = filt[rng[len[Sparc["names"]]], lfn[3, { env2["g"] = arg[args3, 0] };
+      Throw[ge[(orElse[env0["counts"][str["" <> str[env2["g"]] <> ""]], 0.]), 12.], ret]]];
     env0["tops"] = Node[{}];
     Do[loopScope[1, env1["i"] = iter1;
       env1["g"] = elem[env0["C"][str["galaxy"]], env1["i"]];
       env0["tops"][str["" <> str[env1["g"]] <> ""] -> Fmt["max", orElse[env0["tops"][str["" <> str[env1["g"]] <> ""]], 0.], elem[env0["C"][str["Vobs"]], env1["i"]]]]], {iter1, 0., num[env0["t"]["rows"]] - 1.}];
     env0["sorted"] = mSortedBy[env0["ids"], lfn[3, { env2["g"] = arg[args3, 0] };
       Throw[env0["tops"][str["" <> str[env2["g"]] <> ""]], ret]]];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["k"] = iter1;
-      mPush[env0["out"], elem[env0["sorted"], mRound[(div[mul[(sub[len[env0["sorted"]], 1.]), env1["k"]], (sub[env0["want"], 1.])])]]]], {iter1, 0., num[env0["want"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[mMap[rng[env0["want"]], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[elem[env0["sorted"], mRound[(div[mul[(sub[len[env0["sorted"]], 1.]), env2["k"]], (sub[env0["want"], 1.])])]], ret]]], ret]]];
   statik[klass, "simulated", mfn[1,
     env0["got"] = Measured["of", "galaxy.simulated"];
     If[truthy[eq[env0["got"], Null]],
@@ -9238,12 +9036,8 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
       fail["galaxy.fields is not on disk - run the galaxies (`" <> str[Galaxies["SIMULATED"]] <> "`) and try again"]];
     Throw[env0["got"], ret]]];
   statik[klass, "rows_in", mfn[1, { env0["m"] = arg[args1, 0], env0["g"] = arg[args1, 1] };
-    env0["col"] = env0["m"]["columns"][str["galaxy"]];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[eq[elem[env0["col"], env1["i"]], env0["g"]]],
-        mPush[env0["out"], env1["i"]]]], {iter1, 0., num[env0["m"]["rows"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[filt[rng[env0["m"]["rows"]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[eq[elem[env0["m"]["columns"][str["galaxy"]], env2["i"]], env0["g"]], ret]]], ret]]];
   statik[klass, "off_of", mfn[1, { env0["g"] = arg[args1, 0], env0["fitted"] = arg[args1, 1] };
     env0["sim"] = Galaxies["simulated"];
     env0["j"] = mIndexOf[env0["sim"]["header"][str["ids"]], env0["g"]];
@@ -9700,23 +9494,7 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["s"]["fill_style", Galaxies["FAINT"]];
     env0["s"]["font", "11px ui-monospace, monospace"];
     env0["s"]["text_align", "center"];
-    env0["l"] = env0["XMIN"];
-    While[truthy[le[env0["l"], env0["XMAX"]]],
-      env0["s"]["begin_path"];
-      env0["s"]["move_to", env0["X"][env0["l"]], env0["by0"]];
-      env0["s"]["line_to", env0["X"][env0["l"]], env0["by1"]];
-      env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env0["l"]] <> "", env0["X"][env0["l"]], add[env0["by1"], 16.]];
-      env0["l"] = add[env0["l"], 1.]];
-    env0["s"]["text_align", "right"];
-    env0["l"] = env0["YMIN"];
-    While[truthy[le[env0["l"], env0["YMAX"]]],
-      env0["s"]["begin_path"];
-      env0["s"]["move_to", env0["bx0"], env0["Y"][env0["l"]]];
-      env0["s"]["line_to", env0["bx1"], env0["Y"][env0["l"]]];
-      env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env0["l"]] <> "", sub[env0["bx0"], 8.], add[env0["Y"][env0["l"]], 4.]];
-      env0["l"] = add[env0["l"], 1.]];
+    Galaxies["decades", env0["s"], env0["X"], env0["Y"], list[env0["bx0"], env0["by0"], env0["bx1"], env0["by1"]], list[env0["XMIN"], env0["XMAX"], env0["YMIN"], env0["YMAX"]], 16.];
     env0["lg"] = lfn[2, { env1["v"] = arg[args2, 0] };
       Throw[Fmt["log10", div[env1["v"], Galaxies["A0_DATA"]]], ret]];
     env0["spread0"] = list[];
@@ -9747,16 +9525,8 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["a0"] = env0["sim"]["header"][str["a0"]];
     env0["s"]["stroke_style", Galaxies["MODEL"]];
     env0["s"]["line_width", 2.];
-    env0["s"]["begin_path"];
-    env0["l"] = env0["XMIN"];
-    While[truthy[le[env0["l"], add[env0["XMAX"], 0.000001]]],
-      env0["gN"] = mul[power[10., env0["l"]], Galaxies["A0_DATA"]];
-      env0["y"] = env0["lg"][Law["boost", env0["gN"], env0["a0"]]];
-      If[truthy[eq[env0["l"], env0["XMIN"]]],
-        env0["s"]["move_to", env0["X"][env0["l"]], env0["Y"][env0["y"]]],
-        env0["s"]["line_to", env0["X"][env0["l"]], env0["Y"][env0["y"]]]];
-      env0["l"] = add[env0["l"], 0.02]];
-    env0["s"]["stroke"];
+    Galaxies["curve", env0["s"], env0["X"], env0["Y"], lfn[3, { env2["l"] = arg[args3, 0] };
+      Throw[env0["lg"][Law["boost", mul[power[10., env2["l"]], Galaxies["A0_DATA"]], env0["a0"]]], ret]], env0["XMIN"], env0["XMAX"], 0.02];
     env0["s"]["stroke_style", Galaxies["NEWT"]];
     env0["s"]["dash", list[6., 5.]];
     env0["s"]["begin_path"];
@@ -9901,10 +9671,8 @@ DefineClass[Plan, "Plan", Node, Function[{klass},
     Throw[mConcat[env0["base"], mMap[rng[len[env0["shards"]]], lfn[3, { env2["k"] = arg[args3, 0] };
       Throw[list["sources (shard " <> str[env2["k"]] <> ")", mul[elem[env0["shards"], env2["k"]], 12.], True], ret]]]], ret]]];
   getter[klass, "total", mfn[1,
-    env0["sum"] = 0.;
-    Do[loopScope[1, env1["p"] = iter1;
-      env0["sum"] = add[env0["sum"], elem[env1["p"], 1.]]], {iter1, items[self["parts"]]}];
-    Throw[env0["sum"], ret]]];
+    Throw[mSum[mMap[self["parts"], lfn[3, { env2["p"] = arg[args3, 0] };
+      Throw[elem[env2["p"], 1.], ret]]]], ret]]];
   getter[klass, "per_source", mfn[1,
     Throw[If[truthy[self["budget"]["compact"]], 12., mul[add[add[add[add[12., 4.], 2.], 1.], 1.], 4.]], ret]]];
   method[klass, "fits", mfn[1, { env0["memory"] = arg[args1, 0], env0["binding"] = arg[args1, 1] };
@@ -10028,26 +9796,19 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
       env1["g"] = elem[env0["C"][str["galaxy"]], env1["i"]];
       If[truthy[andV[gt[elem[env0["C"][str["R"]], env1["i"]], 0.], gt[elem[env0["C"][str["Vobs"]], env1["i"]], 0.]]],
         env0["counts"][str["" <> str[env1["g"]] <> ""] -> add[(orElse[env0["counts"][str["" <> str[env1["g"]] <> ""]], 0.]), 1.]]]], {iter1, 0., num[Sparc["curves"]["rows"]] - 1.}];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      If[truthy[ge[(orElse[env0["counts"][str["" <> str[env1["g"]] <> ""]], 0.]), 3.]],
-        mPush[env0["out"], env1["g"]]]], {iter1, 0., num[len[Sparc["names"]]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[filt[rng[len[Sparc["names"]]], lfn[3, { env2["g"] = arg[args3, 0] };
+      Throw[ge[(orElse[env0["counts"][str["" <> str[env2["g"]] <> ""]], 0.]), 3.], ret]]], ret]]];
   statik[klass, "rows_of", mfn[1, { env0["g"] = arg[args1, 0] };
     env0["C"] = Sparc["curves"]["columns"];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["i"] = iter1;
-      If[truthy[andV[andV[eq[elem[env0["C"][str["galaxy"]], env1["i"]], env0["g"]], gt[elem[env0["C"][str["R"]], env1["i"]], 0.]], gt[elem[env0["C"][str["Vobs"]], env1["i"]], 0.]]],
-        mPush[env0["out"], list[elem[env0["C"][str["R"]], env1["i"]], elem[env0["C"][str["Vobs"]], env1["i"]], elem[env0["C"][str["e_Vobs"]], env1["i"]], elem[env0["C"][str["Vgas"]], env1["i"]], elem[env0["C"][str["Vdisk"]], env1["i"]], elem[env0["C"][str["Vbul"]], env1["i"]], If[truthy[Simulation["kept", env0["g"], elem[env0["C"][str["Vobs"]], env1["i"]], elem[env0["C"][str["e_Vobs"]], env1["i"]]]], 1., 0.]]]]], {iter1, 0., num[Sparc["curves"]["rows"]] - 1.}];
-    Throw[mSortedBy[env0["out"], lfn[3, { env2["r"] = arg[args3, 0] };
+    env0["mine"] = filt[rng[Sparc["curves"]["rows"]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[andV[andV[eq[elem[env0["C"][str["galaxy"]], env2["i"]], env0["g"]], gt[elem[env0["C"][str["R"]], env2["i"]], 0.]], gt[elem[env0["C"][str["Vobs"]], env2["i"]], 0.]], ret]]];
+    Throw[mSortedBy[mMap[env0["mine"], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[list[elem[env0["C"][str["R"]], env3["i"]], elem[env0["C"][str["Vobs"]], env3["i"]], elem[env0["C"][str["e_Vobs"]], env3["i"]], elem[env0["C"][str["Vgas"]], env3["i"]], elem[env0["C"][str["Vdisk"]], env3["i"]], elem[env0["C"][str["Vbul"]], env3["i"]], If[truthy[Simulation["kept", env0["g"], elem[env0["C"][str["Vobs"]], env3["i"]], elem[env0["C"][str["e_Vobs"]], env3["i"]]]], 1., 0.]], ret]]], lfn[3, { env2["r"] = arg[args3, 0] };
       Throw[elem[env2["r"], 0.], ret]]], ret]]];
   statik[klass, "edges_of", mfn[1, { env0["rs"] = arg[args1, 0] };
     env0["n"] = len[env0["rs"]];
-    env0["out"] = list[0., div[elem[elem[env0["rs"], 0.], 0.], 2.]];
-    Do[loopScope[1, env1["i"] = iter1;
-      mPush[env0["out"], div[(add[elem[elem[env0["rs"], env1["i"]], 0.], elem[elem[env0["rs"], add[env1["i"], 1.]], 0.]]), 2.]]], {iter1, 0., num[sub[env0["n"], 1.]] - 1.}];
-    mPush[env0["out"], add[elem[elem[env0["rs"], sub[env0["n"], 1.]], 0.], div[(sub[elem[elem[env0["rs"], sub[env0["n"], 1.]], 0.], elem[elem[env0["rs"], sub[env0["n"], 2.]], 0.]]), 2.]]];
-    Throw[env0["out"], ret]]];
+    Throw[mConcat[mConcat[list[0., div[elem[elem[env0["rs"], 0.], 0.], 2.]], mMap[rng[sub[env0["n"], 1.]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[div[(add[elem[elem[env0["rs"], env2["i"]], 0.], elem[elem[env0["rs"], add[env2["i"], 1.]], 0.]]), 2.], ret]]]], list[add[elem[elem[env0["rs"], sub[env0["n"], 1.]], 0.], div[(sub[elem[elem[env0["rs"], sub[env0["n"], 1.]], 0.], elem[elem[env0["rs"], sub[env0["n"], 2.]], 0.]]), 2.]]]], ret]]];
   statik[klass, "bulge_arrives", mfn[1, { env0["rs"] = arg[args1, 0], env0["r"] = arg[args1, 1], env0["h"] = arg[args1, 2] };
     env0["got"] = 0.;
     env0["was"] = 0.;
@@ -10250,10 +10011,8 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
       env1["w_gas"] = Simulation["nnls", env1["K"], env1["want_gas"]];
       env1["w_disc"] = Simulation["nnls", env1["K"], env1["want_disc"]];
       env1["sum_at"] = lfn[3, { env2["row_of"] = arg[args3, 0], env2["w"] = arg[args3, 1] };
-        env2["s"] = 0.;
-        Do[loopScope[3, env3["a"] = iter3;
-          env2["s"] = add[env2["s"], mul[env2["row_of"][env3["a"]], elem[env2["w"], env3["a"]]]]], {iter3, 0., num[env1["n"]] - 1.}];
-        Throw[env2["s"], ret]];
+        Throw[mReduce[rng[env1["n"]], 0., lfn[5, { env4["s"] = arg[args5, 0], env4["a"] = arg[args5, 1] };
+          Throw[add[env4["s"], mul[env2["row_of"][env4["a"]], elem[env2["w"], env4["a"]]]], ret]]], ret]];
       env1["here"] = list[];
       env1["worst"] = 0.;
       env1["top"] = 0.;
@@ -10273,31 +10032,22 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
       mPush[self["w_discs"], env1["w_disc"]];
       mPush[self["w_gases"], env1["w_gas"]];
       mPush[self["repro"], If[truthy[gt[env1["top"], 0.]], div[env1["worst"], env1["top"]], 0.]];
-      env1["tab"] = list[];
-      Do[loopScope[2, env2["t"] = iter2;
-        env2["base"] = add[elem[self["tabled_at"], env1["j"]], mul[env2["t"], env1["n"]]];
-        env2["gd"] = env1["sum_at"][lfn[5, { env4["a"] = arg[args5, 0] };
-          Throw[elem[env0["pulls"], add[env2["base"], env4["a"]]], ret]], env1["w_disc"]];
-        env2["gg"] = env1["sum_at"][lfn[5, { env4["a"] = arg[args5, 0] };
-          Throw[elem[env0["pulls"], add[env2["base"], env4["a"]]], ret]], env1["w_gas"]];
-        mPush[env1["tab"], list[self["table_r", env1["j"], env2["t"]], env2["gd"], env2["gg"], Simulation["bulge_at", env1["rs"], self["table_r", env1["j"], env2["t"]]]]]], {iter2, 0., num[Simulation["TABLE"]] - 1.}];
-      mPush[self["tables"], env1["tab"]]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
+      mPush[self["tables"], mMap[rng[Simulation["TABLE"]], lfn[4, { env3["t"] = arg[args4, 0] };
+        env3["base"] = add[elem[self["tabled_at"], env1["j"]], mul[env3["t"], env1["n"]]];
+        Throw[list[self["table_r", env1["j"], env3["t"]], env1["sum_at"][lfn[6, { env5["a"] = arg[args6, 0] };
+          Throw[elem[env0["pulls"], add[env3["base"], env5["a"]]], ret]], env1["w_disc"]], env1["sum_at"][lfn[6, { env5["a"] = arg[args6, 0] };
+          Throw[elem[env0["pulls"], add[env3["base"], env5["a"]]], ret]], env1["w_gas"]], Simulation["bulge_at", env1["rs"], self["table_r", env1["j"], env3["t"]]]], ret]]]]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
   field[klass, "seen_rows", dfn[list[]]];
   method[klass, "arrive", mfn[1, { env0["spulls"] = arg[args1, 0] };
     self["seen_rows" -> list[]];
     Do[loopScope[1, env1["j"] = iter1;
       env1["rs"] = elem[self["rows"], env1["j"]];
       env1["n"] = sub[len[elem[self["edges"], env1["j"]]], 1.];
-      env1["here"] = list[];
-      Do[loopScope[2, env2["i"] = iter2;
-        env2["sd"] = 0.;
-        env2["sg"] = 0.;
-        Do[loopScope[3, env3["a"] = iter3;
-          env3["k"] = elem[env0["spulls"], add[add[elem[self["measured_at"], env1["j"]], mul[env2["i"], env1["n"]]], env3["a"]]];
-          env2["sd"] = add[env2["sd"], mul[env3["k"], elem[elem[self["w_discs"], env1["j"]], env3["a"]]]];
-          env2["sg"] = add[env2["sg"], mul[env3["k"], elem[elem[self["w_gases"], env1["j"]], env3["a"]]]]], {iter3, 0., num[env1["n"]] - 1.}];
-        mPush[env1["here"], list[env2["sd"], env2["sg"], Simulation["bulge_arrives", env1["rs"], elem[elem[env1["rs"], env2["i"]], 0.], elem[self["thick"], env1["j"]]]]]], {iter2, 0., num[len[env1["rs"]]] - 1.}];
-      mPush[self["seen_rows"], env1["here"]]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
+      env1["seen"] = lfn[3, { env2["i"] = arg[args3, 0], env2["w"] = arg[args3, 1] };
+        Throw[mReduce[rng[env1["n"]], 0., lfn[5, { env4["s"] = arg[args5, 0], env4["a"] = arg[args5, 1] };
+          Throw[add[env4["s"], mul[elem[env0["spulls"], add[add[elem[self["measured_at"], env1["j"]], mul[env2["i"], env1["n"]]], env4["a"]]], elem[env2["w"], env4["a"]]]], ret]]], ret]];
+      mPush[self["seen_rows"], mMap[rng[len[env1["rs"]]], lfn[4, { env3["i"] = arg[args4, 0] };
+        Throw[list[env1["seen"][env3["i"], elem[self["w_discs"], env1["j"]]], env1["seen"][env3["i"], elem[self["w_gases"], env1["j"]]], Simulation["bulge_arrives", env1["rs"], elem[elem[env1["rs"], env3["i"]], 0.], elem[self["thick"], env1["j"]]]], ret]]]]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
   statik[klass, "lift_coefficients", mfn[1, { env0["theory"] = arg[args1, 0], env0["deg"] = arg[args1, 1] };
     env0["model"] = Model[{ "theory" -> env0["theory"] }];
     env0["e"] = env0["model"]["settled", env0["deg"]];
@@ -10361,26 +10111,21 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
       Throw[mLn[(div[elem[env0["ys_"], env2["i"]], env0["A0"]])], ret]]]], ret]]];
   method[klass, "felt", mfn[1, { env0["gN"] = arg[args1, 0] };
     Throw[If[truthy[gt[env0["gN"], 0.]], Law["boost", env0["gN"], self["a0"]], (If[truthy[lt[env0["gN"], 0.]], sub[0., Law["boost", sub[0., env0["gN"]], self["a0"]]], 0.])], ret]]];
+  statik[klass, "laid", mfn[1, { env0["records"] = arg[args1, 0] };
+    Throw[mReduce[env0["records"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["r"] = arg[args3, 1] };
+      Throw[mReduce[env2["r"], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["v"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["v"]], ret]]], ret]]], ret]]];
   getter[klass, "points", mfn[1,
-    env0["out"] = list[];
-    Do[loopScope[1, env1["j"] = iter1;
-      Do[loopScope[2, env2["i"] = iter2;
-        env2["p"] = elem[elem[self["at_rows"], env1["j"]], env2["i"]];
-        Do[loopScope[3, env3["v"] = iter3;
-          mPush[env0["out"], env3["v"]]], {iter3, items[list[env1["j"], elem[elem[elem[self["rows"], env1["j"]], env2["i"]], 0.], elem[env2["p"], 0.], elem[env2["p"], 1.], elem[env2["p"], 2.], 0.]]}]], {iter2, 0., num[len[elem[self["rows"], env1["j"]]]] - 1.}]], {iter1, 0., num[len[self["ids"]]] - 1.}];
-    Do[loopScope[1, env1["j"] = iter1;
-      Do[loopScope[2, env2["t"] = iter2;
-        Do[loopScope[3, env3["v"] = iter3;
-          mPush[env0["out"], env3["v"]]], {iter3, items[list[env1["j"], elem[env2["t"], 0.], elem[env2["t"], 1.], elem[env2["t"], 2.], elem[env2["t"], 3.], 0.]]}]], {iter2, items[elem[self["tables"], env1["j"]]]}]], {iter1, 0., num[len[self["ids"]]] - 1.}];
-    Throw[env0["out"], ret]]];
+    env0["measured"] = mReduce[rng[len[self["ids"]]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["j"] = arg[args3, 1] };
+      Throw[mReduce[rng[len[elem[self["rows"], env2["j"]]]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["i"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], list[env2["j"], elem[elem[elem[self["rows"], env2["j"]], env4["i"]], 0.], elem[elem[elem[self["at_rows"], env2["j"]], env4["i"]], 0.], elem[elem[elem[self["at_rows"], env2["j"]], env4["i"]], 1.], elem[elem[elem[self["at_rows"], env2["j"]], env4["i"]], 2.], 0.]], ret]]], ret]]];
+    env0["tabled"] = mReduce[rng[len[self["ids"]]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["j"] = arg[args3, 1] };
+      Throw[mReduce[elem[self["tables"], env2["j"]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["t"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], list[env2["j"], elem[env4["t"], 0.], elem[env4["t"], 1.], elem[env4["t"], 2.], elem[env4["t"], 3.], 0.]], ret]]], ret]]];
+    Throw[Simulation["laid", mConcat[env0["measured"], env0["tabled"]]], ret]]];
   method[klass, "nuisances", mfn[1, { env0["fitted"] = arg[args1, 0] };
-    env0["out"] = list[];
-    Do[loopScope[1, env1["j"] = iter1;
-      mPush[env0["out"], If[truthy[env0["fitted"]], elem[self["best_y"], env1["j"]], Sparc["YD"]]];
-      mPush[env0["out"], If[truthy[env0["fitted"]], elem[self["best_b"], env1["j"]], Sparc["YB"]]];
-      mPush[env0["out"], self["a0"]];
-      mPush[env0["out"], 0.]], {iter1, 0., num[len[self["ids"]]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[Simulation["laid", mMap[rng[len[self["ids"]]], lfn[3, { env2["j"] = arg[args3, 0] };
+      Throw[list[If[truthy[env0["fitted"]], elem[self["best_y"], env2["j"]], Sparc["YD"]], If[truthy[env0["fitted"]], elem[self["best_b"], env2["j"]], Sparc["YB"]], self["a0"], 0.], ret]]]], ret]]];
   field[klass, "best_y", dfn[list[]]];
   field[klass, "best_b", dfn[list[]]];
   field[klass, "best_d", dfn[list[]]];
@@ -10420,13 +10165,10 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
   getter[klass, "searches", mfn[1,
     env0["S"] = Sparc["sample"]["columns"];
     env0["pts"] = self["fit_points"];
-    env0["out"] = list[];
-    Do[loopScope[1, env1["j"] = iter1;
-      env1["g"] = elem[self["ids"], env1["j"]];
-      env1["stop"] = If[truthy[lt[add[env1["j"], 1.], len[self["ids"]]]], elem[self["fit_at"], add[env1["j"], 1.]], mFloor[(div[len[env0["pts"]], 8.])]];
-      Do[loopScope[2, env2["v"] = iter2;
-        mPush[env0["out"], env2["v"]]], {iter2, items[list[elem[self["fit_at"], env1["j"]], sub[env1["stop"], elem[self["fit_at"], env1["j"]]], elem[env0["S"][str["D"]], env1["g"]], elem[env0["S"][str["e_D"]], env1["g"]], elem[env0["S"][str["Inc"]], env1["g"]], elem[env0["S"][str["e_Inc"]], env1["g"]], self["a0"], If[truthy[self["has_bulge", env1["j"]]], 1., 0.], elem[self["centre_y"], env1["j"]], elem[self["centre_b"], env1["j"]], elem[self["centre_d"], env1["j"]], elem[self["centre_i"], env1["j"]], mul[Simulation["STEP_Y"], self["spacing"]], mul[Simulation["STEP_D"], self["spacing"]], mul[Simulation["STEP_I"], self["spacing"]], 0.]]}]], {iter1, 0., num[len[self["ids"]]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[Simulation["laid", mMap[rng[len[self["ids"]]], lfn[3, { env2["j"] = arg[args3, 0] };
+      env2["g"] = elem[self["ids"], env2["j"]];
+      env2["stop"] = If[truthy[lt[add[env2["j"], 1.], len[self["ids"]]]], elem[self["fit_at"], add[env2["j"], 1.]], mFloor[(div[len[env0["pts"]], 8.])]];
+      Throw[list[elem[self["fit_at"], env2["j"]], sub[env2["stop"], elem[self["fit_at"], env2["j"]]], elem[env0["S"][str["D"]], env2["g"]], elem[env0["S"][str["e_D"]], env2["g"]], elem[env0["S"][str["Inc"]], env2["g"]], elem[env0["S"][str["e_Inc"]], env2["g"]], self["a0"], If[truthy[self["has_bulge", env2["j"]]], 1., 0.], elem[self["centre_y"], env2["j"]], elem[self["centre_b"], env2["j"]], elem[self["centre_d"], env2["j"]], elem[self["centre_i"], env2["j"]], mul[Simulation["STEP_Y"], self["spacing"]], mul[Simulation["STEP_D"], self["spacing"]], mul[Simulation["STEP_I"], self["spacing"]], 0.], ret]]]], ret]]];
   method[klass, "combo", mfn[1, { env0["j"] = arg[args1, 0], env0["c"] = arg[args1, 1], env0["n"] = arg[args1, 2] };
     env0["S"] = Sparc["sample"]["columns"];
     env0["g"] = elem[self["ids"], env0["j"]];
@@ -10526,10 +10268,8 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
         mPush[env0["out"], env2["v"]]], {iter2, items[list[elem[self["reach"], env1["j"]], env1["dt"], env1["n"], mFloor[(div[env1["n"], 2.])], neg[1.], env1["edge"], self["a0"], 1., 0., Simulation["SIGMA"], 0., 0.]]}]], {iter1, 0., num[len[self["ids"]]] - 1.}];
     Throw[env0["out"], ret]]];
   getter[klass, "most_steps", mfn[1,
-    env0["m"] = 0.;
-    Do[loopScope[1, env1["n"] = iter1;
-      env0["m"] = Fmt["max", env0["m"], env1["n"]]], {iter1, items[self["steps"]]}];
-    Throw[env0["m"], ret]]];
+    Throw[mReduce[self["steps"], 0., lfn[3, { env2["m"] = arg[args3, 0], env2["n"] = arg[args3, 1] };
+      Throw[Fmt["max", env2["m"], env2["n"]], ret]]], ret]]];
   field[klass, "film_sources", dfn[list[]]];
   field[klass, "film_angles", dfn[list[]]];
   field[klass, "film_steps", dfn[list[]]];
@@ -10556,12 +10296,11 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["per_pixel"] = mul[mul[div[mul[div[env0["fov"], env0["P"]], 3.141592653589793], 180.], env0["D"]], 1000.];
     env0["light"] = env0["I"]["columns"][str["light"]];
     env0["base"] = mul[mul[env0["g"], env0["P"]], env0["P"]];
-    env0["edge"] = list[];
-    Do[loopScope[1, env1["r"] = iter1;
-      Do[loopScope[2, env2["c"] = iter2;
-        If[truthy[orV[orV[orV[lt[env1["r"], Simulation["SKY_EDGE"]], lt[env2["c"], Simulation["SKY_EDGE"]]], ge[env1["r"], sub[env0["P"], Simulation["SKY_EDGE"]]]], ge[env2["c"], sub[env0["P"], Simulation["SKY_EDGE"]]]]],
-          mPush[env0["edge"], elem[env0["light"], add[add[env0["base"], mul[env1["r"], env0["P"]]], env2["c"]]]]]], {iter2, 0., num[env0["P"]] - 1.}]], {iter1, 0., num[env0["P"]] - 1.}];
-    env0["sky"] = Fmt["median", env0["edge"]];
+    env0["on_edge"] = lfn[2, { env1["r"] = arg[args2, 0], env1["c"] = arg[args2, 1] };
+      Throw[orV[orV[orV[lt[env1["r"], Simulation["SKY_EDGE"]], lt[env1["c"], Simulation["SKY_EDGE"]]], ge[env1["r"], sub[env0["P"], Simulation["SKY_EDGE"]]]], ge[env1["c"], sub[env0["P"], Simulation["SKY_EDGE"]]]], ret]];
+    env0["sky"] = Fmt["median", mMap[filt[rng[mul[env0["P"], env0["P"]]], lfn[4, { env3["k"] = arg[args4, 0] };
+      Throw[env0["on_edge"][mFloor[(div[env3["k"], env0["P"]])], mod[env3["k"], env0["P"]]], ret]]], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[elem[env0["light"], add[env0["base"], env2["k"]]], ret]]]];
     env0["reach"] = elem[self["reach"], env0["j"]];
     env0["east"] = lfn[2, { env1["c"] = arg[args2, 0] };
       Throw[sub[0., mul[(sub[add[env1["c"], 0.5], div[env0["P"], 2.]]), env0["per_pixel"]]], ret]];
@@ -10640,20 +10379,17 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
         mPush[self["film_angles"], Indeterminate];
         env1["es"] = elem[self["edges"], env1["j"]];
         env1["rs"] = elem[self["rows"], env1["j"]];
-        env1["masses"] = list[];
-        Do[loopScope[2, env2["a"] = iter2;
-          mPush[env1["masses"], list[elem[env1["es"], env2["a"]], elem[env1["es"], add[env2["a"], 1.]], add[mul[Sparc["YD"], elem[elem[self["w_discs"], env1["j"]], env2["a"]]], elem[elem[self["w_gases"], env1["j"]], env2["a"]]]]]], {iter2, 0., num[sub[len[env1["es"]], 1.]] - 1.}];
+        env1["masses"] = mMap[rng[sub[len[env1["es"]], 1.]], lfn[4, { env3["a"] = arg[args4, 0] };
+          Throw[list[elem[env1["es"], env3["a"]], elem[env1["es"], add[env3["a"], 1.]], add[mul[Sparc["YD"], elem[elem[self["w_discs"], env1["j"]], env3["a"]]], elem[elem[self["w_gases"], env1["j"]], env3["a"]]]], ret]]];
         env1["last"] = 0.;
         Do[loopScope[2, env2["i"] = iter2;
           env2["inside"] = mul[mul[mul[Sparc["YB"], elem[elem[env1["rs"], env2["i"]], 5.]], mAbs[elem[elem[env1["rs"], env2["i"]], 5.]]], elem[elem[env1["rs"], env2["i"]], 0.]];
           If[truthy[gt[env2["inside"], env1["last"]]],
             mPush[env1["masses"], list[If[truthy[eq[env2["i"], 0.]], 0., elem[elem[env1["rs"], sub[env2["i"], 1.]], 0.]], elem[elem[env1["rs"], env2["i"]], 0.], sub[env2["inside"], env1["last"]]]];
             env1["last"] = env2["inside"]]], {iter2, 0., num[len[env1["rs"]]] - 1.}];
-        env1["run"] = list[];
-        env1["total"] = 0.;
-        Do[loopScope[2, env2["m"] = iter2;
-          env1["total"] = add[env1["total"], Fmt["max", elem[env2["m"], 2.], 0.]];
-          mPush[env1["run"], env1["total"]]], {iter2, items[env1["masses"]]}];
+        env1["run"] = mReduce[env1["masses"], list[], lfn[4, { env3["run"] = arg[args4, 0], env3["m"] = arg[args4, 1] };
+          Throw[mPush[env3["run"], add[(orElse[mLast[env3["run"]], 0.]), Fmt["max", elem[env3["m"], 2.], 0.]]], ret]]];
+        env1["total"] = orElse[mLast[env1["run"]], 0.];
         Do[loopScope[2, env2["k"] = iter2;
           env2["want"] = mul[env0["rng"]["next"], env1["total"]];
           env2["a"] = 0.;
@@ -10667,12 +10403,9 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
             mPush[env0["out"], env3["v"]]], {iter3, items[list[env2["r"], mul[6.283185307179586, env0["rng"]["next"]], elem[env2["kick"], 0.], elem[env2["kick"], 1.], 0., 0., 0., 0., 0., 0.]]}]], {iter2, 0., num[Simulation["FILM_STARS"]] - 1.}]]], {iter1, items[self["film_ids"]]}];
     Throw[env0["out"], ret]]];
   method[klass, "film_table", mfn[1, { env0["felt_table"] = arg[args1, 0] };
-    env0["out"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      env1["j"] = mIndexOf[self["ids"], env1["g"]];
-      Do[loopScope[2, env2["t"] = iter2;
-        mPush[env0["out"], elem[env0["felt_table"], add[mul[env1["j"], Simulation["TABLE"]], env2["t"]]]]], {iter2, 0., num[Simulation["TABLE"]] - 1.}]], {iter1, items[self["film_ids"]]}];
-    Throw[env0["out"], ret]]];
+    Throw[mReduce[self["film_ids"], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["g"] = arg[args3, 1] };
+      Throw[mReduce[rng[Simulation["TABLE"]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["t"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], elem[env0["felt_table"], add[mul[mIndexOf[self["ids"], env2["g"]], Simulation["TABLE"]], env4["t"]]]], ret]]], ret]]], ret]]];
   method[klass, "film_runs", mfn[1, { env0["felt_table"] = arg[args1, 0] };
     env0["out"] = list[];
     self["film_steps" -> list[]];
@@ -10695,16 +10428,13 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
         mPush[env0["out"], env2["v"]]], {iter2, items[list[elem[self["reach"], env1["j"]], env1["dt"], mul[env1["every"], Simulation["FRAMES"]], mul[env1["every"], Simulation["FRAMES"]], env1["k"], env1["edge"], self["a0"], env1["every"], 0., Simulation["SIGMA"], 0., 0.]]}]], {iter1, 0., num[len[self["film_ids"]]] - 1.}];
     Throw[env0["out"], ret]]];
   getter[klass, "most_film_steps", mfn[1,
-    env0["m"] = 0.;
-    Do[loopScope[1, env1["n"] = iter1;
-      env0["m"] = Fmt["max", env0["m"], env1["n"]]], {iter1, items[self["film_steps"]]}];
-    Throw[env0["m"], ret]]];
+    Throw[mReduce[self["film_steps"], 0., lfn[3, { env2["m"] = arg[args3, 0], env2["n"] = arg[args3, 1] };
+      Throw[Fmt["max", env2["m"], env2["n"]], ret]]], ret]]];
   method[klass, "save", mfn[1, { env0["felt0"] = arg[args1, 0], env0["felt1"] = arg[args1, 1], env0["stars"] = arg[args1, 2], env0["frames"] = arg[args1, 3] };
     env0["S"] = Sparc["sample"]["columns"];
     env0["T"] = Simulation["TABLE"];
-    env0["nrows"] = 0.;
-    Do[loopScope[1, env1["rs"] = iter1;
-      env0["nrows"] = add[env0["nrows"], len[env1["rs"]]]], {iter1, items[self["rows"]]}];
+    env0["nrows"] = mReduce[self["rows"], 0., lfn[3, { env2["n"] = arg[args3, 0], env2["rs"] = arg[args3, 1] };
+      Throw[add[env2["n"], len[env2["rs"]]], ret]]];
     env0["cols"] = Node[{}];
     env0["names"] = list["galaxy", "R", "Vobs", "e_Vobs", "gd", "gg", "gb", "v0", "v1", "vs", "kept"];
     Do[loopScope[1, env1["nm_"] = iter1;
@@ -10947,11 +10677,9 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
           mPush[env0["out"], env3["v"]]], {iter3, items[list[mul[env2["r"], mCos[env2["th"]]], mul[env2["r"], mSin[env2["th"]]], 0., 0.]]}]], {iter2, 0., num[Formed["N"]] - 1.}]], {iter1, 0., num[self["discs_n"]] - 1.}];
     Throw[env0["out"], ret]]];
   getter[klass, "constants", mfn[1,
-    env0["out"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      Do[loopScope[2, env2["v"] = iter2;
-        mPush[env0["out"], env2["v"]]], {iter2, items[list[div[self["GM", env1["g"]], Formed["N"]], self["soft", env1["g"]], self["scale_a0"], Formed["DT"]]]}]], {iter1, 0., num[self["discs_n"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[mReduce[rng[self["discs_n"]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["g"] = arg[args3, 1] };
+      Throw[mReduce[list[div[self["GM", env2["g"]], Formed["N"]], self["soft", env2["g"]], self["scale_a0"], Formed["DT"]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["v"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["v"]], ret]]], ret]]], ret]]];
   method[klass, "accel_cpu", mfn[1, { env0["state"] = arg[args1, 0], env0["i"] = arg[args1, 1] };
     env0["g"] = mFloor[(div[env0["i"], Formed["N"]])];
     env0["e2"] = mul[self["soft", env0["g"]], self["soft", env0["g"]]];
@@ -11057,11 +10785,10 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
     Throw[env0["out"], ret]]];
   method[klass, "save", mfn[1, { env0["frames"] = arg[args1, 0] };
     env0["G"] = Formed["GRID"];
-    env0["density"] = list[];
-    Do[loopScope[1, env1["g"] = iter1;
-      Do[loopScope[2, env2["f"] = iter2;
-        Do[loopScope[3, env3["c"] = iter3;
-          mPush[env0["density"], elem[env2["f"], add[mul[mul[env1["g"], env0["G"]], env0["G"]], env3["c"]]]]], {iter3, 0., num[mul[env0["G"], env0["G"]]] - 1.}]], {iter2, items[env0["frames"]]}]], {iter1, 0., num[self["discs_n"]] - 1.}];
+    env0["density"] = mReduce[rng[self["discs_n"]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["g"] = arg[args3, 1] };
+      Throw[mReduce[env0["frames"], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["f"] = arg[args5, 1] };
+        Throw[mReduce[rng[mul[env0["G"], env0["G"]]], env4["o"], lfn[7, { env6["oo"] = arg[args7, 0], env6["c"] = arg[args7, 1] };
+          Throw[mPush[env6["oo"], elem[env4["f"], add[mul[mul[env2["g"], env0["G"]], env0["G"]], env6["c"]]]], ret]]], ret]]], ret]]];
     env0["cols"] = Node[{}];
     env0["cols"][str["density"] -> env0["density"]];
     env0["extra"] = Node[{}];
@@ -11130,26 +10857,11 @@ DefineClass[Model, "Model", Node, Function[{klass},
     Model["walk_names", env0["e"], env0["out"]];
     Throw[env0["out"], ret]]];
   statik[klass, "walk_names", mfn[1, { env0["e"] = arg[args1, 0], env0["out"] = arg[args1, 1] };
-    env0["k"] = env0["e"]["kind"];
-    If[truthy[orV[eq[env0["k"], "sym"], eq[env0["k"], "field"]]],
-      If[truthy[not[mContains[env0["out"], env0["e"]["label"]]]],
-        mPush[env0["out"], env0["e"]["label"]]],
-      If[truthy[orV[eq[env0["k"], "add"], eq[env0["k"], "mul"]]],
-        Do[loopScope[1, env1["x"] = iter1;
-          Model["walk_names", env1["x"], env0["out"]]], {iter1, items[env0["e"]["of"]]}],
-        If[truthy[eq[env0["k"], "pow"]],
-          Model["walk_names", env0["e"]["base"], env0["out"]];
-          Throw[Model["walk_names", env0["e"]["power"], env0["out"]], ret],
-          If[truthy[orV[orV[orV[orV[eq[env0["k"], "grad"], eq[env0["k"], "log"]], eq[env0["k"], "exp"]], eq[env0["k"], "root"]], eq[env0["k"], "limit"]]],
-            Throw[Model["walk_names", env0["e"]["base"], env0["out"]], ret],
-            If[truthy[orV[eq[env0["k"], "choose"], eq[env0["k"], "gammaInc"]]],
-              Model["walk_names", env0["e"]["first_"], env0["out"]];
-              Throw[Model["walk_names", env0["e"]["second_"], env0["out"]], ret],
-              If[truthy[eq[env0["k"], "call"]],
-                env0["called"] = "" <> str[env0["e"]["label"]] <> "\\paren{...}";
-                If[truthy[not[mContains[env0["out"], env0["called"]]]],
-                  mPush[env0["out"], env0["called"]]];
-                Throw[Model["walk_names", env0["e"]["base"], env0["out"]], ret]]]]]]]]];
+    env0["name"] = If[truthy[env0["e"]["named"]], env0["e"]["label"], (If[truthy[eq[env0["e"]["kind"], "call"]], "" <> str[env0["e"]["label"]] <> "\\paren{...}", Null])];
+    If[truthy[andV[(!eq[env0["name"], Null]), not[mContains[env0["out"], env0["name"]]]]],
+      mPush[env0["out"], env0["name"]]];
+    Do[loopScope[1, env1["x"] = iter1;
+      Model["walk_names", env1["x"], env0["out"]]], {iter1, items[env0["e"]["subtrees"]]}]]];
   method[klass, "resolved", mfn[1, { env0["e"] = arg[args1, 0], env0["env"] = arg[args1, 1], env0["seen"] = arg[args1, 2] };
     If[truthy[gt[len[env0["seen"]], 8.]],
       Throw[env0["e"], ret]];
@@ -11385,19 +11097,7 @@ DefineClass[Shaded, "Shaded", Node, Function[{klass},
   statik[klass, "helpers", mfn[1,
     Throw["fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }", ret]]];
   statik[klass, "points", mfn[1,
-    env0["points"] = list[];
-    env0["i"] = 1.;
-    While[truthy[le[env0["i"], 120.]],
-      mPush[env0["points"], div[env0["i"], 120.]];
-      env0["i"] = add[env0["i"], 1.]];
-    env0["ex"] = 0.;
-    While[truthy[le[env0["ex"], 24.]],
-      env0["k"] = 1.;
-      While[truthy[lt[env0["k"], 8.]],
-        mPush[env0["points"], mul[(power[10., (sub[env0["ex"], 12.])]), (add[1., div[env0["k"], 2.]])]];
-        env0["k"] = add[env0["k"], 1.]];
-      env0["ex"] = add[env0["ex"], 1.]];
-    Throw[Expr["sorted", env0["points"]], ret]]];
+    Throw[Expr["bracket_points"], ret]]];
   statik[klass, "solver", mfn[1, { env0["name"] = arg[args1, 0], env0["f"] = arg[args1, 1] };
     env0["pts"] = Shaded["points"];
     env0["lits"] = mJoin[mMap[env0["pts"], lfn[3, { env2["v"] = arg[args3, 0] };
@@ -11568,25 +11268,18 @@ DefineClass[Sweep, "Sweep", Node, Function[{klass},
           setAt[env0["need"], env2["i"], add[elem[env0["need"], env2["i"]], power[2., env1["k"]]]]]], {iter2, 0., num[len[env0["need"]]] - 1.}]], {iter1, 0., num[len[env0["without"]]] - 1.}];
     Throw[env0["need"], ret]]];
   method[klass, "save", mfn[1, { env0["id"] = arg[args1, 0], env0["grid"] = arg[args1, 1], env0["need"] = arg[args1, 2] };
-    env0["x"] = list[];
-    env0["y"] = list[];
-    env0["p"] = list[];
-    env0["by"] = list[];
-    Do[loopScope[1, env1["gy"] = iter1;
-      Do[loopScope[2, env2["gx"] = iter2;
-        mPush[env0["x"], add[self["X0"], mul[env2["gx"], self["dx"]]]];
-        mPush[env0["y"], add[self["Y0"], mul[env1["gy"], self["dy"]]]];
-        mPush[env0["p"], elem[env0["grid"], add[mul[env1["gy"], self["XS"]], env2["gx"]]]];
-        mPush[env0["by"], elem[env0["need"], add[mul[env1["gy"], self["XS"]], env2["gx"]]]]], {iter2, 0., num[self["XS"]] - 1.}]], {iter1, 0., num[self["YS"]] - 1.}];
-    env0["most"] = 0.;
-    Do[loopScope[1, env1["v"] = iter1;
-      If[truthy[gt[env1["v"], env0["most"]]],
-        env0["most"] = env1["v"]]], {iter1, items[env0["p"]]}];
+    env0["cells"] = rng[mul[self["YS"], self["XS"]]];
     env0["columns"] = Node[{}];
-    env0["columns"][str["x"] -> env0["x"]];
-    env0["columns"][str["y"] -> env0["y"]];
-    env0["columns"][str["p"] -> env0["p"]];
-    env0["columns"][str["by"] -> env0["by"]];
+    env0["columns"][str["x"] -> mMap[env0["cells"], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[add[self["X0"], mul[(mod[env2["i"], self["XS"]]), self["dx"]]], ret]]]];
+    env0["columns"][str["y"] -> mMap[env0["cells"], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[add[self["Y0"], mul[mFloor[(div[env2["i"], self["XS"]])], self["dy"]]], ret]]]];
+    env0["columns"][str["p"] -> mMap[env0["cells"], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[elem[env0["grid"], env2["i"]], ret]]]];
+    env0["columns"][str["by"] -> mMap[env0["cells"], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[elem[env0["need"], env2["i"]], ret]]]];
+    env0["most"] = mReduce[env0["columns"][str["p"]], 0., lfn[3, { env2["m"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[If[truthy[gt[env2["v"], env2["m"]]], env2["v"], env2["m"]], ret]]];
     env0["extra"] = Node[{}];
     env0["extra"][str["a0"] -> self["a0"]];
     env0["extra"][str["arrangement"] -> self["how"]];
@@ -11630,14 +11323,9 @@ DefineClass[Sweep, "Sweep", Node, Function[{klass},
     env0["i"] = mIndexOf[self["names"], env0["n"]];
     Throw[If[truthy[eq[env0["i"], Null]], neg[1.], env0["i"]], ret]]];
   getter[klass, "radii", mfn[1,
-    env0["out"] = list[];
-    Do[loopScope[1, env1["k"] = iter1;
-      env1["e"] = elem[self["env"], env1["k"]];
-      mPush[env0["out"], elem[self["rad"], env1["k"]]];
-      mPush[env0["out"], orElse[env1["e"][str["n_{f}"]], Indeterminate]];
-      mPush[env0["out"], orElse[env1["e"][str["\\sigma_{tr}"]], Indeterminate]];
-      mPush[env0["out"], orElse[env1["e"][str["L"]], Indeterminate]]], {iter1, 0., num[self["RS"]] - 1.}];
-    Throw[env0["out"], ret]]];
+    Throw[mReduce[rng[self["RS"]], list[], lfn[3, { env2["out"] = arg[args3, 0], env2["k"] = arg[args3, 1] };
+      Throw[mReduce[list[elem[self["rad"], env2["k"]], orElse[elem[self["env"], env2["k"]][str["n_{f}"]], Indeterminate], orElse[elem[self["env"], env2["k"]][str["\\sigma_{tr}"]], Indeterminate], orElse[elem[self["env"], env2["k"]][str["L"]], Indeterminate]], env2["out"], lfn[5, { env4["o"] = arg[args5, 0], env4["v"] = arg[args5, 1] };
+        Throw[mPush[env4["o"], env4["v"]], ret]]], ret]]], ret]]];
   getter[klass, "kernel", mfn[1,
     env0["names"] = self["names"];
     env0["NV"] = len[env0["names"]];
@@ -11763,6 +11451,783 @@ DefineClass[Measure, "Measure", Node, Function[{klass},
     If[truthy[env0["want"]["law"]],
       Measure["law", env0["model"]]]]]]];
 
+DefineClass[Sighted, "Sighted", Node, Function[{klass},
+  field[klass, "name"];
+  field[klass, "disc_mass"];
+  field[klass, "disc_scale"];
+  field[klass, "bulge_mass"];
+  field[klass, "bulge_scale"];
+  field[klass, "circling"];
+  field[klass, "sun"];
+  field[klass, "inclination"];
+  field[klass, "position_angle"];
+  field[klass, "distance"];
+  field[klass, "approach"];
+  field[klass, "across"];
+  field[klass, "source"];
+  getter[klass, "mass", mfn[1,
+    Throw[add[self["disc_mass"], self["bulge_mass"]], ret]]]]];
+
+DefineClass[Video, "Video", Node, Function[{klass},
+  staticField[klass, "WIDTH", dfn[2560.]];
+  staticField[klass, "HEIGHT", dfn[1440.]];
+  staticField[klass, "FPS", dfn[60.]];
+  staticField[klass, "FILM_RD", dfn[6.]];
+  staticField[klass, "PER_MYR", dfn[0.0010227]];
+  staticField[klass, "LIGHT", dfn[299792.458]];
+  staticField[klass, "ANDROMEDA", dfn[Sighted[{ "name" -> "Andromeda (M31)", "disc_mass" -> 8.4, "disc_scale" -> 5.4, "bulge_mass" -> 3.3, "bulge_scale" -> 0.61, "circling" -> 250., "sun" -> 0., "inclination" -> 77., "position_angle" -> 38., "distance" -> 785., "approach" -> 110., "across" -> 17., "source" -> "Geehan et al. 2006, van der Marel et al. 2012" }]]];
+  staticField[klass, "MW_ORBITS", dfn[list[5.5, 0.25]]];
+  staticField[klass, "MW_ORBIT_TRIALS", dfn[list[10., 7.]]];
+  staticField[klass, "MW_ORBIT_TEMPER", dfn[0.1]];
+  staticField[klass, "MW_ARM_END", dfn[list[0., 0., 0., 0., 140.]]];
+  staticField[klass, "MW_ARM_OLD", dfn[list[0., 1., 0., 1., 0.]]];
+  staticField[klass, "MW_ARM_FADE", dfn[12.]];
+  staticField[klass, "MW_ARM_FADE_IN", dfn[45.]];
+  staticField[klass, "MW_YOUNG", dfn[0.1]];
+  staticField[klass, "MW_CLUSTERS", dfn[list[0.5, 50., 0.1]]];
+  staticField[klass, "LIGHT_STARS", dfn[list[0.95, 2.4, 3.2]]];
+  staticField[klass, "ANDROMEDA_IMAGE", dfn[512.]];
+  staticField[klass, "ANDROMEDA_FOV", dfn[3.2]];
+  staticField[klass, "SOURCE", dfn["74,168,235"]];
+  staticField[klass, "STRIP_TOP", dfn[570.]];
+  staticField[klass, "STRIP_TALL", dfn[300.]];
+  staticField[klass, "PLANET_INK", dfn[list["#9a9a9a", "#e8d3a0", "#4a90e2", "#c1440e"]]];
+  staticField[klass, "SOLAR_FROM", dfn[160.]];
+  staticField[klass, "SOLAR_TO", dfn[280.]];
+  staticField[klass, "LOGO", dfn["../orbitmines.com/orbitmines.com/public/logo.png"]];
+  staticField[klass, "PARTS", dfn[list["video.transport", "video.to-source", "video.to-solar", "video.to-milkyway", "video.milkyway", "video.to-andromeda", "video.collision", "video.end"]]];
+  statik[klass, "MILKY_WAY", mfn[1,
+    Throw[Sighted[{ "name" -> "Milky Way", "disc_mass" -> Video["mw_discs_mass"], "disc_scale" -> Video["measured", "milkyway-discs", "thin_scale"], "bulge_mass" -> mSum[Video["MW_BAR_MASSES"]], "bulge_scale" -> 0.6, "circling" -> Video["measured", "milkyway-discs", "circling"], "sun" -> Video["measured", "milkyway-discs", "sun_distance"], "inclination" -> 0., "position_angle" -> 0., "distance" -> 0., "approach" -> 0., "across" -> 0., "source" -> "Bland-Hawthorn & Gerhard 2016 (data/milkyway-discs), Sormani et al. 2022 (data/milkyway-bar)" }], ret]]];
+  statik[klass, "measured", mfn[1, { env0["id"] = arg[args1, 0], env0["name"] = arg[args1, 1] };
+    env0["m"] = Measured["of", env0["id"]];
+    If[truthy[eq[env0["m"], Null]],
+      fail["no data/" <> str[env0["id"]] <> ": run npx ray data " <> str[env0["id"]] <> ""]];
+    env0["names"] = env0["m"]["header"][str["names"]];
+    env0["k"] = mFirst[filt[rng[len[env0["names"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[eq[elem[env0["names"], env2["i"]], env0["name"]], ret]]]];
+    If[truthy[eq[env0["k"], Null]],
+      fail["data/" <> str[env0["id"]] <> " has no " <> str[quoted[env0["name"]]] <> ""]];
+    Throw[elem[env0["m"]["columns"][str["value"]], env0["k"]], ret]]];
+  statik[klass, "MW_BAR1", mfn[1,
+    Throw[mMap[list["rho_1", "x_1", "y_1", "z_1", "c_parallel", "c_perp", "m", "alpha", "n", "c", "x_c", "y_c", "r_cut"], lfn[3, { env2["n"] = arg[args3, 0] };
+      Throw[Video["measured", "milkyway-bar", env2["n"]], ret]]], ret]]];
+  statik[klass, "mw_bar", mfn[1, { env0["i"] = arg[args1, 0] };
+    Throw[mMap[list["rho_" <> str[env0["i"]] <> "", "x_" <> str[env0["i"]] <> "", "y_" <> str[env0["i"]] <> "", "z_" <> str[env0["i"]] <> "", "n_" <> str[env0["i"]] <> "", "c_perp," <> str[env0["i"]] <> "", "R_" <> str[env0["i"]] <> ",out", "R_" <> str[env0["i"]] <> ",in", "n_" <> str[env0["i"]] <> ",out", "n_" <> str[env0["i"]] <> ",in"], lfn[3, { env2["n"] = arg[args3, 0] };
+      Throw[Video["measured", "milkyway-bar", env2["n"]], ret]]], ret]]];
+  statik[klass, "MW_BAR2", mfn[1,
+    Throw[Video["mw_bar", "2"], ret]]];
+  statik[klass, "MW_BAR3", mfn[1,
+    Throw[Video["mw_bar", "3"], ret]]];
+  statik[klass, "MW_BAR_MASSES", mfn[1,
+    Throw[mMap[list["M_bar1", "M_bar2", "M_bar3"], lfn[3, { env2["n"] = arg[args3, 0] };
+      Throw[Video["measured", "milkyway-bar", env2["n"]], ret]]], ret]]];
+  statik[klass, "MW_BAR_ANGLE", mfn[1,
+    Throw[Video["measured", "milkyway-discs", "bar_angle"], ret]]];
+  statik[klass, "MW_PATTERN_SPEED", mfn[1,
+    Throw[Video["measured", "milkyway-bar", "pattern_speed"], ret]]];
+  statik[klass, "mw_discs_mass", mfn[1,
+    Throw[sub[add[add[Video["measured", "milkyway-discs", "bulge_region_mass"], Video["measured", "milkyway-discs", "thin_mass"]], Video["measured", "milkyway-discs", "thick_mass"]], mSum[Video["MW_BAR_MASSES"]]], ret]]];
+  statik[klass, "MW_DISCS", mfn[1,
+    env0["thin"] = Video["measured", "milkyway-discs", "thin_mass"];
+    env0["thick"] = Video["measured", "milkyway-discs", "thick_mass"];
+    Throw[list[list[div[mul[Video["mw_discs_mass"], env0["thin"]], (add[env0["thin"], env0["thick"]])], Video["measured", "milkyway-discs", "thin_scale"], 1.], list[div[mul[Video["mw_discs_mass"], env0["thick"]], (add[env0["thin"], env0["thick"]])], Video["measured", "milkyway-discs", "thick_scale"], 0.]], ret]]];
+  statik[klass, "MW_DISC_HOLE", mfn[1,
+    Throw[Video["measured", "milkyway-bar", "R_cut"], ret]]];
+  statik[klass, "MW_ARMS", mfn[1,
+    env0["m"] = Measured["of", "milkyway-arms"];
+    If[truthy[eq[env0["m"], Null]],
+      fail["no data/milkyway-arms: run npx ray data milkyway-arms"]];
+    Throw[mMap[rng[5.], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[list[elem[env0["m"]["columns"][str["R"]], env2["k"]], elem[env0["m"]["columns"][str["theta"]], env2["k"]], elem[env0["m"]["columns"][str["psi"]], env2["k"]], elem[Video["MW_ARM_END"], env2["k"]], elem[Video["MW_ARM_OLD"], env2["k"]]], ret]]], ret]]];
+  statik[klass, "MW_ARM_WIDTH", mfn[1,
+    Throw[list[div[Video["measured", "milkyway-arm-widths", "w0"], 1000.], div[Video["measured", "milkyway-arm-widths", "slope"], 1000.], Video["measured", "milkyway-arm-widths", "R0"]], ret]]];
+  statik[klass, "MW_ARM_CONTRAST", mfn[1,
+    Throw[Video["measured", "milkyway-arm-contrast", "K"], ret]]];
+  statik[klass, "MW_DUST", mfn[1,
+    Throw[list[div[Video["measured", "milkyway-dust-lane", "hot"], 1000.], 0.12, 0.1], ret]]];
+  statik[klass, "MW_STIR", mfn[1,
+    Throw[list[list[Video["measured", "milkyway-discs", "thin_sigma_R"], Video["measured", "milkyway-discs", "thin_sigma_scale"]], list[Video["measured", "milkyway-discs", "thick_sigma_R"], Video["measured", "milkyway-discs", "thick_sigma_scale"]], list[Video["measured", "milkyway-arm-widths", "young_spread"], Video["measured", "milkyway-discs", "thin_sigma_scale"]]], ret]]];
+  statik[klass, "MW_SUN_MOTION", mfn[1,
+    Throw[list[Video["measured", "milkyway-arm-widths", "U_sun"], sub[Video["measured", "milkyway-discs", "sun_tangential"], Video["measured", "milkyway-discs", "circling"]]], ret]]];
+  statik[klass, "galaxy", mfn[1, { env0["name"] = arg[args1, 0] };
+    Throw[If[truthy[eq[env0["name"], "andromeda"]], Video["ANDROMEDA"], Video["MILKY_WAY"]], ret]]];
+  statik[klass, "per_kpc", mfn[1,
+    Throw[div[Video["FILM_RD"], Video["MILKY_WAY"]["disc_scale"]], ret]]];
+  statik[klass, "myr_per_tick", mfn[1, { env0["film"] = arg[args1, 0] };
+    env0["c"] = env0["film"]["header"][str["clock"]];
+    Throw[div[(div[elem[env0["c"], 1.], elem[env0["c"], 0.]]), (mul[div[elem[env0["c"], 3.], elem[env0["c"], 2.]], Video["PER_MYR"]])], ret]]];
+  statik[klass, "faster", mfn[1, { env0["film"] = arg[args1, 0] };
+    Throw[div[elem[env0["film"]["header"][str["clock"]], 1.], (div[elem[env0["film"]["header"][str["clock"]], 3.], Video["LIGHT"]])], ret]]];
+  statik[klass, "smooth", mfn[1, { env0["t"] = arg[args1, 0] };
+    env0["u"] = Fmt["min", 1., Fmt["max", 0., env0["t"]]];
+    Throw[mul[mul[env0["u"], env0["u"]], (sub[3., mul[2., env0["u"]]])], ret]]];
+  statik[klass, "shot", mfn[1, { env0["id"] = arg[args1, 0], env0["what"] = arg[args1, 1], env0["shot"] = arg[args1, 2] };
+    env0["pic"] = Picture[{ "id" -> env0["id"], "what" -> env0["what"], "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["shot"]["frames"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      Throw[Sky[{ "shot" -> env0["shot"] }], ret]] }];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "solar_meta", mfn[1, { env0["theory"] = arg[args1, 0] };
+    env0["r"] = env0["theory"]["solar"]["record"];
+    env0["at"] = 0.;
+    Do[loopScope[1, env1["k"] = iter1;
+      env0["at"] = If[truthy[eq[elem[env0["r"]["names"], env1["k"]], "marks"]], env1["k"], env0["at"]]], {iter1, 0., num[len[env0["r"]["names"]]] - 1.}];
+    env0["off"] = mSum[mTake[env0["r"]["sizes"], env0["at"]]];
+    env0["SOLAR"] = Measured["of", "solar-inner"];
+    env0["NAMES"] = env0["SOLAR"]["header"][str["names"]];
+    env0["PER"] = env0["SOLAR"]["columns"][str["period"]];
+    env0["PLANETS"] = filt[rng[len[env0["NAMES"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[gt[elem[env0["PER"], env2["i"]], 0.], ret]]];
+    env0["earth_body"] = 0.;
+    Do[loopScope[1, env1["k"] = iter1;
+      env0["earth_body"] = If[truthy[eq[elem[env0["NAMES"], elem[env0["PLANETS"], env1["k"]]], "Earth"]], add[env1["k"], 1.], env0["earth_body"]]], {iter1, 0., num[len[env0["PLANETS"]]] - 1.}];
+    Throw[list[env0["off"], env0["r"]["width"], mRound[(div[(sub[elem[env0["r"]["sizes"], env0["at"]], 1.]), 6.])], env0["earth_body"]], ret]]];
+  statik[klass, "shot_after_solar", mfn[1, { env0["theory"] = arg[args1, 0], env0["id"] = arg[args1, 1], env0["what"] = arg[args1, 2], env0["shot"] = arg[args1, 3] };
+    env0["meta"] = Video["solar_meta", env0["theory"]];
+    env0["stamp"] = env0["theory"]["solar"]["record"]["stamp"];
+    env0["pic"] = Picture[{ "id" -> env0["id"], "what" -> env0["what"], "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["shot"]["frames"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      env2["sky"] = Sky[{ "shot" -> env0["shot"] }];
+      env2["sky"]["meta" -> env0["meta"]];
+      env2["sky"]["sol_stamp" -> env0["stamp"]];
+      Throw[env2["sky"], ret]] }];
+    env0["pic"]["uses" -> list["solar.inner"]];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "light", mfn[1, { env0["s"] = arg[args1, 0], env0["film"] = arg[args1, 1], env0["b0"] = arg[args1, 2], env0["b1"] = arg[args1, 3], env0["w"] = arg[args1, 4], env0["G"] = arg[args1, 5], env0["span"] = arg[args1, 6], env0["cx"] = arg[args1, 7], env0["cy"] = arg[args1, 8], env0["px"] = arg[args1, 9], env0["ci"] = arg[args1, 10], env0["side"] = arg[args1, 11] };
+    env0["D"] = env0["film"]["columns"][str["density"]];
+    env0["Y"] = env0["film"]["columns"][str["young"]];
+    env0["U"] = env0["film"]["columns"][str["dust"]];
+    env0["top"] = 0.;
+    env0["ytop"] = 0.;
+    env0["utop"] = 0.;
+    Do[loopScope[1, env1["c"] = iter1;
+      env0["top"] = Fmt["max", env0["top"], add[elem[env0["D"], add[env0["b0"], env1["c"]]], mul[env0["w"], (sub[elem[env0["D"], add[env0["b1"], env1["c"]]], elem[env0["D"], add[env0["b0"], env1["c"]]]])]]];
+      env0["ytop"] = Fmt["max", env0["ytop"], add[elem[env0["Y"], add[env0["b0"], env1["c"]]], mul[env0["w"], (sub[elem[env0["Y"], add[env0["b1"], env1["c"]]], elem[env0["Y"], add[env0["b0"], env1["c"]]]])]]];
+      env0["utop"] = Fmt["max", env0["utop"], add[elem[env0["U"], add[env0["b0"], env1["c"]]], mul[env0["w"], (sub[elem[env0["U"], add[env0["b1"], env1["c"]]], elem[env0["U"], add[env0["b0"], env1["c"]]]])]]]], {iter1, 0., num[mul[env0["G"], env0["G"]]] - 1.}];
+    env0["lt"] = mLn[(add[1., env0["top"]])];
+    env0["rgb"] = list[];
+    Do[loopScope[1, env1["row"] = iter1;
+      env1["gy"] = sub[sub[env0["G"], 1.], env1["row"]];
+      Do[loopScope[2, env2["gx"] = iter2;
+        env2["c"] = add[mul[env1["gy"], env0["G"]], env2["gx"]];
+        env2["o"] = Fmt["min", 1., div[mLn[(add[add[1., elem[env0["D"], add[env0["b0"], env2["c"]]]], mul[env0["w"], (sub[elem[env0["D"], add[env0["b1"], env2["c"]]], elem[env0["D"], add[env0["b0"], env2["c"]]]])]])], env0["lt"]]];
+        env2["y"] = Fmt["min", 1., mSqrt[(div[(add[elem[env0["Y"], add[env0["b0"], env2["c"]]], mul[env0["w"], (sub[elem[env0["Y"], add[env0["b1"], env2["c"]]], elem[env0["Y"], add[env0["b0"], env2["c"]]]])]]), env0["ytop"]])]];
+        env2["lo"] = mul[mSqrt[env2["o"]], env2["o"]];
+        env2["hii"] = Fmt["max", 0., div[(sub[env2["y"], 0.7]), 0.3]];
+        env2["dim"] = sub[1., mul[0.7, Fmt["min", 1., mSqrt[(div[(add[elem[env0["U"], add[env0["b0"], env2["c"]]], mul[env0["w"], (sub[elem[env0["U"], add[env0["b1"], env2["c"]]], elem[env0["U"], add[env0["b0"], env2["c"]]]])]]), env0["utop"]])]]]];
+        mPush[env0["rgb"], Fmt["min", 255., mul[env2["dim"], (add[add[mul[env2["lo"], (add[130., mul[125., env2["o"]]])], mul[mul[95., env2["y"]], env2["y"]]], mul[110., env2["hii"]]])]]];
+        mPush[env0["rgb"], Fmt["min", 255., mul[env2["dim"], (add[add[mul[env2["lo"], (add[140., mul[85., env2["o"]]])], mul[mul[120., env2["y"]], env2["y"]]], mul[25., env2["hii"]]])]]];
+        mPush[env0["rgb"], Fmt["min", 255., mul[env2["dim"], (add[add[mul[env2["lo"], (sub[175., mul[55., env2["o"]]])], mul[mul[165., env2["y"]], env2["y"]]], mul[70., env2["hii"]]])]]]], {iter2, 0., num[env0["G"]] - 1.}]], {iter1, 0., num[env0["G"]] - 1.}];
+    env0["x0"] = mul[(sub[sub[0., env0["span"]], env0["cx"]]), env0["px"]];
+    env0["y0"] = sub[0., mul[mul[(sub[env0["span"], env0["cy"]]), env0["px"]], env0["ci"]]];
+    env0["bw"] = mul[mul[2., env0["span"]], env0["px"]];
+    env0["bh"] = mul[mul[mul[2., env0["span"]], env0["px"]], env0["ci"]];
+    env0["fade"] = Fmt["min", 1., Fmt["max", 0., div[(sub[90., env0["side"]]), 50.]]];
+    env0["s"]["alpha", mul[0.3, env0["fade"]]];
+    env0["s"]["field", env0["rgb"], env0["G"], env0["G"], env0["x0"], env0["y0"], env0["bw"], env0["bh"], Fmt["max", 2., mul[2., env0["side"]]]];
+    env0["s"]["alpha", mul[0.9, env0["fade"]]];
+    env0["s"]["field", env0["rgb"], env0["G"], env0["G"], env0["x0"], env0["y0"], env0["bw"], env0["bh"], 0.];
+    Throw[env0["s"]["alpha", 1.], ret]]];
+  statik[klass, "sky", mfn[1, { env0["s"] = arg[args1, 0], env0["shot"] = arg[args1, 1], env0["film"] = arg[args1, 2], env0["tracks"] = arg[args1, 3], env0["i"] = arg[args1, 4], env0["sol"] = arg[args1, 5], env0["meta"] = arg[args1, 6] };
+    env0["s"]["fill_style", Galaxies["BACK"]];
+    env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+    env0["H"] = env0["film"]["header"];
+    env0["n"] = env0["shot"]["frames"];
+    env0["t"] = If[truthy[gt[env0["n"], 1.]], div[env0["i"], (sub[env0["n"], 1.])], 0.];
+    env0["e"] = Video["smooth", env0["t"]];
+    env0["FR"] = env0["H"][str["frames"]];
+    env0["u"] = mul[(add[env0["shot"]["from_at"], mul[(sub[env0["shot"]["to_at"], env0["shot"]["from_at"]]), env0["t"]]]), (sub[env0["FR"], 1.])];
+    env0["f0"] = Fmt["min", mFloor[env0["u"]], sub[env0["FR"], 1.]];
+    env0["f1"] = Fmt["min", add[env0["f0"], 1.], sub[env0["FR"], 1.]];
+    env0["w"] = sub[env0["u"], env0["f0"]];
+    env0["ez"] = If[truthy[lt[env0["shot"]["from_zoom"], 1.]], sub[1., mul[(sub[1., Video["smooth", div[env0["t"], 0.6]]]), (sub[1., Video["smooth", div[env0["t"], 0.6]]])]], env0["e"]];
+    env0["across"] = mExp[(add[mLn[env0["shot"]["from_zoom"]], mul[(sub[mLn[env0["shot"]["to_zoom"]], mLn[env0["shot"]["from_zoom"]]]), env0["ez"]]])];
+    env0["px"] = div[env0["s"]["height"], env0["across"]];
+    env0["has_sun"] = andV[(!eq[env0["tracks"], Null]), eq[env0["tracks"]["header"][str["sun"]], 0.]];
+    env0["sx"] = 0.;
+    env0["sy"] = 0.;
+    If[truthy[env0["has_sun"]],
+      env0["XY"] = env0["tracks"]["columns"][str["xy"]];
+      env0["m"] = env0["tracks"]["header"][str["shown"]];
+      env0["sx"] = add[elem[env0["XY"], mul[mul[env0["f0"], env0["m"]], 2.]], mul[env0["w"], (sub[elem[env0["XY"], mul[mul[env0["f1"], env0["m"]], 2.]], elem[env0["XY"], mul[mul[env0["f0"], env0["m"]], 2.]]])]];
+      env0["sy"] = add[elem[env0["XY"], add[mul[mul[env0["f0"], env0["m"]], 2.], 1.]], mul[env0["w"], (sub[elem[env0["XY"], add[mul[mul[env0["f1"], env0["m"]], 2.], 1.]], elem[env0["XY"], add[mul[mul[env0["f0"], env0["m"]], 2.], 1.]]])]]];
+    env0["look"] = If[truthy[env0["has_sun"]], add[env0["shot"]["from_sun"], mul[(sub[env0["shot"]["to_sun"], env0["shot"]["from_sun"]]), env0["e"]]], 0.];
+    env0["px_end"] = div[env0["s"]["height"], env0["shot"]["to_zoom"]];
+    env0["away"] = If[truthy[env0["has_sun"]], div[mul[(sub[1., env0["look"]]), env0["px_end"]], env0["px"]], 0.];
+    env0["cx"] = mul[env0["sx"], (sub[1., env0["away"]])];
+    env0["cy"] = mul[env0["sy"], (sub[1., env0["away"]])];
+    env0["ci"] = mCos[(div[mul[env0["shot"]["tilt"], 3.141592653589793], 180.])];
+    env0["SF"] = If[truthy[(!eq[env0["sol"], Null])], env0["sol"]["columns"][str["frames"]], list[]];
+    env0["sys"] = list[0., 0., 0., 0., 0.];
+    If[truthy[(!eq[env0["sol"], Null])],
+      env0["FRS"] = env0["sol"]["header"][str["frames"]];
+      env0["at_f"] = Fmt["min", sub[env0["FRS"], 1.], Video["SOLAR_TO"]];
+      env0["mk"] = lfn[2, { env1["f"] = arg[args2, 0], env1["k"] = arg[args2, 1], env1["c"] = arg[args2, 2] };
+        Throw[elem[env0["SF"], add[add[add[mul[env1["f"], elem[env0["meta"], 1.]], elem[env0["meta"], 0.]], mul[6., env1["k"]]], env1["c"]]], ret]];
+      env0["reach"] = 0.;
+      Do[loopScope[1, env1["f"] = iter1;
+        Do[loopScope[2, env2["k"] = iter2;
+          env0["reach"] = Fmt["max", env0["reach"], Fmt["hypot", sub[env0["mk"][env1["f"], add[env2["k"], 1.], 0.], env0["mk"][env1["f"], 0., 0.]], sub[env0["mk"][env1["f"], add[env2["k"], 1.], 1.], env0["mk"][env1["f"], 0., 1.]]]]], {iter2, 0., num[sub[elem[env0["meta"], 2.], 1.]] - 1.}]], {iter1, 0., num[env0["FRS"]] - 1.}];
+      env0["eb"] = elem[env0["meta"], 3.];
+      env0["ex"] = env0["mk"][env0["at_f"], env0["eb"], 0.];
+      env0["ey"] = env0["mk"][env0["at_f"], env0["eb"], 1.];
+      env0["last"] = mul[2.1, (add[env0["reach"], Fmt["hypot", sub[env0["ex"], env0["mk"][env0["at_f"], 0., 0.]], sub[env0["ey"], env0["mk"][env0["at_f"], 0., 1.]]]])];
+      env0["pxs"] = mul[div[env0["s"]["height"], env0["last"]], (div[env0["shot"]["from_zoom"], env0["across"]])];
+      env0["sun_x"] = mul[(sub[env0["mk"][env0["at_f"], 0., 0.], env0["ex"]]), env0["pxs"]];
+      env0["sun_y"] = mul[(sub[env0["mk"][env0["at_f"], 0., 1.], env0["ey"]]), env0["pxs"]];
+      env0["cx"] = sub[env0["cx"], div[env0["sun_x"], env0["px"]]];
+      env0["cy"] = sub[env0["cy"], div[env0["sun_y"], (mul[env0["px"], env0["ci"]])]];
+      env0["sys"] = list[env0["pxs"], env0["mk"][env0["at_f"], 0., 0.], env0["mk"][env0["at_f"], 0., 1.], env0["at_f"], sub[1., Video["smooth", div[env0["e"], 0.3]]]]];
+    env0["s"]["save"];
+    env0["s"]["translate", div[env0["s"]["width"], 2.], div[env0["s"]["height"], 2.]];
+    env0["s"]["rotate", sub[0., div[mul[env0["shot"]["turn"], 3.141592653589793], 180.]]];
+    env0["G"] = env0["H"][str["grid"]];
+    env0["span"] = elem[env0["H"][str["span"]], 0.];
+    env0["D"] = env0["film"]["columns"][str["density"]];
+    env0["cs"] = div[mul[2., env0["span"]], env0["G"]];
+    env0["b0"] = mul[mul[env0["f0"], env0["G"]], env0["G"]];
+    env0["b1"] = mul[mul[env0["f1"], env0["G"]], env0["G"]];
+    env0["top"] = 0.;
+    Do[loopScope[1, env1["c"] = iter1;
+      env0["top"] = Fmt["max", env0["top"], add[elem[env0["D"], add[env0["b0"], env1["c"]]], mul[env0["w"], (sub[elem[env0["D"], add[env0["b1"], env1["c"]]], elem[env0["D"], add[env0["b0"], env1["c"]]]])]]]], {iter1, 0., num[mul[env0["G"], env0["G"]]] - 1.}];
+    env0["side"] = add[mul[env0["cs"], env0["px"]], 0.6];
+    env0["half_w"] = add[div[env0["s"]["width"], 2.], env0["side"]];
+    If[truthy[eq[env0["H"][str["young"]], 1.]],
+      Video["light", env0["s"], env0["film"], env0["b0"], env0["b1"], env0["w"], env0["G"], env0["span"], env0["cx"], env0["cy"], env0["px"], env0["ci"], env0["side"]],
+      env0["s"]["alpha", Fmt["min", 1., Fmt["max", 0., div[(sub[24., env0["side"]]), 14.]]]];
+      Do[loopScope[1, env1["gy"] = iter1;
+        env1["y"] = mul[mul[(sub[add[sub[0., env0["span"]], mul[(add[env1["gy"], 0.5]), env0["cs"]]], env0["cy"]]), env0["px"]], env0["ci"]];
+        If[truthy[lt[mAbs[env1["y"]], env0["half_w"]]],
+          Do[loopScope[2, env2["gx"] = iter2;
+            env2["c"] = add[mul[env1["gy"], env0["G"]], env2["gx"]];
+            env2["v"] = add[elem[env0["D"], add[env0["b0"], env2["c"]]], mul[env0["w"], (sub[elem[env0["D"], add[env0["b1"], env2["c"]]], elem[env0["D"], add[env0["b0"], env2["c"]]]])]];
+            If[truthy[gt[env2["v"], 0.]],
+              env2["x"] = mul[(sub[add[sub[0., env0["span"]], mul[(add[env2["gx"], 0.5]), env0["cs"]]], env0["cx"]]), env0["px"]];
+              If[truthy[lt[mAbs[env2["x"]], env0["half_w"]]],
+                env2["k"] = Fmt["min", 1., div[mLn[(add[1., env2["v"]])], mLn[(add[1., env0["top"]])]]];
+                env2["r"] = mRound[(add[40., mul[mul[215., env2["k"]], env2["k"]]])];
+                env2["gr"] = mRound[(add[60., mul[190., env2["k"]]])];
+                env2["b"] = mRound[(add[110., mul[145., Fmt["min", 1., mul[1.6, env2["k"]]]]])];
+                env0["s"]["fill_style", "rgb(" <> str[env2["r"]] <> "," <> str[env2["gr"]] <> "," <> str[env2["b"]] <> ")"];
+                env0["s"]["fill_rect", sub[env2["x"], div[env0["side"], 2.]], sub[sub[0., env1["y"]], div[mul[env0["side"], env0["ci"]], 2.]], env0["side"], add[mul[env0["side"], env0["ci"]], 0.6]]]]], {iter2, 0., num[env0["G"]] - 1.}]]], {iter1, 0., num[env0["G"]] - 1.}];
+      env0["s"]["alpha", 1.]];
+    env0["lit"] = eq[env0["H"][str["young"]], 1.];
+    If[truthy[andV[(!eq[env0["tracks"], Null]), gt[env0["px"], (If[truthy[env0["lit"]], 6., 12.])]]],
+      env0["XY"] = env0["tracks"]["columns"][str["xy"]];
+      env0["m"] = env0["tracks"]["header"][str["shown"]];
+      env0["tags"] = env0["tracks"]["header"][str["tags"]];
+      env0["s"]["alpha", If[truthy[env0["lit"]], Fmt["min", elem[Video["LIGHT_STARS"], 0.], div[(sub[env0["px"], 6.]), 14.]], Fmt["min", 0.85, div[(sub[env0["px"], 12.]), 40.]]]];
+      Do[loopScope[1, env1["k"] = iter1;
+        env1["x"] = mul[(sub[add[elem[env0["XY"], mul[(add[mul[env0["f0"], env0["m"]], env1["k"]]), 2.]], mul[env0["w"], (sub[elem[env0["XY"], mul[(add[mul[env0["f1"], env0["m"]], env1["k"]]), 2.]], elem[env0["XY"], mul[(add[mul[env0["f0"], env0["m"]], env1["k"]]), 2.]]])]], env0["cx"]]), env0["px"]];
+        env1["y"] = mul[mul[(sub[add[elem[env0["XY"], add[mul[(add[mul[env0["f0"], env0["m"]], env1["k"]]), 2.], 1.]], mul[env0["w"], (sub[elem[env0["XY"], add[mul[(add[mul[env0["f1"], env0["m"]], env1["k"]]), 2.], 1.]], elem[env0["XY"], add[mul[(add[mul[env0["f0"], env0["m"]], env1["k"]]), 2.], 1.]]])]], env0["cy"]]), env0["px"]], env0["ci"]];
+        If[truthy[andV[lt[mAbs[env1["x"]], env0["half_w"]], lt[mAbs[env1["y"]], env0["half_w"]]]],
+          env1["tg"] = elem[env0["tags"], env1["k"]];
+          env0["s"]["fill_style", If[truthy[ge[env1["tg"], 4.]], "#d4e6ff", If[truthy[orV[eq[env1["tg"], 1.], eq[env1["tg"], 3.]]], "#ffd9a0", If[truthy[eq[env1["tg"], 2.]], "#ffc7e0", "#dfe8ff"]]]];
+          env1["sz"] = If[truthy[env0["lit"]], (If[truthy[ge[env1["tg"], 4.]], elem[Video["LIGHT_STARS"], 2.], elem[Video["LIGHT_STARS"], 1.]]), 2.4];
+          env0["s"]["fill_rect", sub[env1["x"], div[env1["sz"], 2.]], sub[sub[0., env1["y"]], div[env1["sz"], 2.]], env1["sz"], env1["sz"]]]], {iter1, 0., num[env0["m"]] - 1.}];
+      env0["s"]["alpha", 1.]];
+    If[truthy[andV[(!eq[env0["sol"], Null]), gt[elem[env0["sys"], 4.], 0.004]]],
+      env0["ax"] = mul[(sub[env0["sx"], env0["cx"]]), env0["px"]];
+      env0["ay"] = mul[mul[(sub[env0["sy"], env0["cy"]]), env0["px"]], env0["ci"]];
+      env0["FRS"] = env0["sol"]["header"][str["frames"]];
+      env0["mk"] = lfn[2, { env1["f"] = arg[args2, 0], env1["k"] = arg[args2, 1], env1["c"] = arg[args2, 2] };
+        Throw[elem[env0["SF"], add[add[add[mul[env1["f"], elem[env0["meta"], 1.]], elem[env0["meta"], 0.]], mul[6., env1["k"]]], env1["c"]]], ret]];
+      Do[loopScope[1, env1["k"] = iter1;
+        env1["b"] = add[env1["k"], 1.];
+        env1["ink"] = elem[Video["PLANET_INK"], Fmt["min", 3., env1["k"]]];
+        env0["s"]["alpha", mul[0.85, elem[env0["sys"], 4.]]];
+        env0["s"]["stroke_style", env1["ink"]];
+        env0["s"]["line_width", 2.];
+        env0["s"]["begin_path"];
+        Do[loopScope[2, env2["f"] = iter2;
+          env2["x"] = add[env0["ax"], mul[(sub[env0["mk"][env2["f"], env1["b"], 0.], elem[env0["sys"], 1.]]), elem[env0["sys"], 0.]]];
+          env2["y"] = add[env0["ay"], mul[(sub[env0["mk"][env2["f"], env1["b"], 1.], elem[env0["sys"], 2.]]), elem[env0["sys"], 0.]]];
+          If[truthy[eq[env2["f"], 0.]],
+            env0["s"]["move_to", env2["x"], sub[0., env2["y"]]],
+            env0["s"]["line_to", env2["x"], sub[0., env2["y"]]]]], {iter2, 0., num[env0["FRS"]] - 1.}];
+        env0["s"]["stroke"];
+        env0["s"]["alpha", elem[env0["sys"], 4.]];
+        env1["x"] = add[env0["ax"], mul[(sub[env0["mk"][elem[env0["sys"], 3.], env1["b"], 0.], elem[env0["sys"], 1.]]), elem[env0["sys"], 0.]]];
+        env1["y"] = add[env0["ay"], mul[(sub[env0["mk"][elem[env0["sys"], 3.], env1["b"], 1.], elem[env0["sys"], 2.]]), elem[env0["sys"], 0.]]];
+        env0["s"]["line_width", 2.5];
+        env0["s"]["begin_path"];
+        env0["s"]["arc", env1["x"], sub[0., env1["y"]], 13., 0., 6.283185307179586];
+        env0["s"]["stroke"];
+        env0["s"]["fill_style", "#000000"];
+        env0["s"]["begin_path"];
+        env0["s"]["arc", env1["x"], sub[0., env1["y"]], 2.5, 0., 6.283185307179586];
+        env0["s"]["fill"]], {iter1, 0., num[sub[elem[env0["meta"], 2.], 1.]] - 1.}];
+      env0["s"]["alpha", 1.]];
+    If[truthy[env0["has_sun"]],
+      env0["x"] = mul[(sub[env0["sx"], env0["cx"]]), env0["px"]];
+      env0["y"] = mul[mul[(sub[env0["sy"], env0["cy"]]), env0["px"]], env0["ci"]];
+      env0["big"] = If[truthy[lt[env0["shot"]["from_zoom"], 1.]], sub[1., Video["smooth", mul[env0["e"], 3.]]], 0.];
+      env0["s"]["fill_style", "#ffd23f"];
+      env0["s"]["begin_path"];
+      env0["s"]["arc", env0["x"], sub[0., env0["y"]], mul[4., (sub[1., env0["big"]])], 0., 6.283185307179586];
+      env0["s"]["fill"];
+      If[truthy[gt[env0["big"], 0.]],
+        env0["s"]["alpha", env0["big"]];
+        env0["s"]["stroke_style", "#e0a526"];
+        env0["s"]["line_width", 3.];
+        env0["s"]["begin_path"];
+        env0["s"]["arc", env0["x"], sub[0., env0["y"]], 26., 0., 6.283185307179586];
+        env0["s"]["stroke"];
+        env0["s"]["alpha", 1.]]];
+    env0["s"]["restore"];
+    env0["fade"] = Fmt["max", If[truthy[gt[env0["shot"]["fade_in"], 0.]], sub[1., div[env0["i"], (mul[env0["shot"]["fade_in"], Video["FPS"]])]], 0.], If[truthy[gt[env0["shot"]["fade_out"], 0.]], sub[1., div[(sub[sub[env0["n"], 1.], env0["i"]]), (mul[env0["shot"]["fade_out"], Video["FPS"]])]], 0.]];
+    If[truthy[gt[env0["fade"], 0.]],
+      env0["s"]["alpha", Fmt["min", 1., env0["fade"]]];
+      env0["s"]["fill_style", Galaxies["BACK"]];
+      env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+      Throw[env0["s"]["alpha", 1.], ret]]]];
+  statik[klass, "transport", mfn[1, { env0["theory"] = arg[args1, 0] };
+    env0["ink"] = Ink[{}];
+    env0["lanes"] = Video["transport_lanes", env0["theory"], env0["ink"]];
+    env0["n"] = mRound[(mul[14., Video["FPS"]])];
+    env0["pic"] = Picture[{ "id" -> "video.transport", "what" -> "G/S.v, Transport: a source carrying a quarter of a step a tick, on a line", "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["n"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      Throw[Banded[{ "inner" -> Unrolling[{ "lanes" -> env0["lanes"], "ink" -> env0["ink"], "per" -> Video["per_tick", env0["lanes"]] }], "top" -> Video["STRIP_TOP"], "tall" -> Video["STRIP_TALL"] }], ret]] }];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "transport_lanes", mfn[1, { env0["theory"] = arg[args1, 0], env0["ink"] = arg[args1, 1] };
+    env0["ink"]["every" -> True];
+    env0["ink"]["top" -> 36.];
+    env0["lanes"] = env0["theory"]["transport_lanes", env0["ink"]];
+    Do[loopScope[1, env1["l"] = iter1;
+      env1["l"]["says" -> ""]], {iter1, items[env0["lanes"]]}];
+    env0["ink"]["centre" -> Strip["centre_of", env0["lanes"]]];
+    Throw[env0["lanes"], ret]]];
+  statik[klass, "per_tick", mfn[1, { env0["lanes"] = arg[args1, 0] };
+    Throw[mFloor[(div[mRound[(mul[14., Video["FPS"]])], (add[len[env0["lanes"]], 1.])])], ret]]];
+  statik[klass, "look", mfn[1, { env0["width"] = arg[args1, 0], env0["lane"] = arg[args1, 1], env0["ink"] = arg[args1, 2] };
+    env0["seen"] = False;
+    env0["lo"] = 0.;
+    env0["hi"] = 0.;
+    Do[loopScope[1, env1["sd"] = iter1;
+      env1["to"] = add[env1["sd"]["at"], env1["sd"]["sign"]];
+      If[!truthy[env0["seen"]],
+        env0["lo"] = env1["sd"]["at"];
+        env0["hi"] = env1["sd"]["at"];
+        env0["seen"] = True];
+      env0["lo"] = Fmt["min", env0["lo"], Fmt["min", env1["sd"]["at"], env1["to"]]];
+      env0["hi"] = Fmt["max", env0["hi"], Fmt["max", env1["sd"]["at"], env1["to"]]]], {iter1, items[env0["lane"]["sides"]]}];
+    Do[loopScope[1, env1["p"] = iter1;
+      If[!truthy[env0["seen"]],
+        env0["lo"] = env1["p"];
+        env0["hi"] = env1["p"];
+        env0["seen"] = True];
+      env0["lo"] = Fmt["min", env0["lo"], sub[env1["p"], 1.]];
+      env0["hi"] = Fmt["max", env0["hi"], add[env1["p"], 1.]]], {iter1, items[env0["lane"]["sources"]]}];
+    env0["ext"] = add[Fmt["max", sub[env0["ink"]["centre"], env0["lo"]], sub[env0["hi"], env0["ink"]["centre"]]], 0.4];
+    env0["lanew"] = sub[env0["width"], mul[2., Strip["PAD"]]];
+    env0["cell"] = div[env0["lanew"], (add[mul[2., env0["ext"]], 1.])];
+    env0["mid"] = add[Strip["PAD"], div[env0["lanew"], 2.]];
+    env0["src"] = mFirst[env0["lane"]["sources"]];
+    env0["x0"] = add[env0["mid"], mul[(sub[env0["src"], env0["ink"]["centre"]]), env0["cell"]]];
+    Throw[list[env0["x0"], add[add[Video["STRIP_TOP"], env0["ink"]["top"]], div[(sub[Video["STRIP_TALL"], env0["ink"]["top"]]), 2.]], env0["cell"], env0["src"], div[(sub[Strip["PAD"], env0["x0"]]), env0["cell"]], div[(sub[sub[env0["width"], Strip["PAD"]], env0["x0"]]), env0["cell"]]], ret]]];
+  statik[klass, "seen", mfn[1, { env0["p"] = arg[args1, 0], env0["yaw"] = arg[args1, 1], env0["pitch"] = arg[args1, 2], env0["ox"] = arg[args1, 3], env0["oy"] = arg[args1, 4], env0["cell"] = arg[args1, 5] };
+    env0["x1"] = sub[mul[elem[env0["p"], 0.], mCos[env0["yaw"]]], mul[elem[env0["p"], 2.], mSin[env0["yaw"]]]];
+    env0["z1"] = add[mul[elem[env0["p"], 0.], mSin[env0["yaw"]]], mul[elem[env0["p"], 2.], mCos[env0["yaw"]]]];
+    env0["y1"] = sub[mul[elem[env0["p"], 1.], mCos[env0["pitch"]]], mul[env0["z1"], mSin[env0["pitch"]]]];
+    env0["z2"] = add[mul[elem[env0["p"], 1.], mSin[env0["pitch"]]], mul[env0["z1"], mCos[env0["pitch"]]]];
+    env0["f"] = div[60., (add[60., env0["z2"]])];
+    Throw[list[add[env0["ox"], mul[mul[env0["cell"], env0["f"]], env0["x1"]]], sub[env0["oy"], mul[mul[env0["cell"], env0["f"]], env0["y1"]]], env0["f"]], ret]]];
+  statik[klass, "arrow", mfn[1, { env0["s"] = arg[args1, 0], env0["x"] = arg[args1, 1], env0["y"] = arg[args1, 2], env0["ux"] = arg[args1, 3], env0["uy"] = arg[args1, 4], env0["cell"] = arg[args1, 5], env0["a"] = arg[args1, 6] };
+    env0["HEADW"] = Fmt["max", 7., Fmt["min", 12., mul[env0["cell"], 0.20]]];
+    env0["REACH"] = mul[env0["cell"], 0.25];
+    env0["BAR"] = Fmt["max", 2.5, Fmt["min", 4.5, mul[env0["cell"], 0.075]]];
+    env0["BASE"] = mul[env0["HEADW"], 0.45];
+    env0["TIP"] = mul[env0["HEADW"], 0.55];
+    env0["LEN"] = sub[env0["REACH"], env0["BASE"]];
+    env0["SEEN"] = sub[env0["TIP"], div[env0["BAR"], 0.84]];
+    env0["s"]["line_width", env0["BAR"]];
+    env0["s"]["stroke_style", "rgba(" <> str[Ink["NEUTRAL"]] <> "," <> str[mul[0.32, env0["a"]]] <> ")"];
+    env0["s"]["begin_path"];
+    env0["s"]["move_to", sub[env0["x"], mul[env0["ux"], (add[env0["BASE"], env0["LEN"]])]], sub[env0["y"], mul[env0["uy"], (add[env0["BASE"], env0["LEN"]])]]];
+    env0["s"]["line_to", sub[env0["x"], mul[env0["ux"], env0["BASE"]]], sub[env0["y"], mul[env0["uy"], env0["BASE"]]]];
+    env0["s"]["stroke"];
+    env0["s"]["stroke_style", "rgba(" <> str[Ink["NEUTRAL"]] <> "," <> str[env0["a"]] <> ")"];
+    env0["s"]["begin_path"];
+    env0["s"]["move_to", env0["x"], env0["y"]];
+    env0["s"]["line_to", add[env0["x"], mul[env0["ux"], (add[env0["SEEN"], env0["LEN"]])]], add[env0["y"], mul[env0["uy"], (add[env0["SEEN"], env0["LEN"]])]]];
+    env0["s"]["stroke"];
+    env0["s"]["fill_style", "rgba(" <> str[Ink["NEUTRAL"]] <> "," <> str[mul[0.97, env0["a"]]] <> ")"];
+    env0["s"]["begin_path"];
+    env0["s"]["move_to", add[env0["x"], mul[env0["ux"], env0["TIP"]]], add[env0["y"], mul[env0["uy"], env0["TIP"]]]];
+    env0["s"]["line_to", sub[sub[env0["x"], mul[env0["ux"], env0["BASE"]]], mul[mul[env0["uy"], env0["HEADW"]], 0.42]], add[sub[env0["y"], mul[env0["uy"], env0["BASE"]]], mul[mul[env0["ux"], env0["HEADW"]], 0.42]]];
+    env0["s"]["line_to", add[sub[env0["x"], mul[env0["ux"], env0["BASE"]]], mul[mul[env0["uy"], env0["HEADW"]], 0.42]], sub[sub[env0["y"], mul[env0["uy"], env0["BASE"]]], mul[mul[env0["ux"], env0["HEADW"]], 0.42]]];
+    Throw[env0["s"]["fill"], ret]]];
+  statik[klass, "way", mfn[1, { env0["k"] = arg[args1, 0], env0["space"] = arg[args1, 1] };
+    env0["q"] = mFloor[(div[env0["k"], 2.])];
+    env0["o"] = elem[list[list[1., 0.], list[1., 1.], list[0., 1.], list[sub[0., 1.], 1.], list[sub[0., 1.], 0.], list[sub[0., 1.], sub[0., 1.]], list[0., sub[0., 1.]], list[1., sub[0., 1.]]], env0["k"]];
+    env0["b"] = elem[list[list[0.5, 0.5], list[sub[0., 0.5], 0.5], list[sub[0., 0.5], sub[0., 0.5]], list[0.5, sub[0., 0.5]]], env0["q"]];
+    env0["bz"] = If[truthy[eq[mod[env0["k"], 2.], 0.]], 0.5, sub[0., 0.5]];
+    Throw[list[add[elem[env0["o"], 0.], mul[(sub[elem[env0["b"], 0.], elem[env0["o"], 0.]]), env0["space"]]], add[elem[env0["o"], 1.], mul[(sub[elem[env0["b"], 1.], elem[env0["o"], 1.]]), env0["space"]]], mul[env0["bz"], env0["space"]]], ret]]];
+  statik[klass, "lattice", mfn[1, { env0["s"] = arg[args1, 0], env0["lane"] = arg[args1, 1], env0["look"] = arg[args1, 2], env0["grow"] = arg[args1, 3], env0["ticks"] = arg[args1, 4], env0["fade"] = arg[args1, 5], env0["earth"] = arg[args1, 6], env0["ox"] = arg[args1, 7], env0["oy"] = arg[args1, 8], env0["cell"] = arg[args1, 9], env0["rays"] = arg[args1, 10], env0["dense_from"] = arg[args1, 11], env0["far"] = arg[args1, 12] };
+    env0["plane"] = Video["smooth", div[(sub[env0["grow"], 0.25]), 0.3]];
+    env0["space"] = Video["smooth", div[(sub[env0["grow"], 0.55]), 0.35]];
+    env0["yaw"] = mul[0.55, env0["space"]];
+    env0["pitch"] = mul[0.42, env0["space"]];
+    env0["src"] = elem[env0["look"], 3.];
+    env0["lo"] = elem[env0["look"], 4.];
+    env0["hi"] = elem[env0["look"], 5.];
+    env0["R"] = 7.;
+    env0["a"] = mul[env0["R"], env0["plane"]];
+    env0["b"] = mul[env0["R"], env0["space"]];
+    env0["pt"] = lfn[2, { env1["p"] = arg[args2, 0] };
+      Throw[Video["seen", env1["p"], env0["yaw"], env0["pitch"], env0["ox"], env0["oy"], env0["cell"]], ret]];
+    env0["line"] = lfn[2, { env1["p"] = arg[args2, 0], env1["q"] = arg[args2, 1], env1["al"] = arg[args2, 2] };
+      If[truthy[gt[env1["al"], 0.004]],
+        env1["P"] = env0["pt"][env1["p"]];
+        env1["Q"] = env0["pt"][env1["q"]];
+        env0["s"]["stroke_style", "rgba(" <> str[Ink["NEUTRAL"]] <> "," <> str[mul[0.16, env1["al"]]] <> ")"];
+        env0["s"]["line_width", 1.];
+        env0["s"]["begin_path"];
+        env0["s"]["move_to", elem[env1["P"], 0.], elem[env1["P"], 1.]];
+        env0["s"]["line_to", elem[env1["Q"], 0.], elem[env1["Q"], 1.]];
+        Throw[env0["s"]["stroke"], ret]]];
+    env0["dot"] = lfn[2, { env1["p"] = arg[args2, 0], env1["al"] = arg[args2, 1] };
+      If[truthy[gt[env1["al"], 0.004]],
+        env1["P"] = env0["pt"][env1["p"]];
+        env0["s"]["fill_style", "rgba(" <> str[Ink["NEUTRAL"]] <> "," <> str[mul[0.6, env1["al"]]] <> ")"];
+        env0["s"]["begin_path"];
+        env0["s"]["arc", elem[env1["P"], 0.], elem[env1["P"], 1.], mul[2.6, elem[env1["P"], 2.]], 0., 6.283185307179586];
+        Throw[env0["s"]["fill"], ret]]];
+    env0["ilo"] = mRound[(sub[mReduce[env0["lane"]["points"], mFirst[env0["lane"]["points"]], lfn[3, { env2["p"] = arg[args3, 0], env2["q"] = arg[args3, 1] };
+      Throw[Fmt["min", env2["p"], env2["q"]], ret]]], env0["src"]])];
+    env0["ihi"] = mRound[(sub[mReduce[env0["lane"]["points"], mFirst[env0["lane"]["points"]], lfn[3, { env2["p"] = arg[args3, 0], env2["q"] = arg[args3, 1] };
+      Throw[Fmt["max", env2["p"], env2["q"]], ret]]], env0["src"]])];
+    Do[loopScope[1, env1["jj"] = iter1;
+      env1["j"] = sub[env1["jj"], env0["R"]];
+      Do[loopScope[2, env2["ll"] = iter2;
+        env2["l"] = sub[env2["ll"], env0["R"]];
+        env2["vis"] = mul[mul[env0["fade"], Fmt["min", 1., Fmt["max", 0., sub[add[env0["a"], 1.], mAbs[env1["j"]]]]]], Fmt["min", 1., Fmt["max", 0., sub[add[env0["b"], 1.], mAbs[env2["l"]]]]]];
+        If[truthy[gt[env2["vis"], 0.004]],
+          env0["line"][list[env0["lo"], env1["j"], env2["l"]], list[env0["hi"], env1["j"], env2["l"]], env2["vis"]];
+          Do[loopScope[3, env3["ii"] = iter3;
+            env0["dot"][list[add[env0["ilo"], env3["ii"]], env1["j"], env2["l"]], env2["vis"]]], {iter3, 0., num[add[sub[env0["ihi"], env0["ilo"]], 1.]] - 1.}];
+          If[truthy[andV[andV[gt[env0["space"], 0.01], lt[env1["j"], env0["R"]]], lt[env2["l"], env0["R"]]]],
+            Do[loopScope[3, env3["ii"] = iter3;
+              env0["dot"][list[add[add[env0["ilo"], env3["ii"]], 0.5], add[env1["j"], 0.5], add[env2["l"], 0.5]], mul[env2["vis"], env0["space"]]]], {iter3, 0., num[sub[env0["ihi"], env0["ilo"]]] - 1.}]]]], {iter2, 0., num[add[mul[2., env0["R"]], 1.]] - 1.}]], {iter1, 0., num[add[mul[2., env0["R"]], 1.]] - 1.}];
+    Do[loopScope[1, env1["ii"] = iter1;
+      env1["i"] = add[env0["ilo"], env1["ii"]];
+      Do[loopScope[2, env2["ll"] = iter2;
+        env2["l"] = sub[env2["ll"], env0["R"]];
+        env0["line"][list[env1["i"], sub[0., env0["a"]], env2["l"]], list[env1["i"], env0["a"], env2["l"]], mul[mul[env0["fade"], env0["plane"]], Fmt["min", 1., Fmt["max", 0., sub[add[env0["b"], 1.], mAbs[env2["l"]]]]]]]], {iter2, 0., num[add[mul[2., env0["R"]], 1.]] - 1.}];
+      Do[loopScope[2, env2["jj"] = iter2;
+        env2["j"] = sub[env2["jj"], env0["R"]];
+        env0["line"][list[env1["i"], env2["j"], sub[0., env0["b"]]], list[env1["i"], env2["j"], env0["b"]], mul[mul[env0["fade"], env0["space"]], Fmt["min", 1., Fmt["max", 0., sub[add[env0["a"], 1.], mAbs[env2["j"]]]]]]]], {iter2, 0., num[add[mul[2., env0["R"]], 1.]] - 1.}]], {iter1, 0., num[add[sub[env0["ihi"], env0["ilo"]], 1.]] - 1.}];
+    env0["T"] = mFloor[env0["ticks"]];
+    env0["ray"] = lfn[2, { env1["k"] = arg[args2, 0], env1["r"] = arg[args2, 1], env1["w"] = arg[args2, 2] };
+      If[truthy[andV[andV[gt[env1["w"], 0.004], ge[env1["r"], 1.]], le[env1["r"], env0["far"]]]],
+        env1["d"] = Video["way", env1["k"], env0["space"]];
+        env1["P"] = env0["pt"][list[mul[elem[env1["d"], 0.], env1["r"]], mul[elem[env1["d"], 1.], env1["r"]], mul[elem[env1["d"], 2.], env1["r"]]]];
+        env1["Q"] = env0["pt"][list[mul[elem[env1["d"], 0.], (add[env1["r"], 0.25])], mul[elem[env1["d"], 1.], (add[env1["r"], 0.25])], mul[elem[env1["d"], 2.], (add[env1["r"], 0.25])]]];
+        env1["len"] = Fmt["hypot", sub[elem[env1["Q"], 0.], elem[env1["P"], 0.]], sub[elem[env1["Q"], 1.], elem[env1["P"], 1.]]];
+        If[truthy[gt[env1["len"], 0.01]],
+          Throw[Video["arrow", env0["s"], elem[env1["P"], 0.], elem[env1["P"], 1.], div[(sub[elem[env1["Q"], 0.], elem[env1["P"], 0.]]), env1["len"]], div[(sub[elem[env1["Q"], 1.], elem[env1["P"], 1.]]), env1["len"]], mul[env1["len"], 4.], mul[mul[env1["w"], env0["rays"]], Fmt["min", 1., sub[env0["far"], env1["r"]]]]], ret]]]];
+    Do[loopScope[1, env1["sd"] = iter1;
+      env0["ray"][If[truthy[gt[env1["sd"]["sign"], 0.]], 0., 4.], add[mAbs[(sub[env1["sd"]["at"], env0["src"]])], env0["T"]], 1.]], {iter1, items[env0["lane"]["sides"]]}];
+    Do[loopScope[1, env1["m"] = iter1;
+      env1["e"] = add[env1["m"], 1.];
+      If[truthy[orV[eq[mod[env1["e"], 2.], 1.], gt[env1["e"], env0["dense_from"]]]],
+        Do[loopScope[2, env2["k"] = iter2;
+          env0["ray"][env2["k"], sub[add[1., env0["T"]], env1["e"]], If[truthy[eq[mod[env2["k"], 4.], 0.]], 1., env0["plane"]]]], {iter2, 0., num[8.] - 1.}]]], {iter1, 0., num[env0["T"]] - 1.}];
+    env0["P"] = env0["pt"][list[0., 0., 0.]];
+    env0["half"] = Fmt["max", 9., Fmt["min", 18., mul[env0["cell"], 0.3]]];
+    env0["s"]["fill_style", "rgba(" <> str[Ink["SOURCE"]] <> "," <> str[mul[0.14, (sub[1., env0["earth"]])]] <> ")"];
+    env0["s"]["fill_rect", sub[elem[env0["P"], 0.], env0["half"]], sub[elem[env0["P"], 1.], env0["half"]], mul[2., env0["half"]], mul[2., env0["half"]]];
+    env0["s"]["stroke_style", "rgba(" <> str[Ink["SOURCE"]] <> "," <> str[mul[0.9, (sub[1., env0["earth"]])]] <> ")"];
+    env0["s"]["line_width", 1.5];
+    env0["s"]["stroke_rect", sub[elem[env0["P"], 0.], env0["half"]], sub[elem[env0["P"], 1.], env0["half"]], mul[2., env0["half"]], mul[2., env0["half"]]];
+    If[truthy[gt[env0["earth"], 0.]],
+      env0["s"]["fill_style", "rgba(" <> str[Ink["SOURCE"]] <> "," <> str[env0["earth"]] <> ")"];
+      env0["s"]["begin_path"];
+      env0["s"]["arc", elem[env0["P"], 0.], elem[env0["P"], 1.], add[2.6, mul[7.4, env0["earth"]]], 0., 6.283185307179586];
+      Throw[env0["s"]["fill"], ret]]]];
+  statik[klass, "source_camera", mfn[1, { env0["s"] = arg[args1, 0], env0["look"] = arg[args1, 1], env0["grow"] = arg[args1, 2] };
+    env0["e"] = Video["smooth", div[env0["grow"], 0.3]];
+    Throw[list[add[elem[env0["look"], 0.], mul[(sub[div[env0["s"]["width"], 2.], elem[env0["look"], 0.]]), env0["e"]]], add[elem[env0["look"], 1.], mul[(sub[div[env0["s"]["height"], 2.], elem[env0["look"], 1.]]), env0["e"]]], mExp[(add[mLn[elem[env0["look"], 2.]], mul[(sub[mLn[95.], mLn[elem[env0["look"], 2.]]]), env0["e"]]])]], ret]]];
+  statik[klass, "to_source", mfn[1, { env0["theory"] = arg[args1, 0] };
+    env0["ink"] = Ink[{}];
+    env0["lanes"] = Video["transport_lanes", env0["theory"], env0["ink"]];
+    env0["n"] = mRound[(mul[4., Video["FPS"]])];
+    env0["pic"] = Picture[{ "id" -> "video.to-source", "what" -> "one source, and the lattice around it growing from the S.v film's line to the plane to space (eight ways a point)", "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["n"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      Throw[Growing[{ "n" -> env0["n"], "lane" -> mLast[env0["lanes"]], "ink" -> env0["ink"], "per" -> Video["per_tick", env0["lanes"]] }], ret]] }];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "to_solar", mfn[1, { env0["theory"] = arg[args1, 0] };
+    env0["ink"] = Ink[{}];
+    env0["lanes"] = Video["transport_lanes", env0["theory"], env0["ink"]];
+    env0["sol"] = env0["theory"]["solar"];
+    env0["r"] = env0["sol"]["record"];
+    env0["at"] = 0.;
+    Do[loopScope[1, env1["k"] = iter1;
+      env0["at"] = If[truthy[eq[elem[env0["r"]["names"], env1["k"]], "marks"]], env1["k"], env0["at"]]], {iter1, 0., num[len[env0["r"]["names"]]] - 1.}];
+    env0["off"] = mSum[mTake[env0["r"]["sizes"], env0["at"]]];
+    env0["n"] = mRound[(mul[8., Video["FPS"]])];
+    env0["pic"] = Picture[{ "id" -> "video.to-solar", "what" -> "the source is the Earth: the lattice fades, and the Sun and the inner planets of the solar.inner run come in round it", "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["n"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      Throw[Planets[{ "n" -> env0["n"], "lane" -> mLast[env0["lanes"]], "ink" -> env0["ink"], "per" -> Video["per_tick", env0["lanes"]], "stamp" -> env0["r"]["stamp"], "off" -> env0["off"], "width" -> env0["r"]["width"], "bodies" -> mRound[(div[(sub[elem[env0["r"]["sizes"], env0["at"]], 1.]), 6.])] }], ret]] }];
+    env0["pic"]["uses" -> list["solar.inner"]];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "planets", mfn[1, { env0["s"] = arg[args1, 0], env0["t"] = arg[args1, 1], env0["lane"] = arg[args1, 2], env0["look"] = arg[args1, 3], env0["ticks"] = arg[args1, 4], env0["film"] = arg[args1, 5], env0["off"] = arg[args1, 6], env0["width"] = arg[args1, 7], env0["bodies"] = arg[args1, 8] };
+    env0["SOLAR"] = Measured["of", "solar-inner"];
+    If[truthy[eq[env0["SOLAR"], Null]],
+      fail["solar-inner is not on disk - run `npx ray data` and try again"]];
+    env0["NAMES"] = env0["SOLAR"]["header"][str["names"]];
+    env0["PER"] = env0["SOLAR"]["columns"][str["period"]];
+    env0["PLANETS"] = filt[rng[len[env0["NAMES"]]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[gt[elem[env0["PER"], env2["i"]], 0.], ret]]];
+    env0["F"] = env0["film"]["columns"][str["frames"]];
+    env0["FR"] = env0["film"]["header"][str["frames"]];
+    env0["s"]["fill_style", Galaxies["BACK"]];
+    env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+    env0["fade"] = sub[1., Video["smooth", div[(sub[env0["t"], 0.05]), 0.4]]];
+    env0["rays"] = sub[1., Video["smooth", div[(sub[env0["t"], 0.45]), 0.35]]];
+    env0["earth"] = Video["smooth", div[(sub[env0["t"], 0.3]), 0.3]];
+    env0["e"] = Video["smooth", div[env0["t"], 0.92]];
+    env0["come"] = Video["smooth", div[(sub[env0["t"], 0.45]), 0.35]];
+    env0["u"] = Fmt["min", sub[env0["FR"], 1.], add[Video["SOLAR_FROM"], mul[(sub[Video["SOLAR_TO"], Video["SOLAR_FROM"]]), env0["t"]]]];
+    env0["f0"] = mFloor[env0["u"]];
+    env0["f1"] = Fmt["min", add[env0["f0"], 1.], sub[env0["FR"], 1.]];
+    env0["w"] = sub[env0["u"], env0["f0"]];
+    env0["mark"] = lfn[2, { env1["f"] = arg[args2, 0], env1["k"] = arg[args2, 1], env1["c"] = arg[args2, 2] };
+      Throw[elem[env0["F"], add[add[add[mul[env1["f"], env0["width"]], env0["off"]], mul[6., env1["k"]]], env1["c"]]], ret]];
+    env0["where"] = lfn[2, { env1["k"] = arg[args2, 0] };
+      Throw[list[add[env0["mark"][env0["f0"], env1["k"], 0.], mul[env0["w"], (sub[env0["mark"][env0["f1"], env1["k"], 0.], env0["mark"][env0["f0"], env1["k"], 0.]])]], add[env0["mark"][env0["f0"], env1["k"], 1.], mul[env0["w"], (sub[env0["mark"][env0["f1"], env1["k"], 1.], env0["mark"][env0["f0"], env1["k"], 1.]])]]], ret]];
+    env0["reach"] = 0.;
+    Do[loopScope[1, env1["f"] = iter1;
+      Do[loopScope[2, env2["k"] = iter2;
+        env0["reach"] = Fmt["max", env0["reach"], Fmt["hypot", sub[env0["mark"][env1["f"], add[env2["k"], 1.], 0.], env0["mark"][env1["f"], 0., 0.]], sub[env0["mark"][env1["f"], add[env2["k"], 1.], 1.], env0["mark"][env1["f"], 0., 1.]]]]], {iter2, 0., num[sub[env0["bodies"], 1.]] - 1.}]], {iter1, 0., num[env0["FR"]] - 1.}];
+    env0["earth_body"] = 0.;
+    Do[loopScope[1, env1["k"] = iter1;
+      env0["earth_body"] = If[truthy[eq[elem[env0["NAMES"], elem[env0["PLANETS"], env1["k"]]], "Earth"]], add[env1["k"], 1.], env0["earth_body"]]], {iter1, 0., num[len[env0["PLANETS"]]] - 1.}];
+    env0["E"] = env0["where"][env0["earth_body"]];
+    env0["O"] = env0["where"][0.];
+    env0["last"] = mul[2.1, (add[env0["reach"], Fmt["hypot", sub[elem[env0["E"], 0.], elem[env0["O"], 0.]], sub[elem[env0["E"], 1.], elem[env0["O"], 1.]]]])];
+    env0["across"] = mExp[(add[mLn[(div[env0["last"], 180.])], mul[(sub[mLn[env0["last"]], mLn[(div[env0["last"], 180.])]]), env0["e"]]])];
+    env0["px"] = div[env0["s"]["height"], env0["across"]];
+    env0["cx"] = elem[env0["E"], 0.];
+    env0["cy"] = elem[env0["E"], 1.];
+    env0["X"] = lfn[2, { env1["x"] = arg[args2, 0] };
+      Throw[add[div[env0["s"]["width"], 2.], mul[(sub[env1["x"], env0["cx"]]), env0["px"]]], ret]];
+    env0["Y"] = lfn[2, { env1["y"] = arg[args2, 0] };
+      Throw[sub[div[env0["s"]["height"], 2.], mul[(sub[env1["y"], env0["cy"]]), env0["px"]]], ret]];
+    If[truthy[orV[gt[env0["fade"], 0.004], gt[env0["rays"], 0.004]]],
+      Video["lattice", env0["s"], env0["lane"], env0["look"], 1., add[env0["ticks"], mul[mul[300., env0["t"]], env0["t"]]], env0["fade"], env0["earth"], env0["X"][elem[env0["E"], 0.]], env0["Y"][elem[env0["E"], 1.]], div[mul[95., (div[env0["last"], 180.])], env0["across"]], env0["rays"], mFloor[env0["ticks"]], add[16., mul[40., Video["smooth", div[env0["t"], 0.4]]]]]];
+    Do[loopScope[1, env1["k"] = iter1;
+      env1["b"] = add[env1["k"], 1.];
+      env1["ink"] = elem[Video["PLANET_INK"], Fmt["min", 3., env1["k"]]];
+      env0["s"]["alpha", mul[0.85, env0["come"]]];
+      env0["s"]["stroke_style", env1["ink"]];
+      env0["s"]["line_width", 2.];
+      env0["s"]["begin_path"];
+      Do[loopScope[2, env2["f"] = iter2;
+        If[truthy[eq[env2["f"], 0.]],
+          env0["s"]["move_to", env0["X"][env0["mark"][env2["f"], env1["b"], 0.]], env0["Y"][env0["mark"][env2["f"], env1["b"], 1.]]],
+          env0["s"]["line_to", env0["X"][env0["mark"][env2["f"], env1["b"], 0.]], env0["Y"][env0["mark"][env2["f"], env1["b"], 1.]]]]], {iter2, 0., num[env0["FR"]] - 1.}];
+      env0["s"]["stroke"];
+      env1["P"] = env0["where"][env1["b"]];
+      env1["x"] = env0["X"][elem[env1["P"], 0.]];
+      env1["y"] = env0["Y"][elem[env1["P"], 1.]];
+      env0["s"]["alpha", If[truthy[eq[env1["b"], env0["earth_body"]]], env0["earth"], env0["come"]]];
+      env0["s"]["stroke_style", env1["ink"]];
+      env0["s"]["line_width", 2.5];
+      env0["s"]["begin_path"];
+      env0["s"]["arc", env1["x"], env1["y"], 13., 0., 6.283185307179586];
+      env0["s"]["stroke"];
+      env0["s"]["fill_style", If[truthy[eq[env1["b"], env0["earth_body"]]], "rgba(" <> str[Ink["SOURCE"]] <> "," <> str[sub[1., env0["come"]]] <> ")", "#000000"]];
+      env0["s"]["begin_path"];
+      env0["s"]["arc", env1["x"], env1["y"], If[truthy[eq[env1["b"], env0["earth_body"]]], add[mul[10., (sub[1., env0["come"]])], mul[2.5, env0["come"]]], 2.5], 0., 6.283185307179586];
+      env0["s"]["fill"]], {iter1, 0., num[sub[env0["bodies"], 1.]] - 1.}];
+    env0["s"]["alpha", env0["come"]];
+    env0["s"]["stroke_style", "#e0a526"];
+    env0["s"]["line_width", 3.];
+    env0["s"]["begin_path"];
+    env0["s"]["arc", env0["X"][elem[env0["O"], 0.]], env0["Y"][elem[env0["O"], 1.]], 26., 0., 6.283185307179586];
+    env0["s"]["stroke"];
+    env0["s"]["fill_style", "#000000"];
+    env0["s"]["begin_path"];
+    env0["s"]["arc", env0["X"][elem[env0["O"], 0.]], env0["Y"][elem[env0["O"], 1.]], 3., 0., 6.283185307179586];
+    env0["s"]["fill"];
+    Throw[env0["s"]["alpha", 1.], ret]]];
+  statik[klass, "end", mfn[1,
+    env0["n"] = mRound[(mul[20., Video["FPS"]])];
+    env0["pic"] = Picture[{ "id" -> "video.end", "what" -> "the end card: the OrbitMines logo, Physics Project, orbitmines.com/physics", "width" -> Video["WIDTH"], "height" -> Video["HEIGHT"], "frames" -> env0["n"], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+      Throw[EndCard[{ "n" -> env0["n"] }], ret]] }];
+    env0["pic"]["images" -> list[Video["LOGO"]]];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]];
+  statik[klass, "end_card", mfn[1, { env0["s"] = arg[args1, 0], env0["i"] = arg[args1, 1], env0["n"] = arg[args1, 2] };
+    env0["s"]["fill_style", Galaxies["BACK"]];
+    env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+    env0["s"]["alpha", Video["smooth", div[env0["i"], Video["FPS"]]]];
+    env0["w"] = 1500.;
+    env0["s"]["image", Video["LOGO"], div[(sub[env0["s"]["width"], env0["w"]]), 2.], 330., env0["w"], div[env0["w"], 3.]];
+    env0["s"]["text_align", "center"];
+    env0["s"]["fill_style", Galaxies["SEEN"]];
+    env0["s"]["font", "600 72px ui-sans-serif, system-ui, sans-serif"];
+    env0["s"]["fill_text", "Physics Project", div[env0["s"]["width"], 2.], 960.];
+    env0["s"]["fill_style", "#3ddcff"];
+    env0["s"]["font", "44px ui-sans-serif, system-ui, sans-serif"];
+    env0["s"]["fill_text", "orbitmines.com/physics", div[env0["s"]["width"], 2.], 1060.];
+    Throw[env0["s"]["alpha", 1.], ret]]];
+  statik[klass, "montage", mfn[1,
+    env0["pic"] = Picture["still", "video", "the video: S.v, one source, the Earth, the Milky Way, Andromeda, and the end card, joined", Video["WIDTH"], Video["HEIGHT"], lfn[3, { env2["s"] = arg[args3, 0] };
+      Null]];
+    env0["pic"]["parts" -> Video["PARTS"]];
+    env0["pic"]["on_request" -> True];
+    Throw[env0["pic"], ret]]]]];
+
+DefineClass[Shot, "Shot", Node, Function[{klass},
+  field[klass, "film_id"];
+  field[klass, "seconds"];
+  field[klass, "from_zoom"];
+  field[klass, "to_zoom"];
+  field[klass, "from_sun"];
+  field[klass, "to_sun"];
+  field[klass, "from_at"];
+  field[klass, "to_at"];
+  field[klass, "tilt"];
+  field[klass, "turn"];
+  field[klass, "title"];
+  field[klass, "fade_in"];
+  field[klass, "fade_out"];
+  getter[klass, "frames", mfn[1,
+    Throw[mRound[(mul[self["seconds"], Video["FPS"]])], ret]]]]];
+
+DefineClass[Sky, "Sky", Painter, Function[{klass},
+  field[klass, "shot"];
+  field[klass, "sol", dfn[Null]];
+  field[klass, "meta", dfn[list[]]];
+  field[klass, "sol_stamp", dfn[""]];
+  field[klass, "shown_frames", dfn[0.]];
+  field[klass, "film", dfn[Null]];
+  field[klass, "tracks", dfn[Null]];
+  method[klass, "frame", mfn[1, { env0["s"] = arg[args1, 0], env0["dt"] = arg[args1, 1] };
+    If[truthy[eq[self["film"], Null]],
+      self["film" -> Measured["of", self["shot"]["film_id"]]];
+      self["tracks" -> Measured["of", "" <> str[self["shot"]["film_id"]] <> ".stars"]]];
+    If[truthy[eq[self["film"], Null]],
+      fail["" <> str[self["shot"]["film_id"]] <> " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" <> str[self["shot"]["film_id"]] <> " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ."]];
+    If[truthy[andV[gt[len[self["meta"]], 0.], eq[self["sol"], Null]]],
+      self["sol" -> Measured["of", "solar.inner.frames"]];
+      If[truthy[eq[self["sol"], Null]],
+        fail["solar.inner is not recorded - run `npx ray visuals solar.inner` first"]];
+      If[truthy[(!eq[self["sol"]["header"][str["stamp"]], self["sol_stamp"]])],
+        fail["solar.inner's recording is stale - run `npx ray visuals solar.inner` again"]]];
+    Video["sky", env0["s"], self["shot"], self["film"], self["tracks"], self["shown_frames"], self["sol"], self["meta"]];
+    self["shown_frames" -> add[self["shown_frames"], 1.]]]]]];
+
+DefineClass[Band, "Band", Surface, Function[{klass},
+  field[klass, "inner"];
+  method[klass, "fill_style", mfn[1, { env0["colour"] = arg[args1, 0] };
+    Throw[self["inner"]["fill_style", env0["colour"]], ret]]];
+  method[klass, "stroke_style", mfn[1, { env0["colour"] = arg[args1, 0] };
+    Throw[self["inner"]["stroke_style", env0["colour"]], ret]]];
+  method[klass, "line_width", mfn[1, { env0["w"] = arg[args1, 0] };
+    Throw[self["inner"]["line_width", env0["w"]], ret]]];
+  method[klass, "alpha", mfn[1, { env0["v"] = arg[args1, 0] };
+    Throw[self["inner"]["alpha", env0["v"]], ret]]];
+  method[klass, "fill_rect", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1], env0["w"] = arg[args1, 2], env0["h"] = arg[args1, 3] };
+    Throw[self["inner"]["fill_rect", env0["x"], env0["y"], env0["w"], env0["h"]], ret]]];
+  method[klass, "stroke_rect", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1], env0["w"] = arg[args1, 2], env0["h"] = arg[args1, 3] };
+    Throw[self["inner"]["stroke_rect", env0["x"], env0["y"], env0["w"], env0["h"]], ret]]];
+  method[klass, "clear_rect", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1], env0["w"] = arg[args1, 2], env0["h"] = arg[args1, 3] };
+    Throw[self["inner"]["clear_rect", env0["x"], env0["y"], env0["w"], env0["h"]], ret]]];
+  getter[klass, "begin_path", mfn[1,
+    Throw[self["inner"]["begin_path"], ret]]];
+  method[klass, "move_to", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1] };
+    Throw[self["inner"]["move_to", env0["x"], env0["y"]], ret]]];
+  method[klass, "line_to", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1] };
+    Throw[self["inner"]["line_to", env0["x"], env0["y"]], ret]]];
+  method[klass, "arc", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1], env0["r"] = arg[args1, 2], env0["start_at"] = arg[args1, 3], env0["end_at"] = arg[args1, 4] };
+    Throw[self["inner"]["arc", env0["x"], env0["y"], env0["r"], env0["start_at"], env0["end_at"]], ret]]];
+  getter[klass, "stroke", mfn[1,
+    Throw[self["inner"]["stroke"], ret]]];
+  getter[klass, "fill", mfn[1,
+    Throw[self["inner"]["fill"], ret]]];
+  method[klass, "font", mfn[1, { env0["name"] = arg[args1, 0] };
+    Throw[self["inner"]["font", env0["name"]], ret]]];
+  method[klass, "text_align", mfn[1, { env0["how"] = arg[args1, 0] };
+    Throw[self["inner"]["text_align", env0["how"]], ret]]];
+  method[klass, "text_baseline", mfn[1, { env0["how"] = arg[args1, 0] };
+    Throw[self["inner"]["text_baseline", env0["how"]], ret]]];
+  method[klass, "fill_text", mfn[1, { env0["t"] = arg[args1, 0], env0["x"] = arg[args1, 1], env0["y"] = arg[args1, 2] };
+    Throw[self["inner"]["fill_text", env0["t"], env0["x"], env0["y"]], ret]]];
+  method[klass, "measure", mfn[1, { env0["t"] = arg[args1, 0] };
+    Throw[self["inner"]["measure", env0["t"]], ret]]];
+  getter[klass, "save", mfn[1,
+    Throw[self["inner"]["save"], ret]]];
+  getter[klass, "restore", mfn[1,
+    Throw[self["inner"]["restore"], ret]]];
+  method[klass, "translate", mfn[1, { env0["x"] = arg[args1, 0], env0["y"] = arg[args1, 1] };
+    Throw[self["inner"]["translate", env0["x"], env0["y"]], ret]]];
+  method[klass, "rotate", mfn[1, { env0["angle"] = arg[args1, 0] };
+    Throw[self["inner"]["rotate", env0["angle"]], ret]]];
+  method[klass, "dash", mfn[1, { env0["segments"] = arg[args1, 0] };
+    Throw[self["inner"]["dash", env0["segments"]], ret]]];
+  method[klass, "gradient_stroke", mfn[1, { env0["x0"] = arg[args1, 0], env0["x1"] = arg[args1, 1], env0["stops"] = arg[args1, 2], env0["at"] = arg[args1, 3] };
+    Throw[self["inner"]["gradient_stroke", env0["x0"], env0["x1"], env0["stops"], env0["at"]], ret]]];
+  method[klass, "image", mfn[1, { env0["src"] = arg[args1, 0], env0["x"] = arg[args1, 1], env0["y"] = arg[args1, 2], env0["w"] = arg[args1, 3], env0["h"] = arg[args1, 4] };
+    Throw[self["inner"]["image", env0["src"], env0["x"], env0["y"], env0["w"], env0["h"]], ret]]]]];
+
+DefineClass[Banded, "Banded", Painter, Function[{klass},
+  field[klass, "inner"];
+  field[klass, "top"];
+  field[klass, "tall"];
+  method[klass, "frame", mfn[1, { env0["s"] = arg[args1, 0], env0["dt"] = arg[args1, 1] };
+    env0["s"]["fill_style", Galaxies["BACK"]];
+    env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+    env0["s"]["save"];
+    env0["s"]["translate", 0., self["top"]];
+    self["inner"]["frame", Band[{ "width" -> env0["s"]["width"], "height" -> self["tall"], "inner" -> env0["s"] }], env0["dt"]];
+    Throw[env0["s"]["restore"], ret]]]]];
+
+DefineClass[Growing, "Growing", Painter, Function[{klass},
+  field[klass, "n"];
+  field[klass, "lane"];
+  field[klass, "ink"];
+  field[klass, "per"];
+  field[klass, "shown_frames", dfn[0.]];
+  method[klass, "frame", mfn[1, { env0["s"] = arg[args1, 0], env0["dt"] = arg[args1, 1] };
+    env0["s"]["fill_style", Galaxies["BACK"]];
+    env0["s"]["fill_rect", 0., 0., env0["s"]["width"], env0["s"]["height"]];
+    env0["look"] = Video["look", env0["s"]["width"], self["lane"], self["ink"]];
+    env0["grow"] = div[self["shown_frames"], Fmt["max", 1., sub[self["n"], 1.]]];
+    env0["cam"] = Video["source_camera", env0["s"], env0["look"], env0["grow"]];
+    Video["lattice", env0["s"], self["lane"], env0["look"], env0["grow"], div[self["shown_frames"], self["per"]], 1., 0., elem[env0["cam"], 0.], elem[env0["cam"], 1.], elem[env0["cam"], 2.], 1., 1000000., 16.];
+    self["shown_frames" -> add[self["shown_frames"], 1.]]]]]];
+
+DefineClass[Planets, "Planets", Painter, Function[{klass},
+  field[klass, "n"];
+  field[klass, "lane"];
+  field[klass, "ink"];
+  field[klass, "per"];
+  field[klass, "stamp"];
+  field[klass, "off"];
+  field[klass, "width"];
+  field[klass, "bodies"];
+  field[klass, "shown_frames", dfn[0.]];
+  field[klass, "film", dfn[Null]];
+  method[klass, "frame", mfn[1, { env0["s"] = arg[args1, 0], env0["dt"] = arg[args1, 1] };
+    If[truthy[eq[self["film"], Null]],
+      self["film" -> Measured["of", "solar.inner.frames"]]];
+    If[truthy[eq[self["film"], Null]],
+      fail["solar.inner is not recorded - run `npx ray visuals solar.inner` first"]];
+    If[truthy[(!eq[self["film"]["header"][str["stamp"]], self["stamp"]])],
+      fail["solar.inner's recording is stale - run `npx ray visuals solar.inner` again"]];
+    env0["look"] = Video["look", env0["s"]["width"], self["lane"], self["ink"]];
+    Video["planets", env0["s"], div[self["shown_frames"], Fmt["max", 1., sub[self["n"], 1.]]], self["lane"], env0["look"], div[(add[sub[mRound[(mul[4., Video["FPS"]])], 1.], self["shown_frames"]]), self["per"]], self["film"], self["off"], self["width"], self["bodies"]];
+    self["shown_frames" -> add[self["shown_frames"], 1.]]]]]];
+
+DefineClass[EndCard, "EndCard", Painter, Function[{klass},
+  field[klass, "n"];
+  field[klass, "shown_frames", dfn[0.]];
+  method[klass, "frame", mfn[1, { env0["s"] = arg[args1, 0], env0["dt"] = arg[args1, 1] };
+    Video["end_card", env0["s"], self["shown_frames"], self["n"]];
+    self["shown_frames" -> add[self["shown_frames"], 1.]]]]]];
+
 DefineClass[G, "G", Theory, Function[{klass},
   field[klass, "name", dfn["G"]];
   getter[klass, "lattice", mfn[1,
@@ -11796,11 +12261,10 @@ DefineClass[G, "G", Theory, Function[{klass},
     env0["ink"]["every" -> True];
     env0["w"] = Strip["line", self, 10.];
     Strip["light", env0["w"], 0., 1.];
-    env0["lanes"] = list[Strip["lane", env0["w"], env0["ink"]]];
-    Do[loopScope[1, env1["t"] = iter1;
+    env0["lanes"] = mConcat[list[Strip["lane", env0["w"], env0["ink"]]], mMap[rng[8.], lfn[3, { env2["t"] = arg[args3, 0] };
       Strip["begin", env0["w"]];
       Strip["run", env0["w"], list["/c", "/4"]];
-      mPush[env0["lanes"], Strip["lane", env0["w"], env0["ink"]]]], {iter1, 0., num[8.] - 1.}];
+      Throw[Strip["lane", env0["w"], env0["ink"]], ret]]]];
     Throw[Strip["tell", "rule.movement", "every active ray goes one step along its own exit, c-bar, into its neighbour, every tick (G/c, settled by G/4)", env0["lanes"], env0["ink"]], ret]]];
   getter[klass, "emission_film", mfn[1,
     env0["ink"] = Ink[{}];
@@ -11808,39 +12272,36 @@ DefineClass[G, "G", Theory, Function[{klass},
     env0["ink"]["top" -> 36.];
     env0["w"] = Strip["line", self, 17.];
     env0["w"]["add", Scripted[{ "at" -> Vector[{ "components" -> list[8.] }], "plan" -> list["", "+", "-", "", "+-", "", "+", "-"], "weight" -> 1. }]];
-    env0["lanes"] = list[Strip["lane", env0["w"], env0["ink"]]];
-    Do[loopScope[1, env1["t"] = iter1;
+    env0["lanes"] = mConcat[list[Strip["lane", env0["w"], env0["ink"]]], mMap[rng[8.], lfn[3, { env2["t"] = arg[args3, 0] };
       Strip["begin", env0["w"]];
       Strip["run", env0["w"], list["/c", "/4"]];
-      env1["moved"] = Strip["lane", env0["w"], env0["ink"]];
+      env2["moved"] = Strip["lane", env0["w"], env0["ink"]];
       Strip["run", env0["w"], list["/S.1"]];
-      env1["now"] = Strip["lane", env0["w"], env0["ink"]];
-      env1["now"]["says" -> Strip["emitting", env1["moved"], env1["now"]]];
-      mPush[env0["lanes"], env1["now"]]], {iter1, 0., num[8.] - 1.}];
+      env2["now"] = Strip["lane", env0["w"], env0["ink"]];
+      env2["now"]["says" -> Strip["emitting", env2["moved"], env2["now"]]];
+      Throw[env2["now"], ret]]]];
     Throw[Strip["tell", "rule.emission", "a source on a line, held, choosing each tick whether to light a way and which: nothing, left, right or both - what it lights is the NEIGHBOUR's ray on that heading, and every ray already out moves on a step a tick (G/S.1, with G/c and G/4)", env0["lanes"], env0["ink"]], ret]]];
   getter[klass, "transport_film", mfn[1,
     env0["ink"] = Ink[{}];
     env0["ink"]["every" -> True];
     env0["ink"]["top" -> 36.];
+    Throw[Strip["tell", "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", self["transport_lanes", env0["ink"]], env0["ink"]], ret]]];
+  method[klass, "transport_lanes", mfn[1, { env0["ink"] = arg[args1, 0] };
     env0["w"] = Strip["line", self, 21.];
     env0["s"] = env0["w"]["add", Scripted[{ "at" -> Vector[{ "components" -> list[9.] }], "plan" -> list["+-", "", "", "", "+-"], "weight" -> 4. }]];
     env0["s"]["moves" -> True];
     env0["s"]["momentum" -> Vector[{ "components" -> list[1.] }]];
-    env0["lanes"] = list[Strip["lane", env0["w"], env0["ink"]]];
-    Do[loopScope[1, env1["t"] = iter1;
+    Throw[mConcat[list[Strip["lane", env0["w"], env0["ink"]]], mMap[rng[9.], lfn[3, { env2["t"] = arg[args3, 0] };
       Strip["begin", env0["w"]];
       Strip["run", env0["w"], list["/c", "/4"]];
-      env1["moved"] = Strip["lane", env0["w"], env0["ink"]];
+      env2["moved"] = Strip["lane", env0["w"], env0["ink"]];
       Strip["run", env0["w"], list["/S.1"]];
-      env1["emitted"] = Strip["emitting", env1["moved"], Strip["lane", env0["w"], env0["ink"]]];
+      env2["emitted"] = Strip["emitting", env2["moved"], Strip["lane", env0["w"], env0["ink"]]];
       Strip["run", env0["w"], list["/S.v"]];
-      env1["now"] = Strip["lane", env0["w"], env0["ink"]];
-      env1["went"] = "";
-      If[truthy[env0["s"]["stepped"]],
-        env1["went"] = If[truthy[gt[elem[env0["w"]["geometry"]["V", env0["s"]["moved_along"]]["components"], 0.], 0.]], "steps right", "steps left"]];
-      env1["now"]["says" -> If[truthy[mEmpty[env1["went"]]], env1["emitted"], (If[truthy[mEmpty[env1["emitted"]]], env1["went"], "" <> str[env1["went"]] <> ", " <> str[env1["emitted"]] <> ""])]];
-      mPush[env0["lanes"], env1["now"]]], {iter1, 0., num[9.] - 1.}];
-    Throw[Strip["tell", "rule.transport", "a source carrying a quarter of a step a tick: it stands still while the rays it lit run off at c-bar, and steps once it has earned a whole step - its choice each tick is to stand still or to go (G/S.v, with G/S.1, G/c and G/4)", env0["lanes"], env0["ink"]], ret]]];
+      env2["now"] = Strip["lane", env0["w"], env0["ink"]];
+      env2["went"] = If[truthy[not[env0["s"]["stepped"]]], "", (If[truthy[gt[elem[env0["w"]["geometry"]["V", env0["s"]["moved_along"]]["components"], 0.], 0.]], "steps right", "steps left"])];
+      env2["now"]["says" -> If[truthy[mEmpty[env2["went"]]], env2["emitted"], (If[truthy[mEmpty[env2["emitted"]]], env2["went"], "" <> str[env2["went"]] <> ", " <> str[env2["emitted"]] <> ""])]];
+      Throw[env2["now"], ret]]]], ret]]];
   getter[klass, "expansion", mfn[1,
     env0["ink"] = Ink[{}];
     env0["ink"]["every" -> True];
@@ -12020,19 +12481,17 @@ DefineClass[G, "G", Theory, Function[{klass},
       Throw[env0["VIEW"], ret]], "place" -> lfn[3, { env2["setup"] = arg[args3, 0] };
       env2["sun"] = Body[{ "x" -> 0., "y" -> 0., "mx" -> env0["pulse"][0.], "ways" -> env0["ways"][0.] }];
       env2["sun"]["tag" -> 1.];
-      env2["out"] = list[env2["sun"]];
-      Do[loopScope[3, env3["k"] = iter3;
-        env3["i"] = elem[env0["PLANETS"], env3["k"]];
-        env3["b_"] = Body[{ "x" -> env0["cells"][mul[elem[env0["AX"], env3["i"]], (add[1., elem[env0["EC"], env3["i"]]])]], "y" -> 0., "mx" -> env0["pulse"][env3["i"]], "ways" -> env0["ways"][env3["i"]] }];
-        env3["b_"]["tag" -> add[2., env3["k"]]];
-        env3["b_"]["moves" -> True];
-        env3["v"] = If[truthy[andV[gt[len[env2["setup"]["found"]], env3["k"]], Fmt["finite", elem[elem[env2["setup"]["found"], env3["k"]], 1.]]]], elem[elem[env2["setup"]["found"], env3["k"]], 1.], 0.];
-        env3["b_"]["py" -> sub[0., mul[mul[env3["v"], env0["pulse"][env3["i"]]], env0["ways"][env3["i"]]]]];
-        env3["b_"]["launch" -> "orbit"];
-        env3["b_"]["ecc" -> elem[env0["EC"], env3["i"]]];
-        env3["b_"]["py" -> sub[0., 1.]];
-        mPush[env2["out"], env3["b_"]]], {iter3, 0., num[len[env0["PLANETS"]]] - 1.}];
-      Throw[env2["out"], ret]] }];
+      Throw[mConcat[list[env2["sun"]], mMap[rng[len[env0["PLANETS"]]], lfn[5, { env4["k"] = arg[args5, 0] };
+        env4["i"] = elem[env0["PLANETS"], env4["k"]];
+        env4["b_"] = Body[{ "x" -> env0["cells"][mul[elem[env0["AX"], env4["i"]], (add[1., elem[env0["EC"], env4["i"]]])]], "y" -> 0., "mx" -> env0["pulse"][env4["i"]], "ways" -> env0["ways"][env4["i"]] }];
+        env4["b_"]["tag" -> add[2., env4["k"]]];
+        env4["b_"]["moves" -> True];
+        env4["v"] = If[truthy[andV[gt[len[env2["setup"]["found"]], env4["k"]], Fmt["finite", elem[elem[env2["setup"]["found"], env4["k"]], 1.]]]], elem[elem[env2["setup"]["found"], env4["k"]], 1.], 0.];
+        env4["b_"]["py" -> sub[0., mul[mul[env4["v"], env0["pulse"][env4["i"]]], env0["ways"][env4["i"]]]]];
+        env4["b_"]["launch" -> "orbit"];
+        env4["b_"]["ecc" -> elem[env0["EC"], env4["i"]]];
+        env4["b_"]["py" -> sub[0., 1.]];
+        Throw[env4["b_"], ret]]]], ret]] }];
     env0["BURN"] = mul[2., (add[env0["VIEW"], env0["MARGIN"]])];
     env0["LAW"] = Aggregate["of", self];
     env0["SUN"] = mul[env0["pulse"][0.], env0["ways"][0.]];

@@ -539,25 +539,17 @@ ray_impl_static "channelling" : Inference := do
         if ωtruthy (← ωnev (← ωget t "kind") ("mul" : String)) then
           if true then return t
           pure ()
-        let at_ ← IO.mkRef ωnull
-        for i3 in [0:ωrangeN (← dot! (← ωget t "of") rlength ())] do
-          let i_3 ← IO.mkRef (ωnatF i3)
-          if ωtruthy (← ωandV (ωisNull at_) (do pure (← ωeqv (← ωget (← ωelem (← ωget t "of") (← i_3.get)) "kind") ("add" : String)))) then
-            (← ωwr at_ (← i_3.get)) |> ωsink
-            pure ()
-          pure ()
-        Value.null |> ωsink
+        let at_ ← IO.mkRef (← dot! (← dot! (← ωrrange (← dot! (← ωget t "of") rlength ())) rfilter ((fn! [i_4] do
+          if true then return (← ωeqv (← ωget (← ωelem (← ωget t "of") (← i_4.get)) "kind") ("add" : String))
+          return ωnull))) rfirst ())
         if ωtruthy (ωisNull at_) then
           if true then return t
           pure ()
-        let rest ← IO.mkRef (← ωlst #[])
-        for i3 in [0:ωrangeN (← dot! (← ωget t "of") rlength ())] do
-          let i_3 ← IO.mkRef (ωnatF i3)
-          if ωtruthy (← ωnev (← i_3.get) at_) then
-            (← dot! rest rpush ((← ωelem (← ωget t "of") (← i_3.get)))) |> ωsink
-            pure ()
-          pure ()
-        Value.null |> ωsink
+        let rest ← IO.mkRef (← dot! (← dot! (← ωrrange (← dot! (← ωget t "of") rlength ())) rfilter ((fn! [i_5] do
+          if true then return (← ωnev (← i_5.get) at_)
+          return ωnull))) rmap ((fn! [i_4] do
+          if true then return (← ωelem (← ωget t "of") (← i_4.get))
+          return ωnull)))
         let spread ← IO.mkRef (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "add" ((← dot! (← ωget (← ωelem (← ωget t "of") at_) "of") rmap ((fn! [x_4] do
           if true then return (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "mul" ((← dot! rest rconcat ((← ωlst #[(← x_4.get)])))))))
           return ωnull)))))))

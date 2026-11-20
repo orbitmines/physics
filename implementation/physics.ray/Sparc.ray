@@ -95,15 +95,11 @@ Sparc := class {
       had := best[p.galaxy]
       best[p.galaxy] = p if had == None | p.R > had.R
     })
-    out := []
     names := Sparc.names
-    Array.range(names.length).for(g => {
-      p := best[g]
-      if p != None {
-        q := RarPoint(gbar: p.gbar, gobs: p.gobs, galaxy: p.galaxy, R: p.R)
-        q.name = names[g]
-        out.push(q)
-      }
+    out := Array.range(names.length).filter(g => best[g] != None).map(g => {
+      q := RarPoint(gbar: best[g].gbar, gobs: best[g].gobs, galaxy: best[g].galaxy, R: best[g].R)
+      q.name = names[g]
+      q
     })
     Sparc.CACHE["flat"] = out
     out
@@ -115,12 +111,7 @@ Sparc := class {
     fail("sparc-btfr is not on disk - run `npx ray data` and try again") if t == None
     c := t.columns
     names := t.header["names"]
-    out := []
-    Array.range(t.rows).for(i => {
-      if c["Vf"][i] > 0 {
-        out.push(Btfr(name: names[i], galaxy: c["galaxy"][i], vf: c["Vf"][i], err: c["e_Vf"][i], mass: 10 ^ c["log(Mb)"][i] * Sparc.MSUN, err_mass: c["e_log(Mb)"][i]))
-      }
-    })
+    out := Array.range(t.rows).filter(i => c["Vf"][i] > 0).map(i => Btfr(name: names[i], galaxy: c["galaxy"][i], vf: c["Vf"][i], err: c["e_Vf"][i], mass: 10 ^ c["log(Mb)"][i] * Sparc.MSUN, err_mass: c["e_log(Mb)"][i]))
     Sparc.CACHE["btfr"] = out
     out
   }

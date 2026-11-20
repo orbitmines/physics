@@ -103,18 +103,13 @@ ray_impl_static "lane" (w_0 : World) (ink_0 : Ink) : Lane := do
   let pts_0 ← IO.mkRef (← dot! (← ωget (← w_0.get) "live") rmap ((fn! [v_2] do
     if true then return (← ωelem (← ωget (← ωget (← v_2.get) "at") "components") (0 : Float))
     return ωnull)))
-  let sides_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← ωget (← w_0.get) "live")) do
-    let v_1 ← IO.mkRef e1
-    for e2 in (← ωitems (← ωget (← v_1.get) "rays")) do
-      let r_2 ← IO.mkRef e2
-      if ωtruthy (← ωget (← r_2.get) "active") then
-        (← dot! (← sides_0.get) rpush ((← new! Side («at» := (← ωelem (← ωget (← ωget (← v_1.get) "at") "components") (0 : Float)), «sign» := (← ωelem (← ωget (← ωget (← r_2.get) "along") "components") (0 : Float)), «ink» := (← call! (← ink_0.get) "ink_of" ((← r_2.get))))))) |> ωsink
-        pure ()
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
+  let sides_0 ← IO.mkRef (← dot! (← ωget (← w_0.get) "live") rreduce ((← ωlst #[]), (fn! [out_2 v_2] do
+    if true then return (← dot! (← dot! (← ωget (← v_2.get) "rays") rfilter ((fn! [r_5] do
+      if true then return (← ωget (← r_5.get) "active")
+      return ωnull))) rreduce ((← out_2.get), (fn! [o_4 r_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← new! Side («at» := (← ωelem (← ωget (← ωget (← v_2.get) "at") "components") (0 : Float)), «sign» := (← ωelem (← ωget (← ωget (← r_4.get) "along") "components") (0 : Float)), «ink» := (← call! (← ink_0.get) "ink_of" ((← r_4.get)))))))
+      return ωnull)))
+    return ωnull)))
   let l_0 ← IO.mkRef (← new! Lane («points» := (← pts_0.get), «sides» := (← sides_0.get)))
   for e1 in (← ωitems (← ωget (← w_0.get) "sources")) do
     let s_1 ← IO.mkRef e1
@@ -223,19 +218,12 @@ ray_impl_static "relevant" (pair_0 : (RList Lane)) : object := do
   if true then return (← rel_0.get)
   return ωnull
 ray_impl_static "centre_of" (lanes_0 : (RList Lane)) : Float := do
-  let xs_0 ← IO.mkRef (← ωlst #[])
-  for e1 in (← ωitems (← lanes_0.get)) do
-    let l_1 ← IO.mkRef e1
-    for e2 in (← ωitems (← ωget (← l_1.get) "sources")) do
-      let p_2 ← IO.mkRef e2
-      (← dot! (← xs_0.get) rpush ((← p_2.get))) |> ωsink
-      pure ()
-    Value.null |> ωsink
-    pure ()
-  Value.null |> ωsink
-  if ωtruthy (← dot! (← xs_0.get) rempty ()) then
-    (← ωwr xs_0 (← ωget (← dot! (← lanes_0.get) rfirst ()) "points")) |> ωsink
-    pure ()
+  let sourced_0 ← IO.mkRef (← dot! (← lanes_0.get) rreduce ((← ωlst #[]), (fn! [out_2 l_2] do
+    if true then return (← dot! (← ωget (← l_2.get) "sources") rreduce ((← out_2.get), (fn! [o_4 p_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← p_4.get)))
+      return ωnull)))
+    return ωnull)))
+  let xs_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← sourced_0.get) rempty ())) (do pure (← ωget (← dot! (← lanes_0.get) rfirst ()) "points")) (do pure (← sourced_0.get)))
   if ωtruthy (← dot! (← xs_0.get) rempty ()) then
     if true then return (0 : Float)
     pure ()
