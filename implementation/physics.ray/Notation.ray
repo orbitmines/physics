@@ -78,7 +78,7 @@ Notation := class {
   ]
   static reference (key: String): Reference? => Notation.REFERENCES.filter(r => r.key == key).first
 
-  static builds (name: String): boolean => Notation.WRAP_NAMES.contains(name) | Notation.WORDS.contains(name) | Notation.BIGS.contains(name) | name == "frac" | name == "binom"
+  static builds (name: String): boolean => Notation.WRAP_NAMES.contains(name) | Notation.WORDS.contains(name) | Notation.BIGS.contains(name) | name == "frac" | name == "binom" | name == "narrow"
   static glyph (name: String): String? => {
     i := Notation.GLYPH_NAMES.index_of(name)
     i == None ? None : Notation.GLYPH_TEXTS[i]
@@ -200,7 +200,9 @@ Notation := class {
         frac := (name == "frac" | name == "binom") ? Notation.args(src, after, 2, []) : None
         wrap := Notation.wrap_kind(name) != None ? Notation.args(src, after, 1, []) : None
         words := Notation.WORDS.contains(name) ? Notation.args(src, after, 1, []) : None
-        hit := big ?? frac ?? wrap ?? words
+        /* `\narrow{l}{active & next.active}`: a thing narrowed to what passes, its narrowing set under it */
+        narrow := name == "narrow" ? Notation.args(src, after, 2, []) : None
+        hit := big ?? frac ?? wrap ?? words ?? narrow
         if hit != None {
           flush(i)
           if frac != None {
@@ -214,6 +216,9 @@ Notation := class {
             out.push((kind == "bar" & Notation.BARRED_COUNTS.contains(arg)) ? Piece.wrap("count", [Piece.wrap("bar", once)]) : Piece.wrap(kind, once))
           } elsif words != None {
             out.push(Piece.words(hit.got[0]))
+          } elsif narrow != None {
+            Notation.parse(hit.got[0]).for(p => { out.push(p) })
+            Notation.attach(out, "sub", Notation.narrowing(hit.got[1]))
           } else {
             out.push(Piece.big(name, Notation.parse(hit.got.length > 0 ? hit.got[0] : ""), Notation.parse(hit.got.length > 1 ? hit.got[1] : "")))
           }
@@ -285,6 +290,38 @@ Notation := class {
       i = i + 1 if !handled
     }
     flush(src.length)
+    out
+  }
+
+  /*
+   * A NARROWING, as Ray writes it - `{active & next.active}` - set back like the `l.` of a field: the braces, the
+   * `&` and `.` between the names, and the local itself muted; what is asked of the thing (`active`, `neutral`,
+   * `emits`) set as the functions they are
+   */
+  static narrowing (p: String): Piece[] => {
+    out := [Piece.wrap("muted", [Piece.text_("{{")])]
+    k := 0
+    while k < p.length {
+      c := p.chars[k]
+      if Notation.is_letter(c) | c == 95 {
+        w := Notation.run(p, k, ch => Notation.is_name(ch))
+        out.push(Piece.wrap((w == "l" | w == "x") ? "muted" : "fn", [Piece.text_(w)]))
+        k = k + w.length
+      } elsif Notation.is_digit(c) {
+        w := Notation.run(p, k, ch => Notation.is_digit(ch))
+        out.push(Piece.text_(w))
+        k = k + w.length
+      } elsif c.blank {
+        w := Notation.run(p, k, ch => ch.blank)
+        out.push(Piece.text_(" "))
+        k = k + w.length
+      } else {
+        w := Notation.run(p, k, ch => !(Notation.is_name(ch) | ch.blank))
+        out.push(Piece.wrap("muted", [Piece.text_(w)]))
+        k = k + w.length
+      }
+    }
+    out.push(Piece.wrap("muted", [Piece.text_("}}")]))
     out
   }
 

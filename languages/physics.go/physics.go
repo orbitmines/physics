@@ -3875,7 +3875,7 @@ func init() {
     c.Static("builds", func(self any, a1 []any) any {
       var name_0 any = Arg(a1, 0); _ = name_0;
       if true {
-        return (Truthy((Truthy((Truthy((Truthy(M_contains(Get(K("Notation"), "WRAP_NAMES"), name_0)) || Truthy(M_contains(Get(K("Notation"), "WORDS"), name_0)))) || Truthy(M_contains(Get(K("Notation"), "BIGS"), name_0)))) || Truthy(Eq(name_0, "frac")))) || Truthy(Eq(name_0, "binom")))
+        return (Truthy((Truthy((Truthy((Truthy((Truthy(M_contains(Get(K("Notation"), "WRAP_NAMES"), name_0)) || Truthy(M_contains(Get(K("Notation"), "WORDS"), name_0)))) || Truthy(M_contains(Get(K("Notation"), "BIGS"), name_0)))) || Truthy(Eq(name_0, "frac")))) || Truthy(Eq(name_0, "binom")))) || Truthy(Eq(name_0, "narrow")))
       }
       return nil
     })
@@ -4188,8 +4188,11 @@ func init() {
           var words_0 any
           words_0 = Tern(Truthy(M_contains(Get(K("Notation"), "WORDS"), name_0)), func() any { return Call(K("Notation"), "args", []any{ src_0, after_0, 1.0, Lst() }) }, func() any { return nil })
           _ = words_0
+          var narrow_0 any
+          narrow_0 = Tern(Truthy(Eq(name_0, "narrow")), func() any { return Call(K("Notation"), "args", []any{ src_0, after_0, 2.0, Lst() }) }, func() any { return nil })
+          _ = narrow_0
           var hit_0 any
-          hit_0 = OrElse(OrElse(OrElse(big_0, func() any { return frac_0 }), func() any { return wrap_0 }), func() any { return words_0 })
+          hit_0 = OrElse(OrElse(OrElse(OrElse(big_0, func() any { return frac_0 }), func() any { return wrap_0 }), func() any { return words_0 }), func() any { return narrow_0 })
           _ = hit_0
           if Truthy(!Eq(hit_0, nil)) {
             Invoke(flush_0, []any{ i_0 })
@@ -4220,7 +4223,16 @@ func init() {
                 if Truthy(!Eq(words_0, nil)) {
                   M_push(out_0, Call(K("Piece"), "words", []any{ Elem(Get(hit_0, "got"), 0.0) }))
                 } else {
-                  M_push(out_0, Call(K("Piece"), "big", []any{ name_0, Call(K("Notation"), "parse", []any{ Tern(Truthy(Gt(Len(Get(hit_0, "got")), 0.0)), func() any { return Elem(Get(hit_0, "got"), 0.0) }, func() any { return "" }) }), Call(K("Notation"), "parse", []any{ Tern(Truthy(Gt(Len(Get(hit_0, "got")), 1.0)), func() any { return Elem(Get(hit_0, "got"), 1.0) }, func() any { return "" }) }) }))
+                  if Truthy(!Eq(narrow_0, nil)) {
+                    for _, e1 := range Items(Call(K("Notation"), "parse", []any{ Elem(Get(hit_0, "got"), 0.0) })) {
+                      var p_1 any = e1
+                      _ = p_1
+                      M_push(out_0, p_1)
+                    }
+                    Call(K("Notation"), "attach", []any{ out_0, "sub", Call(K("Notation"), "narrowing", []any{ Elem(Get(hit_0, "got"), 1.0) }) })
+                  } else {
+                    M_push(out_0, Call(K("Piece"), "big", []any{ name_0, Call(K("Notation"), "parse", []any{ Tern(Truthy(Gt(Len(Get(hit_0, "got")), 0.0)), func() any { return Elem(Get(hit_0, "got"), 0.0) }, func() any { return "" }) }), Call(K("Notation"), "parse", []any{ Tern(Truthy(Gt(Len(Get(hit_0, "got")), 1.0)), func() any { return Elem(Get(hit_0, "got"), 1.0) }, func() any { return "" }) }) }))
+                  }
                 }
               }
             }
@@ -4326,6 +4338,78 @@ func init() {
         }
       }
       Invoke(flush_0, []any{ Len(src_0) })
+      if true {
+        return out_0
+      }
+      return nil
+    })
+    c.Static("narrowing", func(self any, a1 []any) any {
+      var p_0 any = Arg(a1, 0); _ = p_0;
+      var out_0 any
+      out_0 = Lst(Call(K("Piece"), "wrap", []any{ "muted", Lst(Call(K("Piece"), "text_", []any{ "{" })) }))
+      _ = out_0
+      var k_0 any
+      k_0 = 0.0
+      _ = k_0
+      for Truthy(Lt(k_0, Len(p_0))) {
+        var c__0 any
+        c__0 = Elem(M_chars(p_0), k_0)
+        _ = c__0
+        if Truthy((Truthy(Call(K("Notation"), "is_letter", []any{ c__0 })) || Truthy(Eq(c__0, 95.0)))) {
+          var w_0 any
+          w_0 = Call(K("Notation"), "run", []any{ p_0, k_0, Fn(func(a3 []any) any {
+            var ch_2 any = Arg(a3, 0); _ = ch_2;
+            if true {
+              return Call(K("Notation"), "is_name", []any{ ch_2 })
+            }
+            return nil
+          }) })
+          _ = w_0
+          M_push(out_0, Call(K("Piece"), "wrap", []any{ Tern(Truthy(((Truthy(Eq(w_0, "l")) || Truthy(Eq(w_0, "x"))))), func() any { return "muted" }, func() any { return "fn" }), Lst(Call(K("Piece"), "text_", []any{ w_0 })) }))
+          k_0 = Add(k_0, Len(w_0))
+        } else {
+          if Truthy(Call(K("Notation"), "is_digit", []any{ c__0 })) {
+            var w_0 any
+            w_0 = Call(K("Notation"), "run", []any{ p_0, k_0, Fn(func(a3 []any) any {
+              var ch_2 any = Arg(a3, 0); _ = ch_2;
+              if true {
+                return Call(K("Notation"), "is_digit", []any{ ch_2 })
+              }
+              return nil
+            }) })
+            _ = w_0
+            M_push(out_0, Call(K("Piece"), "text_", []any{ w_0 }))
+            k_0 = Add(k_0, Len(w_0))
+          } else {
+            if Truthy(Blank(c__0)) {
+              var w_0 any
+              w_0 = Call(K("Notation"), "run", []any{ p_0, k_0, Fn(func(a3 []any) any {
+                var ch_2 any = Arg(a3, 0); _ = ch_2;
+                if true {
+                  return Blank(ch_2)
+                }
+                return nil
+              }) })
+              _ = w_0
+              M_push(out_0, Call(K("Piece"), "text_", []any{ " " }))
+              k_0 = Add(k_0, Len(w_0))
+            } else {
+              var w_0 any
+              w_0 = Call(K("Notation"), "run", []any{ p_0, k_0, Fn(func(a3 []any) any {
+                var ch_2 any = Arg(a3, 0); _ = ch_2;
+                if true {
+                  return Not(((Truthy(Call(K("Notation"), "is_name", []any{ ch_2 })) || Truthy(Blank(ch_2)))))
+                }
+                return nil
+              }) })
+              _ = w_0
+              M_push(out_0, Call(K("Piece"), "wrap", []any{ "muted", Lst(Call(K("Piece"), "text_", []any{ w_0 })) }))
+              k_0 = Add(k_0, Len(w_0))
+            }
+          }
+        }
+      }
+      M_push(out_0, Call(K("Piece"), "wrap", []any{ "muted", Lst(Call(K("Piece"), "text_", []any{ "}" })) }))
       if true {
         return out_0
       }
@@ -9296,6 +9380,8 @@ func init() {
   Prover = cls("Prover", Node, func(c *Cls) {
     c.Field("theory", nil)
     c.StaticField("PROOFS", func(self any) any { return Make(Node) })
+    c.StaticField("RAYS_SAY", func(self any) any { return "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all." })
+    c.StaticField("SPACE_SAY", func(self any) any { return "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here." })
     c.Field("population_line", func(self any) any { return nil })
     c.Field("record_line", func(self any) any { return nil })
     c.Field("store", func(self any) any { return Make("Store", []any{  }...) })
@@ -10865,6 +10951,252 @@ func init() {
       }
       return nil
     })
+    c.Static("edge_ends", func(self any, a1 []any) any {
+      if true {
+        return Filt(M_split(Get(Call(K("Edge"), "method", []any{ "active" }), "source"), " & "), Fn(func(a3 []any) any {
+        var c__2 any = Arg(a3, 0); _ = c__2;
+        if true {
+          return Gt(Len(M_split(c__2, ".active")), 1.0)
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Getter("edge_from_an_end", func(self any, a1 []any) any {
+      var def_0 any
+      def_0 = Get(Call(K("Edge"), "method", []any{ "active" }), "source")
+      _ = def_0
+      var ends_0 any
+      ends_0 = Get(K("Prover"), "edge_ends")
+      _ = ends_0
+      var asked_0 any
+      asked_0 = M_join(M_concat(Lst("active"), M_map(M_drop(ends_0, 1.0), Fn(func(a3 []any) any {
+        var __2 any = Arg(a3, 0); _ = __2;
+        if true {
+          return "next.active"
+        }
+        return nil
+      }))), " & ")
+      _ = asked_0
+      var facing_0 any
+      facing_0 = Get(Call(K("Ray"), "method", []any{ "facing" }), "source")
+      _ = facing_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\narrow{Edge}{active}", Call(K("Expr"), "field", []any{ "\\narrow{l}{" + Str(asked_0) + "}" }) }), "an edge, seen from one of its ends", Lst(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + Str(Len(ends_0)) + ".", Lst("Edge.active = " + Str(def_0) + "", "Ray.facing = " + Str(facing_0) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + Str(asked_0) + "}, " + Str(Len(ends_0)) + " ends to a meeting") })
+      _ = st_0
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Getter("standing_at", func(self any, a1 []any) any {
+      var alive_0 any
+      alive_0 = Get(Call(K("Vertex"), "method", []any{ "alive" }), "source")
+      _ = alive_0
+      var sinks_0 any
+      sinks_0 = Get(Call(K("Vertex"), "method", []any{ "sinks" }), "source")
+      _ = sinks_0
+      if true {
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\narrow{\\forall}{@ == l}", Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "field", []any{ "\\narrow{\\forall}{folded_into == l}" })) }) }), "what stands at a local", Lst(), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", Lst("Vertex.alive = " + Str(alive_0) + "", "Vertex.sinks = " + Str(sinks_0) + "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}") })
+      }
+      return nil
+    })
+    c.Static("members_of", func(self any, a1 []any) any {
+      var t_0 any = Arg(a1, 0); _ = t_0; var rays_0 any = Arg(a1, 1); _ = rays_0;
+      var over_0 any
+      over_0 = Get(Get(Get(t_0, "term"), "rule"), "over")
+      _ = over_0
+      if Truthy(Eq(over_0, "Edge")) {
+        if true {
+          return Call(K("Expr"), "num", []any{ Len(Get(K("Prover"), "edge_ends")) })
+        }
+      }
+      if Truthy((Truthy(Eq(over_0, "Vertex")) && Truthy(rays_0))) {
+        if true {
+          return Call(K("Expr"), "field", []any{ "DEG" })
+        }
+      }
+      if true {
+        return Call(K("Expr"), "num", []any{ 1.0 })
+      }
+      return nil
+    })
+    c.Static("per_member", func(self any, a1 []any) any {
+      var count_0 any = Arg(a1, 0); _ = count_0; var members_0 any = Arg(a1, 1); _ = members_0;
+      var at_0 any
+      at_0 = Fn(func(a2 []any) any {
+        var deg_1 any = Arg(a2, 0); _ = deg_1;
+        var k_1 any
+        k_1 = Make(Node)
+        _ = k_1
+        Set(k_1, Str("DEG"), deg_1)
+        if true {
+          return Div(Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "evaluate", []any{ count_0, k_1 }), k_1 }), Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "evaluate", []any{ members_0, k_1 }), k_1 }))
+        }
+        return nil
+      })
+      _ = at_0
+      var a_0 any
+      a_0 = Invoke(at_0, []any{ 8.0 })
+      _ = a_0
+      if true {
+        return Tern(Truthy(Eq(a_0, Invoke(at_0, []any{ 12.0 }))), func() any { return a_0 }, func() any { return nil })
+      }
+      return nil
+    })
+    c.Static("weighed", func(self any, a1 []any) any {
+      var w_0 any = Arg(a1, 0); _ = w_0; var at_0 any = Arg(a1, 1); _ = at_0;
+      if true {
+        return Tern(Truthy(Eq(w_0, 1.0)), func() any { return at_0 }, func() any { return (Tern(Truthy(Eq(w_0, Neg(1.0))), func() any { return Call(K("Expr"), "neg", []any{ at_0 }) }, func() any { return Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ w_0 }), at_0) }) })) })
+      }
+      return nil
+    })
+    c.Method("narrowed_term", func(self any, a1 []any) any {
+      var t_0 any = Arg(a1, 0); _ = t_0; var rays_0 any = Arg(a1, 1); _ = rays_0; var edge_0 any = Arg(a1, 2); _ = edge_0;
+      var r_0 any
+      r_0 = Get(Get(t_0, "term"), "rule")
+      _ = r_0
+      var p_0 any
+      p_0 = Tern(Truthy(Eq(Get(r_0, "where"), nil)), func() any { return "" }, func() any { return Get(Get(r_0, "where"), "source") })
+      _ = p_0
+      var at_0 any
+      at_0 = Tern(Truthy(Eq(Get(r_0, "over"), "Edge")), func() any { return Get(Get(edge_0, "fact"), "to") }, func() any { return Call(K("Expr"), "field", []any{ "\\narrow{l}{" + Str(p_0) + "}" }) })
+      _ = at_0
+      var count_0 any
+      count_0 = Tern(Truthy(rays_0), func() any { return Get(t_0, "ray_count") }, func() any { return Call(K("Expr"), "neg", []any{ Get(t_0, "held_count") }) })
+      _ = count_0
+      var members_0 any
+      members_0 = Call(K("Prover"), "members_of", []any{ t_0, rays_0 })
+      _ = members_0
+      var w_0 any
+      w_0 = Call(K("Prover"), "per_member", []any{ count_0, members_0 })
+      _ = w_0
+      if Truthy(Eq(w_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      if Truthy(Eq(w_0, 0.0)) {
+        if true {
+          return nil
+        }
+      }
+      var got_0 any
+      got_0 = Call(K("Prover"), "weighed", []any{ w_0, at_0 })
+      _ = got_0
+      var moved_0 any
+      moved_0 = Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ count_0 }) })
+      _ = moved_0
+      var ledger_0 any
+      ledger_0 = Tern(Truthy(rays_0), func() any { return "on the rays" }, func() any { return "on the space" })
+      _ = ledger_0
+      var fires_0 any
+      fires_0 = Tern(Truthy(Eq(Get(r_0, "over"), "Vertex")), func() any { return "a point" }, func() any { return (Tern(Truthy(Eq(Get(r_0, "over"), "Edge")), func() any { return "an edge" }, func() any { return (Tern(Truthy(Eq(Get(r_0, "over"), "Boundary")), func() any { return "a way" }, func() any { return Get(r_0, "over") })) })) })
+      _ = fires_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\text{" + Str(Get(r_0, "name")) + "} \\aside{" + Str(ledger_0) + "}", got_0 }), M_upper(Get(r_0, "name")), Tern(Truthy(Eq(Get(r_0, "over"), "Edge")), func() any { return Lst(Get(Get(edge_0, "fact"), "key")) }, func() any { return Lst() }), "the rule fires on " + Str(fires_0) + ": its pattern, as a narrowing of l, is " + Str(Call(K("Expr"), "show", []any{ at_0 })) + ". One firing moves " + Str(moved_0) + " " + Str(ledger_0) + ", and one match is " + Str(Call(K("Expr"), "show", []any{ members_0 })) + " of l's members, so each member of the narrowing moves " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ w_0 }) })) + ".", Lst("pattern: " + Str(Get(r_0, "over")) + "\\{" + Str(p_0) + "\\} - of l: " + Str(Call(K("Expr"), "show", []any{ at_0 })) + "", "one firing moves " + Str(moved_0) + "", "one match is " + Str(Call(K("Expr"), "show", []any{ members_0 })) + " of l", "so: " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      _ = st_0
+      Set(st_0, "rule", M_upper(Get(r_0, "name")))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("narrowed", func(self any, a1 []any) any {
+      var ledger_0 any = Arg(a1, 0); _ = ledger_0; var upon_0 any = Arg(a1, 1); _ = upon_0;
+      var rays_0 any
+      rays_0 = Eq(ledger_0, "rays")
+      _ = rays_0
+      var edge_0 any
+      edge_0 = Get(self, "edge_from_an_end")
+      _ = edge_0
+      var moving_0 any
+      moving_0 = Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy((Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)) && Truthy(Not(Get(t_2, "transport"))))) && Truthy(Not(Get(t_2, "settles"))))) && Truthy((Tern(Truthy(rays_0), func() any { return !Eq(Get(t_2, "rays"), "0") }, func() any { return !Eq(Get(t_2, "held"), "0") }))))
+        }
+        return nil
+      }))
+      _ = moving_0
+      var by_rule_0 any
+      by_rule_0 = Filt(M_map(moving_0, Fn(func(a4 []any) any {
+        var t_3 any = Arg(a4, 0); _ = t_3;
+        if true {
+          return Call(self, "narrowed_term", []any{ t_3, rays_0, edge_0 })
+        }
+        return nil
+      })), Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return !Eq(x_2, nil)
+        }
+        return nil
+      }))
+      _ = by_rule_0
+      if Truthy(M_empty(by_rule_0)) {
+        if true {
+          return nil
+        }
+      }
+      var carried_0 any
+      carried_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy(Get(t_2, "transport")) && Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)))) && Truthy(!Eq(Get(Get(Get(t_2, "term"), "rule"), "where"), nil)))
+        }
+        return nil
+      })))
+      _ = carried_0
+      var followed_0 any
+      followed_0 = Tern(Truthy(Eq(carried_0, nil)), func() any { return "active" }, func() any { return Get(Get(Get(Get(carried_0, "term"), "rule"), "where"), "source") })
+      _ = followed_0
+      var held_0 any
+      held_0 = Get(self, "standing_at")
+      _ = held_0
+      var lhs_0 any
+      lhs_0 = Tern(Truthy(rays_0), func() any { return "\\Delta \\narrow{l}{" + Str(followed_0) + "}" }, func() any { return "\\Delta " + Str(Get(Get(held_0, "fact"), "of")) + "" })
+      _ = lhs_0
+      var rhs_0 any
+      rhs_0 = Call(K("Expr"), "add", []any{ M_map(by_rule_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Get(Get(x_2, "fact"), "to")
+        }
+        return nil
+      })) })
+      _ = rhs_0
+      var because_0 any
+      because_0 = Tern(Truthy(rays_0), func() any { return Get(K("Prover"), "RAYS_SAY") }, func() any { return Get(K("Prover"), "SPACE_SAY") })
+      _ = because_0
+      var behind_0 any
+      behind_0 = M_concat(M_concat(Lst(edge_0), Tern(Truthy(rays_0), func() any { return Lst() }, func() any { return Lst(held_0) })), by_rule_0)
+      _ = behind_0
+      var title_0 any
+      title_0 = Tern(Truthy(rays_0), func() any { return "the rays at a local, as the rules narrow it" }, func() any { return "the space at a local, as the rules narrow it" })
+      _ = title_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ lhs_0, rhs_0 }), title_0, M_concat(Lst(Get(Get(upon_0, "fact"), "key")), M_map(behind_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Get(Get(x_2, "fact"), "key")
+        }
+        return nil
+      }))), because_0, M_concat(M_map(by_rule_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return "" + Str(Get(x_2, "via")) + ": " + Str(Call(K("Expr"), "show", []any{ Get(Get(x_2, "fact"), "to") })) + ""
+        }
+        return nil
+      })), Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "")) })
+      _ = st_0
+      Set(st_0, "derivation", behind_0)
+      if true {
+        return st_0
+      }
+      return nil
+    })
     c.Method("lean", func(self any, a1 []any) any {
       var rec_0 any = Arg(a1, 0); _ = rec_0;
       if true {
@@ -11555,6 +11887,12 @@ func init() {
       var whole_0 any
       whole_0 = Call(self, "general", []any{ filled_0, folded_0 })
       _ = whole_0
+      var rays_l_0 any
+      rays_l_0 = Call(self, "narrowed", []any{ "rays", filled_0 })
+      _ = rays_l_0
+      var space_l_0 any
+      space_l_0 = Call(self, "narrowed", []any{ "space", spaced_0 })
+      _ = space_l_0
       var settled_0 any
       settled_0 = Call(self, "settled_record", []any{ folded_0 })
       _ = settled_0
@@ -11642,7 +11980,7 @@ func init() {
       var named_0 any
       named_0 = Make("Keyed", []any{  }...)
       _ = named_0
-      for _, e1 := range Items(Filt(Lst(at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0), Fn(func(a4 []any) any {
+      for _, e1 := range Items(Filt(Lst(rays_l_0, space_l_0, at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0), Fn(func(a4 []any) any {
         var x_3 any = Arg(a4, 0); _ = x_3;
         if true {
           return !Eq(x_3, nil)
@@ -31985,6 +32323,22 @@ func init() {
       return Make(Theorem, Kw("id", "vacuum.equation"), Kw("body", Fn(func(a1 []any) any {
         if true {
           return Make("Asked", []any{ Kw("asks", "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?"), Kw("about", "") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.rays", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.rays"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"), Kw("about", "\\Delta \\narrow{l}{active}"), Kw("leads", "THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.space", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.space"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"), Kw("about", "\\Delta \\narrow{\\forall}{@ == l}"), Kw("leads", "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.") }...)
         }
         return nil
       })))

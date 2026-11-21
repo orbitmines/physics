@@ -2960,7 +2960,7 @@ enum C_Notation {
     })
     c.statik("builds", { (this_: V, a1: [V]) throws -> V in
       var name_0: V = arg(a1, 0);
-      return try or_(try or_(try or_(try or_(try m_contains(try get((try K("Notation")), "WRAP_NAMES"), name_0), try m_contains(try get((try K("Notation")), "WORDS"), name_0)), try m_contains(try get((try K("Notation")), "BIGS"), name_0)), V.b(try eq(name_0, V.s(cat("frac"))))), V.b(try eq(name_0, V.s(cat("binom")))))
+      return try or_(try or_(try or_(try or_(try or_(try m_contains(try get((try K("Notation")), "WRAP_NAMES"), name_0), try m_contains(try get((try K("Notation")), "WORDS"), name_0)), try m_contains(try get((try K("Notation")), "BIGS"), name_0)), V.b(try eq(name_0, V.s(cat("frac"))))), V.b(try eq(name_0, V.s(cat("binom"))))), V.b(try eq(name_0, V.s(cat("narrow")))))
       return V.null
     })
     c.statik("glyph", { (this_: V, a1: [V]) throws -> V in
@@ -3161,7 +3161,8 @@ enum C_Notation {
           var frac_0: V = V.null; frac_0 = try sel(truthy((try or_(V.b(try eq(name_0, V.s(cat("frac")))), V.b(try eq(name_0, V.s(cat("binom"))))))), try call((try K("Notation")), "args", [src_0, after_0, 2.0, list()]), V.null)
           var wrap_0: V = V.null; wrap_0 = try sel(truthy(V.b(!(try eq(try call((try K("Notation")), "wrap_kind", [name_0]), V.null)))), try call((try K("Notation")), "args", [src_0, after_0, 1.0, list()]), V.null)
           var words_0: V = V.null; words_0 = try sel(truthy(try m_contains(try get((try K("Notation")), "WORDS"), name_0)), try call((try K("Notation")), "args", [src_0, after_0, 1.0, list()]), V.null)
-          var hit_0: V = V.null; hit_0 = try orElse(try orElse(try orElse(big_0, frac_0), wrap_0), words_0)
+          var narrow_0: V = V.null; narrow_0 = try sel(truthy(V.b(try eq(name_0, V.s(cat("narrow"))))), try call((try K("Notation")), "args", [src_0, after_0, 2.0, list()]), V.null)
+          var hit_0: V = V.null; hit_0 = try orElse(try orElse(try orElse(try orElse(big_0, frac_0), wrap_0), words_0), narrow_0)
           if truthy(V.b(!(try eq(hit_0, V.null)))) {
             try invoke(flush_0, [i_0])
             if truthy(V.b(!(try eq(frac_0, V.null)))) {
@@ -3181,7 +3182,15 @@ enum C_Notation {
                 if truthy(V.b(!(try eq(words_0, V.null)))) {
                   try m_push(out_0, try call((try K("Piece")), "words", [try elem(try get(hit_0, "got"), 0.0)]))
                 } else {
-                  try m_push(out_0, try call((try K("Piece")), "big", [name_0, try call((try K("Notation")), "parse", [try sel(truthy(try gt(try len(try get(hit_0, "got")), 0.0)), try elem(try get(hit_0, "got"), 0.0), V.s(cat("")))]), try call((try K("Notation")), "parse", [try sel(truthy(try gt(try len(try get(hit_0, "got")), 1.0)), try elem(try get(hit_0, "got"), 1.0), V.s(cat("")))])]))
+                  if truthy(V.b(!(try eq(narrow_0, V.null)))) {
+                    for e1 in try items(try call((try K("Notation")), "parse", [try elem(try get(hit_0, "got"), 0.0)])) {
+                      var p_1: V = e1
+                      try m_push(out_0, p_1)
+                    }
+                    try call((try K("Notation")), "attach", [out_0, V.s(cat("sub")), try call((try K("Notation")), "narrowing", [try elem(try get(hit_0, "got"), 1.0)])])
+                  } else {
+                    try m_push(out_0, try call((try K("Piece")), "big", [name_0, try call((try K("Notation")), "parse", [try sel(truthy(try gt(try len(try get(hit_0, "got")), 0.0)), try elem(try get(hit_0, "got"), 0.0), V.s(cat("")))]), try call((try K("Notation")), "parse", [try sel(truthy(try gt(try len(try get(hit_0, "got")), 1.0)), try elem(try get(hit_0, "got"), 1.0), V.s(cat("")))])]))
+                  }
                 }
               }
             }
@@ -3265,6 +3274,54 @@ enum C_Notation {
         }
       }
       try invoke(flush_0, [try len(src_0)])
+      return out_0
+      return V.null
+    })
+    c.statik("narrowing", { (this_: V, a1: [V]) throws -> V in
+      var p_0: V = arg(a1, 0);
+      var out_0: V = V.null; out_0 = list(try call((try K("Piece")), "wrap", [V.s(cat("muted")), list(try call((try K("Piece")), "text_", [V.s(cat("{"))]))]))
+      var k_0: V = V.null; k_0 = 0.0
+      while truthy(try lt(k_0, try len(p_0))) {
+        var c_0: V = V.null; c_0 = try elem(try m_chars(p_0), k_0)
+        if truthy(try or_(try call((try K("Notation")), "is_letter", [c_0]), V.b(try eq(c_0, 95.0)))) {
+          var w_0: V = V.null; w_0 = try call((try K("Notation")), "run", [p_0, k_0, V.fn({ (a3: [V]) throws -> V in
+            var ch_2: V = arg(a3, 0);
+            return try call((try K("Notation")), "is_name", [ch_2])
+            return V.null
+          })])
+          try m_push(out_0, try call((try K("Piece")), "wrap", [try sel(truthy((try or_(V.b(try eq(w_0, V.s(cat("l")))), V.b(try eq(w_0, V.s(cat("x"))))))), V.s(cat("muted")), V.s(cat("fn"))), list(try call((try K("Piece")), "text_", [w_0]))]))
+          k_0 = try add(k_0, try len(w_0))
+        } else {
+          if truthy(try call((try K("Notation")), "is_digit", [c_0])) {
+            var w_0: V = V.null; w_0 = try call((try K("Notation")), "run", [p_0, k_0, V.fn({ (a3: [V]) throws -> V in
+              var ch_2: V = arg(a3, 0);
+              return try call((try K("Notation")), "is_digit", [ch_2])
+              return V.null
+            })])
+            try m_push(out_0, try call((try K("Piece")), "text_", [w_0]))
+            k_0 = try add(k_0, try len(w_0))
+          } else {
+            if truthy(blank(c_0)) {
+              var w_0: V = V.null; w_0 = try call((try K("Notation")), "run", [p_0, k_0, V.fn({ (a3: [V]) throws -> V in
+                var ch_2: V = arg(a3, 0);
+                return blank(ch_2)
+                return V.null
+              })])
+              try m_push(out_0, try call((try K("Piece")), "text_", [V.s(cat(" "))]))
+              k_0 = try add(k_0, try len(w_0))
+            } else {
+              var w_0: V = V.null; w_0 = try call((try K("Notation")), "run", [p_0, k_0, V.fn({ (a3: [V]) throws -> V in
+                var ch_2: V = arg(a3, 0);
+                return not((try or_(try call((try K("Notation")), "is_name", [ch_2]), blank(ch_2))))
+                return V.null
+              })])
+              try m_push(out_0, try call((try K("Piece")), "wrap", [V.s(cat("muted")), list(try call((try K("Piece")), "text_", [w_0]))]))
+              k_0 = try add(k_0, try len(w_0))
+            }
+          }
+        }
+      }
+      try m_push(out_0, try call((try K("Piece")), "wrap", [V.s(cat("muted")), list(try call((try K("Piece")), "text_", [V.s(cat("}"))]))]))
       return out_0
       return V.null
     })
@@ -6420,6 +6477,8 @@ enum C_Prover {
   static func define(_ c: Cls) throws {
     c.field("theory", nil)
     c.staticField("PROOFS", { (this_: V) throws -> V in return makeNode() })
+    c.staticField("RAYS_SAY", { (this_: V) throws -> V in return V.s(cat("l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.")) })
+    c.staticField("SPACE_SAY", { (this_: V) throws -> V in return V.s(cat("the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.")) })
     c.field("population_line", { (this_: V) throws -> V in return V.null })
     c.field("record_line", { (this_: V) throws -> V in return V.null })
     c.field("store", { (this_: V) throws -> V in return try makeNamed("Store", []) })
@@ -7341,6 +7400,136 @@ enum C_Prover {
       return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta_{v}f")), try call((try K("Expr")), "field", [V.s(cat("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}"))])]), V.s(cat("following")), list(try get(try get(rec_0, "fact"), "key")), V.s(cat("the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all")), list(V.s(cat("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick")), V.s(cat("\\nabla f: along a way, at one tick")), V.s(cat("\\partial_{\\hat{d}}\\rho: across the headings, at one local")))])
       return V.null
     })
+    c.statik("edge_ends", { (this_: V, a1: [V]) throws -> V in
+      return try filt(try m_split(try get(try call((try K("Edge")), "method", [V.s(cat("active"))]), "source"), V.s(cat(" & "))), V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try gt(try len(try m_split(c_2, V.s(cat(".active")))), 1.0)
+        return V.null
+      }))
+      return V.null
+    })
+    c.getter("edge_from_an_end", { (this_: V, a1: [V]) throws -> V in
+      var def_0: V = V.null; def_0 = try get(try call((try K("Edge")), "method", [V.s(cat("active"))]), "source")
+      var ends_0: V = V.null; ends_0 = try get((try K("Prover")), "edge_ends")
+      var asked_0: V = V.null; asked_0 = try m_join(try m_concat(list(V.s(cat("active"))), try m_map(try m_drop(ends_0, 1.0), V.fn({ (a3: [V]) throws -> V in
+        var __2: V = arg(a3, 0);
+        return V.s(cat("next.active"))
+        return V.null
+      }))), V.s(cat(" & ")))
+      var facing_0: V = V.null; facing_0 = try get(try call((try K("Ray")), "method", [V.s(cat("facing"))]), "source")
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\narrow{Edge}{active}")), try call((try K("Expr")), "field", [V.s(cat("\\narrow{l}{", try str(asked_0), "}"))])]), V.s(cat("an edge, seen from one of its ends")), list(), V.s(cat("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ", try str(try len(ends_0)), ".")), list(V.s(cat("Edge.active = ", try str(def_0), "")), V.s(cat("Ray.facing = ", try str(facing_0), ": the ray across the same edge - next")), V.s(cat("\\narrow{Edge}{active} = \\narrow{l}{", try str(asked_0), "}, ", try str(try len(ends_0)), " ends to a meeting")))])
+      return st_0
+      return V.null
+    })
+    c.getter("standing_at", { (this_: V, a1: [V]) throws -> V in
+      var alive_0: V = V.null; alive_0 = try get(try call((try K("Vertex")), "method", [V.s(cat("alive"))]), "source")
+      var sinks_0: V = V.null; sinks_0 = try get(try call((try K("Vertex")), "method", [V.s(cat("sinks"))]), "source")
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\narrow{\\forall}{@ == l}")), try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "field", [V.s(cat("\\narrow{\\forall}{folded_into == l}"))]))])]), V.s(cat("what stands at a local")), list(), V.s(cat("the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.")), list(V.s(cat("Vertex.alive = ", try str(alive_0), "")), V.s(cat("Vertex.sinks = ", try str(sinks_0), "")), V.s(cat("\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}")))])
+      return V.null
+    })
+    c.statik("members_of", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var rays_0: V = arg(a1, 1);
+      var over_0: V = V.null; over_0 = try get(try get(try get(t_0, "term"), "rule"), "over")
+      if truthy(V.b(try eq(over_0, V.s(cat("Edge"))))) {
+        return try call((try K("Expr")), "num", [try len(try get((try K("Prover")), "edge_ends"))])
+      }
+      if truthy(try and_(V.b(try eq(over_0, V.s(cat("Vertex")))), rays_0)) {
+        return try call((try K("Expr")), "field", [V.s(cat("DEG"))])
+      }
+      return try call((try K("Expr")), "num", [1.0])
+      return V.null
+    })
+    c.statik("per_member", { (this_: V, a1: [V]) throws -> V in
+      var count_0: V = arg(a1, 0); var members_0: V = arg(a1, 1);
+      var at_0: V = V.null; at_0 = V.fn({ (a2: [V]) throws -> V in
+        var deg_1: V = arg(a2, 0);
+        var k_1: V = V.null; k_1 = makeNode()
+        try set(k_1, Name(try str(V.s(cat("DEG")))), deg_1)
+        return try div(try call((try K("Expr")), "numeric", [try call((try K("Expr")), "evaluate", [count_0, k_1]), k_1]), try call((try K("Expr")), "numeric", [try call((try K("Expr")), "evaluate", [members_0, k_1]), k_1]))
+        return V.null
+      })
+      var a_0: V = V.null; a_0 = try invoke(at_0, [8.0])
+      return try sel(truthy(V.b(try eq(a_0, try invoke(at_0, [12.0])))), a_0, V.null)
+      return V.null
+    })
+    c.statik("weighed", { (this_: V, a1: [V]) throws -> V in
+      var w_0: V = arg(a1, 0); var at_0: V = arg(a1, 1);
+      return try sel(truthy(V.b(try eq(w_0, 1.0))), at_0, (try sel(truthy(V.b(try eq(w_0, try neg(1.0)))), try call((try K("Expr")), "neg", [at_0]), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [w_0]), at_0)]))))
+      return V.null
+    })
+    c.method("narrowed_term", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var rays_0: V = arg(a1, 1); var edge_0: V = arg(a1, 2);
+      var r_0: V = V.null; r_0 = try get(try get(t_0, "term"), "rule")
+      var p_0: V = V.null; p_0 = try sel(truthy(V.b(try eq(try get(r_0, "where"), V.null))), V.s(cat("")), try get(try get(r_0, "where"), "source"))
+      var at_0: V = V.null; at_0 = try sel(truthy(V.b(try eq(try get(r_0, "over"), V.s(cat("Edge"))))), try get(try get(edge_0, "fact"), "to"), try call((try K("Expr")), "field", [V.s(cat("\\narrow{l}{", try str(p_0), "}"))]))
+      var count_0: V = V.null; count_0 = try sel(truthy(rays_0), try get(t_0, "ray_count"), try call((try K("Expr")), "neg", [try get(t_0, "held_count")]))
+      var members_0: V = V.null; members_0 = try call((try K("Prover")), "members_of", [t_0, rays_0])
+      var w_0: V = V.null; w_0 = try call((try K("Prover")), "per_member", [count_0, members_0])
+      if truthy(V.b(try eq(w_0, V.null))) {
+        return V.null
+      }
+      if truthy(V.b(try eq(w_0, 0.0))) {
+        return V.null
+      }
+      var got_0: V = V.null; got_0 = try call((try K("Prover")), "weighed", [w_0, at_0])
+      var moved_0: V = V.null; moved_0 = try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [count_0])])
+      var ledger_0: V = V.null; ledger_0 = try sel(truthy(rays_0), V.s(cat("on the rays")), V.s(cat("on the space")))
+      var fires_0: V = V.null; fires_0 = try sel(truthy(V.b(try eq(try get(r_0, "over"), V.s(cat("Vertex"))))), V.s(cat("a point")), (try sel(truthy(V.b(try eq(try get(r_0, "over"), V.s(cat("Edge"))))), V.s(cat("an edge")), (try sel(truthy(V.b(try eq(try get(r_0, "over"), V.s(cat("Boundary"))))), V.s(cat("a way")), try get(r_0, "over"))))))
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\text{", try str(try get(r_0, "name")), "} \\aside{", try str(ledger_0), "}")), got_0]), try m_upper(try get(r_0, "name")), try sel(truthy(V.b(try eq(try get(r_0, "over"), V.s(cat("Edge"))))), list(try get(try get(edge_0, "fact"), "key")), list()), V.s(cat("the rule fires on ", try str(fires_0), ": its pattern, as a narrowing of l, is ", try str(try call((try K("Expr")), "show", [at_0])), ". One firing moves ", try str(moved_0), " ", try str(ledger_0), ", and one match is ", try str(try call((try K("Expr")), "show", [members_0])), " of l's members, so each member of the narrowing moves ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [w_0])])), ".")), list(V.s(cat("pattern: ", try str(try get(r_0, "over")), "\\{", try str(p_0), "\\} - of l: ", try str(try call((try K("Expr")), "show", [at_0])), "")), V.s(cat("one firing moves ", try str(moved_0), "")), V.s(cat("one match is ", try str(try call((try K("Expr")), "show", [members_0])), " of l")), V.s(cat("so: ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
+      try set(st_0, "rule", try m_upper(try get(r_0, "name")))
+      return st_0
+      return V.null
+    })
+    c.method("narrowed", { (this_: V, a1: [V]) throws -> V in
+      var ledger_0: V = arg(a1, 0); var upon_0: V = arg(a1, 1);
+      var rays_0: V = V.null; rays_0 = V.b(try eq(ledger_0, V.s(cat("rays"))))
+      var edge_0: V = V.null; edge_0 = try get(this_, "edge_from_an_end")
+      var moving_0: V = V.null; moving_0 = try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(try and_(try and_(V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null))), not(try get(t_2, "transport"))), not(try get(t_2, "settles"))), (try sel(truthy(rays_0), V.b(!(try eq(try get(t_2, "rays"), V.s(cat("0"))))), V.b(!(try eq(try get(t_2, "held"), V.s(cat("0"))))))))
+        return V.null
+      }))
+      var by_rule_0: V = V.null; by_rule_0 = try filt(try m_map(moving_0, V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return try call(this_, "narrowed_term", [t_3, rays_0, edge_0])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return V.b(!(try eq(x_2, V.null)))
+        return V.null
+      }))
+      if truthy(try m_empty(by_rule_0)) {
+        return V.null
+      }
+      var carried_0: V = V.null; carried_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(try and_(try get(t_2, "transport"), V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null)))), V.b(!(try eq(try get(try get(try get(t_2, "term"), "rule"), "where"), V.null))))
+        return V.null
+      })))
+      var followed_0: V = V.null; followed_0 = try sel(truthy(V.b(try eq(carried_0, V.null))), V.s(cat("active")), try get(try get(try get(try get(carried_0, "term"), "rule"), "where"), "source"))
+      var held_0: V = V.null; held_0 = try get(this_, "standing_at")
+      var lhs_0: V = V.null; lhs_0 = try sel(truthy(rays_0), V.s(cat("\\Delta \\narrow{l}{", try str(followed_0), "}")), V.s(cat("\\Delta ", try str(try get(try get(held_0, "fact"), "of")), "")))
+      var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "add", [try m_map(by_rule_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try get(try get(x_2, "fact"), "to")
+        return V.null
+      }))])
+      var because_0: V = V.null; because_0 = try sel(truthy(rays_0), try get((try K("Prover")), "RAYS_SAY"), try get((try K("Prover")), "SPACE_SAY"))
+      var behind_0: V = V.null; behind_0 = try m_concat(try m_concat(list(edge_0), try sel(truthy(rays_0), list(), list(held_0))), by_rule_0)
+      var title_0: V = V.null; title_0 = try sel(truthy(rays_0), V.s(cat("the rays at a local, as the rules narrow it")), V.s(cat("the space at a local, as the rules narrow it")))
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [lhs_0, rhs_0]), title_0, try m_concat(list(try get(try get(upon_0, "fact"), "key")), try m_map(behind_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try get(try get(x_2, "fact"), "key")
+        return V.null
+      }))), because_0, try m_concat(try m_map(by_rule_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return V.s(cat("", try str(try get(x_2, "via")), ": ", try str(try call((try K("Expr")), "show", [try get(try get(x_2, "fact"), "to")])), ""))
+        return V.null
+      })), list(V.s(cat("", try str(lhs_0), " = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
+      try set(st_0, "derivation", behind_0)
+      return st_0
+      return V.null
+    })
     c.method("lean", { (this_: V, a1: [V]) throws -> V in
       var rec_0: V = arg(a1, 0);
       return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("a")), try call((try K("Expr")), "field", [V.s(cat("\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}"))])]), V.s(cat("the lean")), list(try get(try get(rec_0, "fact"), "key")), V.s(cat("the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend")), list(V.s(cat("a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned")), V.s(cat("streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading")), V.s(cat("bending: \\Delta_{a}S_{l} - the record along the lean")))])
@@ -7754,6 +7943,8 @@ enum C_Prover {
       try set(this_, "record_line", folded_0)
       var one_0: V = V.null; one_0 = try call(this_, "ledgers_are_one", [s_0, folded_0, spaced_0])
       var whole_0: V = V.null; whole_0 = try call(this_, "general", [filled_0, folded_0])
+      var rays_l_0: V = V.null; rays_l_0 = try call(this_, "narrowed", [V.s(cat("rays")), filled_0])
+      var space_l_0: V = V.null; space_l_0 = try call(this_, "narrowed", [V.s(cat("space")), spaced_0])
       var settled_0: V = V.null; settled_0 = try call(this_, "settled_record", [folded_0])
       var short_0: V = V.null; short_0 = try sel(truthy(V.b(try eq(settled_0, V.null))), V.null, try call(this_, "single", [whole_0, settled_0, folded_0, s_0]))
       var agg_0: V = V.null; agg_0 = try sel(truthy(V.b(try eq(short_0, V.null))), V.null, try call(this_, "aggregate", [whole_0, short_0, s_0]))
@@ -7785,7 +7976,7 @@ enum C_Prover {
       }))
       var chain_0: V = V.null; chain_0 = try m_concat(try m_concat(try m_concat(try m_concat(line_0, list(try get(this_, "isotropic_population"), filled_0, spaced_0, folded_0, one_0, whole_0)), try sel(truthy(V.b(try eq(settled_0, V.null))), list(), list(settled_0, short_0))), try sel(truthy(V.b(try eq(agg_0, V.null))), list(), list(agg_0))), solved_0)
       var named_0: V = V.null; named_0 = try makeNamed("Keyed", [])
-      for e1 in try items(try filt(list(at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0), V.fn({ (a4: [V]) throws -> V in
+      for e1 in try items(try filt(list(rays_l_0, space_l_0, at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0), V.fn({ (a4: [V]) throws -> V in
         var x_3: V = arg(a4, 0);
         return V.b(!(try eq(x_3, V.null)))
         return V.null
@@ -21307,6 +21498,14 @@ enum C_G {
     })
     c.staticField("theorem vacuum.equation", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.equation")), kw("body", V.fn({ (a1: [V]) throws -> V in
       return try makeNamed("Asked", [kw("asks", V.s(cat("every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?"))), kw("about", V.s(cat("")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.rays", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.rays")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"))), kw("about", V.s(cat("\\Delta \\narrow{l}{active}"))), kw("leads", V.s(cat("THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.space", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.space")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"))), kw("about", V.s(cat("\\Delta \\narrow{\\forall}{@ == l}"))), kw("leads", V.s(cat("THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.")))])
       return V.null
     }))]) })
     c.staticField("theorem vacuum.at", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.at")), kw("body", V.fn({ (a1: [V]) throws -> V in

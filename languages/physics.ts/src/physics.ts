@@ -2224,7 +2224,7 @@ export class Notation extends Node {
     })));
   }
   static builds(name: string): boolean {
-    return ((((contains(Notation.WRAP_NAMES, name) || contains(Notation.WORDS, name)) || contains(Notation.BIGS, name)) || eq(name, `frac`)) || eq(name, `binom`));
+    return (((((contains(Notation.WRAP_NAMES, name) || contains(Notation.WORDS, name)) || contains(Notation.BIGS, name)) || eq(name, `frac`)) || eq(name, `binom`)) || eq(name, `narrow`));
   }
   static glyph(name: string): (string | null) {
     let i = index_of(Notation.GLYPH_NAMES, name);
@@ -2384,7 +2384,8 @@ export class Notation extends Node {
         let frac = (((eq(name, `frac`) || eq(name, `binom`))) ? Notation.args(src, after, 2, []) : null);
         let wrap = (!eq(Notation.wrap_kind(name), null) ? Notation.args(src, after, 1, []) : null);
         let words = (contains(Notation.WORDS, name) ? Notation.args(src, after, 1, []) : null);
-        let hit = (((big ?? frac) ?? wrap) ?? words);
+        let narrow = (eq(name, `narrow`) ? Notation.args(src, after, 2, []) : null);
+        let hit = ((((big ?? frac) ?? wrap) ?? words) ?? narrow);
         if (!eq(hit, null)) {
           flush(i);
           if (!eq(frac, null)) {
@@ -2402,7 +2403,14 @@ export class Notation extends Node {
               if (!eq(words, null)) {
                 push(out, Piece.words(elem(hit.got, 0)));
               } else {
-                push(out, Piece.big(name, Notation.parse((gt(hit.got.length, 0) ? elem(hit.got, 0) : ``)), Notation.parse((gt(hit.got.length, 1) ? elem(hit.got, 1) : ``))));
+                if (!eq(narrow, null)) {
+                  for (const p of [...Notation.parse(elem(hit.got, 0))]) {
+                    push(out, p);
+                  };
+                  Notation.attach(out, `sub`, Notation.narrowing(elem(hit.got, 1)));
+                } else {
+                  push(out, Piece.big(name, Notation.parse((gt(hit.got.length, 0) ? elem(hit.got, 0) : ``)), Notation.parse((gt(hit.got.length, 1) ? elem(hit.got, 1) : ``))));
+                }
               }
             }
           }
@@ -2484,6 +2492,44 @@ export class Notation extends Node {
       }
     }
     flush(src.length);
+    return out;
+  }
+  static narrowing(p: string): Piece[] {
+    let out = [Piece.wrap(`muted`, [Piece.text_(`{`)])];
+    let k = 0;
+    while (lt(k, p.length)) {
+      let c = elem(Array.from(p, (ch: string) => ch.codePointAt(0) as number), k);
+      if ((Notation.is_letter(c) || eq(c, 95))) {
+        let w = Notation.run(p, k, ((ch: any) => {
+          return Notation.is_name(ch);
+        }));
+        push(out, Piece.wrap((((eq(w, `l`) || eq(w, `x`))) ? `muted` : `fn`), [Piece.text_(w)]));
+        k = add(k, w.length);
+      } else {
+        if (Notation.is_digit(c)) {
+          let w = Notation.run(p, k, ((ch: any) => {
+            return Notation.is_digit(ch);
+          }));
+          push(out, Piece.text_(w));
+          k = add(k, w.length);
+        } else {
+          if ([32, 9, 10, 13].includes(c)) {
+            let w = Notation.run(p, k, ((ch: any) => {
+              return [32, 9, 10, 13].includes(ch);
+            }));
+            push(out, Piece.text_(` `));
+            k = add(k, w.length);
+          } else {
+            let w = Notation.run(p, k, ((ch: any) => {
+              return !(((Notation.is_name(ch) || [32, 9, 10, 13].includes(ch))));
+            }));
+            push(out, Piece.wrap(`muted`, [Piece.text_(w)]));
+            k = add(k, w.length);
+          }
+        }
+      }
+    }
+    push(out, Piece.wrap(`muted`, [Piece.text_(`}`)]));
     return out;
   }
   static plain(s: string): Piece[] {
@@ -5059,6 +5105,8 @@ export class Prover extends Node {
   get theory(): Theory { return this.read("theory"); }
   set theory(v: Theory) { this.write("theory", v); }
   static PROOFS = ({});
+  static RAYS_SAY = `l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why \`neutral\` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.`;
+  static SPACE_SAY = `the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.`;
   get population_line(): (Step | null) { return this.read("population_line", () => null); }
   set population_line(v: (Step | null)) { this.write("population_line", v); }
   get record_line(): (Step | null) { return this.read("record_line", () => null); }
@@ -5757,6 +5805,103 @@ export class Prover extends Node {
   following(rec: Step): Step {
     return Step.of(Fact.stands(`\\Delta_{v}f`, Expr.field(`f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}`)), `following`, [rec.fact.key], `the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all`, [`\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick`, `\\nabla f: along a way, at one tick`, `\\partial_{\\hat{d}}\\rho: across the headings, at one local`]);
   }
+  static get edge_ends(): string[] {
+    return Edge.method(`active`).source.split(` & `).filter(((c: any) => {
+      return gt(c.split(`.active`).length, 1);
+    }));
+  }
+  get edge_from_an_end(): Step {
+    let def = Edge.method(`active`).source;
+    let ends = Prover.edge_ends;
+    let asked = [`active`].concat(ends.slice(1).map(((_: any) => {
+      return `next.active`;
+    }))).join(` & `);
+    let facing = Ray.method(`facing`).source;
+    let st = Step.of(Fact.stands(`\\narrow{Edge}{active}`, Expr.field(`\\narrow{l}{${asked}}`)), `an edge, seen from one of its ends`, [], `an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray \`facing\` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ${ends.length}.`, [`Edge.active = ${def}`, `Ray.facing = ${facing}: the ray across the same edge - next`, `\\narrow{Edge}{active} = \\narrow{l}{${asked}}, ${ends.length} ends to a meeting`]);
+    return st;
+  }
+  get standing_at(): Step {
+    let alive = Vertex.method(`alive`).source;
+    let sinks = Vertex.method(`sinks`).source;
+    return Step.of(Fact.stands(`\\narrow{\\forall}{@ == l}`, Expr.add([Expr.num(1), Expr.field(`\\narrow{\\forall}{folded_into == l}`)])), `what stands at a local`, [], `the points that stand at l: l itself, and every point folded into it - \`held\`, each with \`folded_into\` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.`, [`Vertex.alive = ${alive}`, `Vertex.sinks = ${sinks}`, `\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}`]);
+  }
+  static members_of(t: TermInfo, rays: boolean): Expr {
+    let over = t.term.rule.over;
+    if (eq(over, `Edge`)) {
+      return Expr.num(Prover.edge_ends.length);
+    }
+    if ((eq(over, `Vertex`) && rays)) {
+      return Expr.field(`DEG`);
+    }
+    return Expr.num(1);
+  }
+  static per_member(count: Expr, members: Expr): (number | null) {
+    let at = ((deg: number) => {
+      let k = ({});
+      k[`DEG`] = deg;
+      return div(Expr.numeric(Expr.evaluate(count, k), k), Expr.numeric(Expr.evaluate(members, k), k));
+    });
+    let a = at(8);
+    return (eq(a, at(12)) ? a : null);
+  }
+  static weighed(w: number, at: Expr): Expr {
+    return (eq(w, 1) ? at : ((eq(w, (-1)) ? Expr.neg(at) : Expr.mul([Expr.num(w), at]))));
+  }
+  narrowed_term(t: TermInfo, rays: boolean, edge: Step): (Step | null) {
+    let r = t.term.rule;
+    let p = (eq(r.where, null) ? `` : r.where.source);
+    let at = (eq(r.over, `Edge`) ? edge.fact.to : Expr.field(`\\narrow{l}{${p}}`));
+    let count = (rays ? t.ray_count : Expr.neg(t.held_count));
+    let members = Prover.members_of(t, rays);
+    let w = Prover.per_member(count, members);
+    if (eq(w, null)) {
+      return null;
+    }
+    if (eq(w, 0)) {
+      return null;
+    }
+    let got = Prover.weighed(w, at);
+    let moved = Expr.show(Expr.simplify(count));
+    let ledger = (rays ? `on the rays` : `on the space`);
+    let fires = (eq(r.over, `Vertex`) ? `a point` : ((eq(r.over, `Edge`) ? `an edge` : ((eq(r.over, `Boundary`) ? `a way` : r.over)))));
+    let st = Step.of(Fact.stands(`\\text{${r.name}} \\aside{${ledger}}`, got), r.name.toUpperCase(), (eq(r.over, `Edge`) ? [edge.fact.key] : []), `the rule fires on ${fires}: its pattern, as a narrowing of l, is ${Expr.show(at)}. One firing moves ${moved} ${ledger}, and one match is ${Expr.show(members)} of l's members, so each member of the narrowing moves ${Expr.show(Expr.num(w))}.`, [`pattern: ${r.over}\\{${p}\\} - of l: ${Expr.show(at)}`, `one firing moves ${moved}`, `one match is ${Expr.show(members)} of l`, `so: ${Expr.show(got)}`]);
+    st.rule = r.name.toUpperCase();
+    return st;
+  }
+  narrowed(ledger: string, upon: Step): (Step | null) {
+    let rays = eq(ledger, `rays`);
+    let edge = this.edge_from_an_end;
+    let moving = this.infos.filter(((t: any) => {
+      return (((!eq(t.term.rule, null) && !(t.transport)) && !(t.settles)) && ((rays ? !eq(t.rays, `0`) : !eq(t.held, `0`))));
+    }));
+    let by_rule = moving.map(((t: any) => {
+      return this.narrowed_term(t, rays, edge);
+    })).filter(((x: any) => {
+      return !eq(x, null);
+    }));
+    if ((by_rule.length === 0)) {
+      return null;
+    }
+    let carried = first(this.infos.filter(((t: any) => {
+      return ((t.transport && !eq(t.term.rule, null)) && !eq(t.term.rule.where, null));
+    })));
+    let followed = (eq(carried, null) ? `active` : carried.term.rule.where.source);
+    let held = this.standing_at;
+    let lhs = (rays ? `\\Delta \\narrow{l}{${followed}}` : `\\Delta ${held.fact.of}`);
+    let rhs = Expr.add(by_rule.map(((x: any) => {
+      return x.fact.to;
+    })));
+    let because = (rays ? Prover.RAYS_SAY : Prover.SPACE_SAY);
+    let behind = [edge].concat((rays ? [] : [held])).concat(by_rule);
+    let title = (rays ? `the rays at a local, as the rules narrow it` : `the space at a local, as the rules narrow it`);
+    let st = Step.of(Fact.stands(lhs, rhs), title, [upon.fact.key].concat(behind.map(((x: any) => {
+      return x.fact.key;
+    }))), because, by_rule.map(((x: any) => {
+      return `${x.via}: ${Expr.show(x.fact.to)}`;
+    })).concat([`${lhs} = ${Expr.show(rhs)}`]));
+    st.derivation = behind;
+    return st;
+  }
   lean(rec: Step): Step {
     return Step.of(Fact.stands(`a`, Expr.field(`\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}`)), `the lean`, [rec.fact.key], `the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend`, [`a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned`, `streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading`, `bending: \\Delta_{a}S_{l} - the record along the lean`]);
   }
@@ -6077,6 +6222,8 @@ export class Prover extends Node {
     this.record_line = folded;
     let one = this.ledgers_are_one(s, folded, spaced);
     let whole = this.general(filled, folded);
+    let rays_l = this.narrowed(`rays`, filled);
+    let space_l = this.narrowed(`space`, spaced);
     let settled = this.settled_record(folded);
     let short = (eq(settled, null) ? null : this.single(whole, settled, folded, s));
     let agg = (eq(short, null) ? null : this.aggregate(whole, short, s));
@@ -6106,7 +6253,7 @@ export class Prover extends Node {
     }));
     let chain = line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat((eq(settled, null) ? [] : [settled, short])).concat((eq(agg, null) ? [] : [agg])).concat(solved);
     let named = new Keyed({  });
-    for (const st of [...[at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
+    for (const st of [...[rays_l, space_l, at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(((x: any) => {
       return !eq(x, null);
     }))]) {
       named.set(st.fact.of, st);
@@ -16390,6 +16537,12 @@ export const G = new (class G extends Theory {
   }
   static "theorem vacuum.equation" = new Theorem({ id: "vacuum.equation", body: () => {
     return new Asked({ asks: `every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?`, about: `` });
+  } });
+  static "theorem vacuum.rays" = new Theorem({ id: "vacuum.rays", body: () => {
+    return new Asked({ asks: `a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?`, about: `\\Delta \\narrow{l}{active}`, leads: `THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.` });
+  } });
+  static "theorem vacuum.space" = new Theorem({ id: "vacuum.space", body: () => {
+    return new Asked({ asks: `and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?`, about: `\\Delta \\narrow{\\forall}{@ == l}`, leads: `THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.` });
   } });
   static "theorem vacuum.at" = new Theorem({ id: "vacuum.at", body: () => {
     return new Asked({ asks: `a source is a thing with a history. What does it mean to read one at a particular time?`, about: `l'_{@t}` });

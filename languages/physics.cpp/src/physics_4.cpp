@@ -12,6 +12,8 @@ namespace orbitmines::physics {
 static void C_Prover(Cls& c) {
   c.field("theory", nullptr);
   c.staticField("PROOFS", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
+  c.staticField("RAYS_SAY", [](const Value& self) -> Value { return "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all."; });
+  c.staticField("SPACE_SAY", [](const Value& self) -> Value { return "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here."; });
   c.field("population_line", [](const Value& self) -> Value { return null; });
   c.field("record_line", [](const Value& self) -> Value { return null; });
   c.field("store", [](const Value& self) -> Value { return make(S<"Store">(), {  }); });
@@ -925,6 +927,136 @@ static void C_Prover(Cls& c) {
     return call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\Delta_{v}f", call(K(S<"Expr">()), S<"field">(), { "f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}" }) }), "following", list({ get(get(rec_0->v, S<"fact">()), S<"key">()) }), "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", list({ "\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local" }) });
     return null;
   });
+  c.statik("edge_ends", [](Value self, const Args& a1) -> Value {
+    return filt(m_split(get(call(K(S<"Edge">()), S<"method">(), { "active" }), S<"source">()), " & "), fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return gt(len(m_split(c__2->v, ".active")), 1.0);
+      return null;
+    }));
+    return null;
+  });
+  c.getter("edge_from_an_end", [](Value self, const Args& a1) -> Value {
+    auto def_0 = cell(); def_0->v = get(call(K(S<"Edge">()), S<"method">(), { "active" }), S<"source">());
+    auto ends_0 = cell(); ends_0->v = get(K(S<"Prover">()), S<"edge_ends">());
+    auto asked_0 = cell(); asked_0->v = m_join(m_concat(list({ "active" }), m_map(m_drop(ends_0->v, 1.0), fn([=](const Args& a3) -> Value {
+      auto __2 = cell(arg(a3, 0));
+      return "next.active";
+      return null;
+    }))), " & ");
+    auto facing_0 = cell(); facing_0->v = get(call(K(S<"Ray">()), S<"method">(), { "facing" }), S<"source">());
+    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\narrow{Edge}{active}", call(K(S<"Expr">()), S<"field">(), { "\\narrow{l}{" + str(asked_0->v) + "}" }) }), "an edge, seen from one of its ends", list({  }), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + str(len(ends_0->v)) + ".", list({ "Edge.active = " + str(def_0->v) + "", "Ray.facing = " + str(facing_0->v) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + str(asked_0->v) + "}, " + str(len(ends_0->v)) + " ends to a meeting" }) });
+    return st_0->v;
+    return null;
+  });
+  c.getter("standing_at", [](Value self, const Args& a1) -> Value {
+    auto alive_0 = cell(); alive_0->v = get(call(K(S<"Vertex">()), S<"method">(), { "alive" }), S<"source">());
+    auto sinks_0 = cell(); sinks_0->v = get(call(K(S<"Vertex">()), S<"method">(), { "sinks" }), S<"source">());
+    return call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\narrow{\\forall}{@ == l}", call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Expr">()), S<"field">(), { "\\narrow{\\forall}{folded_into == l}" }) }) }) }), "what stands at a local", list({  }), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", list({ "Vertex.alive = " + str(alive_0->v) + "", "Vertex.sinks = " + str(sinks_0->v) + "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}" }) });
+    return null;
+  });
+  c.statik("members_of", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0)); auto rays_0 = cell(arg(a1, 1));
+    auto over_0 = cell(); over_0->v = get(get(get(t_0->v, S<"term">()), S<"rule">()), S<"over">());
+    if (truthy(eq(over_0->v, "Edge"))) {
+      return call(K(S<"Expr">()), S<"num">(), { len(get(K(S<"Prover">()), S<"edge_ends">())) });
+    }
+    if (truthy((truthy(eq(over_0->v, "Vertex")) && truthy(rays_0->v)))) {
+      return call(K(S<"Expr">()), S<"field">(), { "DEG" });
+    }
+    return call(K(S<"Expr">()), S<"num">(), { 1.0 });
+    return null;
+  });
+  c.statik("per_member", [](Value self, const Args& a1) -> Value {
+    auto count_0 = cell(arg(a1, 0)); auto members_0 = cell(arg(a1, 1));
+    auto at_0 = cell(); at_0->v = fn([=](const Args& a2) -> Value {
+      auto deg_1 = cell(arg(a2, 0));
+      auto k_1 = cell(); k_1->v = make(S<"Node">(), { });
+      set(k_1->v, Sym(str("DEG")), deg_1->v);
+      return div(call(K(S<"Expr">()), S<"numeric">(), { call(K(S<"Expr">()), S<"evaluate">(), { count_0->v, k_1->v }), k_1->v }), call(K(S<"Expr">()), S<"numeric">(), { call(K(S<"Expr">()), S<"evaluate">(), { members_0->v, k_1->v }), k_1->v }));
+      return null;
+    });
+    auto a_0 = cell(); a_0->v = invoke(at_0->v, { 8.0 });
+    return (truthy(eq(a_0->v, invoke(at_0->v, { 12.0 }))) ? Value(a_0->v) : Value(null));
+    return null;
+  });
+  c.statik("weighed", [](Value self, const Args& a1) -> Value {
+    auto w_0 = cell(arg(a1, 0)); auto at_0 = cell(arg(a1, 1));
+    return (truthy(eq(w_0->v, 1.0)) ? Value(at_0->v) : Value(((truthy(eq(w_0->v, neg(1.0))) ? Value(call(K(S<"Expr">()), S<"neg">(), { at_0->v })) : Value(call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { w_0->v }), at_0->v }) }))))));
+    return null;
+  });
+  c.method("narrowed_term", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0)); auto rays_0 = cell(arg(a1, 1)); auto edge_0 = cell(arg(a1, 2));
+    auto r_0 = cell(); r_0->v = get(get(t_0->v, S<"term">()), S<"rule">());
+    auto p_0 = cell(); p_0->v = (truthy(eq(get(r_0->v, S<"where">()), null)) ? Value("") : Value(get(get(r_0->v, S<"where">()), S<"source">())));
+    auto at_0 = cell(); at_0->v = (truthy(eq(get(r_0->v, S<"over">()), "Edge")) ? Value(get(get(edge_0->v, S<"fact">()), S<"to">())) : Value(call(K(S<"Expr">()), S<"field">(), { "\\narrow{l}{" + str(p_0->v) + "}" })));
+    auto count_0 = cell(); count_0->v = (truthy(rays_0->v) ? Value(get(t_0->v, S<"ray_count">())) : Value(call(K(S<"Expr">()), S<"neg">(), { get(t_0->v, S<"held_count">()) })));
+    auto members_0 = cell(); members_0->v = call(K(S<"Prover">()), S<"members_of">(), { t_0->v, rays_0->v });
+    auto w_0 = cell(); w_0->v = call(K(S<"Prover">()), S<"per_member">(), { count_0->v, members_0->v });
+    if (truthy(eq(w_0->v, null))) {
+      return null;
+    }
+    if (truthy(eq(w_0->v, 0.0))) {
+      return null;
+    }
+    auto got_0 = cell(); got_0->v = call(K(S<"Prover">()), S<"weighed">(), { w_0->v, at_0->v });
+    auto moved_0 = cell(); moved_0->v = call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"simplify">(), { count_0->v }) });
+    auto ledger_0 = cell(); ledger_0->v = (truthy(rays_0->v) ? Value("on the rays") : Value("on the space"));
+    auto fires_0 = cell(); fires_0->v = (truthy(eq(get(r_0->v, S<"over">()), "Vertex")) ? Value("a point") : Value(((truthy(eq(get(r_0->v, S<"over">()), "Edge")) ? Value("an edge") : Value(((truthy(eq(get(r_0->v, S<"over">()), "Boundary")) ? Value("a way") : Value(get(r_0->v, S<"over">())))))))));
+    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\text{" + str(get(r_0->v, S<"name">())) + "} \\aside{" + str(ledger_0->v) + "}", got_0->v }), m_upper(get(r_0->v, S<"name">())), (truthy(eq(get(r_0->v, S<"over">()), "Edge")) ? Value(list({ get(get(edge_0->v, S<"fact">()), S<"key">()) })) : Value(list({  }))), "the rule fires on " + str(fires_0->v) + ": its pattern, as a narrowing of l, is " + str(call(K(S<"Expr">()), S<"show">(), { at_0->v })) + ". One firing moves " + str(moved_0->v) + " " + str(ledger_0->v) + ", and one match is " + str(call(K(S<"Expr">()), S<"show">(), { members_0->v })) + " of l's members, so each member of the narrowing moves " + str(call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"num">(), { w_0->v }) })) + ".", list({ "pattern: " + str(get(r_0->v, S<"over">())) + "\\{" + str(p_0->v) + "\\} - of l: " + str(call(K(S<"Expr">()), S<"show">(), { at_0->v })) + "", "one firing moves " + str(moved_0->v) + "", "one match is " + str(call(K(S<"Expr">()), S<"show">(), { members_0->v })) + " of l", "so: " + str(call(K(S<"Expr">()), S<"show">(), { got_0->v })) + "" }) });
+    set(st_0->v, S<"rule">(), m_upper(get(r_0->v, S<"name">())));
+    return st_0->v;
+    return null;
+  });
+  c.method("narrowed", [](Value self, const Args& a1) -> Value {
+    auto ledger_0 = cell(arg(a1, 0)); auto upon_0 = cell(arg(a1, 1));
+    auto rays_0 = cell(); rays_0->v = eq(ledger_0->v, "rays");
+    auto edge_0 = cell(); edge_0->v = get(self, S<"edge_from_an_end">());
+    auto moving_0 = cell(); moving_0->v = filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((truthy((truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy((!truthy(get(t_2->v, S<"transport">())))))) && truthy((!truthy(get(t_2->v, S<"settles">())))))) && truthy(((truthy(rays_0->v) ? Value((!eq(get(t_2->v, S<"rays">()), "0"))) : Value((!eq(get(t_2->v, S<"held">()), "0")))))));
+      return null;
+    }));
+    auto by_rule_0 = cell(); by_rule_0->v = filt(m_map(moving_0->v, fn([=](const Args& a4) -> Value {
+      auto t_3 = cell(arg(a4, 0));
+      return call(self, S<"narrowed_term">(), { t_3->v, rays_0->v, edge_0->v });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return (!eq(x_2->v, null));
+      return null;
+    }));
+    if (truthy(m_empty(by_rule_0->v))) {
+      return null;
+    }
+    auto carried_0 = cell(); carried_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((truthy(get(t_2->v, S<"transport">())) && truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))))) && truthy((!eq(get(get(get(t_2->v, S<"term">()), S<"rule">()), S<"where">()), null))));
+      return null;
+    })));
+    auto followed_0 = cell(); followed_0->v = (truthy(eq(carried_0->v, null)) ? Value("active") : Value(get(get(get(get(carried_0->v, S<"term">()), S<"rule">()), S<"where">()), S<"source">())));
+    auto held_0 = cell(); held_0->v = get(self, S<"standing_at">());
+    auto lhs_0 = cell(); lhs_0->v = (truthy(rays_0->v) ? Value("\\Delta \\narrow{l}{" + str(followed_0->v) + "}") : Value("\\Delta " + str(get(get(held_0->v, S<"fact">()), S<"of">())) + ""));
+    auto rhs_0 = cell(); rhs_0->v = call(K(S<"Expr">()), S<"add">(), { m_map(by_rule_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return get(get(x_2->v, S<"fact">()), S<"to">());
+      return null;
+    })) });
+    auto because_0 = cell(); because_0->v = (truthy(rays_0->v) ? Value(get(K(S<"Prover">()), S<"RAYS_SAY">())) : Value(get(K(S<"Prover">()), S<"SPACE_SAY">())));
+    auto behind_0 = cell(); behind_0->v = m_concat(m_concat(list({ edge_0->v }), (truthy(rays_0->v) ? Value(list({  })) : Value(list({ held_0->v })))), by_rule_0->v);
+    auto title_0 = cell(); title_0->v = (truthy(rays_0->v) ? Value("the rays at a local, as the rules narrow it") : Value("the space at a local, as the rules narrow it"));
+    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { lhs_0->v, rhs_0->v }), title_0->v, m_concat(list({ get(get(upon_0->v, S<"fact">()), S<"key">()) }), m_map(behind_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return get(get(x_2->v, S<"fact">()), S<"key">());
+      return null;
+    }))), because_0->v, m_concat(m_map(by_rule_0->v, fn([=](const Args& a3) -> Value {
+      auto x_2 = cell(arg(a3, 0));
+      return "" + str(get(x_2->v, S<"via">())) + ": " + str(call(K(S<"Expr">()), S<"show">(), { get(get(x_2->v, S<"fact">()), S<"to">()) })) + "";
+      return null;
+    })), list({ "" + str(lhs_0->v) + " = " + str(call(K(S<"Expr">()), S<"show">(), { rhs_0->v })) + "" })) });
+    set(st_0->v, S<"derivation">(), behind_0->v);
+    return st_0->v;
+    return null;
+  });
   c.method("lean", [](Value self, const Args& a1) -> Value {
     auto rec_0 = cell(arg(a1, 0));
     return call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "a", call(K(S<"Expr">()), S<"field">(), { "\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}" }) }), "the lean", list({ get(get(rec_0->v, S<"fact">()), S<"key">()) }), "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend", list({ "a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned", "streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading", "bending: \\Delta_{a}S_{l} - the record along the lean" }) });
@@ -1334,6 +1466,8 @@ static void C_Prover(Cls& c) {
     set(self, S<"record_line">(), folded_0->v);
     auto one_0 = cell(); one_0->v = call(self, S<"ledgers_are_one">(), { s_0->v, folded_0->v, spaced_0->v });
     auto whole_0 = cell(); whole_0->v = call(self, S<"general">(), { filled_0->v, folded_0->v });
+    auto rays_l_0 = cell(); rays_l_0->v = call(self, S<"narrowed">(), { "rays", filled_0->v });
+    auto space_l_0 = cell(); space_l_0->v = call(self, S<"narrowed">(), { "space", spaced_0->v });
     auto settled_0 = cell(); settled_0->v = call(self, S<"settled_record">(), { folded_0->v });
     auto short__0 = cell(); short__0->v = (truthy(eq(settled_0->v, null)) ? Value(null) : Value(call(self, S<"single">(), { whole_0->v, settled_0->v, folded_0->v, s_0->v })));
     auto agg_0 = cell(); agg_0->v = (truthy(eq(short__0->v, null)) ? Value(null) : Value(call(self, S<"aggregate">(), { whole_0->v, short__0->v, s_0->v })));
@@ -1365,7 +1499,7 @@ static void C_Prover(Cls& c) {
     }));
     auto chain_0 = cell(); chain_0->v = m_concat(m_concat(m_concat(m_concat(line_0->v, list({ get(self, S<"isotropic_population">()), filled_0->v, spaced_0->v, folded_0->v, one_0->v, whole_0->v })), (truthy(eq(settled_0->v, null)) ? Value(list({  })) : Value(list({ settled_0->v, short__0->v })))), (truthy(eq(agg_0->v, null)) ? Value(list({  })) : Value(list({ agg_0->v })))), solved_0->v);
     auto named_0 = cell(); named_0->v = make(S<"Keyed">(), {  });
-    for (const Value& e1 : Each(filt(list({ at__0->v, follow_0->v, lean__0->v, bal_0->v, worth_0->v, big_s_0->v, far_0->v, quiet_0->v, quiet_s_0->v, bent_0->v, bent_far_0->v, here_0->v, slope_0->v }), fn([=](const Args& a4) -> Value {
+    for (const Value& e1 : Each(filt(list({ rays_l_0->v, space_l_0->v, at__0->v, follow_0->v, lean__0->v, bal_0->v, worth_0->v, big_s_0->v, far_0->v, quiet_0->v, quiet_s_0->v, bent_0->v, bent_far_0->v, here_0->v, slope_0->v }), fn([=](const Args& a4) -> Value {
       auto x_3 = cell(arg(a4, 0));
       return (!eq(x_3->v, null));
       return null;

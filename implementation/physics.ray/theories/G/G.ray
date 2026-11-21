@@ -622,6 +622,8 @@ G: Theory = class {
   }
 
   theorem "vacuum.equation" () => Asked(asks: "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?", about: "")
+  theorem "vacuum.rays" () => Asked(asks: "a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?", about: "\\Delta \\narrow{{l}}{{active}}", leads: "THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.")
+  theorem "vacuum.space" () => Asked(asks: "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?", about: "\\Delta \\narrow{{\\forall}}{{@ == l}}", leads: "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.")
   theorem "vacuum.at" () => Asked(asks: "a source is a thing with a history. What does it mean to read one at a particular time?", about: "l'_{{@t}}")
   theorem "vacuum.following" () => Asked(asks: "a difference taken following something - what does one step of the lattice come to, and what is followed?", about: "\\Delta_{{v}}f")
   theorem "vacuum.lean" () => Asked(asks: "the record bends a heading. Along what, and how fast?", about: "a")

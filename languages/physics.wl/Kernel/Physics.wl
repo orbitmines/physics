@@ -2030,7 +2030,7 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
     Throw[mFirst[filt[Notation["REFERENCES"], lfn[3, { env2["r"] = arg[args3, 0] };
       Throw[eq[env2["r"]["key"], env0["key"]], ret]]]], ret]]];
   statik[klass, "builds", mfn[1, { env0["name"] = arg[args1, 0] };
-    Throw[orV[orV[orV[orV[mContains[Notation["WRAP_NAMES"], env0["name"]], mContains[Notation["WORDS"], env0["name"]]], mContains[Notation["BIGS"], env0["name"]]], eq[env0["name"], "frac"]], eq[env0["name"], "binom"]], ret]]];
+    Throw[orV[orV[orV[orV[orV[mContains[Notation["WRAP_NAMES"], env0["name"]], mContains[Notation["WORDS"], env0["name"]]], mContains[Notation["BIGS"], env0["name"]]], eq[env0["name"], "frac"]], eq[env0["name"], "binom"]], eq[env0["name"], "narrow"]], ret]]];
   statik[klass, "glyph", mfn[1, { env0["name"] = arg[args1, 0] };
     env0["i"] = mIndexOf[Notation["GLYPH_NAMES"], env0["name"]];
     Throw[If[truthy[eq[env0["i"], Null]], Null, elem[Notation["GLYPH_TEXTS"], env0["i"]]], ret]]];
@@ -2147,7 +2147,8 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
         env0["frac"] = If[truthy[(orV[eq[env0["name"], "frac"], eq[env0["name"], "binom"]])], Notation["args", env0["src"], env0["after"], 2., list[]], Null];
         env0["wrap"] = If[truthy[(!eq[Notation["wrap_kind", env0["name"]], Null])], Notation["args", env0["src"], env0["after"], 1., list[]], Null];
         env0["words"] = If[truthy[mContains[Notation["WORDS"], env0["name"]]], Notation["args", env0["src"], env0["after"], 1., list[]], Null];
-        env0["hit"] = orElse[orElse[orElse[env0["big"], env0["frac"]], env0["wrap"]], env0["words"]];
+        env0["narrow"] = If[truthy[eq[env0["name"], "narrow"]], Notation["args", env0["src"], env0["after"], 2., list[]], Null];
+        env0["hit"] = orElse[orElse[orElse[orElse[env0["big"], env0["frac"]], env0["wrap"]], env0["words"]], env0["narrow"]];
         If[truthy[(!eq[env0["hit"], Null])],
           env0["flush"][env0["i"]];
           If[truthy[(!eq[env0["frac"], Null])],
@@ -2161,7 +2162,11 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
               mPush[env0["out"], If[truthy[(andV[eq[env0["kind"], "bar"], mContains[Notation["BARRED_COUNTS"], env0["arg"]]])], Piece["wrap", "count", list[Piece["wrap", "bar", env0["once"]]]], Piece["wrap", env0["kind"], env0["once"]]]],
               If[truthy[(!eq[env0["words"], Null])],
                 mPush[env0["out"], Piece["words", elem[env0["hit"]["got"], 0.]]],
-                mPush[env0["out"], Piece["big", env0["name"], Notation["parse", If[truthy[gt[len[env0["hit"]["got"]], 0.]], elem[env0["hit"]["got"], 0.], ""]], Notation["parse", If[truthy[gt[len[env0["hit"]["got"]], 1.]], elem[env0["hit"]["got"], 1.], ""]]]]]]];
+                If[truthy[(!eq[env0["narrow"], Null])],
+                  Do[loopScope[1, env1["p"] = iter1;
+                    mPush[env0["out"], env1["p"]]], {iter1, items[Notation["parse", elem[env0["hit"]["got"], 0.]]]}];
+                  Notation["attach", env0["out"], "sub", Notation["narrowing", elem[env0["hit"]["got"], 1.]]],
+                  mPush[env0["out"], Piece["big", env0["name"], Notation["parse", If[truthy[gt[len[env0["hit"]["got"]], 0.]], elem[env0["hit"]["got"], 0.], ""]], Notation["parse", If[truthy[gt[len[env0["hit"]["got"]], 1.]], elem[env0["hit"]["got"], 1.], ""]]]]]]]];
           env0["i"] = env0["hit"]["end"];
           env0["plain_from"] = env0["hit"]["end"];
           env0["handled"] = True,
@@ -2220,6 +2225,32 @@ DefineClass[Notation, "Notation", Node, Function[{klass},
       If[truthy[not[env0["handled"]]],
         env0["i"] = add[env0["i"], 1.]]];
     env0["flush"][len[env0["src"]]];
+    Throw[env0["out"], ret]]];
+  statik[klass, "narrowing", mfn[1, { env0["p"] = arg[args1, 0] };
+    env0["out"] = list[Piece["wrap", "muted", list[Piece["text_", "{"]]]];
+    env0["k"] = 0.;
+    While[truthy[lt[env0["k"], len[env0["p"]]]],
+      env0["c"] = elem[mChars[env0["p"]], env0["k"]];
+      If[truthy[orV[Notation["is_letter", env0["c"]], eq[env0["c"], 95.]]],
+        env0["w"] = Notation["run", env0["p"], env0["k"], lfn[3, { env2["ch"] = arg[args3, 0] };
+          Throw[Notation["is_name", env2["ch"]], ret]]];
+        mPush[env0["out"], Piece["wrap", If[truthy[(orV[eq[env0["w"], "l"], eq[env0["w"], "x"]])], "muted", "fn"], list[Piece["text_", env0["w"]]]]];
+        env0["k"] = add[env0["k"], len[env0["w"]]],
+        If[truthy[Notation["is_digit", env0["c"]]],
+          env0["w"] = Notation["run", env0["p"], env0["k"], lfn[3, { env2["ch"] = arg[args3, 0] };
+            Throw[Notation["is_digit", env2["ch"]], ret]]];
+          mPush[env0["out"], Piece["text_", env0["w"]]];
+          env0["k"] = add[env0["k"], len[env0["w"]]],
+          If[truthy[blank[env0["c"]]],
+            env0["w"] = Notation["run", env0["p"], env0["k"], lfn[3, { env2["ch"] = arg[args3, 0] };
+              Throw[blank[env2["ch"]], ret]]];
+            mPush[env0["out"], Piece["text_", " "]];
+            env0["k"] = add[env0["k"], len[env0["w"]]],
+            env0["w"] = Notation["run", env0["p"], env0["k"], lfn[3, { env2["ch"] = arg[args3, 0] };
+              Throw[not[(orV[Notation["is_name", env2["ch"]], blank[env2["ch"]]])], ret]]];
+            mPush[env0["out"], Piece["wrap", "muted", list[Piece["text_", env0["w"]]]]];
+            env0["k"] = add[env0["k"], len[env0["w"]]]]]]];
+    mPush[env0["out"], Piece["wrap", "muted", list[Piece["text_", "}"]]]];
     Throw[env0["out"], ret]]];
   statik[klass, "plain", mfn[1, { env0["s"] = arg[args1, 0] };
     env0["out"] = list[];
@@ -3970,6 +4001,8 @@ DefineClass[TermInfo, "TermInfo", Node, Function[{klass},
 DefineClass[Prover, "Prover", Node, Function[{klass},
   field[klass, "theory"];
   staticField[klass, "PROOFS", dfn[Node[{}]]];
+  staticField[klass, "RAYS_SAY", dfn["l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all."]];
+  staticField[klass, "SPACE_SAY", dfn["the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here."]];
   field[klass, "population_line", dfn[Null]];
   field[klass, "record_line", dfn[Null]];
   field[klass, "store", dfn[Store[{}]]];
@@ -4500,6 +4533,80 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     Throw[Step["of", Fact["stands", "n_{f,l}", env0["rhs"]], "summed over the locals", list[env0["rec"]["fact"]["key"], env0["settled"]["fact"]["key"]], "a body is the locals it stands on, and the mass at a local is nought where no body does - so the sum over the bodies is a sum over every local of the lattice, and it is the same sum: only the locals that carry mass contribute. Each local is read at its own time, the tick the rays that reach here left it, l.distance\\paren{l'} ticks ago - a local does not move, so that tick is fixed and nothing is solved for. A body that moves is then a trail of locals each read at a different tick, its mass at each what its choice was then, \\beta inside it: any variation of mass or speed from tick to tick is carried exactly. The bracket is what a unit of mass at that local leaves here - spread over the shell at this local's walk to it, less what still arrives as rays", list["l'_{@t}.\\bar{m}: the mass at local l' when the rays that reach l left it - l.distance\\paren{l'} ticks ago; nought where no body stood", "n_{f,l} = " <> str[Expr["show", env0["rhs"]]] <> ""]], ret]]];
   method[klass, "following", mfn[1, { env0["rec"] = arg[args1, 0] };
     Throw[Step["of", Fact["stands", "\\Delta_{v}f", Expr["field", "f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}"]], "following", list[env0["rec"]["fact"]["key"]], "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", list["\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local"]], ret]]];
+  statik[klass, "edge_ends", mfn[1,
+    Throw[filt[mSplit[Edge["method", "active"]["source"], " & "], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[gt[len[mSplit[env2["c"], ".active"]], 1.], ret]]], ret]]];
+  getter[klass, "edge_from_an_end", mfn[1,
+    env0["def"] = Edge["method", "active"]["source"];
+    env0["ends"] = Prover["edge_ends"];
+    env0["asked"] = mJoin[mConcat[list["active"], mMap[mDrop[env0["ends"], 1.], lfn[3, { env2["_"] = arg[args3, 0] };
+      Throw["next.active", ret]]]], " & "];
+    env0["facing"] = Ray["method", "facing"]["source"];
+    env0["st"] = Step["of", Fact["stands", "\\narrow{Edge}{active}", Expr["field", "\\narrow{l}{" <> str[env0["asked"]] <> "}"]], "an edge, seen from one of its ends", list[], "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " <> str[len[env0["ends"]]] <> ".", list["Edge.active = " <> str[env0["def"]] <> "", "Ray.facing = " <> str[env0["facing"]] <> ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" <> str[env0["asked"]] <> "}, " <> str[len[env0["ends"]]] <> " ends to a meeting"]];
+    Throw[env0["st"], ret]]];
+  getter[klass, "standing_at", mfn[1,
+    env0["alive"] = Vertex["method", "alive"]["source"];
+    env0["sinks"] = Vertex["method", "sinks"]["source"];
+    Throw[Step["of", Fact["stands", "\\narrow{\\forall}{@ == l}", Expr["add", list[Expr["num", 1.], Expr["field", "\\narrow{\\forall}{folded_into == l}"]]]], "what stands at a local", list[], "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", list["Vertex.alive = " <> str[env0["alive"]] <> "", "Vertex.sinks = " <> str[env0["sinks"]] <> "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}"]], ret]]];
+  statik[klass, "members_of", mfn[1, { env0["t"] = arg[args1, 0], env0["rays"] = arg[args1, 1] };
+    env0["over"] = env0["t"]["term"]["rule"]["over"];
+    If[truthy[eq[env0["over"], "Edge"]],
+      Throw[Expr["num", len[Prover["edge_ends"]]], ret]];
+    If[truthy[andV[eq[env0["over"], "Vertex"], env0["rays"]]],
+      Throw[Expr["field", "DEG"], ret]];
+    Throw[Expr["num", 1.], ret]]];
+  statik[klass, "per_member", mfn[1, { env0["count"] = arg[args1, 0], env0["members"] = arg[args1, 1] };
+    env0["at"] = lfn[2, { env1["deg"] = arg[args2, 0] };
+      env1["k"] = Node[{}];
+      env1["k"][str["DEG"] -> env1["deg"]];
+      Throw[div[Expr["numeric", Expr["evaluate", env0["count"], env1["k"]], env1["k"]], Expr["numeric", Expr["evaluate", env0["members"], env1["k"]], env1["k"]]], ret]];
+    env0["a"] = env0["at"][8.];
+    Throw[If[truthy[eq[env0["a"], env0["at"][12.]]], env0["a"], Null], ret]]];
+  statik[klass, "weighed", mfn[1, { env0["w"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
+    Throw[If[truthy[eq[env0["w"], 1.]], env0["at"], (If[truthy[eq[env0["w"], neg[1.]]], Expr["neg", env0["at"]], Expr["mul", list[Expr["num", env0["w"]], env0["at"]]]])], ret]]];
+  method[klass, "narrowed_term", mfn[1, { env0["t"] = arg[args1, 0], env0["rays"] = arg[args1, 1], env0["edge"] = arg[args1, 2] };
+    env0["r"] = env0["t"]["term"]["rule"];
+    env0["p"] = If[truthy[eq[env0["r"]["where"], Null]], "", env0["r"]["where"]["source"]];
+    env0["at"] = If[truthy[eq[env0["r"]["over"], "Edge"]], env0["edge"]["fact"]["to"], Expr["field", "\\narrow{l}{" <> str[env0["p"]] <> "}"]];
+    env0["count"] = If[truthy[env0["rays"]], env0["t"]["ray_count"], Expr["neg", env0["t"]["held_count"]]];
+    env0["members"] = Prover["members_of", env0["t"], env0["rays"]];
+    env0["w"] = Prover["per_member", env0["count"], env0["members"]];
+    If[truthy[eq[env0["w"], Null]],
+      Throw[Null, ret]];
+    If[truthy[eq[env0["w"], 0.]],
+      Throw[Null, ret]];
+    env0["got"] = Prover["weighed", env0["w"], env0["at"]];
+    env0["moved"] = Expr["show", Expr["simplify", env0["count"]]];
+    env0["ledger"] = If[truthy[env0["rays"]], "on the rays", "on the space"];
+    env0["fires"] = If[truthy[eq[env0["r"]["over"], "Vertex"]], "a point", (If[truthy[eq[env0["r"]["over"], "Edge"]], "an edge", (If[truthy[eq[env0["r"]["over"], "Boundary"]], "a way", env0["r"]["over"]])])];
+    env0["st"] = Step["of", Fact["stands", "\\text{" <> str[env0["r"]["name"]] <> "} \\aside{" <> str[env0["ledger"]] <> "}", env0["got"]], mUpper[env0["r"]["name"]], If[truthy[eq[env0["r"]["over"], "Edge"]], list[env0["edge"]["fact"]["key"]], list[]], "the rule fires on " <> str[env0["fires"]] <> ": its pattern, as a narrowing of l, is " <> str[Expr["show", env0["at"]]] <> ". One firing moves " <> str[env0["moved"]] <> " " <> str[env0["ledger"]] <> ", and one match is " <> str[Expr["show", env0["members"]]] <> " of l's members, so each member of the narrowing moves " <> str[Expr["show", Expr["num", env0["w"]]]] <> ".", list["pattern: " <> str[env0["r"]["over"]] <> "\\{" <> str[env0["p"]] <> "\\} - of l: " <> str[Expr["show", env0["at"]]] <> "", "one firing moves " <> str[env0["moved"]] <> "", "one match is " <> str[Expr["show", env0["members"]]] <> " of l", "so: " <> str[Expr["show", env0["got"]]] <> ""]];
+    env0["st"]["rule" -> mUpper[env0["r"]["name"]]];
+    Throw[env0["st"], ret]]];
+  method[klass, "narrowed", mfn[1, { env0["ledger"] = arg[args1, 0], env0["upon"] = arg[args1, 1] };
+    env0["rays"] = eq[env0["ledger"], "rays"];
+    env0["edge"] = self["edge_from_an_end"];
+    env0["moving"] = filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[andV[andV[(!eq[env2["t"]["term"]["rule"], Null]), not[env2["t"]["transport"]]], not[env2["t"]["settles"]]], (If[truthy[env0["rays"]], (!eq[env2["t"]["rays"], "0"]), (!eq[env2["t"]["held"], "0"])])], ret]]];
+    env0["by_rule"] = filt[mMap[env0["moving"], lfn[4, { env3["t"] = arg[args4, 0] };
+      Throw[self["narrowed_term", env3["t"], env0["rays"], env0["edge"]], ret]]], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw[(!eq[env2["x"], Null]), ret]]];
+    If[truthy[mEmpty[env0["by_rule"]]],
+      Throw[Null, ret]];
+    env0["carried"] = mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[andV[env2["t"]["transport"], (!eq[env2["t"]["term"]["rule"], Null])], (!eq[env2["t"]["term"]["rule"]["where"], Null])], ret]]]];
+    env0["followed"] = If[truthy[eq[env0["carried"], Null]], "active", env0["carried"]["term"]["rule"]["where"]["source"]];
+    env0["held"] = self["standing_at"];
+    env0["lhs"] = If[truthy[env0["rays"]], "\\Delta \\narrow{l}{" <> str[env0["followed"]] <> "}", "\\Delta " <> str[env0["held"]["fact"]["of"]] <> ""];
+    env0["rhs"] = Expr["add", mMap[env0["by_rule"], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw[env2["x"]["fact"]["to"], ret]]]];
+    env0["because"] = If[truthy[env0["rays"]], Prover["RAYS_SAY"], Prover["SPACE_SAY"]];
+    env0["behind"] = mConcat[mConcat[list[env0["edge"]], If[truthy[env0["rays"]], list[], list[env0["held"]]]], env0["by_rule"]];
+    env0["title"] = If[truthy[env0["rays"]], "the rays at a local, as the rules narrow it", "the space at a local, as the rules narrow it"];
+    env0["st"] = Step["of", Fact["stands", env0["lhs"], env0["rhs"]], env0["title"], mConcat[list[env0["upon"]["fact"]["key"]], mMap[env0["behind"], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw[env2["x"]["fact"]["key"], ret]]]], env0["because"], mConcat[mMap[env0["by_rule"], lfn[3, { env2["x"] = arg[args3, 0] };
+      Throw["" <> str[env2["x"]["via"]] <> ": " <> str[Expr["show", env2["x"]["fact"]["to"]]] <> "", ret]]], list["" <> str[env0["lhs"]] <> " = " <> str[Expr["show", env0["rhs"]]] <> ""]]];
+    env0["st"]["derivation" -> env0["behind"]];
+    Throw[env0["st"], ret]]];
   method[klass, "lean", mfn[1, { env0["rec"] = arg[args1, 0] };
     Throw[Step["of", Fact["stands", "a", Expr["field", "\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}"]], "the lean", list[env0["rec"]["fact"]["key"]], "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend", list["a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned", "streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading", "bending: \\Delta_{a}S_{l} - the record along the lean"]], ret]]];
   method[klass, "at_time", mfn[1, { env0["rec"] = arg[args1, 0] };
@@ -4742,6 +4849,8 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     self["record_line" -> env0["folded"]];
     env0["one"] = self["ledgers_are_one", env0["s"], env0["folded"], env0["spaced"]];
     env0["whole"] = self["general", env0["filled"], env0["folded"]];
+    env0["rays_l"] = self["narrowed", "rays", env0["filled"]];
+    env0["space_l"] = self["narrowed", "space", env0["spaced"]];
     env0["settled"] = self["settled_record", env0["folded"]];
     env0["short"] = If[truthy[eq[env0["settled"], Null]], Null, self["single", env0["whole"], env0["settled"], env0["folded"], env0["s"]]];
     env0["agg"] = If[truthy[eq[env0["short"], Null]], Null, self["aggregate", env0["whole"], env0["short"], env0["s"]]];
@@ -4771,7 +4880,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     env0["chain"] = mConcat[mConcat[mConcat[mConcat[env0["line"], list[self["isotropic_population"], env0["filled"], env0["spaced"], env0["folded"], env0["one"], env0["whole"]]], If[truthy[eq[env0["settled"], Null]], list[], list[env0["settled"], env0["short"]]]], If[truthy[eq[env0["agg"], Null]], list[], list[env0["agg"]]]], env0["solved"]];
     env0["named"] = Keyed[{}];
     Do[loopScope[1, env1["st"] = iter1;
-      env0["named"]["set", env1["st"]["fact"]["of"], env1["st"]]], {iter1, items[filt[list[env0["at_"], env0["follow"], env0["lean_"], env0["bal"], env0["worth"], env0["big_s"], env0["far"], env0["quiet"], env0["quiet_s"], env0["bent"], env0["bent_far"], env0["here"], env0["slope"]], lfn[4, { env3["x"] = arg[args4, 0] };
+      env0["named"]["set", env1["st"]["fact"]["of"], env1["st"]]], {iter1, items[filt[list[env0["rays_l"], env0["space_l"], env0["at_"], env0["follow"], env0["lean_"], env0["bal"], env0["worth"], env0["big_s"], env0["far"], env0["quiet"], env0["quiet_s"], env0["bent"], env0["bent_far"], env0["here"], env0["slope"]], lfn[4, { env3["x"] = arg[args4, 0] };
       Throw[(!eq[env3["x"], Null]), ret]]]]}];
     env0["proved"] = mMap[self["theory"]["theorems"], lfn[3, { env2["t"] = arg[args3, 0] };
       env2["q"] = env2["t"]["asked"];
@@ -12536,6 +12645,10 @@ DefineClass[G, "G", Theory, Function[{klass},
     Throw[RayPanel["of", env0["p"]], ret]]];
   staticField[klass, "theorem vacuum.equation", dfn[Theorem[{ "id" -> "vacuum.equation", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?", "about" -> "" }], ret]] }]]];
+  staticField[klass, "theorem vacuum.rays", dfn[Theorem[{ "id" -> "vacuum.rays", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?", "about" -> "\\Delta \\narrow{l}{active}", "leads" -> "THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits." }], ret]] }]]];
+  staticField[klass, "theorem vacuum.space", dfn[Theorem[{ "id" -> "vacuum.space", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?", "about" -> "\\Delta \\narrow{\\forall}{@ == l}", "leads" -> "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation." }], ret]] }]]];
   staticField[klass, "theorem vacuum.at", dfn[Theorem[{ "id" -> "vacuum.at", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "a source is a thing with a history. What does it mean to read one at a particular time?", "about" -> "l'_{@t}" }], ret]] }]]];
   staticField[klass, "theorem vacuum.following", dfn[Theorem[{ "id" -> "vacuum.following", "body" -> lfn[1,

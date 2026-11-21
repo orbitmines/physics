@@ -63,7 +63,9 @@ export const LATEX = {
   wrap: (kind: string, c: string): string => {
     switch (kind) {
       case "var": return loose(c);
-      case "count": case "fn": case "muted": return upright(c);
+      /* a narrowing's braces are literal ones */
+      case "muted": return c === "{" || c === "}" ? `\\${c}` : upright(c);
+      case "count": case "fn": return upright(c);
       case "bar": return single(c) ? `\\bar{${c.trim()}}` : `\\overline{${c}}`;
       case "hat": return single(c) ? `\\hat{${c.trim()}}` : `\\widehat{${c}}`;
       case "tilde": return single(c) ? `\\tilde{${c.trim()}}` : `\\widetilde{${c}}`;

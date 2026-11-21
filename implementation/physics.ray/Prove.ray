@@ -953,6 +953,96 @@ Prover := class < theory: Theory {
       "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{{v}} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{{\\hat{{d}}}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all",
       ["\\Delta_{{v}}f = f_{{l + v}}\\paren{{t + 1}} - f_{{l}}\\paren{{t}}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{{\\hat{{d}}}}\\rho: across the headings, at one local"])
   }
+  /*
+   * THE RULES AS NARROWINGS OF A LOCAL. l is a point and its rays superposed, so a rule's pattern is a narrowing of
+   * l - what of l the rule fires on - and a ledger's line is those narrowings, each weighed by what one firing moves
+   * on that ledger (the Reading's count) over how many of l's members one match is. Each piece is read, not put in:
+   * the narrowing is the rule's own `where`; what an edge is from one of its ends is `Edge.active`'s own definition;
+   * the members are what the rule ranges over; and what the space ledger counts is what `Vertex.held` holds.
+   */
+  /* the ends an edge's definition asks to be active */
+  static edge_ends (): String[] => Edge.method("active").source.split(" & ").filter(c => c.split(".active").length > 1)
+  /* AN EDGE, FROM ONE END: from l, the first end it asks is l's own ray and every other is a ray across the edge from
+   * it - `next`, the ray `facing` reads (`terminal.across.ray`) */
+  edge_from_an_end (): Step => {
+    def := Edge.method("active").source
+    ends := Prover.edge_ends
+    asked := ["active"].concat(ends.drop(1).map(_ => "next.active")).join(" & ")
+    facing := Ray.method("facing").source
+    st := Step.of(Fact.stands("\\narrow{{Edge}}{{active}}", Expr.field("\\narrow{{l}}{{{asked}}}")), "an edge, seen from one of its ends", [],
+      "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: {ends.length}.",
+      ["Edge.active = {def}", "Ray.facing = {facing}: the ray across the same edge - next", "\\narrow{{Edge}}{{active}} = \\narrow{{l}}{{{asked}}}, {ends.length} ends to a meeting"])
+    st
+  }
+  /* WHAT STANDS AT A LOCAL: the point and every point folded into it. A folded point is not alive and sinks into its
+   * hub, so where it is, is its hub's place - and the space ledger's count is exactly that, read from the hub's side */
+  standing_at (): Step => {
+    alive := Vertex.method("alive").source
+    sinks := Vertex.method("sinks").source
+    Step.of(Fact.stands("\\narrow{{\\forall}}{{@ == l}}", Expr.add([Expr.num(1), Expr.field("\\narrow{{\\forall}}{{folded_into == l}}")])), "what stands at a local", [],
+      "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.",
+      ["Vertex.alive = {alive}", "Vertex.sinks = {sinks}", "\\narrow{{\\forall}}{{@ == l}} = 1 + \\narrow{{\\forall}}{{folded_into == l}}"])
+  }
+  /* how many of l's members one match is: a meeting is as many as the edge has ends; a point is all its ways when
+   * rays are counted and one point when points are; a way is one of either */
+  static members_of (t: TermInfo, rays: boolean): Expr => {
+    over := t.term.rule.over
+    return Expr.num(Prover.edge_ends.length) if over == "Edge"
+    return Expr.field("DEG") if over == "Vertex" & rays
+    Expr.num(1)
+  }
+  /* a count over members, read the same on every lattice or not at all */
+  static per_member (count: Expr, members: Expr): Real? => {
+    at := (deg: N): Real => {
+      k := { }
+      k["DEG"] = deg
+      Expr.numeric(Expr.evaluate(count, k), k) / Expr.numeric(Expr.evaluate(members, k), k)
+    }
+    a := at(8)
+    a == at(12) ? a : None
+  }
+  static weighed (w: Real, at: Expr): Expr => w == 1 ? at : (w == -1 ? Expr.neg(at) : Expr.mul([Expr.num(w), at]))
+  /* one rule's part of a ledger's line: its own pattern, as a narrowing of l, and what one firing of it moves there */
+  narrowed_term (t: TermInfo, rays: boolean, edge: Step): Step? => {
+    r := t.term.rule
+    p := r.where == None ? "" : r.where.source
+    at := r.over == "Edge" ? edge.fact.to : Expr.field("\\narrow{{l}}{{{p}}}")
+    count := rays ? t.ray_count : Expr.neg(t.held_count)
+    members := Prover.members_of(t, rays)
+    w := Prover.per_member(count, members)
+    return None if w == None
+    return None if w == 0
+    got := Prover.weighed(w, at)
+    moved := Expr.show(Expr.simplify(count))
+    ledger := rays ? "on the rays" : "on the space"
+    fires := r.over == "Vertex" ? "a point" : (r.over == "Edge" ? "an edge" : (r.over == "Boundary" ? "a way" : r.over))
+    st := Step.of(Fact.stands("\\text{{{r.name}}} \\aside{{{ledger}}}", got), r.name.upper, r.over == "Edge" ? [edge.fact.key] : [],
+      "the rule fires on {fires}: its pattern, as a narrowing of l, is {Expr.show(at)}. One firing moves {moved} {ledger}, and one match is {Expr.show(members)} of l's members, so each member of the narrowing moves {Expr.show(Expr.num(w))}.",
+      ["pattern: {r.over}\\{{{p}\\}} - of l: {Expr.show(at)}", "one firing moves {moved}", "one match is {Expr.show(members)} of l", "so: {Expr.show(got)}"])
+    st.rule = r.name.upper
+    st
+  }
+  narrowed (ledger: String, upon: Step): Step? => {
+    rays := ledger == "rays"
+    edge := this.edge_from_an_end
+    moving := this.infos.filter(t => t.term.rule != None & !t.transport & !t.settles & (rays ? t.rays != "0" : t.held != "0"))
+    by_rule := moving.map(t => this.narrowed_term(t, rays, edge)).filter(x => x != None)
+    return None if by_rule.empty
+    carried := this.infos.filter(t => t.transport & t.term.rule != None & t.term.rule.where != None).first
+    followed := carried == None ? "active" : carried.term.rule.where.source
+    held := this.standing_at
+    lhs := rays ? "\\Delta \\narrow{{l}}{{{followed}}}" : "\\Delta {held.fact.of}"
+    rhs := Expr.add(by_rule.map(x => x.fact.to))
+    because := rays ? Prover.RAYS_SAY : Prover.SPACE_SAY
+    behind := [edge].concat(rays ? [] : [held]).concat(by_rule)
+    title := rays ? "the rays at a local, as the rules narrow it" : "the space at a local, as the rules narrow it"
+    st := Step.of(Fact.stands(lhs, rhs), title, [upon.fact.key].concat(behind.map(x => x.fact.key)), because,
+      by_rule.map(x => "{x.via}: {Expr.show(x.fact.to)}").concat(["{lhs} = {Expr.show(rhs)}"]))
+    st.derivation = behind
+    st
+  }
+  static RAYS_SAY = "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all."
+  static SPACE_SAY = "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here."
   /* THE LEAN: how the heading is being turned - half the density's difference across the headings, since a fold turns a heading by the weight it was folded. It is the velocity the record is followed along: the force term's velocity, as the streaming term's is the heading */
   lean (rec: Step): Step => {
     Step.of(Fact.stands("a", Expr.field("\\frac{{1}}{{2}}\\partial_{{\\hat{{d}}}}\\rho_{{l}}")), "the lean", [rec.fact.key],
@@ -1255,6 +1345,9 @@ Prover := class < theory: Theory {
     this.record_line = folded
     one := this.ledgers_are_one(s, folded, spaced)
     whole := this.general(filled, folded)
+    /* the same rules, as narrowings of a local - each line a theorem of its own */
+    rays_l := this.narrowed("rays", filled)
+    space_l := this.narrowed("space", spaced)
     settled := this.settled_record(folded)
     short := settled == None ? None : this.single(whole, settled, folded, s)
     agg := short == None ? None : this.aggregate(whole, short, s)
@@ -1283,7 +1376,7 @@ Prover := class < theory: Theory {
     solved := [back, each, known, pull, one_, rec, locals, at_, follow, lean_, bal, worth, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
     chain := line.concat([this.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
     named := Keyed()
-    [at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    [rays_l, space_l, at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
     proved := this.theory.theorems.map(t => {
       q := t.asked
       p := Proved(theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about)

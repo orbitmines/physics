@@ -21,11 +21,13 @@ A step of the prover is a READING (a rule's own body, the continuous model, the 
 
 What stays NOT CHECKED, each with its reason in the module: an inference that concludes nothing when its lines stand as names (it looks inside a value, or a guard goes the other way); a relation holding a root in the density that the lines it stands on are written in (the prover puts them in under the root by name; a prover's substitution does not); a relation that, with the lines put back, is not the line (the inference did something else to them than it does to names); a cancellation of a sum carrying a real power (1 - q^R), which the algebra of a field cannot show is not nought; and the equation chain's readings - the line solved along a heading, the past taken as infinite, the sum over bodies - which are not algebra at all.
 
-In all: 709 steps in 53 theorems - 345 premises, 203 checked, 161 not checked; 48 of the 53 answers checked.
+In all: 709 steps in 55 theorems - 345 premises, 203 checked, 161 not checked; 48 of the 55 answers checked.
 
 | theorem | steps | premises | checked | not checked | answer |
 |---|---|---|---|---|---|
 | [vacuum.equation](OrbitMines/Physics/Proofs/G/vacuum_equation.lean) | 43 | 13 | 4 | 26 | checked |
+| [vacuum.rays](OrbitMines/Physics/Proofs/G/vacuum_rays.lean) | 0 | 0 | 0 | 0 | not checked |
+| [vacuum.space](OrbitMines/Physics/Proofs/G/vacuum_space.lean) | 0 | 0 | 0 | 0 | not checked |
 | [vacuum.at](OrbitMines/Physics/Proofs/G/vacuum_at.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.following](OrbitMines/Physics/Proofs/G/vacuum_following.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.lean](OrbitMines/Physics/Proofs/G/vacuum_lean.lean) | 2 | 1 | 0 | 1 | checked |
@@ -118,6 +120,22 @@ Lean checked 4 of its 43 steps; 13 are premises read off the program and 26 are 
 - step 42 (the record standing against the density here), checked: the inference's relation (claim 46, read off its code) with the lines it stands on put in - l.balance = \paren{\rho_{\infty} - \rho_{l}}·\paren{\rho_{l} + \rho_{\infty} + DEG} - is this line, by algebra
 - step 43 (the pull off the record standing here), NOT checked: the inference 'the pull off the record standing here' reached it from S_{l} \aside{standing} = -\frac{\paren{DEG - DEG·\rho_{l} - \paren{\rho_{\infty} - \rho_{l}}·\paren{\rho_{l} + \rho_{\infty} + DEG}}}{\rho_{l} - 1} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - answer (the answer), checked: it names \Delta_{\hat{d}}\rho_{l} + a·\nabla S_{l} again (claim 37), and its value is the earlier one's by algebra
+
+### vacuum.rays (G)
+
+a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?
+
+Lean checked 0 of its 0 steps; 0 are premises read off the program and 0 are not checked. And the answer is NOT checked: the last step is not about \Delta \narrow{l}{active}.
+
+- answer (the answer), NOT checked: the last step is not about \Delta \narrow{l}{active}
+
+### vacuum.space (G)
+
+and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?
+
+Lean checked 0 of its 0 steps; 0 are premises read off the program and 0 are not checked. And the answer is NOT checked: the last step is not about \Delta \narrow{\forall}{@ == l}.
+
+- answer (the answer), NOT checked: the last step is not about \Delta \narrow{\forall}{@ == l}
 
 ### vacuum.at (G)
 

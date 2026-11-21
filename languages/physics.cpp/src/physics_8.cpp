@@ -9,49 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_Recording(Cls& c) {
-  c.field("stamp", nullptr);
-  c.field("names", nullptr);
-  c.field("sizes", nullptr);
-  c.getter("width", [](Value self, const Args& a1) -> Value {
-    return m_sum(get(self, S<"sizes">()));
-    return null;
-  });
-  c.getter("start", [](Value self, const Args& a1) -> Value {
-
-    return null;
-  });
-  c.method("frame", [](Value self, const Args& a1) -> Value {
-    auto into_0 = cell(arg(a1, 0));
-
-    return null;
-  });
-}
-static const bool R_Recording = define_class("Recording", "Node", &C_Recording);
-
-static void C_Played(Cls& c) {
-  c.field("cached", nullptr);
-  c.method("at", [](Value, const Args&) -> Value { throw std::runtime_error("at is declared but not defined by anyone"); });
-}
-static const bool R_Played = define_class("Played", "Node", &C_Played);
-
-static void C_Cached(Cls& c) {
-  c.field("film", nullptr);
-  c.field("names", nullptr);
-  c.field("sizes", nullptr);
-  c.method("at", [](Value self, const Args& a1) -> Value {
-    auto frame_at_0 = cell(arg(a1, 0));
-    auto out_0 = cell(); out_0->v = make(S<"Node">(), { });
-    for (double i1 = 0, n1 = num(len(get(self, S<"names">()))); i1 < n1; i1++) {
-      auto i_1 = cell(i1);
-      setAt(out_0->v, elem(get(self, S<"names">()), i_1->v), m_take(m_drop(get(get(get(self, S<"film">()), S<"columns">()), Sym(str("frames"))), add(mul(frame_at_0->v, m_sum(get(self, S<"sizes">()))), m_sum(m_take(get(self, S<"sizes">()), i_1->v)))), elem(get(self, S<"sizes">()), i_1->v)));
-    };
-    return out_0->v;
-    return null;
-  });
-}
-static const bool R_Cached = define_class("Cached", "Played", &C_Cached);
-
 static void C_Live(Cls& c) {
   c.field("recording", nullptr);
   c.field("buf", [](const Value& self) -> Value { return make(S<"Node">(), { }); });

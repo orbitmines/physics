@@ -2019,7 +2019,7 @@ end
     end)))
   end
   function builds(self::Type{<:__class__}, name_0 = nothing, _...)
-    return (truthy((truthy((truthy((truthy(contains(WRAP_NAMES(Notation), name_0)) || truthy(contains(WORDS(Notation), name_0)))) || truthy(contains(BIGS(Notation), name_0)))) || truthy((name_0 == Base.string(j"frac"))))) || truthy((name_0 == Base.string(j"binom"))))
+    return (truthy((truthy((truthy((truthy((truthy(contains(WRAP_NAMES(Notation), name_0)) || truthy(contains(WORDS(Notation), name_0)))) || truthy(contains(BIGS(Notation), name_0)))) || truthy((name_0 == Base.string(j"frac"))))) || truthy((name_0 == Base.string(j"binom"))))) || truthy((name_0 == Base.string(j"narrow"))))
   end
   function glyph(self::Type{<:__class__}, name_0 = nothing, _...)
     i_0 = index_of(GLYPH_NAMES(Notation), name_0)
@@ -2179,7 +2179,8 @@ end
         frac_0 = (truthy(((truthy((name_0 == Base.string(j"frac"))) || truthy((name_0 == Base.string(j"binom")))))) ? (args(Notation, src_0, after_0, 2.0, Any[])) : (nothing))
         wrap_0 = (truthy((wrap_kind(Notation, name_0) != nothing)) ? (args(Notation, src_0, after_0, 1.0, Any[])) : (nothing))
         words_0 = (truthy(contains(WORDS(Notation), name_0)) ? (args(Notation, src_0, after_0, 1.0, Any[])) : (nothing))
-        hit_0 = (let q_ = (let q_ = (let q_ = big_0; q_ === nothing ? (frac_0) : q_ end); q_ === nothing ? (wrap_0) : q_ end); q_ === nothing ? (words_0) : q_ end)
+        narrow_0 = (truthy((name_0 == Base.string(j"narrow"))) ? (args(Notation, src_0, after_0, 2.0, Any[])) : (nothing))
+        hit_0 = (let q_ = (let q_ = (let q_ = (let q_ = big_0; q_ === nothing ? (frac_0) : q_ end); q_ === nothing ? (wrap_0) : q_ end); q_ === nothing ? (words_0) : q_ end); q_ === nothing ? (narrow_0) : q_ end)
         if truthy((hit_0 != nothing))
           flush_0(i_0)
           if truthy((frac_0 != nothing))
@@ -2197,7 +2198,14 @@ end
               if truthy((words_0 != nothing))
                 push(out_0, words(Piece, getat(got(hit_0), 0.0)))
               else
-                push(out_0, big(Piece, name_0, parse(Notation, (truthy((length(got(hit_0)) > 0.0)) ? (getat(got(hit_0), 0.0)) : (Base.string(j"")))), parse(Notation, (truthy((length(got(hit_0)) > 1.0)) ? (getat(got(hit_0), 1.0)) : (Base.string(j""))))))
+                if truthy((narrow_0 != nothing))
+                  for p_1 in items(parse(Notation, getat(got(hit_0), 0.0)))
+                    push(out_0, p_1)
+                  end
+                  attach(Notation, out_0, Base.string(j"sub"), narrowing(Notation, getat(got(hit_0), 1.0)))
+                else
+                  push(out_0, big(Piece, name_0, parse(Notation, (truthy((length(got(hit_0)) > 0.0)) ? (getat(got(hit_0), 0.0)) : (Base.string(j"")))), parse(Notation, (truthy((length(got(hit_0)) > 1.0)) ? (getat(got(hit_0), 1.0)) : (Base.string(j""))))))
+                end
               end
             end
           end
@@ -2279,6 +2287,44 @@ end
       end
     end
     flush_0(length(src_0))
+    return out_0
+  end
+  function narrowing(self::Type{<:__class__}, p_0 = nothing, _...)
+    out_0 = Any[wrap(Piece, Base.string(j"muted"), Any[text_(Piece, Base.string(j"{"))])]
+    k_0 = 0.0
+    while truthy((k_0 < length(p_0)))
+      c_0 = getat(chars(p_0), k_0)
+      if truthy((truthy(is_letter(Notation, c_0)) || truthy((c_0 == 95.0))))
+        w_0 = run(Notation, p_0, k_0, (function (ch_2 = nothing, _...)
+          return is_name(Notation, ch_2)
+        end))
+        push(out_0, wrap(Piece, (truthy(((truthy((w_0 == Base.string(j"l"))) || truthy((w_0 == Base.string(j"x")))))) ? (Base.string(j"muted")) : (Base.string(j"fn"))), Any[text_(Piece, w_0)]))
+        k_0 = (k_0 + length(w_0))
+      else
+        if truthy(is_digit(Notation, c_0))
+          w_0 = run(Notation, p_0, k_0, (function (ch_2 = nothing, _...)
+            return is_digit(Notation, ch_2)
+          end))
+          push(out_0, text_(Piece, w_0))
+          k_0 = (k_0 + length(w_0))
+        else
+          if truthy(blank(c_0))
+            w_0 = run(Notation, p_0, k_0, (function (ch_2 = nothing, _...)
+              return blank(ch_2)
+            end))
+            push(out_0, text_(Piece, Base.string(j" ")))
+            k_0 = (k_0 + length(w_0))
+          else
+            w_0 = run(Notation, p_0, k_0, (function (ch_2 = nothing, _...)
+              return !(((truthy(is_name(Notation, ch_2)) || truthy(blank(ch_2)))))
+            end))
+            push(out_0, wrap(Piece, Base.string(j"muted"), Any[text_(Piece, w_0)]))
+            k_0 = (k_0 + length(w_0))
+          end
+        end
+      end
+    end
+    push(out_0, wrap(Piece, Base.string(j"muted"), Any[text_(Piece, Base.string(j"}"))]))
     return out_0
   end
   function plain(self::Type{<:__class__}, s_0 = nothing, _...)
@@ -4764,6 +4810,8 @@ end
 @class Prover <: Node begin
   @field theory::Theory
   @static_field PROOFS = Node()
+  @static_field RAYS_SAY = Base.string(j"l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.")
+  @static_field SPACE_SAY = Base.string(j"the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.")
   @field population_line::Step = nothing
   @field record_line::Step = nothing
   @field store::Store = Store()
@@ -5461,6 +5509,103 @@ end
   function following(self::__class__, rec_0 = nothing, _...)
     return of(Step, stands(Fact, Base.string(j"\\Delta_{v}f"), field(Expr, Base.string(j"f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}"))), Base.string(j"following"), Any[key(fact(rec_0))], Base.string(j"the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all"), Any[Base.string(j"\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick"), Base.string(j"\\nabla f: along a way, at one tick"), Base.string(j"\\partial_{\\hat{d}}\\rho: across the headings, at one local")])
   end
+  function edge_ends(self::Type{<:__class__})
+    return filter(split(source(method(Edge, Base.string(j"active"))), Base.string(j" & ")), (function (c_2 = nothing, _...)
+      return (length(split(c_2, Base.string(j".active"))) > 1.0)
+    end))
+  end
+  function edge_from_an_end(self::__class__)
+    def_0 = source(method(Edge, Base.string(j"active")))
+    ends_0 = edge_ends(Prover)
+    asked_0 = join(concat(Any[Base.string(j"active")], map(drop(ends_0, 1.0), (function (__2 = nothing, _...)
+      return Base.string(j"next.active")
+    end))), Base.string(j" & "))
+    facing_0 = source(method(Ray, Base.string(j"facing")))
+    st_0 = of(Step, stands(Fact, Base.string(j"\\narrow{Edge}{active}"), field(Expr, Base.string(j"\\narrow{l}{", str(asked_0), j"}"))), Base.string(j"an edge, seen from one of its ends"), Any[], Base.string(j"an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ", str(length(ends_0)), j"."), Any[Base.string(j"Edge.active = ", str(def_0), j""), Base.string(j"Ray.facing = ", str(facing_0), j": the ray across the same edge - next"), Base.string(j"\\narrow{Edge}{active} = \\narrow{l}{", str(asked_0), j"}, ", str(length(ends_0)), j" ends to a meeting")])
+    return st_0
+  end
+  function standing_at(self::__class__)
+    alive_0 = source(method(Vertex, Base.string(j"alive")))
+    sinks_0 = source(method(Vertex, Base.string(j"sinks")))
+    return of(Step, stands(Fact, Base.string(j"\\narrow{\\forall}{@ == l}"), add(Expr, Any[num(Expr, 1.0), field(Expr, Base.string(j"\\narrow{\\forall}{folded_into == l}"))])), Base.string(j"what stands at a local"), Any[], Base.string(j"the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here."), Any[Base.string(j"Vertex.alive = ", str(alive_0), j""), Base.string(j"Vertex.sinks = ", str(sinks_0), j""), Base.string(j"\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}")])
+  end
+  function members_of(self::Type{<:__class__}, t_0 = nothing, rays_0 = nothing, _...)
+    over_0 = over(rule(term(t_0)))
+    if truthy((over_0 == Base.string(j"Edge")))
+      return num(Expr, length(edge_ends(Prover)))
+    end
+    if truthy((truthy((over_0 == Base.string(j"Vertex"))) && truthy(rays_0)))
+      return field(Expr, Base.string(j"DEG"))
+    end
+    return num(Expr, 1.0)
+  end
+  function per_member(self::Type{<:__class__}, count_0 = nothing, members_0 = nothing, _...)
+    at_0 = (function (deg_1 = nothing, _...)
+      k_1 = Node()
+      setat!(k_1, Base.string(j"DEG"), deg_1)
+      return (numeric(Expr, evaluate(Expr, count_0, k_1), k_1) / numeric(Expr, evaluate(Expr, members_0, k_1), k_1))
+    end)
+    a_0 = at_0(8.0)
+    return (truthy((a_0 == at_0(12.0))) ? (a_0) : (nothing))
+  end
+  function weighed(self::Type{<:__class__}, w_0 = nothing, at_0 = nothing, _...)
+    return (truthy((w_0 == 1.0)) ? (at_0) : (((truthy((w_0 == (-1.0))) ? (neg(Expr, at_0)) : (mul(Expr, Any[num(Expr, w_0), at_0]))))))
+  end
+  function narrowed_term(self::__class__, t_0 = nothing, rays_0 = nothing, edge_0 = nothing, _...)
+    r_0 = rule(term(t_0))
+    p_0 = (truthy((where_(r_0) == nothing)) ? (Base.string(j"")) : (source(where_(r_0))))
+    at_0 = (truthy((over(r_0) == Base.string(j"Edge"))) ? (to(fact(edge_0))) : (field(Expr, Base.string(j"\\narrow{l}{", str(p_0), j"}"))))
+    count_0 = (truthy(rays_0) ? (ray_count(t_0)) : (neg(Expr, held_count(t_0))))
+    members_0 = members_of(Prover, t_0, rays_0)
+    w_0 = per_member(Prover, count_0, members_0)
+    if truthy((w_0 == nothing))
+      return nothing
+    end
+    if truthy((w_0 == 0.0))
+      return nothing
+    end
+    got_0 = weighed(Prover, w_0, at_0)
+    moved_0 = show(Expr, simplify(Expr, count_0))
+    ledger_0 = (truthy(rays_0) ? (Base.string(j"on the rays")) : (Base.string(j"on the space")))
+    fires_0 = (truthy((over(r_0) == Base.string(j"Vertex"))) ? (Base.string(j"a point")) : (((truthy((over(r_0) == Base.string(j"Edge"))) ? (Base.string(j"an edge")) : (((truthy((over(r_0) == Base.string(j"Boundary"))) ? (Base.string(j"a way")) : (over(r_0)))))))))
+    st_0 = of(Step, stands(Fact, Base.string(j"\\text{", str(name(r_0)), j"} \\aside{", str(ledger_0), j"}"), got_0), upper(name(r_0)), (truthy((over(r_0) == Base.string(j"Edge"))) ? (Any[key(fact(edge_0))]) : (Any[])), Base.string(j"the rule fires on ", str(fires_0), j": its pattern, as a narrowing of l, is ", str(show(Expr, at_0)), j". One firing moves ", str(moved_0), j" ", str(ledger_0), j", and one match is ", str(show(Expr, members_0)), j" of l's members, so each member of the narrowing moves ", str(show(Expr, num(Expr, w_0))), j"."), Any[Base.string(j"pattern: ", str(over(r_0)), j"\\{", str(p_0), j"\\} - of l: ", str(show(Expr, at_0)), j""), Base.string(j"one firing moves ", str(moved_0), j""), Base.string(j"one match is ", str(show(Expr, members_0)), j" of l"), Base.string(j"so: ", str(show(Expr, got_0)), j"")])
+    st_0.rule = upper(name(r_0))
+    return st_0
+  end
+  function narrowed(self::__class__, ledger_0 = nothing, upon_0 = nothing, _...)
+    rays_0 = (ledger_0 == Base.string(j"rays"))
+    edge_0 = edge_from_an_end(self)
+    moving_0 = filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((truthy((truthy((rule(term(t_2)) != nothing)) && truthy(!(transport(t_2))))) && truthy(!(settles(t_2))))) && truthy(((truthy(rays_0) ? ((rays(t_2) != Base.string(j"0"))) : ((held(t_2) != Base.string(j"0")))))))
+    end))
+    by_rule_0 = filter(map(moving_0, (function (t_3 = nothing, _...)
+      return narrowed_term(self, t_3, rays_0, edge_0)
+    end)), (function (x_2 = nothing, _...)
+      return (x_2 != nothing)
+    end))
+    if truthy(empty(by_rule_0))
+      return nothing
+    end
+    carried_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((truthy(transport(t_2)) && truthy((rule(term(t_2)) != nothing)))) && truthy((where_(rule(term(t_2))) != nothing)))
+    end)))
+    followed_0 = (truthy((carried_0 == nothing)) ? (Base.string(j"active")) : (source(where_(rule(term(carried_0))))))
+    held_0 = standing_at(self)
+    lhs_0 = (truthy(rays_0) ? (Base.string(j"\\Delta \\narrow{l}{", str(followed_0), j"}")) : (Base.string(j"\\Delta ", str(of(fact(held_0))), j"")))
+    rhs_0 = add(Expr, map(by_rule_0, (function (x_2 = nothing, _...)
+      return to(fact(x_2))
+    end)))
+    because_0 = (truthy(rays_0) ? (RAYS_SAY(Prover)) : (SPACE_SAY(Prover)))
+    behind_0 = concat(concat(Any[edge_0], (truthy(rays_0) ? (Any[]) : (Any[held_0]))), by_rule_0)
+    title_0 = (truthy(rays_0) ? (Base.string(j"the rays at a local, as the rules narrow it")) : (Base.string(j"the space at a local, as the rules narrow it")))
+    st_0 = of(Step, stands(Fact, lhs_0, rhs_0), title_0, concat(Any[key(fact(upon_0))], map(behind_0, (function (x_2 = nothing, _...)
+      return key(fact(x_2))
+    end))), because_0, concat(map(by_rule_0, (function (x_2 = nothing, _...)
+      return Base.string(j"", str(via(x_2)), j": ", str(show(Expr, to(fact(x_2)))), j"")
+    end)), Any[Base.string(j"", str(lhs_0), j" = ", str(show(Expr, rhs_0)), j"")]))
+    st_0.derivation = behind_0
+    return st_0
+  end
   function lean(self::__class__, rec_0 = nothing, _...)
     return of(Step, stands(Fact, Base.string(j"a"), field(Expr, Base.string(j"\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}"))), Base.string(j"the lean"), Any[key(fact(rec_0))], Base.string(j"the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend"), Any[Base.string(j"a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned"), Base.string(j"streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading"), Base.string(j"bending: \\Delta_{a}S_{l} - the record along the lean")])
   end
@@ -5782,6 +5927,8 @@ end
     self.record_line = folded_0
     one_0 = ledgers_are_one(self, s_0, folded_0, spaced_0)
     whole_0 = general(self, filled_0, folded_0)
+    rays_l_0 = narrowed(self, Base.string(j"rays"), filled_0)
+    space_l_0 = narrowed(self, Base.string(j"space"), spaced_0)
     settled_0 = settled_record(self, folded_0)
     short_0 = (truthy((settled_0 == nothing)) ? (nothing) : (single(self, whole_0, settled_0, folded_0, s_0)))
     agg_0 = (truthy((short_0 == nothing)) ? (nothing) : (aggregate(self, whole_0, short_0, s_0)))
@@ -5811,7 +5958,7 @@ end
     end))
     chain_0 = concat(concat(concat(concat(line_0, Any[isotropic_population(self), filled_0, spaced_0, folded_0, one_0, whole_0]), (truthy((settled_0 == nothing)) ? (Any[]) : (Any[settled_0, short_0]))), (truthy((agg_0 == nothing)) ? (Any[]) : (Any[agg_0]))), solved_0)
     named_0 = Keyed()
-    for st_1 in items(filter(Any[at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0], (function (x_3 = nothing, _...)
+    for st_1 in items(filter(Any[rays_l_0, space_l_0, at__0, follow_0, lean__0, bal_0, worth_0, big_s_0, far_0, quiet_0, quiet_s_0, bent_0, bent_far_0, here_0, slope_0], (function (x_3 = nothing, _...)
       return (x_3 != nothing)
     end)))
       set(named_0, of(fact(st_1)), st_1)
@@ -16036,6 +16183,12 @@ end
   end
   @theorem Theorem(id = j"vacuum.equation", body = (function (_...)
     return Asked(asks = Base.string(j"every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?"), about = Base.string(j""))
+  end))
+  @theorem Theorem(id = j"vacuum.rays", body = (function (_...)
+    return Asked(asks = Base.string(j"a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"), about = Base.string(j"\\Delta \\narrow{l}{active}"), leads = Base.string(j"THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits."))
+  end))
+  @theorem Theorem(id = j"vacuum.space", body = (function (_...)
+    return Asked(asks = Base.string(j"and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"), about = Base.string(j"\\Delta \\narrow{\\forall}{@ == l}"), leads = Base.string(j"THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation."))
   end))
   @theorem Theorem(id = j"vacuum.at", body = (function (_...)
     return Asked(asks = Base.string(j"a source is a thing with a history. What does it mean to read one at a particular time?"), about = Base.string(j"l'_{@t}"))

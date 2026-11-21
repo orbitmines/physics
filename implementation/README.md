@@ -631,6 +631,15 @@ method body after loading.
   `notation(React, PROVED)` - the components (`Eq`, `V`, `K`, `Bar`, `Frac`, `Markup`, `Film`, ...) the
   article is set in, as one more Setter over the same parse - and re-exports `parse`, `html`, `set`,
   `check`, `REFERENCES`. Python: `orbitmines.physics.notation`.
+- **A narrowing in a line** is written `\narrow{base}{predicate}` - the Ray form `l{active & next.active}`
+  set as a line: the base (`l`, or `\forall` for "everything") with `{predicate}` in its subscript, the base,
+  the braces, `&`, `.`, `==` and `@` muted like the `l.` of a field, and every name asked (`active`, `neutral`,
+  `emits`, `next`) set as a function. A local `l` is its point and its rays superposed, so a rule's pattern is
+  a narrowing of it, and a narrowing stands for its count. `next` on a ray is the ray across its edge (the
+  ray's continuation, as `.next` is an enum's); `@` in a narrowing is where a thing stands, through folds -
+  so `\forall{@ == l}` is the point at l and every point folded into it. `vacuum.rays` and `vacuum.space`
+  (`Prover.narrowed`) read both lines off the rules' own `where`, weighed by what a firing moves over how many
+  of l's members one match is (an edge: 2 ends; a point: DEG rays, or 1 point; a way: 1).
 - **Catalogue.ray**: `data "id" () => Catalogue(...)` declarations on `Borrowed` (collected as
   `datasets`); `npx ray data [ids]` fetches each from its authors' address (cached in `data/.raw`,
   `RAY_REFETCH=1` to refetch), parses it (`Mrt` reads a CDS/AAS machine-readable table by the

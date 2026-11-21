@@ -3795,7 +3795,7 @@ pub mod c_Notation {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let name_0 = cell(&arg(a1, 0));
-      return own(&(truthy(&(truthy(&(truthy(&(truthy(&m_contains(&get(&k!("Notation"), "WRAP_NAMES"), args![rd(&name_0)])) || truthy(&m_contains(&get(&k!("Notation"), "WORDS"), args![rd(&name_0)])))) || truthy(&m_contains(&get(&k!("Notation"), "BIGS"), args![rd(&name_0)])))) || truthy(&eq(&rd(&name_0), &sv!["frac"])))) || truthy(&eq(&rd(&name_0), &sv!["binom"]))));
+      return own(&(truthy(&(truthy(&(truthy(&(truthy(&(truthy(&m_contains(&get(&k!("Notation"), "WRAP_NAMES"), args![rd(&name_0)])) || truthy(&m_contains(&get(&k!("Notation"), "WORDS"), args![rd(&name_0)])))) || truthy(&m_contains(&get(&k!("Notation"), "BIGS"), args![rd(&name_0)])))) || truthy(&eq(&rd(&name_0), &sv!["frac"])))) || truthy(&eq(&rd(&name_0), &sv!["binom"])))) || truthy(&eq(&rd(&name_0), &sv!["narrow"]))));
       Value::Null
     }
   }
@@ -4050,7 +4050,8 @@ pub mod c_Notation {
           let frac_0 = cell(&Value::Null); wr(&frac_0, &(if truthy(&((truthy(&eq(&rd(&name_0), &sv!["frac"])) || truthy(&eq(&rd(&name_0), &sv!["binom"]))))) { own(&call(&k!("Notation"), "args", args![rd(&src_0), rd(&after_0), 2.0, list![]])) } else { own(&Value::Null) }));
           let wrap_0 = cell(&Value::Null); wr(&wrap_0, &(if truthy(&(!eq(&call(&k!("Notation"), "wrap_kind", args![rd(&name_0)]), &Value::Null))) { own(&call(&k!("Notation"), "args", args![rd(&src_0), rd(&after_0), 1.0, list![]])) } else { own(&Value::Null) }));
           let words_0 = cell(&Value::Null); wr(&words_0, &(if truthy(&m_contains(&get(&k!("Notation"), "WORDS"), args![rd(&name_0)])) { own(&call(&k!("Notation"), "args", args![rd(&src_0), rd(&after_0), 1.0, list![]])) } else { own(&Value::Null) }));
-          let hit_0 = cell(&Value::Null); wr(&hit_0, &or_else(&or_else(&or_else(&rd(&big_0), || own(&rd(&frac_0))), || own(&rd(&wrap_0))), || own(&rd(&words_0))));
+          let narrow_0 = cell(&Value::Null); wr(&narrow_0, &(if truthy(&eq(&rd(&name_0), &sv!["narrow"])) { own(&call(&k!("Notation"), "args", args![rd(&src_0), rd(&after_0), 2.0, list![]])) } else { own(&Value::Null) }));
+          let hit_0 = cell(&Value::Null); wr(&hit_0, &or_else(&or_else(&or_else(&or_else(&rd(&big_0), || own(&rd(&frac_0))), || own(&rd(&wrap_0))), || own(&rd(&words_0))), || own(&rd(&narrow_0))));
           if truthy(&(!eq(&rd(&hit_0), &Value::Null))) {
             invoke(&rd(&flush_0), args![rd(&i_0)]);
             if truthy(&(!eq(&rd(&frac_0), &Value::Null))) {
@@ -4071,7 +4072,15 @@ pub mod c_Notation {
                 if truthy(&(!eq(&rd(&words_0), &Value::Null))) {
                   m_push(&rd(&out_0), args![call(&k!("Piece"), "words", args![elem(&get(&rd(&hit_0), "got"), &0.0)])]);
                 } else {
-                  m_push(&rd(&out_0), args![call(&k!("Piece"), "big", args![rd(&name_0), call(&k!("Notation"), "parse", args![(if truthy(&gt(&len(&get(&rd(&hit_0), "got")), &0.0)) { own(&elem(&get(&rd(&hit_0), "got"), &0.0)) } else { own(&sv![""]) })]), call(&k!("Notation"), "parse", args![(if truthy(&gt(&len(&get(&rd(&hit_0), "got")), &1.0)) { own(&elem(&get(&rd(&hit_0), "got"), &1.0)) } else { own(&sv![""]) })])])]);
+                  if truthy(&(!eq(&rd(&narrow_0), &Value::Null))) {
+                    for e1 in items(&call(&k!("Notation"), "parse", args![elem(&get(&rd(&hit_0), "got"), &0.0)])) {
+                      let p_1 = cell(&e1);
+                      m_push(&rd(&out_0), args![rd(&p_1)]);
+                    };
+                    call(&k!("Notation"), "attach", args![rd(&out_0), sv!["sub"], call(&k!("Notation"), "narrowing", args![elem(&get(&rd(&hit_0), "got"), &1.0)])]);
+                  } else {
+                    m_push(&rd(&out_0), args![call(&k!("Piece"), "big", args![rd(&name_0), call(&k!("Notation"), "parse", args![(if truthy(&gt(&len(&get(&rd(&hit_0), "got")), &0.0)) { own(&elem(&get(&rd(&hit_0), "got"), &0.0)) } else { own(&sv![""]) })]), call(&k!("Notation"), "parse", args![(if truthy(&gt(&len(&get(&rd(&hit_0), "got")), &1.0)) { own(&elem(&get(&rd(&hit_0), "got"), &1.0)) } else { own(&sv![""]) })])])]);
+                  }
                 }
               }
             }
@@ -4156,6 +4165,61 @@ pub mod c_Notation {
         }
       }
       invoke(&rd(&flush_0), args![len(&rd(&src_0))]);
+      return own(&rd(&out_0));
+      Value::Null
+    }
+  }
+  pub mod s_narrowing {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let p_0 = cell(&arg(a1, 0));
+      let out_0 = cell(&Value::Null); wr(&out_0, &list![call(&k!("Piece"), "wrap", args![sv!["muted"], list![call(&k!("Piece"), "text_", args![sv!["{"]])]])]);
+      let k_0 = cell(&Value::Null); wr(&k_0, &0.0);
+      while truthy(&lt(&rd(&k_0), &len(&rd(&p_0)))) {
+        let c__0 = cell(&Value::Null); wr(&c__0, &elem(&m_chars(&rd(&p_0)), &rd(&k_0)));
+        if truthy(&(truthy(&call(&k!("Notation"), "is_letter", args![rd(&c__0)])) || truthy(&eq(&rd(&c__0), &95.0)))) {
+          let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Notation"), "run", args![rd(&p_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+            let self_: &Value = &self_;
+            let ch_2 = cell(&arg(a3, 0));
+            return own(&call(&k!("Notation"), "is_name", args![rd(&ch_2)]));
+            Value::Null
+          }) }]));
+          m_push(&rd(&out_0), args![call(&k!("Piece"), "wrap", args![(if truthy(&((truthy(&eq(&rd(&w_0), &sv!["l"])) || truthy(&eq(&rd(&w_0), &sv!["x"]))))) { own(&sv!["muted"]) } else { own(&sv!["fn"]) }), list![call(&k!("Piece"), "text_", args![rd(&w_0)])]])]);
+          wr(&k_0, &add(&rd(&k_0), &len(&rd(&w_0))));
+        } else {
+          if truthy(&call(&k!("Notation"), "is_digit", args![rd(&c__0)])) {
+            let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Notation"), "run", args![rd(&p_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+              let self_: &Value = &self_;
+              let ch_2 = cell(&arg(a3, 0));
+              return own(&call(&k!("Notation"), "is_digit", args![rd(&ch_2)]));
+              Value::Null
+            }) }]));
+            m_push(&rd(&out_0), args![call(&k!("Piece"), "text_", args![rd(&w_0)])]);
+            wr(&k_0, &add(&rd(&k_0), &len(&rd(&w_0))));
+          } else {
+            if truthy(&blank(&rd(&c__0))) {
+              let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Notation"), "run", args![rd(&p_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+                let self_: &Value = &self_;
+                let ch_2 = cell(&arg(a3, 0));
+                return own(&blank(&rd(&ch_2)));
+                Value::Null
+              }) }]));
+              m_push(&rd(&out_0), args![call(&k!("Piece"), "text_", args![sv![" "]])]);
+              wr(&k_0, &add(&rd(&k_0), &len(&rd(&w_0))));
+            } else {
+              let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Notation"), "run", args![rd(&p_0), rd(&k_0), { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+                let self_: &Value = &self_;
+                let ch_2 = cell(&arg(a3, 0));
+                return own(&(!truthy(&((truthy(&call(&k!("Notation"), "is_name", args![rd(&ch_2)])) || truthy(&blank(&rd(&ch_2))))))));
+                Value::Null
+              }) }]));
+              m_push(&rd(&out_0), args![call(&k!("Piece"), "wrap", args![sv!["muted"], list![call(&k!("Piece"), "text_", args![rd(&w_0)])]])]);
+              wr(&k_0, &add(&rd(&k_0), &len(&rd(&w_0))));
+            }
+          }
+        }
+      }
+      m_push(&rd(&out_0), args![call(&k!("Piece"), "wrap", args![sv!["muted"], list![call(&k!("Piece"), "text_", args![sv!["}"]])]])]);
       return own(&rd(&out_0));
       Value::Null
     }
@@ -4430,6 +4494,7 @@ pub mod c_Notation {
     c.statik("scripted", s_scripted::f);//<
     c.statik("attach", s_attach::f);//<
     c.statik("parse", s_parse::f);//<
+    c.statik("narrowing", s_narrowing::f);//<
     c.statik("plain", s_plain::f);//<
     c.statik("set", s_set::f);//<
     c.statik("html", s_html::f);//<
@@ -9249,6 +9314,170 @@ pub mod c_Prover {
       Value::Null
     }
   }
+  pub mod s_edge_ends {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&filt(&m_split(&get(&call(&k!("Edge"), "method", args![sv!["active"]]), "source"), args![sv![" & "]]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__2 = cell(&arg(a3, 0));
+        return own(&gt(&len(&m_split(&rd(&c__2), args![sv![".active"]])), &1.0));
+        Value::Null
+      }) }));
+      Value::Null
+    }
+  }
+  pub mod g_edge_from_an_end {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let def_0 = cell(&Value::Null); wr(&def_0, &get(&call(&k!("Edge"), "method", args![sv!["active"]]), "source"));
+      let ends_0 = cell(&Value::Null); wr(&ends_0, &get(&k!("Prover"), "edge_ends"));
+      let asked_0 = cell(&Value::Null); wr(&asked_0, &m_join(&m_concat(&list![sv!["active"]], args![m_map(&m_drop(&rd(&ends_0), args![1.0]), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let __2 = cell(&arg(a3, 0));
+        return own(&sv!["next.active"]);
+        Value::Null
+      }) }])]), args![sv![" & "]]));
+      let facing_0 = cell(&Value::Null); wr(&facing_0, &get(&call(&k!("Ray"), "method", args![sv!["facing"]]), "source"));
+      let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\narrow{Edge}{active}"], call(&k!("Expr"), "field", args![sv!["\\narrow{l}{", &tos(&rd(&asked_0)), "}"]])]), sv!["an edge, seen from one of its ends"], list![], sv!["an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ", &tos(&len(&rd(&ends_0))), "."], list![sv!["Edge.active = ", &tos(&rd(&def_0)), ""], sv!["Ray.facing = ", &tos(&rd(&facing_0)), ": the ray across the same edge - next"], sv!["\\narrow{Edge}{active} = \\narrow{l}{", &tos(&rd(&asked_0)), "}, ", &tos(&len(&rd(&ends_0))), " ends to a meeting"]]]));
+      return own(&rd(&st_0));
+      Value::Null
+    }
+  }
+  pub mod g_standing_at {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let alive_0 = cell(&Value::Null); wr(&alive_0, &get(&call(&k!("Vertex"), "method", args![sv!["alive"]]), "source"));
+      let sinks_0 = cell(&Value::Null); wr(&sinks_0, &get(&call(&k!("Vertex"), "method", args![sv!["sinks"]]), "source"));
+      return own(&call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\narrow{\\forall}{@ == l}"], call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "num", args![1.0]), call(&k!("Expr"), "field", args![sv!["\\narrow{\\forall}{folded_into == l}"]])]])]), sv!["what stands at a local"], list![], sv!["the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here."], list![sv!["Vertex.alive = ", &tos(&rd(&alive_0)), ""], sv!["Vertex.sinks = ", &tos(&rd(&sinks_0)), ""], sv!["\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}"]]]));
+      Value::Null
+    }
+  }
+  pub mod s_members_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let t_0 = cell(&arg(a1, 0)); let rays_0 = cell(&arg(a1, 1));
+      let over_0 = cell(&Value::Null); wr(&over_0, &get(&get(&get(&rd(&t_0), "term"), "rule"), "over"));
+      if truthy(&eq(&rd(&over_0), &sv!["Edge"])) {
+        return own(&call(&k!("Expr"), "num", args![len(&get(&k!("Prover"), "edge_ends"))]));
+      }
+      if truthy(&(truthy(&eq(&rd(&over_0), &sv!["Vertex"])) && truthy(&rd(&rays_0)))) {
+        return own(&call(&k!("Expr"), "field", args![sv!["DEG"]]));
+      }
+      return own(&call(&k!("Expr"), "num", args![1.0]));
+      Value::Null
+    }
+  }
+  pub mod s_per_member {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let count_0 = cell(&arg(a1, 0)); let members_0 = cell(&arg(a1, 1));
+      let at_0 = cell(&Value::Null); wr(&at_0, &{ let self_: Value = self_.clone(); cl!(count_0, members_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let deg_1 = cell(&arg(a2, 0));
+        let k_1 = cell(&Value::Null); wr(&k_1, &node());
+        set(&rd(&k_1), &tos(&sv!["DEG"]), &rd(&deg_1));
+        return own(&div(&call(&k!("Expr"), "numeric", args![call(&k!("Expr"), "evaluate", args![rd(&count_0), rd(&k_1)]), rd(&k_1)]), &call(&k!("Expr"), "numeric", args![call(&k!("Expr"), "evaluate", args![rd(&members_0), rd(&k_1)]), rd(&k_1)])));
+        Value::Null
+      }) });
+      let a_0 = cell(&Value::Null); wr(&a_0, &invoke(&rd(&at_0), args![8.0]));
+      return own(&(if truthy(&eq(&rd(&a_0), &invoke(&rd(&at_0), args![12.0]))) { own(&rd(&a_0)) } else { own(&Value::Null) }));
+      Value::Null
+    }
+  }
+  pub mod s_weighed {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let w_0 = cell(&arg(a1, 0)); let at_0 = cell(&arg(a1, 1));
+      return own(&(if truthy(&eq(&rd(&w_0), &1.0)) { own(&rd(&at_0)) } else { own(&((if truthy(&eq(&rd(&w_0), &neg(&1.0))) { own(&call(&k!("Expr"), "neg", args![rd(&at_0)])) } else { own(&call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![rd(&w_0)]), rd(&at_0)]])) }))) }));
+      Value::Null
+    }
+  }
+  pub mod m_narrowed_term {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let t_0 = cell(&arg(a1, 0)); let rays_0 = cell(&arg(a1, 1)); let edge_0 = cell(&arg(a1, 2));
+      let r_0 = cell(&Value::Null); wr(&r_0, &get(&get(&rd(&t_0), "term"), "rule"));
+      let p_0 = cell(&Value::Null); wr(&p_0, &(if truthy(&eq(&get(&rd(&r_0), "where"), &Value::Null)) { own(&sv![""]) } else { own(&get(&get(&rd(&r_0), "where"), "source")) }));
+      let at_0 = cell(&Value::Null); wr(&at_0, &(if truthy(&eq(&get(&rd(&r_0), "over"), &sv!["Edge"])) { own(&get(&get(&rd(&edge_0), "fact"), "to")) } else { own(&call(&k!("Expr"), "field", args![sv!["\\narrow{l}{", &tos(&rd(&p_0)), "}"]])) }));
+      let count_0 = cell(&Value::Null); wr(&count_0, &(if truthy(&rd(&rays_0)) { own(&get(&rd(&t_0), "ray_count")) } else { own(&call(&k!("Expr"), "neg", args![get(&rd(&t_0), "held_count")])) }));
+      let members_0 = cell(&Value::Null); wr(&members_0, &call(&k!("Prover"), "members_of", args![rd(&t_0), rd(&rays_0)]));
+      let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Prover"), "per_member", args![rd(&count_0), rd(&members_0)]));
+      if truthy(&eq(&rd(&w_0), &Value::Null)) {
+        return own(&Value::Null);
+      }
+      if truthy(&eq(&rd(&w_0), &0.0)) {
+        return own(&Value::Null);
+      }
+      let got_0 = cell(&Value::Null); wr(&got_0, &call(&k!("Prover"), "weighed", args![rd(&w_0), rd(&at_0)]));
+      let moved_0 = cell(&Value::Null); wr(&moved_0, &call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![rd(&count_0)])]));
+      let ledger_0 = cell(&Value::Null); wr(&ledger_0, &(if truthy(&rd(&rays_0)) { own(&sv!["on the rays"]) } else { own(&sv!["on the space"]) }));
+      let fires_0 = cell(&Value::Null); wr(&fires_0, &(if truthy(&eq(&get(&rd(&r_0), "over"), &sv!["Vertex"])) { own(&sv!["a point"]) } else { own(&((if truthy(&eq(&get(&rd(&r_0), "over"), &sv!["Edge"])) { own(&sv!["an edge"]) } else { own(&((if truthy(&eq(&get(&rd(&r_0), "over"), &sv!["Boundary"])) { own(&sv!["a way"]) } else { own(&get(&rd(&r_0), "over")) }))) }))) }));
+      let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\text{", &tos(&get(&rd(&r_0), "name")), "} \\aside{", &tos(&rd(&ledger_0)), "}"], rd(&got_0)]), m_upper(&get(&rd(&r_0), "name")), (if truthy(&eq(&get(&rd(&r_0), "over"), &sv!["Edge"])) { own(&list![get(&get(&rd(&edge_0), "fact"), "key")]) } else { own(&list![]) }), sv!["the rule fires on ", &tos(&rd(&fires_0)), ": its pattern, as a narrowing of l, is ", &tos(&call(&k!("Expr"), "show", args![rd(&at_0)])), ". One firing moves ", &tos(&rd(&moved_0)), " ", &tos(&rd(&ledger_0)), ", and one match is ", &tos(&call(&k!("Expr"), "show", args![rd(&members_0)])), " of l's members, so each member of the narrowing moves ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "num", args![rd(&w_0)])])), "."], list![sv!["pattern: ", &tos(&get(&rd(&r_0), "over")), "\\{", &tos(&rd(&p_0)), "\\} - of l: ", &tos(&call(&k!("Expr"), "show", args![rd(&at_0)])), ""], sv!["one firing moves ", &tos(&rd(&moved_0)), ""], sv!["one match is ", &tos(&call(&k!("Expr"), "show", args![rd(&members_0)])), " of l"], sv!["so: ", &tos(&call(&k!("Expr"), "show", args![rd(&got_0)])), ""]]]));
+      set(&rd(&st_0), "rule", &m_upper(&get(&rd(&r_0), "name")));
+      return own(&rd(&st_0));
+      Value::Null
+    }
+  }
+  pub mod m_narrowed {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let ledger_0 = cell(&arg(a1, 0)); let upon_0 = cell(&arg(a1, 1));
+      let rays_0 = cell(&Value::Null); wr(&rays_0, &eq(&rd(&ledger_0), &sv!["rays"]));
+      let edge_0 = cell(&Value::Null); wr(&edge_0, &get(&self_, "edge_from_an_end"));
+      let moving_0 = cell(&Value::Null); wr(&moving_0, &filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(rays_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(truthy(&(truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))) && truthy(&(!truthy(&get(&rd(&t_2), "transport")))))) && truthy(&(!truthy(&get(&rd(&t_2), "settles")))))) && truthy(&((if truthy(&rd(&rays_0)) { own(&(!eq(&get(&rd(&t_2), "rays"), &sv!["0"]))) } else { own(&(!eq(&get(&rd(&t_2), "held"), &sv!["0"]))) })))));
+        Value::Null
+      }) }));
+      let by_rule_0 = cell(&Value::Null); wr(&by_rule_0, &filt(&m_map(&rd(&moving_0), args![{ let self_: Value = self_.clone(); cl!(rays_0, edge_0); fnv(move |a4: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_3 = cell(&arg(a4, 0));
+        return own(&call(&self_, "narrowed_term", args![rd(&t_3), rd(&rays_0), rd(&edge_0)]));
+        Value::Null
+      }) }]), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&(!eq(&rd(&x_2), &Value::Null)));
+        Value::Null
+      }) }));
+      if truthy(&m_empty(&rd(&by_rule_0))) {
+        return own(&Value::Null);
+      }
+      let carried_0 = cell(&Value::Null); wr(&carried_0, &m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(truthy(&get(&rd(&t_2), "transport")) && truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))))) && truthy(&(!eq(&get(&get(&get(&rd(&t_2), "term"), "rule"), "where"), &Value::Null)))));
+        Value::Null
+      }) })));
+      let followed_0 = cell(&Value::Null); wr(&followed_0, &(if truthy(&eq(&rd(&carried_0), &Value::Null)) { own(&sv!["active"]) } else { own(&get(&get(&get(&get(&rd(&carried_0), "term"), "rule"), "where"), "source")) }));
+      let held_0 = cell(&Value::Null); wr(&held_0, &get(&self_, "standing_at"));
+      let lhs_0 = cell(&Value::Null); wr(&lhs_0, &(if truthy(&rd(&rays_0)) { own(&sv!["\\Delta \\narrow{l}{", &tos(&rd(&followed_0)), "}"]) } else { own(&sv!["\\Delta ", &tos(&get(&get(&rd(&held_0), "fact"), "of")), ""]) }));
+      let rhs_0 = cell(&Value::Null); wr(&rhs_0, &call(&k!("Expr"), "add", args![m_map(&rd(&by_rule_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&get(&get(&rd(&x_2), "fact"), "to"));
+        Value::Null
+      }) }])]));
+      let because_0 = cell(&Value::Null); wr(&because_0, &(if truthy(&rd(&rays_0)) { own(&get(&k!("Prover"), "RAYS_SAY")) } else { own(&get(&k!("Prover"), "SPACE_SAY")) }));
+      let behind_0 = cell(&Value::Null); wr(&behind_0, &m_concat(&m_concat(&list![rd(&edge_0)], args![(if truthy(&rd(&rays_0)) { own(&list![]) } else { own(&list![rd(&held_0)]) })]), args![rd(&by_rule_0)]));
+      let title_0 = cell(&Value::Null); wr(&title_0, &(if truthy(&rd(&rays_0)) { own(&sv!["the rays at a local, as the rules narrow it"]) } else { own(&sv!["the space at a local, as the rules narrow it"]) }));
+      let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![rd(&lhs_0), rd(&rhs_0)]), rd(&title_0), m_concat(&list![get(&get(&rd(&upon_0), "fact"), "key")], args![m_map(&rd(&behind_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&get(&get(&rd(&x_2), "fact"), "key"));
+        Value::Null
+      }) }])]), rd(&because_0), m_concat(&m_map(&rd(&by_rule_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&sv!["", &tos(&get(&rd(&x_2), "via")), ": ", &tos(&call(&k!("Expr"), "show", args![get(&get(&rd(&x_2), "fact"), "to")])), ""]);
+        Value::Null
+      }) }]), args![list![sv!["", &tos(&rd(&lhs_0)), " = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]])]));
+      set(&rd(&st_0), "derivation", &rd(&behind_0));
+      return own(&rd(&st_0));
+      Value::Null
+    }
+  }
   pub mod m_lean {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
@@ -9748,6 +9977,8 @@ pub mod c_Prover {
       set(&self_, "record_line", &rd(&folded_0));
       let one_0 = cell(&Value::Null); wr(&one_0, &call(&self_, "ledgers_are_one", args![rd(&s_0), rd(&folded_0), rd(&spaced_0)]));
       let whole_0 = cell(&Value::Null); wr(&whole_0, &call(&self_, "general", args![rd(&filled_0), rd(&folded_0)]));
+      let rays_l_0 = cell(&Value::Null); wr(&rays_l_0, &call(&self_, "narrowed", args![sv!["rays"], rd(&filled_0)]));
+      let space_l_0 = cell(&Value::Null); wr(&space_l_0, &call(&self_, "narrowed", args![sv!["space"], rd(&spaced_0)]));
       let settled_0 = cell(&Value::Null); wr(&settled_0, &call(&self_, "settled_record", args![rd(&folded_0)]));
       let short_0 = cell(&Value::Null); wr(&short_0, &(if truthy(&eq(&rd(&settled_0), &Value::Null)) { own(&Value::Null) } else { own(&call(&self_, "single", args![rd(&whole_0), rd(&settled_0), rd(&folded_0), rd(&s_0)])) }));
       let agg_0 = cell(&Value::Null); wr(&agg_0, &(if truthy(&eq(&rd(&short_0), &Value::Null)) { own(&Value::Null) } else { own(&call(&self_, "aggregate", args![rd(&whole_0), rd(&short_0), rd(&s_0)])) }));
@@ -9780,7 +10011,7 @@ pub mod c_Prover {
       }) }));
       let chain_0 = cell(&Value::Null); wr(&chain_0, &m_concat(&m_concat(&m_concat(&m_concat(&rd(&line_0), args![list![get(&self_, "isotropic_population"), rd(&filled_0), rd(&spaced_0), rd(&folded_0), rd(&one_0), rd(&whole_0)]]), args![(if truthy(&eq(&rd(&settled_0), &Value::Null)) { own(&list![]) } else { own(&list![rd(&settled_0), rd(&short_0)]) })]), args![(if truthy(&eq(&rd(&agg_0), &Value::Null)) { own(&list![]) } else { own(&list![rd(&agg_0)]) })]), args![rd(&solved_0)]));
       let named_0 = cell(&Value::Null); wr(&named_0, &make_k(&k!("Keyed"), args![]));
-      for e1 in items(&filt(&list![rd(&at__0), rd(&follow_0), rd(&lean__0), rd(&bal_0), rd(&worth_0), rd(&big_s_0), rd(&far_0), rd(&quiet_0), rd(&quiet_s_0), rd(&bent_0), rd(&bent_far_0), rd(&here_0), rd(&slope_0)], &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
+      for e1 in items(&filt(&list![rd(&rays_l_0), rd(&space_l_0), rd(&at__0), rd(&follow_0), rd(&lean__0), rd(&bal_0), rd(&worth_0), rd(&big_s_0), rd(&far_0), rd(&quiet_0), rd(&quiet_s_0), rd(&bent_0), rd(&bent_far_0), rd(&here_0), rd(&slope_0)], &{ let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let x_3 = cell(&arg(a4, 0));
         return own(&(!eq(&rd(&x_3), &Value::Null)));
@@ -9896,6 +10127,8 @@ pub mod c_Prover {
   pub fn define(c: &mut Cls) {
     c.field_none("theory");//<
     c.static_field("PROOFS", |self_: &Value| -> Value { own(&node()) });//<
+    c.static_field("RAYS_SAY", |self_: &Value| -> Value { own(&sv!["l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all."]) });//<
+    c.static_field("SPACE_SAY", |self_: &Value| -> Value { own(&sv!["the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here."]) });//<
     c.field("population_line", |self_: &Value| -> Value { own(&Value::Null) });//<
     c.field("record_line", |self_: &Value| -> Value { own(&Value::Null) });//<
     c.field("store", |self_: &Value| -> Value { own(&make_k(&k!("Store"), args![])) });//<
@@ -9942,6 +10175,14 @@ pub mod c_Prover {
     c.method("record_of_all", m_record_of_all::f);//<
     c.method("every_local", m_every_local::f);//<
     c.method("following", m_following::f);//<
+    c.statik("edge_ends", s_edge_ends::f);//<
+    c.getter("edge_from_an_end", g_edge_from_an_end::f);//<
+    c.getter("standing_at", g_standing_at::f);//<
+    c.statik("members_of", s_members_of::f);//<
+    c.statik("per_member", s_per_member::f);//<
+    c.statik("weighed", s_weighed::f);//<
+    c.method("narrowed_term", m_narrowed_term::f);//<
+    c.method("narrowed", m_narrowed::f);//<
     c.method("lean", m_lean::f);//<
     c.method("at_time", m_at_time::f);//<
     c.method("balance", m_balance::f);//<
@@ -25127,6 +25368,26 @@ pub mod c_G {
   }) })])
     }
   }
+  pub mod h_vacuum_rays {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "vacuum.rays"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"]), kw("about", &sv!["\\Delta \\narrow{l}{active}"]), kw("leads", &sv!["THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits."])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_vacuum_space {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "vacuum.space"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"]), kw("about", &sv!["\\Delta \\narrow{\\forall}{@ == l}"]), kw("leads", &sv!["THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation."])]));
+    Value::Null
+  }) })])
+    }
+  }
   pub mod h_vacuum_at {
     use crate::rt::*;
     pub fn f(self_: &Value) -> Value {
@@ -25732,6 +25993,8 @@ pub mod c_G {
     c.method("pair", m_pair::f);//<
     c.getter("solar", g_solar::f);//<
     c.static_field("theorem vacuum.equation", h_vacuum_equation::f);//<
+    c.static_field("theorem vacuum.rays", h_vacuum_rays::f);//<
+    c.static_field("theorem vacuum.space", h_vacuum_space::f);//<
     c.static_field("theorem vacuum.at", h_vacuum_at::f);//<
     c.static_field("theorem vacuum.following", h_vacuum_following::f);//<
     c.static_field("theorem vacuum.lean", h_vacuum_lean::f);//<

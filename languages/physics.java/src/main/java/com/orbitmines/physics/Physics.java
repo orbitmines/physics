@@ -2701,7 +2701,7 @@ static final class C_Notation {
     });
     c.statik("builds", (self, a1) -> {
       Object[] name_0 = { arg(a1, 0) };
-      if (true) return (truthy((truthy((truthy((truthy(m_contains(get(K("Notation"), "WRAP_NAMES"), name_0[0])) || truthy(m_contains(get(K("Notation"), "WORDS"), name_0[0])))) || truthy(m_contains(get(K("Notation"), "BIGS"), name_0[0])))) || truthy(eq(name_0[0], "frac")))) || truthy(eq(name_0[0], "binom")));
+      if (true) return (truthy((truthy((truthy((truthy((truthy(m_contains(get(K("Notation"), "WRAP_NAMES"), name_0[0])) || truthy(m_contains(get(K("Notation"), "WORDS"), name_0[0])))) || truthy(m_contains(get(K("Notation"), "BIGS"), name_0[0])))) || truthy(eq(name_0[0], "frac")))) || truthy(eq(name_0[0], "binom")))) || truthy(eq(name_0[0], "narrow")));
       return null;
     });
     c.statik("glyph", (self, a1) -> {
@@ -2902,7 +2902,8 @@ static final class C_Notation {
           Object[] frac_0 = new Object[1]; frac_0[0] = (truthy(((truthy(eq(name_0[0], "frac")) || truthy(eq(name_0[0], "binom"))))) ? (Object) call(K("Notation"), "args", new Object[] { src_0[0], after_0[0], 2.0, list() }) : (Object) null);
           Object[] wrap_0 = new Object[1]; wrap_0[0] = (truthy(!eq(call(K("Notation"), "wrap_kind", new Object[] { name_0[0] }), null)) ? (Object) call(K("Notation"), "args", new Object[] { src_0[0], after_0[0], 1.0, list() }) : (Object) null);
           Object[] words_0 = new Object[1]; words_0[0] = (truthy(m_contains(get(K("Notation"), "WORDS"), name_0[0])) ? (Object) call(K("Notation"), "args", new Object[] { src_0[0], after_0[0], 1.0, list() }) : (Object) null);
-          Object[] hit_0 = new Object[1]; hit_0[0] = orElse(orElse(orElse(big_0[0], () -> frac_0[0]), () -> wrap_0[0]), () -> words_0[0]);
+          Object[] narrow_0 = new Object[1]; narrow_0[0] = (truthy(eq(name_0[0], "narrow")) ? (Object) call(K("Notation"), "args", new Object[] { src_0[0], after_0[0], 2.0, list() }) : (Object) null);
+          Object[] hit_0 = new Object[1]; hit_0[0] = orElse(orElse(orElse(orElse(big_0[0], () -> frac_0[0]), () -> wrap_0[0]), () -> words_0[0]), () -> narrow_0[0]);
           if (truthy(!eq(hit_0[0], null))) {
             invoke(flush_0[0], new Object[] { i_0[0] });
             if (truthy(!eq(frac_0[0], null))) {
@@ -2922,7 +2923,15 @@ static final class C_Notation {
                 if (truthy(!eq(words_0[0], null))) {
                   m_push(out_0[0], call(K("Piece"), "words", new Object[] { elem(get(hit_0[0], "got"), 0.0) }));
                 } else {
-                  m_push(out_0[0], call(K("Piece"), "big", new Object[] { name_0[0], call(K("Notation"), "parse", new Object[] { (truthy(gt(len(get(hit_0[0], "got")), 0.0)) ? (Object) elem(get(hit_0[0], "got"), 0.0) : (Object) "") }), call(K("Notation"), "parse", new Object[] { (truthy(gt(len(get(hit_0[0], "got")), 1.0)) ? (Object) elem(get(hit_0[0], "got"), 1.0) : (Object) "") }) }));
+                  if (truthy(!eq(narrow_0[0], null))) {
+                    for (Object e1 : items(call(K("Notation"), "parse", new Object[] { elem(get(hit_0[0], "got"), 0.0) }))) {
+                      Object[] p_1 = { e1 };
+                      m_push(out_0[0], p_1[0]);
+                    };
+                    call(K("Notation"), "attach", new Object[] { out_0[0], "sub", call(K("Notation"), "narrowing", new Object[] { elem(get(hit_0[0], "got"), 1.0) }) });
+                  } else {
+                    m_push(out_0[0], call(K("Piece"), "big", new Object[] { name_0[0], call(K("Notation"), "parse", new Object[] { (truthy(gt(len(get(hit_0[0], "got")), 0.0)) ? (Object) elem(get(hit_0[0], "got"), 0.0) : (Object) "") }), call(K("Notation"), "parse", new Object[] { (truthy(gt(len(get(hit_0[0], "got")), 1.0)) ? (Object) elem(get(hit_0[0], "got"), 1.0) : (Object) "") }) }));
+                  }
                 }
               }
             }
@@ -3006,6 +3015,54 @@ static final class C_Notation {
         }
       }
       invoke(flush_0[0], new Object[] { len(src_0[0]) });
+      if (true) return out_0[0];
+      return null;
+    });
+    c.statik("narrowing", (self, a1) -> {
+      Object[] p_0 = { arg(a1, 0) };
+      Object[] out_0 = new Object[1]; out_0[0] = list(call(K("Piece"), "wrap", new Object[] { "muted", list(call(K("Piece"), "text_", new Object[] { "{" })) }));
+      Object[] k_0 = new Object[1]; k_0[0] = 0.0;
+      while (truthy(lt(k_0[0], len(p_0[0])))) {
+        Object[] c__0 = new Object[1]; c__0[0] = elem(m_chars(p_0[0]), k_0[0]);
+        if (truthy((truthy(call(K("Notation"), "is_letter", new Object[] { c__0[0] })) || truthy(eq(c__0[0], 95.0))))) {
+          Object[] w_0 = new Object[1]; w_0[0] = call(K("Notation"), "run", new Object[] { p_0[0], k_0[0], (Fn) (a3) -> {
+            Object[] ch_2 = { arg(a3, 0) };
+            if (true) return call(K("Notation"), "is_name", new Object[] { ch_2[0] });
+            return null;
+          } });
+          m_push(out_0[0], call(K("Piece"), "wrap", new Object[] { (truthy(((truthy(eq(w_0[0], "l")) || truthy(eq(w_0[0], "x"))))) ? (Object) "muted" : (Object) "fn"), list(call(K("Piece"), "text_", new Object[] { w_0[0] })) }));
+          k_0[0] = add(k_0[0], len(w_0[0]));
+        } else {
+          if (truthy(call(K("Notation"), "is_digit", new Object[] { c__0[0] }))) {
+            Object[] w_0 = new Object[1]; w_0[0] = call(K("Notation"), "run", new Object[] { p_0[0], k_0[0], (Fn) (a3) -> {
+              Object[] ch_2 = { arg(a3, 0) };
+              if (true) return call(K("Notation"), "is_digit", new Object[] { ch_2[0] });
+              return null;
+            } });
+            m_push(out_0[0], call(K("Piece"), "text_", new Object[] { w_0[0] }));
+            k_0[0] = add(k_0[0], len(w_0[0]));
+          } else {
+            if (truthy(blank(c__0[0]))) {
+              Object[] w_0 = new Object[1]; w_0[0] = call(K("Notation"), "run", new Object[] { p_0[0], k_0[0], (Fn) (a3) -> {
+                Object[] ch_2 = { arg(a3, 0) };
+                if (true) return blank(ch_2[0]);
+                return null;
+              } });
+              m_push(out_0[0], call(K("Piece"), "text_", new Object[] { " " }));
+              k_0[0] = add(k_0[0], len(w_0[0]));
+            } else {
+              Object[] w_0 = new Object[1]; w_0[0] = call(K("Notation"), "run", new Object[] { p_0[0], k_0[0], (Fn) (a3) -> {
+                Object[] ch_2 = { arg(a3, 0) };
+                if (true) return not(((truthy(call(K("Notation"), "is_name", new Object[] { ch_2[0] })) || truthy(blank(ch_2[0])))));
+                return null;
+              } });
+              m_push(out_0[0], call(K("Piece"), "wrap", new Object[] { "muted", list(call(K("Piece"), "text_", new Object[] { w_0[0] })) }));
+              k_0[0] = add(k_0[0], len(w_0[0]));
+            }
+          }
+        }
+      }
+      m_push(out_0[0], call(K("Piece"), "wrap", new Object[] { "muted", list(call(K("Piece"), "text_", new Object[] { "}" })) }));
       if (true) return out_0[0];
       return null;
     });
@@ -6145,6 +6202,8 @@ static final class C_Prover {
   static void define(Cls c) {
     c.field("theory", null);
     c.staticField("PROOFS", self -> make(NODE));
+    c.staticField("RAYS_SAY", self -> "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.");
+    c.staticField("SPACE_SAY", self -> "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.");
     c.field("population_line", self -> null);
     c.field("record_line", self -> null);
     c.field("store", self -> make("Store", new Object[] {  }));
@@ -7058,6 +7117,136 @@ static final class C_Prover {
       if (true) return call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "\\Delta_{v}f", call(K("Expr"), "field", new Object[] { "f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}" }) }), "following", list(get(get(rec_0[0], "fact"), "key")), "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", list("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local") });
       return null;
     });
+    c.statik("edge_ends", (self, a1) -> {
+      if (true) return filt(m_split(get(call(K("Edge"), "method", new Object[] { "active" }), "source"), " & "), (Fn) (a3) -> {
+        Object[] c__2 = { arg(a3, 0) };
+        if (true) return gt(len(m_split(c__2[0], ".active")), 1.0);
+        return null;
+      });
+      return null;
+    });
+    c.getter("edge_from_an_end", (self, a1) -> {
+      Object[] def_0 = new Object[1]; def_0[0] = get(call(K("Edge"), "method", new Object[] { "active" }), "source");
+      Object[] ends_0 = new Object[1]; ends_0[0] = get(K("Prover"), "edge_ends");
+      Object[] asked_0 = new Object[1]; asked_0[0] = m_join(m_concat(list("active"), m_map(m_drop(ends_0[0], 1.0), (Fn) (a3) -> {
+        Object[] __2 = { arg(a3, 0) };
+        if (true) return "next.active";
+        return null;
+      })), " & ");
+      Object[] facing_0 = new Object[1]; facing_0[0] = get(call(K("Ray"), "method", new Object[] { "facing" }), "source");
+      Object[] st_0 = new Object[1]; st_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "\\narrow{Edge}{active}", call(K("Expr"), "field", new Object[] { "\\narrow{l}{" + str(asked_0[0]) + "}" }) }), "an edge, seen from one of its ends", list(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + str(len(ends_0[0])) + ".", list("Edge.active = " + str(def_0[0]) + "", "Ray.facing = " + str(facing_0[0]) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + str(asked_0[0]) + "}, " + str(len(ends_0[0])) + " ends to a meeting") });
+      if (true) return st_0[0];
+      return null;
+    });
+    c.getter("standing_at", (self, a1) -> {
+      Object[] alive_0 = new Object[1]; alive_0[0] = get(call(K("Vertex"), "method", new Object[] { "alive" }), "source");
+      Object[] sinks_0 = new Object[1]; sinks_0[0] = get(call(K("Vertex"), "method", new Object[] { "sinks" }), "source");
+      if (true) return call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "\\narrow{\\forall}{@ == l}", call(K("Expr"), "add", new Object[] { list(call(K("Expr"), "num", new Object[] { 1.0 }), call(K("Expr"), "field", new Object[] { "\\narrow{\\forall}{folded_into == l}" })) }) }), "what stands at a local", list(), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", list("Vertex.alive = " + str(alive_0[0]) + "", "Vertex.sinks = " + str(sinks_0[0]) + "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}") });
+      return null;
+    });
+    c.statik("members_of", (self, a1) -> {
+      Object[] t_0 = { arg(a1, 0) }; Object[] rays_0 = { arg(a1, 1) };
+      Object[] over_0 = new Object[1]; over_0[0] = get(get(get(t_0[0], "term"), "rule"), "over");
+      if (truthy(eq(over_0[0], "Edge"))) {
+        if (true) return call(K("Expr"), "num", new Object[] { len(get(K("Prover"), "edge_ends")) });
+      }
+      if (truthy((truthy(eq(over_0[0], "Vertex")) && truthy(rays_0[0])))) {
+        if (true) return call(K("Expr"), "field", new Object[] { "DEG" });
+      }
+      if (true) return call(K("Expr"), "num", new Object[] { 1.0 });
+      return null;
+    });
+    c.statik("per_member", (self, a1) -> {
+      Object[] count_0 = { arg(a1, 0) }; Object[] members_0 = { arg(a1, 1) };
+      Object[] at_0 = new Object[1]; at_0[0] = (Fn) (a2) -> {
+        Object[] deg_1 = { arg(a2, 0) };
+        Object[] k_1 = new Object[1]; k_1[0] = make(NODE);
+        set(k_1[0], str("DEG"), deg_1[0]);
+        if (true) return div(call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "evaluate", new Object[] { count_0[0], k_1[0] }), k_1[0] }), call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "evaluate", new Object[] { members_0[0], k_1[0] }), k_1[0] }));
+        return null;
+      };
+      Object[] a_0 = new Object[1]; a_0[0] = invoke(at_0[0], new Object[] { 8.0 });
+      if (true) return (truthy(eq(a_0[0], invoke(at_0[0], new Object[] { 12.0 }))) ? (Object) a_0[0] : (Object) null);
+      return null;
+    });
+    c.statik("weighed", (self, a1) -> {
+      Object[] w_0 = { arg(a1, 0) }; Object[] at_0 = { arg(a1, 1) };
+      if (true) return (truthy(eq(w_0[0], 1.0)) ? (Object) at_0[0] : (Object) ((truthy(eq(w_0[0], neg(1.0))) ? (Object) call(K("Expr"), "neg", new Object[] { at_0[0] }) : (Object) call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "num", new Object[] { w_0[0] }), at_0[0]) }))));
+      return null;
+    });
+    c.method("narrowed_term", (self, a1) -> {
+      Object[] t_0 = { arg(a1, 0) }; Object[] rays_0 = { arg(a1, 1) }; Object[] edge_0 = { arg(a1, 2) };
+      Object[] r_0 = new Object[1]; r_0[0] = get(get(t_0[0], "term"), "rule");
+      Object[] p_0 = new Object[1]; p_0[0] = (truthy(eq(get(r_0[0], "where"), null)) ? (Object) "" : (Object) get(get(r_0[0], "where"), "source"));
+      Object[] at_0 = new Object[1]; at_0[0] = (truthy(eq(get(r_0[0], "over"), "Edge")) ? (Object) get(get(edge_0[0], "fact"), "to") : (Object) call(K("Expr"), "field", new Object[] { "\\narrow{l}{" + str(p_0[0]) + "}" }));
+      Object[] count_0 = new Object[1]; count_0[0] = (truthy(rays_0[0]) ? (Object) get(t_0[0], "ray_count") : (Object) call(K("Expr"), "neg", new Object[] { get(t_0[0], "held_count") }));
+      Object[] members_0 = new Object[1]; members_0[0] = call(K("Prover"), "members_of", new Object[] { t_0[0], rays_0[0] });
+      Object[] w_0 = new Object[1]; w_0[0] = call(K("Prover"), "per_member", new Object[] { count_0[0], members_0[0] });
+      if (truthy(eq(w_0[0], null))) {
+        if (true) return null;
+      }
+      if (truthy(eq(w_0[0], 0.0))) {
+        if (true) return null;
+      }
+      Object[] got_0 = new Object[1]; got_0[0] = call(K("Prover"), "weighed", new Object[] { w_0[0], at_0[0] });
+      Object[] moved_0 = new Object[1]; moved_0[0] = call(K("Expr"), "show", new Object[] { call(K("Expr"), "simplify", new Object[] { count_0[0] }) });
+      Object[] ledger_0 = new Object[1]; ledger_0[0] = (truthy(rays_0[0]) ? (Object) "on the rays" : (Object) "on the space");
+      Object[] fires_0 = new Object[1]; fires_0[0] = (truthy(eq(get(r_0[0], "over"), "Vertex")) ? (Object) "a point" : (Object) ((truthy(eq(get(r_0[0], "over"), "Edge")) ? (Object) "an edge" : (Object) ((truthy(eq(get(r_0[0], "over"), "Boundary")) ? (Object) "a way" : (Object) get(r_0[0], "over"))))));
+      Object[] st_0 = new Object[1]; st_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "\\text{" + str(get(r_0[0], "name")) + "} \\aside{" + str(ledger_0[0]) + "}", got_0[0] }), m_upper(get(r_0[0], "name")), (truthy(eq(get(r_0[0], "over"), "Edge")) ? (Object) list(get(get(edge_0[0], "fact"), "key")) : (Object) list()), "the rule fires on " + str(fires_0[0]) + ": its pattern, as a narrowing of l, is " + str(call(K("Expr"), "show", new Object[] { at_0[0] })) + ". One firing moves " + str(moved_0[0]) + " " + str(ledger_0[0]) + ", and one match is " + str(call(K("Expr"), "show", new Object[] { members_0[0] })) + " of l's members, so each member of the narrowing moves " + str(call(K("Expr"), "show", new Object[] { call(K("Expr"), "num", new Object[] { w_0[0] }) })) + ".", list("pattern: " + str(get(r_0[0], "over")) + "\\{" + str(p_0[0]) + "\\} - of l: " + str(call(K("Expr"), "show", new Object[] { at_0[0] })) + "", "one firing moves " + str(moved_0[0]) + "", "one match is " + str(call(K("Expr"), "show", new Object[] { members_0[0] })) + " of l", "so: " + str(call(K("Expr"), "show", new Object[] { got_0[0] })) + "") });
+      set(st_0[0], "rule", m_upper(get(r_0[0], "name")));
+      if (true) return st_0[0];
+      return null;
+    });
+    c.method("narrowed", (self, a1) -> {
+      Object[] ledger_0 = { arg(a1, 0) }; Object[] upon_0 = { arg(a1, 1) };
+      Object[] rays_0 = new Object[1]; rays_0[0] = eq(ledger_0[0], "rays");
+      Object[] edge_0 = new Object[1]; edge_0[0] = get(self, "edge_from_an_end");
+      Object[] moving_0 = new Object[1]; moving_0[0] = filt(get(self, "infos"), (Fn) (a3) -> {
+        Object[] t_2 = { arg(a3, 0) };
+        if (true) return (truthy((truthy((truthy(!eq(get(get(t_2[0], "term"), "rule"), null)) && truthy(not(get(t_2[0], "transport"))))) && truthy(not(get(t_2[0], "settles"))))) && truthy(((truthy(rays_0[0]) ? (Object) !eq(get(t_2[0], "rays"), "0") : (Object) !eq(get(t_2[0], "held"), "0")))));
+        return null;
+      });
+      Object[] by_rule_0 = new Object[1]; by_rule_0[0] = filt(m_map(moving_0[0], (Fn) (a4) -> {
+        Object[] t_3 = { arg(a4, 0) };
+        if (true) return call(self, "narrowed_term", new Object[] { t_3[0], rays_0[0], edge_0[0] });
+        return null;
+      }), (Fn) (a3) -> {
+        Object[] x_2 = { arg(a3, 0) };
+        if (true) return !eq(x_2[0], null);
+        return null;
+      });
+      if (truthy(m_empty(by_rule_0[0]))) {
+        if (true) return null;
+      }
+      Object[] carried_0 = new Object[1]; carried_0[0] = m_first(filt(get(self, "infos"), (Fn) (a3) -> {
+        Object[] t_2 = { arg(a3, 0) };
+        if (true) return (truthy((truthy(get(t_2[0], "transport")) && truthy(!eq(get(get(t_2[0], "term"), "rule"), null)))) && truthy(!eq(get(get(get(t_2[0], "term"), "rule"), "where"), null)));
+        return null;
+      }));
+      Object[] followed_0 = new Object[1]; followed_0[0] = (truthy(eq(carried_0[0], null)) ? (Object) "active" : (Object) get(get(get(get(carried_0[0], "term"), "rule"), "where"), "source"));
+      Object[] held_0 = new Object[1]; held_0[0] = get(self, "standing_at");
+      Object[] lhs_0 = new Object[1]; lhs_0[0] = (truthy(rays_0[0]) ? (Object) "\\Delta \\narrow{l}{" + str(followed_0[0]) + "}" : (Object) "\\Delta " + str(get(get(held_0[0], "fact"), "of")) + "");
+      Object[] rhs_0 = new Object[1]; rhs_0[0] = call(K("Expr"), "add", new Object[] { m_map(by_rule_0[0], (Fn) (a3) -> {
+        Object[] x_2 = { arg(a3, 0) };
+        if (true) return get(get(x_2[0], "fact"), "to");
+        return null;
+      }) });
+      Object[] because_0 = new Object[1]; because_0[0] = (truthy(rays_0[0]) ? (Object) get(K("Prover"), "RAYS_SAY") : (Object) get(K("Prover"), "SPACE_SAY"));
+      Object[] behind_0 = new Object[1]; behind_0[0] = m_concat(m_concat(list(edge_0[0]), (truthy(rays_0[0]) ? (Object) list() : (Object) list(held_0[0]))), by_rule_0[0]);
+      Object[] title_0 = new Object[1]; title_0[0] = (truthy(rays_0[0]) ? (Object) "the rays at a local, as the rules narrow it" : (Object) "the space at a local, as the rules narrow it");
+      Object[] st_0 = new Object[1]; st_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { lhs_0[0], rhs_0[0] }), title_0[0], m_concat(list(get(get(upon_0[0], "fact"), "key")), m_map(behind_0[0], (Fn) (a3) -> {
+        Object[] x_2 = { arg(a3, 0) };
+        if (true) return get(get(x_2[0], "fact"), "key");
+        return null;
+      })), because_0[0], m_concat(m_map(by_rule_0[0], (Fn) (a3) -> {
+        Object[] x_2 = { arg(a3, 0) };
+        if (true) return "" + str(get(x_2[0], "via")) + ": " + str(call(K("Expr"), "show", new Object[] { get(get(x_2[0], "fact"), "to") })) + "";
+        return null;
+      }), list("" + str(lhs_0[0]) + " = " + str(call(K("Expr"), "show", new Object[] { rhs_0[0] })) + "")) });
+      set(st_0[0], "derivation", behind_0[0]);
+      if (true) return st_0[0];
+      return null;
+    });
     c.method("lean", (self, a1) -> {
       Object[] rec_0 = { arg(a1, 0) };
       if (true) return call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "a", call(K("Expr"), "field", new Object[] { "\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}" }) }), "the lean", list(get(get(rec_0[0], "fact"), "key")), "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend", list("a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned", "streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading", "bending: \\Delta_{a}S_{l} - the record along the lean") });
@@ -7467,6 +7656,8 @@ static final class C_Prover {
       set(self, "record_line", folded_0[0]);
       Object[] one_0 = new Object[1]; one_0[0] = call(self, "ledgers_are_one", new Object[] { s_0[0], folded_0[0], spaced_0[0] });
       Object[] whole_0 = new Object[1]; whole_0[0] = call(self, "general", new Object[] { filled_0[0], folded_0[0] });
+      Object[] rays_l_0 = new Object[1]; rays_l_0[0] = call(self, "narrowed", new Object[] { "rays", filled_0[0] });
+      Object[] space_l_0 = new Object[1]; space_l_0[0] = call(self, "narrowed", new Object[] { "space", spaced_0[0] });
       Object[] settled_0 = new Object[1]; settled_0[0] = call(self, "settled_record", new Object[] { folded_0[0] });
       Object[] short__0 = new Object[1]; short__0[0] = (truthy(eq(settled_0[0], null)) ? (Object) null : (Object) call(self, "single", new Object[] { whole_0[0], settled_0[0], folded_0[0], s_0[0] }));
       Object[] agg_0 = new Object[1]; agg_0[0] = (truthy(eq(short__0[0], null)) ? (Object) null : (Object) call(self, "aggregate", new Object[] { whole_0[0], short__0[0], s_0[0] }));
@@ -7498,7 +7689,7 @@ static final class C_Prover {
       });
       Object[] chain_0 = new Object[1]; chain_0[0] = m_concat(m_concat(m_concat(m_concat(line_0[0], list(get(self, "isotropic_population"), filled_0[0], spaced_0[0], folded_0[0], one_0[0], whole_0[0])), (truthy(eq(settled_0[0], null)) ? (Object) list() : (Object) list(settled_0[0], short__0[0]))), (truthy(eq(agg_0[0], null)) ? (Object) list() : (Object) list(agg_0[0]))), solved_0[0]);
       Object[] named_0 = new Object[1]; named_0[0] = make("Keyed", new Object[] {  });
-      for (Object e1 : items(filt(list(at__0[0], follow_0[0], lean__0[0], bal_0[0], worth_0[0], big_s_0[0], far_0[0], quiet_0[0], quiet_s_0[0], bent_0[0], bent_far_0[0], here_0[0], slope_0[0]), (Fn) (a4) -> {
+      for (Object e1 : items(filt(list(rays_l_0[0], space_l_0[0], at__0[0], follow_0[0], lean__0[0], bal_0[0], worth_0[0], big_s_0[0], far_0[0], quiet_0[0], quiet_s_0[0], bent_0[0], bent_far_0[0], here_0[0], slope_0[0]), (Fn) (a4) -> {
         Object[] x_3 = { arg(a4, 0) };
         if (true) return !eq(x_3[0], null);
         return null;
@@ -19843,6 +20034,14 @@ static final class C_G {
     });
     c.staticField("theorem vacuum.equation", self -> make(Theorem, kw("id", "vacuum.equation"), kw("body", (Fn) (a1) -> {
       if (true) return make("Asked", new Object[] { kw("asks", "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?"), kw("about", "") });
+      return null;
+    })));
+    c.staticField("theorem vacuum.rays", self -> make(Theorem, kw("id", "vacuum.rays"), kw("body", (Fn) (a1) -> {
+      if (true) return make("Asked", new Object[] { kw("asks", "a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"), kw("about", "\\Delta \\narrow{l}{active}"), kw("leads", "THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.") });
+      return null;
+    })));
+    c.staticField("theorem vacuum.space", self -> make(Theorem, kw("id", "vacuum.space"), kw("body", (Fn) (a1) -> {
+      if (true) return make("Asked", new Object[] { kw("asks", "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"), kw("about", "\\Delta \\narrow{\\forall}{@ == l}"), kw("leads", "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.") });
       return null;
     })));
     c.staticField("theorem vacuum.at", self -> make(Theorem, kw("id", "vacuum.at"), kw("body", (Fn) (a1) -> {

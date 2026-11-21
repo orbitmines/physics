@@ -387,7 +387,7 @@ static void C_Notation(Cls& c) {
   });
   c.statik("builds", [](Value self, const Args& a1) -> Value {
     auto name_0 = cell(arg(a1, 0));
-    return (truthy((truthy((truthy((truthy(m_contains(get(K(S<"Notation">()), S<"WRAP_NAMES">()), name_0->v)) || truthy(m_contains(get(K(S<"Notation">()), S<"WORDS">()), name_0->v)))) || truthy(m_contains(get(K(S<"Notation">()), S<"BIGS">()), name_0->v)))) || truthy(eq(name_0->v, "frac")))) || truthy(eq(name_0->v, "binom")));
+    return (truthy((truthy((truthy((truthy((truthy(m_contains(get(K(S<"Notation">()), S<"WRAP_NAMES">()), name_0->v)) || truthy(m_contains(get(K(S<"Notation">()), S<"WORDS">()), name_0->v)))) || truthy(m_contains(get(K(S<"Notation">()), S<"BIGS">()), name_0->v)))) || truthy(eq(name_0->v, "frac")))) || truthy(eq(name_0->v, "binom")))) || truthy(eq(name_0->v, "narrow")));
     return null;
   });
   c.statik("glyph", [](Value self, const Args& a1) -> Value {
@@ -588,7 +588,8 @@ static void C_Notation(Cls& c) {
         auto frac_0 = cell(); frac_0->v = (truthy(((truthy(eq(name_0->v, "frac")) || truthy(eq(name_0->v, "binom"))))) ? Value(call(K(S<"Notation">()), S<"args">(), { src_0->v, after_0->v, 2.0, list({  }) })) : Value(null));
         auto wrap_0 = cell(); wrap_0->v = (truthy((!eq(call(K(S<"Notation">()), S<"wrap_kind">(), { name_0->v }), null))) ? Value(call(K(S<"Notation">()), S<"args">(), { src_0->v, after_0->v, 1.0, list({  }) })) : Value(null));
         auto words_0 = cell(); words_0->v = (truthy(m_contains(get(K(S<"Notation">()), S<"WORDS">()), name_0->v)) ? Value(call(K(S<"Notation">()), S<"args">(), { src_0->v, after_0->v, 1.0, list({  }) })) : Value(null));
-        auto hit_0 = cell(); hit_0->v = orElse(orElse(orElse(big_0->v, [&]() -> Value { return frac_0->v; }), [&]() -> Value { return wrap_0->v; }), [&]() -> Value { return words_0->v; });
+        auto narrow_0 = cell(); narrow_0->v = (truthy(eq(name_0->v, "narrow")) ? Value(call(K(S<"Notation">()), S<"args">(), { src_0->v, after_0->v, 2.0, list({  }) })) : Value(null));
+        auto hit_0 = cell(); hit_0->v = orElse(orElse(orElse(orElse(big_0->v, [&]() -> Value { return frac_0->v; }), [&]() -> Value { return wrap_0->v; }), [&]() -> Value { return words_0->v; }), [&]() -> Value { return narrow_0->v; });
         if (truthy((!eq(hit_0->v, null)))) {
           invoke(flush_0->v, { i_0->v });
           if (truthy((!eq(frac_0->v, null)))) {
@@ -608,7 +609,15 @@ static void C_Notation(Cls& c) {
               if (truthy((!eq(words_0->v, null)))) {
                 m_push(out_0->v, call(K(S<"Piece">()), S<"words">(), { elem(get(hit_0->v, S<"got">()), 0.0) }));
               } else {
-                m_push(out_0->v, call(K(S<"Piece">()), S<"big">(), { name_0->v, call(K(S<"Notation">()), S<"parse">(), { (truthy(gt(len(get(hit_0->v, S<"got">())), 0.0)) ? Value(elem(get(hit_0->v, S<"got">()), 0.0)) : Value("")) }), call(K(S<"Notation">()), S<"parse">(), { (truthy(gt(len(get(hit_0->v, S<"got">())), 1.0)) ? Value(elem(get(hit_0->v, S<"got">()), 1.0)) : Value("")) }) }));
+                if (truthy((!eq(narrow_0->v, null)))) {
+                  for (const Value& e1 : Each(call(K(S<"Notation">()), S<"parse">(), { elem(get(hit_0->v, S<"got">()), 0.0) }))) {
+                    auto p_1 = cell(e1);
+                    m_push(out_0->v, p_1->v);
+                  };
+                  call(K(S<"Notation">()), S<"attach">(), { out_0->v, "sub", call(K(S<"Notation">()), S<"narrowing">(), { elem(get(hit_0->v, S<"got">()), 1.0) }) });
+                } else {
+                  m_push(out_0->v, call(K(S<"Piece">()), S<"big">(), { name_0->v, call(K(S<"Notation">()), S<"parse">(), { (truthy(gt(len(get(hit_0->v, S<"got">())), 0.0)) ? Value(elem(get(hit_0->v, S<"got">()), 0.0)) : Value("")) }), call(K(S<"Notation">()), S<"parse">(), { (truthy(gt(len(get(hit_0->v, S<"got">())), 1.0)) ? Value(elem(get(hit_0->v, S<"got">()), 1.0)) : Value("")) }) }));
+                }
               }
             }
           }
@@ -692,6 +701,54 @@ static void C_Notation(Cls& c) {
       }
     }
     invoke(flush_0->v, { len(src_0->v) });
+    return out_0->v;
+    return null;
+  });
+  c.statik("narrowing", [](Value self, const Args& a1) -> Value {
+    auto p_0 = cell(arg(a1, 0));
+    auto out_0 = cell(); out_0->v = list({ call(K(S<"Piece">()), S<"wrap">(), { "muted", list({ call(K(S<"Piece">()), S<"text_">(), { "{" }) }) }) });
+    auto k_0 = cell(); k_0->v = 0.0;
+    while (truthy(lt(k_0->v, len(p_0->v)))) {
+      auto c__0 = cell(); c__0->v = elem(m_chars(p_0->v), k_0->v);
+      if (truthy((truthy(call(K(S<"Notation">()), S<"is_letter">(), { c__0->v })) || truthy(eq(c__0->v, 95.0))))) {
+        auto w_0 = cell(); w_0->v = call(K(S<"Notation">()), S<"run">(), { p_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+          auto ch_2 = cell(arg(a3, 0));
+          return call(K(S<"Notation">()), S<"is_name">(), { ch_2->v });
+          return null;
+        }) });
+        m_push(out_0->v, call(K(S<"Piece">()), S<"wrap">(), { (truthy(((truthy(eq(w_0->v, "l")) || truthy(eq(w_0->v, "x"))))) ? Value("muted") : Value("fn")), list({ call(K(S<"Piece">()), S<"text_">(), { w_0->v }) }) }));
+        k_0->v = add(k_0->v, len(w_0->v));
+      } else {
+        if (truthy(call(K(S<"Notation">()), S<"is_digit">(), { c__0->v }))) {
+          auto w_0 = cell(); w_0->v = call(K(S<"Notation">()), S<"run">(), { p_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+            auto ch_2 = cell(arg(a3, 0));
+            return call(K(S<"Notation">()), S<"is_digit">(), { ch_2->v });
+            return null;
+          }) });
+          m_push(out_0->v, call(K(S<"Piece">()), S<"text_">(), { w_0->v }));
+          k_0->v = add(k_0->v, len(w_0->v));
+        } else {
+          if (truthy(blank(c__0->v))) {
+            auto w_0 = cell(); w_0->v = call(K(S<"Notation">()), S<"run">(), { p_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+              auto ch_2 = cell(arg(a3, 0));
+              return blank(ch_2->v);
+              return null;
+            }) });
+            m_push(out_0->v, call(K(S<"Piece">()), S<"text_">(), { " " }));
+            k_0->v = add(k_0->v, len(w_0->v));
+          } else {
+            auto w_0 = cell(); w_0->v = call(K(S<"Notation">()), S<"run">(), { p_0->v, k_0->v, fn([=](const Args& a3) -> Value {
+              auto ch_2 = cell(arg(a3, 0));
+              return (!truthy(((truthy(call(K(S<"Notation">()), S<"is_name">(), { ch_2->v })) || truthy(blank(ch_2->v))))));
+              return null;
+            }) });
+            m_push(out_0->v, call(K(S<"Piece">()), S<"wrap">(), { "muted", list({ call(K(S<"Piece">()), S<"text_">(), { w_0->v }) }) }));
+            k_0->v = add(k_0->v, len(w_0->v));
+          }
+        }
+      }
+    }
+    m_push(out_0->v, call(K(S<"Piece">()), S<"wrap">(), { "muted", list({ call(K(S<"Piece">()), S<"text_">(), { "}" }) }) }));
     return out_0->v;
     return null;
   });

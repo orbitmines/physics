@@ -4413,6 +4413,14 @@ static void C_G(Cls& c) {
     return make(S<"Asked">(), { kw(S<"asks">(), "every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?"), kw(S<"about">(), "") });
     return null;
   })) }); });
+  c.staticField("theorem vacuum.rays", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.rays"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "a local is a point and its rays at once, and every rule's pattern narrows it to what the rule fires on. Counted that way, in l's own rays, what do the rules do to the rays standing at a local?"), kw(S<"about">(), "\\Delta \\narrow{l}{active}"), kw(S<"leads">(), "THE RAYS AT A LOCAL, followed a step and a tick: lit by creation on every way of a point nothing stands on, taken one apiece where a lit ray's next ray is lit, and lit by a source on the ways it emits.") });
+    return null;
+  })) }); });
+  c.staticField("theorem vacuum.space", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.space"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"), kw(S<"about">(), "\\Delta \\narrow{\\forall}{@ == l}"), kw(S<"leads">(), "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.") });
+    return null;
+  })) }); });
   c.staticField("theorem vacuum.at", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.at"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
     return make(S<"Asked">(), { kw(S<"asks">(), "a source is a thing with a history. What does it mean to read one at a particular time?"), kw(S<"about">(), "l'_{@t}") });
     return null;

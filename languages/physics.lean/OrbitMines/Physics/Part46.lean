@@ -12,6 +12,10 @@ ray_impl_field "theory" : Theory := do
   return ωnull
 ray_impl_sfield "PROOFS" : Value := do
   return (← RMap.new)
+ray_impl_sfield "RAYS_SAY" : Value := do
+  return ("l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all." : String)
+ray_impl_sfield "SPACE_SAY" : Value := do
+  return ("the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here." : String)
 ray_impl_field "population_line" : Step := do
   return ωnull
 ray_impl_field "record_line" : Step := do
@@ -745,6 +749,104 @@ ray_impl_method "every_local" (rec_0 : Step) (settled_0 : Step) : Step := do
 ray_impl_method "following" (rec_0 : Step) : Step := do
   if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta_{v}f" : String), (← call! (← cls% Expr) "field" (("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}" : String))))), ("following" : String), (← ωlst #[(← ωget (← ωget (← rec_0.get) "fact") "key")]), ("the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all" : String), (← ωlst #[("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick" : String), ("\\nabla f: along a way, at one tick" : String), ("\\partial_{\\hat{d}}\\rho: across the headings, at one local" : String)])))
   return ωnull
+ray_impl_static "edge_ends" : (RList String) := do
+  if true then return (← dot! (← dot! (← ωget (← call! (← cls% Edge) "method" (("active" : String))) "source") rsplit ((" & " : String))) rfilter ((fn! [c_2] do
+    if true then return (← ωgt (← dot! (← dot! (← c_2.get) rsplit ((".active" : String))) rlength ()) (1 : Float))
+    return ωnull)))
+  return ωnull
+ray_impl_getter "edge_from_an_end" : Step := do
+  let def__0 ← IO.mkRef (← ωget (← call! (← cls% Edge) "method" (("active" : String))) "source")
+  let ends_0 ← IO.mkRef (← ωget (← cls% Prover) "edge_ends")
+  let asked_0 ← IO.mkRef (← dot! (← dot! (← ωlst #[("active" : String)]) rconcat ((← dot! (← dot! (← ends_0.get) rdrop ((1 : Float))) rmap ((fn! [__2] do
+    if true then return ("next.active" : String)
+    return ωnull))))) rjoin ((" & " : String)))
+  let facing_0 ← IO.mkRef (← ωget (← call! (← cls% Ray) "method" (("facing" : String))) "source")
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\narrow{Edge}{active}" : String), (← call! (← cls% Expr) "field" (("\\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}" : String))))), ("an edge, seen from one of its ends" : String), (← ωlst #[]), ("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ "." : String), (← ωlst #[("Edge.active = " ++ (← ωtoStr (← def__0.get)) ++ "" : String), ("Ray.facing = " ++ (← ωtoStr (← facing_0.get)) ++ ": the ray across the same edge - next" : String), ("\\narrow{Edge}{active} = \\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}, " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ " ends to a meeting" : String)])))
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_getter "standing_at" : Step := do
+  let alive_0 ← IO.mkRef (← ωget (← call! (← cls% Vertex) "method" (("alive" : String))) "source")
+  let sinks_0 ← IO.mkRef (← ωget (← call! (← cls% Vertex) "method" (("sinks" : String))) "source")
+  if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\narrow{\\forall}{@ == l}" : String), (← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← call! (← cls% Expr) "field" (("\\narrow{\\forall}{folded_into == l}" : String)))]))))), ("what stands at a local" : String), (← ωlst #[]), ("the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here." : String), (← ωlst #[("Vertex.alive = " ++ (← ωtoStr (← alive_0.get)) ++ "" : String), ("Vertex.sinks = " ++ (← ωtoStr (← sinks_0.get)) ++ "" : String), ("\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}" : String)])))
+  return ωnull
+ray_impl_static "members_of" (t_0 : TermInfo) (rays_0 : Bool) : Expr := do
+  let over_0 ← IO.mkRef (← ωget (← ωget (← ωget (← t_0.get) "term") "rule") "over")
+  if ωtruthy (← ωeqv (← over_0.get) ("Edge" : String)) then
+    if true then return (← call! (← cls% Expr) "num" ((← dot! (← ωget (← cls% Prover) "edge_ends") rlength ())))
+    pure ()
+  if ωtruthy (← ωandV (← ωeqv (← over_0.get) ("Vertex" : String)) (do pure (← rays_0.get))) then
+    if true then return (← call! (← cls% Expr) "field" (("DEG" : String)))
+    pure ()
+  if true then return (← call! (← cls% Expr) "num" ((1 : Float)))
+  return ωnull
+ray_impl_static "per_member" (count_0 : Expr) (members_0 : Expr) : Float := do
+  let at__0 ← IO.mkRef ωnull
+  at__0.set (fn! [(deg : Float)] do
+      let k ← IO.mkRef (← RMap.new)
+      (← (ωatSetter k ("DEG" : String)) deg) |> ωsink
+      if true then return (← ωdiv (← call! (← cls% Expr) "numeric" ((← call! (← cls% Expr) "evaluate" ((← count_0.get), k)), k)) (← call! (← cls% Expr) "numeric" ((← call! (← cls% Expr) "evaluate" ((← members_0.get), k)), k)))
+      return ωnull)
+  let a_0 ← IO.mkRef (← app! (← at__0.get) ((8 : Float)))
+  if true then return (← ωtern (ωtruthy (← ωeqv (← a_0.get) (← app! (← at__0.get) ((12 : Float))))) (do pure (← a_0.get)) (do pure ωnull))
+  return ωnull
+ray_impl_static "weighed" (w_0 : Float) (at__0 : Expr) : Expr := do
+  if true then return (← ωtern (ωtruthy (← ωeqv (← w_0.get) (1 : Float))) (do pure (← at__0.get)) (do pure ((← ωtern (ωtruthy (← ωeqv (← w_0.get) (← ωneg (1 : Float)))) (do pure (← call! (← cls% Expr) "neg" ((← at__0.get)))) (do pure (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← w_0.get))), (← at__0.get)]))))))))
+  return ωnull
+ray_impl_method "narrowed_term" (t_0 : TermInfo) (rays_0 : Bool) (edge_0 : Step) : Step := do
+  let r_0 ← IO.mkRef (← ωget (← ωget (← t_0.get) "term") "rule")
+  let p_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← ωget (← r_0.get) "where"))) (do pure ("" : String)) (do pure (← ωget (← ωget (← r_0.get) "where") "source")))
+  let at__0 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ωget (← r_0.get) "over") ("Edge" : String))) (do pure (← ωget (← ωget (← edge_0.get) "fact") "to")) (do pure (← call! (← cls% Expr) "field" (("\\narrow{l}{" ++ (← ωtoStr (← p_0.get)) ++ "}" : String)))))
+  let count_0 ← IO.mkRef (← ωtern (ωtruthy (← rays_0.get)) (do pure (← ωget (← t_0.get) "ray_count")) (do pure (← call! (← cls% Expr) "neg" ((← ωget (← t_0.get) "held_count")))))
+  let members_0 ← IO.mkRef (← call! (← cls% Prover) "members_of" ((← t_0.get), (← rays_0.get)))
+  let w_0 ← IO.mkRef (← call! (← cls% Prover) "per_member" ((← count_0.get), (← members_0.get)))
+  if ωtruthy (ωisNull (← w_0.get)) then
+    if true then return ωnull
+    pure ()
+  if ωtruthy (← ωeqv (← w_0.get) (0 : Float)) then
+    if true then return ωnull
+    pure ()
+  let got_0 ← IO.mkRef (← call! (← cls% Prover) "weighed" ((← w_0.get), (← at__0.get)))
+  let moved_0 ← IO.mkRef (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "simplify" ((← count_0.get)))))
+  let ledger_0 ← IO.mkRef (← ωtern (ωtruthy (← rays_0.get)) (do pure ("on the rays" : String)) (do pure ("on the space" : String)))
+  let fires_0 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ωget (← r_0.get) "over") ("Vertex" : String))) (do pure ("a point" : String)) (do pure ((← ωtern (ωtruthy (← ωeqv (← ωget (← r_0.get) "over") ("Edge" : String))) (do pure ("an edge" : String)) (do pure ((← ωtern (ωtruthy (← ωeqv (← ωget (← r_0.get) "over") ("Boundary" : String))) (do pure ("a way" : String)) (do pure (← ωget (← r_0.get) "over")))))))))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\text{" ++ (← ωtoStr (← ωget (← r_0.get) "name")) ++ "} \\aside{" ++ (← ωtoStr (← ledger_0.get)) ++ "}" : String), (← got_0.get))), (← dot! (← ωget (← r_0.get) "name") rupper ()), (← ωtern (ωtruthy (← ωeqv (← ωget (← r_0.get) "over") ("Edge" : String))) (do pure (← ωlst #[(← ωget (← ωget (← edge_0.get) "fact") "key")])) (do pure (← ωlst #[]))), ("the rule fires on " ++ (← ωtoStr (← fires_0.get)) ++ ": its pattern, as a narrowing of l, is " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← at__0.get)))) ++ ". One firing moves " ++ (← ωtoStr (← moved_0.get)) ++ " " ++ (← ωtoStr (← ledger_0.get)) ++ ", and one match is " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← members_0.get)))) ++ " of l's members, so each member of the narrowing moves " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "num" ((← w_0.get)))))) ++ "." : String), (← ωlst #[("pattern: " ++ (← ωtoStr (← ωget (← r_0.get) "over")) ++ "\\{" ++ (← ωtoStr (← p_0.get)) ++ "\\} - of l: " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← at__0.get)))) ++ "" : String), ("one firing moves " ++ (← ωtoStr (← moved_0.get)) ++ "" : String), ("one match is " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← members_0.get)))) ++ " of l" : String), ("so: " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_0.get)))) ++ "" : String)])))
+  (ωsetter (← st_0.get) "rule") (← dot! (← ωget (← r_0.get) "name") rupper ())
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "narrowed" (ledger_0 : String) (upon_0 : Step) : Step := do
+  let rays_0 ← IO.mkRef (← ωeqv (← ledger_0.get) ("rays" : String))
+  let edge_0 ← IO.mkRef (← ωget self "edge_from_an_end")
+  let moving_0 ← IO.mkRef (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
+    if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← ωget (← t_2.get) "term") "rule")) (do pure (ωnotV (← ωget (← t_2.get) "transport")))) (do pure (ωnotV (← ωget (← t_2.get) "settles")))) (do pure ((← ωtern (ωtruthy (← rays_0.get)) (do pure (← ωnev (← ωget (← t_2.get) "rays") ("0" : String))) (do pure (← ωnev (← ωget (← t_2.get) "held") ("0" : String)))))))
+    return ωnull)))
+  let by_rule_0 ← IO.mkRef (← dot! (← dot! (← moving_0.get) rmap ((fn! [t_3] do
+    if true then return (← call! self "narrowed_term" ((← t_3.get), (← rays_0.get), (← edge_0.get)))
+    return ωnull))) rfilter ((fn! [x_2] do
+    if true then return (!ωisNull (← x_2.get))
+    return ωnull)))
+  if ωtruthy (← dot! (← by_rule_0.get) rempty ()) then
+    if true then return ωnull
+    pure ()
+  let carried_0 ← IO.mkRef (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
+    if true then return (← ωandV (← ωandV (← ωget (← t_2.get) "transport") (do pure (!ωisNull (← ωget (← ωget (← t_2.get) "term") "rule")))) (do pure (!ωisNull (← ωget (← ωget (← ωget (← t_2.get) "term") "rule") "where"))))
+    return ωnull))) rfirst ())
+  let followed_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← carried_0.get))) (do pure ("active" : String)) (do pure (← ωget (← ωget (← ωget (← ωget (← carried_0.get) "term") "rule") "where") "source")))
+  let held_0 ← IO.mkRef (← ωget self "standing_at")
+  let lhs_0 ← IO.mkRef (← ωtern (ωtruthy (← rays_0.get)) (do pure ("\\Delta \\narrow{l}{" ++ (← ωtoStr (← followed_0.get)) ++ "}" : String)) (do pure ("\\Delta " ++ (← ωtoStr (← ωget (← ωget (← held_0.get) "fact") "of")) ++ "" : String)))
+  let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← dot! (← by_rule_0.get) rmap ((fn! [x_2] do
+    if true then return (← ωget (← ωget (← x_2.get) "fact") "to")
+    return ωnull)))))
+  let because_0 ← IO.mkRef (← ωtern (ωtruthy (← rays_0.get)) (do pure (← ωget (← cls% Prover) "RAYS_SAY")) (do pure (← ωget (← cls% Prover) "SPACE_SAY")))
+  let behind_0 ← IO.mkRef (← dot! (← dot! (← ωlst #[(← edge_0.get)]) rconcat ((← ωtern (ωtruthy (← rays_0.get)) (do pure (← ωlst #[])) (do pure (← ωlst #[(← held_0.get)]))))) rconcat ((← by_rule_0.get)))
+  let title_0 ← IO.mkRef (← ωtern (ωtruthy (← rays_0.get)) (do pure ("the rays at a local, as the rules narrow it" : String)) (do pure ("the space at a local, as the rules narrow it" : String)))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" ((← lhs_0.get), (← rhs_0.get))), (← title_0.get), (← dot! (← ωlst #[(← ωget (← ωget (← upon_0.get) "fact") "key")]) rconcat ((← dot! (← behind_0.get) rmap ((fn! [x_2] do
+    if true then return (← ωget (← ωget (← x_2.get) "fact") "key")
+    return ωnull))))), (← because_0.get), (← dot! (← dot! (← by_rule_0.get) rmap ((fn! [x_2] do
+    if true then return ("" ++ (← ωtoStr (← ωget (← x_2.get) "via")) ++ ": " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← x_2.get) "fact") "to")))) ++ "" : String)
+    return ωnull))) rconcat ((← ωlst #[("" ++ (← ωtoStr (← lhs_0.get)) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))))
+  (ωsetter (← st_0.get) "derivation") (← behind_0.get)
+  if true then return (← st_0.get)
+  return ωnull
 ray_impl_method "lean" (rec_0 : Step) : Step := do
   if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("a" : String), (← call! (← cls% Expr) "field" (("\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}" : String))))), ("the lean" : String), (← ωlst #[(← ωget (← ωget (← rec_0.get) "fact") "key")]), ("the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend" : String), (← ωlst #[("a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned" : String), ("streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading" : String), ("bending: \\Delta_{a}S_{l} - the record along the lean" : String)])))
   return ωnull
@@ -1101,6 +1203,8 @@ ray_impl_getter "proof" : Proof := do
   (ωsetter self "record_line") (← folded_0.get)
   let one_0 ← IO.mkRef (← call! self "ledgers_are_one" ((← s_0.get), (← folded_0.get), (← spaced_0.get)))
   let whole_0 ← IO.mkRef (← call! self "general" ((← filled_0.get), (← folded_0.get)))
+  let rays_l_0 ← IO.mkRef (← call! self "narrowed" (("rays" : String), (← filled_0.get)))
+  let space_l_0 ← IO.mkRef (← call! self "narrowed" (("space" : String), (← spaced_0.get)))
   let settled_0 ← IO.mkRef (← call! self "settled_record" ((← folded_0.get)))
   let short_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← settled_0.get))) (do pure ωnull) (do pure (← call! self "single" ((← whole_0.get), (← settled_0.get), (← folded_0.get), (← s_0.get)))))
   let agg_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← short_0.get))) (do pure ωnull) (do pure (← call! self "aggregate" ((← whole_0.get), (← short_0.get), (← s_0.get)))))
@@ -1130,7 +1234,7 @@ ray_impl_getter "proof" : Proof := do
     return ωnull)))
   let chain_0 ← IO.mkRef (← dot! (← dot! (← dot! (← dot! (← line_0.get) rconcat ((← ωlst #[(← ωget self "isotropic_population"), (← filled_0.get), (← spaced_0.get), (← folded_0.get), (← one_0.get), (← whole_0.get)]))) rconcat ((← ωtern (ωtruthy (ωisNull (← settled_0.get))) (do pure (← ωlst #[])) (do pure (← ωlst #[(← settled_0.get), (← short_0.get)]))))) rconcat ((← ωtern (ωtruthy (ωisNull (← agg_0.get))) (do pure (← ωlst #[])) (do pure (← ωlst #[(← agg_0.get)]))))) rconcat ((← solved_0.get)))
   let named_0 ← IO.mkRef (← new! Keyed ())
-  for e1 in (← ωitems (← dot! (← ωlst #[(← at__0.get), (← follow_0.get), (← lean__0.get), (← bal_0.get), (← worth_0.get), (← big_s_0.get), (← far_0.get), (← quiet_0.get), (← quiet_s_0.get), (← bent_0.get), (← bent_far_0.get), (← here_0.get), (← slope_0.get)]) rfilter ((fn! [x_3] do
+  for e1 in (← ωitems (← dot! (← ωlst #[(← rays_l_0.get), (← space_l_0.get), (← at__0.get), (← follow_0.get), (← lean__0.get), (← bal_0.get), (← worth_0.get), (← big_s_0.get), (← far_0.get), (← quiet_0.get), (← quiet_s_0.get), (← bent_0.get), (← bent_far_0.get), (← here_0.get), (← slope_0.get)]) rfilter ((fn! [x_3] do
     if true then return (!ωisNull (← x_3.get))
     return ωnull)))) do
     let st_1 ← IO.mkRef e1

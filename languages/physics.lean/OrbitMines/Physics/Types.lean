@@ -646,6 +646,7 @@ ray_static "args" (src_0 : String) (at__0 : Float) (n_0 : Float) (between_0 : (R
 ray_static "scripted" (base_0 : Piece) (kind_0 : String) (of_0 : (RList Piece)) : Piece
 ray_static "attach" (out_0 : (RList Piece)) (kind_0 : String) (of_0 : (RList Piece)) : Value
 ray_static "parse" (src_0 : String) : (RList Piece)
+ray_static "narrowing" (p_0 : String) : (RList Piece)
 ray_static "plain" (s_0 : String) : (RList Piece)
 ray_static "set" (pieces_0 : (RList Piece)) (w_0 : Setter) : Value
 ray_static "html" (src_0 : String) : String
@@ -950,6 +951,8 @@ end TermInfo
 namespace Prover
 ray_field "theory" : Theory
 ray_sfield "PROOFS" : Value
+ray_sfield "RAYS_SAY" : Value
+ray_sfield "SPACE_SAY" : Value
 ray_field "population_line" : Step
 ray_field "record_line" : Step
 ray_field "store" : Store
@@ -996,6 +999,14 @@ ray_method "one_body" (s_0 : Store) (field__0 : Step) : Step
 ray_method "record_of_all" (known_0 : Step) (pull_0 : Step) (settled_0 : Step) : Step
 ray_method "every_local" (rec_0 : Step) (settled_0 : Step) : Step
 ray_method "following" (rec_0 : Step) : Step
+ray_static "edge_ends" : (RList String)
+ray_getter "edge_from_an_end" : Step
+ray_getter "standing_at" : Step
+ray_static "members_of" (t_0 : TermInfo) (rays_0 : Bool) : Expr
+ray_static "per_member" (count_0 : Expr) (members_0 : Expr) : Float
+ray_static "weighed" (w_0 : Float) (at__0 : Expr) : Expr
+ray_method "narrowed_term" (t_0 : TermInfo) (rays_0 : Bool) (edge_0 : Step) : Step
+ray_method "narrowed" (ledger_0 : String) (upon_0 : Step) : Step
 ray_method "lean" (rec_0 : Step) : Step
 ray_method "at_time" (rec_0 : Step) : Step
 ray_method "balance" (rec_0 : Step) (s_0 : Store) : Step
@@ -2403,6 +2414,8 @@ ray_getter "shadow" : Picture
 ray_method "pair" (id_0 : String) (how_0 : String) (what_0 : String) : Picture
 ray_getter "solar" : Picture
 ray_sfield "theorem vacuum.equation" : Theorem
+ray_sfield "theorem vacuum.rays" : Theorem
+ray_sfield "theorem vacuum.space" : Theorem
 ray_sfield "theorem vacuum.at" : Theorem
 ray_sfield "theorem vacuum.following" : Theorem
 ray_sfield "theorem vacuum.lean" : Theorem
