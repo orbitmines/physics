@@ -5815,15 +5815,22 @@ end
     st_0.parts_ = Any[top_0, bottom_0]
     return st_0
   end
-  function record_left(self::__class__, rays_c_0 = nothing, ways_c_0 = nothing, settles_0 = nothing, _...)
+  function record_left(self::__class__, s_0 = nothing, rays_c_0 = nothing, ways_c_0 = nothing, settles_0 = nothing, _...)
     k_0 = fold_weight(self)
     both_0 = neat(Prover, collected(Expr, expand(Expr, add(Expr, Any[mul(Expr, Any[WAYS(Prover), to(fact(rays_c_0))]), mul(Expr, Any[k_0, to(fact(ways_c_0))])]))))
     vac_0 = field(Expr, Base.string(j"\\rho_{\\infty}"))
     base_0 = replace(Expr, to(fact(settles_0)), Base.string(j"\\rho"), vac_0)
-    per_0 = mul(Expr, Any[field(Expr, Base.string(j"x.\\bar{m}")), sub(Expr, num(Expr, 1.0), reach(Prover, Base.string(j"x.\\bar{R}"))), pown(Expr, field(Expr, Base.string(j"l.shell\\paren{x.\\bar{R}}")), (-1.0))])
+    shell_0 = field(Expr, Base.string(j"l.shell\\paren{x.\\bar{R}}"))
+    R_0 = field(Expr, Base.string(j"x.\\bar{R}"))
+    reach_0 = fact(s_0, Base.string(j"is"), Base.string(j"l.reach\\paren{\\bar{R}}"))
+    walks_0 = (truthy(((truthy((reach_0 != nothing)) && truthy((kind(to(reach_0)) == Base.string(j"pow")))))) ? (neat(Prover, replace(Expr, pown(Expr, neat(Prover, sub(Expr, num(Expr, 1.0), base(to(reach_0)))), (-1.0)), Base.string(j"\\rho"), vac_0))) : (nothing))
+    dim_0 = field(Expr, Base.string(j"D"))
+    deeper_0 = (truthy((walks_0 == nothing)) ? (num(Expr, 1.0)) : (add(Expr, Any[num(Expr, 1.0), neat(Prover, div(Expr, mul(Expr, Any[dim_0, R_0]), mul(Expr, Any[sub(Expr, dim_0, num(Expr, 2.0)), walks_0])))])))
+    per_0 = mul(Expr, Any[field(Expr, Base.string(j"x.\\bar{m}")), sub(Expr, num(Expr, 1.0), reach(Prover, Base.string(j"x.\\bar{R}"))), pown(Expr, shell_0, (-1.0)), deeper_0])
+    walked_0 = (truthy((walks_0 == nothing)) ? (Base.string(j"-")) : (show(Expr, walks_0)))
     rhs_0 = add(Expr, Any[base_0, mul(Expr, Any[pown(Expr, k_0, (-1.0)), call(Expr, Base.string(j"\\sum_{x = x_{@t}}"), per_0)])])
     lhs_0 = Base.string(j"\\Delta\\paren{DEG·\\rho + ", str(show(Expr, k_0)), j"·n_{f}}")
-    return of(Step, stands(Fact, Base.string(j"n_{f,l}\\paren{t}"), rhs_0), Base.string(j"the record every body leaves at a local"), Any[key(fact(rays_c_0)), key(fact(ways_c_0)), key(fact(settles_0))], Base.string(j"a meeting turns ", str(show(Expr, k_0)), j" of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", str(show(Expr, k_0)), j" times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought, over ", str(show(Expr, k_0)), j", on the settled record. Each body is read as it was when its rays left it, at its own distance then"), Any[Base.string(j"", str(lhs_0), j" = ", str(show(Expr, both_0)), j""), Base.string(j"the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", str(show(Expr, base_0)), j""), Base.string(j"x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"), Base.string(j"n_{f,l}\\paren{t} = ", str(show(Expr, rhs_0)), j"")])
+    return of(Step, stands(Fact, Base.string(j"n_{f,l}\\paren{t}"), rhs_0), Base.string(j"the record every body leaves at a local"), Any[key(fact(rays_c_0)), key(fact(ways_c_0)), key(fact(settles_0))], Base.string(j"a meeting turns ", str(show(Expr, k_0)), j" of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", str(show(Expr, k_0)), j" times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", str(show(Expr, k_0)), j", on the settled record. Each body is read as it was when its rays left it, at its own distance then"), Any[Base.string(j"", str(lhs_0), j" = ", str(show(Expr, both_0)), j""), Base.string(j"the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", str(show(Expr, base_0)), j""), Base.string(j"x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"), Base.string(j"the walk: \\lambda = ", str(walked_0), j", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}"), Base.string(j"n_{f,l}\\paren{t} = ", str(show(Expr, rhs_0)), j"")])
   end
   function leftover(self::__class__, rays_c_0 = nothing, _...)
     m_0 = label(MASS(Prover))
@@ -5873,7 +5880,7 @@ end
     if truthy((settles_0 == nothing))
       return Any[]
     end
-    left_0 = record_left(self, rays_c_0, ways_c_0, settles_0)
+    left_0 = record_left(self, s_0, rays_c_0, ways_c_0, settles_0)
     mass_0 = leftover(self, rays_c_0)
     if truthy((mass_0 == nothing))
       return Any[]

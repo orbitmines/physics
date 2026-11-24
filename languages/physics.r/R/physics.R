@@ -6870,15 +6870,22 @@ Prover <- ray_class("Prover", Node, function(cl) {
     return(st)
     NULL
   })
-  method(cl, "record_left", function(rays_c = NULL, ways_c = NULL, settles = NULL, ...) {
+  method(cl, "record_left", function(s = NULL, rays_c = NULL, ways_c = NULL, settles = NULL, ...) {
     k <- self$fold_weight
     both <- Prover$neat(Expr$collected(Expr$expand(Expr$add(lst(Expr$mul(lst(Prover$WAYS, rays_c$fact$to)), Expr$mul(lst(k, ways_c$fact$to)))))))
     vac <- Expr$field("\\rho_{\\infty}")
     base <- Expr$replace(settles$fact$to, "\\rho", vac)
-    per <- Expr$mul(lst(Expr$field("x.\\bar{m}"), Expr$sub(Expr$num(1), Prover$reach("x.\\bar{R}")), Expr$pown(Expr$field("l.shell\\paren{x.\\bar{R}}"), neg(1))))
+    shell <- Expr$field("l.shell\\paren{x.\\bar{R}}")
+    R <- Expr$field("x.\\bar{R}")
+    reach <- s$fact("is", "l.reach\\paren{\\bar{R}}")
+    walks <- (if (truthy(((if (truthy(.x <- (!eq(reach, NULL)))) eq(reach$to$kind, "pow") else .x)))) Prover$neat(Expr$replace(Expr$pown(Prover$neat(Expr$sub(Expr$num(1), reach$to$base)), neg(1)), "\\rho", vac)) else NULL)
+    dim <- Expr$field("D")
+    deeper <- (if (truthy(eq(walks, NULL))) Expr$num(1) else Expr$add(lst(Expr$num(1), Prover$neat(Expr$div(Expr$mul(lst(dim, R)), Expr$mul(lst(Expr$sub(dim, Expr$num(2)), walks)))))))
+    per <- Expr$mul(lst(Expr$field("x.\\bar{m}"), Expr$sub(Expr$num(1), Prover$reach("x.\\bar{R}")), Expr$pown(shell, neg(1)), deeper))
+    walked <- (if (truthy(eq(walks, NULL))) "-" else Expr$show(walks))
     rhs <- Expr$add(lst(base, Expr$mul(lst(Expr$pown(k, neg(1)), Expr$call("\\sum_{x = x_{@t}}", per)))))
     lhs <- "\\Delta\\paren{DEG·\\rho + " %+% text_of(Expr$show(k)) %+% "·n_{f}}"
-    return(Step$of(Fact$stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", lst(rays_c$fact$key, ways_c$fact$key, settles$fact$key), "a meeting turns " %+% text_of(Expr$show(k)) %+% " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " %+% text_of(Expr$show(k)) %+% " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought, over " %+% text_of(Expr$show(k)) %+% ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(both)) %+% "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " %+% text_of(Expr$show(base)) %+% "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = " %+% text_of(Expr$show(rhs)) %+% "")))
+    return(Step$of(Fact$stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", lst(rays_c$fact$key, ways_c$fact$key, settles$fact$key), "a meeting turns " %+% text_of(Expr$show(k)) %+% " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " %+% text_of(Expr$show(k)) %+% " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " %+% text_of(Expr$show(k)) %+% ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(both)) %+% "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " %+% text_of(Expr$show(base)) %+% "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " %+% text_of(walked) %+% ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " %+% text_of(Expr$show(rhs)) %+% "")))
     NULL
   })
   method(cl, "leftover", function(rays_c = NULL, ...) {
@@ -6936,7 +6943,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     if (truthy(eq(settles, NULL))) {
       return(lst())
     }
-    left <- self$record_left(rays_c, ways_c, settles)
+    left <- self$record_left(s, rays_c, ways_c, settles)
     mass <- self$leftover(rays_c)
     if (truthy(eq(mass, NULL))) {
       return(lst())

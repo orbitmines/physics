@@ -7182,15 +7182,22 @@ class Prover < Node
     st.parts_ = [top, bottom]
     return st
   end
-  def record_left(rays_c, ways_c, settles)
+  def record_left(s, rays_c, ways_c, settles)
     k = self.fold_weight
     both = Prover.neat(Expr.collected(Expr.expand(Expr.add([Expr.mul([Prover.WAYS, rays_c.fact.to]), Expr.mul([k, ways_c.fact.to])]))))
     vac = Expr.field("\\rho_{\\infty}")
     base = Expr.replace(settles.fact.to, "\\rho", vac)
-    per = Expr.mul([Expr.field("x.\\bar{m}"), Expr.sub(Expr.num(1), Prover.reach("x.\\bar{R}")), Expr.pown(Expr.field("l.shell\\paren{x.\\bar{R}}"), (-1))])
+    shell = Expr.field("l.shell\\paren{x.\\bar{R}}")
+    _R = Expr.field("x.\\bar{R}")
+    reach = s.fact("is", "l.reach\\paren{\\bar{R}}")
+    walks = (((!Ops.eq(reach, nil) && Ops.eq(reach.to.kind, "pow"))) ? Prover.neat(Expr.replace(Expr.pown(Prover.neat(Expr.sub(Expr.num(1), reach.to.base)), (-1)), "\\rho", vac)) : nil)
+    dim = Expr.field("D")
+    deeper = (Ops.eq(walks, nil) ? Expr.num(1) : Expr.add([Expr.num(1), Prover.neat(Expr.div(Expr.mul([dim, _R]), Expr.mul([Expr.sub(dim, Expr.num(2)), walks])))]))
+    per = Expr.mul([Expr.field("x.\\bar{m}"), Expr.sub(Expr.num(1), Prover.reach("x.\\bar{R}")), Expr.pown(shell, (-1)), deeper])
+    walked = (Ops.eq(walks, nil) ? "-" : Expr.show(walks))
     rhs = Expr.add([base, Expr.mul([Expr.pown(k, (-1)), Expr.call("\\sum_{x = x_{@t}}", per)])])
     lhs = "\\Delta\\paren{DEG·\\rho + #{Expr.show(k)}·n_{f}}"
-    return Step.of(Fact.stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", [rays_c.fact.key, ways_c.fact.key, settles.fact.key], "a meeting turns #{Expr.show(k)} of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and #{Expr.show(k)} times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought, over #{Expr.show(k)}, on the settled record. Each body is read as it was when its rays left it, at its own distance then", ["#{lhs} = #{Expr.show(both)}", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, #{Expr.show(base)}", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = #{Expr.show(rhs)}"])
+    return Step.of(Fact.stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", [rays_c.fact.key, ways_c.fact.key, settles.fact.key], "a meeting turns #{Expr.show(k)} of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and #{Expr.show(k)} times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over #{Expr.show(k)}, on the settled record. Each body is read as it was when its rays left it, at its own distance then", ["#{lhs} = #{Expr.show(both)}", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, #{Expr.show(base)}", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = #{walked}, outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = #{Expr.show(rhs)}"])
   end
   def leftover(rays_c)
     m = Prover.MASS.label
@@ -7240,7 +7247,7 @@ class Prover < Node
     if Ops.eq(settles, nil)
       return []
     end
-    left = self.record_left(rays_c, ways_c, settles)
+    left = self.record_left(s, rays_c, ways_c, settles)
     mass = self.leftover(rays_c)
     if Ops.eq(mass, nil)
       return []

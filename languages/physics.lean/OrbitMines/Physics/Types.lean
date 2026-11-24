@@ -1033,7 +1033,7 @@ ray_method "ways_line" (line_0 : Step) (moved_0 : Step) (ways_0 : Step) (pieces_
 ray_method "in_record" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Expr
 ray_method "record_moves" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Step
 ray_method "record_settles" (moves_0 : Step) : Step
-ray_method "record_left" (rays_c_0 : Step) (ways_c_0 : Step) (settles_0 : Step) : Step
+ray_method "record_left" (s_0 : Store) (rays_c_0 : Step) (ways_c_0 : Step) (settles_0 : Step) : Step
 ray_method "leftover" (rays_c_0 : Step) : Step
 ray_method "model_chain" (s_0 : Store) (rays_l_0 : Step) (space_l_0 : Step) (spaced_0 : Step) (folded_0 : Step) (one_0 : Step) : (RList Step)
 ray_method "lean" (rec_0 : Step) : Step

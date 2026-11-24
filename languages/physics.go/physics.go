@@ -11644,7 +11644,7 @@ func init() {
       return nil
     })
     c.Method("record_left", func(self any, a1 []any) any {
-      var rays_c_0 any = Arg(a1, 0); _ = rays_c_0; var ways_c_0 any = Arg(a1, 1); _ = ways_c_0; var settles_0 any = Arg(a1, 2); _ = settles_0;
+      var s_0 any = Arg(a1, 0); _ = s_0; var rays_c_0 any = Arg(a1, 1); _ = rays_c_0; var ways_c_0 any = Arg(a1, 2); _ = ways_c_0; var settles_0 any = Arg(a1, 3); _ = settles_0;
       var k_0 any
       k_0 = Get(self, "fold_weight")
       _ = k_0
@@ -11657,9 +11657,30 @@ func init() {
       var base_0 any
       base_0 = Call(K("Expr"), "replace", []any{ Get(Get(settles_0, "fact"), "to"), "\\rho", vac_0 })
       _ = base_0
+      var shell_0 any
+      shell_0 = Call(K("Expr"), "field", []any{ "l.shell\\paren{x.\\bar{R}}" })
+      _ = shell_0
+      var R_0 any
+      R_0 = Call(K("Expr"), "field", []any{ "x.\\bar{R}" })
+      _ = R_0
+      var reach_0 any
+      reach_0 = Call(s_0, "fact", []any{ "is", "l.reach\\paren{\\bar{R}}" })
+      _ = reach_0
+      var walks_0 any
+      walks_0 = Tern(Truthy(((Truthy(!Eq(reach_0, nil)) && Truthy(Eq(Get(Get(reach_0, "to"), "kind"), "pow"))))), func() any { return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "pown", []any{ Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Get(Get(reach_0, "to"), "base") }) }), Neg(1.0) }), "\\rho", vac_0 }) }) }, func() any { return nil })
+      _ = walks_0
+      var dim_0 any
+      dim_0 = Call(K("Expr"), "field", []any{ "D" })
+      _ = dim_0
+      var deeper_0 any
+      deeper_0 = Tern(Truthy(Eq(walks_0, nil)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ Call(K("Expr"), "mul", []any{ Lst(dim_0, R_0) }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "sub", []any{ dim_0, Call(K("Expr"), "num", []any{ 2.0 }) }), walks_0) }) }) })) }) })
+      _ = deeper_0
       var per_0 any
-      per_0 = Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "x.\\bar{m}" }), Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Prover"), "reach", []any{ "x.\\bar{R}" }) }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "l.shell\\paren{x.\\bar{R}}" }), Neg(1.0) })) })
+      per_0 = Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "x.\\bar{m}" }), Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Prover"), "reach", []any{ "x.\\bar{R}" }) }), Call(K("Expr"), "pown", []any{ shell_0, Neg(1.0) }), deeper_0) })
       _ = per_0
+      var walked_0 any
+      walked_0 = Tern(Truthy(Eq(walks_0, nil)), func() any { return "-" }, func() any { return Call(K("Expr"), "show", []any{ walks_0 }) })
+      _ = walked_0
       var rhs_0 any
       rhs_0 = Call(K("Expr"), "add", []any{ Lst(base_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ k_0, Neg(1.0) }), Call(K("Expr"), "call", []any{ "\\sum_{x = x_{@t}}", per_0 })) })) })
       _ = rhs_0
@@ -11667,7 +11688,7 @@ func init() {
       lhs_0 = "\\Delta\\paren{DEG·\\rho + " + Str(Call(K("Expr"), "show", []any{ k_0 })) + "·n_{f}}"
       _ = lhs_0
       if true {
-        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", Lst(Get(Get(rays_c_0, "fact"), "key"), Get(Get(ways_c_0, "fact"), "key"), Get(Get(settles_0, "fact"), "key")), "a meeting turns " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought, over " + Str(Call(K("Expr"), "show", []any{ k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + Str(Call(K("Expr"), "show", []any{ base_0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", Lst(Get(Get(rays_c_0, "fact"), "key"), Get(Get(ways_c_0, "fact"), "key"), Get(Get(settles_0, "fact"), "key")), "a meeting turns " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " + Str(Call(K("Expr"), "show", []any{ k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + Str(Call(K("Expr"), "show", []any{ base_0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " + Str(walked_0) + ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
       }
       return nil
     })
@@ -11789,7 +11810,7 @@ func init() {
         }
       }
       var left_0 any
-      left_0 = Call(self, "record_left", []any{ rays_c_0, ways_c_0, settles_0 })
+      left_0 = Call(self, "record_left", []any{ s_0, rays_c_0, ways_c_0, settles_0 })
       _ = left_0
       var mass_0 any
       mass_0 = Call(self, "leftover", []any{ rays_c_0 })
