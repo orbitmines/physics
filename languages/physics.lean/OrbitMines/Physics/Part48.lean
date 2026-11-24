@@ -41,6 +41,47 @@ ray_impl_field "store" : Store := do
   return (← ωget (← ωget self "prover") "closure")
 ray_impl_field "chain" : Keyed := do
   return (← call! (← ωget self "prover") "chain" ((← ωget self "store")))
+ray_impl_field "net" : Expr := do
+  return (← ωget self "rays_net")
+ray_impl_getter "rays_net" : Expr := do
+  let st_0 ← IO.mkRef (← call! self "step" (("rays" : String)))
+  if ωtruthy (ωisNull (← st_0.get)) then
+    if true then return ωnull
+    pure ()
+  let e_0 ← IO.mkRef (← ωget (← ωget (← st_0.get) "fact") "to")
+  for e1 in (← ωitems (← ωlst #[(← ωget (← cls% Prover) "GAIN"), (← ωget (← cls% Prover) "LOSS")])) do
+    let name_1 ← IO.mkRef e1
+    let piece_1 ← IO.mkRef (← call! (← ωget self "chain") "get" ((← name_1.get)))
+    if ωtruthy (!ωisNull (← piece_1.get)) then
+      (← ωwr e_0 (← call! (← cls% Expr) "replace" ((← e_0.get), (← name_1.get), (← ωget (← ωget (← piece_1.get) "fact") "to")))) |> ωsink
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  if true then return (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← e_0.get), (← ωget (← ωget (← cls% Prover) "ACROSS") "label"), (← ωget (← cls% Prover) "HERE"))), (← ωget (← ωget (← cls% Prover) "MASS") "label"), (← call! (← cls% Expr) "num" ((0 : Float)))))))
+  return ωnull
+ray_impl_method "nets_at" (rho_0 : Float) : Float := do
+  let e_0 ← IO.mkRef (← ωget self "env")
+  (ωatSetter (← e_0.get) (← ωget (← ωget (← cls% Prover) "HERE") "label")) (← rho_0.get)
+  if true then return (← call! (← cls% Aggregate) "numeric_of" ((← ωget self "net"), (← e_0.get)))
+  return ωnull
+ray_impl_getter "root_of_net" : Float := do
+  let lo_0 ← IO.mkRef (0 : Float)
+  let hi_0 ← IO.mkRef (1 : Float)
+  for i1 in [0:ωrangeN (48 : Float)] do
+    let i_1 ← IO.mkRef (ωnatF i1)
+    let mid_1 ← IO.mkRef (← ωdiv ((← ωadd (← lo_0.get) (← hi_0.get))) (2 : Float))
+    if ωtruthy (← ωgt (← call! self "nets_at" ((← mid_1.get))) (0 : Float)) then
+      (← ωwr lo_0 (← mid_1.get)) |> ωsink
+      pure ()
+    else
+      (← ωwr hi_0 (← mid_1.get)) |> ωsink
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  if true then return (← ωdiv ((← ωadd (← lo_0.get) (← hi_0.get))) (2 : Float))
+  return ωnull
+ray_impl_field "settled_rho" : Float := do
+  return (← ωtern (ωtruthy (ωisNull (← ωget self "net"))) (do pure (← call! self "fact_at" (("\\rho_{\\infty}" : String), (← ωget self "env")))) (do pure (← ωget self "root_of_net")))
 ray_impl_field "NEAR" : Float := do
   return 0.5
 ray_impl_getter "env" : object := do
@@ -56,6 +97,7 @@ ray_impl_getter "env" : object := do
   (← (ωatSetter (← e_0.get) ("D" : String)) (← ωget self "D")) |> ωsink
   (← (ωatSetter (← e_0.get) ("DEG" : String)) (← ωget self "DEG")) |> ωsink
   (← (ωatSetter (← e_0.get) ("l.DEG" : String)) (← ωget self "DEG")) |> ωsink
+  (← (ωatSetter (← e_0.get) ("DEG_{0}" : String)) (← ωget self "DEG")) |> ωsink
   (← (ωatSetter (← e_0.get) ("\\bar{c}" : String)) (1 : Float)) |> ωsink
   if true then return (← e_0.get)
   return ωnull
@@ -77,7 +119,7 @@ ray_impl_method "says" (role_0 : String) : String := do
   if true then return (← ωtern (ωtruthy (ωisNull (← st_0.get))) (do pure ("-" : String)) (do pure ("" ++ (← ωtoStr (← ωget (← ωget (← st_0.get) "fact") "of")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← st_0.get) "fact") "to")))) ++ "" : String)))
   return ωnull
 ray_impl_getter "rho_inf" : Float := do
-  if true then return (← call! self "fact_at" (("\\rho_{\\infty}" : String), (← ωget self "env")))
+  if true then return (← ωget self "settled_rho")
   return ωnull
 ray_impl_getter "settled_env" : object := do
   let e_0 ← IO.mkRef (← ωget self "env")
@@ -565,7 +607,9 @@ ray_impl_getter "bindings" : (RList String) := do
   return ωnull
 ray_impl_getter "folds_expr" : Expr := do
   let st_0 ← IO.mkRef (← call! self "step" (("folds" : String)))
-  if true then return (← ωtern (ωtruthy (ωisNull (← st_0.get))) (do pure (← call! (← cls% Expr) "num" ((0 : Float)))) (do pure (← ωget (← ωget (← st_0.get) "fact") "to")))
+  let lattice_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← lattice_0.get) ("DEG_{0}" : String)) (← ωget self "DEG")) |> ωsink
+  if true then return (← ωtern (ωtruthy (ωisNull (← st_0.get))) (do pure (← call! (← cls% Expr) "num" ((0 : Float)))) (do pure (← call! (← cls% Expr) "evaluate" ((← ωget (← ωget (← st_0.get) "fact") "to"), (← lattice_0.get)))))
   return ωnull
 ray_impl_method "folds_rate" (rho_0 : Float) (nf_0 : Float) : Float := do
   let at__0 ← IO.mkRef (← ωget self "base")

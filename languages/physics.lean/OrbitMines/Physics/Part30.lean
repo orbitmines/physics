@@ -203,7 +203,8 @@ ray_impl_static "parse" (src_0 : String) : (RList Piece) := do
       let name_0 ← IO.mkRef (← call! (← cls% Notation) "letters" ((← src_0.get), (← ωadd (← i_0.get) (1 : Float))))
       let word_0 ← IO.mkRef (ωnotV (← dot! (← name_0.get) rempty ()))
       let after_0 ← IO.mkRef (← ωadd (← ωadd (← i_0.get) (1 : Float)) (← dot! (← name_0.get) rlength ()))
-      if ωtruthy (← ωandV (← word_0.get) (do pure (← ωeqv (← call! (← cls% Notation) "char_at" ((← src_0.get), (← after_0.get))) (32 : Float)))) then
+      let next__0 ← IO.mkRef (← call! (← cls% Notation) "char_at" ((← src_0.get), (← ωadd (← after_0.get) (1 : Float))))
+      if ωtruthy (← ωandV (← ωandV (← ωandV (← ωandV (← word_0.get) (do pure (← ωeqv (← call! (← cls% Notation) "char_at" ((← src_0.get), (← after_0.get))) (32 : Float)))) (do pure (← ωnev (← next__0.get) (43 : Float)))) (do pure (← ωnev (← next__0.get) (45 : Float)))) (do pure (← ωnev (← next__0.get) (61 : Float)))) then
         (← ωwr after_0 (← ωadd (← after_0.get) (1 : Float))) |> ωsink
         pure ()
       let big_0 ← IO.mkRef ωnull

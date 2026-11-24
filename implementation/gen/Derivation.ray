@@ -134,6 +134,9 @@ Derivations := class {
     pr.record_line = folded
     one := pr.ledgers_are_one(s, folded, spaced)
     whole := pr.general(filled, folded)
+    rays_l := pr.narrowed("rays", filled)
+    space_l := pr.narrowed("space", spaced)
+    model := pr.model_chain(s, rays_l, space_l, spaced, folded, one)
     settled := pr.settled_record(folded)
     short := settled == None ? None : pr.single(whole, settled, folded, s)
     agg := short == None ? None : pr.aggregate(whole, short, s)
@@ -159,9 +162,11 @@ Derivations := class {
     here := (big_s == None | bal == None) ? None : pr.record_here(big_s, bal)
     slope := here == None ? None : pr.record_slope(here, s)
     solved := [back, each_, known, pull, one_, rec, locals, at_, follow, lean_, bal, worth, big_s, far, whole_line, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None)
-    chain := line.concat([pr.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
+    old_chain := line.concat([pr.isotropic_population, filled, spaced, folded, one, whole]).concat(settled == None ? [] : [settled, short]).concat(agg == None ? [] : [agg]).concat(solved)
+    chain := model.empty ? old_chain : model
     named := Keyed()
-    [at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    [rays_l, space_l, at_, follow, lean_, bal, worth, big_s, far, quiet, quiet_s, bent, bent_far, here, slope].filter(x => x != None).for(st => { named.set(st.fact.of, st) })
+    model.filter(x => x.via != Prover.RAYS_PER_WAY & x.via != "the ways move with the record" & x.via != "the mass is what the vacuum leaves over").for(st => { named.set(st.fact.of, st) })
     /*
      * THE CHAIN'S OWN ALGEBRA, read off its methods as an inference's is: the steps that are algebra on the lines they are
      * given - one line taken from another, two added - run again with those lines standing as their names

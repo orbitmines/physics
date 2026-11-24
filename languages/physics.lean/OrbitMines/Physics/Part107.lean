@@ -391,6 +391,22 @@ ray_impl_sfield "theorem vacuum.space" : Theorem := do
   return (← new! Theorem (id := "vacuum.space", body := (fn! [] do
     if true then return (← new! Asked («asks» := ("and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?" : String), «about» := ("\\Delta \\narrow{\\forall}{@ == l}" : String), «leads» := ("THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation." : String)))
     return ωnull)))
+ray_impl_sfield "theorem vacuum.creation" : Theorem := do
+  return (← new! Theorem (id := "vacuum.creation", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("creation, at a local: what share of l's ways does it light a tick?" : String), «about» := ("S^{+}" : String), «leads» := ("CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once." : String)))
+    return ωnull)))
+ray_impl_sfield "theorem vacuum.annihilation" : Theorem := do
+  return (← new! Theorem (id := "vacuum.annihilation", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("annihilation, at a local: what share of l's ways does it take a tick?" : String), «about» := ("S^{-}" : String), «leads» := ("ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends." : String)))
+    return ωnull)))
+ray_impl_sfield "theorem vacuum.movement" : Theorem := do
+  return (← new! Theorem (id := "vacuum.movement", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("the rays move. Followed a step and a tick, what does a ray's way on depend on?" : String), «about» := ("\\Delta\\rho" : String), «leads» := ("MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds." : String)))
+    return ωnull)))
+ray_impl_sfield "theorem vacuum.ways" : Theorem := do
+  return (← new! Theorem (id := "vacuum.ways", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("a fold is a way. How many ways does a local have, and what moves them?" : String), «about» := ("\\Delta DEG" : String), «also» := ("DEG" : String), «leads» := ("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own." : String), «then» := ("AND WHAT THEY ARE: the lattice's own ways and one for every fold." : String)))
+    return ωnull)))
 ray_impl_sfield "theorem vacuum.at" : Theorem := do
   return (← new! Theorem (id := "vacuum.at", body := (fn! [] do
     if true then return (← new! Asked («asks» := ("a source is a thing with a history. What does it mean to read one at a particular time?" : String), «about» := ("l'_{@t}" : String)))

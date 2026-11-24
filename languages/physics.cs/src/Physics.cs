@@ -2884,7 +2884,8 @@ public static class C_Notation {
           object name_1 = null; name_1 = call(K("Notation"), "letters", new object[] { src_0, add(i_0, 1.0) });
           object word_1 = null; word_1 = not(m_empty(name_1));
           object after_1 = null; after_1 = add(add(i_0, 1.0), len(name_1));
-          if (truthy((truthy(word_1) && truthy(eq(call(K("Notation"), "char_at", new object[] { src_0, after_1 }), 32.0))))) {
+          object next__1 = null; next__1 = call(K("Notation"), "char_at", new object[] { src_0, add(after_1, 1.0) });
+          if (truthy((truthy((truthy((truthy((truthy(word_1) && truthy(eq(call(K("Notation"), "char_at", new object[] { src_0, after_1 }), 32.0)))) && truthy(!eq(next__1, 43.0)))) && truthy(!eq(next__1, 45.0)))) && truthy(!eq(next__1, 61.0))))) {
             after_1 = add(after_1, 1.0);
           }
           object big_1 = null; big_1 = null;
@@ -6200,8 +6201,13 @@ public static class C_Prover {
   public static void define(Cls c) {
     c.field("theory", null);
     c.staticField("PROOFS", self => make(NODE));
+    c.staticField("MARK", self => "\n@@ ");
     c.staticField("RAYS_SAY", self => "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.");
     c.staticField("SPACE_SAY", self => "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.");
+    c.staticField("LIGHTS", self => "lights");
+    c.staticField("TAKES", self => "takes");
+    c.staticField("RAYS_PER_WAY", self => "the rays at a local, per way");
+    c.staticField("WAYS_LINE", self => "the ways at a local, a tick on");
     c.field("population_line", self => null);
     c.field("record_line", self => null);
     c.field("store", self => make("Store", new object[] {  }));
@@ -7115,8 +7121,26 @@ public static class C_Prover {
       return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta_{v}f", call(K("Expr"), "field", new object[] { "f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}" }) }), "following", list(get(get(rec_0, "fact"), "key")), "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", list("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local") });
       return null;
     });
+    c.statik("sources_read", (self, a1) => {
+      return m_join(m_map(list(list("Edge.active", get(call(K("Edge"), "method", new object[] { "active" }), "source")), list("Ray.facing", get(call(K("Ray"), "method", new object[] { "facing" }), "source")), list("Ray.turns", get(call(K("Ray"), "method", new object[] { "turns" }), "source")), list("Vertex.fold", get(call(K("Vertex"), "method", new object[] { "fold" }), "source")), list("Vertex.alive", get(call(K("Vertex"), "method", new object[] { "alive" }), "source")), list("Vertex.sinks", get(call(K("Vertex"), "method", new object[] { "sinks" }), "source"))), new Fn((a3) => {
+        object p_2 = arg(a3, 0);
+        return "" + str(get(K("Prover"), "MARK")) + "" + str(elem(p_2, 0.0)) + "\n" + str(elem(p_2, 1.0)) + "";
+        return null;
+      })), "");
+      return null;
+    });
+    c.statik("source_of", (self, a1) => {
+      object key_0 = arg(a1, 0);
+      object hit_0 = null; hit_0 = m_first(filt(m_split(METHOD_SOURCES(), get(K("Prover"), "MARK")), new Fn((a3) => {
+        object p_2 = arg(a3, 0);
+        return m_starts_with(p_2, "" + str(key_0) + "\n");
+        return null;
+      })));
+      return (truthy(eq(hit_0, null)) ? (object) "" : (object) m_drop(hit_0, add(len(key_0), 1.0)));
+      return null;
+    });
     c.statik("edge_ends", (self, a1) => {
-      return filt(m_split(get(call(K("Edge"), "method", new object[] { "active" }), "source"), " & "), new Fn((a3) => {
+      return filt(m_split(call(K("Prover"), "source_of", new object[] { "Edge.active" }), " & "), new Fn((a3) => {
         object c__2 = arg(a3, 0);
         return gt(len(m_split(c__2, ".active")), 1.0);
         return null;
@@ -7124,21 +7148,21 @@ public static class C_Prover {
       return null;
     });
     c.getter("edge_from_an_end", (self, a1) => {
-      object def_0 = null; def_0 = get(call(K("Edge"), "method", new object[] { "active" }), "source");
+      object active__0 = null; active__0 = call(K("Prover"), "source_of", new object[] { "Edge.active" });
       object ends_0 = null; ends_0 = get(K("Prover"), "edge_ends");
       object asked_0 = null; asked_0 = m_join(m_concat(list("active"), m_map(m_drop(ends_0, 1.0), new Fn((a3) => {
         object __2 = arg(a3, 0);
         return "next.active";
         return null;
       }))), " & ");
-      object facing_0 = null; facing_0 = get(call(K("Ray"), "method", new object[] { "facing" }), "source");
-      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\narrow{Edge}{active}", call(K("Expr"), "field", new object[] { "\\narrow{l}{" + str(asked_0) + "}" }) }), "an edge, seen from one of its ends", list(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + str(len(ends_0)) + ".", list("Edge.active = " + str(def_0) + "", "Ray.facing = " + str(facing_0) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + str(asked_0) + "}, " + str(len(ends_0)) + " ends to a meeting") });
+      object facing_0 = null; facing_0 = call(K("Prover"), "source_of", new object[] { "Ray.facing" });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\narrow{Edge}{active}", call(K("Expr"), "field", new object[] { "\\narrow{l}{" + str(asked_0) + "}" }) }), "an edge, seen from one of its ends", list(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + str(len(ends_0)) + ".", list("Edge.active = " + str(active__0) + "", "Ray.facing = " + str(facing_0) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + str(asked_0) + "}, " + str(len(ends_0)) + " ends to a meeting") });
       return st_0;
       return null;
     });
     c.getter("standing_at", (self, a1) => {
-      object alive_0 = null; alive_0 = get(call(K("Vertex"), "method", new object[] { "alive" }), "source");
-      object sinks_0 = null; sinks_0 = get(call(K("Vertex"), "method", new object[] { "sinks" }), "source");
+      object alive_0 = null; alive_0 = call(K("Prover"), "source_of", new object[] { "Vertex.alive" });
+      object sinks_0 = null; sinks_0 = call(K("Prover"), "source_of", new object[] { "Vertex.sinks" });
       return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\narrow{\\forall}{@ == l}", call(K("Expr"), "add", new object[] { list(call(K("Expr"), "num", new object[] { 1.0 }), call(K("Expr"), "field", new object[] { "\\narrow{\\forall}{folded_into == l}" })) }) }), "what stands at a local", list(), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", list("Vertex.alive = " + str(alive_0) + "", "Vertex.sinks = " + str(sinks_0) + "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}") });
       return null;
     });
@@ -7243,6 +7267,332 @@ public static class C_Prover {
       })), list("" + str(lhs_0) + " = " + str(call(K("Expr"), "show", new object[] { rhs_0 })) + "")) });
       set(st_0, "derivation", behind_0);
       return st_0;
+      return null;
+    });
+    c.statik("ACROSS", (self, a1) => {
+      return call(K("Expr"), "field", new object[] { "\\tilde{\\rho}" });
+      return null;
+    });
+    c.statik("HERE", (self, a1) => {
+      return call(K("Expr"), "field", new object[] { "\\rho" });
+      return null;
+    });
+    c.statik("WAYS", (self, a1) => {
+      return call(K("Expr"), "field", new object[] { "DEG" });
+      return null;
+    });
+    c.statik("LATTICE", (self, a1) => {
+      return call(K("Expr"), "field", new object[] { "DEG_{0}" });
+      return null;
+    });
+    c.statik("MASS", (self, a1) => {
+      return call(K("Expr"), "field", new object[] { "\\bar{m}" });
+      return null;
+    });
+    c.statik("STANDING", (self, a1) => {
+      return "\\narrow{\\forall}{@ == l}";
+      return null;
+    });
+    c.method("share_at", (self, a1) => {
+      object t_0 = arg(a1, 0); object fill_0 = arg(a1, 1);
+      object at_l_0 = null; at_l_0 = new Fn((a2) => {
+        object e_1 = arg(a2, 0);
+        return call(K("Prover"), "neat", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "evaluate", new object[] { e_1, fill_0 }), "n", get(K("Prover"), "HERE") }), "\\rho", get(K("Prover"), "HERE") }), "l.\\bar{m}", get(K("Prover"), "MASS") }) });
+        return null;
+      });
+      if (truthy(get(t_0, "outside"))) {
+        return invoke(at_l_0, new object[] { get(t_0, "expr") });
+      }
+      object parts_0 = null; parts_0 = list();
+      if (truthy(!eq(get(t_0, "rate"), null))) {
+        m_push(parts_0, call(K("Expr"), "field", new object[] { get(t_0, "rate") }));
+      }
+      if (truthy(!eq(get(t_0, "asked"), null))) {
+        m_push(parts_0, get(t_0, "asked"));
+      }
+      if (truthy(gt(get(t_0, "degree"), 0.0))) {
+        m_push(parts_0, get(K("Prover"), "HERE"));
+      }
+      if (truthy(gt(get(t_0, "degree"), 1.0))) {
+        m_push(parts_0, call(K("Expr"), "pown", new object[] { get(K("Prover"), "ACROSS"), sub(get(t_0, "degree"), 1.0) }));
+      }
+      return invoke(at_l_0, new object[] { (truthy(m_empty(parts_0)) ? (object) call(K("Expr"), "num", new object[] { 1.0 }) : (object) call(K("Expr"), "mul", new object[] { parts_0 })) });
+      return null;
+    });
+    c.statik("members_at", (self, a1) => {
+      object t_0 = arg(a1, 0); object rays_0 = arg(a1, 1);
+      return (truthy(((truthy(get(t_0, "outside")) || truthy(((truthy(eq(get(get(get(t_0, "term"), "rule"), "over"), "Vertex")) && truthy(not(rays_0)))))))) ? (object) call(K("Expr"), "num", new object[] { 1.0 }) : (object) get(K("Prover"), "WAYS"));
+      return null;
+    });
+    c.method("ways_at", (self, a1) => {
+      object one_0 = arg(a1, 0); object behind_0 = arg(a1, 1);
+      object draws_0 = null; draws_0 = call(K("Prover"), "source_of", new object[] { "Ray.turns" });
+      object folding_0 = null; folding_0 = call(K("Prover"), "source_of", new object[] { "Vertex.fold" });
+      if (truthy((truthy(not(m_contains(draws_0, "folds"))) || truthy(not(m_contains(folding_0, "folds[d] + 1")))))) {
+        return null;
+      }
+      object own_0 = null; own_0 = call(K("Expr"), "add", new object[] { list(get(K("Prover"), "LATTICE"), call(K("Expr"), "field", new object[] { "n_{f,l}" })) });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "DEG", own_0 }), "the ways at a local", list(get(get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", list("Ray.turns = " + str(draws_0) + ": straight on at one, each folded way at its folds", "Vertex.fold = " + str(folding_0) + ": a fold written on a way", "DEG = " + str(call(K("Expr"), "show", new object[] { own_0 })) + "") });
+      set(st_0, "derivation", behind_0);
+      return st_0;
+      return null;
+    });
+    c.method("ways_moved", (self, a1) => {
+      object ways_0 = arg(a1, 0);
+      object by_0 = null; by_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "d", new object[] { get(get(ways_0, "fact"), "to"), "n_{f,l}" }) });
+      object got_0 = null; got_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "mul", new object[] { list(by_0, call(K("Expr"), "field", new object[] { "\\Delta n_{f,l}" })) }) });
+      return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta DEG", got_0 }), "the ways move with the record", list(get(get(ways_0, "fact"), "key")), "the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off", list("\\frac{\\partial DEG}{\\partial n_{f,l}} = " + str(call(K("Expr"), "show", new object[] { by_0 })) + "", "\\Delta DEG = " + str(call(K("Expr"), "show", new object[] { got_0 })) + "") });
+      return null;
+    });
+    c.statik("GAIN", (self, a1) => {
+      return "S^{+}";
+      return null;
+    });
+    c.statik("LOSS", (self, a1) => {
+      return "S^{-}";
+      return null;
+    });
+    c.method("rule_piece", (self, a1) => {
+      object t_0 = arg(a1, 0); object fill_0 = arg(a1, 1);
+      if (truthy(get(t_0, "outside"))) {
+        return null;
+      }
+      object w_0 = null; w_0 = call(K("Prover"), "per_member", new object[] { get(t_0, "ray_count"), call(K("Prover"), "members_of", new object[] { t_0, true }) });
+      if (truthy(eq(w_0, null))) {
+        return null;
+      }
+      if (truthy(eq(w_0, 0.0))) {
+        return null;
+      }
+      object r_0 = null; r_0 = get(get(t_0, "term"), "rule");
+      object pattern_0 = null; pattern_0 = (truthy(eq(get(r_0, "where"), null)) ? (object) "" : (object) get(get(r_0, "where"), "source"));
+      object share_0 = null; share_0 = call(self, "share_at", new object[] { t_0, fill_0 });
+      object got_0 = null; got_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { m_abs(w_0) }), share_0) }) });
+      object name_0 = null; name_0 = (truthy(gt(w_0, 0.0)) ? (object) get(K("Prover"), "GAIN") : (object) get(K("Prover"), "LOSS"));
+      object does_0 = null; does_0 = (truthy(gt(w_0, 0.0)) ? (object) get(K("Prover"), "LIGHTS") : (object) get(K("Prover"), "TAKES"));
+      object members_0 = null; members_0 = call(K("Expr"), "show", new object[] { call(K("Prover"), "members_of", new object[] { t_0, true }) });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { name_0, got_0 }), m_upper(get(r_0, "name")), list(), "" + str(get(r_0, "name")) + " at l, per way: its pattern narrows l to " + str(get(r_0, "over")) + "\\{" + str(pattern_0) + "\\}, which holds " + str(call(K("Expr"), "show", new object[] { share_0 })) + " of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is " + str(members_0) + " of l's ways and one firing " + str(does_0) + " " + str(call(K("Expr"), "show", new object[] { call(K("Expr"), "num", new object[] { m_abs(w_0) }) })) + " ray on each. So it " + str(does_0) + " " + str(call(K("Expr"), "show", new object[] { got_0 })) + " of l's ways a tick: written " + str(name_0) + ": S for a rule, marked by what it does to the rays", list("pattern: " + str(get(r_0, "over")) + "\\{" + str(pattern_0) + "\\}", "share of l's ways: " + str(call(K("Expr"), "show", new object[] { share_0 })) + "", "one match: " + str(members_0) + " of l's ways, " + str(call(K("Expr"), "show", new object[] { call(K("Expr"), "num", new object[] { w_0 }) })) + " a way", "" + str(name_0) + " = " + str(call(K("Expr"), "show", new object[] { got_0 })) + "") });
+      set(st_0, "rule", m_upper(get(r_0, "name")));
+      return st_0;
+      return null;
+    });
+    c.method("movement", (self, a1) => {
+      object ways_0 = arg(a1, 0);
+      object t_0 = null; t_0 = m_first(filt(get(self, "infos"), new Fn((a3) => {
+        object t_2 = arg(a3, 0);
+        return (truthy(get(t_2, "transport")) && truthy(get(t_2, "kernel")));
+        return null;
+      })));
+      if (truthy(eq(t_0, null))) {
+        return null;
+      }
+      object draws_0 = null; draws_0 = call(K("Prover"), "source_of", new object[] { "Ray.turns" });
+      object nf_0 = null; nf_0 = call(K("Expr"), "linear", new object[] { call(K("Expr"), "sub", new object[] { call(K("Expr"), "field", new object[] { "x.DEG" }), call(K("Expr"), "add", new object[] { list(get(K("Prover"), "LATTICE"), call(K("Expr"), "field", new object[] { "n_{f}" })) }) }), "n_{f}" });
+      if (truthy(eq(nf_0, null))) {
+        return null;
+      }
+      object keep_0 = null; keep_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "replace", new object[] { get(t_0, "keeps"), "n_{f}", nf_0 }) });
+      object rhs_0 = null; rhs_0 = call(K("Expr"), "sub", new object[] { call(K("Expr"), "field", new object[] { "\\rho_{+v}\\paren{t + 1}" }), call(K("Expr"), "field", new object[] { "\\rho\\paren{t}" }) });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta\\rho", rhs_0 }), m_upper(get(get(get(t_0, "term"), "rule"), "name")), list(get(get(ways_0, "fact"), "key")), "the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps " + str(call(K("Expr"), "show", new object[] { keep_0 })) + " of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place", list("Ray.turns = " + str(draws_0) + "", "at a place x: n_{f} = " + str(call(K("Expr"), "show", new object[] { nf_0 })) + ", its ways over the lattice's own", "kept straight at x: " + str(call(K("Expr"), "show", new object[] { get(t_0, "keeps") })) + " = " + str(call(K("Expr"), "show", new object[] { keep_0 })) + "", "\\Delta\\rho = " + str(call(K("Expr"), "show", new object[] { rhs_0 })) + "") });
+      set(st_0, "rule", m_upper(get(get(get(t_0, "term"), "rule"), "name")));
+      return st_0;
+      return null;
+    });
+    c.method("per_way", (self, a1) => {
+      object line_0 = arg(a1, 0); object pieces_0 = arg(a1, 1); object moving__0 = arg(a1, 2); object fill_0 = arg(a1, 3);
+      object parts_0 = null; parts_0 = list();
+      foreach (object e1 in each_of(filt(get(self, "infos"), new Fn((a4) => {
+        object t_3 = arg(a4, 0);
+        return (truthy((truthy((truthy(!eq(get(get(t_3, "term"), "rule"), null)) && truthy(not(get(t_3, "transport"))))) && truthy(not(get(t_3, "settles"))))) && truthy(!eq(get(t_3, "rays"), "0")));
+        return null;
+      })))) {
+        object t_1 = e1;
+        object w_1 = null; w_1 = call(K("Prover"), "per_member", new object[] { get(t_1, "ray_count"), call(K("Prover"), "members_of", new object[] { t_1, true }) });
+        if (!truthy(eq(w_1, null))) {
+          if (!truthy(eq(w_1, 0.0))) {
+            if (truthy(get(t_1, "outside"))) {
+              m_push(parts_0, call(K("Prover"), "weighed", new object[] { w_1, call(self, "share_at", new object[] { t_1, fill_0 }) }));
+            } else {
+              m_push(parts_0, (truthy(gt(w_1, 0.0)) ? (object) call(K("Expr"), "field", new object[] { get(K("Prover"), "GAIN") }) : (object) call(K("Expr"), "neg", new object[] { call(K("Expr"), "field", new object[] { get(K("Prover"), "LOSS") }) })));
+            };
+          }
+        }
+      };
+      object rhs_0 = null; rhs_0 = call(K("Expr"), "add", new object[] { parts_0 });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta\\rho", rhs_0 }), get(K("Prover"), "RAYS_PER_WAY"), m_concat(list(get(get(line_0, "fact"), "key"), get(get(moving__0, "fact"), "key")), m_map(pieces_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return get(get(x_2, "fact"), "key");
+        return null;
+      }))), "the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place", m_concat(m_map(pieces_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return "" + str(get(get(x_2, "fact"), "of")) + " = " + str(call(K("Expr"), "show", new object[] { get(get(x_2, "fact"), "to") })) + " (" + str(get(x_2, "via")) + ")";
+        return null;
+      })), list("" + str(get(K("Prover"), "RAYS_PER_WAY")) + ": \\Delta\\rho = " + str(call(K("Expr"), "show", new object[] { rhs_0 })) + "")) });
+      set(st_0, "derivation", m_concat(list(line_0, moving__0), pieces_0));
+      return st_0;
+      return null;
+    });
+    c.method("ways_line", (self, a1) => {
+      object line_0 = arg(a1, 0); object moved_0 = arg(a1, 1); object ways_0 = arg(a1, 2); object pieces_0 = arg(a1, 3); object fill_0 = arg(a1, 4);
+      object parts_0 = null; parts_0 = list();
+      object said_0 = null; said_0 = list();
+      object folds_of_0 = null; folds_of_0 = call(K("Expr"), "sub", new object[] { get(get(ways_0, "fact"), "to"), get(K("Prover"), "LATTICE") });
+      foreach (object e1 in each_of(filt(get(self, "infos"), new Fn((a4) => {
+        object t_3 = arg(a4, 0);
+        return (truthy((truthy((truthy(!eq(get(get(t_3, "term"), "rule"), null)) && truthy(not(get(t_3, "transport"))))) && truthy(not(get(t_3, "settles"))))) && truthy(!eq(get(t_3, "folds"), "0")));
+        return null;
+      })))) {
+        object t_1 = e1;
+        object w_1 = null; w_1 = call(K("Prover"), "per_member", new object[] { get(t_1, "fold_count"), call(K("Prover"), "members_of", new object[] { t_1, true }) });
+        if (!truthy(eq(w_1, null))) {
+          if (!truthy(eq(w_1, 0.0))) {
+            object share_1 = null; share_1 = call(self, "share_at", new object[] { t_1, fill_0 });
+            object named_1 = null; named_1 = m_first(filt(pieces_0, new Fn((a4) => {
+              object x_3 = arg(a4, 0);
+              return (truthy(eq(get(x_3, "via"), m_upper(get(get(get(t_1, "term"), "rule"), "name")))) && truthy(eq(call(K("Expr"), "show", new object[] { call(K("Prover"), "neat", new object[] { call(K("Expr"), "div", new object[] { get(get(x_3, "fact"), "to"), share_1 }) }) }), "1")));
+              return null;
+            })));
+            object at_1 = null; at_1 = (truthy(eq(named_1, null)) ? (object) share_1 : (object) call(K("Expr"), "field", new object[] { get(get(named_1, "fact"), "of") }));
+            object gate_1 = null; gate_1 = (truthy(eq(get(t_1, "around"), null)) ? (object) call(K("Expr"), "num", new object[] { 1.0 }) : (object) call(K("Prover"), "neat", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { get(t_1, "around"), "n_{f}", call(K("Prover"), "neat", new object[] { call(K("Expr"), "sub", new object[] { get(K("Prover"), "WAYS"), get(K("Prover"), "LATTICE") }) }) }), "DEG", get(K("Prover"), "WAYS") }) }));
+            object got_1 = null; got_1 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { w_1 }), get(K("Prover"), "WAYS"), gate_1, at_1) }) });
+            m_push(parts_0, got_1);
+            m_push(said_0, "" + str(m_upper(get(get(get(t_1, "term"), "rule"), "name"))) + ": " + str(call(K("Expr"), "show", new object[] { call(K("Expr"), "num", new object[] { w_1 }) })) + " a fold on each of l's ways, " + str(call(K("Expr"), "show", new object[] { gate_1 })) + " of them, at " + str(call(K("Expr"), "show", new object[] { at_1 })) + " - " + str(call(K("Expr"), "show", new object[] { got_1 })) + "");
+          }
+        }
+      };
+      if (truthy(m_empty(parts_0))) {
+        return null;
+      }
+      object rhs_0 = null; rhs_0 = call(K("Expr"), "add", new object[] { parts_0 });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta DEG", rhs_0 }), get(K("Prover"), "WAYS_LINE"), m_concat(list(get(get(line_0, "fact"), "key"), get(get(moved_0, "fact"), "key"), get(get(ways_0, "fact"), "key")), m_map(pieces_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return get(get(x_2, "fact"), "key");
+        return null;
+      }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + str(call(K("Expr"), "show", new object[] { folds_of_0 })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said_0, list("\\Delta DEG = " + str(call(K("Expr"), "show", new object[] { rhs_0 })) + "")) });
+      set(st_0, "derivation", m_concat(list(line_0, moved_0, ways_0), pieces_0));
+      return st_0;
+      return null;
+    });
+    c.method("in_record", (self, a1) => {
+      object ways_c_0 = arg(a1, 0); object ways_0 = arg(a1, 1); object pieces_0 = arg(a1, 2);
+      object e_0 = null; e_0 = get(get(ways_c_0, "fact"), "to");
+      foreach (object e1 in each_of(pieces_0)) {
+        object x_1 = e1;
+        e_0 = call(K("Expr"), "replace", new object[] { e_0, get(get(x_1, "fact"), "of"), get(get(x_1, "fact"), "to") });
+      };
+      e_0 = call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { e_0, get(get(K("Prover"), "ACROSS"), "label"), get(K("Prover"), "HERE") }), "DEG", get(get(ways_0, "fact"), "to") });
+      return call(K("Prover"), "tidy", new object[] { call(K("Expr"), "replace", new object[] { e_0, "n_{f,l}", call(K("Expr"), "field", new object[] { "n_{f}" }) }) });
+      return null;
+    });
+    c.method("record_moves", (self, a1) => {
+      object ways_c_0 = arg(a1, 0); object ways_0 = arg(a1, 1); object pieces_0 = arg(a1, 2);
+      object e_0 = null; e_0 = call(self, "in_record", new object[] { ways_c_0, ways_0, pieces_0 });
+      return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "\\Delta n_{f}", e_0 }), "the record's own line", m_concat(list(get(get(ways_c_0, "fact"), "key"), get(get(ways_0, "fact"), "key")), m_map(pieces_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return get(get(x_2, "fact"), "key");
+        return null;
+      }))), "the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone", list("" + str(get(get(ways_c_0, "fact"), "of")) + " = " + str(call(K("Expr"), "show", new object[] { get(get(ways_c_0, "fact"), "to") })) + "", "DEG = " + str(call(K("Expr"), "show", new object[] { get(get(ways_0, "fact"), "to") })) + "", "\\Delta n_{f} = " + str(call(K("Expr"), "show", new object[] { e_0 })) + "") });
+      return null;
+    });
+    c.method("record_settles", (self, a1) => {
+      object moves_0 = arg(a1, 0);
+      object parts_0 = null; parts_0 = m_split(K("Expr"), get(get(moves_0, "fact"), "to"), "n_{f}");
+      if (truthy(eq(parts_0, null))) {
+        return null;
+      }
+      object top_0 = null; top_0 = call(K("Prover"), "tidy", new object[] { call(K("Expr"), "neg", new object[] { elem(parts_0, 1.0) }) });
+      object bottom_0 = null; bottom_0 = call(K("Prover"), "tidy", new object[] { elem(parts_0, 0.0) });
+      if (truthy(m_starts_with(call(K("Expr"), "show", new object[] { top_0 }), "-"))) {
+        top_0 = call(K("Prover"), "tidy", new object[] { call(K("Expr"), "neg", new object[] { top_0 }) });
+        bottom_0 = call(K("Expr"), "flip", new object[] { bottom_0 });
+      };
+      object nf_0 = null; nf_0 = call(K("Expr"), "div", new object[] { top_0, bottom_0 });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "n_{f}", nf_0 }), "the record settled against the density", list(get(get(moves_0, "fact"), "key")), "the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought", list("" + str(get(get(moves_0, "fact"), "of")) + " = " + str(call(K("Expr"), "show", new object[] { get(get(moves_0, "fact"), "to") })) + " = 0", "n_{f} = " + str(call(K("Expr"), "show", new object[] { nf_0 })) + "") });
+      set(st_0, "parts_", list(top_0, bottom_0));
+      return st_0;
+      return null;
+    });
+    c.method("record_left", (self, a1) => {
+      object rays_c_0 = arg(a1, 0); object ways_c_0 = arg(a1, 1); object settles_0 = arg(a1, 2);
+      object k_0 = null; k_0 = get(self, "fold_weight");
+      object both_0 = null; both_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "collected", new object[] { call(K("Expr"), "expand", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "mul", new object[] { list(get(K("Prover"), "WAYS"), get(get(rays_c_0, "fact"), "to")) }), call(K("Expr"), "mul", new object[] { list(k_0, get(get(ways_c_0, "fact"), "to")) })) }) }) }) });
+      object vac_0 = null; vac_0 = call(K("Expr"), "field", new object[] { "\\rho_{\\infty}" });
+      object base__0 = null; base__0 = call(K("Expr"), "replace", new object[] { get(get(settles_0, "fact"), "to"), "\\rho", vac_0 });
+      object per_0 = null; per_0 = call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "field", new object[] { "x.\\bar{m}" }), call(K("Expr"), "sub", new object[] { call(K("Expr"), "pown", new object[] { call(K("Expr"), "field", new object[] { "l.shell\\paren{x.\\bar{R}}" }), neg(1.0) }), call(K("Prover"), "reach", new object[] { "x.\\bar{R}" }) })) });
+      object rhs_0 = null; rhs_0 = call(K("Expr"), "add", new object[] { list(base__0, call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "pown", new object[] { k_0, neg(1.0) }), call(K("Expr"), "call", new object[] { "\\sum_{x = x_{@t}}", per_0 })) })) });
+      object lhs_0 = null; lhs_0 = "\\Delta\\paren{DEG·\\rho + " + str(call(K("Expr"), "show", new object[] { k_0 })) + "·n_{f}}";
+      return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", list(get(get(rays_c_0, "fact"), "key"), get(get(ways_c_0, "fact"), "key"), get(get(settles_0, "fact"), "key")), "a meeting turns " + str(call(K("Expr"), "show", new object[] { k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + str(call(K("Expr"), "show", new object[] { k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over " + str(call(K("Expr"), "show", new object[] { k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", list("" + str(lhs_0) + " = " + str(call(K("Expr"), "show", new object[] { both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + str(call(K("Expr"), "show", new object[] { base__0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = " + str(call(K("Expr"), "show", new object[] { rhs_0 })) + "") });
+      return null;
+    });
+    c.method("leftover", (self, a1) => {
+      object rays_c_0 = arg(a1, 0);
+      object m_0 = null; m_0 = get(get(K("Prover"), "MASS"), "label");
+      object parts_0 = null; parts_0 = m_split(K("Expr"), call(K("Expr"), "sub", new object[] { get(get(rays_c_0, "fact"), "to"), call(K("Expr"), "field", new object[] { get(get(rays_c_0, "fact"), "of") }) }), m_0);
+      if (truthy(eq(parts_0, null))) {
+        return null;
+      }
+      object rest_0 = null; rest_0 = (truthy(eq(get(elem(parts_0, 1.0), "kind"), "add")) ? (object) get(elem(parts_0, 1.0), "of") : (object) list(elem(parts_0, 1.0)));
+      object over_0 = null; over_0 = m_map(rest_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return call(K("Prover"), "neat", new object[] { call(K("Expr"), "div", new object[] { call(K("Expr"), "neg", new object[] { x_2 }), elem(parts_0, 0.0) }) });
+        return null;
+      }));
+      object got_0 = null; got_0 = call(K("Expr"), "add", new object[] { m_concat(filt(over_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return call(K("Expr"), "mentions", new object[] { x_2, get(get(rays_c_0, "fact"), "of") });
+        return null;
+      })), filt(over_0, new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return not(call(K("Expr"), "mentions", new object[] { x_2, get(get(rays_c_0, "fact"), "of") }));
+        return null;
+      }))) });
+      return call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { m_0, got_0 }), "the mass is what the vacuum leaves over", list(get(get(rays_c_0, "fact"), "key")), "the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source", list("" + str(get(get(rays_c_0, "fact"), "of")) + " = " + str(call(K("Expr"), "show", new object[] { get(get(rays_c_0, "fact"), "to") })) + "", "" + str(m_0) + " = " + str(call(K("Expr"), "show", new object[] { got_0 })) + "") });
+      return null;
+    });
+    c.method("model_chain", (self, a1) => {
+      object s_0 = arg(a1, 0); object rays_l_0 = arg(a1, 1); object space_l_0 = arg(a1, 2); object spaced_0 = arg(a1, 3); object folded_0 = arg(a1, 4); object one_0 = arg(a1, 5);
+      if (truthy((truthy(eq(rays_l_0, null)) || truthy(eq(space_l_0, null))))) {
+        return list();
+      }
+      object fill_0 = null; fill_0 = call(K("Prover"), "settled", new object[] { s_0 });
+      object ways_0 = null; ways_0 = call(self, "ways_at", new object[] { one_0, list(spaced_0, folded_0, one_0) });
+      if (truthy(eq(ways_0, null))) {
+        return list();
+      }
+      object moved_0 = null; moved_0 = call(self, "ways_moved", new object[] { ways_0 });
+      object pieces_0 = null; pieces_0 = filt(m_map(filt(get(self, "infos"), new Fn((a5) => {
+        object t_4 = arg(a5, 0);
+        return (truthy((truthy((truthy(!eq(get(get(t_4, "term"), "rule"), null)) && truthy(not(get(t_4, "transport"))))) && truthy(not(get(t_4, "settles"))))) && truthy(!eq(get(t_4, "rays"), "0")));
+        return null;
+      })), new Fn((a4) => {
+        object t_3 = arg(a4, 0);
+        return call(self, "rule_piece", new object[] { t_3, fill_0 });
+        return null;
+      })), new Fn((a3) => {
+        object x_2 = arg(a3, 0);
+        return !eq(x_2, null);
+        return null;
+      }));
+      object moving__0 = null; moving__0 = call(self, "movement", new object[] { ways_0 });
+      if (truthy((truthy(eq(moving__0, null)) || truthy(m_empty(pieces_0))))) {
+        return list();
+      }
+      object rays_c_0 = null; rays_c_0 = call(self, "per_way", new object[] { rays_l_0, pieces_0, moving__0, fill_0 });
+      object ways_c_0 = null; ways_c_0 = call(self, "ways_line", new object[] { folded_0, moved_0, ways_0, pieces_0, fill_0 });
+      if (truthy(eq(ways_c_0, null))) {
+        return list();
+      }
+      object moves_0 = null; moves_0 = call(self, "record_moves", new object[] { ways_c_0, ways_0, pieces_0 });
+      object settles_0 = null; settles_0 = call(self, "record_settles", new object[] { moves_0 });
+      if (truthy(eq(settles_0, null))) {
+        return list();
+      }
+      object left_0 = null; left_0 = call(self, "record_left", new object[] { rays_c_0, ways_c_0, settles_0 });
+      object mass_0 = null; mass_0 = call(self, "leftover", new object[] { rays_c_0 });
+      if (truthy(eq(mass_0, null))) {
+        return list();
+      }
+      return m_concat(m_concat(list(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), list(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0));
       return null;
     });
     c.method("lean", (self, a1) => {
@@ -7656,6 +8006,7 @@ public static class C_Prover {
       object whole_0 = null; whole_0 = call(self, "general", new object[] { filled_0, folded_0 });
       object rays_l_0 = null; rays_l_0 = call(self, "narrowed", new object[] { "rays", filled_0 });
       object space_l_0 = null; space_l_0 = call(self, "narrowed", new object[] { "space", spaced_0 });
+      object model_0 = null; model_0 = call(self, "model_chain", new object[] { s_0, rays_l_0, space_l_0, spaced_0, folded_0, one_0 });
       object settled_0 = null; settled_0 = call(self, "settled_record", new object[] { folded_0 });
       object short__0 = null; short__0 = (truthy(eq(settled_0, null)) ? (object) null : (object) call(self, "single", new object[] { whole_0, settled_0, folded_0, s_0 }));
       object agg_0 = null; agg_0 = (truthy(eq(short__0, null)) ? (object) null : (object) call(self, "aggregate", new object[] { whole_0, short__0, s_0 }));
@@ -7695,13 +8046,21 @@ public static class C_Prover {
         object st_1 = e1;
         call(named_0, "set", new object[] { get(get(st_1, "fact"), "of"), st_1 });
       };
+      foreach (object e1 in each_of(filt(model_0, new Fn((a4) => {
+        object x_3 = arg(a4, 0);
+        return (truthy((truthy(!eq(get(x_3, "via"), get(K("Prover"), "RAYS_PER_WAY"))) && truthy(!eq(get(x_3, "via"), "the ways move with the record")))) && truthy(!eq(get(x_3, "via"), "the mass is what the vacuum leaves over")));
+        return null;
+      })))) {
+        object st_1 = e1;
+        call(named_0, "set", new object[] { get(get(st_1, "fact"), "of"), st_1 });
+      };
       object proved_0 = null; proved_0 = m_map(get(get(self, "theory"), "theorems"), new Fn((a3) => {
         object t_2 = arg(a3, 0);
         object q_2 = null; q_2 = get(t_2, "asked");
         object p_2 = null; p_2 = make("Proved", new object[] { kw("theorem", get(t_2, "id")), kw("theory", get(get(self, "theory"), "name")), kw("asks", get(q_2, "asks")), kw("about", get(q_2, "about")) });
         object hit_2 = null; hit_2 = (truthy(m_empty(get(q_2, "about"))) ? (object) null : (object) call(named_0, "get", new object[] { get(q_2, "about") }));
         object root_2 = null; root_2 = elem(get(s_0, "steps"), call(K("Fact"), "key_of", new object[] { "is", "the continuous model" }));
-        object steps_2 = null; steps_2 = (truthy(m_empty(get(q_2, "about"))) ? (object) chain_0 : (object) ((truthy(!eq(hit_2, null)) ? (object) ((truthy(eq(root_2, null)) ? (object) list(hit_2) : (object) list(root_2, hit_2))) : (object) call(K("Prover"), "behind", new object[] { s_0, get(q_2, "about") }))));
+        object steps_2 = null; steps_2 = (truthy(m_empty(get(q_2, "about"))) ? (object) ((truthy(m_empty(model_0)) ? (object) chain_0 : (object) model_0)) : (object) ((truthy(!eq(hit_2, null)) ? (object) ((truthy(eq(root_2, null)) ? (object) list(hit_2) : (object) list(root_2, hit_2))) : (object) call(K("Prover"), "behind", new object[] { s_0, get(q_2, "about") }))));
         object end_2 = null; end_2 = (truthy(m_empty(get(q_2, "about"))) ? (object) null : (object) m_last(steps_2));
         set(p_2, "steps", m_map(steps_2, new Fn((a5) => {
           object st_4 = arg(a5, 0);
@@ -7709,7 +8068,13 @@ public static class C_Prover {
           return null;
         })));
         if (truthy(m_empty(get(q_2, "about")))) {
-          set(p_2, "concluded", call(K("Prover"), "headline", new object[] { get((orElse(orElse(orElse(whole_line_0, () => agg_0), () => short__0), () => whole_0)), "fact"), null }));
+          set(p_2, "concluded", call(K("Prover"), "headline", new object[] { get(((truthy(m_empty(model_0)) ? (object) (orElse(orElse(orElse(whole_line_0, () => agg_0), () => short__0), () => whole_0)) : (object) m_last(model_0))), "fact"), null }));
+          object ways_said_3 = null; ways_said_3 = m_first(filt(model_0, new Fn((a6) => {
+            object x_5 = arg(a6, 0);
+            return eq(get(x_5, "via"), get(K("Prover"), "WAYS_LINE"));
+            return null;
+          })));
+          set(p_2, "also", (truthy(eq(ways_said_3, null)) ? (object) null : (object) call(K("Prover"), "headline", new object[] { get(ways_said_3, "fact"), null })));
           set(p_2, "standing", true);
         } else {
           if (truthy((truthy(!eq(end_2, null)) && truthy(!eq(get(get(end_2, "fact"), "of"), get(q_2, "about")))))) {
@@ -7758,19 +8123,29 @@ public static class C_Prover {
       object spaced_0 = null; spaced_0 = call(self, "ledger_filled", new object[] { s_0, "space" });
       object folded_0 = null; folded_0 = call(self, "ledger_filled", new object[] { s_0, "folds" });
       object one_0 = null; one_0 = call(self, "ledgers_are_one", new object[] { s_0, folded_0, spaced_0 });
-      object whole_0 = null; whole_0 = call(self, "general", new object[] { filled_0, folded_0 });
-      object settled_0 = null; settled_0 = call(self, "settled_record", new object[] { folded_0 });
-      object short__0 = null; short__0 = (truthy(eq(settled_0, null)) ? (object) null : (object) call(self, "single", new object[] { whole_0, settled_0, folded_0, s_0 }));
-      object agg_0 = null; agg_0 = (truthy(eq(short__0, null)) ? (object) null : (object) call(self, "aggregate", new object[] { whole_0, short__0, s_0 }));
-      object back_0 = null; back_0 = (truthy(eq(agg_0, null)) ? (object) null : (object) call(self, "remembered", new object[] { s_0, agg_0 }));
-      object each_0 = null; each_0 = (truthy(eq(back_0, null)) ? (object) null : (object) call(self, "from_each", new object[] { s_0, back_0 }));
-      object known_0 = null; known_0 = (truthy(eq(each_0, null)) ? (object) null : (object) call(self, "forgotten", new object[] { s_0, each_0, settled_0 }));
-      object pull_0 = null; pull_0 = (truthy(eq(known_0, null)) ? (object) null : (object) call(self, "felt", new object[] { s_0, known_0, settled_0 }));
-      object rec_0 = null; rec_0 = (truthy(eq(pull_0, null)) ? (object) null : (object) call(self, "record_of_all", new object[] { known_0, pull_0, settled_0 }));
-      object whole_line_0 = null; whole_line_0 = (truthy(eq(rec_0, null)) ? (object) null : (object) call(self, "one_line", new object[] { rec_0 }));
       object grown_0 = null; grown_0 = call(self, "growth_filled", new object[] { s_0 });
-      object roles_0 = null; roles_0 = list("population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth");
-      object steps_0 = null; steps_0 = list(filled_0, spaced_0, folded_0, one_0, whole_0, settled_0, short__0, agg_0, back_0, each_0, known_0, pull_0, rec_0, whole_line_0, grown_0);
+      object model_0 = null; model_0 = call(self, "model_chain", new object[] { s_0, call(self, "narrowed", new object[] { "rays", filled_0 }), call(self, "narrowed", new object[] { "space", spaced_0 }), spaced_0, folded_0, one_0 });
+      object by_0 = null; by_0 = new Fn((a2) => {
+        object via_1 = arg(a2, 0);
+        return m_first(filt(model_0, new Fn((a4) => {
+          object x_3 = arg(a4, 0);
+          return eq(get(x_3, "via"), via_1);
+          return null;
+        })));
+        return null;
+      });
+      object rays_c_0 = null; rays_c_0 = invoke(by_0, new object[] { get(K("Prover"), "RAYS_PER_WAY") });
+      object mass_0 = null; mass_0 = (truthy(m_empty(model_0)) ? (object) null : (object) m_last(model_0));
+      foreach (object e1 in each_of(filt(model_0, new Fn((a4) => {
+        object x_3 = arg(a4, 0);
+        return (truthy(eq(get(get(x_3, "fact"), "of"), get(K("Prover"), "GAIN"))) || truthy(eq(get(get(x_3, "fact"), "of"), get(K("Prover"), "LOSS"))));
+        return null;
+      })))) {
+        object x_1 = e1;
+        call(out__0, "set", new object[] { get(get(x_1, "fact"), "of"), x_1 });
+      };
+      object roles_0 = null; roles_0 = list("population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass");
+      object steps_0 = null; steps_0 = list(filled_0, spaced_0, grown_0, rays_c_0, rays_c_0, invoke(by_0, new object[] { get(K("Prover"), "WAYS_LINE") }), invoke(by_0, new object[] { "the record's own line" }), invoke(by_0, new object[] { "the record settled against the density" }), invoke(by_0, new object[] { "the record every body leaves at a local" }), mass_0);
       for (double i1 = 0; i1 < num(len(roles_0)); i1++) {
         object i_1 = i1;
         if (truthy(!eq(elem(steps_0, i_1), null))) {
@@ -9059,6 +9434,46 @@ public static class C_Aggregate {
     c.field("prover", self => make("Prover", new object[] { kw("theory", get(self, "theory")) }));
     c.field("store", self => get(get(self, "prover"), "closure"));
     c.field("chain", self => call(get(self, "prover"), "chain", new object[] { get(self, "store") }));
+    c.field("net", self => get(self, "rays_net"));
+    c.getter("rays_net", (self, a1) => {
+      object st_0 = null; st_0 = call(self, "step", new object[] { "rays" });
+      if (truthy(eq(st_0, null))) {
+        return null;
+      }
+      object e_0 = null; e_0 = get(get(st_0, "fact"), "to");
+      foreach (object e1 in each_of(list(get(K("Prover"), "GAIN"), get(K("Prover"), "LOSS")))) {
+        object name_1 = e1;
+        object piece_1 = null; piece_1 = call(get(self, "chain"), "get", new object[] { name_1 });
+        if (truthy(!eq(piece_1, null))) {
+          e_0 = call(K("Expr"), "replace", new object[] { e_0, name_1, get(get(piece_1, "fact"), "to") });
+        }
+      };
+      return call(K("Prover"), "neat", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { e_0, get(get(K("Prover"), "ACROSS"), "label"), get(K("Prover"), "HERE") }), get(get(K("Prover"), "MASS"), "label"), call(K("Expr"), "num", new object[] { 0.0 }) }) });
+      return null;
+    });
+    c.method("nets_at", (self, a1) => {
+      object rho_0 = arg(a1, 0);
+      object e_0 = null; e_0 = get(self, "env");
+      setAt(e_0, get(get(K("Prover"), "HERE"), "label"), rho_0);
+      return call(K("Aggregate"), "numeric_of", new object[] { get(self, "net"), e_0 });
+      return null;
+    });
+    c.getter("root_of_net", (self, a1) => {
+      object lo_0 = null; lo_0 = 0.0;
+      object hi_0 = null; hi_0 = 1.0;
+      for (double i1 = 0; i1 < num(48.0); i1++) {
+        object i_1 = i1;
+        object mid_1 = null; mid_1 = div((add(lo_0, hi_0)), 2.0);
+        if (truthy(gt(call(self, "nets_at", new object[] { mid_1 }), 0.0))) {
+          lo_0 = mid_1;
+        } else {
+          hi_0 = mid_1;
+        };
+      };
+      return div((add(lo_0, hi_0)), 2.0);
+      return null;
+    });
+    c.field("settled_rho", self => (truthy(eq(get(self, "net"), null)) ? (object) call(self, "fact_at", new object[] { "\\rho_{\\infty}", get(self, "env") }) : (object) get(self, "root_of_net")));
     c.field("NEAR", self => 0.5);
     c.getter("env", (self, a1) => {
       object e_0 = null; e_0 = make(NODE);
@@ -9072,6 +9487,7 @@ public static class C_Aggregate {
       set(e_0, str("D"), get(self, "D"));
       set(e_0, str("DEG"), get(self, "DEG"));
       set(e_0, str("l.DEG"), get(self, "DEG"));
+      set(e_0, str("DEG_{0}"), get(self, "DEG"));
       set(e_0, str("\\bar{c}"), 1.0);
       return e_0;
       return null;
@@ -9102,7 +9518,7 @@ public static class C_Aggregate {
       return null;
     });
     c.getter("rho_inf", (self, a1) => {
-      return call(self, "fact_at", new object[] { "\\rho_{\\infty}", get(self, "env") });
+      return get(self, "settled_rho");
       return null;
     });
     c.getter("settled_env", (self, a1) => {
@@ -9683,7 +10099,9 @@ public static class C_Aggregate {
     });
     c.getter("folds_expr", (self, a1) => {
       object st_0 = null; st_0 = call(self, "step", new object[] { "folds" });
-      return (truthy(eq(st_0, null)) ? (object) call(K("Expr"), "num", new object[] { 0.0 }) : (object) get(get(st_0, "fact"), "to"));
+      object lattice_0 = null; lattice_0 = make(NODE);
+      set(lattice_0, str("DEG_{0}"), get(self, "DEG"));
+      return (truthy(eq(st_0, null)) ? (object) call(K("Expr"), "num", new object[] { 0.0 }) : (object) call(K("Expr"), "evaluate", new object[] { get(get(st_0, "fact"), "to"), lattice_0 }));
       return null;
     });
     c.method("folds_rate", (self, a1) => {
@@ -11086,6 +11504,9 @@ public static class C_Medium {
     c.field("vac", self => filled(get(self, "cells"), get(get(self, "aggregate"), "rho_inf")));
     c.method("nets", (self, a1) => {
       object rho_0 = arg(a1, 0); object nf_0 = arg(a1, 1);
+      if (truthy(!eq(get(get(self, "aggregate"), "net"), null))) {
+        return call(get(self, "aggregate"), "nets_at", new object[] { rho_0 });
+      }
       object s_0 = null; s_0 = call(self, "symbols", new object[] { rho_0, nf_0 });
       object got_0 = null; got_0 = 0.0;
       foreach (object e1 in each_of(get(self, "points"))) {
@@ -20042,6 +20463,22 @@ public static class C_G {
       return make("Asked", new object[] { kw("asks", "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"), kw("about", "\\Delta \\narrow{\\forall}{@ == l}"), kw("leads", "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.") });
       return null;
     }))));
+    c.staticField("theorem vacuum.creation", self => make(Theorem, kw("id", "vacuum.creation"), kw("body", new Fn((a1) => {
+      return make("Asked", new object[] { kw("asks", "creation, at a local: what share of l's ways does it light a tick?"), kw("about", "S^{+}"), kw("leads", "CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once.") });
+      return null;
+    }))));
+    c.staticField("theorem vacuum.annihilation", self => make(Theorem, kw("id", "vacuum.annihilation"), kw("body", new Fn((a1) => {
+      return make("Asked", new object[] { kw("asks", "annihilation, at a local: what share of l's ways does it take a tick?"), kw("about", "S^{-}"), kw("leads", "ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends.") });
+      return null;
+    }))));
+    c.staticField("theorem vacuum.movement", self => make(Theorem, kw("id", "vacuum.movement"), kw("body", new Fn((a1) => {
+      return make("Asked", new object[] { kw("asks", "the rays move. Followed a step and a tick, what does a ray's way on depend on?"), kw("about", "\\Delta\\rho"), kw("leads", "MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds.") });
+      return null;
+    }))));
+    c.staticField("theorem vacuum.ways", self => make(Theorem, kw("id", "vacuum.ways"), kw("body", new Fn((a1) => {
+      return make("Asked", new object[] { kw("asks", "a fold is a way. How many ways does a local have, and what moves them?"), kw("about", "\\Delta DEG"), kw("also", "DEG"), kw("leads", "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."), kw("then", "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") });
+      return null;
+    }))));
     c.staticField("theorem vacuum.at", self => make(Theorem, kw("id", "vacuum.at"), kw("body", new Fn((a1) => {
       return make("Asked", new object[] { kw("asks", "a source is a thing with a history. What does it mean to read one at a particular time?"), kw("about", "l'_{@t}") });
       return null;
@@ -20391,6 +20828,12 @@ private static bool nl0_made;
 public static object nl0() {
   if (!nl0_made) { nl0_made = true; nl0_value = "\n"; }
   return nl0_value;
+}
+private static object METHOD_SOURCES_value;
+private static bool METHOD_SOURCES_made;
+public static object METHOD_SOURCES() {
+  if (!METHOD_SOURCES_made) { METHOD_SOURCES_made = true; METHOD_SOURCES_value = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"; }
+  return METHOD_SOURCES_value;
 }
 
   /* the last thing made: every class and theory stands, so a class looked up by name is the one it stays */

@@ -1781,6 +1781,79 @@ static void C_Galaxies(Cls& c) {
 }
 static const bool R_Galaxies = define_class("Galaxies", "Node", &C_Galaxies);
 
+static void C_Sweeping(Cls& c) {
+  c.field("solved", nullptr);
+  c.field("title", nullptr);
+  c.field("ks", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    auto k_0 = cell(); k_0->v = elem(get(self, S<"ks">()), (truthy(lt(get(self, S<"shown_frames">()), len(get(self, S<"ks">())))) ? Value(get(self, S<"shown_frames">())) : Value(sub(len(get(self, S<"ks">())), 1.0))));
+    auto deg_0 = cell(); deg_0->v = elem(get(get(get(self, S<"solved">()), S<"header">()), Sym(str("degs"))), k_0->v);
+    call(K(S<"Galaxies">()), S<"panel">(), { s_0->v, call(K(S<"Galaxies">()), S<"frame_of">(), { get(self, S<"solved">()), k_0->v }), get(self, S<"title">()), deg_0->v, call(K(S<"Galaxies">()), S<"support_at">(), { get(self, S<"solved">()), k_0->v }), call(K(S<"Galaxies">()), S<"possible_at">(), { deg_0->v }) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Sweeping = define_class("Sweeping", "Painter", &C_Sweeping);
+
+static void C_Orbiting(Cls& c) {
+  c.field("stars", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(K(S<"Galaxies">()), S<"orbit_panel">(), { s_0->v, get(self, S<"stars">()), get(self, S<"shown_frames">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Orbiting = define_class("Orbiting", "Painter", &C_Orbiting);
+
+static void C_Forming(Cls& c) {
+  c.field("formed", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(K(S<"Galaxies">()), S<"formed_panel">(), { s_0->v, get(self, S<"formed">()), get(self, S<"shown_frames">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_Forming = define_class("Forming", "Painter", &C_Forming);
+
+static void C_HeldDisc(Cls& c) {
+  c.field("formed", nullptr);
+  c.field("shown_frames", [](const Value& self) -> Value { return 0.0; });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    call(K(S<"Galaxies">()), S<"medium_panel">(), { s_0->v, get(self, S<"formed">()), get(self, S<"shown_frames">()) });
+    set(self, S<"shown_frames">(), add(get(self, S<"shown_frames">()), 1.0));
+    return null;
+  });
+}
+static const bool R_HeldDisc = define_class("HeldDisc", "Painter", &C_HeldDisc);
+
+static void C_Resolution(Cls& c) {
+  c.field("cells", [](const Value& self) -> Value { return 3.0; });
+  c.field("ways", [](const Value& self) -> Value { return 96.0; });
+  c.field("keeps", [](const Value& self) -> Value { return 4.0; });
+  c.field("list", [](const Value& self) -> Value { return 12.0; });
+  c.field("near_list", [](const Value& self) -> Value { return 96.0; });
+  c.field("near_cells", [](const Value& self) -> Value { return 5.0; });
+  c.field("cell_pull", [](const Value& self) -> Value { return true; });
+  c.field("margin", [](const Value& self) -> Value { return 2.0; });
+  c.field("speed", [](const Value& self) -> Value { return 0.25; });
+  c.getter("constants", [](Value self, const Args& a1) -> Value {
+    auto out_0 = cell(); out_0->v = make(S<"Node">(), { });
+    set(out_0->v, Sym(str("MLIST")), get(self, S<"list">()));
+    set(out_0->v, Sym(str("MNEAR")), get(self, S<"near_list">()));
+    set(out_0->v, Sym(str("MCELLPULL")), get(self, S<"cell_pull">()));
+    return out_0->v;
+    return null;
+  });
+}
+static const bool R_Resolution = define_class("Resolution", "Node", &C_Resolution);
+
 
 
 void part_9() { }

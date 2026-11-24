@@ -3,6 +3,10 @@ import OrbitMines.Physics.Proofs.Basic
 import OrbitMines.Physics.Proofs.G.vacuum_equation
 import OrbitMines.Physics.Proofs.G.vacuum_rays
 import OrbitMines.Physics.Proofs.G.vacuum_space
+import OrbitMines.Physics.Proofs.G.vacuum_creation
+import OrbitMines.Physics.Proofs.G.vacuum_annihilation
+import OrbitMines.Physics.Proofs.G.vacuum_movement
+import OrbitMines.Physics.Proofs.G.vacuum_ways
 import OrbitMines.Physics.Proofs.G.vacuum_at
 import OrbitMines.Physics.Proofs.G.vacuum_following
 import OrbitMines.Physics.Proofs.G.vacuum_lean

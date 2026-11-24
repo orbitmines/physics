@@ -32,6 +32,8 @@ ray_global ind2 := do
   return ("  " : String)
 ray_global nl0 := do
   return ("\n" : String)
+ray_global METHOD_SOURCES := do
+  return "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
 
 
 end OrbitMines.Physics

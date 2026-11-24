@@ -1283,6 +1283,9 @@ ray_impl_getter "stream" : Value := do
 ray_impl_field "vac" : (RList Float) := do
   return (← ωrfilled (← ωget self "cells") (← ωget (← ωget self "aggregate") "rho_inf"))
 ray_impl_method "nets" (rho_0 : Float) (nf_0 : Float) : Float := do
+  if ωtruthy (!ωisNull (← ωget (← ωget self "aggregate") "net")) then
+    if true then return (← call! (← ωget self "aggregate") "nets_at" ((← rho_0.get)))
+    pure ()
   let s_0 ← IO.mkRef (← call! self "symbols" ((← rho_0.get), (← nf_0.get)))
   let got_0 ← IO.mkRef (0 : Float)
   for e1 in (← ωitems (← ωget self "points")) do

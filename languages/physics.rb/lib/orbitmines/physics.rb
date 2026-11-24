@@ -3122,7 +3122,8 @@ class Notation < Node
         name = Notation.letters(src, Ops.add(i, 1))
         word = !(Ops.m_empty(name))
         after = Ops.add(Ops.add(i, 1), name.length)
-        if (word && Ops.eq(Notation.char_at(src, after), 32))
+        next_ = Notation.char_at(src, Ops.add(after, 1))
+        if ((((word && Ops.eq(Notation.char_at(src, after), 32)) && !Ops.eq(next_, 43)) && !Ops.eq(next_, 45)) && !Ops.eq(next_, 61))
           after = Ops.add(after, 1)
         end
         big = nil
@@ -6125,6 +6126,13 @@ class Prover < Node
   def self.PROOFS=(v)
     @PROOFS = v
   end
+  def self.MARK
+    @MARK = ("\n@@ ") unless instance_variable_defined?(:@MARK)
+    @MARK
+  end
+  def self.MARK=(v)
+    @MARK = v
+  end
   def self.RAYS_SAY
     @RAYS_SAY = ("l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.") unless instance_variable_defined?(:@RAYS_SAY)
     @RAYS_SAY
@@ -6138,6 +6146,34 @@ class Prover < Node
   end
   def self.SPACE_SAY=(v)
     @SPACE_SAY = v
+  end
+  def self.LIGHTS
+    @LIGHTS = ("lights") unless instance_variable_defined?(:@LIGHTS)
+    @LIGHTS
+  end
+  def self.LIGHTS=(v)
+    @LIGHTS = v
+  end
+  def self.TAKES
+    @TAKES = ("takes") unless instance_variable_defined?(:@TAKES)
+    @TAKES
+  end
+  def self.TAKES=(v)
+    @TAKES = v
+  end
+  def self.RAYS_PER_WAY
+    @RAYS_PER_WAY = ("the rays at a local, per way") unless instance_variable_defined?(:@RAYS_PER_WAY)
+    @RAYS_PER_WAY
+  end
+  def self.RAYS_PER_WAY=(v)
+    @RAYS_PER_WAY = v
+  end
+  def self.WAYS_LINE
+    @WAYS_LINE = ("the ways at a local, a tick on") unless instance_variable_defined?(:@WAYS_LINE)
+    @WAYS_LINE
+  end
+  def self.WAYS_LINE=(v)
+    @WAYS_LINE = v
   end
   def population_line(*args_)
     @population_line = (nil) unless instance_variable_defined?(:@population_line)
@@ -6846,24 +6882,35 @@ class Prover < Node
   def following(rec)
     return Step.of(Fact.stands("\\Delta_{v}f", Expr.field("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}")), "following", [rec.fact.key], "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", ["\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local"])
   end
+  def self.sources_read
+    return Ops.m_join(Ops.m_map([["Edge.active", Edge.method("active").source], ["Ray.facing", Ray.method("facing").source], ["Ray.turns", Ray.method("turns").source], ["Vertex.fold", Vertex.method("fold").source], ["Vertex.alive", Vertex.method("alive").source], ["Vertex.sinks", Vertex.method("sinks").source]], ->(p) {
+      return "#{Prover.MARK}#{Ops.elem(p, 0)}\n#{Ops.elem(p, 1)}"
+    }), "")
+  end
+  def self.source_of(key)
+    hit = Ops.m_first(Ops.filt(Ops.m_split(Physics.METHOD_SOURCES, Prover.MARK), ->(p) {
+      return Ops.m_starts_with(p, "#{key}\n")
+    }))
+    return (Ops.eq(hit, nil) ? "" : Ops.m_drop(hit, Ops.add(key.length, 1)))
+  end
   def self.edge_ends
-    return Ops.filt(Ops.m_split(Edge.method("active").source, " & "), ->(c) {
+    return Ops.filt(Ops.m_split(Prover.source_of("Edge.active"), " & "), ->(c) {
       return Ops.gt(Ops.m_split(c, ".active").length, 1)
     })
   end
   def edge_from_an_end
-    _def = Edge.method("active").source
+    active_ = Prover.source_of("Edge.active")
     ends = Prover.edge_ends
     asked = Ops.m_join(Ops.m_concat(["active"], Ops.m_map(Ops.m_drop(ends, 1), ->(_) {
       return "next.active"
     })), " & ")
-    facing = Ray.method("facing").source
-    st = Step.of(Fact.stands("\\narrow{Edge}{active}", Expr.field("\\narrow{l}{#{asked}}")), "an edge, seen from one of its ends", [], "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: #{ends.length}.", ["Edge.active = #{_def}", "Ray.facing = #{facing}: the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{#{asked}}, #{ends.length} ends to a meeting"])
+    facing = Prover.source_of("Ray.facing")
+    st = Step.of(Fact.stands("\\narrow{Edge}{active}", Expr.field("\\narrow{l}{#{asked}}")), "an edge, seen from one of its ends", [], "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: #{ends.length}.", ["Edge.active = #{active_}", "Ray.facing = #{facing}: the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{#{asked}}, #{ends.length} ends to a meeting"])
     return st
   end
   def standing_at
-    alive = Vertex.method("alive").source
-    sinks = Vertex.method("sinks").source
+    alive = Prover.source_of("Vertex.alive")
+    sinks = Prover.source_of("Vertex.sinks")
     return Step.of(Fact.stands("\\narrow{\\forall}{@ == l}", Expr.add([Expr.num(1), Expr.field("\\narrow{\\forall}{folded_into == l}")])), "what stands at a local", [], "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", ["Vertex.alive = #{alive}", "Vertex.sinks = #{sinks}", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}"])
   end
   def self.members_of(t, rays)
@@ -6942,6 +6989,263 @@ class Prover < Node
     }), ["#{lhs} = #{Expr.show(rhs)}"]))
     st.derivation = behind
     return st
+  end
+  def self.ACROSS
+    return Expr.field("\\tilde{\\rho}")
+  end
+  def self.HERE
+    return Expr.field("\\rho")
+  end
+  def self.WAYS
+    return Expr.field("DEG")
+  end
+  def self.LATTICE
+    return Expr.field("DEG_{0}")
+  end
+  def self.MASS
+    return Expr.field("\\bar{m}")
+  end
+  def self.STANDING
+    return "\\narrow{\\forall}{@ == l}"
+  end
+  def share_at(t, fill)
+    at_l = ->(e) {
+      return Prover.neat(Expr.replace(Expr.replace(Expr.replace(Expr.evaluate(e, fill), "n", Prover.HERE), "\\rho", Prover.HERE), "l.\\bar{m}", Prover.MASS))
+    }
+    if t.outside
+      return at_l.(t.expr)
+    end
+    parts = []
+    if !Ops.eq(t.rate, nil)
+      Ops.m_push(parts, Expr.field(t.rate))
+    end
+    if !Ops.eq(t.asked, nil)
+      Ops.m_push(parts, t.asked)
+    end
+    if Ops.gt(t.degree, 0)
+      Ops.m_push(parts, Prover.HERE)
+    end
+    if Ops.gt(t.degree, 1)
+      Ops.m_push(parts, Expr.pown(Prover.ACROSS, Ops.sub(t.degree, 1)))
+    end
+    return at_l.((Ops.m_empty(parts) ? Expr.num(1) : Expr.mul(parts)))
+  end
+  def self.members_at(t, rays)
+    return (((t.outside || ((Ops.eq(t.term.rule.over, "Vertex") && !(rays))))) ? Expr.num(1) : Prover.WAYS)
+  end
+  def ways_at(one, behind)
+    draws = Prover.source_of("Ray.turns")
+    folding = Prover.source_of("Vertex.fold")
+    if (!(Ops.m_contains(draws, "folds")) || !(Ops.m_contains(folding, "folds[d] + 1")))
+      return nil
+    end
+    own = Expr.add([Prover.LATTICE, Expr.field("n_{f,l}")])
+    st = Step.of(Fact.stands("DEG", own), "the ways at a local", [one.fact.key], "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", ["Ray.turns = #{draws}: straight on at one, each folded way at its folds", "Vertex.fold = #{folding}: a fold written on a way", "DEG = #{Expr.show(own)}"])
+    st.derivation = behind
+    return st
+  end
+  def ways_moved(ways)
+    by = Prover.neat(Expr.d(ways.fact.to, "n_{f,l}"))
+    got = Prover.neat(Expr.mul([by, Expr.field("\\Delta n_{f,l}")]))
+    return Step.of(Fact.stands("\\Delta DEG", got), "the ways move with the record", [ways.fact.key], "the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off", ["\\frac{\\partial DEG}{\\partial n_{f,l}} = #{Expr.show(by)}", "\\Delta DEG = #{Expr.show(got)}"])
+  end
+  def self.GAIN
+    return "S^{+}"
+  end
+  def self.LOSS
+    return "S^{-}"
+  end
+  def rule_piece(t, fill)
+    if t.outside
+      return nil
+    end
+    w = Prover.per_member(t.ray_count, Prover.members_of(t, true))
+    if Ops.eq(w, nil)
+      return nil
+    end
+    if Ops.eq(w, 0)
+      return nil
+    end
+    r = t.term.rule
+    pattern = (Ops.eq(r.where, nil) ? "" : r.where.source)
+    share = self.share_at(t, fill)
+    got = Prover.neat(Expr.mul([Expr.num(Ops.m_abs(w)), share]))
+    name = (Ops.gt(w, 0) ? Prover.GAIN : Prover.LOSS)
+    does = (Ops.gt(w, 0) ? Prover.LIGHTS : Prover.TAKES)
+    members = Expr.show(Prover.members_of(t, true))
+    st = Step.of(Fact.stands(name, got), Ops.m_upper(r.name), [], "#{r.name} at l, per way: its pattern narrows l to #{r.over}\\{#{pattern}\\}, which holds #{Expr.show(share)} of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is #{members} of l's ways and one firing #{does} #{Expr.show(Expr.num(Ops.m_abs(w)))} ray on each. So it #{does} #{Expr.show(got)} of l's ways a tick: written #{name}: S for a rule, marked by what it does to the rays", ["pattern: #{r.over}\\{#{pattern}\\}", "share of l's ways: #{Expr.show(share)}", "one match: #{members} of l's ways, #{Expr.show(Expr.num(w))} a way", "#{name} = #{Expr.show(got)}"])
+    st.rule = Ops.m_upper(r.name)
+    return st
+  end
+  def movement(ways)
+    t = Ops.m_first(Ops.filt(self.infos, ->(t) {
+      return (t.transport && t.kernel)
+    }))
+    if Ops.eq(t, nil)
+      return nil
+    end
+    draws = Prover.source_of("Ray.turns")
+    nf = Expr.linear(Expr.sub(Expr.field("x.DEG"), Expr.add([Prover.LATTICE, Expr.field("n_{f}")])), "n_{f}")
+    if Ops.eq(nf, nil)
+      return nil
+    end
+    keep = Prover.neat(Expr.replace(t.keeps, "n_{f}", nf))
+    rhs = Expr.sub(Expr.field("\\rho_{+v}\\paren{t + 1}"), Expr.field("\\rho\\paren{t}"))
+    st = Step.of(Fact.stands("\\Delta\\rho", rhs), Ops.m_upper(t.term.rule.name), [ways.fact.key], "the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps #{Expr.show(keep)} of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place", ["Ray.turns = #{draws}", "at a place x: n_{f} = #{Expr.show(nf)}, its ways over the lattice's own", "kept straight at x: #{Expr.show(t.keeps)} = #{Expr.show(keep)}", "\\Delta\\rho = #{Expr.show(rhs)}"])
+    st.rule = Ops.m_upper(t.term.rule.name)
+    return st
+  end
+  def per_way(line, pieces, moving_, fill)
+    parts = []
+    Ops.list(Ops.filt(self.infos, ->(t) {
+      return (((!Ops.eq(t.term.rule, nil) && !(t.transport)) && !(t.settles)) && !Ops.eq(t.rays, "0"))
+    })).each do |t|
+      w = Prover.per_member(t.ray_count, Prover.members_of(t, true))
+      unless Ops.eq(w, nil)
+        unless Ops.eq(w, 0)
+          if t.outside
+            Ops.m_push(parts, Prover.weighed(w, self.share_at(t, fill)))
+          else
+            Ops.m_push(parts, (Ops.gt(w, 0) ? Expr.field(Prover.GAIN) : Expr.neg(Expr.field(Prover.LOSS))))
+          end
+        end
+      end
+    end
+    rhs = Expr.add(parts)
+    st = Step.of(Fact.stands("\\Delta\\rho", rhs), Prover.RAYS_PER_WAY, Ops.m_concat([line.fact.key, moving_.fact.key], Ops.m_map(pieces, ->(x) {
+      return x.fact.key
+    })), "the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place", Ops.m_concat(Ops.m_map(pieces, ->(x) {
+      return "#{x.fact.of} = #{Expr.show(x.fact.to)} (#{x.via})"
+    }), ["#{Prover.RAYS_PER_WAY}: \\Delta\\rho = #{Expr.show(rhs)}"]))
+    st.derivation = Ops.m_concat([line, moving_], pieces)
+    return st
+  end
+  def ways_line(line, moved, ways, pieces, fill)
+    parts = []
+    said = []
+    folds_of = Expr.sub(ways.fact.to, Prover.LATTICE)
+    Ops.list(Ops.filt(self.infos, ->(t) {
+      return (((!Ops.eq(t.term.rule, nil) && !(t.transport)) && !(t.settles)) && !Ops.eq(t.folds, "0"))
+    })).each do |t|
+      w = Prover.per_member(t.fold_count, Prover.members_of(t, true))
+      unless Ops.eq(w, nil)
+        unless Ops.eq(w, 0)
+          share = self.share_at(t, fill)
+          named = Ops.m_first(Ops.filt(pieces, ->(x) {
+            return (Ops.eq(x.via, Ops.m_upper(t.term.rule.name)) && Ops.eq(Expr.show(Prover.neat(Expr.div(x.fact.to, share))), "1"))
+          }))
+          at = (Ops.eq(named, nil) ? share : Expr.field(named.fact.of))
+          gate = (Ops.eq(t.around, nil) ? Expr.num(1) : Prover.neat(Expr.replace(Expr.replace(t.around, "n_{f}", Prover.neat(Expr.sub(Prover.WAYS, Prover.LATTICE))), "DEG", Prover.WAYS)))
+          got = Prover.neat(Expr.mul([Expr.num(w), Prover.WAYS, gate, at]))
+          Ops.m_push(parts, got)
+          Ops.m_push(said, "#{Ops.m_upper(t.term.rule.name)}: #{Expr.show(Expr.num(w))} a fold on each of l's ways, #{Expr.show(gate)} of them, at #{Expr.show(at)} - #{Expr.show(got)}")
+        end
+      end
+    end
+    if Ops.m_empty(parts)
+      return nil
+    end
+    rhs = Expr.add(parts)
+    st = Step.of(Fact.stands("\\Delta DEG", rhs), Prover.WAYS_LINE, Ops.m_concat([line.fact.key, moved.fact.key, ways.fact.key], Ops.m_map(pieces, ->(x) {
+      return x.fact.key
+    })), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - #{Expr.show(folds_of)} of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", Ops.m_concat(said, ["\\Delta DEG = #{Expr.show(rhs)}"]))
+    st.derivation = Ops.m_concat([line, moved, ways], pieces)
+    return st
+  end
+  def in_record(ways_c, ways, pieces)
+    e = ways_c.fact.to
+    Ops.list(pieces).each do |x|
+      e = Expr.replace(e, x.fact.of, x.fact.to)
+    end
+    e = Expr.replace(Expr.replace(e, Prover.ACROSS.label, Prover.HERE), "DEG", ways.fact.to)
+    return Prover.tidy(Expr.replace(e, "n_{f,l}", Expr.field("n_{f}")))
+  end
+  def record_moves(ways_c, ways, pieces)
+    e = self.in_record(ways_c, ways, pieces)
+    return Step.of(Fact.stands("\\Delta n_{f}", e), "the record's own line", Ops.m_concat([ways_c.fact.key, ways.fact.key], Ops.m_map(pieces, ->(x) {
+      return x.fact.key
+    })), "the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone", ["#{ways_c.fact.of} = #{Expr.show(ways_c.fact.to)}", "DEG = #{Expr.show(ways.fact.to)}", "\\Delta n_{f} = #{Expr.show(e)}"])
+  end
+  def record_settles(moves)
+    parts = Ops.m_split(Expr, moves.fact.to, "n_{f}")
+    if Ops.eq(parts, nil)
+      return nil
+    end
+    top = Prover.tidy(Expr.neg(Ops.elem(parts, 1)))
+    bottom = Prover.tidy(Ops.elem(parts, 0))
+    if Ops.m_starts_with(Expr.show(top), "-")
+      top = Prover.tidy(Expr.neg(top))
+      bottom = Expr.flip(bottom)
+    end
+    nf = Expr.div(top, bottom)
+    st = Step.of(Fact.stands("n_{f}", nf), "the record settled against the density", [moves.fact.key], "the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought", ["#{moves.fact.of} = #{Expr.show(moves.fact.to)} = 0", "n_{f} = #{Expr.show(nf)}"])
+    st.parts_ = [top, bottom]
+    return st
+  end
+  def record_left(rays_c, ways_c, settles)
+    k = self.fold_weight
+    both = Prover.neat(Expr.collected(Expr.expand(Expr.add([Expr.mul([Prover.WAYS, rays_c.fact.to]), Expr.mul([k, ways_c.fact.to])]))))
+    vac = Expr.field("\\rho_{\\infty}")
+    base = Expr.replace(settles.fact.to, "\\rho", vac)
+    per = Expr.mul([Expr.field("x.\\bar{m}"), Expr.sub(Expr.pown(Expr.field("l.shell\\paren{x.\\bar{R}}"), (-1)), Prover.reach("x.\\bar{R}"))])
+    rhs = Expr.add([base, Expr.mul([Expr.pown(k, (-1)), Expr.call("\\sum_{x = x_{@t}}", per)])])
+    lhs = "\\Delta\\paren{DEG·\\rho + #{Expr.show(k)}·n_{f}}"
+    return Step.of(Fact.stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", [rays_c.fact.key, ways_c.fact.key, settles.fact.key], "a meeting turns #{Expr.show(k)} of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and #{Expr.show(k)} times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over #{Expr.show(k)}, on the settled record. Each body is read as it was when its rays left it, at its own distance then", ["#{lhs} = #{Expr.show(both)}", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, #{Expr.show(base)}", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = #{Expr.show(rhs)}"])
+  end
+  def leftover(rays_c)
+    m = Prover.MASS.label
+    parts = Ops.m_split(Expr, Expr.sub(rays_c.fact.to, Expr.field(rays_c.fact.of)), m)
+    if Ops.eq(parts, nil)
+      return nil
+    end
+    rest = (Ops.eq(Ops.elem(parts, 1).kind, "add") ? Ops.elem(parts, 1).of : [Ops.elem(parts, 1)])
+    over = Ops.m_map(rest, ->(x) {
+      return Prover.neat(Expr.div(Expr.neg(x), Ops.elem(parts, 0)))
+    })
+    got = Expr.add(Ops.m_concat(Ops.filt(over, ->(x) {
+      return Expr.mentions(x, rays_c.fact.of)
+    }), Ops.filt(over, ->(x) {
+      return !(Expr.mentions(x, rays_c.fact.of))
+    })))
+    return Step.of(Fact.stands(m, got), "the mass is what the vacuum leaves over", [rays_c.fact.key], "the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source", ["#{rays_c.fact.of} = #{Expr.show(rays_c.fact.to)}", "#{m} = #{Expr.show(got)}"])
+  end
+  def model_chain(s, rays_l, space_l, spaced, folded, one)
+    if (Ops.eq(rays_l, nil) || Ops.eq(space_l, nil))
+      return []
+    end
+    fill = Prover.settled(s)
+    ways = self.ways_at(one, [spaced, folded, one])
+    if Ops.eq(ways, nil)
+      return []
+    end
+    moved = self.ways_moved(ways)
+    pieces = Ops.filt(Ops.m_map(Ops.filt(self.infos, ->(t) {
+      return (((!Ops.eq(t.term.rule, nil) && !(t.transport)) && !(t.settles)) && !Ops.eq(t.rays, "0"))
+    }), ->(t) {
+      return self.rule_piece(t, fill)
+    }), ->(x) {
+      return !Ops.eq(x, nil)
+    })
+    moving_ = self.movement(ways)
+    if (Ops.eq(moving_, nil) || Ops.m_empty(pieces))
+      return []
+    end
+    rays_c = self.per_way(rays_l, pieces, moving_, fill)
+    ways_c = self.ways_line(folded, moved, ways, pieces, fill)
+    if Ops.eq(ways_c, nil)
+      return []
+    end
+    moves = self.record_moves(ways_c, ways, pieces)
+    settles = self.record_settles(moves)
+    if Ops.eq(settles, nil)
+      return []
+    end
+    left = self.record_left(rays_c, ways_c, settles)
+    mass = self.leftover(rays_c)
+    if Ops.eq(mass, nil)
+      return []
+    end
+    return Ops.m_concat(Ops.m_concat([rays_l, space_l, ways, moved], pieces), [moving_, rays_c, ways_c, moves, settles, left, mass])
   end
   def lean(rec)
     return Step.of(Fact.stands("a", Expr.field("\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}")), "the lean", [rec.fact.key], "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend", ["a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned", "streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading", "bending: \\Delta_{a}S_{l} - the record along the lean"])
@@ -7265,6 +7569,7 @@ class Prover < Node
     whole = self.general(filled, folded)
     rays_l = self.narrowed("rays", filled)
     space_l = self.narrowed("space", spaced)
+    model = self.model_chain(s, rays_l, space_l, spaced, folded, one)
     settled = self.settled_record(folded)
     short = (Ops.eq(settled, nil) ? nil : self.single(whole, settled, folded, s))
     agg = (Ops.eq(short, nil) ? nil : self.aggregate(whole, short, s))
@@ -7299,18 +7604,27 @@ class Prover < Node
     })).each do |st|
       named.set(st.fact.of, st)
     end
+    Ops.list(Ops.filt(model, ->(x) {
+      return ((!Ops.eq(x.via, Prover.RAYS_PER_WAY) && !Ops.eq(x.via, "the ways move with the record")) && !Ops.eq(x.via, "the mass is what the vacuum leaves over"))
+    })).each do |st|
+      named.set(st.fact.of, st)
+    end
     proved = Ops.m_map(self.theory.theorems, ->(t) {
       q = t.asked
       p = Proved.new(theorem: t.id, theory: self.theory.name, asks: q.asks, about: q.about)
       hit = (Ops.m_empty(q.about) ? nil : named.get(q.about))
       root = Ops.elem(s.steps, Fact.key_of("is", "the continuous model"))
-      steps = (Ops.m_empty(q.about) ? chain : ((!Ops.eq(hit, nil) ? ((Ops.eq(root, nil) ? [hit] : [root, hit])) : Prover.behind(s, q.about))))
+      steps = (Ops.m_empty(q.about) ? ((Ops.m_empty(model) ? chain : model)) : ((!Ops.eq(hit, nil) ? ((Ops.eq(root, nil) ? [hit] : [root, hit])) : Prover.behind(s, q.about))))
       _end = (Ops.m_empty(q.about) ? nil : Ops.m_last(steps))
       p.steps = Ops.m_map(steps, ->(st) {
         return self.line_of(st)
       })
       if Ops.m_empty(q.about)
-        p.concluded = Prover.headline((Ops.or_else(Ops.or_else(Ops.or_else(whole_line) { agg }) { short }) { whole }).fact, nil)
+        p.concluded = Prover.headline(((Ops.m_empty(model) ? (Ops.or_else(Ops.or_else(Ops.or_else(whole_line) { agg }) { short }) { whole }) : Ops.m_last(model))).fact, nil)
+        ways_said = Ops.m_first(Ops.filt(model, ->(x) {
+          return Ops.eq(x.via, Prover.WAYS_LINE)
+        }))
+        p.also = (Ops.eq(ways_said, nil) ? nil : Prover.headline(ways_said.fact, nil))
         p.standing = true
       else
         if (!Ops.eq(_end, nil) && !Ops.eq(_end.fact.of, q.about))
@@ -7354,19 +7668,22 @@ class Prover < Node
     spaced = self.ledger_filled(s, "space")
     folded = self.ledger_filled(s, "folds")
     one = self.ledgers_are_one(s, folded, spaced)
-    whole = self.general(filled, folded)
-    settled = self.settled_record(folded)
-    short = (Ops.eq(settled, nil) ? nil : self.single(whole, settled, folded, s))
-    agg = (Ops.eq(short, nil) ? nil : self.aggregate(whole, short, s))
-    back = (Ops.eq(agg, nil) ? nil : self.remembered(s, agg))
-    each = (Ops.eq(back, nil) ? nil : self.from_each(s, back))
-    known = (Ops.eq(each, nil) ? nil : self.forgotten(s, each, settled))
-    pull = (Ops.eq(known, nil) ? nil : self.felt(s, known, settled))
-    rec = (Ops.eq(pull, nil) ? nil : self.record_of_all(known, pull, settled))
-    whole_line = (Ops.eq(rec, nil) ? nil : self.one_line(rec))
     grown = self.growth_filled(s)
-    roles = ["population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth"]
-    steps = [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line, grown]
+    model = self.model_chain(s, self.narrowed("rays", filled), self.narrowed("space", spaced), spaced, folded, one)
+    by = ->(via) {
+      return Ops.m_first(Ops.filt(model, ->(x) {
+        return Ops.eq(x.via, via)
+      }))
+    }
+    rays_c = by.(Prover.RAYS_PER_WAY)
+    mass = (Ops.m_empty(model) ? nil : Ops.m_last(model))
+    Ops.list(Ops.filt(model, ->(x) {
+      return (Ops.eq(x.fact.of, Prover.GAIN) || Ops.eq(x.fact.of, Prover.LOSS))
+    })).each do |x|
+      out.set(x.fact.of, x)
+    end
+    roles = ["population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass"]
+    steps = [filled, spaced, grown, rays_c, rays_c, by.(Prover.WAYS_LINE), by.("the record's own line"), by.("the record settled against the density"), by.("the record every body leaves at a local"), mass]
     roles.length.times do |i|
       if !Ops.eq(Ops.elem(steps, i), nil)
         out.set(Ops.elem(roles, i), Ops.elem(steps, i))
@@ -8447,6 +8764,48 @@ class Aggregate < Node
     args_.empty? ? @chain : @chain.(*args_)
   end
   attr_writer :chain
+  def net(*args_)
+    @net = (self.rays_net) unless instance_variable_defined?(:@net)
+    args_.empty? ? @net : @net.(*args_)
+  end
+  attr_writer :net
+  def rays_net
+    st = self.step("rays")
+    if Ops.eq(st, nil)
+      return nil
+    end
+    e = st.fact.to
+    Ops.list([Prover.GAIN, Prover.LOSS]).each do |name|
+      piece = self.chain.get(name)
+      if !Ops.eq(piece, nil)
+        e = Expr.replace(e, name, piece.fact.to)
+      end
+    end
+    return Prover.neat(Expr.replace(Expr.replace(e, Prover.ACROSS.label, Prover.HERE), Prover.MASS.label, Expr.num(0)))
+  end
+  def nets_at(rho)
+    e = self.env
+    Ops.set_at(e, Prover.HERE.label, rho)
+    return Aggregate.numeric_of(self.net, e)
+  end
+  def root_of_net
+    lo = 0
+    hi = 1
+    48.times do |i|
+      mid = Ops.div((Ops.add(lo, hi)), 2)
+      if Ops.gt(self.nets_at(mid), 0)
+        lo = mid
+      else
+        hi = mid
+      end
+    end
+    return Ops.div((Ops.add(lo, hi)), 2)
+  end
+  def settled_rho(*args_)
+    @settled_rho = ((Ops.eq(self.net, nil) ? self.fact_at("\\rho_{\\infty}", self.env) : self.root_of_net)) unless instance_variable_defined?(:@settled_rho)
+    args_.empty? ? @settled_rho : @settled_rho.(*args_)
+  end
+  attr_writer :settled_rho
   def NEAR(*args_)
     @NEAR = (0.5) unless instance_variable_defined?(:@NEAR)
     args_.empty? ? @NEAR : @NEAR.(*args_)
@@ -8463,6 +8822,7 @@ class Aggregate < Node
     Ops.setattr(e, "D", self.D)
     Ops.setattr(e, "DEG", self.DEG)
     Ops.setattr(e, "l.DEG", self.DEG)
+    Ops.setattr(e, "DEG_{0}", self.DEG)
     Ops.setattr(e, "\\bar{c}", 1)
     return e
   end
@@ -8484,7 +8844,7 @@ class Aggregate < Node
     return (Ops.eq(st, nil) ? "-" : "#{st.fact.of} = #{Expr.show(st.fact.to)}")
   end
   def rho_inf
-    return self.fact_at("\\rho_{\\infty}", self.env)
+    return self.settled_rho
   end
   def settled_env
     e = self.env
@@ -8970,7 +9330,9 @@ class Aggregate < Node
   end
   def folds_expr
     st = self.step("folds")
-    return (Ops.eq(st, nil) ? Expr.num(0) : st.fact.to)
+    lattice = Node.new
+    Ops.setattr(lattice, "DEG_{0}", self.DEG)
+    return (Ops.eq(st, nil) ? Expr.num(0) : Expr.evaluate(st.fact.to, lattice))
   end
   def folds_rate(rho, nf)
     at = self.base
@@ -10346,6 +10708,9 @@ class Medium < Node
   end
   attr_writer :vac
   def nets(rho, nf)
+    if !Ops.eq(self.aggregate.net, nil)
+      return self.aggregate.nets_at(rho)
+    end
     s = self.symbols(rho, nf)
     got = 0
     Ops.list(self.points).each do |t|
@@ -19619,6 +19984,18 @@ class GTheory < Theory
   THEOREM_vacuum_space = Theorem.new(id: "vacuum.space", body: -> {
     return Asked.new(asks: "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?", about: "\\Delta \\narrow{\\forall}{@ == l}", leads: "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.")
   })
+  THEOREM_vacuum_creation = Theorem.new(id: "vacuum.creation", body: -> {
+    return Asked.new(asks: "creation, at a local: what share of l's ways does it light a tick?", about: "S^{+}", leads: "CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once.")
+  })
+  THEOREM_vacuum_annihilation = Theorem.new(id: "vacuum.annihilation", body: -> {
+    return Asked.new(asks: "annihilation, at a local: what share of l's ways does it take a tick?", about: "S^{-}", leads: "ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends.")
+  })
+  THEOREM_vacuum_movement = Theorem.new(id: "vacuum.movement", body: -> {
+    return Asked.new(asks: "the rays move. Followed a step and a tick, what does a ray's way on depend on?", about: "\\Delta\\rho", leads: "MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds.")
+  })
+  THEOREM_vacuum_ways = Theorem.new(id: "vacuum.ways", body: -> {
+    return Asked.new(asks: "a fold is a way. How many ways does a local have, and what moves them?", about: "\\Delta DEG", also: "DEG", leads: "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own.", then: "AND WHAT THEY ARE: the lattice's own ways and one for every fold.")
+  })
   THEOREM_vacuum_at = Theorem.new(id: "vacuum.at", body: -> {
     return Asked.new(asks: "a source is a thing with a history. What does it mean to read one at a particular time?", about: "l'_{@t}")
   })
@@ -19885,6 +20262,10 @@ end
 def self.nl0
   @nl0 = ("\n") unless instance_variable_defined?(:@nl0)
   @nl0
+end
+def self.METHOD_SOURCES
+  @METHOD_SOURCES = ("\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at") unless instance_variable_defined?(:@METHOD_SOURCES)
+  @METHOD_SOURCES
 end
 
 end

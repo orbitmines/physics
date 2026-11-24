@@ -12,10 +12,20 @@ ray_impl_field "theory" : Theory := do
   return ωnull
 ray_impl_sfield "PROOFS" : Value := do
   return (← RMap.new)
+ray_impl_sfield "MARK" : Value := do
+  return ("\n@@ " : String)
 ray_impl_sfield "RAYS_SAY" : Value := do
   return ("l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all." : String)
 ray_impl_sfield "SPACE_SAY" : Value := do
   return ("the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here." : String)
+ray_impl_sfield "LIGHTS" : Value := do
+  return ("lights" : String)
+ray_impl_sfield "TAKES" : Value := do
+  return ("takes" : String)
+ray_impl_sfield "RAYS_PER_WAY" : Value := do
+  return ("the rays at a local, per way" : String)
+ray_impl_sfield "WAYS_LINE" : Value := do
+  return ("the ways at a local, a tick on" : String)
 ray_impl_field "population_line" : Step := do
   return ωnull
 ray_impl_field "record_line" : Step := do
@@ -749,24 +759,35 @@ ray_impl_method "every_local" (rec_0 : Step) (settled_0 : Step) : Step := do
 ray_impl_method "following" (rec_0 : Step) : Step := do
   if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta_{v}f" : String), (← call! (← cls% Expr) "field" (("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}" : String))))), ("following" : String), (← ωlst #[(← ωget (← ωget (← rec_0.get) "fact") "key")]), ("the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all" : String), (← ωlst #[("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick" : String), ("\\nabla f: along a way, at one tick" : String), ("\\partial_{\\hat{d}}\\rho: across the headings, at one local" : String)])))
   return ωnull
+ray_impl_static "sources_read" : String := do
+  if true then return (← dot! (← dot! (← ωlst #[(← ωlst #[("Edge.active" : String), (← ωget (← call! (← cls% Edge) "method" (("active" : String))) "source")]), (← ωlst #[("Ray.facing" : String), (← ωget (← call! (← cls% Ray) "method" (("facing" : String))) "source")]), (← ωlst #[("Ray.turns" : String), (← ωget (← call! (← cls% Ray) "method" (("turns" : String))) "source")]), (← ωlst #[("Vertex.fold" : String), (← ωget (← call! (← cls% Vertex) "method" (("fold" : String))) "source")]), (← ωlst #[("Vertex.alive" : String), (← ωget (← call! (← cls% Vertex) "method" (("alive" : String))) "source")]), (← ωlst #[("Vertex.sinks" : String), (← ωget (← call! (← cls% Vertex) "method" (("sinks" : String))) "source")])]) rmap ((fn! [p_2] do
+    if true then return ("" ++ (← ωtoStr (← ωget (← cls% Prover) "MARK")) ++ "" ++ (← ωtoStr (← ωelem (← p_2.get) (0 : Float))) ++ "\n" ++ (← ωtoStr (← ωelem (← p_2.get) (1 : Float))) ++ "" : String)
+    return ωnull))) rjoin (("" : String)))
+  return ωnull
+ray_impl_static "source_of" (key_0 : String) : String := do
+  let hit_0 ← IO.mkRef (← dot! (← dot! (← dot! (← ωglobal_METHOD_SOURCES) rsplit ((← ωget (← cls% Prover) "MARK"))) rfilter ((fn! [p_2] do
+    if true then return (← dot! (← p_2.get) rstarts_with (("" ++ (← ωtoStr (← key_0.get)) ++ "\n" : String)))
+    return ωnull))) rfirst ())
+  if true then return (← ωtern (ωtruthy (ωisNull (← hit_0.get))) (do pure ("" : String)) (do pure (← dot! (← hit_0.get) rdrop ((← ωadd (← dot! (← key_0.get) rlength ()) (1 : Float))))))
+  return ωnull
 ray_impl_static "edge_ends" : (RList String) := do
-  if true then return (← dot! (← dot! (← ωget (← call! (← cls% Edge) "method" (("active" : String))) "source") rsplit ((" & " : String))) rfilter ((fn! [c_2] do
+  if true then return (← dot! (← dot! (← call! (← cls% Prover) "source_of" (("Edge.active" : String))) rsplit ((" & " : String))) rfilter ((fn! [c_2] do
     if true then return (← ωgt (← dot! (← dot! (← c_2.get) rsplit ((".active" : String))) rlength ()) (1 : Float))
     return ωnull)))
   return ωnull
 ray_impl_getter "edge_from_an_end" : Step := do
-  let def__0 ← IO.mkRef (← ωget (← call! (← cls% Edge) "method" (("active" : String))) "source")
+  let active__0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Edge.active" : String)))
   let ends_0 ← IO.mkRef (← ωget (← cls% Prover) "edge_ends")
   let asked_0 ← IO.mkRef (← dot! (← dot! (← ωlst #[("active" : String)]) rconcat ((← dot! (← dot! (← ends_0.get) rdrop ((1 : Float))) rmap ((fn! [__2] do
     if true then return ("next.active" : String)
     return ωnull))))) rjoin ((" & " : String)))
-  let facing_0 ← IO.mkRef (← ωget (← call! (← cls% Ray) "method" (("facing" : String))) "source")
-  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\narrow{Edge}{active}" : String), (← call! (← cls% Expr) "field" (("\\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}" : String))))), ("an edge, seen from one of its ends" : String), (← ωlst #[]), ("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ "." : String), (← ωlst #[("Edge.active = " ++ (← ωtoStr (← def__0.get)) ++ "" : String), ("Ray.facing = " ++ (← ωtoStr (← facing_0.get)) ++ ": the ray across the same edge - next" : String), ("\\narrow{Edge}{active} = \\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}, " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ " ends to a meeting" : String)])))
+  let facing_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Ray.facing" : String)))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\narrow{Edge}{active}" : String), (← call! (← cls% Expr) "field" (("\\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}" : String))))), ("an edge, seen from one of its ends" : String), (← ωlst #[]), ("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ "." : String), (← ωlst #[("Edge.active = " ++ (← ωtoStr (← active__0.get)) ++ "" : String), ("Ray.facing = " ++ (← ωtoStr (← facing_0.get)) ++ ": the ray across the same edge - next" : String), ("\\narrow{Edge}{active} = \\narrow{l}{" ++ (← ωtoStr (← asked_0.get)) ++ "}, " ++ (← ωtoStr (← dot! (← ends_0.get) rlength ())) ++ " ends to a meeting" : String)])))
   if true then return (← st_0.get)
   return ωnull
 ray_impl_getter "standing_at" : Step := do
-  let alive_0 ← IO.mkRef (← ωget (← call! (← cls% Vertex) "method" (("alive" : String))) "source")
-  let sinks_0 ← IO.mkRef (← ωget (← call! (← cls% Vertex) "method" (("sinks" : String))) "source")
+  let alive_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Vertex.alive" : String)))
+  let sinks_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Vertex.sinks" : String)))
   if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\narrow{\\forall}{@ == l}" : String), (← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← call! (← cls% Expr) "field" (("\\narrow{\\forall}{folded_into == l}" : String)))]))))), ("what stands at a local" : String), (← ωlst #[]), ("the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here." : String), (← ωlst #[("Vertex.alive = " ++ (← ωtoStr (← alive_0.get)) ++ "" : String), ("Vertex.sinks = " ++ (← ωtoStr (← sinks_0.get)) ++ "" : String), ("\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}" : String)])))
   return ωnull
 ray_impl_static "members_of" (t_0 : TermInfo) (rays_0 : Bool) : Expr := do
@@ -846,6 +867,271 @@ ray_impl_method "narrowed" (ledger_0 : String) (upon_0 : Step) : Step := do
     return ωnull))) rconcat ((← ωlst #[("" ++ (← ωtoStr (← lhs_0.get)) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))))
   (ωsetter (← st_0.get) "derivation") (← behind_0.get)
   if true then return (← st_0.get)
+  return ωnull
+ray_impl_static "ACROSS" : Expr := do
+  if true then return (← call! (← cls% Expr) "field" (("\\tilde{\\rho}" : String)))
+  return ωnull
+ray_impl_static "HERE" : Expr := do
+  if true then return (← call! (← cls% Expr) "field" (("\\rho" : String)))
+  return ωnull
+ray_impl_static "WAYS" : Expr := do
+  if true then return (← call! (← cls% Expr) "field" (("DEG" : String)))
+  return ωnull
+ray_impl_static "LATTICE" : Expr := do
+  if true then return (← call! (← cls% Expr) "field" (("DEG_{0}" : String)))
+  return ωnull
+ray_impl_static "MASS" : Expr := do
+  if true then return (← call! (← cls% Expr) "field" (("\\bar{m}" : String)))
+  return ωnull
+ray_impl_static "STANDING" : String := do
+  if true then return ("\\narrow{\\forall}{@ == l}" : String)
+  return ωnull
+ray_impl_method "share_at" (t_0 : TermInfo) (fill_0 : object) : Expr := do
+  let at_l_0 ← IO.mkRef ωnull
+  at_l_0.set (fn! [(e : Expr)] do
+      if true then return (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "evaluate" (e, (← fill_0.get))), ("n" : String), (← ωget (← cls% Prover) "HERE"))), ("\\rho" : String), (← ωget (← cls% Prover) "HERE"))), ("l.\\bar{m}" : String), (← ωget (← cls% Prover) "MASS")))))
+      return ωnull)
+  if ωtruthy (← ωget (← t_0.get) "outside") then
+    if true then return (← app! (← at_l_0.get) ((← ωget (← t_0.get) "expr")))
+    pure ()
+  let parts_0 ← IO.mkRef (← ωlst #[])
+  if ωtruthy (!ωisNull (← ωget (← t_0.get) "rate")) then
+    (← dot! (← parts_0.get) rpush ((← call! (← cls% Expr) "field" ((← ωget (← t_0.get) "rate"))))) |> ωsink
+    pure ()
+  if ωtruthy (!ωisNull (← ωget (← t_0.get) "asked")) then
+    (← dot! (← parts_0.get) rpush ((← ωget (← t_0.get) "asked"))) |> ωsink
+    pure ()
+  if ωtruthy (← ωgt (← ωget (← t_0.get) "degree") (0 : Float)) then
+    (← dot! (← parts_0.get) rpush ((← ωget (← cls% Prover) "HERE"))) |> ωsink
+    pure ()
+  if ωtruthy (← ωgt (← ωget (← t_0.get) "degree") (1 : Float)) then
+    (← dot! (← parts_0.get) rpush ((← call! (← cls% Expr) "pown" ((← ωget (← cls% Prover) "ACROSS"), (← ωsub (← ωget (← t_0.get) "degree") (1 : Float)))))) |> ωsink
+    pure ()
+  if true then return (← app! (← at_l_0.get) ((← ωtern (ωtruthy (← dot! (← parts_0.get) rempty ())) (do pure (← call! (← cls% Expr) "num" ((1 : Float)))) (do pure (← call! (← cls% Expr) "mul" ((← parts_0.get)))))))
+  return ωnull
+ray_impl_static "members_at" (t_0 : TermInfo) (rays_0 : Bool) : Expr := do
+  if true then return (← ωtern (ωtruthy ((← ωorV (← ωget (← t_0.get) "outside") (do pure ((← ωandV (← ωeqv (← ωget (← ωget (← ωget (← t_0.get) "term") "rule") "over") ("Vertex" : String)) (do pure (ωnotV (← rays_0.get))))))))) (do pure (← call! (← cls% Expr) "num" ((1 : Float)))) (do pure (← ωget (← cls% Prover) "WAYS")))
+  return ωnull
+ray_impl_method "ways_at" (one_0 : Step) (behind_0 : (RList Step)) : Step := do
+  let draws_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Ray.turns" : String)))
+  let folding_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Vertex.fold" : String)))
+  if ωtruthy (← ωorV (ωnotV (← dot! (← draws_0.get) rcontains (("folds" : String)))) (do pure (ωnotV (← dot! (← folding_0.get) rcontains (("folds[d] + 1" : String)))))) then
+    if true then return ωnull
+    pure ()
+  let own_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← ωlst #[(← ωget (← cls% Prover) "LATTICE"), (← call! (← cls% Expr) "field" (("n_{f,l}" : String)))])))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("DEG" : String), (← own_0.get))), ("the ways at a local" : String), (← ωlst #[(← ωget (← ωget (← one_0.get) "fact") "key")]), ("a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it" : String), (← ωlst #[("Ray.turns = " ++ (← ωtoStr (← draws_0.get)) ++ ": straight on at one, each folded way at its folds" : String), ("Vertex.fold = " ++ (← ωtoStr (← folding_0.get)) ++ ": a fold written on a way" : String), ("DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← own_0.get)))) ++ "" : String)])))
+  (ωsetter (← st_0.get) "derivation") (← behind_0.get)
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "ways_moved" (ways_0 : Step) : Step := do
+  let by__0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "d" ((← ωget (← ωget (← ways_0.get) "fact") "to"), ("n_{f,l}" : String)))))
+  let got_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← by__0.get), (← call! (← cls% Expr) "field" (("\\Delta n_{f,l}" : String)))])))))
+  if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta DEG" : String), (← got_0.get))), ("the ways move with the record" : String), (← ωlst #[(← ωget (← ωget (← ways_0.get) "fact") "key")]), ("the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off" : String), (← ωlst #[("\\frac{\\partial DEG}{\\partial n_{f,l}} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← by__0.get)))) ++ "" : String), ("\\Delta DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_0.get)))) ++ "" : String)])))
+  return ωnull
+ray_impl_static "GAIN" : String := do
+  if true then return ("S^{+}" : String)
+  return ωnull
+ray_impl_static "LOSS" : String := do
+  if true then return ("S^{-}" : String)
+  return ωnull
+ray_impl_method "rule_piece" (t_0 : TermInfo) (fill_0 : object) : Step := do
+  if ωtruthy (← ωget (← t_0.get) "outside") then
+    if true then return ωnull
+    pure ()
+  let w_0 ← IO.mkRef (← call! (← cls% Prover) "per_member" ((← ωget (← t_0.get) "ray_count"), (← call! (← cls% Prover) "members_of" ((← t_0.get), true))))
+  if ωtruthy (ωisNull (← w_0.get)) then
+    if true then return ωnull
+    pure ()
+  if ωtruthy (← ωeqv (← w_0.get) (0 : Float)) then
+    if true then return ωnull
+    pure ()
+  let r_0 ← IO.mkRef (← ωget (← ωget (← t_0.get) "term") "rule")
+  let pattern_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← ωget (← r_0.get) "where"))) (do pure ("" : String)) (do pure (← ωget (← ωget (← r_0.get) "where") "source")))
+  let share_0 ← IO.mkRef (← call! self "share_at" ((← t_0.get), (← fill_0.get)))
+  let got_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← dot! (← w_0.get) rabs ()))), (← share_0.get)])))))
+  let name_0 ← IO.mkRef (← ωtern (ωtruthy (← ωgt (← w_0.get) (0 : Float))) (do pure (← ωget (← cls% Prover) "GAIN")) (do pure (← ωget (← cls% Prover) "LOSS")))
+  let does_0 ← IO.mkRef (← ωtern (ωtruthy (← ωgt (← w_0.get) (0 : Float))) (do pure (← ωget (← cls% Prover) "LIGHTS")) (do pure (← ωget (← cls% Prover) "TAKES")))
+  let members_0 ← IO.mkRef (← call! (← cls% Expr) "show" ((← call! (← cls% Prover) "members_of" ((← t_0.get), true))))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" ((← name_0.get), (← got_0.get))), (← dot! (← ωget (← r_0.get) "name") rupper ()), (← ωlst #[]), ("" ++ (← ωtoStr (← ωget (← r_0.get) "name")) ++ " at l, per way: its pattern narrows l to " ++ (← ωtoStr (← ωget (← r_0.get) "over")) ++ "\\{" ++ (← ωtoStr (← pattern_0.get)) ++ "\\}, which holds " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← share_0.get)))) ++ " of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is " ++ (← ωtoStr (← members_0.get)) ++ " of l's ways and one firing " ++ (← ωtoStr (← does_0.get)) ++ " " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "num" ((← dot! (← w_0.get) rabs ())))))) ++ " ray on each. So it " ++ (← ωtoStr (← does_0.get)) ++ " " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_0.get)))) ++ " of l's ways a tick: written " ++ (← ωtoStr (← name_0.get)) ++ ": S for a rule, marked by what it does to the rays" : String), (← ωlst #[("pattern: " ++ (← ωtoStr (← ωget (← r_0.get) "over")) ++ "\\{" ++ (← ωtoStr (← pattern_0.get)) ++ "\\}" : String), ("share of l's ways: " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← share_0.get)))) ++ "" : String), ("one match: " ++ (← ωtoStr (← members_0.get)) ++ " of l's ways, " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "num" ((← w_0.get)))))) ++ " a way" : String), ("" ++ (← ωtoStr (← name_0.get)) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_0.get)))) ++ "" : String)])))
+  (ωsetter (← st_0.get) "rule") (← dot! (← ωget (← r_0.get) "name") rupper ())
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "movement" (ways_0 : Step) : Step := do
+  let t_0 ← IO.mkRef (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
+    if true then return (← ωandV (← ωget (← t_2.get) "transport") (do pure (← ωget (← t_2.get) "kernel")))
+    return ωnull))) rfirst ())
+  if ωtruthy (ωisNull (← t_0.get)) then
+    if true then return ωnull
+    pure ()
+  let draws_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Ray.turns" : String)))
+  let nf_0 ← IO.mkRef (← call! (← cls% Expr) "linear" ((← call! (← cls% Expr) "sub" ((← call! (← cls% Expr) "field" (("x.DEG" : String))), (← call! (← cls% Expr) "add" ((← ωlst #[(← ωget (← cls% Prover) "LATTICE"), (← call! (← cls% Expr) "field" (("n_{f}" : String)))]))))), ("n_{f}" : String)))
+  if ωtruthy (ωisNull (← nf_0.get)) then
+    if true then return ωnull
+    pure ()
+  let keep_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← ωget (← t_0.get) "keeps"), ("n_{f}" : String), (← nf_0.get)))))
+  let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "sub" ((← call! (← cls% Expr) "field" (("\\rho_{+v}\\paren{t + 1}" : String))), (← call! (← cls% Expr) "field" (("\\rho\\paren{t}" : String)))))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta\\rho" : String), (← rhs_0.get))), (← dot! (← ωget (← ωget (← ωget (← t_0.get) "term") "rule") "name") rupper ()), (← ωlst #[(← ωget (← ωget (← ways_0.get) "fact") "key")]), ("the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← keep_0.get)))) ++ " of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place" : String), (← ωlst #[("Ray.turns = " ++ (← ωtoStr (← draws_0.get)) ++ "" : String), ("at a place x: n_{f} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← nf_0.get)))) ++ ", its ways over the lattice's own" : String), ("kept straight at x: " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← t_0.get) "keeps")))) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← keep_0.get)))) ++ "" : String), ("\\Delta\\rho = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))
+  (ωsetter (← st_0.get) "rule") (← dot! (← ωget (← ωget (← ωget (← t_0.get) "term") "rule") "name") rupper ())
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "per_way" (line_0 : Step) (pieces_0 : (RList Step)) (moving__0 : Step) (fill_0 : object) : Step := do
+  let parts_0 ← IO.mkRef (← ωlst #[])
+  for e1 in (← ωitems (← dot! (← ωget self "infos") rfilter ((fn! [t_3] do
+    if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← ωget (← t_3.get) "term") "rule")) (do pure (ωnotV (← ωget (← t_3.get) "transport")))) (do pure (ωnotV (← ωget (← t_3.get) "settles")))) (do pure (← ωnev (← ωget (← t_3.get) "rays") ("0" : String))))
+    return ωnull)))) do
+    let t_1 ← IO.mkRef e1
+    let w_1 ← IO.mkRef (← call! (← cls% Prover) "per_member" ((← ωget (← t_1.get) "ray_count"), (← call! (← cls% Prover) "members_of" ((← t_1.get), true))))
+    if !ωtruthy (ωisNull (← w_1.get)) then
+      if !ωtruthy (← ωeqv (← w_1.get) (0 : Float)) then
+        if ωtruthy (← ωget (← t_1.get) "outside") then
+          (← dot! (← parts_0.get) rpush ((← call! (← cls% Prover) "weighed" ((← w_1.get), (← call! self "share_at" ((← t_1.get), (← fill_0.get))))))) |> ωsink
+          pure ()
+        else
+          (← dot! (← parts_0.get) rpush ((← ωtern (ωtruthy (← ωgt (← w_1.get) (0 : Float))) (do pure (← call! (← cls% Expr) "field" ((← ωget (← cls% Prover) "GAIN")))) (do pure (← call! (← cls% Expr) "neg" ((← call! (← cls% Expr) "field" ((← ωget (← cls% Prover) "LOSS"))))))))) |> ωsink
+          pure ()
+        pure ()
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← parts_0.get)))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta\\rho" : String), (← rhs_0.get))), (← ωget (← cls% Prover) "RAYS_PER_WAY"), (← dot! (← ωlst #[(← ωget (← ωget (← line_0.get) "fact") "key"), (← ωget (← ωget (← moving__0.get) "fact") "key")]) rconcat ((← dot! (← pieces_0.get) rmap ((fn! [x_2] do
+    if true then return (← ωget (← ωget (← x_2.get) "fact") "key")
+    return ωnull))))), ("the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place" : String), (← dot! (← dot! (← pieces_0.get) rmap ((fn! [x_2] do
+    if true then return ("" ++ (← ωtoStr (← ωget (← ωget (← x_2.get) "fact") "of")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← x_2.get) "fact") "to")))) ++ " (" ++ (← ωtoStr (← ωget (← x_2.get) "via")) ++ ")" : String)
+    return ωnull))) rconcat ((← ωlst #[("" ++ (← ωtoStr (← ωget (← cls% Prover) "RAYS_PER_WAY")) ++ ": \\Delta\\rho = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))))
+  (ωsetter (← st_0.get) "derivation") (← dot! (← ωlst #[(← line_0.get), (← moving__0.get)]) rconcat ((← pieces_0.get)))
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "ways_line" (line_0 : Step) (moved_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) (fill_0 : object) : Step := do
+  let parts_0 ← IO.mkRef (← ωlst #[])
+  let said_0 ← IO.mkRef (← ωlst #[])
+  let folds_of_0 ← IO.mkRef (← call! (← cls% Expr) "sub" ((← ωget (← ωget (← ways_0.get) "fact") "to"), (← ωget (← cls% Prover) "LATTICE")))
+  for e1 in (← ωitems (← dot! (← ωget self "infos") rfilter ((fn! [t_3] do
+    if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← ωget (← t_3.get) "term") "rule")) (do pure (ωnotV (← ωget (← t_3.get) "transport")))) (do pure (ωnotV (← ωget (← t_3.get) "settles")))) (do pure (← ωnev (← ωget (← t_3.get) "folds") ("0" : String))))
+    return ωnull)))) do
+    let t_1 ← IO.mkRef e1
+    let w_1 ← IO.mkRef (← call! (← cls% Prover) "per_member" ((← ωget (← t_1.get) "fold_count"), (← call! (← cls% Prover) "members_of" ((← t_1.get), true))))
+    if !ωtruthy (ωisNull (← w_1.get)) then
+      if !ωtruthy (← ωeqv (← w_1.get) (0 : Float)) then
+        let share_1 ← IO.mkRef (← call! self "share_at" ((← t_1.get), (← fill_0.get)))
+        let named_1 ← IO.mkRef (← dot! (← dot! (← pieces_0.get) rfilter ((fn! [x_3] do
+          if true then return (← ωandV (← ωeqv (← ωget (← x_3.get) "via") (← dot! (← ωget (← ωget (← ωget (← t_1.get) "term") "rule") "name") rupper ())) (do pure (← ωeqv (← call! (← cls% Expr) "show" ((← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "div" ((← ωget (← ωget (← x_3.get) "fact") "to"), (← share_1.get))))))) ("1" : String))))
+          return ωnull))) rfirst ())
+        let at__1 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← named_1.get))) (do pure (← share_1.get)) (do pure (← call! (← cls% Expr) "field" ((← ωget (← ωget (← named_1.get) "fact") "of")))))
+        let gate_1 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← ωget (← t_1.get) "around"))) (do pure (← call! (← cls% Expr) "num" ((1 : Float)))) (do pure (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← ωget (← t_1.get) "around"), ("n_{f}" : String), (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "sub" ((← ωget (← cls% Prover) "WAYS"), (← ωget (← cls% Prover) "LATTICE"))))))), ("DEG" : String), (← ωget (← cls% Prover) "WAYS")))))))
+        let got_1 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "num" ((← w_1.get))), (← ωget (← cls% Prover) "WAYS"), (← gate_1.get), (← at__1.get)])))))
+        (← dot! (← parts_0.get) rpush ((← got_1.get))) |> ωsink
+        (← dot! (← said_0.get) rpush (("" ++ (← ωtoStr (← dot! (← ωget (← ωget (← ωget (← t_1.get) "term") "rule") "name") rupper ())) ++ ": " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← call! (← cls% Expr) "num" ((← w_1.get)))))) ++ " a fold on each of l's ways, " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← gate_1.get)))) ++ " of them, at " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← at__1.get)))) ++ " - " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_1.get)))) ++ "" : String))) |> ωsink
+        pure ()
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  if ωtruthy (← dot! (← parts_0.get) rempty ()) then
+    if true then return ωnull
+    pure ()
+  let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← parts_0.get)))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta DEG" : String), (← rhs_0.get))), (← ωget (← cls% Prover) "WAYS_LINE"), (← dot! (← ωlst #[(← ωget (← ωget (← line_0.get) "fact") "key"), (← ωget (← ωget (← moved_0.get) "fact") "key"), (← ωget (← ωget (← ways_0.get) "fact") "key")]) rconcat ((← dot! (← pieces_0.get) rmap ((fn! [x_2] do
+    if true then return (← ωget (← ωget (← x_2.get) "fact") "key")
+    return ωnull))))), ("l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← folds_of_0.get)))) ++ " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back" : String), (← dot! (← said_0.get) rconcat ((← ωlst #[("\\Delta DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))))
+  (ωsetter (← st_0.get) "derivation") (← dot! (← ωlst #[(← line_0.get), (← moved_0.get), (← ways_0.get)]) rconcat ((← pieces_0.get)))
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "in_record" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Expr := do
+  let e_0 ← IO.mkRef (← ωget (← ωget (← ways_c_0.get) "fact") "to")
+  for e1 in (← ωitems (← pieces_0.get)) do
+    let x_1 ← IO.mkRef e1
+    (← ωwr e_0 (← call! (← cls% Expr) "replace" ((← e_0.get), (← ωget (← ωget (← x_1.get) "fact") "of"), (← ωget (← ωget (← x_1.get) "fact") "to")))) |> ωsink
+    pure ()
+  Value.null |> ωsink
+  (← ωwr e_0 (← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← e_0.get), (← ωget (← ωget (← cls% Prover) "ACROSS") "label"), (← ωget (← cls% Prover) "HERE"))), ("DEG" : String), (← ωget (← ωget (← ways_0.get) "fact") "to")))) |> ωsink
+  if true then return (← call! (← cls% Prover) "tidy" ((← call! (← cls% Expr) "replace" ((← e_0.get), ("n_{f,l}" : String), (← call! (← cls% Expr) "field" (("n_{f}" : String)))))))
+  return ωnull
+ray_impl_method "record_moves" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Step := do
+  let e_0 ← IO.mkRef (← call! self "in_record" ((← ways_c_0.get), (← ways_0.get), (← pieces_0.get)))
+  if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("\\Delta n_{f}" : String), (← e_0.get))), ("the record's own line" : String), (← dot! (← ωlst #[(← ωget (← ωget (← ways_c_0.get) "fact") "key"), (← ωget (← ωget (← ways_0.get) "fact") "key")]) rconcat ((← dot! (← pieces_0.get) rmap ((fn! [x_2] do
+    if true then return (← ωget (← ωget (← x_2.get) "fact") "key")
+    return ωnull))))), ("the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone" : String), (← ωlst #[("" ++ (← ωtoStr (← ωget (← ωget (← ways_c_0.get) "fact") "of")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← ways_c_0.get) "fact") "to")))) ++ "" : String), ("DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← ways_0.get) "fact") "to")))) ++ "" : String), ("\\Delta n_{f} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← e_0.get)))) ++ "" : String)])))
+  return ωnull
+ray_impl_method "record_settles" (moves_0 : Step) : Step := do
+  let parts_0 ← IO.mkRef (← dot! (← cls% Expr) rsplit ((← ωget (← ωget (← moves_0.get) "fact") "to"), ("n_{f}" : String)))
+  if ωtruthy (ωisNull (← parts_0.get)) then
+    if true then return ωnull
+    pure ()
+  let top_0 ← IO.mkRef (← call! (← cls% Prover) "tidy" ((← call! (← cls% Expr) "neg" ((← ωelem (← parts_0.get) (1 : Float))))))
+  let bottom_0 ← IO.mkRef (← call! (← cls% Prover) "tidy" ((← ωelem (← parts_0.get) (0 : Float))))
+  if ωtruthy (← dot! (← call! (← cls% Expr) "show" ((← top_0.get))) rstarts_with (("-" : String))) then
+    (← ωwr top_0 (← call! (← cls% Prover) "tidy" ((← call! (← cls% Expr) "neg" ((← top_0.get)))))) |> ωsink
+    (← ωwr bottom_0 (← call! (← cls% Expr) "flip" ((← bottom_0.get)))) |> ωsink
+    pure ()
+  let nf_0 ← IO.mkRef (← call! (← cls% Expr) "div" ((← top_0.get), (← bottom_0.get)))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("n_{f}" : String), (← nf_0.get))), ("the record settled against the density" : String), (← ωlst #[(← ωget (← ωget (← moves_0.get) "fact") "key")]), ("the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought" : String), (← ωlst #[("" ++ (← ωtoStr (← ωget (← ωget (← moves_0.get) "fact") "of")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← moves_0.get) "fact") "to")))) ++ " = 0" : String), ("n_{f} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← nf_0.get)))) ++ "" : String)])))
+  (ωsetter (← st_0.get) "parts_") (← ωlst #[(← top_0.get), (← bottom_0.get)])
+  if true then return (← st_0.get)
+  return ωnull
+ray_impl_method "record_left" (rays_c_0 : Step) (ways_c_0 : Step) (settles_0 : Step) : Step := do
+  let k_0 ← IO.mkRef (← ωget self "fold_weight")
+  let both_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "collected" ((← call! (← cls% Expr) "expand" ((← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "mul" ((← ωlst #[(← ωget (← cls% Prover) "WAYS"), (← ωget (← ωget (← rays_c_0.get) "fact") "to")]))), (← call! (← cls% Expr) "mul" ((← ωlst #[(← k_0.get), (← ωget (← ωget (← ways_c_0.get) "fact") "to")])))])))))))))
+  let vac_0 ← IO.mkRef (← call! (← cls% Expr) "field" (("\\rho_{\\infty}" : String)))
+  let base_0 ← IO.mkRef (← call! (← cls% Expr) "replace" ((← ωget (← ωget (← settles_0.get) "fact") "to"), ("\\rho" : String), (← vac_0.get)))
+  let per_0 ← IO.mkRef (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "field" (("x.\\bar{m}" : String))), (← call! (← cls% Expr) "sub" ((← call! (← cls% Expr) "pown" ((← call! (← cls% Expr) "field" (("l.shell\\paren{x.\\bar{R}}" : String))), (← ωneg (1 : Float)))), (← call! (← cls% Prover) "reach" (("x.\\bar{R}" : String)))))])))
+  let rhs_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← ωlst #[(← base_0.get), (← call! (← cls% Expr) "mul" ((← ωlst #[(← call! (← cls% Expr) "pown" ((← k_0.get), (← ωneg (1 : Float)))), (← call! (← cls% Expr) "call" (("\\sum_{x = x_{@t}}" : String), (← per_0.get)))])))])))
+  let lhs_0 ← IO.mkRef ("\\Delta\\paren{DEG·\\rho + " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← k_0.get)))) ++ "·n_{f}}" : String)
+  if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("n_{f,l}\\paren{t}" : String), (← rhs_0.get))), ("the record every body leaves at a local" : String), (← ωlst #[(← ωget (← ωget (← rays_c_0.get) "fact") "key"), (← ωget (← ωget (← ways_c_0.get) "fact") "key"), (← ωget (← ωget (← settles_0.get) "fact") "key")]), ("a meeting turns " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← k_0.get)))) ++ " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← k_0.get)))) ++ " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← k_0.get)))) ++ ", on the settled record. Each body is read as it was when its rays left it, at its own distance then" : String), (← ωlst #[("" ++ (← ωtoStr (← lhs_0.get)) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← both_0.get)))) ++ "" : String), ("the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← base_0.get)))) ++ "" : String), ("x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then" : String), ("n_{f,l}\\paren{t} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← rhs_0.get)))) ++ "" : String)])))
+  return ωnull
+ray_impl_method "leftover" (rays_c_0 : Step) : Step := do
+  let m_0 ← IO.mkRef (← ωget (← ωget (← cls% Prover) "MASS") "label")
+  let parts_0 ← IO.mkRef (← dot! (← cls% Expr) rsplit ((← call! (← cls% Expr) "sub" ((← ωget (← ωget (← rays_c_0.get) "fact") "to"), (← call! (← cls% Expr) "field" ((← ωget (← ωget (← rays_c_0.get) "fact") "of"))))), (← m_0.get)))
+  if ωtruthy (ωisNull (← parts_0.get)) then
+    if true then return ωnull
+    pure ()
+  let rest_0 ← IO.mkRef (← ωtern (ωtruthy (← ωeqv (← ωget (← ωelem (← parts_0.get) (1 : Float)) "kind") ("add" : String))) (do pure (← ωget (← ωelem (← parts_0.get) (1 : Float)) "of")) (do pure (← ωlst #[(← ωelem (← parts_0.get) (1 : Float))])))
+  let over_0 ← IO.mkRef (← dot! (← rest_0.get) rmap ((fn! [x_2] do
+    if true then return (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "div" ((← call! (← cls% Expr) "neg" ((← x_2.get))), (← ωelem (← parts_0.get) (0 : Float))))))
+    return ωnull)))
+  let got_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← dot! (← dot! (← over_0.get) rfilter ((fn! [x_2] do
+    if true then return (← call! (← cls% Expr) "mentions" ((← x_2.get), (← ωget (← ωget (← rays_c_0.get) "fact") "of")))
+    return ωnull))) rconcat ((← dot! (← over_0.get) rfilter ((fn! [x_2] do
+    if true then return (ωnotV (← call! (← cls% Expr) "mentions" ((← x_2.get), (← ωget (← ωget (← rays_c_0.get) "fact") "of"))))
+    return ωnull)))))))
+  if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" ((← m_0.get), (← got_0.get))), ("the mass is what the vacuum leaves over" : String), (← ωlst #[(← ωget (← ωget (← rays_c_0.get) "fact") "key")]), ("the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source" : String), (← ωlst #[("" ++ (← ωtoStr (← ωget (← ωget (← rays_c_0.get) "fact") "of")) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← ωget (← ωget (← rays_c_0.get) "fact") "to")))) ++ "" : String), ("" ++ (← ωtoStr (← m_0.get)) ++ " = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← got_0.get)))) ++ "" : String)])))
+  return ωnull
+ray_impl_method "model_chain" (s_0 : Store) (rays_l_0 : Step) (space_l_0 : Step) (spaced_0 : Step) (folded_0 : Step) (one_0 : Step) : (RList Step) := do
+  if ωtruthy (← ωorV (ωisNull (← rays_l_0.get)) (do pure (ωisNull (← space_l_0.get)))) then
+    if true then return (← ωlst #[])
+    pure ()
+  let fill_0 ← IO.mkRef (← call! (← cls% Prover) "settled" ((← s_0.get)))
+  let ways_0 ← IO.mkRef (← call! self "ways_at" ((← one_0.get), (← ωlst #[(← spaced_0.get), (← folded_0.get), (← one_0.get)])))
+  if ωtruthy (ωisNull (← ways_0.get)) then
+    if true then return (← ωlst #[])
+    pure ()
+  let moved_0 ← IO.mkRef (← call! self "ways_moved" ((← ways_0.get)))
+  let pieces_0 ← IO.mkRef (← dot! (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_4] do
+    if true then return (← ωandV (← ωandV (← ωandV (!ωisNull (← ωget (← ωget (← t_4.get) "term") "rule")) (do pure (ωnotV (← ωget (← t_4.get) "transport")))) (do pure (ωnotV (← ωget (← t_4.get) "settles")))) (do pure (← ωnev (← ωget (← t_4.get) "rays") ("0" : String))))
+    return ωnull))) rmap ((fn! [t_3] do
+    if true then return (← call! self "rule_piece" ((← t_3.get), (← fill_0.get)))
+    return ωnull))) rfilter ((fn! [x_2] do
+    if true then return (!ωisNull (← x_2.get))
+    return ωnull)))
+  let moving__0 ← IO.mkRef (← call! self "movement" ((← ways_0.get)))
+  if ωtruthy (← ωorV (ωisNull (← moving__0.get)) (do pure (← dot! (← pieces_0.get) rempty ()))) then
+    if true then return (← ωlst #[])
+    pure ()
+  let rays_c_0 ← IO.mkRef (← call! self "per_way" ((← rays_l_0.get), (← pieces_0.get), (← moving__0.get), (← fill_0.get)))
+  let ways_c_0 ← IO.mkRef (← call! self "ways_line" ((← folded_0.get), (← moved_0.get), (← ways_0.get), (← pieces_0.get), (← fill_0.get)))
+  if ωtruthy (ωisNull (← ways_c_0.get)) then
+    if true then return (← ωlst #[])
+    pure ()
+  let moves_0 ← IO.mkRef (← call! self "record_moves" ((← ways_c_0.get), (← ways_0.get), (← pieces_0.get)))
+  let settles_0 ← IO.mkRef (← call! self "record_settles" ((← moves_0.get)))
+  if ωtruthy (ωisNull (← settles_0.get)) then
+    if true then return (← ωlst #[])
+    pure ()
+  let left_0 ← IO.mkRef (← call! self "record_left" ((← rays_c_0.get), (← ways_c_0.get), (← settles_0.get)))
+  let mass_0 ← IO.mkRef (← call! self "leftover" ((← rays_c_0.get)))
+  if ωtruthy (ωisNull (← mass_0.get)) then
+    if true then return (← ωlst #[])
+    pure ()
+  if true then return (← dot! (← dot! (← ωlst #[(← rays_l_0.get), (← space_l_0.get), (← ways_0.get), (← moved_0.get)]) rconcat ((← pieces_0.get))) rconcat ((← ωlst #[(← moving__0.get), (← rays_c_0.get), (← ways_c_0.get), (← moves_0.get), (← settles_0.get), (← left_0.get), (← mass_0.get)])))
   return ωnull
 ray_impl_method "lean" (rec_0 : Step) : Step := do
   if true then return (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("a" : String), (← call! (← cls% Expr) "field" (("\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}" : String))))), ("the lean" : String), (← ωlst #[(← ωget (← ωget (← rec_0.get) "fact") "key")]), ("the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend" : String), (← ωlst #[("a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned" : String), ("streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading" : String), ("bending: \\Delta_{a}S_{l} - the record along the lean" : String)])))
@@ -1205,6 +1491,7 @@ ray_impl_getter "proof" : Proof := do
   let whole_0 ← IO.mkRef (← call! self "general" ((← filled_0.get), (← folded_0.get)))
   let rays_l_0 ← IO.mkRef (← call! self "narrowed" (("rays" : String), (← filled_0.get)))
   let space_l_0 ← IO.mkRef (← call! self "narrowed" (("space" : String), (← spaced_0.get)))
+  let model_0 ← IO.mkRef (← call! self "model_chain" ((← s_0.get), (← rays_l_0.get), (← space_l_0.get), (← spaced_0.get), (← folded_0.get), (← one_0.get)))
   let settled_0 ← IO.mkRef (← call! self "settled_record" ((← folded_0.get)))
   let short_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← settled_0.get))) (do pure ωnull) (do pure (← call! self "single" ((← whole_0.get), (← settled_0.get), (← folded_0.get), (← s_0.get)))))
   let agg_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← short_0.get))) (do pure ωnull) (do pure (← call! self "aggregate" ((← whole_0.get), (← short_0.get), (← s_0.get)))))
@@ -1241,18 +1528,29 @@ ray_impl_getter "proof" : Proof := do
     (← call! (← named_0.get) "set" ((← ωget (← ωget (← st_1.get) "fact") "of"), (← st_1.get))) |> ωsink
     pure ()
   Value.null |> ωsink
+  for e1 in (← ωitems (← dot! (← model_0.get) rfilter ((fn! [x_3] do
+    if true then return (← ωandV (← ωandV (← ωnev (← ωget (← x_3.get) "via") (← ωget (← cls% Prover) "RAYS_PER_WAY")) (do pure (← ωnev (← ωget (← x_3.get) "via") ("the ways move with the record" : String)))) (do pure (← ωnev (← ωget (← x_3.get) "via") ("the mass is what the vacuum leaves over" : String))))
+    return ωnull)))) do
+    let st_1 ← IO.mkRef e1
+    (← call! (← named_0.get) "set" ((← ωget (← ωget (← st_1.get) "fact") "of"), (← st_1.get))) |> ωsink
+    pure ()
+  Value.null |> ωsink
   let proved_0 ← IO.mkRef (← dot! (← ωget (← ωget self "theory") "theorems") rmap ((fn! [t_2] do
     let q_2 ← IO.mkRef (← ωget (← t_2.get) "asked")
     let p_2 ← IO.mkRef (← new! Proved («theorem» := (← ωget (← t_2.get) "id"), «theory» := (← ωget (← ωget self "theory") "name"), «asks» := (← ωget (← q_2.get) "asks"), «about» := (← ωget (← q_2.get) "about")))
     let hit_2 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← ωget (← q_2.get) "about") rempty ())) (do pure ωnull) (do pure (← call! (← named_0.get) "get" ((← ωget (← q_2.get) "about")))))
     let root_2 ← IO.mkRef (← ωelem (← ωget (← s_0.get) "steps") (← call! (← cls% Fact) "key_of" (("is" : String), ("the continuous model" : String))))
-    let steps_2 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← ωget (← q_2.get) "about") rempty ())) (do pure (← chain_0.get)) (do pure ((← ωtern (ωtruthy (!ωisNull (← hit_2.get))) (do pure ((← ωtern (ωtruthy (ωisNull (← root_2.get))) (do pure (← ωlst #[(← hit_2.get)])) (do pure (← ωlst #[(← root_2.get), (← hit_2.get)]))))) (do pure (← call! (← cls% Prover) "behind" ((← s_0.get), (← ωget (← q_2.get) "about"))))))))
+    let steps_2 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← ωget (← q_2.get) "about") rempty ())) (do pure ((← ωtern (ωtruthy (← dot! (← model_0.get) rempty ())) (do pure (← chain_0.get)) (do pure (← model_0.get))))) (do pure ((← ωtern (ωtruthy (!ωisNull (← hit_2.get))) (do pure ((← ωtern (ωtruthy (ωisNull (← root_2.get))) (do pure (← ωlst #[(← hit_2.get)])) (do pure (← ωlst #[(← root_2.get), (← hit_2.get)]))))) (do pure (← call! (← cls% Prover) "behind" ((← s_0.get), (← ωget (← q_2.get) "about"))))))))
     let end__2 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← ωget (← q_2.get) "about") rempty ())) (do pure ωnull) (do pure (← dot! (← steps_2.get) rlast ())))
     (ωsetter (← p_2.get) "steps") (← dot! (← steps_2.get) rmap ((fn! [st_4] do
       if true then return (← call! self "line_of" ((← st_4.get)))
       return ωnull)))
     if ωtruthy (← dot! (← ωget (← q_2.get) "about") rempty ()) then
-      (ωsetter (← p_2.get) "concluded") (← call! (← cls% Prover) "headline" ((← ωget ((← ωorElse (← ωorElse (← ωorElse (← whole_line_0.get) (do pure (← agg_0.get))) (do pure (← short_0.get))) (do pure (← whole_0.get)))) "fact"), ωnull))
+      (ωsetter (← p_2.get) "concluded") (← call! (← cls% Prover) "headline" ((← ωget ((← ωtern (ωtruthy (← dot! (← model_0.get) rempty ())) (do pure ((← ωorElse (← ωorElse (← ωorElse (← whole_line_0.get) (do pure (← agg_0.get))) (do pure (← short_0.get))) (do pure (← whole_0.get))))) (do pure (← dot! (← model_0.get) rlast ())))) "fact"), ωnull))
+      let ways_said_2 ← IO.mkRef (← dot! (← dot! (← model_0.get) rfilter ((fn! [x_4] do
+        if true then return (← ωeqv (← ωget (← x_4.get) "via") (← ωget (← cls% Prover) "WAYS_LINE"))
+        return ωnull))) rfirst ())
+      (ωsetter (← p_2.get) "also") (← ωtern (ωtruthy (ωisNull (← ways_said_2.get))) (do pure ωnull) (do pure (← call! (← cls% Prover) "headline" ((← ωget (← ways_said_2.get) "fact"), ωnull))))
       (ωsetter (← p_2.get) "standing") true
       pure ()
     else
@@ -1298,19 +1596,25 @@ ray_impl_method "chain" (s_0 : Store) : Keyed := do
   let spaced_0 ← IO.mkRef (← call! self "ledger_filled" ((← s_0.get), ("space" : String)))
   let folded_0 ← IO.mkRef (← call! self "ledger_filled" ((← s_0.get), ("folds" : String)))
   let one_0 ← IO.mkRef (← call! self "ledgers_are_one" ((← s_0.get), (← folded_0.get), (← spaced_0.get)))
-  let whole_0 ← IO.mkRef (← call! self "general" ((← filled_0.get), (← folded_0.get)))
-  let settled_0 ← IO.mkRef (← call! self "settled_record" ((← folded_0.get)))
-  let short_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← settled_0.get))) (do pure ωnull) (do pure (← call! self "single" ((← whole_0.get), (← settled_0.get), (← folded_0.get), (← s_0.get)))))
-  let agg_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← short_0.get))) (do pure ωnull) (do pure (← call! self "aggregate" ((← whole_0.get), (← short_0.get), (← s_0.get)))))
-  let back_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← agg_0.get))) (do pure ωnull) (do pure (← call! self "remembered" ((← s_0.get), (← agg_0.get)))))
-  let each_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← back_0.get))) (do pure ωnull) (do pure (← call! self "from_each" ((← s_0.get), (← back_0.get)))))
-  let known_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← each_0.get))) (do pure ωnull) (do pure (← call! self "forgotten" ((← s_0.get), (← each_0.get), (← settled_0.get)))))
-  let pull_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← known_0.get))) (do pure ωnull) (do pure (← call! self "felt" ((← s_0.get), (← known_0.get), (← settled_0.get)))))
-  let rec_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← pull_0.get))) (do pure ωnull) (do pure (← call! self "record_of_all" ((← known_0.get), (← pull_0.get), (← settled_0.get)))))
-  let whole_line_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← rec_0.get))) (do pure ωnull) (do pure (← call! self "one_line" ((← rec_0.get)))))
   let grown_0 ← IO.mkRef (← call! self "growth_filled" ((← s_0.get)))
-  let roles_0 ← IO.mkRef (← ωlst #[("population" : String), ("space" : String), ("folds" : String), ("one" : String), ("general" : String), ("settled" : String), ("single" : String), ("aggregate" : String), ("remembered" : String), ("each" : String), ("known" : String), ("felt" : String), ("record" : String), ("line" : String), ("growth" : String)])
-  let steps_0 ← IO.mkRef (← ωlst #[(← filled_0.get), (← spaced_0.get), (← folded_0.get), (← one_0.get), (← whole_0.get), (← settled_0.get), (← short_0.get), (← agg_0.get), (← back_0.get), (← each_0.get), (← known_0.get), (← pull_0.get), (← rec_0.get), (← whole_line_0.get), (← grown_0.get)])
+  let model_0 ← IO.mkRef (← call! self "model_chain" ((← s_0.get), (← call! self "narrowed" (("rays" : String), (← filled_0.get))), (← call! self "narrowed" (("space" : String), (← spaced_0.get))), (← spaced_0.get), (← folded_0.get), (← one_0.get)))
+  let by__0 ← IO.mkRef ωnull
+  by__0.set (fn! [(via : String)] do
+      if true then return (← dot! (← dot! (← model_0.get) rfilter ((fn! [x_2] do
+        if true then return (← ωeqv (← ωget (← x_2.get) "via") via)
+        return ωnull))) rfirst ())
+      return ωnull)
+  let rays_c_0 ← IO.mkRef (← app! (← by__0.get) ((← ωget (← cls% Prover) "RAYS_PER_WAY")))
+  let mass_0 ← IO.mkRef (← ωtern (ωtruthy (← dot! (← model_0.get) rempty ())) (do pure ωnull) (do pure (← dot! (← model_0.get) rlast ())))
+  for e1 in (← ωitems (← dot! (← model_0.get) rfilter ((fn! [x_3] do
+    if true then return (← ωorV (← ωeqv (← ωget (← ωget (← x_3.get) "fact") "of") (← ωget (← cls% Prover) "GAIN")) (do pure (← ωeqv (← ωget (← ωget (← x_3.get) "fact") "of") (← ωget (← cls% Prover) "LOSS"))))
+    return ωnull)))) do
+    let x_1 ← IO.mkRef e1
+    (← call! (← out_0.get) "set" ((← ωget (← ωget (← x_1.get) "fact") "of"), (← x_1.get))) |> ωsink
+    pure ()
+  Value.null |> ωsink
+  let roles_0 ← IO.mkRef (← ωlst #[("population" : String), ("space" : String), ("growth" : String), ("rays" : String), ("line" : String), ("ways" : String), ("folds" : String), ("settled" : String), ("record" : String), ("mass" : String)])
+  let steps_0 ← IO.mkRef (← ωlst #[(← filled_0.get), (← spaced_0.get), (← grown_0.get), (← rays_c_0.get), (← rays_c_0.get), (← app! (← by__0.get) ((← ωget (← cls% Prover) "WAYS_LINE"))), (← app! (← by__0.get) (("the record's own line" : String))), (← app! (← by__0.get) (("the record settled against the density" : String))), (← app! (← by__0.get) (("the record every body leaves at a local" : String))), (← mass_0.get)])
   for i1 in [0:ωrangeN (← dot! (← roles_0.get) rlength ())] do
     let i_1 ← IO.mkRef (ωnatF i1)
     if ωtruthy (!ωisNull (← ωelem (← steps_0.get) (← i_1.get))) then

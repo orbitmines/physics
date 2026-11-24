@@ -49,7 +49,8 @@ Gen := class {
 
   /* the top-level definitions of the physics project - the named lattices - read off it by the bootstrap */
   static constants (): Definition[]
-  static emit_constants (language: Language): String => Gen.constants.map(d => language.constant(d.name, d.definition.as(language))).join("\n")
+  /* a constant that is text read off the definitions themselves (METHOD_SOURCES) is written as that text: a package cannot read a method */
+  static emit_constants (language: Language): String => Gen.constants.map(d => language.constant(d.name, d.name == "METHOD_SOURCES" ? METHOD_SOURCES.quoted : d.definition.as(language))).join("\n")
 
   /* the kernels of a GPU backend, as a file of their own: languages/kernels/<theory>.<backend>.<ext> */
   static write_kernels (tn: String, bn: String, text: String) => {

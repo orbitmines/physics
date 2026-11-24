@@ -951,8 +951,13 @@ end TermInfo
 namespace Prover
 ray_field "theory" : Theory
 ray_sfield "PROOFS" : Value
+ray_sfield "MARK" : Value
 ray_sfield "RAYS_SAY" : Value
 ray_sfield "SPACE_SAY" : Value
+ray_sfield "LIGHTS" : Value
+ray_sfield "TAKES" : Value
+ray_sfield "RAYS_PER_WAY" : Value
+ray_sfield "WAYS_LINE" : Value
 ray_field "population_line" : Step
 ray_field "record_line" : Step
 ray_field "store" : Store
@@ -999,6 +1004,8 @@ ray_method "one_body" (s_0 : Store) (field__0 : Step) : Step
 ray_method "record_of_all" (known_0 : Step) (pull_0 : Step) (settled_0 : Step) : Step
 ray_method "every_local" (rec_0 : Step) (settled_0 : Step) : Step
 ray_method "following" (rec_0 : Step) : Step
+ray_static "sources_read" : String
+ray_static "source_of" (key_0 : String) : String
 ray_static "edge_ends" : (RList String)
 ray_getter "edge_from_an_end" : Step
 ray_getter "standing_at" : Step
@@ -1007,6 +1014,28 @@ ray_static "per_member" (count_0 : Expr) (members_0 : Expr) : Float
 ray_static "weighed" (w_0 : Float) (at__0 : Expr) : Expr
 ray_method "narrowed_term" (t_0 : TermInfo) (rays_0 : Bool) (edge_0 : Step) : Step
 ray_method "narrowed" (ledger_0 : String) (upon_0 : Step) : Step
+ray_static "ACROSS" : Expr
+ray_static "HERE" : Expr
+ray_static "WAYS" : Expr
+ray_static "LATTICE" : Expr
+ray_static "MASS" : Expr
+ray_static "STANDING" : String
+ray_method "share_at" (t_0 : TermInfo) (fill_0 : object) : Expr
+ray_static "members_at" (t_0 : TermInfo) (rays_0 : Bool) : Expr
+ray_method "ways_at" (one_0 : Step) (behind_0 : (RList Step)) : Step
+ray_method "ways_moved" (ways_0 : Step) : Step
+ray_static "GAIN" : String
+ray_static "LOSS" : String
+ray_method "rule_piece" (t_0 : TermInfo) (fill_0 : object) : Step
+ray_method "movement" (ways_0 : Step) : Step
+ray_method "per_way" (line_0 : Step) (pieces_0 : (RList Step)) (moving__0 : Step) (fill_0 : object) : Step
+ray_method "ways_line" (line_0 : Step) (moved_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) (fill_0 : object) : Step
+ray_method "in_record" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Expr
+ray_method "record_moves" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Step
+ray_method "record_settles" (moves_0 : Step) : Step
+ray_method "record_left" (rays_c_0 : Step) (ways_c_0 : Step) (settles_0 : Step) : Step
+ray_method "leftover" (rays_c_0 : Step) : Step
+ray_method "model_chain" (s_0 : Store) (rays_l_0 : Step) (space_l_0 : Step) (spaced_0 : Step) (folded_0 : Step) (one_0 : Step) : (RList Step)
 ray_method "lean" (rec_0 : Step) : Step
 ray_method "at_time" (rec_0 : Step) : Step
 ray_method "balance" (rec_0 : Step) (s_0 : Store) : Step
@@ -1120,6 +1149,11 @@ ray_static "of" (theory_0 : Theory) (DEG_0 : Float := ωnull) (D_0 : Float := ω
 ray_field "prover" : Prover
 ray_field "store" : Store
 ray_field "chain" : Keyed
+ray_field "net" : Expr
+ray_getter "rays_net" : Expr
+ray_method "nets_at" (rho_0 : Float) : Float
+ray_getter "root_of_net" : Float
+ray_field "settled_rho" : Float
 ray_field "NEAR" : Float
 ray_getter "env" : object
 ray_static "numeric_of" (e_0 : Expr) (at__0 : object) : Float
@@ -2416,6 +2450,10 @@ ray_getter "solar" : Picture
 ray_sfield "theorem vacuum.equation" : Theorem
 ray_sfield "theorem vacuum.rays" : Theorem
 ray_sfield "theorem vacuum.space" : Theorem
+ray_sfield "theorem vacuum.creation" : Theorem
+ray_sfield "theorem vacuum.annihilation" : Theorem
+ray_sfield "theorem vacuum.movement" : Theorem
+ray_sfield "theorem vacuum.ways" : Theorem
 ray_sfield "theorem vacuum.at" : Theorem
 ray_sfield "theorem vacuum.following" : Theorem
 ray_sfield "theorem vacuum.lean" : Theorem

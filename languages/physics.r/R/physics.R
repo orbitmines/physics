@@ -2635,7 +2635,8 @@ Notation <- ray_class("Notation", Node, function(cl) {
         name <- Notation$letters(src, r_add(i, 1))
         word <- (!truthy(m_empty(name)))
         after <- r_add(r_add(i, 1), len(name))
-        if (truthy((if (truthy(.x <- word)) eq(Notation$char_at(src, after), 32) else .x))) {
+        next_ <- Notation$char_at(src, r_add(after, 1))
+        if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- word)) eq(Notation$char_at(src, after), 32) else .x))) (!eq(next_, 43)) else .x))) (!eq(next_, 45)) else .x))) (!eq(next_, 61)) else .x))) {
           .w("after", r_add(after, 1))
         }
         big <- NULL
@@ -5673,8 +5674,13 @@ TermInfo <- ray_class("TermInfo", Node, function(cl) {
 Prover <- ray_class("Prover", Node, function(cl) {
   field(cl, "theory", NULL)
   static_field(cl, "PROOFS", function() Node$new())
+  static_field(cl, "MARK", function() "\n@@ ")
   static_field(cl, "RAYS_SAY", function() "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.")
   static_field(cl, "SPACE_SAY", function() "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.")
+  static_field(cl, "LIGHTS", function() "lights")
+  static_field(cl, "TAKES", function() "takes")
+  static_field(cl, "RAYS_PER_WAY", function() "the rays at a local, per way")
+  static_field(cl, "WAYS_LINE", function() "the ways at a local, a tick on")
   field(cl, "population_line", function() NULL)
   field(cl, "record_line", function() NULL)
   field(cl, "store", function() Store$new())
@@ -6508,28 +6514,43 @@ Prover <- ray_class("Prover", Node, function(cl) {
     return(Step$of(Fact$stands("\\Delta_{v}f", Expr$field("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}")), "following", lst(rec$fact$key), "the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all", lst("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick", "\\nabla f: along a way, at one tick", "\\partial_{\\hat{d}}\\rho: across the headings, at one local")))
     NULL
   })
+  static_getter(cl, "sources_read", function() {
+    return(m_join(m_map(lst(lst("Edge.active", Edge$method("active")$source), lst("Ray.facing", Ray$method("facing")$source), lst("Ray.turns", Ray$method("turns")$source), lst("Vertex.fold", Vertex$method("fold")$source), lst("Vertex.alive", Vertex$method("alive")$source), lst("Vertex.sinks", Vertex$method("sinks")$source)), function(p = NULL, ...) {
+      return("" %+% text_of(Prover$MARK) %+% "" %+% text_of(elem(p, 0)) %+% "\n" %+% text_of(elem(p, 1)) %+% "")
+      NULL
+    }), ""))
+    NULL
+  })
+  statik(cl, "source_of", function(key = NULL, ...) {
+    hit <- m_first(filt(m_split(g_METHOD_SOURCES(), Prover$MARK), function(p = NULL, ...) {
+      return(m_starts_with(p, "" %+% text_of(key) %+% "\n"))
+      NULL
+    }))
+    return((if (truthy(eq(hit, NULL))) "" else m_drop(hit, r_add(len(key), 1))))
+    NULL
+  })
   static_getter(cl, "edge_ends", function() {
-    return(filt(m_split(Edge$method("active")$source, " & "), function(c = NULL, ...) {
+    return(filt(m_split(Prover$source_of("Edge.active"), " & "), function(c = NULL, ...) {
       return(gt(len(m_split(c, ".active")), 1))
       NULL
     }))
     NULL
   })
   getter(cl, "edge_from_an_end", function() {
-    def <- Edge$method("active")$source
+    active_ <- Prover$source_of("Edge.active")
     ends <- Prover$edge_ends
     asked <- m_join(m_concat(lst("active"), m_map(m_drop(ends, 1), function(v__ = NULL, ...) {
       return("next.active")
       NULL
     })), " & ")
-    facing <- Ray$method("facing")$source
-    st <- Step$of(Fact$stands("\\narrow{Edge}{active}", Expr$field("\\narrow{l}{" %+% text_of(asked) %+% "}")), "an edge, seen from one of its ends", lst(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " %+% text_of(len(ends)) %+% ".", lst("Edge.active = " %+% text_of(def) %+% "", "Ray.facing = " %+% text_of(facing) %+% ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" %+% text_of(asked) %+% "}, " %+% text_of(len(ends)) %+% " ends to a meeting"))
+    facing <- Prover$source_of("Ray.facing")
+    st <- Step$of(Fact$stands("\\narrow{Edge}{active}", Expr$field("\\narrow{l}{" %+% text_of(asked) %+% "}")), "an edge, seen from one of its ends", lst(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " %+% text_of(len(ends)) %+% ".", lst("Edge.active = " %+% text_of(active_) %+% "", "Ray.facing = " %+% text_of(facing) %+% ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" %+% text_of(asked) %+% "}, " %+% text_of(len(ends)) %+% " ends to a meeting"))
     return(st)
     NULL
   })
   getter(cl, "standing_at", function() {
-    alive <- Vertex$method("alive")$source
-    sinks <- Vertex$method("sinks")$source
+    alive <- Prover$source_of("Vertex.alive")
+    sinks <- Prover$source_of("Vertex.sinks")
     return(Step$of(Fact$stands("\\narrow{\\forall}{@ == l}", Expr$add(lst(Expr$num(1), Expr$field("\\narrow{\\forall}{folded_into == l}")))), "what stands at a local", lst(), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", lst("Vertex.alive = " %+% text_of(alive) %+% "", "Vertex.sinks = " %+% text_of(sinks) %+% "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}")))
     NULL
   })
@@ -6621,6 +6642,306 @@ Prover <- ray_class("Prover", Node, function(cl) {
     }), lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(rhs)) %+% "")))
     .set(st, "derivation", behind)
     return(st)
+    NULL
+  })
+  static_getter(cl, "ACROSS", function() {
+    return(Expr$field("\\tilde{\\rho}"))
+    NULL
+  })
+  static_getter(cl, "HERE", function() {
+    return(Expr$field("\\rho"))
+    NULL
+  })
+  static_getter(cl, "WAYS", function() {
+    return(Expr$field("DEG"))
+    NULL
+  })
+  static_getter(cl, "LATTICE", function() {
+    return(Expr$field("DEG_{0}"))
+    NULL
+  })
+  static_getter(cl, "MASS", function() {
+    return(Expr$field("\\bar{m}"))
+    NULL
+  })
+  static_getter(cl, "STANDING", function() {
+    return("\\narrow{\\forall}{@ == l}")
+    NULL
+  })
+  method(cl, "share_at", function(t = NULL, fill = NULL, ...) {
+    at_l <- function(e = NULL, ...) {
+      return(Prover$neat(Expr$replace(Expr$replace(Expr$replace(Expr$evaluate(e, fill), "n", Prover$HERE), "\\rho", Prover$HERE), "l.\\bar{m}", Prover$MASS)))
+      NULL
+    }
+    if (truthy(t$outside)) {
+      return((at_l)(t$expr))
+    }
+    parts <- lst()
+    if (truthy((!eq(t$rate, NULL)))) {
+      m_push(parts, Expr$field(t$rate))
+    }
+    if (truthy((!eq(t$asked, NULL)))) {
+      m_push(parts, t$asked)
+    }
+    if (truthy(gt(t$degree, 0))) {
+      m_push(parts, Prover$HERE)
+    }
+    if (truthy(gt(t$degree, 1))) {
+      m_push(parts, Expr$pown(Prover$ACROSS, r_sub(t$degree, 1)))
+    }
+    return((at_l)((if (truthy(m_empty(parts))) Expr$num(1) else Expr$mul(parts))))
+    NULL
+  })
+  statik(cl, "members_at", function(t = NULL, rays = NULL, ...) {
+    return((if (truthy(((if (truthy(.x <- t$outside)) .x else ((if (truthy(.x <- eq(t$term$rule$over, "Vertex"))) (!truthy(rays)) else .x)))))) Expr$num(1) else Prover$WAYS))
+    NULL
+  })
+  method(cl, "ways_at", function(one = NULL, behind = NULL, ...) {
+    draws <- Prover$source_of("Ray.turns")
+    folding <- Prover$source_of("Vertex.fold")
+    if (truthy((if (truthy(.x <- (!truthy(m_contains(draws, "folds"))))) .x else (!truthy(m_contains(folding, "folds[d] + 1")))))) {
+      return(NULL)
+    }
+    own <- Expr$add(lst(Prover$LATTICE, Expr$field("n_{f,l}")))
+    st <- Step$of(Fact$stands("DEG", own), "the ways at a local", lst(one$fact$key), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", lst("Ray.turns = " %+% text_of(draws) %+% ": straight on at one, each folded way at its folds", "Vertex.fold = " %+% text_of(folding) %+% ": a fold written on a way", "DEG = " %+% text_of(Expr$show(own)) %+% ""))
+    .set(st, "derivation", behind)
+    return(st)
+    NULL
+  })
+  method(cl, "ways_moved", function(ways = NULL, ...) {
+    by <- Prover$neat(Expr$d(ways$fact$to, "n_{f,l}"))
+    got <- Prover$neat(Expr$mul(lst(by, Expr$field("\\Delta n_{f,l}"))))
+    return(Step$of(Fact$stands("\\Delta DEG", got), "the ways move with the record", lst(ways$fact$key), "the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off", lst("\\frac{\\partial DEG}{\\partial n_{f,l}} = " %+% text_of(Expr$show(by)) %+% "", "\\Delta DEG = " %+% text_of(Expr$show(got)) %+% "")))
+    NULL
+  })
+  static_getter(cl, "GAIN", function() {
+    return("S^{+}")
+    NULL
+  })
+  static_getter(cl, "LOSS", function() {
+    return("S^{-}")
+    NULL
+  })
+  method(cl, "rule_piece", function(t = NULL, fill = NULL, ...) {
+    if (truthy(t$outside)) {
+      return(NULL)
+    }
+    w <- Prover$per_member(t$ray_count, Prover$members_of(t, TRUE))
+    if (truthy(eq(w, NULL))) {
+      return(NULL)
+    }
+    if (truthy(eq(w, 0))) {
+      return(NULL)
+    }
+    r <- t$term$rule
+    pattern <- (if (truthy(eq(r$where, NULL))) "" else r$where$source)
+    share <- self$share_at(t, fill)
+    got <- Prover$neat(Expr$mul(lst(Expr$num(m_abs(w)), share)))
+    name <- (if (truthy(gt(w, 0))) Prover$GAIN else Prover$LOSS)
+    does <- (if (truthy(gt(w, 0))) Prover$LIGHTS else Prover$TAKES)
+    members <- Expr$show(Prover$members_of(t, TRUE))
+    st <- Step$of(Fact$stands(name, got), m_upper(r$name), lst(), "" %+% text_of(r$name) %+% " at l, per way: its pattern narrows l to " %+% text_of(r$over) %+% "\\{" %+% text_of(pattern) %+% "\\}, which holds " %+% text_of(Expr$show(share)) %+% " of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is " %+% text_of(members) %+% " of l's ways and one firing " %+% text_of(does) %+% " " %+% text_of(Expr$show(Expr$num(m_abs(w)))) %+% " ray on each. So it " %+% text_of(does) %+% " " %+% text_of(Expr$show(got)) %+% " of l's ways a tick: written " %+% text_of(name) %+% ": S for a rule, marked by what it does to the rays", lst("pattern: " %+% text_of(r$over) %+% "\\{" %+% text_of(pattern) %+% "\\}", "share of l's ways: " %+% text_of(Expr$show(share)) %+% "", "one match: " %+% text_of(members) %+% " of l's ways, " %+% text_of(Expr$show(Expr$num(w))) %+% " a way", "" %+% text_of(name) %+% " = " %+% text_of(Expr$show(got)) %+% ""))
+    .set(st, "rule", m_upper(r$name))
+    return(st)
+    NULL
+  })
+  method(cl, "movement", function(ways = NULL, ...) {
+    t <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- t$transport)) t$kernel else .x))
+      NULL
+    }))
+    if (truthy(eq(t, NULL))) {
+      return(NULL)
+    }
+    draws <- Prover$source_of("Ray.turns")
+    nf <- Expr$linear(Expr$sub(Expr$field("x.DEG"), Expr$add(lst(Prover$LATTICE, Expr$field("n_{f}")))), "n_{f}")
+    if (truthy(eq(nf, NULL))) {
+      return(NULL)
+    }
+    keep <- Prover$neat(Expr$replace(t$keeps, "n_{f}", nf))
+    rhs <- Expr$sub(Expr$field("\\rho_{+v}\\paren{t + 1}"), Expr$field("\\rho\\paren{t}"))
+    st <- Step$of(Fact$stands("\\Delta\\rho", rhs), m_upper(t$term$rule$name), lst(ways$fact$key), "the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps " %+% text_of(Expr$show(keep)) %+% " of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place", lst("Ray.turns = " %+% text_of(draws) %+% "", "at a place x: n_{f} = " %+% text_of(Expr$show(nf)) %+% ", its ways over the lattice's own", "kept straight at x: " %+% text_of(Expr$show(t$keeps)) %+% " = " %+% text_of(Expr$show(keep)) %+% "", "\\Delta\\rho = " %+% text_of(Expr$show(rhs)) %+% ""))
+    .set(st, "rule", m_upper(t$term$rule$name))
+    return(st)
+    NULL
+  })
+  method(cl, "per_way", function(line = NULL, pieces = NULL, moving_ = NULL, fill = NULL, ...) {
+    parts <- lst()
+    .r <- for_each(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$term$rule, NULL)))) (!truthy(t$transport)) else .x))) (!truthy(t$settles)) else .x))) (!eq(t$rays, "0")) else .x))
+      NULL
+    }), function(t) {
+      w <- Prover$per_member(t$ray_count, Prover$members_of(t, TRUE))
+      if (!truthy(eq(w, NULL))) {
+        if (!truthy(eq(w, 0))) {
+          if (truthy(t$outside)) {
+            m_push(parts, Prover$weighed(w, self$share_at(t, fill)))
+          } else {
+            m_push(parts, (if (truthy(gt(w, 0))) Expr$field(Prover$GAIN) else Expr$neg(Expr$field(Prover$LOSS))))
+          }
+        }
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    rhs <- Expr$add(parts)
+    st <- Step$of(Fact$stands("\\Delta\\rho", rhs), Prover$RAYS_PER_WAY, m_concat(lst(line$fact$key, moving_$fact$key), m_map(pieces, function(x = NULL, ...) {
+      return(x$fact$key)
+      NULL
+    })), "the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place", m_concat(m_map(pieces, function(x = NULL, ...) {
+      return("" %+% text_of(x$fact$of) %+% " = " %+% text_of(Expr$show(x$fact$to)) %+% " (" %+% text_of(x$via) %+% ")")
+      NULL
+    }), lst("" %+% text_of(Prover$RAYS_PER_WAY) %+% ": \\Delta\\rho = " %+% text_of(Expr$show(rhs)) %+% "")))
+    .set(st, "derivation", m_concat(lst(line, moving_), pieces))
+    return(st)
+    NULL
+  })
+  method(cl, "ways_line", function(line = NULL, moved = NULL, ways = NULL, pieces = NULL, fill = NULL, ...) {
+    parts <- lst()
+    said <- lst()
+    folds_of <- Expr$sub(ways$fact$to, Prover$LATTICE)
+    .r <- for_each(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$term$rule, NULL)))) (!truthy(t$transport)) else .x))) (!truthy(t$settles)) else .x))) (!eq(t$folds, "0")) else .x))
+      NULL
+    }), function(t) {
+      w <- Prover$per_member(t$fold_count, Prover$members_of(t, TRUE))
+      if (!truthy(eq(w, NULL))) {
+        if (!truthy(eq(w, 0))) {
+          share <- self$share_at(t, fill)
+          named <- m_first(filt(pieces, function(x = NULL, ...) {
+            return((if (truthy(.x <- eq(x$via, m_upper(t$term$rule$name)))) eq(Expr$show(Prover$neat(Expr$div(x$fact$to, share))), "1") else .x))
+            NULL
+          }))
+          at <- (if (truthy(eq(named, NULL))) share else Expr$field(named$fact$of))
+          gate <- (if (truthy(eq(t$around, NULL))) Expr$num(1) else Prover$neat(Expr$replace(Expr$replace(t$around, "n_{f}", Prover$neat(Expr$sub(Prover$WAYS, Prover$LATTICE))), "DEG", Prover$WAYS)))
+          got <- Prover$neat(Expr$mul(lst(Expr$num(w), Prover$WAYS, gate, at)))
+          m_push(parts, got)
+          m_push(said, "" %+% text_of(m_upper(t$term$rule$name)) %+% ": " %+% text_of(Expr$show(Expr$num(w))) %+% " a fold on each of l's ways, " %+% text_of(Expr$show(gate)) %+% " of them, at " %+% text_of(Expr$show(at)) %+% " - " %+% text_of(Expr$show(got)) %+% "")
+        }
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    if (truthy(m_empty(parts))) {
+      return(NULL)
+    }
+    rhs <- Expr$add(parts)
+    st <- Step$of(Fact$stands("\\Delta DEG", rhs), Prover$WAYS_LINE, m_concat(lst(line$fact$key, moved$fact$key, ways$fact$key), m_map(pieces, function(x = NULL, ...) {
+      return(x$fact$key)
+      NULL
+    })), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " %+% text_of(Expr$show(folds_of)) %+% " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said, lst("\\Delta DEG = " %+% text_of(Expr$show(rhs)) %+% "")))
+    .set(st, "derivation", m_concat(lst(line, moved, ways), pieces))
+    return(st)
+    NULL
+  })
+  method(cl, "in_record", function(ways_c = NULL, ways = NULL, pieces = NULL, ...) {
+    e <- ways_c$fact$to
+    .r <- for_each(pieces, function(x) {
+      .w("e", Expr$replace(e, x$fact$of, x$fact$to))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .w("e", Expr$replace(Expr$replace(e, Prover$ACROSS$label, Prover$HERE), "DEG", ways$fact$to))
+    return(Prover$tidy(Expr$replace(e, "n_{f,l}", Expr$field("n_{f}"))))
+    NULL
+  })
+  method(cl, "record_moves", function(ways_c = NULL, ways = NULL, pieces = NULL, ...) {
+    e <- self$in_record(ways_c, ways, pieces)
+    return(Step$of(Fact$stands("\\Delta n_{f}", e), "the record's own line", m_concat(lst(ways_c$fact$key, ways$fact$key), m_map(pieces, function(x = NULL, ...) {
+      return(x$fact$key)
+      NULL
+    })), "the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone", lst("" %+% text_of(ways_c$fact$of) %+% " = " %+% text_of(Expr$show(ways_c$fact$to)) %+% "", "DEG = " %+% text_of(Expr$show(ways$fact$to)) %+% "", "\\Delta n_{f} = " %+% text_of(Expr$show(e)) %+% "")))
+    NULL
+  })
+  method(cl, "record_settles", function(moves = NULL, ...) {
+    parts <- m_split(Expr, moves$fact$to, "n_{f}")
+    if (truthy(eq(parts, NULL))) {
+      return(NULL)
+    }
+    top <- Prover$tidy(Expr$neg(elem(parts, 1)))
+    bottom <- Prover$tidy(elem(parts, 0))
+    if (truthy(m_starts_with(Expr$show(top), "-"))) {
+      .w("top", Prover$tidy(Expr$neg(top)))
+      .w("bottom", Expr$flip(bottom))
+    }
+    nf <- Expr$div(top, bottom)
+    st <- Step$of(Fact$stands("n_{f}", nf), "the record settled against the density", lst(moves$fact$key), "the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought", lst("" %+% text_of(moves$fact$of) %+% " = " %+% text_of(Expr$show(moves$fact$to)) %+% " = 0", "n_{f} = " %+% text_of(Expr$show(nf)) %+% ""))
+    .set(st, "parts_", lst(top, bottom))
+    return(st)
+    NULL
+  })
+  method(cl, "record_left", function(rays_c = NULL, ways_c = NULL, settles = NULL, ...) {
+    k <- self$fold_weight
+    both <- Prover$neat(Expr$collected(Expr$expand(Expr$add(lst(Expr$mul(lst(Prover$WAYS, rays_c$fact$to)), Expr$mul(lst(k, ways_c$fact$to)))))))
+    vac <- Expr$field("\\rho_{\\infty}")
+    base <- Expr$replace(settles$fact$to, "\\rho", vac)
+    per <- Expr$mul(lst(Expr$field("x.\\bar{m}"), Expr$sub(Expr$pown(Expr$field("l.shell\\paren{x.\\bar{R}}"), neg(1)), Prover$reach("x.\\bar{R}"))))
+    rhs <- Expr$add(lst(base, Expr$mul(lst(Expr$pown(k, neg(1)), Expr$call("\\sum_{x = x_{@t}}", per)))))
+    lhs <- "\\Delta\\paren{DEG·\\rho + " %+% text_of(Expr$show(k)) %+% "·n_{f}}"
+    return(Step$of(Fact$stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", lst(rays_c$fact$key, ways_c$fact$key, settles$fact$key), "a meeting turns " %+% text_of(Expr$show(k)) %+% " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " %+% text_of(Expr$show(k)) %+% " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over " %+% text_of(Expr$show(k)) %+% ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(both)) %+% "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " %+% text_of(Expr$show(base)) %+% "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = " %+% text_of(Expr$show(rhs)) %+% "")))
+    NULL
+  })
+  method(cl, "leftover", function(rays_c = NULL, ...) {
+    m <- Prover$MASS$label
+    parts <- m_split(Expr, Expr$sub(rays_c$fact$to, Expr$field(rays_c$fact$of)), m)
+    if (truthy(eq(parts, NULL))) {
+      return(NULL)
+    }
+    rest <- (if (truthy(eq(elem(parts, 1)$kind, "add"))) elem(parts, 1)$of else lst(elem(parts, 1)))
+    over <- m_map(rest, function(x = NULL, ...) {
+      return(Prover$neat(Expr$div(Expr$neg(x), elem(parts, 0))))
+      NULL
+    })
+    got <- Expr$add(m_concat(filt(over, function(x = NULL, ...) {
+      return(Expr$mentions(x, rays_c$fact$of))
+      NULL
+    }), filt(over, function(x = NULL, ...) {
+      return((!truthy(Expr$mentions(x, rays_c$fact$of))))
+      NULL
+    })))
+    return(Step$of(Fact$stands(m, got), "the mass is what the vacuum leaves over", lst(rays_c$fact$key), "the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source", lst("" %+% text_of(rays_c$fact$of) %+% " = " %+% text_of(Expr$show(rays_c$fact$to)) %+% "", "" %+% text_of(m) %+% " = " %+% text_of(Expr$show(got)) %+% "")))
+    NULL
+  })
+  method(cl, "model_chain", function(s = NULL, rays_l = NULL, space_l = NULL, spaced = NULL, folded = NULL, one = NULL, ...) {
+    if (truthy((if (truthy(.x <- eq(rays_l, NULL))) .x else eq(space_l, NULL)))) {
+      return(lst())
+    }
+    fill <- Prover$settled(s)
+    ways <- self$ways_at(one, lst(spaced, folded, one))
+    if (truthy(eq(ways, NULL))) {
+      return(lst())
+    }
+    moved <- self$ways_moved(ways)
+    pieces <- filt(m_map(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- (!eq(t$term$rule, NULL)))) (!truthy(t$transport)) else .x))) (!truthy(t$settles)) else .x))) (!eq(t$rays, "0")) else .x))
+      NULL
+    }), function(t = NULL, ...) {
+      return(self$rule_piece(t, fill))
+      NULL
+    }), function(x = NULL, ...) {
+      return((!eq(x, NULL)))
+      NULL
+    })
+    moving_ <- self$movement(ways)
+    if (truthy((if (truthy(.x <- eq(moving_, NULL))) .x else m_empty(pieces)))) {
+      return(lst())
+    }
+    rays_c <- self$per_way(rays_l, pieces, moving_, fill)
+    ways_c <- self$ways_line(folded, moved, ways, pieces, fill)
+    if (truthy(eq(ways_c, NULL))) {
+      return(lst())
+    }
+    moves <- self$record_moves(ways_c, ways, pieces)
+    settles <- self$record_settles(moves)
+    if (truthy(eq(settles, NULL))) {
+      return(lst())
+    }
+    left <- self$record_left(rays_c, ways_c, settles)
+    mass <- self$leftover(rays_c)
+    if (truthy(eq(mass, NULL))) {
+      return(lst())
+    }
+    return(m_concat(m_concat(lst(rays_l, space_l, ways, moved), pieces), lst(moving_, rays_c, ways_c, moves, settles, left, mass)))
     NULL
   })
   method(cl, "lean", function(rec = NULL, ...) {
@@ -7008,6 +7329,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     whole <- self$general(filled, folded)
     rays_l <- self$narrowed("rays", filled)
     space_l <- self$narrowed("space", spaced)
+    model <- self$model_chain(s, rays_l, space_l, spaced, folded, one)
     settled <- self$settled_record(folded)
     short <- (if (truthy(eq(settled, NULL))) NULL else self$single(whole, settled, folded, s))
     agg <- (if (truthy(eq(short, NULL))) NULL else self$aggregate(whole, short, s))
@@ -7046,19 +7368,32 @@ Prover <- ray_class("Prover", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
+    .r <- for_each(filt(model, function(x = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (!eq(x$via, Prover$RAYS_PER_WAY)))) (!eq(x$via, "the ways move with the record")) else .x))) (!eq(x$via, "the mass is what the vacuum leaves over")) else .x))
+      NULL
+    }), function(st) {
+      named$set(st$fact$of, st)
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
     proved <- m_map(self$theory$theorems, function(t = NULL, ...) {
       q <- t$asked
       p <- Proved$new(theorem = t$id, theory = self$theory$name, asks = q$asks, about = q$about)
       hit <- (if (truthy(m_empty(q$about))) NULL else named$get(q$about))
       root <- elem(s$steps, Fact$key_of("is", "the continuous model"))
-      steps <- (if (truthy(m_empty(q$about))) chain else ((if (truthy((!eq(hit, NULL)))) ((if (truthy(eq(root, NULL))) lst(hit) else lst(root, hit))) else Prover$behind(s, q$about))))
+      steps <- (if (truthy(m_empty(q$about))) ((if (truthy(m_empty(model))) chain else model)) else ((if (truthy((!eq(hit, NULL)))) ((if (truthy(eq(root, NULL))) lst(hit) else lst(root, hit))) else Prover$behind(s, q$about))))
       end <- (if (truthy(m_empty(q$about))) NULL else m_last(steps))
       .set(p, "steps", m_map(steps, function(st = NULL, ...) {
         return(self$line_of(st))
         NULL
       }))
       if (truthy(m_empty(q$about))) {
-        .set(p, "concluded", Prover$headline((or_else(or_else(or_else(whole_line, agg), short), whole))$fact, NULL))
+        .set(p, "concluded", Prover$headline(((if (truthy(m_empty(model))) (or_else(or_else(or_else(whole_line, agg), short), whole)) else m_last(model)))$fact, NULL))
+        ways_said <- m_first(filt(model, function(x = NULL, ...) {
+          return(eq(x$via, Prover$WAYS_LINE))
+          NULL
+        }))
+        .set(p, "also", (if (truthy(eq(ways_said, NULL))) NULL else Prover$headline(ways_said$fact, NULL)))
         .set(p, "standing", TRUE)
       } else {
         if (truthy((if (truthy(.x <- (!eq(end, NULL)))) (!eq(end$fact$of, q$about)) else .x))) {
@@ -7105,19 +7440,27 @@ Prover <- ray_class("Prover", Node, function(cl) {
     spaced <- self$ledger_filled(s, "space")
     folded <- self$ledger_filled(s, "folds")
     one <- self$ledgers_are_one(s, folded, spaced)
-    whole <- self$general(filled, folded)
-    settled <- self$settled_record(folded)
-    short <- (if (truthy(eq(settled, NULL))) NULL else self$single(whole, settled, folded, s))
-    agg <- (if (truthy(eq(short, NULL))) NULL else self$aggregate(whole, short, s))
-    back <- (if (truthy(eq(agg, NULL))) NULL else self$remembered(s, agg))
-    each <- (if (truthy(eq(back, NULL))) NULL else self$from_each(s, back))
-    known <- (if (truthy(eq(each, NULL))) NULL else self$forgotten(s, each, settled))
-    pull <- (if (truthy(eq(known, NULL))) NULL else self$felt(s, known, settled))
-    rec <- (if (truthy(eq(pull, NULL))) NULL else self$record_of_all(known, pull, settled))
-    whole_line <- (if (truthy(eq(rec, NULL))) NULL else self$one_line(rec))
     grown <- self$growth_filled(s)
-    roles <- lst("population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth")
-    steps <- lst(filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line, grown)
+    model <- self$model_chain(s, self$narrowed("rays", filled), self$narrowed("space", spaced), spaced, folded, one)
+    by <- function(via = NULL, ...) {
+      return(m_first(filt(model, function(x = NULL, ...) {
+        return(eq(x$via, via))
+        NULL
+      })))
+      NULL
+    }
+    rays_c <- (by)(Prover$RAYS_PER_WAY)
+    mass <- (if (truthy(m_empty(model))) NULL else m_last(model))
+    .r <- for_each(filt(model, function(x = NULL, ...) {
+      return((if (truthy(.x <- eq(x$fact$of, Prover$GAIN))) .x else eq(x$fact$of, Prover$LOSS)))
+      NULL
+    }), function(x) {
+      out$set(x$fact$of, x)
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    roles <- lst("population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass")
+    steps <- lst(filled, spaced, grown, rays_c, rays_c, (by)(Prover$WAYS_LINE), (by)("the record's own line"), (by)("the record settled against the density"), (by)("the record every body leaves at a local"), mass)
     .r <- for_range(len(roles), function(i) {
       if (truthy((!eq(elem(steps, i), NULL)))) {
         out$set(elem(roles, i), elem(steps, i))
@@ -8326,6 +8669,47 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
   field(cl, "prover", function() Prover$new(theory = self$theory))
   field(cl, "store", function() self$prover$closure)
   field(cl, "chain", function() self$prover$chain(self$store))
+  field(cl, "net", function() self$rays_net)
+  getter(cl, "rays_net", function() {
+    st <- self$step("rays")
+    if (truthy(eq(st, NULL))) {
+      return(NULL)
+    }
+    e <- st$fact$to
+    .r <- for_each(lst(Prover$GAIN, Prover$LOSS), function(name) {
+      piece <- self$chain$get(name)
+      if (truthy((!eq(piece, NULL)))) {
+        .w("e", Expr$replace(e, name, piece$fact$to))
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(Prover$neat(Expr$replace(Expr$replace(e, Prover$ACROSS$label, Prover$HERE), Prover$MASS$label, Expr$num(0))))
+    NULL
+  })
+  method(cl, "nets_at", function(rho = NULL, ...) {
+    e <- self$env
+    set_at(e, Prover$HERE$label, rho)
+    return(Aggregate$numeric_of(self$net, e))
+    NULL
+  })
+  getter(cl, "root_of_net", function() {
+    lo <- 0
+    hi <- 1
+    .r <- for_range(48, function(i) {
+      mid <- r_div((r_add(lo, hi)), 2)
+      if (truthy(gt(self$nets_at(mid), 0))) {
+        .w("lo", mid)
+      } else {
+        .w("hi", mid)
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(r_div((r_add(lo, hi)), 2))
+    NULL
+  })
+  field(cl, "settled_rho", function() (if (truthy(eq(self$net, NULL))) self$fact_at("\\rho_{\\infty}", self$env) else self$root_of_net))
   field(cl, "NEAR", function() 0.5)
   getter(cl, "env", function() {
     e <- Node$new()
@@ -8340,6 +8724,7 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
     .set(e, key_("D"), self$D)
     .set(e, key_("DEG"), self$DEG)
     .set(e, key_("l.DEG"), self$DEG)
+    .set(e, key_("DEG_{0}"), self$DEG)
     .set(e, key_("\\bar{c}"), 1)
     return(e)
     NULL
@@ -8366,7 +8751,7 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
     NULL
   })
   getter(cl, "rho_inf", function() {
-    return(self$fact_at("\\rho_{\\infty}", self$env))
+    return(self$settled_rho)
     NULL
   })
   getter(cl, "settled_env", function() {
@@ -8910,7 +9295,9 @@ Aggregate <- ray_class("Aggregate", Node, function(cl) {
   })
   getter(cl, "folds_expr", function() {
     st <- self$step("folds")
-    return((if (truthy(eq(st, NULL))) Expr$num(0) else st$fact$to))
+    lattice <- Node$new()
+    .set(lattice, key_("DEG_{0}"), self$DEG)
+    return((if (truthy(eq(st, NULL))) Expr$num(0) else Expr$evaluate(st$fact$to, lattice)))
     NULL
   })
   method(cl, "folds_rate", function(rho = NULL, nf = NULL, ...) {
@@ -10276,6 +10663,9 @@ Medium <- ray_class("Medium", Node, function(cl) {
   })
   field(cl, "vac", function() filled(self$cells, self$aggregate$rho_inf))
   method(cl, "nets", function(rho = NULL, nf = NULL, ...) {
+    if (truthy((!eq(self$aggregate$net, NULL)))) {
+      return(self$aggregate$nets_at(rho))
+    }
     s <- self$symbols(rho, nf)
     got <- 0
     .r <- for_each(self$points, function(t) {
@@ -18818,6 +19208,22 @@ GTheory <- ray_class("G", Theory, function(cl) {
     return(Asked$new(asks = "and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?", about = "\\Delta \\narrow{\\forall}{@ == l}", leads = "THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation."))
     NULL
   }))
+  static_field(cl, "theorem vacuum.creation", function() Theorem$new(`id` = "vacuum.creation", `body` = function(...) {
+    return(Asked$new(asks = "creation, at a local: what share of l's ways does it light a tick?", about = "S^{+}", leads = "CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once."))
+    NULL
+  }))
+  static_field(cl, "theorem vacuum.annihilation", function() Theorem$new(`id` = "vacuum.annihilation", `body` = function(...) {
+    return(Asked$new(asks = "annihilation, at a local: what share of l's ways does it take a tick?", about = "S^{-}", leads = "ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends."))
+    NULL
+  }))
+  static_field(cl, "theorem vacuum.movement", function() Theorem$new(`id` = "vacuum.movement", `body` = function(...) {
+    return(Asked$new(asks = "the rays move. Followed a step and a tick, what does a ray's way on depend on?", about = "\\Delta\\rho", leads = "MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds."))
+    NULL
+  }))
+  static_field(cl, "theorem vacuum.ways", function() Theorem$new(`id` = "vacuum.ways", `body` = function(...) {
+    return(Asked$new(asks = "a fold is a way. How many ways does a local have, and what moves them?", about = "\\Delta DEG", also = "DEG", leads = "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own.", then = "AND WHAT THEY ARE: the lattice's own ways and one for every fold."))
+    NULL
+  }))
   static_field(cl, "theorem vacuum.at", function() Theorem$new(`id` = "vacuum.at", `body` = function(...) {
     return(Asked$new(asks = "a source is a thing with a history. What does it mean to read one at a particular time?", about = "l'_{@t}"))
     NULL
@@ -19104,6 +19510,7 @@ g_sep2 <- lazy_constant(function() ", ")
 g_plus <- lazy_constant(function() " + ")
 g_ind2 <- lazy_constant(function() "  ")
 g_nl0 <- lazy_constant(function() "\n")
+g_METHOD_SOURCES <- lazy_constant(function() "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at")
 
 })
 .onLoad <- function(libname, pkgname) eval(.physics, asNamespace(pkgname))

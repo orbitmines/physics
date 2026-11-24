@@ -640,6 +640,20 @@ method body after loading.
   so `\forall{@ == l}` is the point at l and every point folded into it. `vacuum.rays` and `vacuum.space`
   (`Prover.narrowed`) read both lines off the rules' own `where`, weighed by what a firing moves over how many
   of l's members one match is (an edge: 2 ends; a point: DEG rays, or 1 point; a way: 1).
+- **THE CONTINUOUS MODEL, OFF THE NARROWINGS (`Prover.model_chain`, 2026-11-24; the user's).** `vacuum.equation` is now
+  `\bar{m} = \Delta\rho + S^{-} - S^{+}` (no `l.`/`_l` on the vacuum.* lines: the user, redundant), with `also` the ways' line `\Delta DEG = ½·DEG·S^{-} - (DEG - DEG_{0})·S^{+}`; there DEG is the place's own ways and `DEG_{0}` the lattice's; `\tilde{\rho}` is the ray across the edge (the Reading's tilde for the facing ray), `\bar{m}` the share of the ways a source lights. LETTERS: `S^{+}`/`S^{-}` a rule at l (the density stays ρ: A was tried and dropped, it clashes with the metric's A) (S is also the OLD record `S_l` in vacuum.record/worth/settled/balance - kept apart by the mark). Its chain:
+  `vacuum.rays`, `vacuum.space`; `DEG = DEG_{0} + n_{f,l}` (`ways_at`: a fold is a way - read off `Ray.turns`'s draw and
+   `Vertex.fold`); `\Delta DEG = \Delta n_{f,l}`; ONE STEP PER RULE AT A LOCAL, per way
+  (`rule_piece`): the narrowing's share - the Reading's rate and `asked` (the rule's own `where`), l's own ray and `\tilde{\rho}` for every
+  further end the edge needs - times what one firing moves on one way, named `S` (a rule) marked `+` where it puts
+  rays in and `-` where it takes them (the sign is the rule's ray count, not chosen); `\Delta\rho` (`movement`): followed a step and a tick,
+  and at every place x the ray's way on is x's own - x keeps `1/(1 + x.DEG - DEG_{0})` straight (`TermInfo.keeps` with `n_f = x.DEG - DEG_{0}`), so the
+  ways are IN the propagation, never a count in front of l (the user: `l.DEG` names l's own node, the mass's); the rays' line per way in the
+  rules' names (`per_way`); the ways' line (`ways_line`, off the FOLDS ledger - the `folded` step - not the space ledger: reading it off the space held, `s = 1 + n_f`, gave `- S^{+}` and the ways ran away, e-folding every ~7 ticks; creation takes a fold off every way that holds one, the term's `around` `n_f/DEG`, which gives `-(DEG - DEG_{0})·S^{+}` and settles at `DEG = 2·DEG_{0}`; each term named by the piece whose share it has); the record's own line (`record_moves`), the record settled against the density (`record_settles`), the record every body leaves (`record_left`: `DEG` times the rays' line plus `k` times the ways' line, the meetings cancelling); and the mass solved off the rays'
+  line (`Expr.linear`). Theorems by name: `vacuum.creation` (`S^{+}`), `vacuum.annihilation` (`S^{-}`), `vacuum.movement`
+  (`\Delta\rho`), `vacuum.ways` (`\Delta DEG`, also `DEG`). The site lists them under `vacuum.equation`.  THE MEDIUM FOLLOWS IT (CPU and GPU; nothing off the older chain - `Prover.chain`'s roles are all the model's): `Aggregate.net` is the rays' line with each `S^{±}` put back as its
+  share, the ray across the same vacuum and nothing from outside; `Aggregate.rho_inf` is its root (√3 − 1, on every lattice); `Medium.nets`
+  evaluates it and the WGSL `mnets` is it, emitted (`e[0]` the density, `e[1]` `P.DEG`); `settled`, `folds`, `record` are `record_settles`, `record_moves`, `record_left`, with `DEG_{0}` bound to the Aggregate's lattice (so `nf_inf = DEG_{0}`). PACKAGES CANNOT OPEN A METHOD: the derivation reads `Edge.active`, `Ray.turns`, ... through `Prover.source_of`, off the constant `METHOD_SOURCES`, which the bootstrap reads by reflection and `Gen.emit_constants` writes into every package as text.
 - **Catalogue.ray**: `data "id" () => Catalogue(...)` declarations on `Borrowed` (collected as
   `datasets`); `npx ray data [ids]` fetches each from its authors' address (cached in `data/.raw`,
   `RAY_REFETCH=1` to refetch), parses it (`Mrt` reads a CDS/AAS machine-readable table by the

@@ -11,9 +11,10 @@ open OrbitMines.Physics.Proofs
 
 and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?
 
-Lean checked 0 of its 0 steps; 0 are premises read off the program and 0 are not checked. And the answer is NOT checked: the last step is not about \Delta \narrow{\forall}{@ == l}.
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names \Delta \narrow{\forall}{@ == l} again (claim 2), and its value is the earlier one's by algebra).
 
-- answer (the answer), NOT checked: the last step is not about \Delta \narrow{\forall}{@ == l}
+- step 2 (the space at a local, as the rules narrow it), NOT checked: the inference 'the space at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names \Delta \narrow{\forall}{@ == l} again (claim 2), and its value is the earlier one's by algebra
 -/
 
 namespace OrbitMines.Physics.Proofs.G.«vacuum.space»
@@ -21,22 +22,25 @@ namespace OrbitMines.Physics.Proofs.G.«vacuum.space»
 /-- What the prover takes from the rules: the premises, read off the program BY DESIGN - a rule's own body, the
 continuous model the rules were read into, the lattice, a count. None is believed or measured; each is already in the
 theory's .ray. -/
-structure Premises ( : ℝ) : Prop
+structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}» : ℝ) : Prop where
+  /-- step 1 (the reading): the continuous model = DEG·\nu·\paren{1 - \rho} + l.\bar{m}·\omega - 2·\sigma·F·n^{2} - the rules read as a line (Reading.ray): the root every derivation passes through -/
+  «the reading: the continuous model» : «the continuous model» = (((-1 : ℝ) * (2 : ℝ) * «\sigma» * «F» * («n» ^ 2)) + («DEG» * «\nu» * ((1 : ℝ) + ((-1 : ℝ) * «\rho»))) + ((1 : ℝ) * «l.\bar{m}» * «\omega»))
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
-structure Unchecked ( : ℝ) : Prop where
-  /-- the answer (the answer): \Delta \narrow{\forall}{@ == l} = \frac{\narrow{l}{active & next.active}}{2} - \narrow{l}{neutral} - NOT CHECKED: the last step is not about \Delta \narrow{\forall}{@ == l} -/
-  unchecked_vacuum_space_1 : Stated "\\Delta \\narrow{\\forall}{@ == l} = \\frac{\\narrow{l}{active & next.active}}{2} - \\narrow{l}{neutral}"
+structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}» : ℝ) : Prop where
+  /-- step 2 (the space at a local, as the rules narrow it): \Delta \narrow{\forall}{@ == l} = \frac{\narrow{l}{active & next.active}}{2} - \narrow{l}{neutral} - NOT CHECKED: the inference 'the space at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_vacuum_space_2 : «\Delta \narrow{\forall}{@ == l}» = ((((5 : ℝ) / 10) * «\narrow{l}{active & next.active}») + ((-1 : ℝ) * «\narrow{l}{neutral}»))
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/
-structure Defined ( : ℝ) : Prop
+structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}» : ℝ) : Prop
+
+/-- the answer (the answer): \Delta \narrow{\forall}{@ == l} = \frac{\narrow{l}{active & next.active}}{2} - \narrow{l}{neutral} - CHECKED: it names \Delta \narrow{\forall}{@ == l} again (claim 2), and its value is the earlier one's by algebra -/
+theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}» : ℝ)
+    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta \narrow{\forall}{@ == l}» «\narrow{l}{active & next.active}» «\narrow{l}{neutral}») :
+    «\Delta \narrow{\forall}{@ == l}» = ((((5 : ℝ) / 10) * «\narrow{l}{active & next.active}») + ((-1 : ℝ) * «\narrow{l}{neutral}»)) := by
+  have h2 := u.unchecked_vacuum_space_2
+  check_algebra
 
 
-
-/-- the answer (the answer): \Delta \narrow{\forall}{@ == l} = \frac{\narrow{l}{active & next.active}}{2} - \narrow{l}{neutral} - NOT CHECKED: the last step is not about \Delta \narrow{\forall}{@ == l} -/
-theorem answer ( : ℝ)
-    (p : Premises ) (u : Unchecked ) (w : Defined ) :
-    Stated "\\Delta \\narrow{\\forall}{@ == l} = \\frac{\\narrow{l}{active & next.active}}{2} - \\narrow{l}{neutral}" :=
-  u.unchecked_vacuum_space_1
 
 end OrbitMines.Physics.Proofs.G.«vacuum.space»

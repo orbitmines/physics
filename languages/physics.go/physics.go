@@ -4164,7 +4164,10 @@ func init() {
           var after_0 any
           after_0 = Add(Add(i_0, 1.0), Len(name_0))
           _ = after_0
-          if Truthy((Truthy(word_0) && Truthy(Eq(Call(K("Notation"), "char_at", []any{ src_0, after_0 }), 32.0)))) {
+          var next__0 any
+          next__0 = Call(K("Notation"), "char_at", []any{ src_0, Add(after_0, 1.0) })
+          _ = next__0
+          if Truthy((Truthy((Truthy((Truthy((Truthy(word_0) && Truthy(Eq(Call(K("Notation"), "char_at", []any{ src_0, after_0 }), 32.0)))) && Truthy(!Eq(next__0, 43.0)))) && Truthy(!Eq(next__0, 45.0)))) && Truthy(!Eq(next__0, 61.0)))) {
             after_0 = Add(after_0, 1.0)
           }
           var big_0 any
@@ -9380,8 +9383,13 @@ func init() {
   Prover = cls("Prover", Node, func(c *Cls) {
     c.Field("theory", nil)
     c.StaticField("PROOFS", func(self any) any { return Make(Node) })
+    c.StaticField("MARK", func(self any) any { return "\n@@ " })
     c.StaticField("RAYS_SAY", func(self any) any { return "l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all." })
     c.StaticField("SPACE_SAY", func(self any) any { return "the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here." })
+    c.StaticField("LIGHTS", func(self any) any { return "lights" })
+    c.StaticField("TAKES", func(self any) any { return "takes" })
+    c.StaticField("RAYS_PER_WAY", func(self any) any { return "the rays at a local, per way" })
+    c.StaticField("WAYS_LINE", func(self any) any { return "the ways at a local, a tick on" })
     c.Field("population_line", func(self any) any { return nil })
     c.Field("record_line", func(self any) any { return nil })
     c.Field("store", func(self any) any { return Make("Store", []any{  }...) })
@@ -10951,9 +10959,37 @@ func init() {
       }
       return nil
     })
+    c.Static("sources_read", func(self any, a1 []any) any {
+      if true {
+        return M_join(M_map(Lst(Lst("Edge.active", Get(Call(K("Edge"), "method", []any{ "active" }), "source")), Lst("Ray.facing", Get(Call(K("Ray"), "method", []any{ "facing" }), "source")), Lst("Ray.turns", Get(Call(K("Ray"), "method", []any{ "turns" }), "source")), Lst("Vertex.fold", Get(Call(K("Vertex"), "method", []any{ "fold" }), "source")), Lst("Vertex.alive", Get(Call(K("Vertex"), "method", []any{ "alive" }), "source")), Lst("Vertex.sinks", Get(Call(K("Vertex"), "method", []any{ "sinks" }), "source"))), Fn(func(a3 []any) any {
+        var p_2 any = Arg(a3, 0); _ = p_2;
+        if true {
+          return "" + Str(Get(K("Prover"), "MARK")) + "" + Str(Elem(p_2, 0.0)) + "\n" + Str(Elem(p_2, 1.0)) + ""
+        }
+        return nil
+      })), "")
+      }
+      return nil
+    })
+    c.Static("source_of", func(self any, a1 []any) any {
+      var key_0 any = Arg(a1, 0); _ = key_0;
+      var hit_0 any
+      hit_0 = M_first(Filt(M_split(Def_METHOD_SOURCES(), Get(K("Prover"), "MARK")), Fn(func(a3 []any) any {
+        var p_2 any = Arg(a3, 0); _ = p_2;
+        if true {
+          return M_starts_with(p_2, "" + Str(key_0) + "\n")
+        }
+        return nil
+      })))
+      _ = hit_0
+      if true {
+        return Tern(Truthy(Eq(hit_0, nil)), func() any { return "" }, func() any { return M_drop(hit_0, Add(Len(key_0), 1.0)) })
+      }
+      return nil
+    })
     c.Static("edge_ends", func(self any, a1 []any) any {
       if true {
-        return Filt(M_split(Get(Call(K("Edge"), "method", []any{ "active" }), "source"), " & "), Fn(func(a3 []any) any {
+        return Filt(M_split(Call(K("Prover"), "source_of", []any{ "Edge.active" }), " & "), Fn(func(a3 []any) any {
         var c__2 any = Arg(a3, 0); _ = c__2;
         if true {
           return Gt(Len(M_split(c__2, ".active")), 1.0)
@@ -10964,9 +11000,9 @@ func init() {
       return nil
     })
     c.Getter("edge_from_an_end", func(self any, a1 []any) any {
-      var def_0 any
-      def_0 = Get(Call(K("Edge"), "method", []any{ "active" }), "source")
-      _ = def_0
+      var active__0 any
+      active__0 = Call(K("Prover"), "source_of", []any{ "Edge.active" })
+      _ = active__0
       var ends_0 any
       ends_0 = Get(K("Prover"), "edge_ends")
       _ = ends_0
@@ -10980,10 +11016,10 @@ func init() {
       }))), " & ")
       _ = asked_0
       var facing_0 any
-      facing_0 = Get(Call(K("Ray"), "method", []any{ "facing" }), "source")
+      facing_0 = Call(K("Prover"), "source_of", []any{ "Ray.facing" })
       _ = facing_0
       var st_0 any
-      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\narrow{Edge}{active}", Call(K("Expr"), "field", []any{ "\\narrow{l}{" + Str(asked_0) + "}" }) }), "an edge, seen from one of its ends", Lst(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + Str(Len(ends_0)) + ".", Lst("Edge.active = " + Str(def_0) + "", "Ray.facing = " + Str(facing_0) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + Str(asked_0) + "}, " + Str(Len(ends_0)) + " ends to a meeting") })
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\narrow{Edge}{active}", Call(K("Expr"), "field", []any{ "\\narrow{l}{" + Str(asked_0) + "}" }) }), "an edge, seen from one of its ends", Lst(), "an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: " + Str(Len(ends_0)) + ".", Lst("Edge.active = " + Str(active__0) + "", "Ray.facing = " + Str(facing_0) + ": the ray across the same edge - next", "\\narrow{Edge}{active} = \\narrow{l}{" + Str(asked_0) + "}, " + Str(Len(ends_0)) + " ends to a meeting") })
       _ = st_0
       if true {
         return st_0
@@ -10992,10 +11028,10 @@ func init() {
     })
     c.Getter("standing_at", func(self any, a1 []any) any {
       var alive_0 any
-      alive_0 = Get(Call(K("Vertex"), "method", []any{ "alive" }), "source")
+      alive_0 = Call(K("Prover"), "source_of", []any{ "Vertex.alive" })
       _ = alive_0
       var sinks_0 any
-      sinks_0 = Get(Call(K("Vertex"), "method", []any{ "sinks" }), "source")
+      sinks_0 = Call(K("Prover"), "source_of", []any{ "Vertex.sinks" })
       _ = sinks_0
       if true {
         return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\narrow{\\forall}{@ == l}", Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "field", []any{ "\\narrow{\\forall}{folded_into == l}" })) }) }), "what stands at a local", Lst(), "the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.", Lst("Vertex.alive = " + Str(alive_0) + "", "Vertex.sinks = " + Str(sinks_0) + "", "\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}") })
@@ -11194,6 +11230,577 @@ func init() {
       Set(st_0, "derivation", behind_0)
       if true {
         return st_0
+      }
+      return nil
+    })
+    c.Static("ACROSS", func(self any, a1 []any) any {
+      if true {
+        return Call(K("Expr"), "field", []any{ "\\tilde{\\rho}" })
+      }
+      return nil
+    })
+    c.Static("HERE", func(self any, a1 []any) any {
+      if true {
+        return Call(K("Expr"), "field", []any{ "\\rho" })
+      }
+      return nil
+    })
+    c.Static("WAYS", func(self any, a1 []any) any {
+      if true {
+        return Call(K("Expr"), "field", []any{ "DEG" })
+      }
+      return nil
+    })
+    c.Static("LATTICE", func(self any, a1 []any) any {
+      if true {
+        return Call(K("Expr"), "field", []any{ "DEG_{0}" })
+      }
+      return nil
+    })
+    c.Static("MASS", func(self any, a1 []any) any {
+      if true {
+        return Call(K("Expr"), "field", []any{ "\\bar{m}" })
+      }
+      return nil
+    })
+    c.Static("STANDING", func(self any, a1 []any) any {
+      if true {
+        return "\\narrow{\\forall}{@ == l}"
+      }
+      return nil
+    })
+    c.Method("share_at", func(self any, a1 []any) any {
+      var t_0 any = Arg(a1, 0); _ = t_0; var fill_0 any = Arg(a1, 1); _ = fill_0;
+      var at_l_0 any
+      at_l_0 = Fn(func(a2 []any) any {
+        var e_1 any = Arg(a2, 0); _ = e_1;
+        if true {
+          return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "evaluate", []any{ e_1, fill_0 }), "n", Get(K("Prover"), "HERE") }), "\\rho", Get(K("Prover"), "HERE") }), "l.\\bar{m}", Get(K("Prover"), "MASS") }) })
+        }
+        return nil
+      })
+      _ = at_l_0
+      if Truthy(Get(t_0, "outside")) {
+        if true {
+          return Invoke(at_l_0, []any{ Get(t_0, "expr") })
+        }
+      }
+      var parts_0 any
+      parts_0 = Lst()
+      _ = parts_0
+      if Truthy(!Eq(Get(t_0, "rate"), nil)) {
+        M_push(parts_0, Call(K("Expr"), "field", []any{ Get(t_0, "rate") }))
+      }
+      if Truthy(!Eq(Get(t_0, "asked"), nil)) {
+        M_push(parts_0, Get(t_0, "asked"))
+      }
+      if Truthy(Gt(Get(t_0, "degree"), 0.0)) {
+        M_push(parts_0, Get(K("Prover"), "HERE"))
+      }
+      if Truthy(Gt(Get(t_0, "degree"), 1.0)) {
+        M_push(parts_0, Call(K("Expr"), "pown", []any{ Get(K("Prover"), "ACROSS"), Sub(Get(t_0, "degree"), 1.0) }))
+      }
+      if true {
+        return Invoke(at_l_0, []any{ Tern(Truthy(M_empty(parts_0)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Expr"), "mul", []any{ parts_0 }) }) })
+      }
+      return nil
+    })
+    c.Static("members_at", func(self any, a1 []any) any {
+      var t_0 any = Arg(a1, 0); _ = t_0; var rays_0 any = Arg(a1, 1); _ = rays_0;
+      if true {
+        return Tern(Truthy(((Truthy(Get(t_0, "outside")) || Truthy(((Truthy(Eq(Get(Get(Get(t_0, "term"), "rule"), "over"), "Vertex")) && Truthy(Not(rays_0)))))))), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Get(K("Prover"), "WAYS") })
+      }
+      return nil
+    })
+    c.Method("ways_at", func(self any, a1 []any) any {
+      var one_0 any = Arg(a1, 0); _ = one_0; var behind_0 any = Arg(a1, 1); _ = behind_0;
+      var draws_0 any
+      draws_0 = Call(K("Prover"), "source_of", []any{ "Ray.turns" })
+      _ = draws_0
+      var folding_0 any
+      folding_0 = Call(K("Prover"), "source_of", []any{ "Vertex.fold" })
+      _ = folding_0
+      if Truthy((Truthy(Not(M_contains(draws_0, "folds"))) || Truthy(Not(M_contains(folding_0, "folds[d] + 1"))))) {
+        if true {
+          return nil
+        }
+      }
+      var own_0 any
+      own_0 = Call(K("Expr"), "add", []any{ Lst(Get(K("Prover"), "LATTICE"), Call(K("Expr"), "field", []any{ "n_{f,l}" })) })
+      _ = own_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "DEG", own_0 }), "the ways at a local", Lst(Get(Get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", Lst("Ray.turns = " + Str(draws_0) + ": straight on at one, each folded way at its folds", "Vertex.fold = " + Str(folding_0) + ": a fold written on a way", "DEG = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "") })
+      _ = st_0
+      Set(st_0, "derivation", behind_0)
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("ways_moved", func(self any, a1 []any) any {
+      var ways_0 any = Arg(a1, 0); _ = ways_0;
+      var by_0 any
+      by_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "d", []any{ Get(Get(ways_0, "fact"), "to"), "n_{f,l}" }) })
+      _ = by_0
+      var got_0 any
+      got_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(by_0, Call(K("Expr"), "field", []any{ "\\Delta n_{f,l}" })) }) })
+      _ = got_0
+      if true {
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Delta DEG", got_0 }), "the ways move with the record", Lst(Get(Get(ways_0, "fact"), "key")), "the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off", Lst("\\frac{\\partial DEG}{\\partial n_{f,l}} = " + Str(Call(K("Expr"), "show", []any{ by_0 })) + "", "\\Delta DEG = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      }
+      return nil
+    })
+    c.Static("GAIN", func(self any, a1 []any) any {
+      if true {
+        return "S^{+}"
+      }
+      return nil
+    })
+    c.Static("LOSS", func(self any, a1 []any) any {
+      if true {
+        return "S^{-}"
+      }
+      return nil
+    })
+    c.Method("rule_piece", func(self any, a1 []any) any {
+      var t_0 any = Arg(a1, 0); _ = t_0; var fill_0 any = Arg(a1, 1); _ = fill_0;
+      if Truthy(Get(t_0, "outside")) {
+        if true {
+          return nil
+        }
+      }
+      var w_0 any
+      w_0 = Call(K("Prover"), "per_member", []any{ Get(t_0, "ray_count"), Call(K("Prover"), "members_of", []any{ t_0, true }) })
+      _ = w_0
+      if Truthy(Eq(w_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      if Truthy(Eq(w_0, 0.0)) {
+        if true {
+          return nil
+        }
+      }
+      var r_0 any
+      r_0 = Get(Get(t_0, "term"), "rule")
+      _ = r_0
+      var pattern_0 any
+      pattern_0 = Tern(Truthy(Eq(Get(r_0, "where"), nil)), func() any { return "" }, func() any { return Get(Get(r_0, "where"), "source") })
+      _ = pattern_0
+      var share_0 any
+      share_0 = Call(self, "share_at", []any{ t_0, fill_0 })
+      _ = share_0
+      var got_0 any
+      got_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ M_abs(w_0) }), share_0) }) })
+      _ = got_0
+      var name_0 any
+      name_0 = Tern(Truthy(Gt(w_0, 0.0)), func() any { return Get(K("Prover"), "GAIN") }, func() any { return Get(K("Prover"), "LOSS") })
+      _ = name_0
+      var does_0 any
+      does_0 = Tern(Truthy(Gt(w_0, 0.0)), func() any { return Get(K("Prover"), "LIGHTS") }, func() any { return Get(K("Prover"), "TAKES") })
+      _ = does_0
+      var members_0 any
+      members_0 = Call(K("Expr"), "show", []any{ Call(K("Prover"), "members_of", []any{ t_0, true }) })
+      _ = members_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ name_0, got_0 }), M_upper(Get(r_0, "name")), Lst(), "" + Str(Get(r_0, "name")) + " at l, per way: its pattern narrows l to " + Str(Get(r_0, "over")) + "\\{" + Str(pattern_0) + "\\}, which holds " + Str(Call(K("Expr"), "show", []any{ share_0 })) + " of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is " + Str(members_0) + " of l's ways and one firing " + Str(does_0) + " " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ M_abs(w_0) }) })) + " ray on each. So it " + Str(does_0) + " " + Str(Call(K("Expr"), "show", []any{ got_0 })) + " of l's ways a tick: written " + Str(name_0) + ": S for a rule, marked by what it does to the rays", Lst("pattern: " + Str(Get(r_0, "over")) + "\\{" + Str(pattern_0) + "\\}", "share of l's ways: " + Str(Call(K("Expr"), "show", []any{ share_0 })) + "", "one match: " + Str(members_0) + " of l's ways, " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ w_0 }) })) + " a way", "" + Str(name_0) + " = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      _ = st_0
+      Set(st_0, "rule", M_upper(Get(r_0, "name")))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("movement", func(self any, a1 []any) any {
+      var ways_0 any = Arg(a1, 0); _ = ways_0;
+      var t_0 any
+      t_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy(Get(t_2, "transport")) && Truthy(Get(t_2, "kernel")))
+        }
+        return nil
+      })))
+      _ = t_0
+      if Truthy(Eq(t_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      var draws_0 any
+      draws_0 = Call(K("Prover"), "source_of", []any{ "Ray.turns" })
+      _ = draws_0
+      var nf_0 any
+      nf_0 = Call(K("Expr"), "linear", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "field", []any{ "x.DEG" }), Call(K("Expr"), "add", []any{ Lst(Get(K("Prover"), "LATTICE"), Call(K("Expr"), "field", []any{ "n_{f}" })) }) }), "n_{f}" })
+      _ = nf_0
+      if Truthy(Eq(nf_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      var keep_0 any
+      keep_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Get(t_0, "keeps"), "n_{f}", nf_0 }) })
+      _ = keep_0
+      var rhs_0 any
+      rhs_0 = Call(K("Expr"), "sub", []any{ Call(K("Expr"), "field", []any{ "\\rho_{+v}\\paren{t + 1}" }), Call(K("Expr"), "field", []any{ "\\rho\\paren{t}" }) })
+      _ = rhs_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Delta\\rho", rhs_0 }), M_upper(Get(Get(Get(t_0, "term"), "rule"), "name")), Lst(Get(Get(ways_0, "fact"), "key")), "the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps " + Str(Call(K("Expr"), "show", []any{ keep_0 })) + " of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place", Lst("Ray.turns = " + Str(draws_0) + "", "at a place x: n_{f} = " + Str(Call(K("Expr"), "show", []any{ nf_0 })) + ", its ways over the lattice's own", "kept straight at x: " + Str(Call(K("Expr"), "show", []any{ Get(t_0, "keeps") })) + " = " + Str(Call(K("Expr"), "show", []any{ keep_0 })) + "", "\\Delta\\rho = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
+      _ = st_0
+      Set(st_0, "rule", M_upper(Get(Get(Get(t_0, "term"), "rule"), "name")))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("per_way", func(self any, a1 []any) any {
+      var line_0 any = Arg(a1, 0); _ = line_0; var pieces_0 any = Arg(a1, 1); _ = pieces_0; var moving__0 any = Arg(a1, 2); _ = moving__0; var fill_0 any = Arg(a1, 3); _ = fill_0;
+      var parts_0 any
+      parts_0 = Lst()
+      _ = parts_0
+      for _, e1 := range Items(Filt(Get(self, "infos"), Fn(func(a4 []any) any {
+        var t_3 any = Arg(a4, 0); _ = t_3;
+        if true {
+          return (Truthy((Truthy((Truthy(!Eq(Get(Get(t_3, "term"), "rule"), nil)) && Truthy(Not(Get(t_3, "transport"))))) && Truthy(Not(Get(t_3, "settles"))))) && Truthy(!Eq(Get(t_3, "rays"), "0")))
+        }
+        return nil
+      }))) {
+        var t_1 any = e1
+        _ = t_1
+        var w_1 any
+        w_1 = Call(K("Prover"), "per_member", []any{ Get(t_1, "ray_count"), Call(K("Prover"), "members_of", []any{ t_1, true }) })
+        _ = w_1
+        if !Truthy(Eq(w_1, nil)) {
+          if !Truthy(Eq(w_1, 0.0)) {
+            if Truthy(Get(t_1, "outside")) {
+              M_push(parts_0, Call(K("Prover"), "weighed", []any{ w_1, Call(self, "share_at", []any{ t_1, fill_0 }) }))
+            } else {
+              M_push(parts_0, Tern(Truthy(Gt(w_1, 0.0)), func() any { return Call(K("Expr"), "field", []any{ Get(K("Prover"), "GAIN") }) }, func() any { return Call(K("Expr"), "neg", []any{ Call(K("Expr"), "field", []any{ Get(K("Prover"), "LOSS") }) }) }))
+            }
+          }
+        }
+      }
+      var rhs_0 any
+      rhs_0 = Call(K("Expr"), "add", []any{ parts_0 })
+      _ = rhs_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Delta\\rho", rhs_0 }), Get(K("Prover"), "RAYS_PER_WAY"), M_concat(Lst(Get(Get(line_0, "fact"), "key"), Get(Get(moving__0, "fact"), "key")), M_map(pieces_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Get(Get(x_2, "fact"), "key")
+        }
+        return nil
+      }))), "the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place", M_concat(M_map(pieces_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return "" + Str(Get(Get(x_2, "fact"), "of")) + " = " + Str(Call(K("Expr"), "show", []any{ Get(Get(x_2, "fact"), "to") })) + " (" + Str(Get(x_2, "via")) + ")"
+        }
+        return nil
+      })), Lst("" + Str(Get(K("Prover"), "RAYS_PER_WAY")) + ": \\Delta\\rho = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "")) })
+      _ = st_0
+      Set(st_0, "derivation", M_concat(Lst(line_0, moving__0), pieces_0))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("ways_line", func(self any, a1 []any) any {
+      var line_0 any = Arg(a1, 0); _ = line_0; var moved_0 any = Arg(a1, 1); _ = moved_0; var ways_0 any = Arg(a1, 2); _ = ways_0; var pieces_0 any = Arg(a1, 3); _ = pieces_0; var fill_0 any = Arg(a1, 4); _ = fill_0;
+      var parts_0 any
+      parts_0 = Lst()
+      _ = parts_0
+      var said_0 any
+      said_0 = Lst()
+      _ = said_0
+      var folds_of_0 any
+      folds_of_0 = Call(K("Expr"), "sub", []any{ Get(Get(ways_0, "fact"), "to"), Get(K("Prover"), "LATTICE") })
+      _ = folds_of_0
+      for _, e1 := range Items(Filt(Get(self, "infos"), Fn(func(a4 []any) any {
+        var t_3 any = Arg(a4, 0); _ = t_3;
+        if true {
+          return (Truthy((Truthy((Truthy(!Eq(Get(Get(t_3, "term"), "rule"), nil)) && Truthy(Not(Get(t_3, "transport"))))) && Truthy(Not(Get(t_3, "settles"))))) && Truthy(!Eq(Get(t_3, "folds"), "0")))
+        }
+        return nil
+      }))) {
+        var t_1 any = e1
+        _ = t_1
+        var w_1 any
+        w_1 = Call(K("Prover"), "per_member", []any{ Get(t_1, "fold_count"), Call(K("Prover"), "members_of", []any{ t_1, true }) })
+        _ = w_1
+        if !Truthy(Eq(w_1, nil)) {
+          if !Truthy(Eq(w_1, 0.0)) {
+            var share_1 any
+            share_1 = Call(self, "share_at", []any{ t_1, fill_0 })
+            _ = share_1
+            var named_1 any
+            named_1 = M_first(Filt(pieces_0, Fn(func(a4 []any) any {
+              var x_3 any = Arg(a4, 0); _ = x_3;
+              if true {
+                return (Truthy(Eq(Get(x_3, "via"), M_upper(Get(Get(Get(t_1, "term"), "rule"), "name")))) && Truthy(Eq(Call(K("Expr"), "show", []any{ Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ Get(Get(x_3, "fact"), "to"), share_1 }) }) }), "1")))
+              }
+              return nil
+            })))
+            _ = named_1
+            var at_1 any
+            at_1 = Tern(Truthy(Eq(named_1, nil)), func() any { return share_1 }, func() any { return Call(K("Expr"), "field", []any{ Get(Get(named_1, "fact"), "of") }) })
+            _ = at_1
+            var gate_1 any
+            gate_1 = Tern(Truthy(Eq(Get(t_1, "around"), nil)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Get(t_1, "around"), "n_{f}", Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Get(K("Prover"), "WAYS"), Get(K("Prover"), "LATTICE") }) }) }), "DEG", Get(K("Prover"), "WAYS") }) }) })
+            _ = gate_1
+            var got_1 any
+            got_1 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ w_1 }), Get(K("Prover"), "WAYS"), gate_1, at_1) }) })
+            _ = got_1
+            M_push(parts_0, got_1)
+            M_push(said_0, "" + Str(M_upper(Get(Get(Get(t_1, "term"), "rule"), "name"))) + ": " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ w_1 }) })) + " a fold on each of l's ways, " + Str(Call(K("Expr"), "show", []any{ gate_1 })) + " of them, at " + Str(Call(K("Expr"), "show", []any{ at_1 })) + " - " + Str(Call(K("Expr"), "show", []any{ got_1 })) + "")
+          }
+        }
+      }
+      if Truthy(M_empty(parts_0)) {
+        if true {
+          return nil
+        }
+      }
+      var rhs_0 any
+      rhs_0 = Call(K("Expr"), "add", []any{ parts_0 })
+      _ = rhs_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Delta DEG", rhs_0 }), Get(K("Prover"), "WAYS_LINE"), M_concat(Lst(Get(Get(line_0, "fact"), "key"), Get(Get(moved_0, "fact"), "key"), Get(Get(ways_0, "fact"), "key")), M_map(pieces_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Get(Get(x_2, "fact"), "key")
+        }
+        return nil
+      }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + Str(Call(K("Expr"), "show", []any{ folds_of_0 })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", M_concat(said_0, Lst("\\Delta DEG = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "")) })
+      _ = st_0
+      Set(st_0, "derivation", M_concat(Lst(line_0, moved_0, ways_0), pieces_0))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("in_record", func(self any, a1 []any) any {
+      var ways_c_0 any = Arg(a1, 0); _ = ways_c_0; var ways_0 any = Arg(a1, 1); _ = ways_0; var pieces_0 any = Arg(a1, 2); _ = pieces_0;
+      var e_0 any
+      e_0 = Get(Get(ways_c_0, "fact"), "to")
+      _ = e_0
+      for _, e1 := range Items(pieces_0) {
+        var x_1 any = e1
+        _ = x_1
+        e_0 = Call(K("Expr"), "replace", []any{ e_0, Get(Get(x_1, "fact"), "of"), Get(Get(x_1, "fact"), "to") })
+      }
+      e_0 = Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ e_0, Get(Get(K("Prover"), "ACROSS"), "label"), Get(K("Prover"), "HERE") }), "DEG", Get(Get(ways_0, "fact"), "to") })
+      if true {
+        return Call(K("Prover"), "tidy", []any{ Call(K("Expr"), "replace", []any{ e_0, "n_{f,l}", Call(K("Expr"), "field", []any{ "n_{f}" }) }) })
+      }
+      return nil
+    })
+    c.Method("record_moves", func(self any, a1 []any) any {
+      var ways_c_0 any = Arg(a1, 0); _ = ways_c_0; var ways_0 any = Arg(a1, 1); _ = ways_0; var pieces_0 any = Arg(a1, 2); _ = pieces_0;
+      var e_0 any
+      e_0 = Call(self, "in_record", []any{ ways_c_0, ways_0, pieces_0 })
+      _ = e_0
+      if true {
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Delta n_{f}", e_0 }), "the record's own line", M_concat(Lst(Get(Get(ways_c_0, "fact"), "key"), Get(Get(ways_0, "fact"), "key")), M_map(pieces_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Get(Get(x_2, "fact"), "key")
+        }
+        return nil
+      }))), "the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone", Lst("" + Str(Get(Get(ways_c_0, "fact"), "of")) + " = " + Str(Call(K("Expr"), "show", []any{ Get(Get(ways_c_0, "fact"), "to") })) + "", "DEG = " + Str(Call(K("Expr"), "show", []any{ Get(Get(ways_0, "fact"), "to") })) + "", "\\Delta n_{f} = " + Str(Call(K("Expr"), "show", []any{ e_0 })) + "") })
+      }
+      return nil
+    })
+    c.Method("record_settles", func(self any, a1 []any) any {
+      var moves_0 any = Arg(a1, 0); _ = moves_0;
+      var parts_0 any
+      parts_0 = M_split(K("Expr"), Get(Get(moves_0, "fact"), "to"), "n_{f}")
+      _ = parts_0
+      if Truthy(Eq(parts_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      var top_0 any
+      top_0 = Call(K("Prover"), "tidy", []any{ Call(K("Expr"), "neg", []any{ Elem(parts_0, 1.0) }) })
+      _ = top_0
+      var bottom_0 any
+      bottom_0 = Call(K("Prover"), "tidy", []any{ Elem(parts_0, 0.0) })
+      _ = bottom_0
+      if Truthy(M_starts_with(Call(K("Expr"), "show", []any{ top_0 }), "-")) {
+        top_0 = Call(K("Prover"), "tidy", []any{ Call(K("Expr"), "neg", []any{ top_0 }) })
+        bottom_0 = Call(K("Expr"), "flip", []any{ bottom_0 })
+      }
+      var nf_0 any
+      nf_0 = Call(K("Expr"), "div", []any{ top_0, bottom_0 })
+      _ = nf_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f}", nf_0 }), "the record settled against the density", Lst(Get(Get(moves_0, "fact"), "key")), "the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought", Lst("" + Str(Get(Get(moves_0, "fact"), "of")) + " = " + Str(Call(K("Expr"), "show", []any{ Get(Get(moves_0, "fact"), "to") })) + " = 0", "n_{f} = " + Str(Call(K("Expr"), "show", []any{ nf_0 })) + "") })
+      _ = st_0
+      Set(st_0, "parts_", Lst(top_0, bottom_0))
+      if true {
+        return st_0
+      }
+      return nil
+    })
+    c.Method("record_left", func(self any, a1 []any) any {
+      var rays_c_0 any = Arg(a1, 0); _ = rays_c_0; var ways_c_0 any = Arg(a1, 1); _ = ways_c_0; var settles_0 any = Arg(a1, 2); _ = settles_0;
+      var k_0 any
+      k_0 = Get(self, "fold_weight")
+      _ = k_0
+      var both_0 any
+      both_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "collected", []any{ Call(K("Expr"), "expand", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "mul", []any{ Lst(Get(K("Prover"), "WAYS"), Get(Get(rays_c_0, "fact"), "to")) }), Call(K("Expr"), "mul", []any{ Lst(k_0, Get(Get(ways_c_0, "fact"), "to")) })) }) }) }) })
+      _ = both_0
+      var vac_0 any
+      vac_0 = Call(K("Expr"), "field", []any{ "\\rho_{\\infty}" })
+      _ = vac_0
+      var base_0 any
+      base_0 = Call(K("Expr"), "replace", []any{ Get(Get(settles_0, "fact"), "to"), "\\rho", vac_0 })
+      _ = base_0
+      var per_0 any
+      per_0 = Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "x.\\bar{m}" }), Call(K("Expr"), "sub", []any{ Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "l.shell\\paren{x.\\bar{R}}" }), Neg(1.0) }), Call(K("Prover"), "reach", []any{ "x.\\bar{R}" }) })) })
+      _ = per_0
+      var rhs_0 any
+      rhs_0 = Call(K("Expr"), "add", []any{ Lst(base_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ k_0, Neg(1.0) }), Call(K("Expr"), "call", []any{ "\\sum_{x = x_{@t}}", per_0 })) })) })
+      _ = rhs_0
+      var lhs_0 any
+      lhs_0 = "\\Delta\\paren{DEG·\\rho + " + Str(Call(K("Expr"), "show", []any{ k_0 })) + "·n_{f}}"
+      _ = lhs_0
+      if true {
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", Lst(Get(Get(rays_c_0, "fact"), "key"), Get(Get(ways_c_0, "fact"), "key"), Get(Get(settles_0, "fact"), "key")), "a meeting turns " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over " + Str(Call(K("Expr"), "show", []any{ k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + Str(Call(K("Expr"), "show", []any{ base_0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "n_{f,l}\\paren{t} = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
+      }
+      return nil
+    })
+    c.Method("leftover", func(self any, a1 []any) any {
+      var rays_c_0 any = Arg(a1, 0); _ = rays_c_0;
+      var m_0 any
+      m_0 = Get(Get(K("Prover"), "MASS"), "label")
+      _ = m_0
+      var parts_0 any
+      parts_0 = M_split(K("Expr"), Call(K("Expr"), "sub", []any{ Get(Get(rays_c_0, "fact"), "to"), Call(K("Expr"), "field", []any{ Get(Get(rays_c_0, "fact"), "of") }) }), m_0)
+      _ = parts_0
+      if Truthy(Eq(parts_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      var rest_0 any
+      rest_0 = Tern(Truthy(Eq(Get(Elem(parts_0, 1.0), "kind"), "add")), func() any { return Get(Elem(parts_0, 1.0), "of") }, func() any { return Lst(Elem(parts_0, 1.0)) })
+      _ = rest_0
+      var over_0 any
+      over_0 = M_map(rest_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ Call(K("Expr"), "neg", []any{ x_2 }), Elem(parts_0, 0.0) }) })
+        }
+        return nil
+      }))
+      _ = over_0
+      var got_0 any
+      got_0 = Call(K("Expr"), "add", []any{ M_concat(Filt(over_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Call(K("Expr"), "mentions", []any{ x_2, Get(Get(rays_c_0, "fact"), "of") })
+        }
+        return nil
+      })), Filt(over_0, Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Not(Call(K("Expr"), "mentions", []any{ x_2, Get(Get(rays_c_0, "fact"), "of") }))
+        }
+        return nil
+      }))) })
+      _ = got_0
+      if true {
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ m_0, got_0 }), "the mass is what the vacuum leaves over", Lst(Get(Get(rays_c_0, "fact"), "key")), "the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source", Lst("" + Str(Get(Get(rays_c_0, "fact"), "of")) + " = " + Str(Call(K("Expr"), "show", []any{ Get(Get(rays_c_0, "fact"), "to") })) + "", "" + Str(m_0) + " = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      }
+      return nil
+    })
+    c.Method("model_chain", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var rays_l_0 any = Arg(a1, 1); _ = rays_l_0; var space_l_0 any = Arg(a1, 2); _ = space_l_0; var spaced_0 any = Arg(a1, 3); _ = spaced_0; var folded_0 any = Arg(a1, 4); _ = folded_0; var one_0 any = Arg(a1, 5); _ = one_0;
+      if Truthy((Truthy(Eq(rays_l_0, nil)) || Truthy(Eq(space_l_0, nil)))) {
+        if true {
+          return Lst()
+        }
+      }
+      var fill_0 any
+      fill_0 = Call(K("Prover"), "settled", []any{ s_0 })
+      _ = fill_0
+      var ways_0 any
+      ways_0 = Call(self, "ways_at", []any{ one_0, Lst(spaced_0, folded_0, one_0) })
+      _ = ways_0
+      if Truthy(Eq(ways_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      var moved_0 any
+      moved_0 = Call(self, "ways_moved", []any{ ways_0 })
+      _ = moved_0
+      var pieces_0 any
+      pieces_0 = Filt(M_map(Filt(Get(self, "infos"), Fn(func(a5 []any) any {
+        var t_4 any = Arg(a5, 0); _ = t_4;
+        if true {
+          return (Truthy((Truthy((Truthy(!Eq(Get(Get(t_4, "term"), "rule"), nil)) && Truthy(Not(Get(t_4, "transport"))))) && Truthy(Not(Get(t_4, "settles"))))) && Truthy(!Eq(Get(t_4, "rays"), "0")))
+        }
+        return nil
+      })), Fn(func(a4 []any) any {
+        var t_3 any = Arg(a4, 0); _ = t_3;
+        if true {
+          return Call(self, "rule_piece", []any{ t_3, fill_0 })
+        }
+        return nil
+      })), Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return !Eq(x_2, nil)
+        }
+        return nil
+      }))
+      _ = pieces_0
+      var moving__0 any
+      moving__0 = Call(self, "movement", []any{ ways_0 })
+      _ = moving__0
+      if Truthy((Truthy(Eq(moving__0, nil)) || Truthy(M_empty(pieces_0)))) {
+        if true {
+          return Lst()
+        }
+      }
+      var rays_c_0 any
+      rays_c_0 = Call(self, "per_way", []any{ rays_l_0, pieces_0, moving__0, fill_0 })
+      _ = rays_c_0
+      var ways_c_0 any
+      ways_c_0 = Call(self, "ways_line", []any{ folded_0, moved_0, ways_0, pieces_0, fill_0 })
+      _ = ways_c_0
+      if Truthy(Eq(ways_c_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      var moves_0 any
+      moves_0 = Call(self, "record_moves", []any{ ways_c_0, ways_0, pieces_0 })
+      _ = moves_0
+      var settles_0 any
+      settles_0 = Call(self, "record_settles", []any{ moves_0 })
+      _ = settles_0
+      if Truthy(Eq(settles_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      var left_0 any
+      left_0 = Call(self, "record_left", []any{ rays_c_0, ways_c_0, settles_0 })
+      _ = left_0
+      var mass_0 any
+      mass_0 = Call(self, "leftover", []any{ rays_c_0 })
+      _ = mass_0
+      if Truthy(Eq(mass_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      if true {
+        return M_concat(M_concat(Lst(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), Lst(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0))
       }
       return nil
     })
@@ -11893,6 +12500,9 @@ func init() {
       var space_l_0 any
       space_l_0 = Call(self, "narrowed", []any{ "space", spaced_0 })
       _ = space_l_0
+      var model_0 any
+      model_0 = Call(self, "model_chain", []any{ s_0, rays_l_0, space_l_0, spaced_0, folded_0, one_0 })
+      _ = model_0
       var settled_0 any
       settled_0 = Call(self, "settled_record", []any{ folded_0 })
       _ = settled_0
@@ -11991,6 +12601,17 @@ func init() {
         _ = st_1
         Call(named_0, "set", []any{ Get(Get(st_1, "fact"), "of"), st_1 })
       }
+      for _, e1 := range Items(Filt(model_0, Fn(func(a4 []any) any {
+        var x_3 any = Arg(a4, 0); _ = x_3;
+        if true {
+          return (Truthy((Truthy(!Eq(Get(x_3, "via"), Get(K("Prover"), "RAYS_PER_WAY"))) && Truthy(!Eq(Get(x_3, "via"), "the ways move with the record")))) && Truthy(!Eq(Get(x_3, "via"), "the mass is what the vacuum leaves over")))
+        }
+        return nil
+      }))) {
+        var st_1 any = e1
+        _ = st_1
+        Call(named_0, "set", []any{ Get(Get(st_1, "fact"), "of"), st_1 })
+      }
       var proved_0 any
       proved_0 = M_map(Get(Get(self, "theory"), "theorems"), Fn(func(a3 []any) any {
         var t_2 any = Arg(a3, 0); _ = t_2;
@@ -12007,7 +12628,7 @@ func init() {
         root_2 = Elem(Get(s_0, "steps"), Call(K("Fact"), "key_of", []any{ "is", "the continuous model" }))
         _ = root_2
         var steps_2 any
-        steps_2 = Tern(Truthy(M_empty(Get(q_2, "about"))), func() any { return chain_0 }, func() any { return (Tern(Truthy(!Eq(hit_2, nil)), func() any { return (Tern(Truthy(Eq(root_2, nil)), func() any { return Lst(hit_2) }, func() any { return Lst(root_2, hit_2) })) }, func() any { return Call(K("Prover"), "behind", []any{ s_0, Get(q_2, "about") }) })) })
+        steps_2 = Tern(Truthy(M_empty(Get(q_2, "about"))), func() any { return (Tern(Truthy(M_empty(model_0)), func() any { return chain_0 }, func() any { return model_0 })) }, func() any { return (Tern(Truthy(!Eq(hit_2, nil)), func() any { return (Tern(Truthy(Eq(root_2, nil)), func() any { return Lst(hit_2) }, func() any { return Lst(root_2, hit_2) })) }, func() any { return Call(K("Prover"), "behind", []any{ s_0, Get(q_2, "about") }) })) })
         _ = steps_2
         var end_2 any
         end_2 = Tern(Truthy(M_empty(Get(q_2, "about"))), func() any { return nil }, func() any { return M_last(steps_2) })
@@ -12020,7 +12641,17 @@ func init() {
           return nil
         })))
         if Truthy(M_empty(Get(q_2, "about"))) {
-          Set(p_2, "concluded", Call(K("Prover"), "headline", []any{ Get((OrElse(OrElse(OrElse(whole_line_0, func() any { return agg_0 }), func() any { return short_0 }), func() any { return whole_0 })), "fact"), nil }))
+          Set(p_2, "concluded", Call(K("Prover"), "headline", []any{ Get((Tern(Truthy(M_empty(model_0)), func() any { return (OrElse(OrElse(OrElse(whole_line_0, func() any { return agg_0 }), func() any { return short_0 }), func() any { return whole_0 })) }, func() any { return M_last(model_0) })), "fact"), nil }))
+          var ways_said_2 any
+          ways_said_2 = M_first(Filt(model_0, Fn(func(a5 []any) any {
+            var x_4 any = Arg(a5, 0); _ = x_4;
+            if true {
+              return Eq(Get(x_4, "via"), Get(K("Prover"), "WAYS_LINE"))
+            }
+            return nil
+          })))
+          _ = ways_said_2
+          Set(p_2, "also", Tern(Truthy(Eq(ways_said_2, nil)), func() any { return nil }, func() any { return Call(K("Prover"), "headline", []any{ Get(ways_said_2, "fact"), nil }) }))
           Set(p_2, "standing", true)
         } else {
           if Truthy((Truthy(!Eq(end_2, nil)) && Truthy(!Eq(Get(Get(end_2, "fact"), "of"), Get(q_2, "about"))))) {
@@ -12098,44 +12729,49 @@ func init() {
       var one_0 any
       one_0 = Call(self, "ledgers_are_one", []any{ s_0, folded_0, spaced_0 })
       _ = one_0
-      var whole_0 any
-      whole_0 = Call(self, "general", []any{ filled_0, folded_0 })
-      _ = whole_0
-      var settled_0 any
-      settled_0 = Call(self, "settled_record", []any{ folded_0 })
-      _ = settled_0
-      var short_0 any
-      short_0 = Tern(Truthy(Eq(settled_0, nil)), func() any { return nil }, func() any { return Call(self, "single", []any{ whole_0, settled_0, folded_0, s_0 }) })
-      _ = short_0
-      var agg_0 any
-      agg_0 = Tern(Truthy(Eq(short_0, nil)), func() any { return nil }, func() any { return Call(self, "aggregate", []any{ whole_0, short_0, s_0 }) })
-      _ = agg_0
-      var back_0 any
-      back_0 = Tern(Truthy(Eq(agg_0, nil)), func() any { return nil }, func() any { return Call(self, "remembered", []any{ s_0, agg_0 }) })
-      _ = back_0
-      var each_0 any
-      each_0 = Tern(Truthy(Eq(back_0, nil)), func() any { return nil }, func() any { return Call(self, "from_each", []any{ s_0, back_0 }) })
-      _ = each_0
-      var known_0 any
-      known_0 = Tern(Truthy(Eq(each_0, nil)), func() any { return nil }, func() any { return Call(self, "forgotten", []any{ s_0, each_0, settled_0 }) })
-      _ = known_0
-      var pull_0 any
-      pull_0 = Tern(Truthy(Eq(known_0, nil)), func() any { return nil }, func() any { return Call(self, "felt", []any{ s_0, known_0, settled_0 }) })
-      _ = pull_0
-      var rec_0 any
-      rec_0 = Tern(Truthy(Eq(pull_0, nil)), func() any { return nil }, func() any { return Call(self, "record_of_all", []any{ known_0, pull_0, settled_0 }) })
-      _ = rec_0
-      var whole_line_0 any
-      whole_line_0 = Tern(Truthy(Eq(rec_0, nil)), func() any { return nil }, func() any { return Call(self, "one_line", []any{ rec_0 }) })
-      _ = whole_line_0
       var grown_0 any
       grown_0 = Call(self, "growth_filled", []any{ s_0 })
       _ = grown_0
+      var model_0 any
+      model_0 = Call(self, "model_chain", []any{ s_0, Call(self, "narrowed", []any{ "rays", filled_0 }), Call(self, "narrowed", []any{ "space", spaced_0 }), spaced_0, folded_0, one_0 })
+      _ = model_0
+      var by_0 any
+      by_0 = Fn(func(a2 []any) any {
+        var via_1 any = Arg(a2, 0); _ = via_1;
+        if true {
+          return M_first(Filt(model_0, Fn(func(a4 []any) any {
+          var x_3 any = Arg(a4, 0); _ = x_3;
+          if true {
+            return Eq(Get(x_3, "via"), via_1)
+          }
+          return nil
+        })))
+        }
+        return nil
+      })
+      _ = by_0
+      var rays_c_0 any
+      rays_c_0 = Invoke(by_0, []any{ Get(K("Prover"), "RAYS_PER_WAY") })
+      _ = rays_c_0
+      var mass_0 any
+      mass_0 = Tern(Truthy(M_empty(model_0)), func() any { return nil }, func() any { return M_last(model_0) })
+      _ = mass_0
+      for _, e1 := range Items(Filt(model_0, Fn(func(a4 []any) any {
+        var x_3 any = Arg(a4, 0); _ = x_3;
+        if true {
+          return (Truthy(Eq(Get(Get(x_3, "fact"), "of"), Get(K("Prover"), "GAIN"))) || Truthy(Eq(Get(Get(x_3, "fact"), "of"), Get(K("Prover"), "LOSS"))))
+        }
+        return nil
+      }))) {
+        var x_1 any = e1
+        _ = x_1
+        Call(out_0, "set", []any{ Get(Get(x_1, "fact"), "of"), x_1 })
+      }
       var roles_0 any
-      roles_0 = Lst("population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth")
+      roles_0 = Lst("population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass")
       _ = roles_0
       var steps_0 any
-      steps_0 = Lst(filled_0, spaced_0, folded_0, one_0, whole_0, settled_0, short_0, agg_0, back_0, each_0, known_0, pull_0, rec_0, whole_line_0, grown_0)
+      steps_0 = Lst(filled_0, spaced_0, grown_0, rays_c_0, rays_c_0, Invoke(by_0, []any{ Get(K("Prover"), "WAYS_LINE") }), Invoke(by_0, []any{ "the record's own line" }), Invoke(by_0, []any{ "the record settled against the density" }), Invoke(by_0, []any{ "the record every body leaves at a local" }), mass_0)
       _ = steps_0
       for i1 := 0.0; i1 < Num(Len(roles_0)); i1++ {
         var i_1 any = Box(i1)
@@ -14535,6 +15171,70 @@ func init() {
     c.Field("prover", func(self any) any { return Make("Prover", []any{ Kw("theory", Get(self, "theory")) }...) })
     c.Field("store", func(self any) any { return Get(Get(self, "prover"), "closure") })
     c.Field("chain", func(self any) any { return Call(Get(self, "prover"), "chain", []any{ Get(self, "store") }) })
+    c.Field("net", func(self any) any { return Get(self, "rays_net") })
+    c.Getter("rays_net", func(self any, a1 []any) any {
+      var st_0 any
+      st_0 = Call(self, "step", []any{ "rays" })
+      _ = st_0
+      if Truthy(Eq(st_0, nil)) {
+        if true {
+          return nil
+        }
+      }
+      var e_0 any
+      e_0 = Get(Get(st_0, "fact"), "to")
+      _ = e_0
+      for _, e1 := range Items(Lst(Get(K("Prover"), "GAIN"), Get(K("Prover"), "LOSS"))) {
+        var name_1 any = e1
+        _ = name_1
+        var piece_1 any
+        piece_1 = Call(Get(self, "chain"), "get", []any{ name_1 })
+        _ = piece_1
+        if Truthy(!Eq(piece_1, nil)) {
+          e_0 = Call(K("Expr"), "replace", []any{ e_0, name_1, Get(Get(piece_1, "fact"), "to") })
+        }
+      }
+      if true {
+        return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ e_0, Get(Get(K("Prover"), "ACROSS"), "label"), Get(K("Prover"), "HERE") }), Get(Get(K("Prover"), "MASS"), "label"), Call(K("Expr"), "num", []any{ 0.0 }) }) })
+      }
+      return nil
+    })
+    c.Method("nets_at", func(self any, a1 []any) any {
+      var rho_0 any = Arg(a1, 0); _ = rho_0;
+      var e_0 any
+      e_0 = Get(self, "env")
+      _ = e_0
+      SetAt(e_0, Get(Get(K("Prover"), "HERE"), "label"), rho_0)
+      if true {
+        return Call(K("Aggregate"), "numeric_of", []any{ Get(self, "net"), e_0 })
+      }
+      return nil
+    })
+    c.Getter("root_of_net", func(self any, a1 []any) any {
+      var lo_0 any
+      lo_0 = 0.0
+      _ = lo_0
+      var hi_0 any
+      hi_0 = 1.0
+      _ = hi_0
+      for i1 := 0.0; i1 < Num(48.0); i1++ {
+        var i_1 any = Box(i1)
+        _ = i_1
+        var mid_1 any
+        mid_1 = Div((Add(lo_0, hi_0)), 2.0)
+        _ = mid_1
+        if Truthy(Gt(Call(self, "nets_at", []any{ mid_1 }), 0.0)) {
+          lo_0 = mid_1
+        } else {
+          hi_0 = mid_1
+        }
+      }
+      if true {
+        return Div((Add(lo_0, hi_0)), 2.0)
+      }
+      return nil
+    })
+    c.Field("settled_rho", func(self any) any { return Tern(Truthy(Eq(Get(self, "net"), nil)), func() any { return Call(self, "fact_at", []any{ "\\rho_{\\infty}", Get(self, "env") }) }, func() any { return Get(self, "root_of_net") }) })
     c.Field("NEAR", func(self any) any { return 0.5 })
     c.Getter("env", func(self any, a1 []any) any {
       var e_0 any
@@ -14553,6 +15253,7 @@ func init() {
       Set(e_0, Str("D"), Get(self, "D"))
       Set(e_0, Str("DEG"), Get(self, "DEG"))
       Set(e_0, Str("l.DEG"), Get(self, "DEG"))
+      Set(e_0, Str("DEG_{0}"), Get(self, "DEG"))
       Set(e_0, Str("\\bar{c}"), 1.0)
       if true {
         return e_0
@@ -14600,7 +15301,7 @@ func init() {
     })
     c.Getter("rho_inf", func(self any, a1 []any) any {
       if true {
-        return Call(self, "fact_at", []any{ "\\rho_{\\infty}", Get(self, "env") })
+        return Get(self, "settled_rho")
       }
       return nil
     })
@@ -15544,8 +16245,12 @@ func init() {
       var st_0 any
       st_0 = Call(self, "step", []any{ "folds" })
       _ = st_0
+      var lattice_0 any
+      lattice_0 = Make(Node)
+      _ = lattice_0
+      Set(lattice_0, Str("DEG_{0}"), Get(self, "DEG"))
       if true {
-        return Tern(Truthy(Eq(st_0, nil)), func() any { return Call(K("Expr"), "num", []any{ 0.0 }) }, func() any { return Get(Get(st_0, "fact"), "to") })
+        return Tern(Truthy(Eq(st_0, nil)), func() any { return Call(K("Expr"), "num", []any{ 0.0 }) }, func() any { return Call(K("Expr"), "evaluate", []any{ Get(Get(st_0, "fact"), "to"), lattice_0 }) })
       }
       return nil
     })
@@ -17900,6 +18605,11 @@ func init() {
     c.Field("vac", func(self any) any { return Filled(Get(self, "cells"), Get(Get(self, "aggregate"), "rho_inf")) })
     c.Method("nets", func(self any, a1 []any) any {
       var rho_0 any = Arg(a1, 0); _ = rho_0; var nf_0 any = Arg(a1, 1); _ = nf_0;
+      if Truthy(!Eq(Get(Get(self, "aggregate"), "net"), nil)) {
+        if true {
+          return Call(Get(self, "aggregate"), "nets_at", []any{ rho_0 })
+        }
+      }
       var s_0 any
       s_0 = Call(self, "symbols", []any{ rho_0, nf_0 })
       _ = s_0
@@ -32343,6 +33053,38 @@ func init() {
         return nil
       })))
     })
+    c.StaticField("theorem vacuum.creation", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.creation"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "creation, at a local: what share of l's ways does it light a tick?"), Kw("about", "S^{+}"), Kw("leads", "CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once.") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.annihilation", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.annihilation"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "annihilation, at a local: what share of l's ways does it take a tick?"), Kw("about", "S^{-}"), Kw("leads", "ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends.") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.movement", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.movement"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "the rays move. Followed a step and a tick, what does a ray's way on depend on?"), Kw("about", "\\Delta\\rho"), Kw("leads", "MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds.") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.ways", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.ways"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "a fold is a way. How many ways does a local have, and what moves them?"), Kw("about", "\\Delta DEG"), Kw("also", "DEG"), Kw("leads", "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."), Kw("then", "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") }...)
+        }
+        return nil
+      })))
+    })
     c.StaticField("theorem vacuum.at", func(self any) any {
       return Make(Theorem, Kw("id", "vacuum.at"), Kw("body", Fn(func(a1 []any) any {
         if true {
@@ -32984,4 +33726,15 @@ func Def_nl0() any {
     def_nl0 = "\n"
   }
   return def_nl0
+}
+var def_METHOD_SOURCES any
+var def_METHOD_SOURCES_made bool
+
+// Def_METHOD_SOURCES is the top-level definition METHOD_SOURCES, made on first call.
+func Def_METHOD_SOURCES() any {
+  if !def_METHOD_SOURCES_made {
+    def_METHOD_SOURCES_made = true
+    def_METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
+  }
+  return def_METHOD_SOURCES
 }

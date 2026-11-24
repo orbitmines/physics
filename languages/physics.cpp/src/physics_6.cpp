@@ -36,6 +36,46 @@ static void C_Aggregate(Cls& c) {
   c.field("prover", [](const Value& self) -> Value { return make(S<"Prover">(), { kw(S<"theory">(), get(self, S<"theory">())) }); });
   c.field("store", [](const Value& self) -> Value { return get(get(self, S<"prover">()), S<"closure">()); });
   c.field("chain", [](const Value& self) -> Value { return call(get(self, S<"prover">()), S<"chain">(), { get(self, S<"store">()) }); });
+  c.field("net", [](const Value& self) -> Value { return get(self, S<"rays_net">()); });
+  c.getter("rays_net", [](Value self, const Args& a1) -> Value {
+    auto st_0 = cell(); st_0->v = call(self, S<"step">(), { "rays" });
+    if (truthy(eq(st_0->v, null))) {
+      return null;
+    }
+    auto e_0 = cell(); e_0->v = get(get(st_0->v, S<"fact">()), S<"to">());
+    for (const Value& e1 : Each(list({ get(K(S<"Prover">()), S<"GAIN">()), get(K(S<"Prover">()), S<"LOSS">()) }))) {
+      auto name_1 = cell(e1);
+      auto piece_1 = cell(); piece_1->v = call(get(self, S<"chain">()), S<"get">(), { name_1->v });
+      if (truthy((!eq(piece_1->v, null)))) {
+        e_0->v = call(K(S<"Expr">()), S<"replace">(), { e_0->v, name_1->v, get(get(piece_1->v, S<"fact">()), S<"to">()) });
+      }
+    };
+    return call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"replace">(), { e_0->v, get(get(K(S<"Prover">()), S<"ACROSS">()), S<"label">()), get(K(S<"Prover">()), S<"HERE">()) }), get(get(K(S<"Prover">()), S<"MASS">()), S<"label">()), call(K(S<"Expr">()), S<"num">(), { 0.0 }) }) });
+    return null;
+  });
+  c.method("nets_at", [](Value self, const Args& a1) -> Value {
+    auto rho_0 = cell(arg(a1, 0));
+    auto e_0 = cell(); e_0->v = get(self, S<"env">());
+    setAt(e_0->v, get(get(K(S<"Prover">()), S<"HERE">()), S<"label">()), rho_0->v);
+    return call(K(S<"Aggregate">()), S<"numeric_of">(), { get(self, S<"net">()), e_0->v });
+    return null;
+  });
+  c.getter("root_of_net", [](Value self, const Args& a1) -> Value {
+    auto lo_0 = cell(); lo_0->v = 0.0;
+    auto hi_0 = cell(); hi_0->v = 1.0;
+    for (double i1 = 0, n1 = num(48.0); i1 < n1; i1++) {
+      auto i_1 = cell(i1);
+      auto mid_1 = cell(); mid_1->v = div((add(lo_0->v, hi_0->v)), 2.0);
+      if (truthy(gt(call(self, S<"nets_at">(), { mid_1->v }), 0.0))) {
+        lo_0->v = mid_1->v;
+      } else {
+        hi_0->v = mid_1->v;
+      }
+    };
+    return div((add(lo_0->v, hi_0->v)), 2.0);
+    return null;
+  });
+  c.field("settled_rho", [](const Value& self) -> Value { return (truthy(eq(get(self, S<"net">()), null)) ? Value(call(self, S<"fact_at">(), { "\\rho_{\\infty}", get(self, S<"env">()) })) : Value(get(self, S<"root_of_net">()))); });
   c.field("NEAR", [](const Value& self) -> Value { return 0.5; });
   c.getter("env", [](Value self, const Args& a1) -> Value {
     auto e_0 = cell(); e_0->v = make(S<"Node">(), { });
@@ -49,6 +89,7 @@ static void C_Aggregate(Cls& c) {
     set(e_0->v, Sym(str("D")), get(self, S<"D">()));
     set(e_0->v, Sym(str("DEG")), get(self, S<"DEG">()));
     set(e_0->v, Sym(str("l.DEG")), get(self, S<"DEG">()));
+    set(e_0->v, Sym(str("DEG_{0}")), get(self, S<"DEG">()));
     set(e_0->v, Sym(str("\\bar{c}")), 1.0);
     return e_0->v;
     return null;
@@ -79,7 +120,7 @@ static void C_Aggregate(Cls& c) {
     return null;
   });
   c.getter("rho_inf", [](Value self, const Args& a1) -> Value {
-    return call(self, S<"fact_at">(), { "\\rho_{\\infty}", get(self, S<"env">()) });
+    return get(self, S<"settled_rho">());
     return null;
   });
   c.getter("settled_env", [](Value self, const Args& a1) -> Value {
@@ -660,7 +701,9 @@ static void C_Aggregate(Cls& c) {
   });
   c.getter("folds_expr", [](Value self, const Args& a1) -> Value {
     auto st_0 = cell(); st_0->v = call(self, S<"step">(), { "folds" });
-    return (truthy(eq(st_0->v, null)) ? Value(call(K(S<"Expr">()), S<"num">(), { 0.0 })) : Value(get(get(st_0->v, S<"fact">()), S<"to">())));
+    auto lattice_0 = cell(); lattice_0->v = make(S<"Node">(), { });
+    set(lattice_0->v, Sym(str("DEG_{0}")), get(self, S<"DEG">()));
+    return (truthy(eq(st_0->v, null)) ? Value(call(K(S<"Expr">()), S<"num">(), { 0.0 })) : Value(call(K(S<"Expr">()), S<"evaluate">(), { get(get(st_0->v, S<"fact">()), S<"to">()), lattice_0->v })));
     return null;
   });
   c.method("folds_rate", [](Value self, const Args& a1) -> Value {

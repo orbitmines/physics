@@ -1108,15 +1108,10 @@ got = got * msource0_share(b_) * msource0_rays(b_);
 }
 
 fn mnets(rho: f32, nf: f32) -> f32 {
-  var got: f32 = 0.0;
-got = got + mpoint0_share(rho, nf) * mpoint0_rays(rho, nf);
-got = got + mpoint1_share(rho, nf) * mpoint1_rays(rho, nf);
-got = got + mpoint2_share(rho, nf) * mpoint2_rays(rho, nf);
-got = got + msingle0_share(rho, nf) * rho * msingle0_rays(rho, nf);
-got = got + mmeet0_share(rho, nf) * rho * rho * mmeet0_rays(rho, nf);
-got = got + mmeet1_share(rho, nf) * rho * rho * mmeet1_rays(rho, nf);
-got = got + mmeet2_share(rho, nf) * rho * rho * mmeet2_rays(rho, nf);
-  return got;
+  var e: array<f32, 2>;
+  e[0] = rho;
+  e[1] = P.DEG;
+  return (((-0.5) * powi(e[0], 2)) + ((-1.0) * e[0]) + (1.0));
 }
 
 fn mscale(avg: f32) -> f32 {

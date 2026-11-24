@@ -1371,6 +1371,9 @@ static void C_Medium(Cls& c) {
   c.field("vac", [](const Value& self) -> Value { return filled(get(self, S<"cells">()), get(get(self, S<"aggregate">()), S<"rho_inf">())); });
   c.method("nets", [](Value self, const Args& a1) -> Value {
     auto rho_0 = cell(arg(a1, 0)); auto nf_0 = cell(arg(a1, 1));
+    if (truthy((!eq(get(get(self, S<"aggregate">()), S<"net">()), null)))) {
+      return call(get(self, S<"aggregate">()), S<"nets_at">(), { rho_0->v });
+    }
     auto s_0 = cell(); s_0->v = call(self, S<"symbols">(), { rho_0->v, nf_0->v });
     auto got_0 = cell(); got_0->v = 0.0;
     for (const Value& e1 : Each(get(self, S<"points">()))) {
@@ -1896,6 +1899,70 @@ static void C_Cached(Cls& c) {
   });
 }
 static const bool R_Cached = define_class("Cached", "Played", &C_Cached);
+
+static void C_Live(Cls& c) {
+  c.field("recording", nullptr);
+  c.field("buf", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
+  c.field("next", [](const Value& self) -> Value { return 0.0; });
+  c.field("started", [](const Value& self) -> Value { return false; });
+  c.method("at", [](Value self, const Args& a1) -> Value {
+    auto frame_at_0 = cell(arg(a1, 0));
+    if (!truthy(get(self, S<"started">()))) {
+      for (double i1 = 0, n1 = num(len(get(get(self, S<"recording">()), S<"names">()))); i1 < n1; i1++) {
+        auto i_1 = cell(i1);
+        setAt(get(self, S<"buf">()), elem(get(get(self, S<"recording">()), S<"names">()), i_1->v), filled(elem(get(get(self, S<"recording">()), S<"sizes">()), i_1->v), 0.0));
+      };
+      get(get(self, S<"recording">()), S<"start">());
+      set(self, S<"started">(), true);
+    }
+    if (truthy(lt(frame_at_0->v, sub(get(self, S<"next">()), 1.0)))) {
+      invoke(fail, { "frame " + str(frame_at_0->v) + " was asked for after " + str(sub(get(self, S<"next">()), 1.0)) + ", and a world that is being run cannot go back - record it first" });
+    }
+    while (truthy(le(get(self, S<"next">()), frame_at_0->v))) {
+      call(get(self, S<"recording">()), S<"frame">(), { get(self, S<"buf">()) });
+      set(self, S<"next">(), add(get(self, S<"next">()), 1.0));
+    }
+    return get(self, S<"buf">());
+    return null;
+  });
+}
+static const bool R_Live = define_class("Live", "Played", &C_Live);
+
+static void C_Painter(Cls& c) {
+  c.getter("start", [](Value self, const Args& a1) -> Value {
+
+    return null;
+  });
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+
+    return null;
+  });
+  c.method("warm", [](Value self, const Args& a1) -> Value {
+    auto budget_0 = cell(arg(a1, 0));
+    return 1.0;
+    return null;
+  });
+}
+static const bool R_Painter = define_class("Painter", "Node", &C_Painter);
+
+static void C_Still(Cls& c) {
+  c.field("paints", nullptr);
+  c.method("frame", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto dt_0 = cell(arg(a1, 1));
+    return call(self, S<"paints">(), { s_0->v });
+    return null;
+  });
+}
+static const bool R_Still = define_class("Still", "Painter", &C_Still);
+
+static void C_Pane(Cls& c) {
+  c.field("name", nullptr);
+  c.field("width", nullptr);
+  c.field("height", nullptr);
+  c.field("paints", nullptr);
+}
+static const bool R_Pane = define_class("Pane", "Node", &C_Pane);
 
 
 

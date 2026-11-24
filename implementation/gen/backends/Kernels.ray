@@ -181,7 +181,11 @@ Kernels := class {
     crossed_fn := "fn mcrossed(px: f32, py: f32) -> f32 {{\n  var best: i32 = -1;\n  var far: f32 = 0.0;\n  for (var h: u32 = 0u; h < P.holes; h = h + 1u) {{\n    let o: vec4<f32> = bodat(h);\n    let d: f32 = (o.x - px) * (o.x - px) + (o.y - py) * (o.y - py);\n    if (best < 0 || d < far) {{ best = i32(h); far = d; }}\n  }}\n  if (best < 0) {{ return xc(1u); }}\n  let o: vec4<f32> = bodat(u32(best));\n  var got: f32 = 0.0;\n  for (var i: u32 = 0u; i < 16u; i = i + 1u) {{\n    let f: f32 = (f32(i) + 0.5) / 16.0;\n    got = got + mtap(VAC(), o.x + (px - o.x) * f, o.y + (py - o.y) * f, xc(1u));\n  }}\n  return got / 16.0;\n}}"
     /* what the rays line nets at a point, off the same terms every other reading is made of (Medium.nets): what a point makes, what a single carries, and a meeting of two - the balance MSETTLE finds the root of */
     nets_code := Array.range(points.length).map(k => "got = got + mpoint{k}_share(rho, nf) * mpoint{k}_rays(rho, nf);").concat(Array.range(singles.length).map(k => "got = got + msingle{k}_share(rho, nf) * rho * msingle{k}_rays(rho, nf);")).concat(Array.range(meets.length).map(k => "got = got + mmeet{k}_share(rho, nf) * rho * rho * mmeet{k}_rays(rho, nf);")).join("\n")
-    nets := "fn mnets(rho: f32, nf: f32) -> f32 {{\n  var got: f32 = 0.0;\n{nets_code}\n  return got;\n}}"
+    old_nets := "fn mnets(rho: f32, nf: f32) -> f32 {{\n  var got: f32 = 0.0;\n{nets_code}\n  return got;\n}}"
+    /* the continuous model's own rays line, where the chain has one: the density and l's ways bound, the ways the run's own */
+    net_code := law.net == None ? "" : Shaded.wgsl(law.net, [Prover.HERE.label, Prover.WAYS.label], None)
+    new_nets := "fn mnets(rho: f32, nf: f32) -> f32 {{\n  var e: array<f32, 2>;\n  e[0] = rho;\n  e[1] = P.DEG;\n  return {net_code};\n}}"
+    nets := law.net == None ? old_nets : new_nets
     fns := fm.concat(fp).concat(fs).concat(fo).concat([per_way, nets, scale_fn]).join("\n\n")
     [
       "//! medium MKEEP MCARRY MHWANT MHSTREAM MHSHINE MHJOIN MHFIELD MOPEN MMEET MUNFOLD MMAKE MSETTLE MMOVE MPULLC MPULLH MMOVEH MSTEP MSTEPH MSOURCE MHCLEAR MHLINK MHSCAN MHSCAN2 MHSCAN3 MHPLACE MHSRC1 MHSRC MBLOCK",

@@ -3145,7 +3145,8 @@ enum C_Notation {
           var name_0: V = V.null; name_0 = try call((try K("Notation")), "letters", [src_0, try add(i_0, 1.0)])
           var word_0: V = V.null; word_0 = not(try m_empty(name_0))
           var after_0: V = V.null; after_0 = try add(try add(i_0, 1.0), try len(name_0))
-          if truthy(try and_(word_0, V.b(try eq(try call((try K("Notation")), "char_at", [src_0, after_0]), 32.0)))) {
+          var next__0: V = V.null; next__0 = try call((try K("Notation")), "char_at", [src_0, try add(after_0, 1.0)])
+          if truthy(try and_(try and_(try and_(try and_(word_0, V.b(try eq(try call((try K("Notation")), "char_at", [src_0, after_0]), 32.0))), V.b(!(try eq(next__0, 43.0)))), V.b(!(try eq(next__0, 45.0)))), V.b(!(try eq(next__0, 61.0))))) {
             after_0 = try add(after_0, 1.0)
           }
           var big_0: V = V.null; big_0 = V.null
@@ -6477,8 +6478,13 @@ enum C_Prover {
   static func define(_ c: Cls) throws {
     c.field("theory", nil)
     c.staticField("PROOFS", { (this_: V) throws -> V in return makeNode() })
+    c.staticField("MARK", { (this_: V) throws -> V in return V.s(cat("\n@@ ")) })
     c.staticField("RAYS_SAY", { (this_: V) throws -> V in return V.s(cat("l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why `neutral` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.")) })
     c.staticField("SPACE_SAY", { (this_: V) throws -> V in return V.s(cat("the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.")) })
+    c.staticField("LIGHTS", { (this_: V) throws -> V in return V.s(cat("lights")) })
+    c.staticField("TAKES", { (this_: V) throws -> V in return V.s(cat("takes")) })
+    c.staticField("RAYS_PER_WAY", { (this_: V) throws -> V in return V.s(cat("the rays at a local, per way")) })
+    c.staticField("WAYS_LINE", { (this_: V) throws -> V in return V.s(cat("the ways at a local, a tick on")) })
     c.field("population_line", { (this_: V) throws -> V in return V.null })
     c.field("record_line", { (this_: V) throws -> V in return V.null })
     c.field("store", { (this_: V) throws -> V in return try makeNamed("Store", []) })
@@ -7400,8 +7406,26 @@ enum C_Prover {
       return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta_{v}f")), try call((try K("Expr")), "field", [V.s(cat("f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}"))])]), V.s(cat("following")), list(try get(try get(rec_0, "fact"), "key")), V.s(cat("the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all")), list(V.s(cat("\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick")), V.s(cat("\\nabla f: along a way, at one tick")), V.s(cat("\\partial_{\\hat{d}}\\rho: across the headings, at one local")))])
       return V.null
     })
+    c.statik("sources_read", { (this_: V, a1: [V]) throws -> V in
+      return try m_join(try m_map(list(list(V.s(cat("Edge.active")), try get(try call((try K("Edge")), "method", [V.s(cat("active"))]), "source")), list(V.s(cat("Ray.facing")), try get(try call((try K("Ray")), "method", [V.s(cat("facing"))]), "source")), list(V.s(cat("Ray.turns")), try get(try call((try K("Ray")), "method", [V.s(cat("turns"))]), "source")), list(V.s(cat("Vertex.fold")), try get(try call((try K("Vertex")), "method", [V.s(cat("fold"))]), "source")), list(V.s(cat("Vertex.alive")), try get(try call((try K("Vertex")), "method", [V.s(cat("alive"))]), "source")), list(V.s(cat("Vertex.sinks")), try get(try call((try K("Vertex")), "method", [V.s(cat("sinks"))]), "source"))), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0);
+        return V.s(cat("", try str(try get((try K("Prover")), "MARK")), "", try str(try elem(p_2, 0.0)), "\n", try str(try elem(p_2, 1.0)), ""))
+        return V.null
+      })), V.s(cat("")))
+      return V.null
+    })
+    c.statik("source_of", { (this_: V, a1: [V]) throws -> V in
+      var key_0: V = arg(a1, 0);
+      var hit_0: V = V.null; hit_0 = try m_first(try filt(try m_split((try Physics.METHOD_SOURCES), try get((try K("Prover")), "MARK")), V.fn({ (a3: [V]) throws -> V in
+        var p_2: V = arg(a3, 0);
+        return try m_starts_with(p_2, V.s(cat("", try str(key_0), "\n")))
+        return V.null
+      })))
+      return try sel(truthy(V.b(try eq(hit_0, V.null))), V.s(cat("")), try m_drop(hit_0, try add(try len(key_0), 1.0)))
+      return V.null
+    })
     c.statik("edge_ends", { (this_: V, a1: [V]) throws -> V in
-      return try filt(try m_split(try get(try call((try K("Edge")), "method", [V.s(cat("active"))]), "source"), V.s(cat(" & "))), V.fn({ (a3: [V]) throws -> V in
+      return try filt(try m_split(try call((try K("Prover")), "source_of", [V.s(cat("Edge.active"))]), V.s(cat(" & "))), V.fn({ (a3: [V]) throws -> V in
         var c_2: V = arg(a3, 0);
         return try gt(try len(try m_split(c_2, V.s(cat(".active")))), 1.0)
         return V.null
@@ -7409,21 +7433,21 @@ enum C_Prover {
       return V.null
     })
     c.getter("edge_from_an_end", { (this_: V, a1: [V]) throws -> V in
-      var def_0: V = V.null; def_0 = try get(try call((try K("Edge")), "method", [V.s(cat("active"))]), "source")
+      var active__0: V = V.null; active__0 = try call((try K("Prover")), "source_of", [V.s(cat("Edge.active"))])
       var ends_0: V = V.null; ends_0 = try get((try K("Prover")), "edge_ends")
       var asked_0: V = V.null; asked_0 = try m_join(try m_concat(list(V.s(cat("active"))), try m_map(try m_drop(ends_0, 1.0), V.fn({ (a3: [V]) throws -> V in
         var __2: V = arg(a3, 0);
         return V.s(cat("next.active"))
         return V.null
       }))), V.s(cat(" & ")))
-      var facing_0: V = V.null; facing_0 = try get(try call((try K("Ray")), "method", [V.s(cat("facing"))]), "source")
-      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\narrow{Edge}{active}")), try call((try K("Expr")), "field", [V.s(cat("\\narrow{l}{", try str(asked_0), "}"))])]), V.s(cat("an edge, seen from one of its ends")), list(), V.s(cat("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ", try str(try len(ends_0)), ".")), list(V.s(cat("Edge.active = ", try str(def_0), "")), V.s(cat("Ray.facing = ", try str(facing_0), ": the ray across the same edge - next")), V.s(cat("\\narrow{Edge}{active} = \\narrow{l}{", try str(asked_0), "}, ", try str(try len(ends_0)), " ends to a meeting")))])
+      var facing_0: V = V.null; facing_0 = try call((try K("Prover")), "source_of", [V.s(cat("Ray.facing"))])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\narrow{Edge}{active}")), try call((try K("Expr")), "field", [V.s(cat("\\narrow{l}{", try str(asked_0), "}"))])]), V.s(cat("an edge, seen from one of its ends")), list(), V.s(cat("an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray `facing` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ", try str(try len(ends_0)), ".")), list(V.s(cat("Edge.active = ", try str(active__0), "")), V.s(cat("Ray.facing = ", try str(facing_0), ": the ray across the same edge - next")), V.s(cat("\\narrow{Edge}{active} = \\narrow{l}{", try str(asked_0), "}, ", try str(try len(ends_0)), " ends to a meeting")))])
       return st_0
       return V.null
     })
     c.getter("standing_at", { (this_: V, a1: [V]) throws -> V in
-      var alive_0: V = V.null; alive_0 = try get(try call((try K("Vertex")), "method", [V.s(cat("alive"))]), "source")
-      var sinks_0: V = V.null; sinks_0 = try get(try call((try K("Vertex")), "method", [V.s(cat("sinks"))]), "source")
+      var alive_0: V = V.null; alive_0 = try call((try K("Prover")), "source_of", [V.s(cat("Vertex.alive"))])
+      var sinks_0: V = V.null; sinks_0 = try call((try K("Prover")), "source_of", [V.s(cat("Vertex.sinks"))])
       return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\narrow{\\forall}{@ == l}")), try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "field", [V.s(cat("\\narrow{\\forall}{folded_into == l}"))]))])]), V.s(cat("what stands at a local")), list(), V.s(cat("the points that stand at l: l itself, and every point folded into it - `held`, each with `folded_into` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.")), list(V.s(cat("Vertex.alive = ", try str(alive_0), "")), V.s(cat("Vertex.sinks = ", try str(sinks_0), "")), V.s(cat("\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}")))])
       return V.null
     })
@@ -7528,6 +7552,332 @@ enum C_Prover {
       })), list(V.s(cat("", try str(lhs_0), " = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
       try set(st_0, "derivation", behind_0)
       return st_0
+      return V.null
+    })
+    c.statik("ACROSS", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Expr")), "field", [V.s(cat("\\tilde{\\rho}"))])
+      return V.null
+    })
+    c.statik("HERE", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Expr")), "field", [V.s(cat("\\rho"))])
+      return V.null
+    })
+    c.statik("WAYS", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Expr")), "field", [V.s(cat("DEG"))])
+      return V.null
+    })
+    c.statik("LATTICE", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Expr")), "field", [V.s(cat("DEG_{0}"))])
+      return V.null
+    })
+    c.statik("MASS", { (this_: V, a1: [V]) throws -> V in
+      return try call((try K("Expr")), "field", [V.s(cat("\\bar{m}"))])
+      return V.null
+    })
+    c.statik("STANDING", { (this_: V, a1: [V]) throws -> V in
+      return V.s(cat("\\narrow{\\forall}{@ == l}"))
+      return V.null
+    })
+    c.method("share_at", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var fill_0: V = arg(a1, 1);
+      var at_l_0: V = V.null; at_l_0 = V.fn({ (a2: [V]) throws -> V in
+        var e_1: V = arg(a2, 0);
+        return try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "evaluate", [e_1, fill_0]), V.s(cat("n")), try get((try K("Prover")), "HERE")]), V.s(cat("\\rho")), try get((try K("Prover")), "HERE")]), V.s(cat("l.\\bar{m}")), try get((try K("Prover")), "MASS")])])
+        return V.null
+      })
+      if truthy(try get(t_0, "outside")) {
+        return try invoke(at_l_0, [try get(t_0, "expr")])
+      }
+      var parts_0: V = V.null; parts_0 = list()
+      if truthy(V.b(!(try eq(try get(t_0, "rate"), V.null)))) {
+        try m_push(parts_0, try call((try K("Expr")), "field", [try get(t_0, "rate")]))
+      }
+      if truthy(V.b(!(try eq(try get(t_0, "asked"), V.null)))) {
+        try m_push(parts_0, try get(t_0, "asked"))
+      }
+      if truthy(try gt(try get(t_0, "degree"), 0.0)) {
+        try m_push(parts_0, try get((try K("Prover")), "HERE"))
+      }
+      if truthy(try gt(try get(t_0, "degree"), 1.0)) {
+        try m_push(parts_0, try call((try K("Expr")), "pown", [try get((try K("Prover")), "ACROSS"), try sub(try get(t_0, "degree"), 1.0)]))
+      }
+      return try invoke(at_l_0, [try sel(truthy(try m_empty(parts_0)), try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "mul", [parts_0]))])
+      return V.null
+    })
+    c.statik("members_at", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var rays_0: V = arg(a1, 1);
+      return try sel(truthy((try or_(try get(t_0, "outside"), (try and_(V.b(try eq(try get(try get(try get(t_0, "term"), "rule"), "over"), V.s(cat("Vertex")))), not(rays_0)))))), try call((try K("Expr")), "num", [1.0]), try get((try K("Prover")), "WAYS"))
+      return V.null
+    })
+    c.method("ways_at", { (this_: V, a1: [V]) throws -> V in
+      var one_0: V = arg(a1, 0); var behind_0: V = arg(a1, 1);
+      var draws_0: V = V.null; draws_0 = try call((try K("Prover")), "source_of", [V.s(cat("Ray.turns"))])
+      var folding_0: V = V.null; folding_0 = try call((try K("Prover")), "source_of", [V.s(cat("Vertex.fold"))])
+      if truthy(try or_(not(try m_contains(draws_0, V.s(cat("folds")))), not(try m_contains(folding_0, V.s(cat("folds[d] + 1")))))) {
+        return V.null
+      }
+      var own_0: V = V.null; own_0 = try call((try K("Expr")), "add", [list(try get((try K("Prover")), "LATTICE"), try call((try K("Expr")), "field", [V.s(cat("n_{f,l}"))]))])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("DEG")), own_0]), V.s(cat("the ways at a local")), list(try get(try get(one_0, "fact"), "key")), V.s(cat("a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it")), list(V.s(cat("Ray.turns = ", try str(draws_0), ": straight on at one, each folded way at its folds")), V.s(cat("Vertex.fold = ", try str(folding_0), ": a fold written on a way")), V.s(cat("DEG = ", try str(try call((try K("Expr")), "show", [own_0])), "")))])
+      try set(st_0, "derivation", behind_0)
+      return st_0
+      return V.null
+    })
+    c.method("ways_moved", { (this_: V, a1: [V]) throws -> V in
+      var ways_0: V = arg(a1, 0);
+      var by_0: V = V.null; by_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "d", [try get(try get(ways_0, "fact"), "to"), V.s(cat("n_{f,l}"))])])
+      var got_0: V = V.null; got_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(by_0, try call((try K("Expr")), "field", [V.s(cat("\\Delta n_{f,l}"))]))])])
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta DEG")), got_0]), V.s(cat("the ways move with the record")), list(try get(try get(ways_0, "fact"), "key")), V.s(cat("the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off")), list(V.s(cat("\\frac{\\partial DEG}{\\partial n_{f,l}} = ", try str(try call((try K("Expr")), "show", [by_0])), "")), V.s(cat("\\Delta DEG = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
+      return V.null
+    })
+    c.statik("GAIN", { (this_: V, a1: [V]) throws -> V in
+      return V.s(cat("S^{+}"))
+      return V.null
+    })
+    c.statik("LOSS", { (this_: V, a1: [V]) throws -> V in
+      return V.s(cat("S^{-}"))
+      return V.null
+    })
+    c.method("rule_piece", { (this_: V, a1: [V]) throws -> V in
+      var t_0: V = arg(a1, 0); var fill_0: V = arg(a1, 1);
+      if truthy(try get(t_0, "outside")) {
+        return V.null
+      }
+      var w_0: V = V.null; w_0 = try call((try K("Prover")), "per_member", [try get(t_0, "ray_count"), try call((try K("Prover")), "members_of", [t_0, V.b(true)])])
+      if truthy(V.b(try eq(w_0, V.null))) {
+        return V.null
+      }
+      if truthy(V.b(try eq(w_0, 0.0))) {
+        return V.null
+      }
+      var r_0: V = V.null; r_0 = try get(try get(t_0, "term"), "rule")
+      var pattern_0: V = V.null; pattern_0 = try sel(truthy(V.b(try eq(try get(r_0, "where"), V.null))), V.s(cat("")), try get(try get(r_0, "where"), "source"))
+      var share_0: V = V.null; share_0 = try call(this_, "share_at", [t_0, fill_0])
+      var got_0: V = V.null; got_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [try m_abs(w_0)]), share_0)])])
+      var name_0: V = V.null; name_0 = try sel(truthy(try gt(w_0, 0.0)), try get((try K("Prover")), "GAIN"), try get((try K("Prover")), "LOSS"))
+      var does_0: V = V.null; does_0 = try sel(truthy(try gt(w_0, 0.0)), try get((try K("Prover")), "LIGHTS"), try get((try K("Prover")), "TAKES"))
+      var members_0: V = V.null; members_0 = try call((try K("Expr")), "show", [try call((try K("Prover")), "members_of", [t_0, V.b(true)])])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [name_0, got_0]), try m_upper(try get(r_0, "name")), list(), V.s(cat("", try str(try get(r_0, "name")), " at l, per way: its pattern narrows l to ", try str(try get(r_0, "over")), "\\{", try str(pattern_0), "\\}, which holds ", try str(try call((try K("Expr")), "show", [share_0])), " of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is ", try str(members_0), " of l's ways and one firing ", try str(does_0), " ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [try m_abs(w_0)])])), " ray on each. So it ", try str(does_0), " ", try str(try call((try K("Expr")), "show", [got_0])), " of l's ways a tick: written ", try str(name_0), ": S for a rule, marked by what it does to the rays")), list(V.s(cat("pattern: ", try str(try get(r_0, "over")), "\\{", try str(pattern_0), "\\}")), V.s(cat("share of l's ways: ", try str(try call((try K("Expr")), "show", [share_0])), "")), V.s(cat("one match: ", try str(members_0), " of l's ways, ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [w_0])])), " a way")), V.s(cat("", try str(name_0), " = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
+      try set(st_0, "rule", try m_upper(try get(r_0, "name")))
+      return st_0
+      return V.null
+    })
+    c.method("movement", { (this_: V, a1: [V]) throws -> V in
+      var ways_0: V = arg(a1, 0);
+      var t_0: V = V.null; t_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(try get(t_2, "transport"), try get(t_2, "kernel"))
+        return V.null
+      })))
+      if truthy(V.b(try eq(t_0, V.null))) {
+        return V.null
+      }
+      var draws_0: V = V.null; draws_0 = try call((try K("Prover")), "source_of", [V.s(cat("Ray.turns"))])
+      var nf_0: V = V.null; nf_0 = try call((try K("Expr")), "linear", [try call((try K("Expr")), "sub", [try call((try K("Expr")), "field", [V.s(cat("x.DEG"))]), try call((try K("Expr")), "add", [list(try get((try K("Prover")), "LATTICE"), try call((try K("Expr")), "field", [V.s(cat("n_{f}"))]))])]), V.s(cat("n_{f}"))])
+      if truthy(V.b(try eq(nf_0, V.null))) {
+        return V.null
+      }
+      var keep_0: V = V.null; keep_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try get(t_0, "keeps"), V.s(cat("n_{f}")), nf_0])])
+      var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "sub", [try call((try K("Expr")), "field", [V.s(cat("\\rho_{+v}\\paren{t + 1}"))]), try call((try K("Expr")), "field", [V.s(cat("\\rho\\paren{t}"))])])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta\\rho")), rhs_0]), try m_upper(try get(try get(try get(t_0, "term"), "rule"), "name")), list(try get(try get(ways_0, "fact"), "key")), V.s(cat("the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps ", try str(try call((try K("Expr")), "show", [keep_0])), " of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place")), list(V.s(cat("Ray.turns = ", try str(draws_0), "")), V.s(cat("at a place x: n_{f} = ", try str(try call((try K("Expr")), "show", [nf_0])), ", its ways over the lattice's own")), V.s(cat("kept straight at x: ", try str(try call((try K("Expr")), "show", [try get(t_0, "keeps")])), " = ", try str(try call((try K("Expr")), "show", [keep_0])), "")), V.s(cat("\\Delta\\rho = ", try str(try call((try K("Expr")), "show", [rhs_0])), "")))])
+      try set(st_0, "rule", try m_upper(try get(try get(try get(t_0, "term"), "rule"), "name")))
+      return st_0
+      return V.null
+    })
+    c.method("per_way", { (this_: V, a1: [V]) throws -> V in
+      var line_0: V = arg(a1, 0); var pieces_0: V = arg(a1, 1); var moving__0: V = arg(a1, 2); var fill_0: V = arg(a1, 3);
+      var parts_0: V = V.null; parts_0 = list()
+      for e1 in try items(try filt(try get(this_, "infos"), V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return try and_(try and_(try and_(V.b(!(try eq(try get(try get(t_3, "term"), "rule"), V.null))), not(try get(t_3, "transport"))), not(try get(t_3, "settles"))), V.b(!(try eq(try get(t_3, "rays"), V.s(cat("0"))))))
+        return V.null
+      }))) {
+        var t_1: V = e1
+        var w_1: V = V.null; w_1 = try call((try K("Prover")), "per_member", [try get(t_1, "ray_count"), try call((try K("Prover")), "members_of", [t_1, V.b(true)])])
+        if !truthy(V.b(try eq(w_1, V.null))) {
+          if !truthy(V.b(try eq(w_1, 0.0))) {
+            if truthy(try get(t_1, "outside")) {
+              try m_push(parts_0, try call((try K("Prover")), "weighed", [w_1, try call(this_, "share_at", [t_1, fill_0])]))
+            } else {
+              try m_push(parts_0, try sel(truthy(try gt(w_1, 0.0)), try call((try K("Expr")), "field", [try get((try K("Prover")), "GAIN")]), try call((try K("Expr")), "neg", [try call((try K("Expr")), "field", [try get((try K("Prover")), "LOSS")])])))
+            }
+          }
+        }
+      }
+      var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "add", [parts_0])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta\\rho")), rhs_0]), try get((try K("Prover")), "RAYS_PER_WAY"), try m_concat(list(try get(try get(line_0, "fact"), "key"), try get(try get(moving__0, "fact"), "key")), try m_map(pieces_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try get(try get(x_2, "fact"), "key")
+        return V.null
+      }))), V.s(cat("the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place")), try m_concat(try m_map(pieces_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return V.s(cat("", try str(try get(try get(x_2, "fact"), "of")), " = ", try str(try call((try K("Expr")), "show", [try get(try get(x_2, "fact"), "to")])), " (", try str(try get(x_2, "via")), ")"))
+        return V.null
+      })), list(V.s(cat("", try str(try get((try K("Prover")), "RAYS_PER_WAY")), ": \\Delta\\rho = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
+      try set(st_0, "derivation", try m_concat(list(line_0, moving__0), pieces_0))
+      return st_0
+      return V.null
+    })
+    c.method("ways_line", { (this_: V, a1: [V]) throws -> V in
+      var line_0: V = arg(a1, 0); var moved_0: V = arg(a1, 1); var ways_0: V = arg(a1, 2); var pieces_0: V = arg(a1, 3); var fill_0: V = arg(a1, 4);
+      var parts_0: V = V.null; parts_0 = list()
+      var said_0: V = V.null; said_0 = list()
+      var folds_of_0: V = V.null; folds_of_0 = try call((try K("Expr")), "sub", [try get(try get(ways_0, "fact"), "to"), try get((try K("Prover")), "LATTICE")])
+      for e1 in try items(try filt(try get(this_, "infos"), V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return try and_(try and_(try and_(V.b(!(try eq(try get(try get(t_3, "term"), "rule"), V.null))), not(try get(t_3, "transport"))), not(try get(t_3, "settles"))), V.b(!(try eq(try get(t_3, "folds"), V.s(cat("0"))))))
+        return V.null
+      }))) {
+        var t_1: V = e1
+        var w_1: V = V.null; w_1 = try call((try K("Prover")), "per_member", [try get(t_1, "fold_count"), try call((try K("Prover")), "members_of", [t_1, V.b(true)])])
+        if !truthy(V.b(try eq(w_1, V.null))) {
+          if !truthy(V.b(try eq(w_1, 0.0))) {
+            var share_1: V = V.null; share_1 = try call(this_, "share_at", [t_1, fill_0])
+            var named_1: V = V.null; named_1 = try m_first(try filt(pieces_0, V.fn({ (a4: [V]) throws -> V in
+              var x_3: V = arg(a4, 0);
+              return try and_(V.b(try eq(try get(x_3, "via"), try m_upper(try get(try get(try get(t_1, "term"), "rule"), "name")))), V.b(try eq(try call((try K("Expr")), "show", [try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [try get(try get(x_3, "fact"), "to"), share_1])])]), V.s(cat("1")))))
+              return V.null
+            })))
+            var at_1: V = V.null; at_1 = try sel(truthy(V.b(try eq(named_1, V.null))), share_1, try call((try K("Expr")), "field", [try get(try get(named_1, "fact"), "of")]))
+            var gate_1: V = V.null; gate_1 = try sel(truthy(V.b(try eq(try get(t_1, "around"), V.null))), try call((try K("Expr")), "num", [1.0]), try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try get(t_1, "around"), V.s(cat("n_{f}")), try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [try get((try K("Prover")), "WAYS"), try get((try K("Prover")), "LATTICE")])])]), V.s(cat("DEG")), try get((try K("Prover")), "WAYS")])]))
+            var got_1: V = V.null; got_1 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [w_1]), try get((try K("Prover")), "WAYS"), gate_1, at_1)])])
+            try m_push(parts_0, got_1)
+            try m_push(said_0, V.s(cat("", try str(try m_upper(try get(try get(try get(t_1, "term"), "rule"), "name"))), ": ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [w_1])])), " a fold on each of l's ways, ", try str(try call((try K("Expr")), "show", [gate_1])), " of them, at ", try str(try call((try K("Expr")), "show", [at_1])), " - ", try str(try call((try K("Expr")), "show", [got_1])), "")))
+          }
+        }
+      }
+      if truthy(try m_empty(parts_0)) {
+        return V.null
+      }
+      var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "add", [parts_0])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta DEG")), rhs_0]), try get((try K("Prover")), "WAYS_LINE"), try m_concat(list(try get(try get(line_0, "fact"), "key"), try get(try get(moved_0, "fact"), "key"), try get(try get(ways_0, "fact"), "key")), try m_map(pieces_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try get(try get(x_2, "fact"), "key")
+        return V.null
+      }))), V.s(cat("l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", try str(try call((try K("Expr")), "show", [folds_of_0])), " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back")), try m_concat(said_0, list(V.s(cat("\\Delta DEG = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
+      try set(st_0, "derivation", try m_concat(list(line_0, moved_0, ways_0), pieces_0))
+      return st_0
+      return V.null
+    })
+    c.method("in_record", { (this_: V, a1: [V]) throws -> V in
+      var ways_c_0: V = arg(a1, 0); var ways_0: V = arg(a1, 1); var pieces_0: V = arg(a1, 2);
+      var e_0: V = V.null; e_0 = try get(try get(ways_c_0, "fact"), "to")
+      for e1 in try items(pieces_0) {
+        var x_1: V = e1
+        e_0 = try call((try K("Expr")), "replace", [e_0, try get(try get(x_1, "fact"), "of"), try get(try get(x_1, "fact"), "to")])
+      }
+      e_0 = try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [e_0, try get(try get((try K("Prover")), "ACROSS"), "label"), try get((try K("Prover")), "HERE")]), V.s(cat("DEG")), try get(try get(ways_0, "fact"), "to")])
+      return try call((try K("Prover")), "tidy", [try call((try K("Expr")), "replace", [e_0, V.s(cat("n_{f,l}")), try call((try K("Expr")), "field", [V.s(cat("n_{f}"))])])])
+      return V.null
+    })
+    c.method("record_moves", { (this_: V, a1: [V]) throws -> V in
+      var ways_c_0: V = arg(a1, 0); var ways_0: V = arg(a1, 1); var pieces_0: V = arg(a1, 2);
+      var e_0: V = V.null; e_0 = try call(this_, "in_record", [ways_c_0, ways_0, pieces_0])
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Delta n_{f}")), e_0]), V.s(cat("the record's own line")), try m_concat(list(try get(try get(ways_c_0, "fact"), "key"), try get(try get(ways_0, "fact"), "key")), try m_map(pieces_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try get(try get(x_2, "fact"), "key")
+        return V.null
+      }))), V.s(cat("the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone")), list(V.s(cat("", try str(try get(try get(ways_c_0, "fact"), "of")), " = ", try str(try call((try K("Expr")), "show", [try get(try get(ways_c_0, "fact"), "to")])), "")), V.s(cat("DEG = ", try str(try call((try K("Expr")), "show", [try get(try get(ways_0, "fact"), "to")])), "")), V.s(cat("\\Delta n_{f} = ", try str(try call((try K("Expr")), "show", [e_0])), "")))])
+      return V.null
+    })
+    c.method("record_settles", { (this_: V, a1: [V]) throws -> V in
+      var moves_0: V = arg(a1, 0);
+      var parts_0: V = V.null; parts_0 = try m_split((try K("Expr")), try get(try get(moves_0, "fact"), "to"), V.s(cat("n_{f}")))
+      if truthy(V.b(try eq(parts_0, V.null))) {
+        return V.null
+      }
+      var top_0: V = V.null; top_0 = try call((try K("Prover")), "tidy", [try call((try K("Expr")), "neg", [try elem(parts_0, 1.0)])])
+      var bottom_0: V = V.null; bottom_0 = try call((try K("Prover")), "tidy", [try elem(parts_0, 0.0)])
+      if truthy(try m_starts_with(try call((try K("Expr")), "show", [top_0]), V.s(cat("-")))) {
+        top_0 = try call((try K("Prover")), "tidy", [try call((try K("Expr")), "neg", [top_0])])
+        bottom_0 = try call((try K("Expr")), "flip", [bottom_0])
+      }
+      var nf_0: V = V.null; nf_0 = try call((try K("Expr")), "div", [top_0, bottom_0])
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("n_{f}")), nf_0]), V.s(cat("the record settled against the density")), list(try get(try get(moves_0, "fact"), "key")), V.s(cat("the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought")), list(V.s(cat("", try str(try get(try get(moves_0, "fact"), "of")), " = ", try str(try call((try K("Expr")), "show", [try get(try get(moves_0, "fact"), "to")])), " = 0")), V.s(cat("n_{f} = ", try str(try call((try K("Expr")), "show", [nf_0])), "")))])
+      try set(st_0, "parts_", list(top_0, bottom_0))
+      return st_0
+      return V.null
+    })
+    c.method("record_left", { (this_: V, a1: [V]) throws -> V in
+      var rays_c_0: V = arg(a1, 0); var ways_c_0: V = arg(a1, 1); var settles_0: V = arg(a1, 2);
+      var k_0: V = V.null; k_0 = try get(this_, "fold_weight")
+      var both_0: V = V.null; both_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "collected", [try call((try K("Expr")), "expand", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "mul", [list(try get((try K("Prover")), "WAYS"), try get(try get(rays_c_0, "fact"), "to"))]), try call((try K("Expr")), "mul", [list(k_0, try get(try get(ways_c_0, "fact"), "to"))]))])])])])
+      var vac_0: V = V.null; vac_0 = try call((try K("Expr")), "field", [V.s(cat("\\rho_{\\infty}"))])
+      var base_0: V = V.null; base_0 = try call((try K("Expr")), "replace", [try get(try get(settles_0, "fact"), "to"), V.s(cat("\\rho")), vac_0])
+      var per_0: V = V.null; per_0 = try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("x.\\bar{m}"))]), try call((try K("Expr")), "sub", [try call((try K("Expr")), "pown", [try call((try K("Expr")), "field", [V.s(cat("l.shell\\paren{x.\\bar{R}}"))]), try neg(1.0)]), try call((try K("Prover")), "reach", [V.s(cat("x.\\bar{R}"))])]))])
+      var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "add", [list(base_0, try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "pown", [k_0, try neg(1.0)]), try call((try K("Expr")), "call", [V.s(cat("\\sum_{x = x_{@t}}")), per_0]))]))])
+      var lhs_0: V = V.null; lhs_0 = V.s(cat("\\Delta\\paren{DEG·\\rho + ", try str(try call((try K("Expr")), "show", [k_0])), "·n_{f}}"))
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("n_{f,l}\\paren{t}")), rhs_0]), V.s(cat("the record every body leaves at a local")), list(try get(try get(rays_c_0, "fact"), "key"), try get(try get(ways_c_0, "fact"), "key"), try get(try get(settles_0, "fact"), "key")), V.s(cat("a meeting turns ", try str(try call((try K("Expr")), "show", [k_0])), " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", try str(try call((try K("Expr")), "show", [k_0])), " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over ", try str(try call((try K("Expr")), "show", [k_0])), ", on the settled record. Each body is read as it was when its rays left it, at its own distance then")), list(V.s(cat("", try str(lhs_0), " = ", try str(try call((try K("Expr")), "show", [both_0])), "")), V.s(cat("the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", try str(try call((try K("Expr")), "show", [base_0])), "")), V.s(cat("x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then")), V.s(cat("n_{f,l}\\paren{t} = ", try str(try call((try K("Expr")), "show", [rhs_0])), "")))])
+      return V.null
+    })
+    c.method("leftover", { (this_: V, a1: [V]) throws -> V in
+      var rays_c_0: V = arg(a1, 0);
+      var m_0: V = V.null; m_0 = try get(try get((try K("Prover")), "MASS"), "label")
+      var parts_0: V = V.null; parts_0 = try m_split((try K("Expr")), try call((try K("Expr")), "sub", [try get(try get(rays_c_0, "fact"), "to"), try call((try K("Expr")), "field", [try get(try get(rays_c_0, "fact"), "of")])]), m_0)
+      if truthy(V.b(try eq(parts_0, V.null))) {
+        return V.null
+      }
+      var rest_0: V = V.null; rest_0 = try sel(truthy(V.b(try eq(try get(try elem(parts_0, 1.0), "kind"), V.s(cat("add"))))), try get(try elem(parts_0, 1.0), "of"), list(try elem(parts_0, 1.0)))
+      var over_0: V = V.null; over_0 = try m_map(rest_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [try call((try K("Expr")), "neg", [x_2]), try elem(parts_0, 0.0)])])
+        return V.null
+      }))
+      var got_0: V = V.null; got_0 = try call((try K("Expr")), "add", [try m_concat(try filt(over_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try call((try K("Expr")), "mentions", [x_2, try get(try get(rays_c_0, "fact"), "of")])
+        return V.null
+      })), try filt(over_0, V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return not(try call((try K("Expr")), "mentions", [x_2, try get(try get(rays_c_0, "fact"), "of")]))
+        return V.null
+      })))])
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [m_0, got_0]), V.s(cat("the mass is what the vacuum leaves over")), list(try get(try get(rays_c_0, "fact"), "key")), V.s(cat("the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source")), list(V.s(cat("", try str(try get(try get(rays_c_0, "fact"), "of")), " = ", try str(try call((try K("Expr")), "show", [try get(try get(rays_c_0, "fact"), "to")])), "")), V.s(cat("", try str(m_0), " = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
+      return V.null
+    })
+    c.method("model_chain", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var rays_l_0: V = arg(a1, 1); var space_l_0: V = arg(a1, 2); var spaced_0: V = arg(a1, 3); var folded_0: V = arg(a1, 4); var one_0: V = arg(a1, 5);
+      if truthy(try or_(V.b(try eq(rays_l_0, V.null)), V.b(try eq(space_l_0, V.null)))) {
+        return list()
+      }
+      var fill_0: V = V.null; fill_0 = try call((try K("Prover")), "settled", [s_0])
+      var ways_0: V = V.null; ways_0 = try call(this_, "ways_at", [one_0, list(spaced_0, folded_0, one_0)])
+      if truthy(V.b(try eq(ways_0, V.null))) {
+        return list()
+      }
+      var moved_0: V = V.null; moved_0 = try call(this_, "ways_moved", [ways_0])
+      var pieces_0: V = V.null; pieces_0 = try filt(try m_map(try filt(try get(this_, "infos"), V.fn({ (a5: [V]) throws -> V in
+        var t_4: V = arg(a5, 0);
+        return try and_(try and_(try and_(V.b(!(try eq(try get(try get(t_4, "term"), "rule"), V.null))), not(try get(t_4, "transport"))), not(try get(t_4, "settles"))), V.b(!(try eq(try get(t_4, "rays"), V.s(cat("0"))))))
+        return V.null
+      })), V.fn({ (a4: [V]) throws -> V in
+        var t_3: V = arg(a4, 0);
+        return try call(this_, "rule_piece", [t_3, fill_0])
+        return V.null
+      })), V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return V.b(!(try eq(x_2, V.null)))
+        return V.null
+      }))
+      var moving__0: V = V.null; moving__0 = try call(this_, "movement", [ways_0])
+      if truthy(try or_(V.b(try eq(moving__0, V.null)), try m_empty(pieces_0))) {
+        return list()
+      }
+      var rays_c_0: V = V.null; rays_c_0 = try call(this_, "per_way", [rays_l_0, pieces_0, moving__0, fill_0])
+      var ways_c_0: V = V.null; ways_c_0 = try call(this_, "ways_line", [folded_0, moved_0, ways_0, pieces_0, fill_0])
+      if truthy(V.b(try eq(ways_c_0, V.null))) {
+        return list()
+      }
+      var moves_0: V = V.null; moves_0 = try call(this_, "record_moves", [ways_c_0, ways_0, pieces_0])
+      var settles_0: V = V.null; settles_0 = try call(this_, "record_settles", [moves_0])
+      if truthy(V.b(try eq(settles_0, V.null))) {
+        return list()
+      }
+      var left_0: V = V.null; left_0 = try call(this_, "record_left", [rays_c_0, ways_c_0, settles_0])
+      var mass_0: V = V.null; mass_0 = try call(this_, "leftover", [rays_c_0])
+      if truthy(V.b(try eq(mass_0, V.null))) {
+        return list()
+      }
+      return try m_concat(try m_concat(list(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), list(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0))
       return V.null
     })
     c.method("lean", { (this_: V, a1: [V]) throws -> V in
@@ -7945,6 +8295,7 @@ enum C_Prover {
       var whole_0: V = V.null; whole_0 = try call(this_, "general", [filled_0, folded_0])
       var rays_l_0: V = V.null; rays_l_0 = try call(this_, "narrowed", [V.s(cat("rays")), filled_0])
       var space_l_0: V = V.null; space_l_0 = try call(this_, "narrowed", [V.s(cat("space")), spaced_0])
+      var model_0: V = V.null; model_0 = try call(this_, "model_chain", [s_0, rays_l_0, space_l_0, spaced_0, folded_0, one_0])
       var settled_0: V = V.null; settled_0 = try call(this_, "settled_record", [folded_0])
       var short_0: V = V.null; short_0 = try sel(truthy(V.b(try eq(settled_0, V.null))), V.null, try call(this_, "single", [whole_0, settled_0, folded_0, s_0]))
       var agg_0: V = V.null; agg_0 = try sel(truthy(V.b(try eq(short_0, V.null))), V.null, try call(this_, "aggregate", [whole_0, short_0, s_0]))
@@ -7984,13 +8335,21 @@ enum C_Prover {
         var st_1: V = e1
         try call(named_0, "set", [try get(try get(st_1, "fact"), "of"), st_1])
       }
+      for e1 in try items(try filt(model_0, V.fn({ (a4: [V]) throws -> V in
+        var x_3: V = arg(a4, 0);
+        return try and_(try and_(V.b(!(try eq(try get(x_3, "via"), try get((try K("Prover")), "RAYS_PER_WAY")))), V.b(!(try eq(try get(x_3, "via"), V.s(cat("the ways move with the record")))))), V.b(!(try eq(try get(x_3, "via"), V.s(cat("the mass is what the vacuum leaves over"))))))
+        return V.null
+      }))) {
+        var st_1: V = e1
+        try call(named_0, "set", [try get(try get(st_1, "fact"), "of"), st_1])
+      }
       var proved_0: V = V.null; proved_0 = try m_map(try get(try get(this_, "theory"), "theorems"), V.fn({ (a3: [V]) throws -> V in
         var t_2: V = arg(a3, 0);
         var q_2: V = V.null; q_2 = try get(t_2, "asked")
         var p_2: V = V.null; p_2 = try makeNamed("Proved", [kw("theorem", try get(t_2, "id")), kw("theory", try get(try get(this_, "theory"), "name")), kw("asks", try get(q_2, "asks")), kw("about", try get(q_2, "about"))])
         var hit_2: V = V.null; hit_2 = try sel(truthy(try m_empty(try get(q_2, "about"))), V.null, try call(named_0, "get", [try get(q_2, "about")]))
         var root_2: V = V.null; root_2 = try elem(try get(s_0, "steps"), try call((try K("Fact")), "key_of", [V.s(cat("is")), V.s(cat("the continuous model"))]))
-        var steps_2: V = V.null; steps_2 = try sel(truthy(try m_empty(try get(q_2, "about"))), chain_0, (try sel(truthy(V.b(!(try eq(hit_2, V.null)))), (try sel(truthy(V.b(try eq(root_2, V.null))), list(hit_2), list(root_2, hit_2))), try call((try K("Prover")), "behind", [s_0, try get(q_2, "about")]))))
+        var steps_2: V = V.null; steps_2 = try sel(truthy(try m_empty(try get(q_2, "about"))), (try sel(truthy(try m_empty(model_0)), chain_0, model_0)), (try sel(truthy(V.b(!(try eq(hit_2, V.null)))), (try sel(truthy(V.b(try eq(root_2, V.null))), list(hit_2), list(root_2, hit_2))), try call((try K("Prover")), "behind", [s_0, try get(q_2, "about")]))))
         var end_2: V = V.null; end_2 = try sel(truthy(try m_empty(try get(q_2, "about"))), V.null, try m_last(steps_2))
         try set(p_2, "steps", try m_map(steps_2, V.fn({ (a5: [V]) throws -> V in
           var st_4: V = arg(a5, 0);
@@ -7998,7 +8357,13 @@ enum C_Prover {
           return V.null
         })))
         if truthy(try m_empty(try get(q_2, "about"))) {
-          try set(p_2, "concluded", try call((try K("Prover")), "headline", [try get((try orElse(try orElse(try orElse(whole_line_0, agg_0), short_0), whole_0)), "fact"), V.null]))
+          try set(p_2, "concluded", try call((try K("Prover")), "headline", [try get((try sel(truthy(try m_empty(model_0)), (try orElse(try orElse(try orElse(whole_line_0, agg_0), short_0), whole_0)), try m_last(model_0))), "fact"), V.null]))
+          var ways_said_2: V = V.null; ways_said_2 = try m_first(try filt(model_0, V.fn({ (a5: [V]) throws -> V in
+            var x_4: V = arg(a5, 0);
+            return V.b(try eq(try get(x_4, "via"), try get((try K("Prover")), "WAYS_LINE")))
+            return V.null
+          })))
+          try set(p_2, "also", try sel(truthy(V.b(try eq(ways_said_2, V.null))), V.null, try call((try K("Prover")), "headline", [try get(ways_said_2, "fact"), V.null])))
           try set(p_2, "standing", V.b(true))
         } else {
           if truthy(try and_(V.b(!(try eq(end_2, V.null))), V.b(!(try eq(try get(try get(end_2, "fact"), "of"), try get(q_2, "about")))))) {
@@ -8047,19 +8412,29 @@ enum C_Prover {
       var spaced_0: V = V.null; spaced_0 = try call(this_, "ledger_filled", [s_0, V.s(cat("space"))])
       var folded_0: V = V.null; folded_0 = try call(this_, "ledger_filled", [s_0, V.s(cat("folds"))])
       var one_0: V = V.null; one_0 = try call(this_, "ledgers_are_one", [s_0, folded_0, spaced_0])
-      var whole_0: V = V.null; whole_0 = try call(this_, "general", [filled_0, folded_0])
-      var settled_0: V = V.null; settled_0 = try call(this_, "settled_record", [folded_0])
-      var short_0: V = V.null; short_0 = try sel(truthy(V.b(try eq(settled_0, V.null))), V.null, try call(this_, "single", [whole_0, settled_0, folded_0, s_0]))
-      var agg_0: V = V.null; agg_0 = try sel(truthy(V.b(try eq(short_0, V.null))), V.null, try call(this_, "aggregate", [whole_0, short_0, s_0]))
-      var back_0: V = V.null; back_0 = try sel(truthy(V.b(try eq(agg_0, V.null))), V.null, try call(this_, "remembered", [s_0, agg_0]))
-      var each_0: V = V.null; each_0 = try sel(truthy(V.b(try eq(back_0, V.null))), V.null, try call(this_, "from_each", [s_0, back_0]))
-      var known_0: V = V.null; known_0 = try sel(truthy(V.b(try eq(each_0, V.null))), V.null, try call(this_, "forgotten", [s_0, each_0, settled_0]))
-      var pull_0: V = V.null; pull_0 = try sel(truthy(V.b(try eq(known_0, V.null))), V.null, try call(this_, "felt", [s_0, known_0, settled_0]))
-      var rec_0: V = V.null; rec_0 = try sel(truthy(V.b(try eq(pull_0, V.null))), V.null, try call(this_, "record_of_all", [known_0, pull_0, settled_0]))
-      var whole_line_0: V = V.null; whole_line_0 = try sel(truthy(V.b(try eq(rec_0, V.null))), V.null, try call(this_, "one_line", [rec_0]))
       var grown_0: V = V.null; grown_0 = try call(this_, "growth_filled", [s_0])
-      var roles_0: V = V.null; roles_0 = list(V.s(cat("population")), V.s(cat("space")), V.s(cat("folds")), V.s(cat("one")), V.s(cat("general")), V.s(cat("settled")), V.s(cat("single")), V.s(cat("aggregate")), V.s(cat("remembered")), V.s(cat("each")), V.s(cat("known")), V.s(cat("felt")), V.s(cat("record")), V.s(cat("line")), V.s(cat("growth")))
-      var steps_0: V = V.null; steps_0 = list(filled_0, spaced_0, folded_0, one_0, whole_0, settled_0, short_0, agg_0, back_0, each_0, known_0, pull_0, rec_0, whole_line_0, grown_0)
+      var model_0: V = V.null; model_0 = try call(this_, "model_chain", [s_0, try call(this_, "narrowed", [V.s(cat("rays")), filled_0]), try call(this_, "narrowed", [V.s(cat("space")), spaced_0]), spaced_0, folded_0, one_0])
+      var by_0: V = V.null; by_0 = V.fn({ (a2: [V]) throws -> V in
+        var via_1: V = arg(a2, 0);
+        return try m_first(try filt(model_0, V.fn({ (a4: [V]) throws -> V in
+          var x_3: V = arg(a4, 0);
+          return V.b(try eq(try get(x_3, "via"), via_1))
+          return V.null
+        })))
+        return V.null
+      })
+      var rays_c_0: V = V.null; rays_c_0 = try invoke(by_0, [try get((try K("Prover")), "RAYS_PER_WAY")])
+      var mass_0: V = V.null; mass_0 = try sel(truthy(try m_empty(model_0)), V.null, try m_last(model_0))
+      for e1 in try items(try filt(model_0, V.fn({ (a4: [V]) throws -> V in
+        var x_3: V = arg(a4, 0);
+        return try or_(V.b(try eq(try get(try get(x_3, "fact"), "of"), try get((try K("Prover")), "GAIN"))), V.b(try eq(try get(try get(x_3, "fact"), "of"), try get((try K("Prover")), "LOSS"))))
+        return V.null
+      }))) {
+        var x_1: V = e1
+        try call(out_0, "set", [try get(try get(x_1, "fact"), "of"), x_1])
+      }
+      var roles_0: V = V.null; roles_0 = list(V.s(cat("population")), V.s(cat("space")), V.s(cat("growth")), V.s(cat("rays")), V.s(cat("line")), V.s(cat("ways")), V.s(cat("folds")), V.s(cat("settled")), V.s(cat("record")), V.s(cat("mass")))
+      var steps_0: V = V.null; steps_0 = list(filled_0, spaced_0, grown_0, rays_c_0, rays_c_0, try invoke(by_0, [try get((try K("Prover")), "WAYS_LINE")]), try invoke(by_0, [V.s(cat("the record's own line"))]), try invoke(by_0, [V.s(cat("the record settled against the density"))]), try invoke(by_0, [V.s(cat("the record every body leaves at a local"))]), mass_0)
       do {
         var i1: Double = 0
         while i1 < num(try len(roles_0)) {
@@ -9362,6 +9737,50 @@ enum C_Aggregate {
     c.field("prover", { (this_: V) throws -> V in return try makeNamed("Prover", [kw("theory", try get(this_, "theory"))]) })
     c.field("store", { (this_: V) throws -> V in return try get(try get(this_, "prover"), "closure") })
     c.field("chain", { (this_: V) throws -> V in return try call(try get(this_, "prover"), "chain", [try get(this_, "store")]) })
+    c.field("net", { (this_: V) throws -> V in return try get(this_, "rays_net") })
+    c.getter("rays_net", { (this_: V, a1: [V]) throws -> V in
+      var st_0: V = V.null; st_0 = try call(this_, "step", [V.s(cat("rays"))])
+      if truthy(V.b(try eq(st_0, V.null))) {
+        return V.null
+      }
+      var e_0: V = V.null; e_0 = try get(try get(st_0, "fact"), "to")
+      for e1 in try items(list(try get((try K("Prover")), "GAIN"), try get((try K("Prover")), "LOSS"))) {
+        var name_1: V = e1
+        var piece_1: V = V.null; piece_1 = try call(try get(this_, "chain"), "get", [name_1])
+        if truthy(V.b(!(try eq(piece_1, V.null)))) {
+          e_0 = try call((try K("Expr")), "replace", [e_0, name_1, try get(try get(piece_1, "fact"), "to")])
+        }
+      }
+      return try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [e_0, try get(try get((try K("Prover")), "ACROSS"), "label"), try get((try K("Prover")), "HERE")]), try get(try get((try K("Prover")), "MASS"), "label"), try call((try K("Expr")), "num", [0.0])])])
+      return V.null
+    })
+    c.method("nets_at", { (this_: V, a1: [V]) throws -> V in
+      var rho_0: V = arg(a1, 0);
+      var e_0: V = V.null; e_0 = try get(this_, "env")
+      try setAt(e_0, try get(try get((try K("Prover")), "HERE"), "label"), rho_0)
+      return try call((try K("Aggregate")), "numeric_of", [try get(this_, "net"), e_0])
+      return V.null
+    })
+    c.getter("root_of_net", { (this_: V, a1: [V]) throws -> V in
+      var lo_0: V = V.null; lo_0 = 0.0
+      var hi_0: V = V.null; hi_0 = 1.0
+      do {
+        var i1: Double = 0
+        while i1 < num(48.0) {
+          var i_1: V = V.num(i1)
+          var mid_1: V = V.null; mid_1 = try div((try add(lo_0, hi_0)), 2.0)
+          if truthy(try gt(try call(this_, "nets_at", [mid_1]), 0.0)) {
+            lo_0 = mid_1
+          } else {
+            hi_0 = mid_1
+          }
+          i1 += 1
+        }
+      }
+      return try div((try add(lo_0, hi_0)), 2.0)
+      return V.null
+    })
+    c.field("settled_rho", { (this_: V) throws -> V in return try sel(truthy(V.b(try eq(try get(this_, "net"), V.null))), try call(this_, "fact_at", [V.s(cat("\\rho_{\\infty}")), try get(this_, "env")]), try get(this_, "root_of_net")) })
     c.field("NEAR", { (this_: V) throws -> V in return 0.5 })
     c.getter("env", { (this_: V, a1: [V]) throws -> V in
       var e_0: V = V.null; e_0 = makeNode()
@@ -9375,6 +9794,7 @@ enum C_Aggregate {
       try set(e_0, Name(try str(V.s(cat("D")))), try get(this_, "D"))
       try set(e_0, Name(try str(V.s(cat("DEG")))), try get(this_, "DEG"))
       try set(e_0, Name(try str(V.s(cat("l.DEG")))), try get(this_, "DEG"))
+      try set(e_0, Name(try str(V.s(cat("DEG_{0}")))), try get(this_, "DEG"))
       try set(e_0, Name(try str(V.s(cat("\\bar{c}")))), 1.0)
       return e_0
       return V.null
@@ -9405,7 +9825,7 @@ enum C_Aggregate {
       return V.null
     })
     c.getter("rho_inf", { (this_: V, a1: [V]) throws -> V in
-      return try call(this_, "fact_at", [V.s(cat("\\rho_{\\infty}")), try get(this_, "env")])
+      return try get(this_, "settled_rho")
       return V.null
     })
     c.getter("settled_env", { (this_: V, a1: [V]) throws -> V in
@@ -10026,7 +10446,9 @@ enum C_Aggregate {
     })
     c.getter("folds_expr", { (this_: V, a1: [V]) throws -> V in
       var st_0: V = V.null; st_0 = try call(this_, "step", [V.s(cat("folds"))])
-      return try sel(truthy(V.b(try eq(st_0, V.null))), try call((try K("Expr")), "num", [0.0]), try get(try get(st_0, "fact"), "to"))
+      var lattice_0: V = V.null; lattice_0 = makeNode()
+      try set(lattice_0, Name(try str(V.s(cat("DEG_{0}")))), try get(this_, "DEG"))
+      return try sel(truthy(V.b(try eq(st_0, V.null))), try call((try K("Expr")), "num", [0.0]), try call((try K("Expr")), "evaluate", [try get(try get(st_0, "fact"), "to"), lattice_0]))
       return V.null
     })
     c.method("folds_rate", { (this_: V, a1: [V]) throws -> V in
@@ -11614,6 +12036,9 @@ enum C_Medium {
     c.field("vac", { (this_: V) throws -> V in return filled(try get(this_, "cells"), try get(try get(this_, "aggregate"), "rho_inf")) })
     c.method("nets", { (this_: V, a1: [V]) throws -> V in
       var rho_0: V = arg(a1, 0); var nf_0: V = arg(a1, 1);
+      if truthy(V.b(!(try eq(try get(try get(this_, "aggregate"), "net"), V.null)))) {
+        return try call(try get(this_, "aggregate"), "nets_at", [rho_0])
+      }
       var s_0: V = V.null; s_0 = try call(this_, "symbols", [rho_0, nf_0])
       var got_0: V = V.null; got_0 = 0.0
       for e1 in try items(try get(this_, "points")) {
@@ -21508,6 +21933,22 @@ enum C_G {
       return try makeNamed("Asked", [kw("asks", V.s(cat("and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?"))), kw("about", V.s(cat("\\Delta \\narrow{\\forall}{@ == l}"))), kw("leads", V.s(cat("THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.")))])
       return V.null
     }))]) })
+    c.staticField("theorem vacuum.creation", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.creation")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("creation, at a local: what share of l's ways does it light a tick?"))), kw("about", V.s(cat("S^{+}"))), kw("leads", V.s(cat("CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once.")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.annihilation", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.annihilation")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("annihilation, at a local: what share of l's ways does it take a tick?"))), kw("about", V.s(cat("S^{-}"))), kw("leads", V.s(cat("ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends.")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.movement", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.movement")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("the rays move. Followed a step and a tick, what does a ray's way on depend on?"))), kw("about", V.s(cat("\\Delta\\rho"))), kw("leads", V.s(cat("MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds.")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.ways", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.ways")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a fold is a way. How many ways does a local have, and what moves them?"))), kw("about", V.s(cat("\\Delta DEG"))), kw("also", V.s(cat("DEG"))), kw("leads", V.s(cat("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."))), kw("then", V.s(cat("AND WHAT THEY ARE: the lattice's own ways and one for every fold.")))])
+      return V.null
+    }))]) })
     c.staticField("theorem vacuum.at", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.at")), kw("body", V.fn({ (a1: [V]) throws -> V in
       return try makeNamed("Asked", [kw("asks", V.s(cat("a source is a thing with a history. What does it mean to read one at a particular time?"))), kw("about", V.s(cat("l'_{@t}")))])
       return V.null
@@ -21915,6 +22356,17 @@ extension Physics {
       CONSTANTS["nl0"] = V.null
       let v: V = V.s(cat("\n"))
       CONSTANTS["nl0"] = v
+      return v
+    }
+  }
+}
+extension Physics {
+  public static var METHOD_SOURCES: V {
+    get throws {
+      if let v = CONSTANTS["METHOD_SOURCES"] { return v }
+      CONSTANTS["METHOD_SOURCES"] = V.null
+      let v: V = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
+      CONSTANTS["METHOD_SOURCES"] = v
       return v
     }
   }

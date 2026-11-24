@@ -2091,6 +2091,177 @@ static void C_Expr(Cls& c) {
 }
 static const bool R_Expr = define_class("Expr", "Node", &C_Expr);
 
+static void C_ExprReader(Cls& c) {
+  c.field("text", nullptr);
+  c.field("at", [](const Value& self) -> Value { return 0.0; });
+  c.getter("peek", [](Value self, const Args& a1) -> Value {
+    return (truthy(lt(get(self, S<"at">()), len(get(self, S<"text">())))) ? Value(elem(m_chars(get(self, S<"text">())), get(self, S<"at">()))) : Value(0.0));
+    return null;
+  });
+  c.getter("skip", [](Value self, const Args& a1) -> Value {
+    while (truthy(eq(get(self, S<"peek">()), 32.0))) {
+      set(self, S<"at">(), add(get(self, S<"at">()), 1.0));
+    }
+    return null;
+  });
+  c.method("eat", [](Value self, const Args& a1) -> Value {
+    auto n_0 = cell(arg(a1, 0));
+    auto got_0 = cell(); got_0->v = call(K(S<"Notation">()), S<"sub_">(), { get(self, S<"text">()), get(self, S<"at">()), add(get(self, S<"at">()), n_0->v) });
+    set(self, S<"at">(), add(get(self, S<"at">()), n_0->v));
+    return got_0->v;
+    return null;
+  });
+  c.method("starts", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0));
+    return eq(call(K(S<"Notation">()), S<"sub_">(), { get(self, S<"text">()), get(self, S<"at">()), add(get(self, S<"at">()), len(s_0->v)) }), s_0->v);
+    return null;
+  });
+  c.method("take_while", [](Value self, const Args& a1) -> Value {
+    auto keep_0 = cell(arg(a1, 0));
+    auto k_0 = cell(); k_0->v = get(self, S<"at">());
+    while (truthy((truthy(lt(k_0->v, len(get(self, S<"text">())))) && truthy(invoke(keep_0->v, { elem(m_chars(get(self, S<"text">())), k_0->v) }))))) {
+      k_0->v = add(k_0->v, 1.0);
+    }
+    return call(self, S<"eat">(), { sub(k_0->v, get(self, S<"at">())) });
+    return null;
+  });
+  c.getter("addition", [](Value self, const Args& a1) -> Value {
+    auto left_0 = cell(); left_0->v = get(self, S<"product">());
+    get(self, S<"skip">());
+    while (truthy((truthy(eq(get(self, S<"peek">()), 43.0)) || truthy(((truthy(eq(get(self, S<"peek">()), 45.0)) && truthy((!truthy(call(self, S<"starts">(), { "->" })))))))))) {
+      auto op_0 = cell(); op_0->v = call(self, S<"eat">(), { 1.0 });
+      auto right_0 = cell(); right_0->v = get(self, S<"product">());
+      left_0->v = (truthy(eq(op_0->v, "+")) ? Value(call(K(S<"Expr">()), S<"add">(), { list({ left_0->v, right_0->v }) })) : Value(call(K(S<"Expr">()), S<"sub">(), { left_0->v, right_0->v })));
+      get(self, S<"skip">());
+    }
+    return left_0->v;
+    return null;
+  });
+  c.getter("product", [](Value self, const Args& a1) -> Value {
+    auto left_0 = cell(); left_0->v = get(self, S<"power">());
+    get(self, S<"skip">());
+    while (truthy((truthy(eq(get(self, S<"peek">()), 42.0)) || truthy(eq(get(self, S<"peek">()), 47.0))))) {
+      auto op_0 = cell(); op_0->v = call(self, S<"eat">(), { 1.0 });
+      auto right_0 = cell(); right_0->v = get(self, S<"power">());
+      left_0->v = (truthy(eq(op_0->v, "*")) ? Value(call(K(S<"Expr">()), S<"mul">(), { list({ left_0->v, right_0->v }) })) : Value(call(K(S<"Expr">()), S<"div">(), { left_0->v, right_0->v })));
+      get(self, S<"skip">());
+    }
+    return left_0->v;
+    return null;
+  });
+  c.getter("power", [](Value self, const Args& a1) -> Value {
+    auto base_0 = cell(); base_0->v = get(self, S<"unary">());
+    get(self, S<"skip">());
+    if (truthy(eq(get(self, S<"peek">()), 94.0))) {
+      call(self, S<"eat">(), { 1.0 });
+      return call(K(S<"Expr">()), S<"to_power">(), { base_0->v, get(self, S<"power">()) });
+    }
+    return base_0->v;
+    return null;
+  });
+  c.getter("unary", [](Value self, const Args& a1) -> Value {
+    get(self, S<"skip">());
+    if (truthy(eq(get(self, S<"peek">()), 45.0))) {
+      call(self, S<"eat">(), { 1.0 });
+      return call(K(S<"Expr">()), S<"neg">(), { get(self, S<"unary">()) });
+    }
+    return get(self, S<"postfix">());
+    return null;
+  });
+  c.getter("postfix", [](Value self, const Args& a1) -> Value {
+    auto e_0 = cell(); e_0->v = get(self, S<"primary">());
+    get(self, S<"skip">());
+    while (truthy((truthy(eq(get(self, S<"peek">()), 46.0)) && truthy((!truthy(call(K(S<"Notation">()), S<"is_digit">(), { call(K(S<"Notation">()), S<"char_at">(), { get(self, S<"text">()), add(get(self, S<"at">()), 1.0) }) }))))))) {
+      call(self, S<"eat">(), { 1.0 });
+      auto name_0 = cell(); name_0->v = get(self, S<"word">());
+      e_0->v = (truthy(eq(name_0->v, "ln")) ? Value(call(K(S<"Expr">()), S<"log">(), { e_0->v })) : Value(call(K(S<"Expr">()), S<"call">(), { name_0->v, e_0->v })));
+    }
+    return e_0->v;
+    return null;
+  });
+  c.getter("word", [](Value self, const Args& a1) -> Value {
+    return call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (truthy(call(K(S<"Notation">()), S<"is_name">(), { c__2->v })) || truthy(gt(c__2->v, 127.0)));
+      return null;
+    }) });
+    return null;
+  });
+  c.getter("number", [](Value self, const Args& a1) -> Value {
+    return call(K(S<"Expr">()), S<"num">(), { number(call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (truthy(call(K(S<"Notation">()), S<"is_digit">(), { c__2->v })) || truthy(eq(c__2->v, 46.0)));
+      return null;
+    }) })) });
+    return null;
+  });
+  c.getter("quoted", [](Value self, const Args& a1) -> Value {
+    return call(self, S<"take_while">(), { fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return (!eq(c__2->v, 34.0));
+      return null;
+    }) });
+    return null;
+  });
+  c.getter("primary", [](Value self, const Args& a1) -> Value {
+    get(self, S<"skip">());
+    auto c__0 = cell(); c__0->v = get(self, S<"peek">());
+    if (truthy(eq(c__0->v, 40.0))) {
+      call(self, S<"eat">(), { 1.0 });
+      auto e_0 = cell(); e_0->v = get(self, S<"addition">());
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      return e_0->v;
+    }
+    if (truthy(call(K(S<"Notation">()), S<"is_digit">(), { c__0->v }))) {
+      return get(self, S<"number">());
+    }
+    if (truthy(eq(c__0->v, 34.0))) {
+      call(self, S<"eat">(), { 1.0 });
+      auto name_0 = cell(); name_0->v = quoted(self);
+      call(self, S<"eat">(), { 1.0 });
+      return call(K(S<"Expr">()), S<"field">(), { call(K(S<"Expr">()), S<"name_of">(), { name_0->v }) });
+    }
+    if (truthy(call(self, S<"starts">(), { "Solve.root(" }))) {
+      call(self, S<"eat">(), { 11.0 });
+      get(self, S<"skip">());
+      get(self, S<"word">());
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      auto name_0 = cell(); name_0->v = quoted(self);
+      call(self, S<"eat">(), { 1.0 });
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      get(self, S<"word">());
+      call(self, S<"eat">(), { 1.0 });
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 2.0 });
+      auto body_0 = cell(); body_0->v = get(self, S<"addition">());
+      get(self, S<"skip">());
+      call(self, S<"eat">(), { 1.0 });
+      return call(K(S<"Expr">()), S<"root">(), { body_0->v, call(K(S<"Expr">()), S<"name_of">(), { name_0->v }) });
+    }
+    auto name_0 = cell(); name_0->v = get(self, S<"word">());
+    if (truthy((truthy(eq(name_0->v, "s")) && truthy(eq(get(self, S<"peek">()), 46.0))))) {
+      call(self, S<"eat">(), { 1.0 });
+      return call(K(S<"Expr">()), S<"field">(), { call(K(S<"Expr">()), S<"name_of">(), { get(self, S<"word">()) }) });
+    }
+    if (truthy((truthy(eq(name_0->v, "s")) && truthy(eq(get(self, S<"peek">()), 91.0))))) {
+      call(self, S<"eat">(), { 2.0 });
+      auto key_0 = cell(); key_0->v = quoted(self);
+      call(self, S<"eat">(), { 2.0 });
+      return call(K(S<"Expr">()), S<"field">(), { call(K(S<"Expr">()), S<"name_of">(), { key_0->v }) });
+    }
+    return call(K(S<"Expr">()), S<"field">(), { name_0->v });
+    return null;
+  });
+}
+static const bool R_ExprReader = define_class("ExprReader", "Node", &C_ExprReader);
+
 
 
 void part_2() { }

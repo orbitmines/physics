@@ -2368,7 +2368,8 @@ export class Notation extends Node {
         let name = Notation.letters(src, add(i, 1));
         let word = !((name.length === 0));
         let after = add(add(i, 1), name.length);
-        if ((word && eq(Notation.char_at(src, after), 32))) {
+        let next_ = Notation.char_at(src, add(after, 1));
+        if (((((word && eq(Notation.char_at(src, after), 32)) && !eq(next_, 43)) && !eq(next_, 45)) && !eq(next_, 61))) {
           after = add(after, 1);
         }
         let big = null;
@@ -5105,8 +5106,13 @@ export class Prover extends Node {
   get theory(): Theory { return this.read("theory"); }
   set theory(v: Theory) { this.write("theory", v); }
   static PROOFS = ({});
+  static MARK = `\n@@ `;
   static RAYS_SAY = `l is a point and its rays at once, so every rule's pattern narrows l to what the rule fires on, and the line counts those narrowings in l's rays: what one firing lights or takes, over how many of l's rays one match is. Creation fires on a point - all its ways at once, which is why \`neutral\` is the point's and counts every ray of it. A meeting fires on an edge, which l sees from its own end as a lit ray whose next ray is lit too, and it takes that one ray. A source lights the ways it emits on, which already says it is not moving. And Δ is the movement: following a ray a step and a tick, through the space standing where it goes - the rule that settles each tick is what makes it a difference at all.`;
   static SPACE_SAY = `the same narrowings, counted in the points that stand at l. A meeting folds one of its two ends into the other, so l, seen from one end, gains half a point a meeting; and a creation hands one point back, whatever l holds - a firing is one event on one point. What the world grows behind a meeting or ahead of a ray is a new local, not a point standing here.`;
+  static LIGHTS = `lights`;
+  static TAKES = `takes`;
+  static RAYS_PER_WAY = `the rays at a local, per way`;
+  static WAYS_LINE = `the ways at a local, a tick on`;
   get population_line(): (Step | null) { return this.read("population_line", () => null); }
   set population_line(v: (Step | null)) { this.write("population_line", v); }
   get record_line(): (Step | null) { return this.read("record_line", () => null); }
@@ -5805,24 +5811,35 @@ export class Prover extends Node {
   following(rec: Step): Step {
     return Step.of(Fact.stands(`\\Delta_{v}f`, Expr.field(`f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}`)), `following`, [rec.fact.key], `the difference taken following something: the change per tick seen by whatever moves along v. On the lattice it is exact and it is one step - the value one local along v, a tick later, less the value here now. It is the material derivative, D/Dt, with the velocity marked, since two different velocities stand on the line. Three differences are on the line and they are not the same move: \\Delta_{v} follows v through the lattice, a step and a tick; \\nabla is the difference along a way at one tick, the neighbour less here; \\partial_{\\hat{d}} is the difference across the headings at one local, the next way's density less this one's - no move through space at all`, [`\\Delta_{v}f = f_{l + v}\\paren{t + 1} - f_{l}\\paren{t}: one step along v, one tick`, `\\nabla f: along a way, at one tick`, `\\partial_{\\hat{d}}\\rho: across the headings, at one local`]);
   }
+  static get sources_read(): string {
+    return [[`Edge.active`, Edge.method(`active`).source], [`Ray.facing`, Ray.method(`facing`).source], [`Ray.turns`, Ray.method(`turns`).source], [`Vertex.fold`, Vertex.method(`fold`).source], [`Vertex.alive`, Vertex.method(`alive`).source], [`Vertex.sinks`, Vertex.method(`sinks`).source]].map(((p: any) => {
+      return `${Prover.MARK}${elem(p, 0)}\n${elem(p, 1)}`;
+    })).join(``);
+  }
+  static source_of(key: string): string {
+    let hit = first(METHOD_SOURCES.split(Prover.MARK).filter(((p: any) => {
+      return p.startsWith(`${key}\n`);
+    })));
+    return (eq(hit, null) ? `` : hit.slice(add(key.length, 1)));
+  }
   static get edge_ends(): string[] {
-    return Edge.method(`active`).source.split(` & `).filter(((c: any) => {
+    return Prover.source_of(`Edge.active`).split(` & `).filter(((c: any) => {
       return gt(c.split(`.active`).length, 1);
     }));
   }
   get edge_from_an_end(): Step {
-    let def = Edge.method(`active`).source;
+    let active_ = Prover.source_of(`Edge.active`);
     let ends = Prover.edge_ends;
     let asked = [`active`].concat(ends.slice(1).map(((_: any) => {
       return `next.active`;
     }))).join(` & `);
-    let facing = Ray.method(`facing`).source;
-    let st = Step.of(Fact.stands(`\\narrow{Edge}{active}`, Expr.field(`\\narrow{l}{${asked}}`)), `an edge, seen from one of its ends`, [], `an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray \`facing\` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ${ends.length}.`, [`Edge.active = ${def}`, `Ray.facing = ${facing}: the ray across the same edge - next`, `\\narrow{Edge}{active} = \\narrow{l}{${asked}}, ${ends.length} ends to a meeting`]);
+    let facing = Prover.source_of(`Ray.facing`);
+    let st = Step.of(Fact.stands(`\\narrow{Edge}{active}`, Expr.field(`\\narrow{l}{${asked}}`)), `an edge, seen from one of its ends`, [], `an edge is active by its own definition: every end it joins is active. Seen from l, one of those ends is l's own ray and the others are across the edge from it - the ray \`facing\` reads, which is l's ray's next one. So a meeting is a ray of l that is lit and whose next ray is lit, and one meeting is as many of l's members as the definition has ends: ${ends.length}.`, [`Edge.active = ${active_}`, `Ray.facing = ${facing}: the ray across the same edge - next`, `\\narrow{Edge}{active} = \\narrow{l}{${asked}}, ${ends.length} ends to a meeting`]);
     return st;
   }
   get standing_at(): Step {
-    let alive = Vertex.method(`alive`).source;
-    let sinks = Vertex.method(`sinks`).source;
+    let alive = Prover.source_of(`Vertex.alive`);
+    let sinks = Prover.source_of(`Vertex.sinks`);
     return Step.of(Fact.stands(`\\narrow{\\forall}{@ == l}`, Expr.add([Expr.num(1), Expr.field(`\\narrow{\\forall}{folded_into == l}`)])), `what stands at a local`, [], `the points that stand at l: l itself, and every point folded into it - \`held\`, each with \`folded_into\` set to l. A folded point is not alive and it sinks into the point that holds it, so its place is l's, and @ == l is the one narrowing for both. The space a firing moves at a local is this count, a swallow one more and a hand-back one fewer; what the world grows is a new local, not a point standing here.`, [`Vertex.alive = ${alive}`, `Vertex.sinks = ${sinks}`, `\\narrow{\\forall}{@ == l} = 1 + \\narrow{\\forall}{folded_into == l}`]);
   }
   static members_of(t: TermInfo, rays: boolean): Expr {
@@ -5901,6 +5918,263 @@ export class Prover extends Node {
     })).concat([`${lhs} = ${Expr.show(rhs)}`]));
     st.derivation = behind;
     return st;
+  }
+  static get ACROSS(): Expr {
+    return Expr.field(`\\tilde{\\rho}`);
+  }
+  static get HERE(): Expr {
+    return Expr.field(`\\rho`);
+  }
+  static get WAYS(): Expr {
+    return Expr.field(`DEG`);
+  }
+  static get LATTICE(): Expr {
+    return Expr.field(`DEG_{0}`);
+  }
+  static get MASS(): Expr {
+    return Expr.field(`\\bar{m}`);
+  }
+  static get STANDING(): string {
+    return `\\narrow{\\forall}{@ == l}`;
+  }
+  share_at(t: TermInfo, fill: object): Expr {
+    let at_l = ((e: Expr) => {
+      return Prover.neat(Expr.replace(Expr.replace(Expr.replace(Expr.evaluate(e, fill), `n`, Prover.HERE), `\\rho`, Prover.HERE), `l.\\bar{m}`, Prover.MASS));
+    });
+    if (t.outside) {
+      return at_l(t.expr);
+    }
+    let parts = [];
+    if (!eq(t.rate, null)) {
+      push(parts, Expr.field(t.rate));
+    }
+    if (!eq(t.asked, null)) {
+      push(parts, t.asked);
+    }
+    if (gt(t.degree, 0)) {
+      push(parts, Prover.HERE);
+    }
+    if (gt(t.degree, 1)) {
+      push(parts, Expr.pown(Prover.ACROSS, sub(t.degree, 1)));
+    }
+    return at_l(((parts.length === 0) ? Expr.num(1) : Expr.mul(parts)));
+  }
+  static members_at(t: TermInfo, rays: boolean): Expr {
+    return (((t.outside || ((eq(t.term.rule.over, `Vertex`) && !(rays))))) ? Expr.num(1) : Prover.WAYS);
+  }
+  ways_at(one: Step, behind: Step[]): (Step | null) {
+    let draws = Prover.source_of(`Ray.turns`);
+    let folding = Prover.source_of(`Vertex.fold`);
+    if ((!(contains(draws, `folds`)) || !(contains(folding, `folds[d] + 1`)))) {
+      return null;
+    }
+    let own = Expr.add([Prover.LATTICE, Expr.field(`n_{f,l}`)]);
+    let st = Step.of(Fact.stands(`DEG`, own), `the ways at a local`, [one.fact.key], `a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it`, [`Ray.turns = ${draws}: straight on at one, each folded way at its folds`, `Vertex.fold = ${folding}: a fold written on a way`, `DEG = ${Expr.show(own)}`]);
+    st.derivation = behind;
+    return st;
+  }
+  ways_moved(ways: Step): Step {
+    let by = Prover.neat(Expr.d(ways.fact.to, `n_{f,l}`));
+    let got = Prover.neat(Expr.mul([by, Expr.field(`\\Delta n_{f,l}`)]));
+    return Step.of(Fact.stands(`\\Delta DEG`, got), `the ways move with the record`, [ways.fact.key], `the record at l is the only thing on the ways' line that moves, so the ways move by its slope in it - one way for every fold written, one fewer for every fold taken off`, [`\\frac{\\partial DEG}{\\partial n_{f,l}} = ${Expr.show(by)}`, `\\Delta DEG = ${Expr.show(got)}`]);
+  }
+  static get GAIN(): string {
+    return `S^{+}`;
+  }
+  static get LOSS(): string {
+    return `S^{-}`;
+  }
+  rule_piece(t: TermInfo, fill: object): (Step | null) {
+    if (t.outside) {
+      return null;
+    }
+    let w = Prover.per_member(t.ray_count, Prover.members_of(t, true));
+    if (eq(w, null)) {
+      return null;
+    }
+    if (eq(w, 0)) {
+      return null;
+    }
+    let r = t.term.rule;
+    let pattern = (eq(r.where, null) ? `` : r.where.source);
+    let share = this.share_at(t, fill);
+    let got = Prover.neat(Expr.mul([Expr.num(Math.abs(w)), share]));
+    let name = (gt(w, 0) ? Prover.GAIN : Prover.LOSS);
+    let does = (gt(w, 0) ? Prover.LIGHTS : Prover.TAKES);
+    let members = Expr.show(Prover.members_of(t, true));
+    let st = Step.of(Fact.stands(name, got), r.name.toUpperCase(), [], `${r.name} at l, per way: its pattern narrows l to ${r.over}\\{${pattern}\\}, which holds ${Expr.show(share)} of l's ways - its rate, what the pattern asked, and the ends it needs lit, l's own and the one across its edge. One match is ${members} of l's ways and one firing ${does} ${Expr.show(Expr.num(Math.abs(w)))} ray on each. So it ${does} ${Expr.show(got)} of l's ways a tick: written ${name}: S for a rule, marked by what it does to the rays`, [`pattern: ${r.over}\\{${pattern}\\}`, `share of l's ways: ${Expr.show(share)}`, `one match: ${members} of l's ways, ${Expr.show(Expr.num(w))} a way`, `${name} = ${Expr.show(got)}`]);
+    st.rule = r.name.toUpperCase();
+    return st;
+  }
+  movement(ways: Step): (Step | null) {
+    let t = first(this.infos.filter(((t: any) => {
+      return (t.transport && t.kernel);
+    })));
+    if (eq(t, null)) {
+      return null;
+    }
+    let draws = Prover.source_of(`Ray.turns`);
+    let nf = Expr.linear(Expr.sub(Expr.field(`x.DEG`), Expr.add([Prover.LATTICE, Expr.field(`n_{f}`)])), `n_{f}`);
+    if (eq(nf, null)) {
+      return null;
+    }
+    let keep = Prover.neat(Expr.replace(t.keeps, `n_{f}`, nf));
+    let rhs = Expr.sub(Expr.field(`\\rho_{+v}\\paren{t + 1}`), Expr.field(`\\rho\\paren{t}`));
+    let st = Step.of(Fact.stands(`\\Delta\\rho`, rhs), t.term.rule.name.toUpperCase(), [ways.fact.key], `the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps ${Expr.show(keep)} of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place`, [`Ray.turns = ${draws}`, `at a place x: n_{f} = ${Expr.show(nf)}, its ways over the lattice's own`, `kept straight at x: ${Expr.show(t.keeps)} = ${Expr.show(keep)}`, `\\Delta\\rho = ${Expr.show(rhs)}`]);
+    st.rule = t.term.rule.name.toUpperCase();
+    return st;
+  }
+  per_way(line: Step, pieces: Step[], moving_: Step, fill: object): Step {
+    let parts = [];
+    for (const t of [...this.infos.filter(((t: any) => {
+      return (((!eq(t.term.rule, null) && !(t.transport)) && !(t.settles)) && !eq(t.rays, `0`));
+    }))]) {
+      let w = Prover.per_member(t.ray_count, Prover.members_of(t, true));
+      if (!(eq(w, null))) {
+        if (!(eq(w, 0))) {
+          if (t.outside) {
+            push(parts, Prover.weighed(w, this.share_at(t, fill)));
+          } else {
+            push(parts, (gt(w, 0) ? Expr.field(Prover.GAIN) : Expr.neg(Expr.field(Prover.LOSS))));
+          }
+        }
+      }
+    };
+    let rhs = Expr.add(parts);
+    let st = Step.of(Fact.stands(`\\Delta\\rho`, rhs), Prover.RAYS_PER_WAY, [line.fact.key, moving_.fact.key].concat(pieces.map(((x: any) => {
+      return x.fact.key;
+    }))), `the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place`, pieces.map(((x: any) => {
+      return `${x.fact.of} = ${Expr.show(x.fact.to)} (${x.via})`;
+    })).concat([`${Prover.RAYS_PER_WAY}: \\Delta\\rho = ${Expr.show(rhs)}`]));
+    st.derivation = [line, moving_].concat(pieces);
+    return st;
+  }
+  ways_line(line: Step, moved: Step, ways: Step, pieces: Step[], fill: object): (Step | null) {
+    let parts = [];
+    let said = [];
+    let folds_of = Expr.sub(ways.fact.to, Prover.LATTICE);
+    for (const t of [...this.infos.filter(((t: any) => {
+      return (((!eq(t.term.rule, null) && !(t.transport)) && !(t.settles)) && !eq(t.folds, `0`));
+    }))]) {
+      let w = Prover.per_member(t.fold_count, Prover.members_of(t, true));
+      if (!(eq(w, null))) {
+        if (!(eq(w, 0))) {
+          let share = this.share_at(t, fill);
+          let named = first(pieces.filter(((x: any) => {
+            return (eq(x.via, t.term.rule.name.toUpperCase()) && eq(Expr.show(Prover.neat(Expr.div(x.fact.to, share))), `1`));
+          })));
+          let at = (eq(named, null) ? share : Expr.field(named.fact.of));
+          let gate = (eq(t.around, null) ? Expr.num(1) : Prover.neat(Expr.replace(Expr.replace(t.around, `n_{f}`, Prover.neat(Expr.sub(Prover.WAYS, Prover.LATTICE))), `DEG`, Prover.WAYS)));
+          let got = Prover.neat(Expr.mul([Expr.num(w), Prover.WAYS, gate, at]));
+          push(parts, got);
+          push(said, `${t.term.rule.name.toUpperCase()}: ${Expr.show(Expr.num(w))} a fold on each of l's ways, ${Expr.show(gate)} of them, at ${Expr.show(at)} - ${Expr.show(got)}`);
+        }
+      }
+    };
+    if ((parts.length === 0)) {
+      return null;
+    }
+    let rhs = Expr.add(parts);
+    let st = Step.of(Fact.stands(`\\Delta DEG`, rhs), Prover.WAYS_LINE, [line.fact.key, moved.fact.key, ways.fact.key].concat(pieces.map(((x: any) => {
+      return x.fact.key;
+    }))), `l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ${Expr.show(folds_of)} of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back`, said.concat([`\\Delta DEG = ${Expr.show(rhs)}`]));
+    st.derivation = [line, moved, ways].concat(pieces);
+    return st;
+  }
+  in_record(ways_c: Step, ways: Step, pieces: Step[]): Expr {
+    let e = ways_c.fact.to;
+    for (const x of [...pieces]) {
+      e = Expr.replace(e, x.fact.of, x.fact.to);
+    };
+    e = Expr.replace(Expr.replace(e, Prover.ACROSS.label, Prover.HERE), `DEG`, ways.fact.to);
+    return Prover.tidy(Expr.replace(e, `n_{f,l}`, Expr.field(`n_{f}`)));
+  }
+  record_moves(ways_c: Step, ways: Step, pieces: Step[]): Step {
+    let e = this.in_record(ways_c, ways, pieces);
+    return Step.of(Fact.stands(`\\Delta n_{f}`, e), `the record's own line`, [ways_c.fact.key, ways.fact.key].concat(pieces.map(((x: any) => {
+      return x.fact.key;
+    }))), `the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone`, [`${ways_c.fact.of} = ${Expr.show(ways_c.fact.to)}`, `DEG = ${Expr.show(ways.fact.to)}`, `\\Delta n_{f} = ${Expr.show(e)}`]);
+  }
+  record_settles(moves: Step): (Step | null) {
+    let parts = Expr.split(moves.fact.to, `n_{f}`);
+    if (eq(parts, null)) {
+      return null;
+    }
+    let top = Prover.tidy(Expr.neg(elem(parts, 1)));
+    let bottom = Prover.tidy(elem(parts, 0));
+    if (Expr.show(top).startsWith(`-`)) {
+      top = Prover.tidy(Expr.neg(top));
+      bottom = Expr.flip(bottom);
+    }
+    let nf = Expr.div(top, bottom);
+    let st = Step.of(Fact.stands(`n_{f}`, nf), `the record settled against the density`, [moves.fact.key], `the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought`, [`${moves.fact.of} = ${Expr.show(moves.fact.to)} = 0`, `n_{f} = ${Expr.show(nf)}`]);
+    st.parts_ = [top, bottom];
+    return st;
+  }
+  record_left(rays_c: Step, ways_c: Step, settles: Step): Step {
+    let k = this.fold_weight;
+    let both = Prover.neat(Expr.collected(Expr.expand(Expr.add([Expr.mul([Prover.WAYS, rays_c.fact.to]), Expr.mul([k, ways_c.fact.to])]))));
+    let vac = Expr.field(`\\rho_{\\infty}`);
+    let base = Expr.replace(settles.fact.to, `\\rho`, vac);
+    let per = Expr.mul([Expr.field(`x.\\bar{m}`), Expr.sub(Expr.pown(Expr.field(`l.shell\\paren{x.\\bar{R}}`), (-1)), Prover.reach(`x.\\bar{R}`))]);
+    let rhs = Expr.add([base, Expr.mul([Expr.pown(k, (-1)), Expr.call(`\\sum_{x = x_{@t}}`, per)])]);
+    let lhs = `\\Delta\\paren{DEG·\\rho + ${Expr.show(k)}·n_{f}}`;
+    return Step.of(Fact.stands(`n_{f,l}\\paren{t}`, rhs), `the record every body leaves at a local`, [rays_c.fact.key, ways_c.fact.key, settles.fact.key], `a meeting turns ${Expr.show(k)} of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ${Expr.show(k)} times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over ${Expr.show(k)}, on the settled record. Each body is read as it was when its rays left it, at its own distance then`, [`${lhs} = ${Expr.show(both)}`, `the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ${Expr.show(base)}`, `x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then`, `n_{f,l}\\paren{t} = ${Expr.show(rhs)}`]);
+  }
+  leftover(rays_c: Step): (Step | null) {
+    let m = Prover.MASS.label;
+    let parts = Expr.split(Expr.sub(rays_c.fact.to, Expr.field(rays_c.fact.of)), m);
+    if (eq(parts, null)) {
+      return null;
+    }
+    let rest = (eq(elem(parts, 1).kind, `add`) ? elem(parts, 1).of : [elem(parts, 1)]);
+    let over = rest.map(((x: any) => {
+      return Prover.neat(Expr.div(Expr.neg(x), elem(parts, 0)));
+    }));
+    let got = Expr.add(over.filter(((x: any) => {
+      return Expr.mentions(x, rays_c.fact.of);
+    })).concat(over.filter(((x: any) => {
+      return !(Expr.mentions(x, rays_c.fact.of));
+    }))));
+    return Step.of(Fact.stands(m, got), `the mass is what the vacuum leaves over`, [rays_c.fact.key], `the rays' line is linear in what a source puts in, so it solves for it: the share of l's ways a source lights is how the lit share at l moved, less what the vacuum's own rules did to it - put in by creation, taken by the meetings. Where the rays do only what the vacuum does, it is nought; anything else is a source`, [`${rays_c.fact.of} = ${Expr.show(rays_c.fact.to)}`, `${m} = ${Expr.show(got)}`]);
+  }
+  model_chain(s: Store, rays_l: (Step | null), space_l: (Step | null), spaced: Step, folded: Step, one: Step): Step[] {
+    if ((eq(rays_l, null) || eq(space_l, null))) {
+      return [];
+    }
+    let fill = Prover.settled(s);
+    let ways = this.ways_at(one, [spaced, folded, one]);
+    if (eq(ways, null)) {
+      return [];
+    }
+    let moved = this.ways_moved(ways);
+    let pieces = this.infos.filter(((t: any) => {
+      return (((!eq(t.term.rule, null) && !(t.transport)) && !(t.settles)) && !eq(t.rays, `0`));
+    })).map(((t: any) => {
+      return this.rule_piece(t, fill);
+    })).filter(((x: any) => {
+      return !eq(x, null);
+    }));
+    let moving_ = this.movement(ways);
+    if ((eq(moving_, null) || (pieces.length === 0))) {
+      return [];
+    }
+    let rays_c = this.per_way(rays_l, pieces, moving_, fill);
+    let ways_c = this.ways_line(folded, moved, ways, pieces, fill);
+    if (eq(ways_c, null)) {
+      return [];
+    }
+    let moves = this.record_moves(ways_c, ways, pieces);
+    let settles = this.record_settles(moves);
+    if (eq(settles, null)) {
+      return [];
+    }
+    let left = this.record_left(rays_c, ways_c, settles);
+    let mass = this.leftover(rays_c);
+    if (eq(mass, null)) {
+      return [];
+    }
+    return [rays_l, space_l, ways, moved].concat(pieces).concat([moving_, rays_c, ways_c, moves, settles, left, mass]);
   }
   lean(rec: Step): Step {
     return Step.of(Fact.stands(`a`, Expr.field(`\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}`)), `the lean`, [rec.fact.key], `the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend`, [`a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned`, `streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading`, `bending: \\Delta_{a}S_{l} - the record along the lean`]);
@@ -6224,6 +6498,7 @@ export class Prover extends Node {
     let whole = this.general(filled, folded);
     let rays_l = this.narrowed(`rays`, filled);
     let space_l = this.narrowed(`space`, spaced);
+    let model = this.model_chain(s, rays_l, space_l, spaced, folded, one);
     let settled = this.settled_record(folded);
     let short = (eq(settled, null) ? null : this.single(whole, settled, folded, s));
     let agg = (eq(short, null) ? null : this.aggregate(whole, short, s));
@@ -6258,18 +6533,27 @@ export class Prover extends Node {
     }))]) {
       named.set(st.fact.of, st);
     };
+    for (const st of [...model.filter(((x: any) => {
+      return ((!eq(x.via, Prover.RAYS_PER_WAY) && !eq(x.via, `the ways move with the record`)) && !eq(x.via, `the mass is what the vacuum leaves over`));
+    }))]) {
+      named.set(st.fact.of, st);
+    };
     let proved = this.theory.theorems.map(((t: any) => {
       let q = t.asked;
       let p = new Proved({ theorem: t.id, theory: this.theory.name, asks: q.asks, about: q.about });
       let hit = ((q.about.length === 0) ? null : named.get(q.about));
       let root = elem(s.steps, Fact.key_of(`is`, `the continuous model`));
-      let steps = ((q.about.length === 0) ? chain : ((!eq(hit, null) ? ((eq(root, null) ? [hit] : [root, hit])) : Prover.behind(s, q.about))));
+      let steps = ((q.about.length === 0) ? (((model.length === 0) ? chain : model)) : ((!eq(hit, null) ? ((eq(root, null) ? [hit] : [root, hit])) : Prover.behind(s, q.about))));
       let end = ((q.about.length === 0) ? null : last(steps));
       p.steps = steps.map(((st: any) => {
         return this.line_of(st);
       }));
       if ((q.about.length === 0)) {
-        p.concluded = Prover.headline(((((whole_line ?? agg) ?? short) ?? whole)).fact, null);
+        p.concluded = Prover.headline((((model.length === 0) ? ((((whole_line ?? agg) ?? short) ?? whole)) : last(model))).fact, null);
+        let ways_said = first(model.filter(((x: any) => {
+          return eq(x.via, Prover.WAYS_LINE);
+        })));
+        p.also = (eq(ways_said, null) ? null : Prover.headline(ways_said.fact, null));
         p.standing = true;
       } else {
         if ((!eq(end, null) && !eq(end.fact.of, q.about))) {
@@ -6313,19 +6597,22 @@ export class Prover extends Node {
     let spaced = this.ledger_filled(s, `space`);
     let folded = this.ledger_filled(s, `folds`);
     let one = this.ledgers_are_one(s, folded, spaced);
-    let whole = this.general(filled, folded);
-    let settled = this.settled_record(folded);
-    let short = (eq(settled, null) ? null : this.single(whole, settled, folded, s));
-    let agg = (eq(short, null) ? null : this.aggregate(whole, short, s));
-    let back = (eq(agg, null) ? null : this.remembered(s, agg));
-    let each = (eq(back, null) ? null : this.from_each(s, back));
-    let known = (eq(each, null) ? null : this.forgotten(s, each, settled));
-    let pull = (eq(known, null) ? null : this.felt(s, known, settled));
-    let rec = (eq(pull, null) ? null : this.record_of_all(known, pull, settled));
-    let whole_line = (eq(rec, null) ? null : this.one_line(rec));
     let grown = this.growth_filled(s);
-    let roles = [`population`, `space`, `folds`, `one`, `general`, `settled`, `single`, `aggregate`, `remembered`, `each`, `known`, `felt`, `record`, `line`, `growth`];
-    let steps = [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line, grown];
+    let model = this.model_chain(s, this.narrowed(`rays`, filled), this.narrowed(`space`, spaced), spaced, folded, one);
+    let by = ((via: string) => {
+      return first(model.filter(((x: any) => {
+        return eq(x.via, via);
+      })));
+    });
+    let rays_c = by(Prover.RAYS_PER_WAY);
+    let mass = ((model.length === 0) ? null : last(model));
+    for (const x of [...model.filter(((x: any) => {
+      return (eq(x.fact.of, Prover.GAIN) || eq(x.fact.of, Prover.LOSS));
+    }))]) {
+      out.set(x.fact.of, x);
+    };
+    let roles = [`population`, `space`, `growth`, `rays`, `line`, `ways`, `folds`, `settled`, `record`, `mass`];
+    let steps = [filled, spaced, grown, rays_c, rays_c, by(Prover.WAYS_LINE), by(`the record's own line`), by(`the record settled against the density`), by(`the record every body leaves at a local`), mass];
     for (let i = 0; i < roles.length; i++) {
       if (!eq(elem(steps, i), null)) {
         out.set(elem(roles, i), elem(steps, i));
@@ -7363,6 +7650,42 @@ export class Aggregate extends Node {
   set store(v: Store) { this.write("store", v); }
   get chain(): Keyed { return this.read("chain", () => this.prover.chain(this.store)); }
   set chain(v: Keyed) { this.write("chain", v); }
+  get net(): (Expr | null) { return this.read("net", () => this.rays_net); }
+  set net(v: (Expr | null)) { this.write("net", v); }
+  get rays_net(): (Expr | null) {
+    let st = this.step(`rays`);
+    if (eq(st, null)) {
+      return null;
+    }
+    let e = st.fact.to;
+    for (const name of [...[Prover.GAIN, Prover.LOSS]]) {
+      let piece = this.chain.get(name);
+      if (!eq(piece, null)) {
+        e = Expr.replace(e, name, piece.fact.to);
+      }
+    };
+    return Prover.neat(Expr.replace(Expr.replace(e, Prover.ACROSS.label, Prover.HERE), Prover.MASS.label, Expr.num(0)));
+  }
+  nets_at(rho: number): number {
+    let e = this.env;
+    e[Prover.HERE.label] = rho;
+    return Aggregate.numeric_of(this.net, e);
+  }
+  get root_of_net(): number {
+    let lo = 0;
+    let hi = 1;
+    for (let i = 0; i < 48; i++) {
+      let mid = div((add(lo, hi)), 2);
+      if (gt(this.nets_at(mid), 0)) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    };
+    return div((add(lo, hi)), 2);
+  }
+  get settled_rho(): number { return this.read("settled_rho", () => (eq(this.net, null) ? this.fact_at(`\\rho_{\\infty}`, this.env) : this.root_of_net)); }
+  set settled_rho(v: number) { this.write("settled_rho", v); }
   get NEAR(): number { return this.read("NEAR", () => 0.5); }
   set NEAR(v: number) { this.write("NEAR", v); }
   get env(): object {
@@ -7376,6 +7699,7 @@ export class Aggregate extends Node {
     e[`D`] = this.D;
     e[`DEG`] = this.DEG;
     e[`l.DEG`] = this.DEG;
+    e[`DEG_{0}`] = this.DEG;
     e[`\\bar{c}`] = 1;
     return e;
   }
@@ -7397,7 +7721,7 @@ export class Aggregate extends Node {
     return (eq(st, null) ? `-` : `${st.fact.of} = ${Expr.show(st.fact.to)}`);
   }
   get rho_inf(): number {
-    return this.fact_at(`\\rho_{\\infty}`, this.env);
+    return this.settled_rho;
   }
   get settled_env(): object {
     let e = this.env;
@@ -7856,7 +8180,9 @@ export class Aggregate extends Node {
   }
   get folds_expr(): Expr {
     let st = this.step(`folds`);
-    return (eq(st, null) ? Expr.num(0) : st.fact.to);
+    let lattice = ({});
+    lattice[`DEG_{0}`] = this.DEG;
+    return (eq(st, null) ? Expr.num(0) : Expr.evaluate(st.fact.to, lattice));
   }
   folds_rate(rho: number, nf: number): number {
     let at = this.base;
@@ -9046,6 +9372,9 @@ export class Medium extends Node {
   get vac(): number[] { return this.read("vac", () => filled(this.cells, this.aggregate.rho_inf)); }
   set vac(v: number[]) { this.write("vac", v); }
   nets(rho: number, nf: number): number {
+    if (!eq(this.aggregate.net, null)) {
+      return this.aggregate.nets_at(rho);
+    }
     let s = this.symbols(rho, nf);
     let got = 0;
     for (const t of [...this.points]) {
@@ -16544,6 +16873,18 @@ export const G = new (class G extends Theory {
   static "theorem vacuum.space" = new Theorem({ id: "vacuum.space", body: () => {
     return new Asked({ asks: `and the same narrowings counted in the points that stand at a local - the point and everything folded into it. What do the rules do to the space at a local?`, about: `\\Delta \\narrow{\\forall}{@ == l}`, leads: `THE SPACE AT A LOCAL: half a point for every meeting seen from l's end, since a meeting folds one of its two points into the other, and one point handed back by every creation.` });
   } });
+  static "theorem vacuum.creation" = new Theorem({ id: "vacuum.creation", body: () => {
+    return new Asked({ asks: `creation, at a local: what share of l's ways does it light a tick?`, about: `S^{+}`, leads: `CREATION AT A LOCAL (G/2), per way: a rule, written S, marked + for putting rays in - every way of a point nothing stands on, lit at once.` });
+  } });
+  static "theorem vacuum.annihilation" = new Theorem({ id: "vacuum.annihilation", body: () => {
+    return new Asked({ asks: `annihilation, at a local: what share of l's ways does it take a tick?`, about: `S^{-}`, leads: `ANNIHILATION AT A LOCAL (G/1), per way: a rule, written S, marked - for taking rays out - one from each lit way whose next ray is lit, at the share a meeting is of its two ends.` });
+  } });
+  static "theorem vacuum.movement" = new Theorem({ id: "vacuum.movement", body: () => {
+    return new Asked({ asks: `the rays move. Followed a step and a tick, what does a ray's way on depend on?`, about: `\\Delta\\rho`, leads: `MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds.` });
+  } });
+  static "theorem vacuum.ways" = new Theorem({ id: "vacuum.ways", body: () => {
+    return new Asked({ asks: `a fold is a way. How many ways does a local have, and what moves them?`, about: `\\Delta DEG`, also: `DEG`, leads: `THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own.`, then: `AND WHAT THEY ARE: the lattice's own ways and one for every fold.` });
+  } });
   static "theorem vacuum.at" = new Theorem({ id: "vacuum.at", body: () => {
     return new Asked({ asks: `a source is a thing with a history. What does it mean to read one at a particular time?`, about: `l'_{@t}` });
   } });
@@ -16768,3 +17109,4 @@ export const sep2 = `, `;
 export const plus = ` + `;
 export const ind2 = `  `;
 export const nl0 = `\n`;
+export const METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at";

@@ -1288,6 +1288,8 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   vac: Real[] = Array.filled(this.cells, this.aggregate.rho_inf)
   /* what the rays line nets at a point, off the same terms every other reading is made of (Continuum.right) */
   nets (rho: Real, nf: Real): Real => {
+    /* the continuous model's own rays line, where the chain has one */
+    return this.aggregate.nets_at(rho) if this.aggregate.net != None
     s := this.symbols(rho, nf)
     got := 0
     /* what a point makes counts the lattice's ways already, since CREATION lights every one of them */

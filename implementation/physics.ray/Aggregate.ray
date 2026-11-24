@@ -10,11 +10,12 @@
  * and the field of any list of bodies at a place, with its gradient. Edit the derivation and every
  * backend follows, since they read it here rather than transcribing it.
  *
- * WHAT IS READ, BY ROLE. `population`: the line with every factor in; `folds`: the record's line;
- * `settled`: the record against the density; `aggregate`: the vacuum settled; `record`: the record
- * every body leaves at a local (`n_{f,l}`), a sum over the bodies; `line`: one line for every body,
- * whose turn is the record's gradient. A role the chain no longer produces is None, and the backend
- * that needs it says so.
+ * WHAT IS READ, BY ROLE - all of it off the continuous model (`Prover.model_chain`), none off the older chain.
+ * `population`/`space`/`growth`: the rules' ledgers with every factor in; `rays` (and `line`): the rays at a
+ * local, per way; `ways`: the ways at a local, a tick on; `folds`: the record's own line, the ways' line in the
+ * record; `settled`: the record against the density; `record`: the record every body leaves at a local
+ * (`n_{f,l}`), a sum over the bodies; `mass`: the mass as what the vacuum leaves over. A role the chain no
+ * longer produces is None, and the backend that needs it says so.
  */
 
 Prover += {
@@ -25,19 +26,16 @@ Prover += {
     spaced := this.ledger_filled(s, "space")
     folded := this.ledger_filled(s, "folds")
     one := this.ledgers_are_one(s, folded, spaced)
-    whole := this.general(filled, folded)
-    settled := this.settled_record(folded)
-    short := settled == None ? None : this.single(whole, settled, folded, s)
-    agg := short == None ? None : this.aggregate(whole, short, s)
-    back := agg == None ? None : this.remembered(s, agg)
-    each := back == None ? None : this.from_each(s, back)
-    known := each == None ? None : this.forgotten(s, each, settled)
-    pull := known == None ? None : this.felt(s, known, settled)
-    rec := pull == None ? None : this.record_of_all(known, pull, settled)
-    whole_line := rec == None ? None : this.one_line(rec)
     grown := this.growth_filled(s)
-    roles := ["population", "space", "folds", "one", "general", "settled", "single", "aggregate", "remembered", "each", "known", "felt", "record", "line", "growth"]
-    steps := [filled, spaced, folded, one, whole, settled, short, agg, back, each, known, pull, rec, whole_line, grown]
+    /* the continuous model off the narrowings, and nothing else: the rays and the ways at a local, the record they leave, and the mass as what the vacuum leaves over */
+    model := this.model_chain(s, this.narrowed("rays", filled), this.narrowed("space", spaced), spaced, folded, one)
+    by := (via: String): Step? => model.filter(x => x.via == via).first
+    rays_c := by(Prover.RAYS_PER_WAY)
+    mass := model.empty ? None : model.last
+    /* each rule at a local, by its own name, so a backend can put the shares back into the lines */
+    model.filter(x => x.fact.of == Prover.GAIN | x.fact.of == Prover.LOSS).for(x => { out.set(x.fact.of, x) })
+    roles := ["population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass"]
+    steps := [filled, spaced, grown, rays_c, rays_c, by(Prover.WAYS_LINE), by("the record's own line"), by("the record settled against the density"), by("the record every body leaves at a local"), mass]
     Array.range(roles.length).for(i => { out.set(roles[i], steps[i]) if steps[i] != None })
     out
   }
@@ -59,6 +57,39 @@ Aggregate := class < theory: Theory {
   prover: Prover = Prover(theory: this.theory)
   store: Store = this.prover.closure
   chain: Keyed = this.prover.chain(this.store)
+  /*
+   * THE VACUUM'S RAYS AT A POINT, off the continuous model: the counted rays line with nothing put in from outside, the
+   * ray across l's edge the same vacuum as l's own, and l's ways the lattice's - what the line nets at a density. The
+   * medium settles its vacuum where this is nought, on the CPU (`Medium.nets`) and on the device (`mnets`)
+   */
+  net: Expr? = this.rays_net
+  rays_net (): Expr? => {
+    st := this.step("rays")
+    return None if st == None
+    e := st.fact.to
+    /* each rule's own share put back in for its name */
+    [Prover.GAIN, Prover.LOSS].for(name => {
+      piece := this.chain.get(name)
+      e = Expr.replace(e, name, piece.fact.to) if piece != None
+    })
+    Prover.neat(Expr.replace(Expr.replace(e, Prover.ACROSS.label, Prover.HERE), Prover.MASS.label, Expr.num(0)))
+  }
+  nets_at (rho: Real): Real => {
+    e := this.env
+    e[Prover.HERE.label] = rho
+    Aggregate.numeric_of(this.net, e)
+  }
+  /* the line falls with the density, so one bisection finds where it nets nought */
+  root_of_net (): Real => {
+    lo := 0
+    hi := 1
+    Array.range(48).for(i => {
+      mid := (lo + hi) / 2
+      if this.nets_at(mid) > 0 { lo = mid } else { hi = mid }
+    })
+    (lo + hi) / 2
+  }
+  settled_rho: Real = this.net == None ? this.fact_at("\\rho_{{\\infty}}", this.env) : this.root_of_net
   /* a body has a size - its own cell - so no distance is read closer than half a c-bar */
   NEAR: Real = 0.5
 
@@ -72,6 +103,8 @@ Aggregate := class < theory: Theory {
     e["D"] = this.D
     e["DEG"] = this.DEG
     e["l.DEG"] = this.DEG
+    /* the lattice's own ways, which a place has before anything folds into it */
+    e["DEG_{{0}}"] = this.DEG
     e["\\bar{{c}}"] = 1
     e
   }
@@ -90,7 +123,7 @@ Aggregate := class < theory: Theory {
   }
 
   /* THE SETTLED VACUUM: its density, where the making pays for the taking, and its record at that density */
-  rho_inf (): Real => this.fact_at("\\rho_{{\\infty}}", this.env)
+  rho_inf (): Real => this.settled_rho
   settled_env (): {} => {
     e := this.env
     e["\\rho"] = this.rho_inf
@@ -483,7 +516,9 @@ Aggregate := class < theory: Theory {
    */
   folds_expr (): Expr => {
     st := this.step("folds")
-    st == None ? Expr.num(0) : st.fact.to
+    lattice := { }
+    lattice["DEG_{{0}}"] = this.DEG
+    st == None ? Expr.num(0) : Expr.evaluate(st.fact.to, lattice)
   }
   static FOLDS_NAMES = ["\\rho", "n_{{f}}"]
   folds_rate (rho: Real, nf: Real): Real => {

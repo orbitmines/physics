@@ -190,7 +190,9 @@ Notation := class {
         name := Notation.letters(src, i + 1)
         word := !name.empty
         after := i + 1 + name.length
-        after = after + 1 if word & Notation.char_at(src, after) == 32
+        /* the space after a command word ends the word and is not set - unless an operator follows it, where it is the operator's own room */
+        next_ := Notation.char_at(src, after + 1)
+        after = after + 1 if word & Notation.char_at(src, after) == 32 & next_ != 43 & next_ != 45 & next_ != 61
         big := None
         if Notation.BIGS.contains(name) {
           big = Notation.args(src, after, 2, ["_", "^"])
