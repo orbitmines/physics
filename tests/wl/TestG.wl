@@ -344,7 +344,7 @@ t["tests/medium.ray:32 on alone_medium", Module[{it, guard = 0},
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:32 on pair_medium", Module[{it, guard = 0},
@@ -352,7 +352,7 @@ t["tests/medium.ray:32 on pair_medium", Module[{it, guard = 0},
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
 t["tests/medium.ray:32 on standing", Module[{it, guard = 0},
@@ -360,238 +360,283 @@ t["tests/medium.ray:32 on standing", Module[{it, guard = 0},
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[mEvery[it["rho"], lfn[2, { env1["v"] = arg[args2, 0] };
-  Throw[ge[env1["v"], it["rho_inf"]], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], it[\"rho_inf\"]], ret]]]"],
+  Throw[ge[env1["v"], 0.], ret]]]], "pass", "failed: " <> "mEvery[it[\"rho\"], lfn[2, { env1[\"v\"] = arg[args2, 0] };\n  Throw[ge[env1[\"v\"], 0.], ret]]]"],
     skip]]];
 
-t["tests/medium.ray:40 on alone_medium", Module[{it, guard = 0},
+t["tests/medium.ray:33 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["rho"], it["at", 7., 7.]], elem[it["rho"], it["at", 12., 7.]]]], "pass", "failed: " <> "gt[elem[it[\"rho\"], it[\"at\", 7., 7.]], elem[it[\"rho\"], it[\"at\", 12., 7.]]]"],
     skip]]];
 
-t["tests/medium.ray:40 on pair_medium", Module[{it, guard = 0},
+t["tests/medium.ray:33 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["rho"], it["at", 7., 7.]], elem[it["rho"], it["at", 12., 7.]]]], "pass", "failed: " <> "gt[elem[it[\"rho\"], it[\"at\", 7., 7.]], elem[it[\"rho\"], it[\"at\", 12., 7.]]]"],
     skip]]];
 
-t["tests/medium.ray:40 on standing", Module[{it, guard = 0},
+t["tests/medium.ray:33 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], eq[it["N"], 16.]], eq[it["ticks"], 12.]]], If[++guard > 14 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[elem[it["rho"], it["at", 7., 7.]], elem[it["rho"], it["at", 12., 7.]]]], "pass", "failed: " <> "gt[elem[it[\"rho\"], it[\"at\", 7., 7.]], elem[it[\"rho\"], it[\"at\", 12., 7.]]]"],
     skip]]];
 
 t["tests/medium.ray:41 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:41 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:41 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["px_now"], 0.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:42 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:42 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:42 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
+    If[truthy[lt[elem[it["holes"], 1.]["px_now"], 0.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"px_now\"], 0.]"],
     skip]]];
 
 t["tests/medium.ray:43 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:43 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:43 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
+    If[truthy[lt[mAbs[elem[it["holes"], 0.]["py_now"]], 0.000001]], "pass", "failed: " <> "lt[mAbs[elem[it[\"holes\"], 0.][\"py_now\"]], 0.000001]"],
     skip]]];
 
 t["tests/medium.ray:44 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
 t["tests/medium.ray:44 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
 t["tests/medium.ray:44 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
+    If[truthy[gt[elem[it["holes"], 0.]["x"], 6.]], "pass", "failed: " <> "gt[elem[it[\"holes\"], 0.][\"x\"], 6.]"],
     skip]]];
 
-t["tests/medium.ray:46 on alone_medium", Module[{it, guard = 0},
+t["tests/medium.ray:45 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
-t["tests/medium.ray:46 on pair_medium", Module[{it, guard = 0},
+t["tests/medium.ray:45 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
-t["tests/medium.ray:46 on standing", Module[{it, guard = 0},
+t["tests/medium.ray:45 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 6., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 6., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
+    If[truthy[lt[elem[it["holes"], 1.]["x"], 42.]], "pass", "failed: " <> "lt[elem[it[\"holes\"], 1.][\"x\"], 42.]"],
     skip]]];
 
 t["tests/medium.ray:47 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
+    If[truthy[gt[it["record_above", it["at", 7., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 7., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
     skip]]];
 
 t["tests/medium.ray:47 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
+    If[truthy[gt[it["record_above", it["at", 7., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 7., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
     skip]]];
 
 t["tests/medium.ray:47 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 7., 24.]], it["record_above", it["at", 24., 24.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 7., 24.]], it[\"record_above\", it[\"at\", 24., 24.]]]"],
+    skip]]];
+
+t["tests/medium.ray:48 on alone_medium", Module[{it, guard = 0},
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
+  Catch[
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
-t["tests/medium.ray:61 on alone_medium", Module[{it, guard = 0},
-  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
-  Catch[
-    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
-    skip]]];
-
-t["tests/medium.ray:61 on pair_medium", Module[{it, guard = 0},
+t["tests/medium.ray:48 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
-    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
-t["tests/medium.ray:61 on standing", Module[{it, guard = 0},
+t["tests/medium.ray:48 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
-    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
+    While[!truthy[andV[eq[len[it["holes"]], 2.], eq[it["ticks"], 24.]]], If[++guard > 26 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["crossed", it["at", 24., 24.]], 0.]], "pass", "failed: " <> "gt[it[\"crossed\", it[\"at\", 24., 24.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:62 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], 0.]"],
     skip]]];
 
-t["tests/medium.ray:64 on alone_medium", Module[{it, guard = 0},
+t["tests/medium.ray:63 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
-t["tests/medium.ray:64 on pair_medium", Module[{it, guard = 0},
+t["tests/medium.ray:63 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
-t["tests/medium.ray:64 on standing", Module[{it, guard = 0},
+t["tests/medium.ray:63 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
+    If[truthy[gt[it["record_above", it["at", 30., 18.]], 0.]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 30., 18.]], 0.]"],
     skip]]];
 
 t["tests/medium.ray:65 on alone_medium", Module[{it, guard = 0},
   it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
     skip]]];
 
 t["tests/medium.ray:65 on pair_medium", Module[{it, guard = 0},
   it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
     skip]]];
 
 t["tests/medium.ray:65 on standing", Module[{it, guard = 0},
   it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
   Catch[
     While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["record_above", it["at", 24., 18.]], div[it["nf_inf"], 100.]]], "pass", "failed: " <> "lt[it[\"record_above\", it[\"at\", 24., 18.]], div[it[\"nf_inf\"], 100.]]"],
+    skip]]];
+
+t["tests/medium.ray:66 on alone_medium", Module[{it, guard = 0},
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
     If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
+    skip]]];
+
+t["tests/medium.ray:66 on pair_medium", Module[{it, guard = 0},
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
+    skip]]];
+
+t["tests/medium.ray:66 on standing", Module[{it, guard = 0},
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["record_above", it["at", 24., 18.]], it["record_above", it["at", 30., 18.]]]], "pass", "failed: " <> "gt[it[\"record_above\", it[\"at\", 24., 18.]], it[\"record_above\", it[\"at\", 30., 18.]]]"],
+    skip]]];
+
+t["tests/medium.ray:68 on alone_medium", Module[{it, guard = 0},
+  it = G["medium", 16., 8., 3., 18., 2.]["thrown", 7., 7., 1., 100., 0., 0., 1.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[rng[it["cells"]], lfn[2, { env1["c"] = arg[args2, 0] };
+  Throw[ge[add[elem[it["rho"], env1["c"]], elem[it["vac"], env1["c"]]], sub[it["rho_inf"], 0.000001]], ret]]]], "pass", "failed: " <> "mEvery[rng[it[\"cells\"]], lfn[2, { env1[\"c\"] = arg[args2, 0] };\n  Throw[ge[add[elem[it[\"rho\"], env1[\"c\"]], elem[it[\"vac\"], env1[\"c\"]]], sub[it[\"rho_inf\"], 0.000001]], ret]]]"],
+    skip]]];
+
+t["tests/medium.ray:68 on pair_medium", Module[{it, guard = 0},
+  it = G["medium", 49., 8., 3., 18., 3.]["thrown", 6., 24., 1., 100., 0., 0., 1.]["thrown", 42., 24., 1., 100., 0., 0., 2.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[rng[it["cells"]], lfn[2, { env1["c"] = arg[args2, 0] };
+  Throw[ge[add[elem[it["rho"], env1["c"]], elem[it["vac"], env1["c"]]], sub[it["rho_inf"], 0.000001]], ret]]]], "pass", "failed: " <> "mEvery[rng[it[\"cells\"]], lfn[2, { env1[\"c\"] = arg[args2, 0] };\n  Throw[ge[add[elem[it[\"rho\"], env1[\"c\"]], elem[it[\"vac\"], env1[\"c\"]]], sub[it[\"rho_inf\"], 0.000001]], ret]]]"],
+    skip]]];
+
+t["tests/medium.ray:68 on standing", Module[{it, guard = 0},
+  it = G["medium", 37., 8., 3., 18., 2.]["under_vacuum"]["thrown", 18., 18., 0.01, 100., 0., 0., 1.];
+  Catch[
+    While[!truthy[andV[andV[eq[len[it["holes"]], 1.], it["vacuum"]], eq[it["ticks"], 40.]]], If[++guard > 42 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[mEvery[rng[it["cells"]], lfn[2, { env1["c"] = arg[args2, 0] };
+  Throw[ge[add[elem[it["rho"], env1["c"]], elem[it["vac"], env1["c"]]], sub[it["rho_inf"], 0.000001]], ret]]]], "pass", "failed: " <> "mEvery[rng[it[\"cells\"]], lfn[2, { env1[\"c\"] = arg[args2, 0] };\n  Throw[ge[add[elem[it[\"rho\"], env1[\"c\"]], elem[it[\"vac\"], env1[\"c\"]]], sub[it[\"rho_inf\"], 0.000001]], ret]]]"],
     skip]]];
 
 t["tests/motion.ray:13 on line", Module[{it, guard = 0},

@@ -147,17 +147,17 @@ n_f = \frac{DEG_0·\rho^(2)}{4·\paren{1 - \frac{\rho^(2)}{4} - \rho}}
 
 the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought
 
-**n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{x.m̄·\paren{\frac{1}{l.shell\paren{x.R̄}} - l.reach\paren{x.R̄}}}}{2}**  
+**n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}}{l.shell\paren{x.R̄}}}}{2}**  
 <sub>theorem · the record every body leaves at a local</sub>  
 
 ```
 \Delta\paren{DEG·\rho + 2·n_f} = DEG·m̄ + 2·DEG_0·S^(+) - DEG·S^(+)
 the settled vacuum underneath: n_f at \rho_\infty, \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}}
 x = x_@t: every body at its own time, bound once in the sum; x.R̄ = l.distance\paren{x.l}, from the local now to the body then
-n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{x.m̄·\paren{\frac{1}{l.shell\paren{x.R̄}} - l.reach\paren{x.R̄}}}}{2}
+n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}}{l.shell\paren{x.R̄}}}}{2}
 ```
 
-a meeting turns 2 of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and 2 times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \rho_\infty. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays - the record is the one less the other, over 2, on the settled record. Each body is read as it was when its rays left it, at its own distance then
+a meeting turns 2 of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and 2 times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \rho_\infty. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought, over 2, on the settled record. Each body is read as it was when its rays left it, at its own distance then
 
 **m̄ = \Delta\rho + S^(-) - S^(+)**  
 <sub>theorem · the mass is what the vacuum leaves over</sub>  

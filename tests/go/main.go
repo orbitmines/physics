@@ -886,13 +886,13 @@ func main() {
     if Truthy(M_every(Get(it, "rho"), Fn(func(a2 []any) any {
   var v_1 any = Arg(a2, 0); _ = v_1;
   if true {
-    return Ge(v_1, Get(it, "rho_inf"))
+    return Ge(v_1, 0.0)
   }
   return nil
 }))) {
       return pass_
     }
-    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, Get(it, \"rho_inf\"))\n  }\n  return nil\n}))"
+    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, 0.0)\n  }\n  return nil\n}))"
   })
 
   t("tests/medium.ray:32 on pair_medium", func() any {
@@ -909,13 +909,13 @@ func main() {
     if Truthy(M_every(Get(it, "rho"), Fn(func(a2 []any) any {
   var v_1 any = Arg(a2, 0); _ = v_1;
   if true {
-    return Ge(v_1, Get(it, "rho_inf"))
+    return Ge(v_1, 0.0)
   }
   return nil
 }))) {
       return pass_
     }
-    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, Get(it, \"rho_inf\"))\n  }\n  return nil\n}))"
+    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, 0.0)\n  }\n  return nil\n}))"
   })
 
   t("tests/medium.ray:32 on standing", func() any {
@@ -932,64 +932,64 @@ func main() {
     if Truthy(M_every(Get(it, "rho"), Fn(func(a2 []any) any {
   var v_1 any = Arg(a2, 0); _ = v_1;
   if true {
-    return Ge(v_1, Get(it, "rho_inf"))
+    return Ge(v_1, 0.0)
   }
   return nil
 }))) {
       return pass_
     }
-    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, Get(it, \"rho_inf\"))\n  }\n  return nil\n}))"
+    return "failed: " + "M_every(Get(it, \"rho\"), Fn(func(a2 []any) any {\n  var v_1 any = Arg(a2, 0); _ = v_1;\n  if true {\n    return Ge(v_1, 0.0)\n  }\n  return nil\n}))"
   })
 
-  t("tests/medium.ray:40 on alone_medium", func() any {
+  t("tests/medium.ray:33 on alone_medium", func() any {
     var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
-    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Eq(Get(it, "N"), 16.0)))) && Truthy(Eq(Get(it, "ticks"), 12.0)))) {
       guard++
-      if guard > 26 || !Has(it, "tick") {
+      if guard > 14 || !Has(it, "tick") {
         return skip_
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Elem(Get(it, "rho"), Call(it, "at", []any{ 7.0, 7.0 })), Elem(Get(it, "rho"), Call(it, "at", []any{ 12.0, 7.0 })))) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 7.0, 7.0 })), Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 12.0, 7.0 })))"
   })
 
-  t("tests/medium.ray:40 on pair_medium", func() any {
+  t("tests/medium.ray:33 on pair_medium", func() any {
     var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
     _ = it
     guard := 0.0
-    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Eq(Get(it, "N"), 16.0)))) && Truthy(Eq(Get(it, "ticks"), 12.0)))) {
       guard++
-      if guard > 26 || !Has(it, "tick") {
+      if guard > 14 || !Has(it, "tick") {
         return skip_
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Elem(Get(it, "rho"), Call(it, "at", []any{ 7.0, 7.0 })), Elem(Get(it, "rho"), Call(it, "at", []any{ 12.0, 7.0 })))) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 7.0, 7.0 })), Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 12.0, 7.0 })))"
   })
 
-  t("tests/medium.ray:40 on standing", func() any {
+  t("tests/medium.ray:33 on standing", func() any {
     var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
-    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Eq(Get(it, "N"), 16.0)))) && Truthy(Eq(Get(it, "ticks"), 12.0)))) {
       guard++
-      if guard > 26 || !Has(it, "tick") {
+      if guard > 14 || !Has(it, "tick") {
         return skip_
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Elem(Get(it, "rho"), Call(it, "at", []any{ 7.0, 7.0 })), Elem(Get(it, "rho"), Call(it, "at", []any{ 12.0, 7.0 })))) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 7.0, 7.0 })), Elem(Get(it, \"rho\"), Call(it, \"at\", []any{ 12.0, 7.0 })))"
   })
 
   t("tests/medium.ray:41 on alone_medium", func() any {
@@ -1003,10 +1003,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:41 on pair_medium", func() any {
@@ -1020,10 +1020,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:41 on standing", func() any {
@@ -1037,10 +1037,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:42 on alone_medium", func() any {
@@ -1054,10 +1054,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:42 on pair_medium", func() any {
@@ -1071,10 +1071,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:42 on standing", func() any {
@@ -1088,10 +1088,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "px_now"), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
   })
 
   t("tests/medium.ray:43 on alone_medium", func() any {
@@ -1105,10 +1105,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
+    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
   })
 
   t("tests/medium.ray:43 on pair_medium", func() any {
@@ -1122,10 +1122,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
+    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
   })
 
   t("tests/medium.ray:43 on standing", func() any {
@@ -1139,10 +1139,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
+    if Truthy(Lt(M_abs(Get(Elem(Get(it, "holes"), 0.0), "py_now")), 0.000001)) {
       return pass_
     }
-    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+    return "failed: " + "Lt(M_abs(Get(Elem(Get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
   })
 
   t("tests/medium.ray:44 on alone_medium", func() any {
@@ -1156,10 +1156,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
   })
 
   t("tests/medium.ray:44 on pair_medium", func() any {
@@ -1173,10 +1173,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
   })
 
   t("tests/medium.ray:44 on standing", func() any {
@@ -1190,13 +1190,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
+    if Truthy(Gt(Get(Elem(Get(it, "holes"), 0.0), "x"), 6.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+    return "failed: " + "Gt(Get(Elem(Get(it, \"holes\"), 0.0), \"x\"), 6.0)"
   })
 
-  t("tests/medium.ray:46 on alone_medium", func() any {
+  t("tests/medium.ray:45 on alone_medium", func() any {
     var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1207,13 +1207,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 6.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 6.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
   })
 
-  t("tests/medium.ray:46 on pair_medium", func() any {
+  t("tests/medium.ray:45 on pair_medium", func() any {
     var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
     _ = it
     guard := 0.0
@@ -1224,13 +1224,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 6.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 6.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
   })
 
-  t("tests/medium.ray:46 on standing", func() any {
+  t("tests/medium.ray:45 on standing", func() any {
     var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1241,10 +1241,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 6.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
+    if Truthy(Lt(Get(Elem(Get(it, "holes"), 1.0), "x"), 42.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 6.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
+    return "failed: " + "Lt(Get(Elem(Get(it, \"holes\"), 1.0), \"x\"), 42.0)"
   })
 
   t("tests/medium.ray:47 on alone_medium", func() any {
@@ -1258,10 +1258,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "crossed", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }), 0.0)) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 7.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"crossed\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }), 0.0)"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 7.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
   })
 
   t("tests/medium.ray:47 on pair_medium", func() any {
@@ -1275,13 +1275,64 @@ func main() {
       }
       Get(it, "tick")
     }
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 7.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
+      return pass_
+    }
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 7.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
+  })
+
+  t("tests/medium.ray:47 on standing", func() any {
+    var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+      guard++
+      if guard > 26 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 7.0, 24.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }))) {
+      return pass_
+    }
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 7.0, 24.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }))"
+  })
+
+  t("tests/medium.ray:48 on alone_medium", func() any {
+    var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+      guard++
+      if guard > 26 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
     if Truthy(Gt(Call(it, "crossed", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }), 0.0)) {
       return pass_
     }
     return "failed: " + "Gt(Call(it, \"crossed\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }), 0.0)"
   })
 
-  t("tests/medium.ray:47 on standing", func() any {
+  t("tests/medium.ray:48 on pair_medium", func() any {
+    var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy(Eq(Len(Get(it, "holes")), 2.0)) && Truthy(Eq(Get(it, "ticks"), 24.0)))) {
+      guard++
+      if guard > 26 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Gt(Call(it, "crossed", []any{ Call(it, "at", []any{ 24.0, 24.0 }) }), 0.0)) {
+      return pass_
+    }
+    return "failed: " + "Gt(Call(it, \"crossed\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }), 0.0)"
+  })
+
+  t("tests/medium.ray:48 on standing", func() any {
     var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1298,57 +1349,6 @@ func main() {
     return "failed: " + "Gt(Call(it, \"crossed\", []any{ Call(it, \"at\", []any{ 24.0, 24.0 }) }), 0.0)"
   })
 
-  t("tests/medium.ray:61 on alone_medium", func() any {
-    var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
-    _ = it
-    guard := 0.0
-    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
-      guard++
-      if guard > 42 || !Has(it, "tick") {
-        return skip_
-      }
-      Get(it, "tick")
-    }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
-      return pass_
-    }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
-  })
-
-  t("tests/medium.ray:61 on pair_medium", func() any {
-    var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
-    _ = it
-    guard := 0.0
-    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
-      guard++
-      if guard > 42 || !Has(it, "tick") {
-        return skip_
-      }
-      Get(it, "tick")
-    }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
-      return pass_
-    }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
-  })
-
-  t("tests/medium.ray:61 on standing", func() any {
-    var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
-    _ = it
-    guard := 0.0
-    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
-      guard++
-      if guard > 42 || !Has(it, "tick") {
-        return skip_
-      }
-      Get(it, "tick")
-    }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
-      return pass_
-    }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
-  })
-
   t("tests/medium.ray:62 on alone_medium", func() any {
     var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
     _ = it
@@ -1360,10 +1360,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
   })
 
   t("tests/medium.ray:62 on pair_medium", func() any {
@@ -1377,10 +1377,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
   })
 
   t("tests/medium.ray:62 on standing", func() any {
@@ -1394,13 +1394,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), 0.0)"
   })
 
-  t("tests/medium.ray:64 on alone_medium", func() any {
+  t("tests/medium.ray:63 on alone_medium", func() any {
     var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1411,13 +1411,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
   })
 
-  t("tests/medium.ray:64 on pair_medium", func() any {
+  t("tests/medium.ray:63 on pair_medium", func() any {
     var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
     _ = it
     guard := 0.0
@@ -1428,13 +1428,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
   })
 
-  t("tests/medium.ray:64 on standing", func() any {
+  t("tests/medium.ray:63 on standing", func() any {
     var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1445,10 +1445,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+    if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }), 0.0)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+    return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }), 0.0)"
   })
 
   t("tests/medium.ray:65 on alone_medium", func() any {
@@ -1462,13 +1462,64 @@ func main() {
       }
       Get(it, "tick")
     }
+    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+  })
+
+  t("tests/medium.ray:65 on pair_medium", func() any {
+    var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+  })
+
+  t("tests/medium.ray:65 on standing", func() any {
+    var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Div(Get(it, "nf_inf"), 100.0))) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Div(Get(it, \"nf_inf\"), 100.0))"
+  })
+
+  t("tests/medium.ray:66 on alone_medium", func() any {
+    var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
     if Truthy(Gt(Call(it, "record_above", []any{ Call(it, "at", []any{ 24.0, 18.0 }) }), Call(it, "record_above", []any{ Call(it, "at", []any{ 30.0, 18.0 }) }))) {
       return pass_
     }
     return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }))"
   })
 
-  t("tests/medium.ray:65 on pair_medium", func() any {
+  t("tests/medium.ray:66 on pair_medium", func() any {
     var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
     _ = it
     guard := 0.0
@@ -1485,7 +1536,7 @@ func main() {
     return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }))"
   })
 
-  t("tests/medium.ray:65 on standing", func() any {
+  t("tests/medium.ray:66 on standing", func() any {
     var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
     _ = it
     guard := 0.0
@@ -1500,6 +1551,75 @@ func main() {
       return pass_
     }
     return "failed: " + "Gt(Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 24.0, 18.0 }) }), Call(it, \"record_above\", []any{ Call(it, \"at\", []any{ 30.0, 18.0 }) }))"
+  })
+
+  t("tests/medium.ray:68 on alone_medium", func() any {
+    var it any = Call(Call(K("G"), "medium", []any{ 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", []any{ 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(M_every(Rng(Get(it, "cells")), Fn(func(a2 []any) any {
+  var c__1 any = Arg(a2, 0); _ = c__1;
+  if true {
+    return Ge(Add(Elem(Get(it, "rho"), c__1), Elem(Get(it, "vac"), c__1)), Sub(Get(it, "rho_inf"), 0.000001))
+  }
+  return nil
+}))) {
+      return pass_
+    }
+    return "failed: " + "M_every(Rng(Get(it, \"cells\")), Fn(func(a2 []any) any {\n  var c__1 any = Arg(a2, 0); _ = c__1;\n  if true {\n    return Ge(Add(Elem(Get(it, \"rho\"), c__1), Elem(Get(it, \"vac\"), c__1)), Sub(Get(it, \"rho_inf\"), 0.000001))\n  }\n  return nil\n}))"
+  })
+
+  t("tests/medium.ray:68 on pair_medium", func() any {
+    var it any = Call(Call(Call(K("G"), "medium", []any{ 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", []any{ 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", []any{ 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(M_every(Rng(Get(it, "cells")), Fn(func(a2 []any) any {
+  var c__1 any = Arg(a2, 0); _ = c__1;
+  if true {
+    return Ge(Add(Elem(Get(it, "rho"), c__1), Elem(Get(it, "vac"), c__1)), Sub(Get(it, "rho_inf"), 0.000001))
+  }
+  return nil
+}))) {
+      return pass_
+    }
+    return "failed: " + "M_every(Rng(Get(it, \"cells\")), Fn(func(a2 []any) any {\n  var c__1 any = Arg(a2, 0); _ = c__1;\n  if true {\n    return Ge(Add(Elem(Get(it, \"rho\"), c__1), Elem(Get(it, \"vac\"), c__1)), Sub(Get(it, \"rho_inf\"), 0.000001))\n  }\n  return nil\n}))"
+  })
+
+  t("tests/medium.ray:68 on standing", func() any {
+    var it any = Call(Get(Call(K("G"), "medium", []any{ 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", []any{ 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 })
+    _ = it
+    guard := 0.0
+    for !Truthy((Truthy((Truthy(Eq(Len(Get(it, "holes")), 1.0)) && Truthy(Get(it, "vacuum")))) && Truthy(Eq(Get(it, "ticks"), 40.0)))) {
+      guard++
+      if guard > 42 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(M_every(Rng(Get(it, "cells")), Fn(func(a2 []any) any {
+  var c__1 any = Arg(a2, 0); _ = c__1;
+  if true {
+    return Ge(Add(Elem(Get(it, "rho"), c__1), Elem(Get(it, "vac"), c__1)), Sub(Get(it, "rho_inf"), 0.000001))
+  }
+  return nil
+}))) {
+      return pass_
+    }
+    return "failed: " + "M_every(Rng(Get(it, \"cells\")), Fn(func(a2 []any) any {\n  var c__1 any = Arg(a2, 0); _ = c__1;\n  if true {\n    return Ge(Add(Elem(Get(it, \"rho\"), c__1), Elem(Get(it, \"vac\"), c__1)), Sub(Get(it, \"rho_inf\"), 0.000001))\n  }\n  return nil\n}))"
   })
 
   t("tests/motion.ray:13 on line", func() any {

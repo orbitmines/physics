@@ -524,9 +524,9 @@ int main(int argc, char** argv) {
     }
     return truthy(m_every(get(it, S<"rho">()), fn([=](const Args& a2) -> Value {
   auto v_1 = cell(arg(a2, 0));
-  return ge(v_1->v, get(it, S<"rho_inf">()));
+  return ge(v_1->v, 0.0);
   return null;
-}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, get(it, S<\"rho_inf\">()));\n  return null;\n}))";
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, 0.0);\n  return null;\n}))";
   });
 
   t("tests/medium.ray:32 on pair_medium", [&]() -> std::string {
@@ -538,9 +538,9 @@ int main(int argc, char** argv) {
     }
     return truthy(m_every(get(it, S<"rho">()), fn([=](const Args& a2) -> Value {
   auto v_1 = cell(arg(a2, 0));
-  return ge(v_1->v, get(it, S<"rho_inf">()));
+  return ge(v_1->v, 0.0);
   return null;
-}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, get(it, S<\"rho_inf\">()));\n  return null;\n}))";
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, 0.0);\n  return null;\n}))";
   });
 
   t("tests/medium.ray:32 on standing", [&]() -> std::string {
@@ -552,39 +552,39 @@ int main(int argc, char** argv) {
     }
     return truthy(m_every(get(it, S<"rho">()), fn([=](const Args& a2) -> Value {
   auto v_1 = cell(arg(a2, 0));
-  return ge(v_1->v, get(it, S<"rho_inf">()));
+  return ge(v_1->v, 0.0);
   return null;
-}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, get(it, S<\"rho_inf\">()));\n  return null;\n}))";
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(get(it, S<\"rho\">()), fn([=](const Args& a2) -> Value {\n  auto v_1 = cell(arg(a2, 0));\n  return ge(v_1->v, 0.0);\n  return null;\n}))";
   });
 
-  t("tests/medium.ray:40 on alone_medium", [&]() -> std::string {
+  t("tests/medium.ray:33 on alone_medium", [&]() -> std::string {
     Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
-    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
-      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(eq(get(it, S<"N">()), 16.0)))) && truthy(eq(get(it, S<"ticks">()), 12.0))))) {
+      if (++guard > 14 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(elem(get(it, S<"rho">()), call(it, S<"at">(), { 7.0, 7.0 })), elem(get(it, S<"rho">()), call(it, S<"at">(), { 12.0, 7.0 })))) ? std::string(PASS) : std::string("failed: ") + "gt(elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 7.0, 7.0 })), elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 12.0, 7.0 })))";
   });
 
-  t("tests/medium.ray:40 on pair_medium", [&]() -> std::string {
+  t("tests/medium.ray:33 on pair_medium", [&]() -> std::string {
     Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
     int guard = 0;
-    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
-      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(eq(get(it, S<"N">()), 16.0)))) && truthy(eq(get(it, S<"ticks">()), 12.0))))) {
+      if (++guard > 14 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(elem(get(it, S<"rho">()), call(it, S<"at">(), { 7.0, 7.0 })), elem(get(it, S<"rho">()), call(it, S<"at">(), { 12.0, 7.0 })))) ? std::string(PASS) : std::string("failed: ") + "gt(elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 7.0, 7.0 })), elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 12.0, 7.0 })))";
   });
 
-  t("tests/medium.ray:40 on standing", [&]() -> std::string {
+  t("tests/medium.ray:33 on standing", [&]() -> std::string {
     Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
-    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
-      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(eq(get(it, S<"N">()), 16.0)))) && truthy(eq(get(it, S<"ticks">()), 12.0))))) {
+      if (++guard > 14 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(elem(get(it, S<"rho">()), call(it, S<"at">(), { 7.0, 7.0 })), elem(get(it, S<"rho">()), call(it, S<"at">(), { 12.0, 7.0 })))) ? std::string(PASS) : std::string("failed: ") + "gt(elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 7.0, 7.0 })), elem(get(it, S<\"rho\">()), call(it, S<\"at\">(), { 12.0, 7.0 })))";
   });
 
   t("tests/medium.ray:41 on alone_medium", [&]() -> std::string {
@@ -594,7 +594,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:41 on pair_medium", [&]() -> std::string {
@@ -604,7 +604,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:41 on standing", [&]() -> std::string {
@@ -614,7 +614,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:42 on alone_medium", [&]() -> std::string {
@@ -624,7 +624,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:42 on pair_medium", [&]() -> std::string {
@@ -634,7 +634,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:42 on standing", [&]() -> std::string {
@@ -644,7 +644,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"px_now">()), 0.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"px_now\">()), 0.0)";
   });
 
   t("tests/medium.ray:43 on alone_medium", [&]() -> std::string {
@@ -654,7 +654,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
+    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
   });
 
   t("tests/medium.ray:43 on pair_medium", [&]() -> std::string {
@@ -664,7 +664,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
+    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
   });
 
   t("tests/medium.ray:43 on standing", [&]() -> std::string {
@@ -674,7 +674,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
+    return truthy(lt(m_abs(get(elem(get(it, S<"holes">()), 0.0), S<"py_now">())), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs(get(elem(get(it, S<\"holes\">()), 0.0), S<\"py_now\">())), 0.000001)";
   });
 
   t("tests/medium.ray:44 on alone_medium", [&]() -> std::string {
@@ -684,7 +684,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
   });
 
   t("tests/medium.ray:44 on pair_medium", [&]() -> std::string {
@@ -694,7 +694,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
   });
 
   t("tests/medium.ray:44 on standing", [&]() -> std::string {
@@ -704,37 +704,37 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
+    return truthy(gt(get(elem(get(it, S<"holes">()), 0.0), S<"x">()), 6.0)) ? std::string(PASS) : std::string("failed: ") + "gt(get(elem(get(it, S<\"holes\">()), 0.0), S<\"x\">()), 6.0)";
   });
 
-  t("tests/medium.ray:46 on alone_medium", [&]() -> std::string {
+  t("tests/medium.ray:45 on alone_medium", [&]() -> std::string {
     Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
     while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 6.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 6.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
   });
 
-  t("tests/medium.ray:46 on pair_medium", [&]() -> std::string {
+  t("tests/medium.ray:45 on pair_medium", [&]() -> std::string {
     Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
     int guard = 0;
     while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 6.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 6.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
   });
 
-  t("tests/medium.ray:46 on standing", [&]() -> std::string {
+  t("tests/medium.ray:45 on standing", [&]() -> std::string {
     Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
     while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 6.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 6.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
+    return truthy(lt(get(elem(get(it, S<"holes">()), 1.0), S<"x">()), 42.0)) ? std::string(PASS) : std::string("failed: ") + "lt(get(elem(get(it, S<\"holes\">()), 1.0), S<\"x\">()), 42.0)";
   });
 
   t("tests/medium.ray:47 on alone_medium", [&]() -> std::string {
@@ -744,7 +744,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"crossed">(), { call(it, S<"at">(), { 24.0, 24.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"crossed\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 7.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 7.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
   });
 
   t("tests/medium.ray:47 on pair_medium", [&]() -> std::string {
@@ -754,7 +754,7 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"crossed">(), { call(it, S<"at">(), { 24.0, 24.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"crossed\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 7.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 7.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
   });
 
   t("tests/medium.ray:47 on standing", [&]() -> std::string {
@@ -764,37 +764,37 @@ int main(int argc, char** argv) {
       if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 7.0, 24.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 24.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 7.0, 24.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }))";
+  });
+
+  t("tests/medium.ray:48 on alone_medium", [&]() -> std::string {
+    Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+    int guard = 0;
+    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
+      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
     return truthy(gt(call(it, S<"crossed">(), { call(it, S<"at">(), { 24.0, 24.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"crossed\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }), 0.0)";
   });
 
-  t("tests/medium.ray:61 on alone_medium", [&]() -> std::string {
-    Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
-    int guard = 0;
-    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
-      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
-      get(it, S<"tick">());
-    }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
-  });
-
-  t("tests/medium.ray:61 on pair_medium", [&]() -> std::string {
+  t("tests/medium.ray:48 on pair_medium", [&]() -> std::string {
     Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
     int guard = 0;
-    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
-      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
+      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"crossed">(), { call(it, S<"at">(), { 24.0, 24.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"crossed\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }), 0.0)";
   });
 
-  t("tests/medium.ray:61 on standing", [&]() -> std::string {
+  t("tests/medium.ray:48 on standing", [&]() -> std::string {
     Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
-    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
-      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+    while (!truthy((truthy(eq(len(get(it, S<"holes">())), 2.0)) && truthy(eq(get(it, S<"ticks">()), 24.0))))) {
+      if (++guard > 26 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"crossed">(), { call(it, S<"at">(), { 24.0, 24.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"crossed\">(), { call(it, S<\"at\">(), { 24.0, 24.0 }) }), 0.0)";
   });
 
   t("tests/medium.ray:62 on alone_medium", [&]() -> std::string {
@@ -804,7 +804,7 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
   });
 
   t("tests/medium.ray:62 on pair_medium", [&]() -> std::string {
@@ -814,7 +814,7 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
   });
 
   t("tests/medium.ray:62 on standing", [&]() -> std::string {
@@ -824,37 +824,37 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), 0.0)";
   });
 
-  t("tests/medium.ray:64 on alone_medium", [&]() -> std::string {
+  t("tests/medium.ray:63 on alone_medium", [&]() -> std::string {
     Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
     while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
   });
 
-  t("tests/medium.ray:64 on pair_medium", [&]() -> std::string {
+  t("tests/medium.ray:63 on pair_medium", [&]() -> std::string {
     Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
     int guard = 0;
     while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
   });
 
-  t("tests/medium.ray:64 on standing", [&]() -> std::string {
+  t("tests/medium.ray:63 on standing", [&]() -> std::string {
     Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
     int guard = 0;
     while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }), 0.0)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }), 0.0)";
   });
 
   t("tests/medium.ray:65 on alone_medium", [&]() -> std::string {
@@ -864,7 +864,7 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }))";
+    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
   });
 
   t("tests/medium.ray:65 on pair_medium", [&]() -> std::string {
@@ -874,7 +874,7 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }))";
+    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
   });
 
   t("tests/medium.ray:65 on standing", [&]() -> std::string {
@@ -884,7 +884,79 @@ int main(int argc, char** argv) {
       if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
+    return truthy(lt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), div(get(it, S<"nf_inf">()), 100.0))) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), div(get(it, S<\"nf_inf\">()), 100.0))";
+  });
+
+  t("tests/medium.ray:66 on alone_medium", [&]() -> std::string {
+    Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
     return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }))";
+  });
+
+  t("tests/medium.ray:66 on pair_medium", [&]() -> std::string {
+    Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }))";
+  });
+
+  t("tests/medium.ray:66 on standing", [&]() -> std::string {
+    Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(gt(call(it, S<"record_above">(), { call(it, S<"at">(), { 24.0, 18.0 }) }), call(it, S<"record_above">(), { call(it, S<"at">(), { 30.0, 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 24.0, 18.0 }) }), call(it, S<\"record_above\">(), { call(it, S<\"at\">(), { 30.0, 18.0 }) }))";
+  });
+
+  t("tests/medium.ray:68 on alone_medium", [&]() -> std::string {
+    Value it = call(call(K(S<"G">()), S<"medium">(), { 16.0, 8.0, 3.0, 18.0, 2.0 }), S<"thrown">(), { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(m_every(rng(get(it, S<"cells">())), fn([=](const Args& a2) -> Value {
+  auto c__1 = cell(arg(a2, 0));
+  return ge(add(elem(get(it, S<"rho">()), c__1->v), elem(get(it, S<"vac">()), c__1->v)), sub(get(it, S<"rho_inf">()), 0.000001));
+  return null;
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(rng(get(it, S<\"cells\">())), fn([=](const Args& a2) -> Value {\n  auto c__1 = cell(arg(a2, 0));\n  return ge(add(elem(get(it, S<\"rho\">()), c__1->v), elem(get(it, S<\"vac\">()), c__1->v)), sub(get(it, S<\"rho_inf\">()), 0.000001));\n  return null;\n}))";
+  });
+
+  t("tests/medium.ray:68 on pair_medium", [&]() -> std::string {
+    Value it = call(call(call(K(S<"G">()), S<"medium">(), { 49.0, 8.0, 3.0, 18.0, 3.0 }), S<"thrown">(), { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), S<"thrown">(), { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(m_every(rng(get(it, S<"cells">())), fn([=](const Args& a2) -> Value {
+  auto c__1 = cell(arg(a2, 0));
+  return ge(add(elem(get(it, S<"rho">()), c__1->v), elem(get(it, S<"vac">()), c__1->v)), sub(get(it, S<"rho_inf">()), 0.000001));
+  return null;
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(rng(get(it, S<\"cells\">())), fn([=](const Args& a2) -> Value {\n  auto c__1 = cell(arg(a2, 0));\n  return ge(add(elem(get(it, S<\"rho\">()), c__1->v), elem(get(it, S<\"vac\">()), c__1->v)), sub(get(it, S<\"rho_inf\">()), 0.000001));\n  return null;\n}))";
+  });
+
+  t("tests/medium.ray:68 on standing", [&]() -> std::string {
+    Value it = call(get(call(K(S<"G">()), S<"medium">(), { 37.0, 8.0, 3.0, 18.0, 2.0 }), S<"under_vacuum">()), S<"thrown">(), { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
+    int guard = 0;
+    while (!truthy((truthy((truthy(eq(len(get(it, S<"holes">())), 1.0)) && truthy(get(it, S<"vacuum">())))) && truthy(eq(get(it, S<"ticks">()), 40.0))))) {
+      if (++guard > 42 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(m_every(rng(get(it, S<"cells">())), fn([=](const Args& a2) -> Value {
+  auto c__1 = cell(arg(a2, 0));
+  return ge(add(elem(get(it, S<"rho">()), c__1->v), elem(get(it, S<"vac">()), c__1->v)), sub(get(it, S<"rho_inf">()), 0.000001));
+  return null;
+}))) ? std::string(PASS) : std::string("failed: ") + "m_every(rng(get(it, S<\"cells\">())), fn([=](const Args& a2) -> Value {\n  auto c__1 = cell(arg(a2, 0));\n  return ge(add(elem(get(it, S<\"rho\">()), c__1->v), elem(get(it, S<\"vac\">()), c__1->v)), sub(get(it, S<\"rho_inf\">()), 0.000001));\n  return null;\n}))";
   });
 
   t("tests/motion.ray:13 on line", [&]() -> std::string {

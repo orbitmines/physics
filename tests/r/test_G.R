@@ -555,9 +555,9 @@ t_case("tests/medium.ray:32 on alone_medium", function() {
     it$tick
   }
   if (truthy(m_every(it$rho, function(v = NULL, ...) {
-  return(ge(v, it$rho_inf))
+  return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:32 on pair_medium", function() {
@@ -569,9 +569,9 @@ t_case("tests/medium.ray:32 on pair_medium", function() {
     it$tick
   }
   if (truthy(m_every(it$rho, function(v = NULL, ...) {
-  return(ge(v, it$rho_inf))
+  return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
 t_case("tests/medium.ray:32 on standing", function() {
@@ -583,42 +583,42 @@ t_case("tests/medium.ray:32 on standing", function() {
     it$tick
   }
   if (truthy(m_every(it$rho, function(v = NULL, ...) {
-  return(ge(v, it$rho_inf))
+  return(ge(v, 0))
   NULL
-}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, it$rho_inf))\n  NULL\n})")
+}))) "pass" else paste0("failed: ", "m_every(it$rho, function(v = NULL, ...) {\n  return(ge(v, 0))\n  NULL\n})")
 })
 
-t_case("tests/medium.ray:40 on alone_medium", function() {
+t_case("tests/medium.ray:33 on alone_medium", function() {
   it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
-    if (guard > 26 || !has(it, "tick")) return("skip")
+    if (guard > 14 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
+  if (truthy(gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7))))) "pass" else paste0("failed: ", "gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7)))")
 })
 
-t_case("tests/medium.ray:40 on pair_medium", function() {
+t_case("tests/medium.ray:33 on pair_medium", function() {
   it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
-    if (guard > 26 || !has(it, "tick")) return("skip")
+    if (guard > 14 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
+  if (truthy(gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7))))) "pass" else paste0("failed: ", "gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7)))")
 })
 
-t_case("tests/medium.ray:40 on standing", function() {
+t_case("tests/medium.ray:33 on standing", function() {
   it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) eq(it$N, 16) else .x))) eq(it$ticks, 12) else .x))) {
     guard <- guard + 1
-    if (guard > 26 || !has(it, "tick")) return("skip")
+    if (guard > 14 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
+  if (truthy(gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7))))) "pass" else paste0("failed: ", "gt(elem(it$rho, it$at(7, 7)), elem(it$rho, it$at(12, 7)))")
 })
 
 t_case("tests/medium.ray:41 on alone_medium", function() {
@@ -629,7 +629,7 @@ t_case("tests/medium.ray:41 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:41 on pair_medium", function() {
@@ -640,7 +640,7 @@ t_case("tests/medium.ray:41 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:41 on standing", function() {
@@ -651,7 +651,7 @@ t_case("tests/medium.ray:41 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
+  if (truthy(gt(elem(it$holes, 0)$px_now, 0))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:42 on alone_medium", function() {
@@ -662,7 +662,7 @@ t_case("tests/medium.ray:42 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:42 on pair_medium", function() {
@@ -673,7 +673,7 @@ t_case("tests/medium.ray:42 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:42 on standing", function() {
@@ -684,7 +684,7 @@ t_case("tests/medium.ray:42 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
+  if (truthy(lt(elem(it$holes, 1)$px_now, 0))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$px_now, 0)")
 })
 
 t_case("tests/medium.ray:43 on alone_medium", function() {
@@ -695,7 +695,7 @@ t_case("tests/medium.ray:43 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:43 on pair_medium", function() {
@@ -706,7 +706,7 @@ t_case("tests/medium.ray:43 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:43 on standing", function() {
@@ -717,7 +717,7 @@ t_case("tests/medium.ray:43 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
+  if (truthy(lt(m_abs(elem(it$holes, 0)$py_now), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs(elem(it$holes, 0)$py_now), 0.000001)")
 })
 
 t_case("tests/medium.ray:44 on alone_medium", function() {
@@ -728,7 +728,7 @@ t_case("tests/medium.ray:44 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
 t_case("tests/medium.ray:44 on pair_medium", function() {
@@ -739,7 +739,7 @@ t_case("tests/medium.ray:44 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
 t_case("tests/medium.ray:44 on standing", function() {
@@ -750,10 +750,10 @@ t_case("tests/medium.ray:44 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
+  if (truthy(gt(elem(it$holes, 0)$x, 6))) "pass" else paste0("failed: ", "gt(elem(it$holes, 0)$x, 6)")
 })
 
-t_case("tests/medium.ray:46 on alone_medium", function() {
+t_case("tests/medium.ray:45 on alone_medium", function() {
   it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
   while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
@@ -761,10 +761,10 @@ t_case("tests/medium.ray:46 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
-t_case("tests/medium.ray:46 on pair_medium", function() {
+t_case("tests/medium.ray:45 on pair_medium", function() {
   it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
   while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
@@ -772,10 +772,10 @@ t_case("tests/medium.ray:46 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
-t_case("tests/medium.ray:46 on standing", function() {
+t_case("tests/medium.ray:45 on standing", function() {
   it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
   while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
@@ -783,7 +783,7 @@ t_case("tests/medium.ray:46 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(6, 24)), it$record_above(it$at(24, 24)))")
+  if (truthy(lt(elem(it$holes, 1)$x, 42))) "pass" else paste0("failed: ", "lt(elem(it$holes, 1)$x, 42)")
 })
 
 t_case("tests/medium.ray:47 on alone_medium", function() {
@@ -794,7 +794,7 @@ t_case("tests/medium.ray:47 on alone_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
+  if (truthy(gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24)))")
 })
 
 t_case("tests/medium.ray:47 on pair_medium", function() {
@@ -805,7 +805,7 @@ t_case("tests/medium.ray:47 on pair_medium", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
+  if (truthy(gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24)))")
 })
 
 t_case("tests/medium.ray:47 on standing", function() {
@@ -816,40 +816,40 @@ t_case("tests/medium.ray:47 on standing", function() {
     if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
+  if (truthy(gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(7, 24)), it$record_above(it$at(24, 24)))")
+})
+
+t_case("tests/medium.ray:48 on alone_medium", function() {
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
+    guard <- guard + 1
+    if (guard > 26 || !has(it, "tick")) return("skip")
+    it$tick
+  }
   if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
-t_case("tests/medium.ray:61 on alone_medium", function() {
-  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
-  guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
-    guard <- guard + 1
-    if (guard > 42 || !has(it, "tick")) return("skip")
-    it$tick
-  }
-  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
-})
-
-t_case("tests/medium.ray:61 on pair_medium", function() {
+t_case("tests/medium.ray:48 on pair_medium", function() {
   it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
-    if (guard > 42 || !has(it, "tick")) return("skip")
+    if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
+  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
-t_case("tests/medium.ray:61 on standing", function() {
+t_case("tests/medium.ray:48 on standing", function() {
   it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
-  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+  while (!truthy((if (truthy(.x <- eq(len(it$holes), 2))) eq(it$ticks, 24) else .x))) {
     guard <- guard + 1
-    if (guard > 42 || !has(it, "tick")) return("skip")
+    if (guard > 26 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
+  if (truthy(gt(it$crossed(it$at(24, 24)), 0))) "pass" else paste0("failed: ", "gt(it$crossed(it$at(24, 24)), 0)")
 })
 
 t_case("tests/medium.ray:62 on alone_medium", function() {
@@ -860,7 +860,7 @@ t_case("tests/medium.ray:62 on alone_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
 t_case("tests/medium.ray:62 on pair_medium", function() {
@@ -871,7 +871,7 @@ t_case("tests/medium.ray:62 on pair_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
 t_case("tests/medium.ray:62 on standing", function() {
@@ -882,10 +882,10 @@ t_case("tests/medium.ray:62 on standing", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
+  if (truthy(gt(it$record_above(it$at(24, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), 0)")
 })
 
-t_case("tests/medium.ray:64 on alone_medium", function() {
+t_case("tests/medium.ray:63 on alone_medium", function() {
   it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
   guard <- 0
   while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
@@ -893,10 +893,10 @@ t_case("tests/medium.ray:64 on alone_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
-t_case("tests/medium.ray:64 on pair_medium", function() {
+t_case("tests/medium.ray:63 on pair_medium", function() {
   it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
   guard <- 0
   while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
@@ -904,10 +904,10 @@ t_case("tests/medium.ray:64 on pair_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
-t_case("tests/medium.ray:64 on standing", function() {
+t_case("tests/medium.ray:63 on standing", function() {
   it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
   guard <- 0
   while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
@@ -915,7 +915,7 @@ t_case("tests/medium.ray:64 on standing", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
+  if (truthy(gt(it$record_above(it$at(30, 18)), 0))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(30, 18)), 0)")
 })
 
 t_case("tests/medium.ray:65 on alone_medium", function() {
@@ -926,7 +926,7 @@ t_case("tests/medium.ray:65 on alone_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
 })
 
 t_case("tests/medium.ray:65 on pair_medium", function() {
@@ -937,7 +937,7 @@ t_case("tests/medium.ray:65 on pair_medium", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
 })
 
 t_case("tests/medium.ray:65 on standing", function() {
@@ -948,7 +948,82 @@ t_case("tests/medium.ray:65 on standing", function() {
     if (guard > 42 || !has(it, "tick")) return("skip")
     it$tick
   }
+  if (truthy(lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100)))) "pass" else paste0("failed: ", "lt(it$record_above(it$at(24, 18)), r_div(it$nf_inf, 100))")
+})
+
+t_case("tests/medium.ray:66 on alone_medium", function() {
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
   if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
+})
+
+t_case("tests/medium.ray:66 on pair_medium", function() {
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
+})
+
+t_case("tests/medium.ray:66 on standing", function() {
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18))))) "pass" else paste0("failed: ", "gt(it$record_above(it$at(24, 18)), it$record_above(it$at(30, 18)))")
+})
+
+t_case("tests/medium.ray:68 on alone_medium", function() {
+  it <- G$medium(16, 8, 3, 18, 2)$thrown(7, 7, 1, 100, 0, 0, 1)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(m_every(rng(it$cells), function(c = NULL, ...) {
+  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))
+  NULL
+}))) "pass" else paste0("failed: ", "m_every(rng(it$cells), function(c = NULL, ...) {\n  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))\n  NULL\n})")
+})
+
+t_case("tests/medium.ray:68 on pair_medium", function() {
+  it <- G$medium(49, 8, 3, 18, 3)$thrown(6, 24, 1, 100, 0, 0, 1)$thrown(42, 24, 1, 100, 0, 0, 2)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(m_every(rng(it$cells), function(c = NULL, ...) {
+  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))
+  NULL
+}))) "pass" else paste0("failed: ", "m_every(rng(it$cells), function(c = NULL, ...) {\n  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))\n  NULL\n})")
+})
+
+t_case("tests/medium.ray:68 on standing", function() {
+  it <- G$medium(37, 8, 3, 18, 2)$under_vacuum$thrown(18, 18, 0.01, 100, 0, 0, 1)
+  guard <- 0
+  while (!truthy((if (truthy(.x <- (if (truthy(.x <- eq(len(it$holes), 1))) it$vacuum else .x))) eq(it$ticks, 40) else .x))) {
+    guard <- guard + 1
+    if (guard > 42 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(m_every(rng(it$cells), function(c = NULL, ...) {
+  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))
+  NULL
+}))) "pass" else paste0("failed: ", "m_every(rng(it$cells), function(c = NULL, ...) {\n  return(ge(r_add(elem(it$rho, c), elem(it$vac, c)), r_sub(it$rho_inf, 0.000001)))\n  NULL\n})")
 })
 
 t_case("tests/motion.ray:13 on line", function() {

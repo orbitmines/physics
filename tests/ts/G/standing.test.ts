@@ -70,99 +70,117 @@ test("tests/medium.ray:31 on standing", (t) => {
 });
 
 want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:32 on standing", holds: (it) => ((eq(it.holes.length, 1) && eq(it.N, 16)) && eq(it.ticks, 12)), until: 14, requirement: (it) => it.rho.every(((v: any) => {
-  return ge(v, it.rho_inf);
+  return ge(v, 0);
 })) });
 test("tests/medium.ray:32 on standing", (t) => {
   const got = outcome("standing", "tests/medium.ray:32 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "it.rho.every(((v: any) => {\n  return ge(v, it.rho_inf);\n}))");
+  assert.ok(got, "it.rho.every(((v: any) => {\n  return ge(v, 0);\n}))");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:40 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(elem(it.holes, 0).px_now, 0) });
-test("tests/medium.ray:40 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:40 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:33 on standing", holds: (it) => ((eq(it.holes.length, 1) && eq(it.N, 16)) && eq(it.ticks, 12)), until: 14, requirement: (it) => gt(elem(it.rho, it.at(7, 7)), elem(it.rho, it.at(12, 7))) });
+test("tests/medium.ray:33 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:33 on standing");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "gt(elem(it.rho, it.at(7, 7)), elem(it.rho, it.at(12, 7)))");
+});
+
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:41 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(elem(it.holes, 0).px_now, 0) });
+test("tests/medium.ray:41 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:41 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(elem(it.holes, 0).px_now, 0)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:41 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(elem(it.holes, 1).px_now, 0) });
-test("tests/medium.ray:41 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:41 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:42 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(elem(it.holes, 1).px_now, 0) });
+test("tests/medium.ray:42 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:42 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "lt(elem(it.holes, 1).px_now, 0)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:42 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(Math.abs(elem(it.holes, 0).py_now), 0.000001) });
-test("tests/medium.ray:42 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:42 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:43 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(Math.abs(elem(it.holes, 0).py_now), 0.000001) });
+test("tests/medium.ray:43 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:43 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "lt(Math.abs(elem(it.holes, 0).py_now), 0.000001)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:43 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(elem(it.holes, 0).x, 6) });
-test("tests/medium.ray:43 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:43 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:44 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(elem(it.holes, 0).x, 6) });
+test("tests/medium.ray:44 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:44 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(elem(it.holes, 0).x, 6)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:44 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(elem(it.holes, 1).x, 42) });
-test("tests/medium.ray:44 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:44 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:45 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => lt(elem(it.holes, 1).x, 42) });
+test("tests/medium.ray:45 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:45 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "lt(elem(it.holes, 1).x, 42)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:46 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24))) });
-test("tests/medium.ray:46 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:46 on standing");
-  if (got === SKIP) return t.skip("the refinement never held");
-  if (got instanceof Error) throw got;
-  assert.ok(got, "gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24)))");
-});
-
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:47 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(it.crossed(it.at(24, 24)), 0) });
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:47 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24))) });
 test("tests/medium.ray:47 on standing", (t) => {
   const got = outcome("standing", "tests/medium.ray:47 on standing");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24)))");
+});
+
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:48 on standing", holds: (it) => (eq(it.holes.length, 2) && eq(it.ticks, 24)), until: 26, requirement: (it) => gt(it.crossed(it.at(24, 24)), 0) });
+test("tests/medium.ray:48 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:48 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(it.crossed(it.at(24, 24)), 0)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:61 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(24, 18)), 0) });
-test("tests/medium.ray:61 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:61 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:62 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(24, 18)), 0) });
+test("tests/medium.ray:62 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:62 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(it.record_above(it.at(24, 18)), 0)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:62 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(30, 18)), 0) });
-test("tests/medium.ray:62 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:62 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:63 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(30, 18)), 0) });
+test("tests/medium.ray:63 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:63 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(it.record_above(it.at(30, 18)), 0)");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:64 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100)) });
-test("tests/medium.ray:64 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:64 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:65 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100)) });
+test("tests/medium.ray:65 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:65 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100))");
 });
 
-want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:65 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))) });
-test("tests/medium.ray:65 on standing", (t) => {
-  const got = outcome("standing", "tests/medium.ray:65 on standing");
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:66 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))) });
+test("tests/medium.ray:66 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:66 on standing");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))");
+});
+
+want("standing", () => G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1), { label: "tests/medium.ray:68 on standing", holds: (it) => ((eq(it.holes.length, 1) && it.vacuum) && eq(it.ticks, 40)), until: 42, requirement: (it) => range(it.cells).every(((c: any) => {
+  return ge(add(elem(it.rho, c), elem(it.vac, c)), sub(it.rho_inf, 0.000001));
+})) });
+test("tests/medium.ray:68 on standing", (t) => {
+  const got = outcome("standing", "tests/medium.ray:68 on standing");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "range(it.cells).every(((c: any) => {\n  return ge(add(elem(it.rho, c), elem(it.vac, c)), sub(it.rho_inf, 0.000001));\n}))");
 });

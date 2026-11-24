@@ -27,9 +27,10 @@ Medium{holes.length == 1 & this.N == 16 & ticks == 12} += {
   dynamically assert holes[0].x == 7
   dynamically assert holes[0].y == 7
   dynamically assert holes[0].px_now == 0
-  /* and its rays are out: what arrived at a cell a c-bar off is more than nothing, and the density everywhere is the settled one at least */
+  /* and its rays are out: what arrived at a cell a c-bar off is more than nothing. No vacuum stands under this box, so rho is the body's own rays alone: never below nought, and highest at the body */
   dynamically assert arrived(1, at(10, 7)) > 0
-  dynamically assert rho.every(v => v >= rho_inf)
+  dynamically assert rho.every(v => v >= 0)
+  dynamically assert rho[at(7, 7)] > rho[at(12, 7)]
 }
 
 /* two bodies at rest thirty-six cells (twelve c-bar) apart on a sixteen c-bar box - past the band where the pull turns away: each is pulled toward the other, and neither is pushed off the line between them */
@@ -42,8 +43,8 @@ Medium{holes.length == 2 & ticks == 24} += {
   dynamically assert holes[0].py_now.abs < 0.000001
   dynamically assert holes[0].x > 6
   dynamically assert holes[1].x < 42
-  /* the record above the settled one is highest at the bodies; between them one body's rays meet the other's and space is destroyed */
-  dynamically assert record_above(at(6, 24)) > record_above(at(24, 24))
+  /* the record above the settled one is highest at the bodies - beside each, on the side the other's rays come from: a body's own cell sends its rays out and nothing meets there - and between them one body's rays meet the other's and space is destroyed */
+  dynamically assert record_above(at(7, 24)) > record_above(at(24, 24))
   dynamically assert crossed(at(24, 24)) > 0
 }
 
@@ -63,4 +64,6 @@ Medium{holes.length == 1 & vacuum & ticks == 40} += {
   /* small against the vacuum's own, and falling outward */
   dynamically assert record_above(at(24, 18)) < nf_inf / 100
   dynamically assert record_above(at(24, 18)) > record_above(at(30, 18))
+  /* and the vacuum makes room for what the body put: with the body's rays the density everywhere is the settled one at least */
+  dynamically assert Array.range(cells).every(c => rho[c] + vac[c] >= rho_inf - 0.000001)
 }

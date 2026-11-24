@@ -618,9 +618,9 @@ fn run(only: Option<String>) -> bool {
       if truthy(&m_every(&get(&it, "rho"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
   let self_: &Value = &self_;
   let v_1 = cell(&arg(a2, 0));
-  return own(&ge(&rd(&v_1), &get(&it, "rho_inf")));
+  return own(&ge(&rd(&v_1), &0.0));
   Value::Null
-}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &get(&it, \"rho_inf\")));\n  Value::Null\n}) }])") }
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &0.0));\n  Value::Null\n}) }])") }
     });
 
     t(s, "tests/medium.ray:32 on pair_medium", || {
@@ -635,9 +635,9 @@ fn run(only: Option<String>) -> bool {
       if truthy(&m_every(&get(&it, "rho"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
   let self_: &Value = &self_;
   let v_1 = cell(&arg(a2, 0));
-  return own(&ge(&rd(&v_1), &get(&it, "rho_inf")));
+  return own(&ge(&rd(&v_1), &0.0));
   Value::Null
-}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &get(&it, \"rho_inf\")));\n  Value::Null\n}) }])") }
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &0.0));\n  Value::Null\n}) }])") }
     });
 
     t(s, "tests/medium.ray:32 on standing", || {
@@ -652,45 +652,45 @@ fn run(only: Option<String>) -> bool {
       if truthy(&m_every(&get(&it, "rho"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
   let self_: &Value = &self_;
   let v_1 = cell(&arg(a2, 0));
-  return own(&ge(&rd(&v_1), &get(&it, "rho_inf")));
+  return own(&ge(&rd(&v_1), &0.0));
   Value::Null
-}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &get(&it, \"rho_inf\")));\n  Value::Null\n}) }])") }
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&get(&it, \"rho\"), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let v_1 = cell(&arg(a2, 0));\n  return own(&ge(&rd(&v_1), &0.0));\n  Value::Null\n}) }])") }
     });
 
-    t(s, "tests/medium.ray:40 on alone_medium", || {
+    t(s, "tests/medium.ray:33 on alone_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&eq(&get(&it, "N"), &16.0)))) && truthy(&eq(&get(&it, "ticks"), &12.0)))) {
         guard += 1;
-        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 14 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&elem(&get(&it, "rho"), &call(&it, "at", args![7.0, 7.0])), &elem(&get(&it, "rho"), &call(&it, "at", args![12.0, 7.0])))) { PASS.to_string() } else { format!("failed: {}", "gt(&elem(&get(&it, \"rho\"), &call(&it, \"at\", args![7.0, 7.0])), &elem(&get(&it, \"rho\"), &call(&it, \"at\", args![12.0, 7.0])))") }
     });
 
-    t(s, "tests/medium.ray:40 on pair_medium", || {
+    t(s, "tests/medium.ray:33 on pair_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&eq(&get(&it, "N"), &16.0)))) && truthy(&eq(&get(&it, "ticks"), &12.0)))) {
         guard += 1;
-        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 14 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&elem(&get(&it, "rho"), &call(&it, "at", args![7.0, 7.0])), &elem(&get(&it, "rho"), &call(&it, "at", args![12.0, 7.0])))) { PASS.to_string() } else { format!("failed: {}", "gt(&elem(&get(&it, \"rho\"), &call(&it, \"at\", args![7.0, 7.0])), &elem(&get(&it, \"rho\"), &call(&it, \"at\", args![12.0, 7.0])))") }
     });
 
-    t(s, "tests/medium.ray:40 on standing", || {
+    t(s, "tests/medium.ray:33 on standing", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&eq(&get(&it, "N"), &16.0)))) && truthy(&eq(&get(&it, "ticks"), &12.0)))) {
         guard += 1;
-        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 14 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&elem(&get(&it, "rho"), &call(&it, "at", args![7.0, 7.0])), &elem(&get(&it, "rho"), &call(&it, "at", args![12.0, 7.0])))) { PASS.to_string() } else { format!("failed: {}", "gt(&elem(&get(&it, \"rho\"), &call(&it, \"at\", args![7.0, 7.0])), &elem(&get(&it, \"rho\"), &call(&it, \"at\", args![12.0, 7.0])))") }
     });
 
     t(s, "tests/medium.ray:41 on alone_medium", || {
@@ -702,7 +702,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:41 on pair_medium", || {
@@ -714,7 +714,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:41 on standing", || {
@@ -726,7 +726,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:42 on alone_medium", || {
@@ -738,7 +738,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:42 on pair_medium", || {
@@ -750,7 +750,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:42 on standing", || {
@@ -762,7 +762,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "px_now"), &0.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"px_now\"), &0.0)") }
     });
 
     t(s, "tests/medium.ray:43 on alone_medium", || {
@@ -774,7 +774,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
+      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
     });
 
     t(s, "tests/medium.ray:43 on pair_medium", || {
@@ -786,7 +786,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
+      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
     });
 
     t(s, "tests/medium.ray:43 on standing", || {
@@ -798,7 +798,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
+      if truthy(&lt(&m_abs(&get(&elem(&get(&it, "holes"), &0.0), "py_now")), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&get(&elem(&get(&it, \"holes\"), &0.0), \"py_now\")), &0.000001)") }
     });
 
     t(s, "tests/medium.ray:44 on alone_medium", || {
@@ -810,7 +810,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
     });
 
     t(s, "tests/medium.ray:44 on pair_medium", || {
@@ -822,7 +822,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
     });
 
     t(s, "tests/medium.ray:44 on standing", || {
@@ -834,10 +834,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
+      if truthy(&gt(&get(&elem(&get(&it, "holes"), &0.0), "x"), &6.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&get(&elem(&get(&it, \"holes\"), &0.0), \"x\"), &6.0)") }
     });
 
-    t(s, "tests/medium.ray:46 on alone_medium", || {
+    t(s, "tests/medium.ray:45 on alone_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
@@ -846,10 +846,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![6.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![6.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
     });
 
-    t(s, "tests/medium.ray:46 on pair_medium", || {
+    t(s, "tests/medium.ray:45 on pair_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
       let mut guard = 0;
@@ -858,10 +858,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![6.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![6.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
     });
 
-    t(s, "tests/medium.ray:46 on standing", || {
+    t(s, "tests/medium.ray:45 on standing", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
@@ -870,7 +870,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![6.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![6.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
+      if truthy(&lt(&get(&elem(&get(&it, "holes"), &1.0), "x"), &42.0)) { PASS.to_string() } else { format!("failed: {}", "lt(&get(&elem(&get(&it, \"holes\"), &1.0), \"x\"), &42.0)") }
     });
 
     t(s, "tests/medium.ray:47 on alone_medium", || {
@@ -882,7 +882,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![7.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![7.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
     });
 
     t(s, "tests/medium.ray:47 on pair_medium", || {
@@ -894,7 +894,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![7.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![7.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
     });
 
     t(s, "tests/medium.ray:47 on standing", || {
@@ -906,43 +906,43 @@ fn run(only: Option<String>) -> bool {
         if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![7.0, 24.0])]), &call(&it, "record_above", args![call(&it, "at", args![24.0, 24.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![7.0, 24.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 24.0])]))") }
     });
 
-    t(s, "tests/medium.ray:61 on alone_medium", || {
+    t(s, "tests/medium.ray:48 on alone_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
         guard += 1;
-        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
     });
 
-    t(s, "tests/medium.ray:61 on pair_medium", || {
+    t(s, "tests/medium.ray:48 on pair_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
         guard += 1;
-        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
     });
 
-    t(s, "tests/medium.ray:61 on standing", || {
+    t(s, "tests/medium.ray:48 on standing", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
-      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+      while !truthy(&(truthy(&eq(&len(&get(&it, "holes")), &2.0)) && truthy(&eq(&get(&it, "ticks"), &24.0)))) {
         guard += 1;
-        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        if guard > 26 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "crossed", args![call(&it, "at", args![24.0, 24.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"crossed\", args![call(&it, \"at\", args![24.0, 24.0])]), &0.0)") }
     });
 
     t(s, "tests/medium.ray:62 on alone_medium", || {
@@ -954,7 +954,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
     });
 
     t(s, "tests/medium.ray:62 on pair_medium", || {
@@ -966,7 +966,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
     });
 
     t(s, "tests/medium.ray:62 on standing", || {
@@ -978,10 +978,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &0.0)") }
     });
 
-    t(s, "tests/medium.ray:64 on alone_medium", || {
+    t(s, "tests/medium.ray:63 on alone_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
@@ -990,10 +990,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
     });
 
-    t(s, "tests/medium.ray:64 on pair_medium", || {
+    t(s, "tests/medium.ray:63 on pair_medium", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
       let mut guard = 0;
@@ -1002,10 +1002,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
     });
 
-    t(s, "tests/medium.ray:64 on standing", || {
+    t(s, "tests/medium.ray:63 on standing", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
       let mut guard = 0;
@@ -1014,7 +1014,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]), &0.0)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]), &0.0)") }
     });
 
     t(s, "tests/medium.ray:65 on alone_medium", || {
@@ -1026,7 +1026,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]))") }
+      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
     });
 
     t(s, "tests/medium.ray:65 on pair_medium", || {
@@ -1038,7 +1038,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]))") }
+      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
     });
 
     t(s, "tests/medium.ray:65 on standing", || {
@@ -1050,7 +1050,94 @@ fn run(only: Option<String>) -> bool {
         if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
+      if truthy(&lt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &div(&get(&it, "nf_inf"), &100.0))) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &div(&get(&it, \"nf_inf\"), &100.0))") }
+    });
+
+    t(s, "tests/medium.ray:66 on alone_medium", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
       if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]))") }
+    });
+
+    t(s, "tests/medium.ray:66 on pair_medium", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]))") }
+    });
+
+    t(s, "tests/medium.ray:66 on standing", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&gt(&call(&it, "record_above", args![call(&it, "at", args![24.0, 18.0])]), &call(&it, "record_above", args![call(&it, "at", args![30.0, 18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"record_above\", args![call(&it, \"at\", args![24.0, 18.0])]), &call(&it, \"record_above\", args![call(&it, \"at\", args![30.0, 18.0])]))") }
+    });
+
+    t(s, "tests/medium.ray:68 on alone_medium", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&call(&k!("G"), "medium", args![16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", args![7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&m_every(&rng(&get(&it, "cells")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+  let self_: &Value = &self_;
+  let c__1 = cell(&arg(a2, 0));
+  return own(&ge(&add(&elem(&get(&it, "rho"), &rd(&c__1)), &elem(&get(&it, "vac"), &rd(&c__1))), &sub(&get(&it, "rho_inf"), &0.000001)));
+  Value::Null
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&rng(&get(&it, \"cells\")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let c__1 = cell(&arg(a2, 0));\n  return own(&ge(&add(&elem(&get(&it, \"rho\"), &rd(&c__1)), &elem(&get(&it, \"vac\"), &rd(&c__1))), &sub(&get(&it, \"rho_inf\"), &0.000001)));\n  Value::Null\n}) }])") }
+    });
+
+    t(s, "tests/medium.ray:68 on pair_medium", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&call(&call(&k!("G"), "medium", args![49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", args![6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", args![42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&m_every(&rng(&get(&it, "cells")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+  let self_: &Value = &self_;
+  let c__1 = cell(&arg(a2, 0));
+  return own(&ge(&add(&elem(&get(&it, "rho"), &rd(&c__1)), &elem(&get(&it, "vac"), &rd(&c__1))), &sub(&get(&it, "rho_inf"), &0.000001)));
+  Value::Null
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&rng(&get(&it, \"cells\")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let c__1 = cell(&arg(a2, 0));\n  return own(&ge(&add(&elem(&get(&it, \"rho\"), &rd(&c__1)), &elem(&get(&it, \"vac\"), &rd(&c__1))), &sub(&get(&it, \"rho_inf\"), &0.000001)));\n  Value::Null\n}) }])") }
+    });
+
+    t(s, "tests/medium.ray:68 on standing", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&call(&get(&call(&k!("G"), "medium", args![37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", args![18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0]))));
+      let mut guard = 0;
+      while !truthy(&(truthy(&(truthy(&eq(&len(&get(&it, "holes")), &1.0)) && truthy(&get(&it, "vacuum")))) && truthy(&eq(&get(&it, "ticks"), &40.0)))) {
+        guard += 1;
+        if guard > 42 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&m_every(&rng(&get(&it, "cells")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+  let self_: &Value = &self_;
+  let c__1 = cell(&arg(a2, 0));
+  return own(&ge(&add(&elem(&get(&it, "rho"), &rd(&c__1)), &elem(&get(&it, "vac"), &rd(&c__1))), &sub(&get(&it, "rho_inf"), &0.000001)));
+  Value::Null
+}) }])) { PASS.to_string() } else { format!("failed: {}", "m_every(&rng(&get(&it, \"cells\")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {\n  let self_: &Value = &self_;\n  let c__1 = cell(&arg(a2, 0));\n  return own(&ge(&add(&elem(&get(&it, \"rho\"), &rd(&c__1)), &elem(&get(&it, \"vac\"), &rd(&c__1))), &sub(&get(&it, \"rho_inf\"), &0.000001)));\n  Value::Null\n}) }])") }
     });
 
     t(s, "tests/motion.ray:13 on line", || {

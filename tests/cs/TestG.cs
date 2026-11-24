@@ -516,9 +516,9 @@ public static class TestG {
       }
       return truthy(m_every(get(it, "rho"), new Fn((a2) => {
   object v_1 = arg(a2, 0);
-  return ge(v_1, get(it, "rho_inf"));
+  return ge(v_1, 0.0);
   return null;
-}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, get(it, \"rho_inf\"));\n  return null;\n}))";
+}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, 0.0);\n  return null;\n}))";
     });
 
     t("tests/medium.ray:32 on pair_medium", () => {
@@ -530,9 +530,9 @@ public static class TestG {
       }
       return truthy(m_every(get(it, "rho"), new Fn((a2) => {
   object v_1 = arg(a2, 0);
-  return ge(v_1, get(it, "rho_inf"));
+  return ge(v_1, 0.0);
   return null;
-}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, get(it, \"rho_inf\"));\n  return null;\n}))";
+}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, 0.0);\n  return null;\n}))";
     });
 
     t("tests/medium.ray:32 on standing", () => {
@@ -544,39 +544,39 @@ public static class TestG {
       }
       return truthy(m_every(get(it, "rho"), new Fn((a2) => {
   object v_1 = arg(a2, 0);
-  return ge(v_1, get(it, "rho_inf"));
+  return ge(v_1, 0.0);
   return null;
-}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, get(it, \"rho_inf\"));\n  return null;\n}))";
+}))) ? PASS : "failed: " + "m_every(get(it, \"rho\"), new Fn((a2) => {\n  object v_1 = arg(a2, 0);\n  return ge(v_1, 0.0);\n  return null;\n}))";
     });
 
-    t("tests/medium.ray:40 on alone_medium", () => {
+    t("tests/medium.ray:33 on alone_medium", () => {
       object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
-      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
-        if (++guard > 26 || !has(it, "tick")) return SKIP;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(eq(get(it, "N"), 16.0)))) && truthy(eq(get(it, "ticks"), 12.0))))) {
+        if (++guard > 14 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
+      return truthy(gt(elem(get(it, "rho"), call(it, "at", new object[] { 7.0, 7.0 })), elem(get(it, "rho"), call(it, "at", new object[] { 12.0, 7.0 })))) ? PASS : "failed: " + "gt(elem(get(it, \"rho\"), call(it, \"at\", new object[] { 7.0, 7.0 })), elem(get(it, \"rho\"), call(it, \"at\", new object[] { 12.0, 7.0 })))";
     });
 
-    t("tests/medium.ray:40 on pair_medium", () => {
+    t("tests/medium.ray:33 on pair_medium", () => {
       object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
       int guard = 0;
-      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
-        if (++guard > 26 || !has(it, "tick")) return SKIP;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(eq(get(it, "N"), 16.0)))) && truthy(eq(get(it, "ticks"), 12.0))))) {
+        if (++guard > 14 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
+      return truthy(gt(elem(get(it, "rho"), call(it, "at", new object[] { 7.0, 7.0 })), elem(get(it, "rho"), call(it, "at", new object[] { 12.0, 7.0 })))) ? PASS : "failed: " + "gt(elem(get(it, \"rho\"), call(it, \"at\", new object[] { 7.0, 7.0 })), elem(get(it, \"rho\"), call(it, \"at\", new object[] { 12.0, 7.0 })))";
     });
 
-    t("tests/medium.ray:40 on standing", () => {
+    t("tests/medium.ray:33 on standing", () => {
       object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
-      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
-        if (++guard > 26 || !has(it, "tick")) return SKIP;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(eq(get(it, "N"), 16.0)))) && truthy(eq(get(it, "ticks"), 12.0))))) {
+        if (++guard > 14 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
+      return truthy(gt(elem(get(it, "rho"), call(it, "at", new object[] { 7.0, 7.0 })), elem(get(it, "rho"), call(it, "at", new object[] { 12.0, 7.0 })))) ? PASS : "failed: " + "gt(elem(get(it, \"rho\"), call(it, \"at\", new object[] { 7.0, 7.0 })), elem(get(it, \"rho\"), call(it, \"at\", new object[] { 12.0, 7.0 })))";
     });
 
     t("tests/medium.ray:41 on alone_medium", () => {
@@ -586,7 +586,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:41 on pair_medium", () => {
@@ -596,7 +596,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:41 on standing", () => {
@@ -606,7 +606,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "px_now"), 0.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:42 on alone_medium", () => {
@@ -616,7 +616,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:42 on pair_medium", () => {
@@ -626,7 +626,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:42 on standing", () => {
@@ -636,7 +636,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "px_now"), 0.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"px_now\"), 0.0)";
     });
 
     t("tests/medium.ray:43 on alone_medium", () => {
@@ -646,7 +646,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
+      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
     });
 
     t("tests/medium.ray:43 on pair_medium", () => {
@@ -656,7 +656,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
+      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
     });
 
     t("tests/medium.ray:43 on standing", () => {
@@ -666,7 +666,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
+      return truthy(lt(m_abs(get(elem(get(it, "holes"), 0.0), "py_now")), 0.000001)) ? PASS : "failed: " + "lt(m_abs(get(elem(get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)";
     });
 
     t("tests/medium.ray:44 on alone_medium", () => {
@@ -676,7 +676,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
     });
 
     t("tests/medium.ray:44 on pair_medium", () => {
@@ -686,7 +686,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
     });
 
     t("tests/medium.ray:44 on standing", () => {
@@ -696,37 +696,37 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
+      return truthy(gt(get(elem(get(it, "holes"), 0.0), "x"), 6.0)) ? PASS : "failed: " + "gt(get(elem(get(it, \"holes\"), 0.0), \"x\"), 6.0)";
     });
 
-    t("tests/medium.ray:46 on alone_medium", () => {
+    t("tests/medium.ray:45 on alone_medium", () => {
       object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
       while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 6.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 6.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
     });
 
-    t("tests/medium.ray:46 on pair_medium", () => {
+    t("tests/medium.ray:45 on pair_medium", () => {
       object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
       int guard = 0;
       while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 6.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 6.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
     });
 
-    t("tests/medium.ray:46 on standing", () => {
+    t("tests/medium.ray:45 on standing", () => {
       object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
       while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 6.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 6.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
+      return truthy(lt(get(elem(get(it, "holes"), 1.0), "x"), 42.0)) ? PASS : "failed: " + "lt(get(elem(get(it, \"holes\"), 1.0), \"x\"), 42.0)";
     });
 
     t("tests/medium.ray:47 on alone_medium", () => {
@@ -736,7 +736,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "crossed", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"crossed\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }), 0.0)";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 7.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 7.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
     });
 
     t("tests/medium.ray:47 on pair_medium", () => {
@@ -746,7 +746,7 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "crossed", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"crossed\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }), 0.0)";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 7.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 7.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
     });
 
     t("tests/medium.ray:47 on standing", () => {
@@ -756,37 +756,37 @@ public static class TestG {
         if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 7.0, 24.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 7.0, 24.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }))";
+    });
+
+    t("tests/medium.ray:48 on alone_medium", () => {
+      object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+      int guard = 0;
+      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
+        if (++guard > 26 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
       return truthy(gt(call(it, "crossed", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"crossed\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }), 0.0)";
     });
 
-    t("tests/medium.ray:61 on alone_medium", () => {
-      object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
-      int guard = 0;
-      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
-        if (++guard > 42 || !has(it, "tick")) return SKIP;
-        get(it, "tick");
-      }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
-    });
-
-    t("tests/medium.ray:61 on pair_medium", () => {
+    t("tests/medium.ray:48 on pair_medium", () => {
       object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
       int guard = 0;
-      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
-        if (++guard > 42 || !has(it, "tick")) return SKIP;
+      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
+        if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
+      return truthy(gt(call(it, "crossed", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"crossed\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }), 0.0)";
     });
 
-    t("tests/medium.ray:61 on standing", () => {
+    t("tests/medium.ray:48 on standing", () => {
       object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
-      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
-        if (++guard > 42 || !has(it, "tick")) return SKIP;
+      while (!truthy((truthy(eq(len(get(it, "holes")), 2.0)) && truthy(eq(get(it, "ticks"), 24.0))))) {
+        if (++guard > 26 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
+      return truthy(gt(call(it, "crossed", new object[] { call(it, "at", new object[] { 24.0, 24.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"crossed\", new object[] { call(it, \"at\", new object[] { 24.0, 24.0 }) }), 0.0)";
     });
 
     t("tests/medium.ray:62 on alone_medium", () => {
@@ -796,7 +796,7 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
     });
 
     t("tests/medium.ray:62 on pair_medium", () => {
@@ -806,7 +806,7 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
     });
 
     t("tests/medium.ray:62 on standing", () => {
@@ -816,37 +816,37 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), 0.0)";
     });
 
-    t("tests/medium.ray:64 on alone_medium", () => {
+    t("tests/medium.ray:63 on alone_medium", () => {
       object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
       while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
     });
 
-    t("tests/medium.ray:64 on pair_medium", () => {
+    t("tests/medium.ray:63 on pair_medium", () => {
       object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
       int guard = 0;
       while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
     });
 
-    t("tests/medium.ray:64 on standing", () => {
+    t("tests/medium.ray:63 on standing", () => {
       object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
       int guard = 0;
       while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }), 0.0)) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }), 0.0)";
     });
 
     t("tests/medium.ray:65 on alone_medium", () => {
@@ -856,7 +856,7 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }))";
+      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
     });
 
     t("tests/medium.ray:65 on pair_medium", () => {
@@ -866,7 +866,7 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }))";
+      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
     });
 
     t("tests/medium.ray:65 on standing", () => {
@@ -876,7 +876,79 @@ public static class TestG {
         if (++guard > 42 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
+      return truthy(lt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), div(get(it, "nf_inf"), 100.0))) ? PASS : "failed: " + "lt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), div(get(it, \"nf_inf\"), 100.0))";
+    });
+
+    t("tests/medium.ray:66 on alone_medium", () => {
+      object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
       return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }))";
+    });
+
+    t("tests/medium.ray:66 on pair_medium", () => {
+      object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }))";
+    });
+
+    t("tests/medium.ray:66 on standing", () => {
+      object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(gt(call(it, "record_above", new object[] { call(it, "at", new object[] { 24.0, 18.0 }) }), call(it, "record_above", new object[] { call(it, "at", new object[] { 30.0, 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 24.0, 18.0 }) }), call(it, \"record_above\", new object[] { call(it, \"at\", new object[] { 30.0, 18.0 }) }))";
+    });
+
+    t("tests/medium.ray:68 on alone_medium", () => {
+      object it = call(call(K("G"), "medium", new object[] { 16.0, 8.0, 3.0, 18.0, 2.0 }), "thrown", new object[] { 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(m_every(rng(get(it, "cells")), new Fn((a2) => {
+  object c__1 = arg(a2, 0);
+  return ge(add(elem(get(it, "rho"), c__1), elem(get(it, "vac"), c__1)), sub(get(it, "rho_inf"), 0.000001));
+  return null;
+}))) ? PASS : "failed: " + "m_every(rng(get(it, \"cells\")), new Fn((a2) => {\n  object c__1 = arg(a2, 0);\n  return ge(add(elem(get(it, \"rho\"), c__1), elem(get(it, \"vac\"), c__1)), sub(get(it, \"rho_inf\"), 0.000001));\n  return null;\n}))";
+    });
+
+    t("tests/medium.ray:68 on pair_medium", () => {
+      object it = call(call(call(K("G"), "medium", new object[] { 49.0, 8.0, 3.0, 18.0, 3.0 }), "thrown", new object[] { 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0 }), "thrown", new object[] { 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(m_every(rng(get(it, "cells")), new Fn((a2) => {
+  object c__1 = arg(a2, 0);
+  return ge(add(elem(get(it, "rho"), c__1), elem(get(it, "vac"), c__1)), sub(get(it, "rho_inf"), 0.000001));
+  return null;
+}))) ? PASS : "failed: " + "m_every(rng(get(it, \"cells\")), new Fn((a2) => {\n  object c__1 = arg(a2, 0);\n  return ge(add(elem(get(it, \"rho\"), c__1), elem(get(it, \"vac\"), c__1)), sub(get(it, \"rho_inf\"), 0.000001));\n  return null;\n}))";
+    });
+
+    t("tests/medium.ray:68 on standing", () => {
+      object it = call(get(call(K("G"), "medium", new object[] { 37.0, 8.0, 3.0, 18.0, 2.0 }), "under_vacuum"), "thrown", new object[] { 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0 });
+      int guard = 0;
+      while (!truthy((truthy((truthy(eq(len(get(it, "holes")), 1.0)) && truthy(get(it, "vacuum")))) && truthy(eq(get(it, "ticks"), 40.0))))) {
+        if (++guard > 42 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(m_every(rng(get(it, "cells")), new Fn((a2) => {
+  object c__1 = arg(a2, 0);
+  return ge(add(elem(get(it, "rho"), c__1), elem(get(it, "vac"), c__1)), sub(get(it, "rho_inf"), 0.000001));
+  return null;
+}))) ? PASS : "failed: " + "m_every(rng(get(it, \"cells\")), new Fn((a2) => {\n  object c__1 = arg(a2, 0);\n  return ge(add(elem(get(it, \"rho\"), c__1), elem(get(it, \"vac\"), c__1)), sub(get(it, \"rho_inf\"), 0.000001));\n  return null;\n}))";
     });
 
     t("tests/motion.ray:13 on line", () => {

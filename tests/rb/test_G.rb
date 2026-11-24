@@ -530,8 +530,8 @@ class TestG < Minitest::Test
       it.tick
     end
     assert(Ops.m_every(it.rho, ->(v) {
-  return Ops.ge(v, it.rho_inf)
-}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, it.rho_inf)\n})")
+  return Ops.ge(v, 0)
+}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, 0)\n})")
   end
 
   def test_tests_medium_ray_32_on_pair_medium
@@ -543,8 +543,8 @@ class TestG < Minitest::Test
       it.tick
     end
     assert(Ops.m_every(it.rho, ->(v) {
-  return Ops.ge(v, it.rho_inf)
-}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, it.rho_inf)\n})")
+  return Ops.ge(v, 0)
+}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, 0)\n})")
   end
 
   def test_tests_medium_ray_32_on_standing
@@ -556,41 +556,41 @@ class TestG < Minitest::Test
       it.tick
     end
     assert(Ops.m_every(it.rho, ->(v) {
-  return Ops.ge(v, it.rho_inf)
-}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, it.rho_inf)\n})")
+  return Ops.ge(v, 0)
+}), "Ops.m_every(it.rho, ->(v) {\n  return Ops.ge(v, 0)\n})")
   end
 
-  def test_tests_medium_ray_40_on_alone_medium
+  def test_tests_medium_ray_33_on_alone_medium
     it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
     guard = 0
-    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
+    until ((Ops.eq(it.holes.length, 1) && Ops.eq(it.N, 16)) && Ops.eq(it.ticks, 12))
       guard += 1
-      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
+      skip("the refinement never held") if guard > 14 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7))), "Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7)))")
   end
 
-  def test_tests_medium_ray_40_on_pair_medium
+  def test_tests_medium_ray_33_on_pair_medium
     it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
     guard = 0
-    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
+    until ((Ops.eq(it.holes.length, 1) && Ops.eq(it.N, 16)) && Ops.eq(it.ticks, 12))
       guard += 1
-      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
+      skip("the refinement never held") if guard > 14 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7))), "Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7)))")
   end
 
-  def test_tests_medium_ray_40_on_standing
+  def test_tests_medium_ray_33_on_standing
     it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
     guard = 0
-    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
+    until ((Ops.eq(it.holes.length, 1) && Ops.eq(it.N, 16)) && Ops.eq(it.ticks, 12))
       guard += 1
-      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
+      skip("the refinement never held") if guard > 14 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7))), "Ops.gt(Ops.elem(it.rho, it.at(7, 7)), Ops.elem(it.rho, it.at(12, 7)))")
   end
 
   def test_tests_medium_ray_41_on_alone_medium
@@ -601,7 +601,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
   end
 
   def test_tests_medium_ray_41_on_pair_medium
@@ -612,7 +612,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
   end
 
   def test_tests_medium_ray_41_on_standing
@@ -623,7 +623,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).px_now, 0), "Ops.gt(Ops.elem(it.holes, 0).px_now, 0)")
   end
 
   def test_tests_medium_ray_42_on_alone_medium
@@ -634,7 +634,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
+    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
   end
 
   def test_tests_medium_ray_42_on_pair_medium
@@ -645,7 +645,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
+    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
   end
 
   def test_tests_medium_ray_42_on_standing
@@ -656,7 +656,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
+    assert(Ops.lt(Ops.elem(it.holes, 1).px_now, 0), "Ops.lt(Ops.elem(it.holes, 1).px_now, 0)")
   end
 
   def test_tests_medium_ray_43_on_alone_medium
@@ -667,7 +667,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
+    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
   end
 
   def test_tests_medium_ray_43_on_pair_medium
@@ -678,7 +678,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
+    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
   end
 
   def test_tests_medium_ray_43_on_standing
@@ -689,7 +689,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
+    assert(Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001), "Ops.lt(Ops.m_abs(Ops.elem(it.holes, 0).py_now), 0.000001)")
   end
 
   def test_tests_medium_ray_44_on_alone_medium
@@ -700,7 +700,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
   end
 
   def test_tests_medium_ray_44_on_pair_medium
@@ -711,7 +711,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
   end
 
   def test_tests_medium_ray_44_on_standing
@@ -722,10 +722,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
+    assert(Ops.gt(Ops.elem(it.holes, 0).x, 6), "Ops.gt(Ops.elem(it.holes, 0).x, 6)")
   end
 
-  def test_tests_medium_ray_46_on_alone_medium
+  def test_tests_medium_ray_45_on_alone_medium
     it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
     guard = 0
     until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
@@ -733,10 +733,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24)))")
+    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
   end
 
-  def test_tests_medium_ray_46_on_pair_medium
+  def test_tests_medium_ray_45_on_pair_medium
     it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
     guard = 0
     until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
@@ -744,10 +744,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24)))")
+    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
   end
 
-  def test_tests_medium_ray_46_on_standing
+  def test_tests_medium_ray_45_on_standing
     it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
     guard = 0
     until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
@@ -755,7 +755,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24)))")
+    assert(Ops.lt(Ops.elem(it.holes, 1).x, 42), "Ops.lt(Ops.elem(it.holes, 1).x, 42)")
   end
 
   def test_tests_medium_ray_47_on_alone_medium
@@ -766,7 +766,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.crossed(it.at(24, 24)), 0), "Ops.gt(it.crossed(it.at(24, 24)), 0)")
+    assert(Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24)))")
   end
 
   def test_tests_medium_ray_47_on_pair_medium
@@ -777,7 +777,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.crossed(it.at(24, 24)), 0), "Ops.gt(it.crossed(it.at(24, 24)), 0)")
+    assert(Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24)))")
   end
 
   def test_tests_medium_ray_47_on_standing
@@ -788,40 +788,40 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
+    assert(Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24))), "Ops.gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24)))")
+  end
+
+  def test_tests_medium_ray_48_on_alone_medium
+    it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
+    guard = 0
+    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
+      guard += 1
+      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
+      it.tick
+    end
     assert(Ops.gt(it.crossed(it.at(24, 24)), 0), "Ops.gt(it.crossed(it.at(24, 24)), 0)")
   end
 
-  def test_tests_medium_ray_61_on_alone_medium
-    it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
-    guard = 0
-    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
-      guard += 1
-      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
-      it.tick
-    end
-    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
-  end
-
-  def test_tests_medium_ray_61_on_pair_medium
+  def test_tests_medium_ray_48_on_pair_medium
     it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
     guard = 0
-    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
       guard += 1
-      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
+    assert(Ops.gt(it.crossed(it.at(24, 24)), 0), "Ops.gt(it.crossed(it.at(24, 24)), 0)")
   end
 
-  def test_tests_medium_ray_61_on_standing
+  def test_tests_medium_ray_48_on_standing
     it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
     guard = 0
-    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+    until (Ops.eq(it.holes.length, 2) && Ops.eq(it.ticks, 24))
       guard += 1
-      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      skip("the refinement never held") if guard > 26 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
+    assert(Ops.gt(it.crossed(it.at(24, 24)), 0), "Ops.gt(it.crossed(it.at(24, 24)), 0)")
   end
 
   def test_tests_medium_ray_62_on_alone_medium
@@ -832,7 +832,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
+    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
   end
 
   def test_tests_medium_ray_62_on_pair_medium
@@ -843,7 +843,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
+    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
   end
 
   def test_tests_medium_ray_62_on_standing
@@ -854,10 +854,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
+    assert(Ops.gt(it.record_above(it.at(24, 18)), 0), "Ops.gt(it.record_above(it.at(24, 18)), 0)")
   end
 
-  def test_tests_medium_ray_64_on_alone_medium
+  def test_tests_medium_ray_63_on_alone_medium
     it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
     guard = 0
     until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
@@ -865,10 +865,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
+    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
   end
 
-  def test_tests_medium_ray_64_on_pair_medium
+  def test_tests_medium_ray_63_on_pair_medium
     it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
     guard = 0
     until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
@@ -876,10 +876,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
+    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
   end
 
-  def test_tests_medium_ray_64_on_standing
+  def test_tests_medium_ray_63_on_standing
     it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
     guard = 0
     until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
@@ -887,7 +887,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
+    assert(Ops.gt(it.record_above(it.at(30, 18)), 0), "Ops.gt(it.record_above(it.at(30, 18)), 0)")
   end
 
   def test_tests_medium_ray_65_on_alone_medium
@@ -898,7 +898,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))), "Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
   end
 
   def test_tests_medium_ray_65_on_pair_medium
@@ -909,7 +909,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))), "Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
   end
 
   def test_tests_medium_ray_65_on_standing
@@ -920,7 +920,79 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
       it.tick
     end
+    assert(Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100)), "Ops.lt(it.record_above(it.at(24, 18)), Ops.div(it.nf_inf, 100))")
+  end
+
+  def test_tests_medium_ray_66_on_alone_medium
+    it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
     assert(Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))), "Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+  end
+
+  def test_tests_medium_ray_66_on_pair_medium
+    it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))), "Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+  end
+
+  def test_tests_medium_ray_66_on_standing
+    it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))), "Ops.gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+  end
+
+  def test_tests_medium_ray_68_on_alone_medium
+    it = G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.m_every(Ops.rng(it.cells), ->(c) {
+  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))
+}), "Ops.m_every(Ops.rng(it.cells), ->(c) {\n  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))\n})")
+  end
+
+  def test_tests_medium_ray_68_on_pair_medium
+    it = G.medium(49, 8, 3, 18, 3).thrown(6, 24, 1, 100, 0, 0, 1).thrown(42, 24, 1, 100, 0, 0, 2)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.m_every(Ops.rng(it.cells), ->(c) {
+  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))
+}), "Ops.m_every(Ops.rng(it.cells), ->(c) {\n  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))\n})")
+  end
+
+  def test_tests_medium_ray_68_on_standing
+    it = G.medium(37, 8, 3, 18, 2).under_vacuum.thrown(18, 18, 0.01, 100, 0, 0, 1)
+    guard = 0
+    until ((Ops.eq(it.holes.length, 1) && it.vacuum) && Ops.eq(it.ticks, 40))
+      guard += 1
+      skip("the refinement never held") if guard > 42 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.m_every(Ops.rng(it.cells), ->(c) {
+  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))
+}), "Ops.m_every(Ops.rng(it.cells), ->(c) {\n  return Ops.ge(Ops.add(Ops.elem(it.rho, c), Ops.elem(it.vac, c)), Ops.sub(it.rho_inf, 0.000001))\n})")
   end
 
   def test_tests_motion_ray_13_on_line

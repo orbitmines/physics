@@ -607,10 +607,10 @@ t("tests/medium.ray:32 on alone_medium") {
   }
   let ok: Bool = truthy(try m_every(try get(it, "rho"), V.fn({ (a2: [V]) throws -> V in
   var v_1: V = arg(a2, 0);
-  return try ge(v_1, try get(it, "rho_inf"))
+  return try ge(v_1, 0.0)
   return V.null
 })))
-  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, try get(it, \"rho_inf\"))\n  return V.null\n}))"
+  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, 0.0)\n  return V.null\n}))"
 }
 
 t("tests/medium.ray:32 on pair_medium") {
@@ -623,10 +623,10 @@ t("tests/medium.ray:32 on pair_medium") {
   }
   let ok: Bool = truthy(try m_every(try get(it, "rho"), V.fn({ (a2: [V]) throws -> V in
   var v_1: V = arg(a2, 0);
-  return try ge(v_1, try get(it, "rho_inf"))
+  return try ge(v_1, 0.0)
   return V.null
 })))
-  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, try get(it, \"rho_inf\"))\n  return V.null\n}))"
+  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, 0.0)\n  return V.null\n}))"
 }
 
 t("tests/medium.ray:32 on standing") {
@@ -639,46 +639,46 @@ t("tests/medium.ray:32 on standing") {
   }
   let ok: Bool = truthy(try m_every(try get(it, "rho"), V.fn({ (a2: [V]) throws -> V in
   var v_1: V = arg(a2, 0);
-  return try ge(v_1, try get(it, "rho_inf"))
+  return try ge(v_1, 0.0)
   return V.null
 })))
-  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, try get(it, \"rho_inf\"))\n  return V.null\n}))"
+  return ok ? PASS : "failed: " + "try m_every(try get(it, \"rho\"), V.fn({ (a2: [V]) throws -> V in\n  var v_1: V = arg(a2, 0);\n  return try ge(v_1, 0.0)\n  return V.null\n}))"
 }
 
-t("tests/medium.ray:40 on alone_medium") {
+t("tests/medium.ray:33 on alone_medium") {
   let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
-  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), V.b(try eq(try get(it, "N"), 16.0))), V.b(try eq(try get(it, "ticks"), 12.0)))) {
     guard_ += 1
-    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    if guard_ > 14 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try elem(try get(it, "rho"), try call(it, "at", [7.0, 7.0])), try elem(try get(it, "rho"), try call(it, "at", [12.0, 7.0]))))
+  return ok ? PASS : "failed: " + "try gt(try elem(try get(it, \"rho\"), try call(it, \"at\", [7.0, 7.0])), try elem(try get(it, \"rho\"), try call(it, \"at\", [12.0, 7.0])))"
 }
 
-t("tests/medium.ray:40 on pair_medium") {
+t("tests/medium.ray:33 on pair_medium") {
   let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
   var guard_: Int = 0
-  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), V.b(try eq(try get(it, "N"), 16.0))), V.b(try eq(try get(it, "ticks"), 12.0)))) {
     guard_ += 1
-    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    if guard_ > 14 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try elem(try get(it, "rho"), try call(it, "at", [7.0, 7.0])), try elem(try get(it, "rho"), try call(it, "at", [12.0, 7.0]))))
+  return ok ? PASS : "failed: " + "try gt(try elem(try get(it, \"rho\"), try call(it, \"at\", [7.0, 7.0])), try elem(try get(it, \"rho\"), try call(it, \"at\", [12.0, 7.0])))"
 }
 
-t("tests/medium.ray:40 on standing") {
+t("tests/medium.ray:33 on standing") {
   let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
-  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), V.b(try eq(try get(it, "N"), 16.0))), V.b(try eq(try get(it, "ticks"), 12.0)))) {
     guard_ += 1
-    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    if guard_ > 14 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try elem(try get(it, "rho"), try call(it, "at", [7.0, 7.0])), try elem(try get(it, "rho"), try call(it, "at", [12.0, 7.0]))))
+  return ok ? PASS : "failed: " + "try gt(try elem(try get(it, \"rho\"), try call(it, \"at\", [7.0, 7.0])), try elem(try get(it, \"rho\"), try call(it, \"at\", [12.0, 7.0])))"
 }
 
 t("tests/medium.ray:41 on alone_medium") {
@@ -689,8 +689,8 @@ t("tests/medium.ray:41 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:41 on pair_medium") {
@@ -701,8 +701,8 @@ t("tests/medium.ray:41 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:41 on standing") {
@@ -713,8 +713,8 @@ t("tests/medium.ray:41 on standing") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:42 on alone_medium") {
@@ -725,8 +725,8 @@ t("tests/medium.ray:42 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
-  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:42 on pair_medium") {
@@ -737,8 +737,8 @@ t("tests/medium.ray:42 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
-  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:42 on standing") {
@@ -749,8 +749,8 @@ t("tests/medium.ray:42 on standing") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
-  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "px_now"), 0.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"px_now\"), 0.0)"
 }
 
 t("tests/medium.ray:43 on alone_medium") {
@@ -761,8 +761,8 @@ t("tests/medium.ray:43 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
+  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
 }
 
 t("tests/medium.ray:43 on pair_medium") {
@@ -773,8 +773,8 @@ t("tests/medium.ray:43 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
+  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
 }
 
 t("tests/medium.ray:43 on standing") {
@@ -785,8 +785,8 @@ t("tests/medium.ray:43 on standing") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
-  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
+  let ok: Bool = truthy(try lt(try m_abs(try get(try elem(try get(it, "holes"), 0.0), "py_now")), 0.000001))
+  return ok ? PASS : "failed: " + "try lt(try m_abs(try get(try elem(try get(it, \"holes\"), 0.0), \"py_now\")), 0.000001)"
 }
 
 t("tests/medium.ray:44 on alone_medium") {
@@ -797,8 +797,8 @@ t("tests/medium.ray:44 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
 }
 
 t("tests/medium.ray:44 on pair_medium") {
@@ -809,8 +809,8 @@ t("tests/medium.ray:44 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
 }
 
 t("tests/medium.ray:44 on standing") {
@@ -821,11 +821,11 @@ t("tests/medium.ray:44 on standing") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
-  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
+  let ok: Bool = truthy(try gt(try get(try elem(try get(it, "holes"), 0.0), "x"), 6.0))
+  return ok ? PASS : "failed: " + "try gt(try get(try elem(try get(it, \"holes\"), 0.0), \"x\"), 6.0)"
 }
 
-t("tests/medium.ray:46 on alone_medium") {
+t("tests/medium.ray:45 on alone_medium") {
   let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
@@ -833,11 +833,11 @@ t("tests/medium.ray:46 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [6.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [6.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
 }
 
-t("tests/medium.ray:46 on pair_medium") {
+t("tests/medium.ray:45 on pair_medium") {
   let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
   var guard_: Int = 0
   while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
@@ -845,11 +845,11 @@ t("tests/medium.ray:46 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [6.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [6.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
 }
 
-t("tests/medium.ray:46 on standing") {
+t("tests/medium.ray:45 on standing") {
   let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
@@ -857,8 +857,8 @@ t("tests/medium.ray:46 on standing") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [6.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [6.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
+  let ok: Bool = truthy(try lt(try get(try elem(try get(it, "holes"), 1.0), "x"), 42.0))
+  return ok ? PASS : "failed: " + "try lt(try get(try elem(try get(it, \"holes\"), 1.0), \"x\"), 42.0)"
 }
 
 t("tests/medium.ray:47 on alone_medium") {
@@ -869,8 +869,8 @@ t("tests/medium.ray:47 on alone_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "crossed", [try call(it, "at", [24.0, 24.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"crossed\", [try call(it, \"at\", [24.0, 24.0])]), 0.0)"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [7.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [7.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
 }
 
 t("tests/medium.ray:47 on pair_medium") {
@@ -881,11 +881,47 @@ t("tests/medium.ray:47 on pair_medium") {
     if guard_ > 26 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [7.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [7.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
+}
+
+t("tests/medium.ray:47 on standing") {
+  let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+    guard_ += 1
+    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [7.0, 24.0])]), try call(it, "record_above", [try call(it, "at", [24.0, 24.0])])))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [7.0, 24.0])]), try call(it, \"record_above\", [try call(it, \"at\", [24.0, 24.0])]))"
+}
+
+t("tests/medium.ray:48 on alone_medium") {
+  let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+    guard_ += 1
+    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
   let ok: Bool = truthy(try gt(try call(it, "crossed", [try call(it, "at", [24.0, 24.0])]), 0.0))
   return ok ? PASS : "failed: " + "try gt(try call(it, \"crossed\", [try call(it, \"at\", [24.0, 24.0])]), 0.0)"
 }
 
-t("tests/medium.ray:47 on standing") {
+t("tests/medium.ray:48 on pair_medium") {
+  let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
+  var guard_: Int = 0
+  while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
+    guard_ += 1
+    if guard_ > 26 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try gt(try call(it, "crossed", [try call(it, "at", [24.0, 24.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"crossed\", [try call(it, \"at\", [24.0, 24.0])]), 0.0)"
+}
+
+t("tests/medium.ray:48 on standing") {
   let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(V.b(try eq(try len(try get(it, "holes")), 2.0)), V.b(try eq(try get(it, "ticks"), 24.0)))) {
@@ -897,42 +933,6 @@ t("tests/medium.ray:47 on standing") {
   return ok ? PASS : "failed: " + "try gt(try call(it, \"crossed\", [try call(it, \"at\", [24.0, 24.0])]), 0.0)"
 }
 
-t("tests/medium.ray:61 on alone_medium") {
-  let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
-  var guard_: Int = 0
-  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
-    guard_ += 1
-    if guard_ > 42 || !has(it, "tick") { return SKIP }
-    try get(it, "tick")
-  }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
-}
-
-t("tests/medium.ray:61 on pair_medium") {
-  let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
-  var guard_: Int = 0
-  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
-    guard_ += 1
-    if guard_ > 42 || !has(it, "tick") { return SKIP }
-    try get(it, "tick")
-  }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
-}
-
-t("tests/medium.ray:61 on standing") {
-  let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
-  var guard_: Int = 0
-  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
-    guard_ += 1
-    if guard_ > 42 || !has(it, "tick") { return SKIP }
-    try get(it, "tick")
-  }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
-}
-
 t("tests/medium.ray:62 on alone_medium") {
   let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
@@ -941,8 +941,8 @@ t("tests/medium.ray:62 on alone_medium") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
 }
 
 t("tests/medium.ray:62 on pair_medium") {
@@ -953,8 +953,8 @@ t("tests/medium.ray:62 on pair_medium") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
 }
 
 t("tests/medium.ray:62 on standing") {
@@ -965,11 +965,11 @@ t("tests/medium.ray:62 on standing") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), 0.0)"
 }
 
-t("tests/medium.ray:64 on alone_medium") {
+t("tests/medium.ray:63 on alone_medium") {
   let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
@@ -977,11 +977,11 @@ t("tests/medium.ray:64 on alone_medium") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
 }
 
-t("tests/medium.ray:64 on pair_medium") {
+t("tests/medium.ray:63 on pair_medium") {
   let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
   var guard_: Int = 0
   while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
@@ -989,11 +989,11 @@ t("tests/medium.ray:64 on pair_medium") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
 }
 
-t("tests/medium.ray:64 on standing") {
+t("tests/medium.ray:63 on standing") {
   let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
@@ -1001,8 +1001,8 @@ t("tests/medium.ray:64 on standing") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+  let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [30.0, 18.0])]), 0.0))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]), 0.0)"
 }
 
 t("tests/medium.ray:65 on alone_medium") {
@@ -1013,11 +1013,47 @@ t("tests/medium.ray:65 on alone_medium") {
     if guard_ > 42 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
+  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+}
+
+t("tests/medium.ray:65 on pair_medium") {
+  let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+}
+
+t("tests/medium.ray:65 on standing") {
+  let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try div(try get(it, "nf_inf"), 100.0)))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try div(try get(it, \"nf_inf\"), 100.0))"
+}
+
+t("tests/medium.ray:66 on alone_medium") {
+  let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
   let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try call(it, "record_above", [try call(it, "at", [30.0, 18.0])])))
   return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]))"
 }
 
-t("tests/medium.ray:65 on pair_medium") {
+t("tests/medium.ray:66 on pair_medium") {
   let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
   var guard_: Int = 0
   while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
@@ -1029,7 +1065,7 @@ t("tests/medium.ray:65 on pair_medium") {
   return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]))"
 }
 
-t("tests/medium.ray:65 on standing") {
+t("tests/medium.ray:66 on standing") {
   let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
   var guard_: Int = 0
   while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
@@ -1039,6 +1075,54 @@ t("tests/medium.ray:65 on standing") {
   }
   let ok: Bool = truthy(try gt(try call(it, "record_above", [try call(it, "at", [24.0, 18.0])]), try call(it, "record_above", [try call(it, "at", [30.0, 18.0])])))
   return ok ? PASS : "failed: " + "try gt(try call(it, \"record_above\", [try call(it, \"at\", [24.0, 18.0])]), try call(it, \"record_above\", [try call(it, \"at\", [30.0, 18.0])]))"
+}
+
+t("tests/medium.ray:68 on alone_medium") {
+  let it: V = try call(try call((try K("G")), "medium", [16.0, 8.0, 3.0, 18.0, 2.0]), "thrown", [7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try m_every(rng(try get(it, "cells")), V.fn({ (a2: [V]) throws -> V in
+  var c_1: V = arg(a2, 0);
+  return try ge(try add(try elem(try get(it, "rho"), c_1), try elem(try get(it, "vac"), c_1)), try sub(try get(it, "rho_inf"), 0.000001))
+  return V.null
+})))
+  return ok ? PASS : "failed: " + "try m_every(rng(try get(it, \"cells\")), V.fn({ (a2: [V]) throws -> V in\n  var c_1: V = arg(a2, 0);\n  return try ge(try add(try elem(try get(it, \"rho\"), c_1), try elem(try get(it, \"vac\"), c_1)), try sub(try get(it, \"rho_inf\"), 0.000001))\n  return V.null\n}))"
+}
+
+t("tests/medium.ray:68 on pair_medium") {
+  let it: V = try call(try call(try call((try K("G")), "medium", [49.0, 8.0, 3.0, 18.0, 3.0]), "thrown", [6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0]), "thrown", [42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try m_every(rng(try get(it, "cells")), V.fn({ (a2: [V]) throws -> V in
+  var c_1: V = arg(a2, 0);
+  return try ge(try add(try elem(try get(it, "rho"), c_1), try elem(try get(it, "vac"), c_1)), try sub(try get(it, "rho_inf"), 0.000001))
+  return V.null
+})))
+  return ok ? PASS : "failed: " + "try m_every(rng(try get(it, \"cells\")), V.fn({ (a2: [V]) throws -> V in\n  var c_1: V = arg(a2, 0);\n  return try ge(try add(try elem(try get(it, \"rho\"), c_1), try elem(try get(it, \"vac\"), c_1)), try sub(try get(it, \"rho_inf\"), 0.000001))\n  return V.null\n}))"
+}
+
+t("tests/medium.ray:68 on standing") {
+  let it: V = try call(try get(try call((try K("G")), "medium", [37.0, 8.0, 3.0, 18.0, 2.0]), "under_vacuum"), "thrown", [18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0])
+  var guard_: Int = 0
+  while !truthy(try and_(try and_(V.b(try eq(try len(try get(it, "holes")), 1.0)), try get(it, "vacuum")), V.b(try eq(try get(it, "ticks"), 40.0)))) {
+    guard_ += 1
+    if guard_ > 42 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try m_every(rng(try get(it, "cells")), V.fn({ (a2: [V]) throws -> V in
+  var c_1: V = arg(a2, 0);
+  return try ge(try add(try elem(try get(it, "rho"), c_1), try elem(try get(it, "vac"), c_1)), try sub(try get(it, "rho_inf"), 0.000001))
+  return V.null
+})))
+  return ok ? PASS : "failed: " + "try m_every(rng(try get(it, \"cells\")), V.fn({ (a2: [V]) throws -> V in\n  var c_1: V = arg(a2, 0);\n  return try ge(try add(try elem(try get(it, \"rho\"), c_1), try elem(try get(it, \"vac\"), c_1)), try sub(try get(it, \"rho_inf\"), 0.000001))\n  return V.null\n}))"
 }
 
 t("tests/motion.ray:13 on line") {

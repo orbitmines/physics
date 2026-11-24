@@ -600,8 +600,8 @@ run_case(j"tests/medium.ray:32 on alone_medium", @dynamic_names(() -> begin
     tick(it)
   end
   truthy(every(rho(it), (function (v_1 = nothing, _...)
-  return (v_1 >= rho_inf(it))
-end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= rho_inf(it))\nend))")
+  return (v_1 >= 0.0)
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= 0.0)\nend))")
 end))
 
 
@@ -614,8 +614,8 @@ run_case(j"tests/medium.ray:32 on pair_medium", @dynamic_names(() -> begin
     tick(it)
   end
   truthy(every(rho(it), (function (v_1 = nothing, _...)
-  return (v_1 >= rho_inf(it))
-end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= rho_inf(it))\nend))")
+  return (v_1 >= 0.0)
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= 0.0)\nend))")
 end))
 
 
@@ -628,44 +628,44 @@ run_case(j"tests/medium.ray:32 on standing", @dynamic_names(() -> begin
     tick(it)
   end
   truthy(every(rho(it), (function (v_1 = nothing, _...)
-  return (v_1 >= rho_inf(it))
-end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= rho_inf(it))\nend))")
+  return (v_1 >= 0.0)
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rho(it), (function (v_1 = nothing, _...)\n  return (v_1 >= 0.0)\nend))")
 end))
 
 
-run_case(j"tests/medium.ray:40 on alone_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:33 on alone_medium", @dynamic_names(() -> begin
   it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
   guard = 0
-  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy((N(it) == 16.0)))) && truthy((ticks(it) == 12.0))))
     guard = Base.:+(guard, 1)
-    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
+    (Base.:>(guard, 14) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
+  truthy((getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))) ? TEST_PASS : Base.:*("failed: ", j"(getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))")
 end))
 
 
-run_case(j"tests/medium.ray:40 on pair_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:33 on pair_medium", @dynamic_names(() -> begin
   it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
   guard = 0
-  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy((N(it) == 16.0)))) && truthy((ticks(it) == 12.0))))
     guard = Base.:+(guard, 1)
-    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
+    (Base.:>(guard, 14) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
+  truthy((getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))) ? TEST_PASS : Base.:*("failed: ", j"(getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))")
 end))
 
 
-run_case(j"tests/medium.ray:40 on standing", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:33 on standing", @dynamic_names(() -> begin
   it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
   guard = 0
-  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy((N(it) == 16.0)))) && truthy((ticks(it) == 12.0))))
     guard = Base.:+(guard, 1)
-    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
+    (Base.:>(guard, 14) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
+  truthy((getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))) ? TEST_PASS : Base.:*("failed: ", j"(getat(rho(it), at(it, 7.0, 7.0)) > getat(rho(it), at(it, 12.0, 7.0)))")
 end))
 
 
@@ -677,7 +677,7 @@ run_case(j"tests/medium.ray:41 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
+  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
 end))
 
 
@@ -689,7 +689,7 @@ run_case(j"tests/medium.ray:41 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
+  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
 end))
 
 
@@ -701,7 +701,7 @@ run_case(j"tests/medium.ray:41 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
+  truthy((px_now(getat(holes(it), 0.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 0.0)) > 0.0)")
 end))
 
 
@@ -713,7 +713,7 @@ run_case(j"tests/medium.ray:42 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
+  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
 end))
 
 
@@ -725,7 +725,7 @@ run_case(j"tests/medium.ray:42 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
+  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
 end))
 
 
@@ -737,7 +737,7 @@ run_case(j"tests/medium.ray:42 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
+  truthy((px_now(getat(holes(it), 1.0)) < 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(px_now(getat(holes(it), 1.0)) < 0.0)")
 end))
 
 
@@ -749,7 +749,7 @@ run_case(j"tests/medium.ray:43 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
+  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
 end))
 
 
@@ -761,7 +761,7 @@ run_case(j"tests/medium.ray:43 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
+  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
 end))
 
 
@@ -773,7 +773,7 @@ run_case(j"tests/medium.ray:43 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
+  truthy((abs(py_now(getat(holes(it), 0.0))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(py_now(getat(holes(it), 0.0))) < 0.000001)")
 end))
 
 
@@ -785,7 +785,7 @@ run_case(j"tests/medium.ray:44 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
+  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
 end))
 
 
@@ -797,7 +797,7 @@ run_case(j"tests/medium.ray:44 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
+  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
 end))
 
 
@@ -809,11 +809,11 @@ run_case(j"tests/medium.ray:44 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
+  truthy((x(getat(holes(it), 0.0)) > 6.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 0.0)) > 6.0)")
 end))
 
 
-run_case(j"tests/medium.ray:46 on alone_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:45 on alone_medium", @dynamic_names(() -> begin
   it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
   guard = 0
   while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
@@ -821,11 +821,11 @@ run_case(j"tests/medium.ray:46 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
+  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
 end))
 
 
-run_case(j"tests/medium.ray:46 on pair_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:45 on pair_medium", @dynamic_names(() -> begin
   it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
   guard = 0
   while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
@@ -833,11 +833,11 @@ run_case(j"tests/medium.ray:46 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
+  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
 end))
 
 
-run_case(j"tests/medium.ray:46 on standing", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:45 on standing", @dynamic_names(() -> begin
   it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
   guard = 0
   while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
@@ -845,7 +845,7 @@ run_case(j"tests/medium.ray:46 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 6.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
+  truthy((x(getat(holes(it), 1.0)) < 42.0)) ? TEST_PASS : Base.:*("failed: ", j"(x(getat(holes(it), 1.0)) < 42.0)")
 end))
 
 
@@ -857,7 +857,7 @@ run_case(j"tests/medium.ray:47 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((crossed(it, at(it, 24.0, 24.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(crossed(it, at(it, 24.0, 24.0)) > 0.0)")
+  truthy((record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
 end))
 
 
@@ -869,7 +869,7 @@ run_case(j"tests/medium.ray:47 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((crossed(it, at(it, 24.0, 24.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(crossed(it, at(it, 24.0, 24.0)) > 0.0)")
+  truthy((record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
 end))
 
 
@@ -881,43 +881,43 @@ run_case(j"tests/medium.ray:47 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
+  truthy((record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 7.0, 24.0)) > record_above(it, at(it, 24.0, 24.0)))")
+end))
+
+
+run_case(j"tests/medium.ray:48 on alone_medium", @dynamic_names(() -> begin
+  it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
+  guard = 0
+  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
   truthy((crossed(it, at(it, 24.0, 24.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(crossed(it, at(it, 24.0, 24.0)) > 0.0)")
 end))
 
 
-run_case(j"tests/medium.ray:61 on alone_medium", @dynamic_names(() -> begin
-  it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
-  guard = 0
-  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
-    guard = Base.:+(guard, 1)
-    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
-    tick(it)
-  end
-  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
-end))
-
-
-run_case(j"tests/medium.ray:61 on pair_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:48 on pair_medium", @dynamic_names(() -> begin
   it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
   guard = 0
-  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
     guard = Base.:+(guard, 1)
-    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
+  truthy((crossed(it, at(it, 24.0, 24.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(crossed(it, at(it, 24.0, 24.0)) > 0.0)")
 end))
 
 
-run_case(j"tests/medium.ray:61 on standing", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:48 on standing", @dynamic_names(() -> begin
   it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
   guard = 0
-  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+  while !truthy((truthy((length(holes(it)) == 2.0)) && truthy((ticks(it) == 24.0))))
     guard = Base.:+(guard, 1)
-    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    (Base.:>(guard, 26) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
+  truthy((crossed(it, at(it, 24.0, 24.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(crossed(it, at(it, 24.0, 24.0)) > 0.0)")
 end))
 
 
@@ -929,7 +929,7 @@ run_case(j"tests/medium.ray:62 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
+  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
 end))
 
 
@@ -941,7 +941,7 @@ run_case(j"tests/medium.ray:62 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
+  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
 end))
 
 
@@ -953,11 +953,11 @@ run_case(j"tests/medium.ray:62 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
+  truthy((record_above(it, at(it, 24.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > 0.0)")
 end))
 
 
-run_case(j"tests/medium.ray:64 on alone_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:63 on alone_medium", @dynamic_names(() -> begin
   it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
   guard = 0
   while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
@@ -965,11 +965,11 @@ run_case(j"tests/medium.ray:64 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
+  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
 end))
 
 
-run_case(j"tests/medium.ray:64 on pair_medium", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:63 on pair_medium", @dynamic_names(() -> begin
   it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
   guard = 0
   while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
@@ -977,11 +977,11 @@ run_case(j"tests/medium.ray:64 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
+  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
 end))
 
 
-run_case(j"tests/medium.ray:64 on standing", @dynamic_names(() -> begin
+run_case(j"tests/medium.ray:63 on standing", @dynamic_names(() -> begin
   it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
   guard = 0
   while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
@@ -989,7 +989,7 @@ run_case(j"tests/medium.ray:64 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
+  truthy((record_above(it, at(it, 30.0, 18.0)) > 0.0)) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 30.0, 18.0)) > 0.0)")
 end))
 
 
@@ -1001,7 +1001,7 @@ run_case(j"tests/medium.ray:65 on alone_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))")
+  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
 end))
 
 
@@ -1013,7 +1013,7 @@ run_case(j"tests/medium.ray:65 on pair_medium", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))")
+  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
 end))
 
 
@@ -1025,7 +1025,85 @@ run_case(j"tests/medium.ray:65 on standing", @dynamic_names(() -> begin
     (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
+  truthy((record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) < (nf_inf(it) / 100.0))")
+end))
+
+
+run_case(j"tests/medium.ray:66 on alone_medium", @dynamic_names(() -> begin
+  it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
   truthy((record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))")
+end))
+
+
+run_case(j"tests/medium.ray:66 on pair_medium", @dynamic_names(() -> begin
+  it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))")
+end))
+
+
+run_case(j"tests/medium.ray:66 on standing", @dynamic_names(() -> begin
+  it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))) ? TEST_PASS : Base.:*("failed: ", j"(record_above(it, at(it, 24.0, 18.0)) > record_above(it, at(it, 30.0, 18.0)))")
+end))
+
+
+run_case(j"tests/medium.ray:68 on alone_medium", @dynamic_names(() -> begin
+  it = thrown(medium(G, 16.0, 8.0, 3.0, 18.0, 2.0), 7.0, 7.0, 1.0, 100.0, 0.0, 0.0, 1.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(every(rng(cells(it)), (function (c_1 = nothing, _...)
+  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rng(cells(it)), (function (c_1 = nothing, _...)\n  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))\nend))")
+end))
+
+
+run_case(j"tests/medium.ray:68 on pair_medium", @dynamic_names(() -> begin
+  it = thrown(thrown(medium(G, 49.0, 8.0, 3.0, 18.0, 3.0), 6.0, 24.0, 1.0, 100.0, 0.0, 0.0, 1.0), 42.0, 24.0, 1.0, 100.0, 0.0, 0.0, 2.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(every(rng(cells(it)), (function (c_1 = nothing, _...)
+  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rng(cells(it)), (function (c_1 = nothing, _...)\n  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))\nend))")
+end))
+
+
+run_case(j"tests/medium.ray:68 on standing", @dynamic_names(() -> begin
+  it = thrown(under_vacuum(medium(G, 37.0, 8.0, 3.0, 18.0, 2.0)), 18.0, 18.0, 0.01, 100.0, 0.0, 0.0, 1.0)
+  guard = 0
+  while !truthy((truthy((truthy((length(holes(it)) == 1.0)) && truthy(vacuum(it)))) && truthy((ticks(it) == 40.0))))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 42) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(every(rng(cells(it)), (function (c_1 = nothing, _...)
+  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))
+end))) ? TEST_PASS : Base.:*("failed: ", j"every(rng(cells(it)), (function (c_1 = nothing, _...)\n  return ((getat(rho(it), c_1) + getat(vac(it), c_1)) >= (rho_inf(it) - 0.000001))\nend))")
 end))
 
 

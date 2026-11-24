@@ -441,8 +441,8 @@ initialize addTest "tests/medium.ray:32 on alone_medium" (do
     if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
-  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
-  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:32 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -452,8 +452,8 @@ initialize addTest "tests/medium.ray:32 on pair_medium" (do
     if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
-  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
-  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
 initialize addTest "tests/medium.ray:32 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -463,35 +463,35 @@ initialize addTest "tests/medium.ray:32 on standing" (do
     if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← dot! (← ωget it "rho") revery ((fn! [v_1] do
-  if true then return (← ωge (← v_1.get) (← ωget it "rho_inf"))
-  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (← ωget it \"rho_inf\"))\n  return ωnull)))"))
+  if true then return (← ωge (← v_1.get) (0 : Float))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωget it \"rho\") revery ((fn! [v_1] do\n  if true then return (← ωge (← v_1.get) (0 : Float))\n  return ωnull)))"))
 
-initialize addTest "tests/medium.ray:40 on alone_medium" (do
+initialize addTest "tests/medium.ray:33 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωelem (← ωget it "rho") (← call! it "at" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it "rho") (← call! it "at" ((12 : Float), (7 : Float))))) then "pass" else "failed: " ++ "(← ωgt (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((12 : Float), (7 : Float)))))"))
 
-initialize addTest "tests/medium.ray:40 on pair_medium" (do
+initialize addTest "tests/medium.ray:33 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωelem (← ωget it "rho") (← call! it "at" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it "rho") (← call! it "at" ((12 : Float), (7 : Float))))) then "pass" else "failed: " ++ "(← ωgt (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((12 : Float), (7 : Float)))))"))
 
-initialize addTest "tests/medium.ray:40 on standing" (do
+initialize addTest "tests/medium.ray:33 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωeqv (← ωget it "N") (16 : Float)))) (do pure (← ωeqv (← ωget it "ticks") (12 : Float)))) do
     guard := guard + 1
-    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 14 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωelem (← ωget it "rho") (← call! it "at" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it "rho") (← call! it "at" ((12 : Float), (7 : Float))))) then "pass" else "failed: " ++ "(← ωgt (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((7 : Float), (7 : Float)))) (← ωelem (← ωget it \"rho\") (← call! it \"at\" ((12 : Float), (7 : Float)))))"))
 
 initialize addTest "tests/medium.ray:41 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -500,7 +500,7 @@ initialize addTest "tests/medium.ray:41 on alone_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:41 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -509,7 +509,7 @@ initialize addTest "tests/medium.ray:41 on pair_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:41 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -518,7 +518,7 @@ initialize addTest "tests/medium.ray:41 on standing" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:42 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -527,7 +527,7 @@ initialize addTest "tests/medium.ray:42 on alone_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:42 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -536,7 +536,7 @@ initialize addTest "tests/medium.ray:42 on pair_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:42 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -545,7 +545,7 @@ initialize addTest "tests/medium.ray:42 on standing" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "px_now") (0 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"px_now\") (0 : Float))"))
 
 initialize addTest "tests/medium.ray:43 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -554,7 +554,7 @@ initialize addTest "tests/medium.ray:43 on alone_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:43 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -563,7 +563,7 @@ initialize addTest "tests/medium.ray:43 on pair_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:43 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -572,7 +572,7 @@ initialize addTest "tests/medium.ray:43 on standing" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
+  return (if truthy (← ωlt (← dot! (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "py_now") rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"py_now\") rabs ()) 0.000001)"))
 
 initialize addTest "tests/medium.ray:44 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -581,7 +581,7 @@ initialize addTest "tests/medium.ray:44 on alone_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
 initialize addTest "tests/medium.ray:44 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -590,7 +590,7 @@ initialize addTest "tests/medium.ray:44 on pair_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
 initialize addTest "tests/medium.ray:44 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -599,34 +599,34 @@ initialize addTest "tests/medium.ray:44 on standing" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
+  return (if truthy (← ωgt (← ωget (← ωelem (← ωget it "holes") (0 : Float)) "x") (6 : Float)) then "pass" else "failed: " ++ "(← ωgt (← ωget (← ωelem (← ωget it \"holes\") (0 : Float)) \"x\") (6 : Float))"))
 
-initialize addTest "tests/medium.ray:46 on alone_medium" (do
+initialize addTest "tests/medium.ray:45 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
-initialize addTest "tests/medium.ray:46 on pair_medium" (do
+initialize addTest "tests/medium.ray:45 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
-initialize addTest "tests/medium.ray:46 on standing" (do
+initialize addTest "tests/medium.ray:45 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((6 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((6 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
+  return (if truthy (← ωlt (← ωget (← ωelem (← ωget it "holes") (1 : Float)) "x") (42 : Float)) then "pass" else "failed: " ++ "(← ωlt (← ωget (← ωelem (← ωget it \"holes\") (1 : Float)) \"x\") (42 : Float))"))
 
 initialize addTest "tests/medium.ray:47 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -635,7 +635,7 @@ initialize addTest "tests/medium.ray:47 on alone_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((7 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((7 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
 initialize addTest "tests/medium.ray:47 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -644,7 +644,7 @@ initialize addTest "tests/medium.ray:47 on pair_medium" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((7 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((7 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
 initialize addTest "tests/medium.ray:47 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -653,34 +653,34 @@ initialize addTest "tests/medium.ray:47 on standing" (do
     guard := guard + 1
     if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((7 : Float), (24 : Float))))) (← call! it "record_above" ((← call! it "at" ((24 : Float), (24 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((7 : Float), (24 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (24 : Float))))))"))
 
-initialize addTest "tests/medium.ray:61 on alone_medium" (do
+initialize addTest "tests/medium.ray:48 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
-initialize addTest "tests/medium.ray:61 on pair_medium" (do
+initialize addTest "tests/medium.ray:48 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
-initialize addTest "tests/medium.ray:61 on standing" (do
+initialize addTest "tests/medium.ray:48 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
-  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+  while !truthy (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (2 : Float)) (do pure (← ωeqv (← ωget it "ticks") (24 : Float)))) do
     guard := guard + 1
-    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    if guard > 26 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "crossed" ((← call! it "at" ((24 : Float), (24 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"crossed\" ((← call! it \"at\" ((24 : Float), (24 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -689,7 +689,7 @@ initialize addTest "tests/medium.ray:62 on alone_medium" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -698,7 +698,7 @@ initialize addTest "tests/medium.ray:62 on pair_medium" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:62 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -707,34 +707,34 @@ initialize addTest "tests/medium.ray:62 on standing" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (0 : Float))"))
 
-initialize addTest "tests/medium.ray:64 on alone_medium" (do
+initialize addTest "tests/medium.ray:63 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
-initialize addTest "tests/medium.ray:64 on pair_medium" (do
+initialize addTest "tests/medium.ray:63 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
-initialize addTest "tests/medium.ray:64 on standing" (do
+initialize addTest "tests/medium.ray:63 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
   let mut guard := 0
   while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float))))) (0 : Float)) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))) (0 : Float))"))
 
 initialize addTest "tests/medium.ray:65 on alone_medium" (do
   let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -743,7 +743,7 @@ initialize addTest "tests/medium.ray:65 on alone_medium" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
 
 initialize addTest "tests/medium.ray:65 on pair_medium" (do
   let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
@@ -752,7 +752,7 @@ initialize addTest "tests/medium.ray:65 on pair_medium" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
 
 initialize addTest "tests/medium.ray:65 on standing" (do
   let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
@@ -761,7 +761,67 @@ initialize addTest "tests/medium.ray:65 on standing" (do
     guard := guard + 1
     if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it "nf_inf") (100 : Float))) then "pass" else "failed: " ++ "(← ωlt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← ωdiv (← ωget it \"nf_inf\") (100 : Float)))"))
+
+initialize addTest "tests/medium.ray:66 on alone_medium" (do
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
   return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
+
+initialize addTest "tests/medium.ray:66 on pair_medium" (do
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
+
+initialize addTest "tests/medium.ray:66 on standing" (do
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "record_above" ((← call! it "at" ((24 : Float), (18 : Float))))) (← call! it "record_above" ((← call! it "at" ((30 : Float), (18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"record_above\" ((← call! it \"at\" ((24 : Float), (18 : Float))))) (← call! it \"record_above\" ((← call! it \"at\" ((30 : Float), (18 : Float))))))"))
+
+initialize addTest "tests/medium.ray:68 on alone_medium" (do
+  let it := (← call! (← call! (← cls% G) "medium" ((16 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "thrown" ((7 : Float), (7 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωrrange (← ωget it "cells")) revery ((fn! [c_1] do
+  if true then return (← ωge (← ωadd (← ωelem (← ωget it "rho") (← c_1.get)) (← ωelem (← ωget it "vac") (← c_1.get))) (← ωsub (← ωget it "rho_inf") 0.000001))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωrrange (← ωget it \"cells\")) revery ((fn! [c_1] do\n  if true then return (← ωge (← ωadd (← ωelem (← ωget it \"rho\") (← c_1.get)) (← ωelem (← ωget it \"vac\") (← c_1.get))) (← ωsub (← ωget it \"rho_inf\") 0.000001))\n  return ωnull)))"))
+
+initialize addTest "tests/medium.ray:68 on pair_medium" (do
+  let it := (← call! (← call! (← call! (← cls% G) "medium" ((49 : Float), (8 : Float), (3 : Float), (18 : Float), (3 : Float))) "thrown" ((6 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (1 : Float))) "thrown" ((42 : Float), (24 : Float), (1 : Float), (100 : Float), (0 : Float), (0 : Float), (2 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωrrange (← ωget it "cells")) revery ((fn! [c_1] do
+  if true then return (← ωge (← ωadd (← ωelem (← ωget it "rho") (← c_1.get)) (← ωelem (← ωget it "vac") (← c_1.get))) (← ωsub (← ωget it "rho_inf") 0.000001))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωrrange (← ωget it \"cells\")) revery ((fn! [c_1] do\n  if true then return (← ωge (← ωadd (← ωelem (← ωget it \"rho\") (← c_1.get)) (← ωelem (← ωget it \"vac\") (← c_1.get))) (← ωsub (← ωget it \"rho_inf\") 0.000001))\n  return ωnull)))"))
+
+initialize addTest "tests/medium.ray:68 on standing" (do
+  let it := (← call! (← ωget (← call! (← cls% G) "medium" ((37 : Float), (8 : Float), (3 : Float), (18 : Float), (2 : Float))) "under_vacuum") "thrown" ((18 : Float), (18 : Float), 0.01, (100 : Float), (0 : Float), (0 : Float), (1 : Float)))
+  let mut guard := 0
+  while !truthy (← ωandV (← ωandV (← ωeqv (← dot! (← ωget it "holes") rlength ()) (1 : Float)) (do pure (← ωget it "vacuum"))) (do pure (← ωeqv (← ωget it "ticks") (40 : Float)))) do
+    guard := guard + 1
+    if guard > 42 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← dot! (← ωrrange (← ωget it "cells")) revery ((fn! [c_1] do
+  if true then return (← ωge (← ωadd (← ωelem (← ωget it "rho") (← c_1.get)) (← ωelem (← ωget it "vac") (← c_1.get))) (← ωsub (← ωget it "rho_inf") 0.000001))
+  return ωnull))) then "pass" else "failed: " ++ "(← dot! (← ωrrange (← ωget it \"cells\")) revery ((fn! [c_1] do\n  if true then return (← ωge (← ωadd (← ωelem (← ωget it \"rho\") (← c_1.get)) (← ωelem (← ωget it \"vac\") (← c_1.get))) (← ωsub (← ωget it \"rho_inf\") 0.000001))\n  return ωnull)))"))
 
 initialize addTest "tests/motion.ray:13 on line" (do
   let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))

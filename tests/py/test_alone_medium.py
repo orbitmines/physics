@@ -89,101 +89,117 @@ class TestG(unittest.TestCase):
         if isinstance(got, BaseException): raise got
         self.assertTrue(got, "gt(it.arrived(1, it.at(10, 7)), 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:32 on alone_medium", lambda it: ((eq(len(it.holes), 1) and eq(it.N, 16)) and eq(it.ticks, 12)), 14, lambda it: all(ge(v, it.rho_inf) for v in it.rho))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:32 on alone_medium", lambda it: ((eq(len(it.holes), 1) and eq(it.N, 16)) and eq(it.ticks, 12)), 14, lambda it: all(ge(v, 0) for v in it.rho))
 
     def test_tests_medium_ray_32_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:32 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "all(ge(v, it.rho_inf) for v in it.rho)")
+        self.assertTrue(got, "all(ge(v, 0) for v in it.rho)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:40 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(elem(it.holes, 0).px_now, 0))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:33 on alone_medium", lambda it: ((eq(len(it.holes), 1) and eq(it.N, 16)) and eq(it.ticks, 12)), 14, lambda it: gt(elem(it.rho, it.at(7, 7)), elem(it.rho, it.at(12, 7))))
 
-    def test_tests_medium_ray_40_on_alone_medium(self):
-        got = _outcome("alone_medium", "tests/medium.ray:40 on alone_medium")
+    def test_tests_medium_ray_33_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:33 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(elem(it.holes, 0).px_now, 0)")
+        self.assertTrue(got, "gt(elem(it.rho, it.at(7, 7)), elem(it.rho, it.at(12, 7)))")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:41 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(elem(it.holes, 1).px_now, 0))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:41 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(elem(it.holes, 0).px_now, 0))
 
     def test_tests_medium_ray_41_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:41 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(elem(it.holes, 1).px_now, 0)")
+        self.assertTrue(got, "gt(elem(it.holes, 0).px_now, 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:42 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(abs(elem(it.holes, 0).py_now), 0.000001))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:42 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(elem(it.holes, 1).px_now, 0))
 
     def test_tests_medium_ray_42_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:42 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(abs(elem(it.holes, 0).py_now), 0.000001)")
+        self.assertTrue(got, "lt(elem(it.holes, 1).px_now, 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:43 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(elem(it.holes, 0).x, 6))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:43 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(abs(elem(it.holes, 0).py_now), 0.000001))
 
     def test_tests_medium_ray_43_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:43 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(elem(it.holes, 0).x, 6)")
+        self.assertTrue(got, "lt(abs(elem(it.holes, 0).py_now), 0.000001)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:44 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(elem(it.holes, 1).x, 42))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:44 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(elem(it.holes, 0).x, 6))
 
     def test_tests_medium_ray_44_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:44 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(elem(it.holes, 1).x, 42)")
+        self.assertTrue(got, "gt(elem(it.holes, 0).x, 6)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:46 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24))))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:45 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: lt(elem(it.holes, 1).x, 42))
 
-    def test_tests_medium_ray_46_on_alone_medium(self):
-        got = _outcome("alone_medium", "tests/medium.ray:46 on alone_medium")
+    def test_tests_medium_ray_45_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:45 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(it.record_above(it.at(6, 24)), it.record_above(it.at(24, 24)))")
+        self.assertTrue(got, "lt(elem(it.holes, 1).x, 42)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:47 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(it.crossed(it.at(24, 24)), 0))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:47 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24))))
 
     def test_tests_medium_ray_47_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:47 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(it.crossed(it.at(24, 24)), 0)")
+        self.assertTrue(got, "gt(it.record_above(it.at(7, 24)), it.record_above(it.at(24, 24)))")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:61 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(24, 18)), 0))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:48 on alone_medium", lambda it: (eq(len(it.holes), 2) and eq(it.ticks, 24)), 26, lambda it: gt(it.crossed(it.at(24, 24)), 0))
 
-    def test_tests_medium_ray_61_on_alone_medium(self):
-        got = _outcome("alone_medium", "tests/medium.ray:61 on alone_medium")
+    def test_tests_medium_ray_48_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:48 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(it.record_above(it.at(24, 18)), 0)")
+        self.assertTrue(got, "gt(it.crossed(it.at(24, 24)), 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:62 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(30, 18)), 0))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:62 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(24, 18)), 0))
 
     def test_tests_medium_ray_62_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:62 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(it.record_above(it.at(30, 18)), 0)")
+        self.assertTrue(got, "gt(it.record_above(it.at(24, 18)), 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:64 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100)))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:63 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(30, 18)), 0))
 
-    def test_tests_medium_ray_64_on_alone_medium(self):
-        got = _outcome("alone_medium", "tests/medium.ray:64 on alone_medium")
+    def test_tests_medium_ray_63_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:63 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100))")
+        self.assertTrue(got, "gt(it.record_above(it.at(30, 18)), 0)")
 
-    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:65 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))))
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:65 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100)))
 
     def test_tests_medium_ray_65_on_alone_medium(self):
         got = _outcome("alone_medium", "tests/medium.ray:65 on alone_medium")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "lt(it.record_above(it.at(24, 18)), div(it.nf_inf, 100))")
+
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:66 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18))))
+
+    def test_tests_medium_ray_66_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:66 on alone_medium")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
         self.assertTrue(got, "gt(it.record_above(it.at(24, 18)), it.record_above(it.at(30, 18)))")
+
+    _want("alone_medium", lambda: G.medium(16, 8, 3, 18, 2).thrown(7, 7, 1, 100, 0, 0, 1), "tests/medium.ray:68 on alone_medium", lambda it: ((eq(len(it.holes), 1) and it.vacuum) and eq(it.ticks, 40)), 42, lambda it: all(ge(add(elem(it.rho, c), elem(it.vac, c)), sub(it.rho_inf, 0.000001)) for c in rng(it.cells)))
+
+    def test_tests_medium_ray_68_on_alone_medium(self):
+        got = _outcome("alone_medium", "tests/medium.ray:68 on alone_medium")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "all(ge(add(elem(it.rho, c), elem(it.vac, c)), sub(it.rho_inf, 0.000001)) for c in rng(it.cells))")
 
 
 if __name__ == "__main__":
