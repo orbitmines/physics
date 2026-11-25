@@ -39,6 +39,6 @@ a_0 = vH_vac, cH_vac = c̄H_vac
 against what is measured: a_0/cH_0 = v\sqrt{\Omega_\Lambda}, \Omega_\Lambda = \paren{H_vac/H_0}^(2)
 ```
 
-a_0 is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_0, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \sqrt{\Omega_\Lambda} of it - so a_0/cH_0 = v\sqrt{\Omega_\Lambda}. Measured it is 0.155 to 0.183
+a_0 is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_0, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \sqrt{\Omega_\Lambda} of it - so a_0/cH_0 = v\sqrt{\Omega_\Lambda}. Measured it is 0.155 to 0.183
 
 #### what the runs found

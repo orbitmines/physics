@@ -11928,13 +11928,53 @@ func init() {
       var sent_0 any
       sent_0 = Tern(Truthy(Eq(sends_0, nil)), func() any { return "EMISSION" }, func() any { return M_upper(Get(Get(Get(sends_0, "term"), "rule"), "name")) })
       _ = sent_0
+      var meet_0 any
+      meet_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy(Eq(Get(t_2, "degree"), 2.0)) && Truthy(Not(M_empty(Get(t_2, "rules")))))) && Truthy(!Eq(Get(t_2, "folds"), "0")))
+        }
+        return nil
+      })))
+      _ = meet_0
+      if Truthy(Eq(meet_0, nil)) {
+        if true {
+          return Lst(straight_0)
+        }
+      }
+      var met_0 any
+      met_0 = M_upper(Get(Get(Get(meet_0, "term"), "rule"), "name"))
+      _ = met_0
+      var ends_0 any
+      ends_0 = Call(K("Expr"), "num", []any{ Len(Get(K("Prover"), "edge_ends")) })
+      _ = ends_0
+      var rate_0 any
+      rate_0 = Tern(Truthy(Eq(Get(meet_0, "rate"), nil)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Expr"), "field", []any{ Get(meet_0, "rate") }) })
+      _ = rate_0
+      var meets_0 any
+      meets_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(rate_0, OrElse(Get(meet_0, "share"), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }), Call(K("Expr"), "pown", []any{ vac_0, 2.0 })) }) })
+      _ = meets_0
+      var eps_0 any
+      eps_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(meets_0, ends_0, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), vac_0 })) }) })
+      _ = eps_0
+      var potential_0 any
+      potential_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\varepsilon", eps_0 }), "what the vacuum would grow, had no mass been there", Lst(Get(Get(settles_0, "fact"), "key")), "" + Str(met_0) + " folds the two points of a meeting into one and, at each of its " + Str(Call(K("Expr"), "show", []any{ ends_0 })) + " ends, leaves the point behind the ray where the way behind is dark. On the continuous line nothing ties the way behind to the ray that met, so it is dark at the share the density leaves dark, 1 - \\rho. So the vacuum makes room at every meeting - not on net, since the fold took a point first and creation hands back what a point holds, but as the growth the vacuum would have were nothing folding it: what keeps it from collapsing. Where a body is, its rays meet the vacuum's and do the same, at the edge of its influence", Lst("meetings a point a tick: " + Str(Call(K("Expr"), "show", []any{ meets_0 })) + "", "behind each of " + Str(Call(K("Expr"), "show", []any{ ends_0 })) + " ends, dark at 1 - \\rho_{\\infty}", "\\varepsilon = " + Str(Call(K("Expr"), "show", []any{ eps_0 })) + "") })
+      _ = potential_0
+      Set(potential_0, "derivation", Lst(settles_0))
+      var own_0 any
+      own_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(eps_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "D" }), Neg(1.0) })) }) })
+      _ = own_0
+      var lam_0 any
+      lam_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "H_{\\Lambda}", own_0 }), "the rate the vacuum would expand at", Lst(Get(Get(potential_0, "fact"), "key")), "room made at every point grows what is inside a radius at that times how many points there are, R^{D}, so as a rate of the radius it is a D-th of it: the rate the vacuum would expand at had no mass been there. It does not thin as the world ages - it is the vacuum's own, at every epoch - and the world's actual growth, the frontier's one over its age, is a different rate", Lst("\\dot{V} = \\varepsilon V with V \\propto R^{D}", "H_{\\Lambda} = \\varepsilon/D = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "") })
+      _ = lam_0
+      Set(lam_0, "derivation", Lst(potential_0))
       var a0_0 any
-      a0_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(v_0, Get(Get(hub_0, "fact"), "to")) }) })
+      a0_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(v_0, own_0) }) })
       _ = a0_0
       var scale_0 any
-      scale_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "a_{0} \\aside{age}", a0_0 }), "the scale is the vacuum's own growth", Lst(Get(Get(straight_0, "fact"), "key"), Get(Get(hub_0, "fact"), "key")), "" + Str(lit_0) + " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " + Str(sent_0) + " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against", Lst("" + Str(lit_0) + ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" + Str(sent_0) + ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, " + Str(Call(K("Expr"), "show", []any{ Get(Get(hub_0, "fact"), "to") })) + "", "a_{0} = vH = " + Str(Call(K("Expr"), "show", []any{ a0_0 })) + "") })
+      scale_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "a_{0}", a0_0 }), "the scale is the vacuum's own growth", Lst(Get(Get(straight_0, "fact"), "key"), Get(Get(lam_0, "fact"), "key")), "" + Str(lit_0) + " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " + Str(sent_0) + " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and what cuts them off is the vacuum making room where they are: the rate it would grow at, carried at what a heading keeps straight. That is the scale an acceleration is measured against, the same at every place and every epoch", Lst("" + Str(lit_0) + ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" + Str(sent_0) + ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up until the room the vacuum makes cuts them off", "H_{\\Lambda} = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "", "a_{0} = vH_{\\Lambda} = " + Str(Call(K("Expr"), "show", []any{ a0_0 })) + "") })
       _ = scale_0
-      Set(scale_0, "derivation", Lst(straight_0, hub_0))
+      Set(scale_0, "derivation", Lst(straight_0, lam_0))
       var g_0 any
       g_0 = Call(K("Expr"), "field", []any{ "g_{N}" })
       _ = g_0
@@ -11952,15 +11992,14 @@ func init() {
       _ = closing_0
       Set(closing_0, "derivation", Lst(scale_0))
       var ratio_0 any
-      ratio_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ a0_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "\\bar{c}" }), Get(Get(hub_0, "fact"), "to")) }) }) })
+      ratio_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ a0_0, own_0 }) })
       _ = ratio_0
-      ratio_0 = Call(K("Expr"), "replace", []any{ ratio_0, "\\bar{c}", Call(K("Expr"), "num", []any{ 1.0 }) })
       var against_0 any
-      against_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\frac{a_{0}}{cH}", Call(K("Prover"), "neat", []any{ ratio_0 }) }), "the scale against the vacuum's growth", Lst(Get(Get(scale_0, "fact"), "key"), Get(Get(hub_0, "fact"), "key")), "a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", Lst("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Prover"), "neat", []any{ ratio_0 }) })) + "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}") })
+      against_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\frac{a_{0}}{cH}", ratio_0 }), "the scale against the vacuum's growth", Lst(Get(Get(scale_0, "fact"), "key"), Get(Get(lam_0, "fact"), "key")), "a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", Lst("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Prover"), "neat", []any{ ratio_0 }) })) + "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}") })
       _ = against_0
       Set(against_0, "derivation", Lst(scale_0))
       if true {
-        return Lst(straight_0, scale_0, closing_0, against_0)
+        return Lst(straight_0, potential_0, lam_0, scale_0, closing_0, against_0)
       }
       return nil
     })
@@ -33822,7 +33861,7 @@ func init() {
     c.StaticField("theorem gravity.scale", func(self any) any {
       return Make(Theorem, Kw("id", "gravity.scale"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"), Kw("about", "a_{0} \\aside{age}"), Kw("also", "v \\aside{straight}") }...)
+          return Make("Asked", []any{ Kw("asks", "a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?"), Kw("about", "a_{0}"), Kw("also", "H_{\\Lambda}") }...)
         }
         return nil
       })))

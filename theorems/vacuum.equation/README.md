@@ -267,18 +267,39 @@ v = \frac{1}{1 + n_f} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_
 
 MOVEMENT draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at
 
-**a_0 \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·t}**  
+**\varepsilon = 2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}**  
+<sub>theorem · what the vacuum would grow, had no mass been there</sub>  
+
+```
+meetings a point a tick: \sigma·F·\rho_\infty^(2)
+behind each of 2 ends, dark at 1 - \rho_\infty
+\varepsilon = 2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}
+```
+
+ANNIHILATION folds the two points of a meeting into one and, at each of its 2 ends, leaves the point behind the ray where the way behind is dark. On the continuous line nothing ties the way behind to the ray that met, so it is dark at the share the density leaves dark, 1 - \rho. So the vacuum makes room at every meeting - not on net, since the fold took a point first and creation hands back what a point holds, but as the growth the vacuum would have were nothing folding it: what keeps it from collapsing. Where a body is, its rays meet the vacuum's and do the same, at the edge of its influence
+
+**H_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D}**  
+<sub>theorem · the rate the vacuum would expand at</sub>  
+
+```
+\dot{V} = \varepsilon V with V \propto R^(D)
+H_\Lambda = \varepsilon/D = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D}
+```
+
+room made at every point grows what is inside a radius at that times how many points there are, R^(D), so as a rate of the radius it is a D-th of it: the rate the vacuum would expand at had no mass been there. It does not thin as the world ages - it is the vacuum's own, at every epoch - and the world's actual growth, the frontier's one over its age, is a different rate
+
+**a_0 = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·D}**  
 <sub>theorem · the scale is the vacuum's own growth</sub>  
 
 ```
 CREATION: fires at a free point, lights every way - the vacuum pulses, every other tick
 EMISSION: a source moves or emits, so each move flips the parity, fore against aft
-steady: the flips cancel; accelerating: they pile up, since the beginning
-the age is one over the vacuum's growth, \frac{1}{t}
-a_0 = vH = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·t}
+steady: the flips cancel; accelerating: they pile up until the room the vacuum makes cuts them off
+H_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D}
+a_0 = vH_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·D}
 ```
 
-CREATION fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. EMISSION sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against
+CREATION fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. EMISSION sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and what cuts them off is the vacuum making room where they are: the rate it would grow at, carried at what a heading keeps straight. That is the scale an acceleration is measured against, the same at every place and every epoch
 
 **F_g \aside{closing} = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}**  
 <sub>theorem · what is felt, with the mismatch closed</sub>  
@@ -301,7 +322,7 @@ a_0 = vH_vac, cH_vac = c̄H_vac
 against what is measured: a_0/cH_0 = v\sqrt{\Omega_\Lambda}, \Omega_\Lambda = \paren{H_vac/H_0}^(2)
 ```
 
-a_0 is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_0, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \sqrt{\Omega_\Lambda} of it - so a_0/cH_0 = v\sqrt{\Omega_\Lambda}. Measured it is 0.155 to 0.183
+a_0 is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_0, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \sqrt{\Omega_\Lambda} of it - so a_0/cH_0 = v\sqrt{\Omega_\Lambda}. Measured it is 0.155 to 0.183
 
 **m̄ = \Delta\rho + S^(-) - S^(+)**  
 <sub>theorem · the mass is what the vacuum leaves over</sub>  

@@ -621,7 +621,7 @@ ray_impl_sfield "theorem vacuum.age" : Theorem := do
     return ωnull)))
 ray_impl_sfield "theorem gravity.scale" : Theorem := do
   return (← new! Theorem (id := "gravity.scale", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?" : String), «about» := ("a_{0} \\aside{age}" : String), «also» := ("v \\aside{straight}" : String)))
+    if true then return (← new! Asked («asks» := ("a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?" : String), «about» := ("a_{0}" : String), «also» := ("H_{\\Lambda}" : String)))
     return ωnull)))
 ray_impl_sfield "theorem gravity.closing" : Theorem := do
   return (← new! Theorem (id := "gravity.closing", body := (fn! [] do

@@ -21,11 +21,11 @@ A step of the prover is a READING (a rule's own body, the continuous model, the 
 
 What stays NOT CHECKED, each with its reason in the module: an inference that concludes nothing when its lines stand as names (it looks inside a value, or a guard goes the other way); a relation holding a root in the density that the lines it stands on are written in (the prover puts them in under the root by name; a prover's substitution does not); a relation that, with the lines put back, is not the line (the inference did something else to them than it does to names); a cancellation of a sum carrying a real power (1 - q^R), which the algebra of a field cannot show is not nought; and the equation chain's readings - the line solved along a heading, the past taken as infinite, the sum over bodies - which are not algebra at all.
 
-In all: 666 steps in 64 theorems - 325 premises, 182 checked, 159 not checked; 59 of the 64 answers checked.
+In all: 668 steps in 64 theorems - 325 premises, 182 checked, 161 not checked; 59 of the 64 answers checked.
 
 | theorem | steps | premises | checked | not checked | answer |
 |---|---|---|---|---|---|
-| [vacuum.equation](OrbitMines/Physics/Proofs/G/vacuum_equation.lean) | 26 | 3 | 0 | 23 | checked |
+| [vacuum.equation](OrbitMines/Physics/Proofs/G/vacuum_equation.lean) | 28 | 3 | 0 | 25 | checked |
 | [vacuum.rays](OrbitMines/Physics/Proofs/G/vacuum_rays.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.space](OrbitMines/Physics/Proofs/G/vacuum_space.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.creation](OrbitMines/Physics/Proofs/G/vacuum_creation.lean) | 2 | 2 | 0 | 0 | checked |
@@ -96,7 +96,7 @@ In all: 666 steps in 64 theorems - 325 premises, 182 checked, 159 not checked; 5
 
 every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?
 
-Lean checked 0 of its 26 steps; 3 are premises read off the program and 23 are not checked. And the answer is CHECKED (it names \bar{m} again (claim 26), and its value is the earlier one's by algebra).
+Lean checked 0 of its 28 steps; 3 are premises read off the program and 25 are not checked. And the answer is CHECKED (it names \bar{m} again (claim 28), and its value is the earlier one's by algebra).
 
 - step 1 (the rays at a local, as the rules narrow it), NOT checked: the inference 'the rays at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 2 (the space at a local, as the rules narrow it), NOT checked: the inference 'the space at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
@@ -117,11 +117,13 @@ Lean checked 0 of its 26 steps; 3 are premises read off the program and 23 are n
 - step 20 (what the settled vacuum grows), NOT checked: the inference 'what the settled vacuum grows' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 21 (the world grows at its frontier), NOT checked: the inference 'the world grows at its frontier' reached it from \partial_{t}V \aside{inside} = 0 in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 22 (what a heading keeps straight), NOT checked: the inference 'what a heading keeps straight' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 23 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from v \aside{straight} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}; H \aside{frontier} = \frac{1}{t} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 24 (what is felt, with the mismatch closed), NOT checked: the inference 'what is felt, with the mismatch closed' reached it from a_{0} \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·t} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 25 (the scale against the vacuum's growth), NOT checked: the inference 'the scale against the vacuum's growth' reached it from a_{0} \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·t}; H \aside{frontier} = \frac{1}{t} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 26 (the mass is what the vacuum leaves over), NOT checked: the inference 'the mass is what the vacuum leaves over' reached it from \Delta\rho = S^{+} + \bar{m} - S^{-} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- answer (the answer), checked: it names \bar{m} again (claim 26), and its value is the earlier one's by algebra
+- step 23 (what the vacuum would grow, had no mass been there), NOT checked: the inference 'what the vacuum would grow, had no mass been there' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 24 (the rate the vacuum would expand at), NOT checked: the inference 'the rate the vacuum would expand at' reached it from \varepsilon = 2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 25 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from v \aside{straight} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 26 (what is felt, with the mismatch closed), NOT checked: the inference 'what is felt, with the mismatch closed' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 27 (the scale against the vacuum's growth), NOT checked: the inference 'the scale against the vacuum's growth' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 28 (the mass is what the vacuum leaves over), NOT checked: the inference 'the mass is what the vacuum leaves over' reached it from \Delta\rho = S^{+} + \bar{m} - S^{-} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names \bar{m} again (claim 28), and its value is the earlier one's by algebra
 
 ### vacuum.rays (G)
 
@@ -974,12 +976,13 @@ Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not
 
 ### gravity.scale (G)
 
-a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?
+a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?
 
-Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names a_{0} \aside{age} again (claim 2), and its value is the earlier one's by algebra).
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names a_{0} again (claim 2), and its value is the earlier one's by algebra, with \sigma = 1, F = \frac{1}{2} put in).
 
 - step 2 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- answer (the answer), checked: it names a_{0} \aside{age} again (claim 2), and its value is the earlier one's by algebra
+- settled number 4 (isotropy leaves no mean heading), NOT checked: the inference 'isotropy leaves no mean heading' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names a_{0} again (claim 2), and its value is the earlier one's by algebra, with \sigma = 1, F = \frac{1}{2} put in
 
 ### gravity.closing (G)
 

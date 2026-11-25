@@ -9,12 +9,13 @@ open OrbitMines.Physics.Proofs
 /-!
 # gravity.scale (G)
 
-a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?
+a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?
 
-Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names a_{0} \aside{age} again (claim 2), and its value is the earlier one's by algebra).
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names a_{0} again (claim 2), and its value is the earlier one's by algebra, with \sigma = 1, F = \frac{1}{2} put in).
 
 - step 2 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- answer (the answer), checked: it names a_{0} \aside{age} again (claim 2), and its value is the earlier one's by algebra
+- settled number 4 (isotropy leaves no mean heading), NOT checked: the inference 'isotropy leaves no mean heading' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names a_{0} again (claim 2), and its value is the earlier one's by algebra, with \sigma = 1, F = \frac{1}{2} put in
 -/
 
 namespace OrbitMines.Physics.Proofs.G.«gravity.scale»
@@ -22,29 +23,35 @@ namespace OrbitMines.Physics.Proofs.G.«gravity.scale»
 /-- What the prover takes from the rules: the premises, read off the program BY DESIGN - a rule's own body, the
 continuous model the rules were read into, the lattice, a count. None is believed or measured; each is already in the
 theory's .ray. -/
-structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t» : ℝ) : Prop where
+structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D» : ℝ) : Prop where
   /-- step 1 (the reading): the continuous model = DEG·\nu·\paren{1 - \rho} + l.\bar{m}·\omega - 2·\sigma·F·n^{2} - the rules read as a line (Reading.ray): the root every derivation passes through -/
   «the reading: the continuous model» : «the continuous model» = (((-1 : ℝ) * (2 : ℝ) * «\sigma» * «F» * («n» ^ 2)) + («DEG» * «\nu» * ((1 : ℝ) + ((-1 : ℝ) * «\rho»))) + ((1 : ℝ) * «l.\bar{m}» * «\omega»))
+  /-- a settled number (read off the continuous model): \sigma = 1 - read off the continuous model - a term of the line the rules were read into, or how the line is made -/
+  «read off the continuous model: \sigma» : «\sigma» = (1 : ℝ)
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
-structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t» : ℝ) : Prop where
-  /-- step 2 (the scale is the vacuum's own growth): a_{0} \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·t} - NOT CHECKED: the inference 'the scale is the vacuum's own growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
-  unchecked_gravity_scale_2 : «a_{0} \aside{age}» = ((((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ * («t»)⁻¹)
+structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D» : ℝ) : Prop where
+  /-- step 2 (the scale is the vacuum's own growth): a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D} - NOT CHECKED: the inference 'the scale is the vacuum's own growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_gravity_scale_2 : «a_{0}» = ((2 : ℝ) * (((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ * «\sigma» * «F» * («\rho_{\infty}» ^ 2) * (((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)) * («D»)⁻¹)
+  /-- a settled number (isotropy leaves no mean heading): F = \frac{1}{2} - NOT CHECKED: the inference 'isotropy leaves no mean heading' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_gravity_scale_4 : «F» = ((1 : ℝ) * ((2 : ℝ))⁻¹)
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/
-structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t» : ℝ) : Prop where
+structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D» : ℝ) : Prop where
   /-- \frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1 is not nought -/
   ne_0 : ((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)) ≠ 0
   /-- 1 - \rho_{\infty} is not nought -/
   ne_1 : (((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)) ≠ 0
-  /-- t is not nought -/
-  ne_2 : «t» ≠ 0
+  /-- D is not nought -/
+  ne_2 : «D» ≠ 0
 
-/-- the answer (the answer): a_{0} \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·t} - CHECKED: it names a_{0} \aside{age} again (claim 2), and its value is the earlier one's by algebra -/
-theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t» : ℝ)
-    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0} \aside{age}» «\rho_{\infty}» «t») :
-    «a_{0} \aside{age}» = ((((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ * («t»)⁻¹) := by
+/-- the answer (the answer): a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D} - CHECKED: it names a_{0} again (claim 2), and its value is the earlier one's by algebra, with \sigma = 1, F = \frac{1}{2} put in -/
+theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D» : ℝ)
+    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «a_{0}» «\rho_{\infty}» «D») :
+    «a_{0}» = ((2 : ℝ) * (((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ * «\sigma» * «F» * («\rho_{\infty}» ^ 2) * (((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)) * («D»)⁻¹) := by
   have h2 := u.unchecked_gravity_scale_2
+  have h3 := p.«read off the continuous model: \sigma»
+  have h4 := u.unchecked_gravity_scale_4
   have w0 := w.ne_0
   have w1 := w.ne_1
   have w2 := w.ne_2

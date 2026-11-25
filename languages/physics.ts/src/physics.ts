@@ -6222,20 +6222,35 @@ export class Prover extends Node {
       return t.outside;
     })));
     let sent = (eq(sends, null) ? `EMISSION` : sends.term.rule.name.toUpperCase());
-    let a0 = Prover.neat(Expr.mul([v, hub.fact.to]));
-    let scale = Step.of(Fact.stands(`a_{0} \\aside{age}`, a0), `the scale is the vacuum's own growth`, [straight.fact.key, hub.fact.key], `${lit} fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. ${sent} sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against`, [`${lit}: fires at a free point, lights every way - the vacuum pulses, every other tick`, `${sent}: a source moves or emits, so each move flips the parity, fore against aft`, `steady: the flips cancel; accelerating: they pile up, since the beginning`, `the age is one over the vacuum's growth, ${Expr.show(hub.fact.to)}`, `a_{0} = vH = ${Expr.show(a0)}`]);
-    scale.derivation = [straight, hub];
+    let meet = first(this.infos.filter(((t: any) => {
+      return ((eq(t.degree, 2) && !((t.rules.length === 0))) && !eq(t.folds, `0`));
+    })));
+    if (eq(meet, null)) {
+      return [straight];
+    }
+    let met = meet.term.rule.name.toUpperCase();
+    let ends = Expr.num(Prover.edge_ends.length);
+    let rate = (eq(meet.rate, null) ? Expr.num(1) : Expr.field(meet.rate));
+    let meets = Prover.neat(Expr.mul([rate, (meet.share ?? Expr.num(1)), Expr.pown(vac, 2)]));
+    let eps = Prover.neat(Expr.mul([meets, ends, Expr.sub(Expr.num(1), vac)]));
+    let potential = Step.of(Fact.stands(`\\varepsilon`, eps), `what the vacuum would grow, had no mass been there`, [settles.fact.key], `${met} folds the two points of a meeting into one and, at each of its ${Expr.show(ends)} ends, leaves the point behind the ray where the way behind is dark. On the continuous line nothing ties the way behind to the ray that met, so it is dark at the share the density leaves dark, 1 - \\rho. So the vacuum makes room at every meeting - not on net, since the fold took a point first and creation hands back what a point holds, but as the growth the vacuum would have were nothing folding it: what keeps it from collapsing. Where a body is, its rays meet the vacuum's and do the same, at the edge of its influence`, [`meetings a point a tick: ${Expr.show(meets)}`, `behind each of ${Expr.show(ends)} ends, dark at 1 - \\rho_{\\infty}`, `\\varepsilon = ${Expr.show(eps)}`]);
+    potential.derivation = [settles];
+    let own = Prover.neat(Expr.mul([eps, Expr.pown(Expr.field(`D`), (-1))]));
+    let lam = Step.of(Fact.stands(`H_{\\Lambda}`, own), `the rate the vacuum would expand at`, [potential.fact.key], `room made at every point grows what is inside a radius at that times how many points there are, R^{D}, so as a rate of the radius it is a D-th of it: the rate the vacuum would expand at had no mass been there. It does not thin as the world ages - it is the vacuum's own, at every epoch - and the world's actual growth, the frontier's one over its age, is a different rate`, [`\\dot{V} = \\varepsilon V with V \\propto R^{D}`, `H_{\\Lambda} = \\varepsilon/D = ${Expr.show(own)}`]);
+    lam.derivation = [potential];
+    let a0 = Prover.neat(Expr.mul([v, own]));
+    let scale = Step.of(Fact.stands(`a_{0}`, a0), `the scale is the vacuum's own growth`, [straight.fact.key, lam.fact.key], `${lit} fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. ${sent} sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and what cuts them off is the vacuum making room where they are: the rate it would grow at, carried at what a heading keeps straight. That is the scale an acceleration is measured against, the same at every place and every epoch`, [`${lit}: fires at a free point, lights every way - the vacuum pulses, every other tick`, `${sent}: a source moves or emits, so each move flips the parity, fore against aft`, `steady: the flips cancel; accelerating: they pile up until the room the vacuum makes cuts them off`, `H_{\\Lambda} = ${Expr.show(own)}`, `a_{0} = vH_{\\Lambda} = ${Expr.show(a0)}`]);
+    scale.derivation = [straight, lam];
     let g = Expr.field(`g_{N}`);
     let a = Expr.field(`a_{0}`);
     let half = Expr.mul([g, Expr.num(0.5)]);
     let got = Prover.neat(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
     let closing = Step.of(Fact.stands(`F_{g} \\aside{closing}`, got), `what is felt, with the mismatch closed`, [scale.fact.key], `what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling`, [`g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3`, `F_{g} = ${Expr.show(got)}`]);
     closing.derivation = [scale];
-    let ratio = Prover.neat(Expr.div(a0, Expr.mul([Expr.field(`\\bar{c}`), hub.fact.to])));
-    ratio = Expr.replace(ratio, `\\bar{c}`, Expr.num(1));
-    let against = Step.of(Fact.stands(`\\frac{a_{0}}{cH}`, Prover.neat(ratio)), `the scale against the vacuum's growth`, [scale.fact.key, hub.fact.key], `a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183`, [`a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}`, `\\frac{a_{0}}{cH_{vac}} = ${Expr.show(Prover.neat(ratio))}`, `against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}`]);
+    let ratio = Prover.neat(Expr.div(a0, own));
+    let against = Step.of(Fact.stands(`\\frac{a_{0}}{cH}`, ratio), `the scale against the vacuum's growth`, [scale.fact.key, lam.fact.key], `a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183`, [`a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}`, `\\frac{a_{0}}{cH_{vac}} = ${Expr.show(Prover.neat(ratio))}`, `against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}`]);
     against.derivation = [scale];
-    return [straight, scale, closing, against];
+    return [straight, potential, lam, scale, closing, against];
   }
   leftover(rays_c: Step): (Step | null) {
     let m = Prover.MASS.label;
@@ -17170,7 +17185,7 @@ export const G = new (class G extends Theory {
     return new Asked({ asks: `the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?`, about: `H \\aside{frontier}`, also: `\\partial_{t}V \\aside{inside}` });
   } });
   static "theorem gravity.scale" = new Theorem({ id: "gravity.scale", body: () => {
-    return new Asked({ asks: `a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?`, about: `a_{0} \\aside{age}`, also: `v \\aside{straight}` });
+    return new Asked({ asks: `a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?`, about: `a_{0}`, also: `H_{\\Lambda}` });
   } });
   static "theorem gravity.closing" = new Theorem({ id: "gravity.closing", body: () => {
     return new Asked({ asks: `what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?`, about: `F_{g} \\aside{closing}` });

@@ -3131,7 +3131,7 @@ static void C_G(Cls& c) {
     return null;
   })) }); });
   c.staticField("theorem gravity.scale", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.scale"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"), kw(S<"about">(), "a_{0} \\aside{age}"), kw(S<"also">(), "v \\aside{straight}") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?"), kw(S<"about">(), "a_{0}"), kw(S<"also">(), "H_{\\Lambda}") });
     return null;
   })) }); });
   c.staticField("theorem gravity.closing", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.closing"), kw(S<"body">(), fn([=](const Args& a1) -> Value {

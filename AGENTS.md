@@ -11,6 +11,11 @@ A discrete theory of physics (and the continuous theory derived from it), writte
   author, then record the answer there.
 - **Never edit generated folders by hand:** `languages/`, `tests/`, `visuals/`, `theorems/`, `data/`.
   Change the `.ray` source and regenerate.
+- **Do not test physics on the discrete setting.** The discrete worlds (`G.seed(...)`, a `World` ticked
+  rule by rule) do not work as a check of the physics: their correlations are not the model's, and they
+  are far too slow to settle. Every physics check - the vacuum, Newton, GR, the scale, rotation curves -
+  runs on the continuous setup: the derivation (`Prover.model_chain`, read through `Aggregate`/`Model`)
+  and the medium it drives (`Medium`).
 
 ## Layout
 
