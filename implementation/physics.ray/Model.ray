@@ -153,7 +153,7 @@ Model := class < theory: Theory {
   }
   /* what a body is felt to pull with, given what arrives: F_g read in g_N and a_0 - and a law that does not come to a number is an error, not a blank panel */
   boost (gN: Real, a0: Real): Real => {
-    F := this.fact("F_{{g}}")
+    F := this.fact("F_{{g}} \\aside{{closing}}") ?? this.fact("F_{{g}}")
     return Real.NAN if F == None
     env := { }
     env["D"] = this.theory.lattice.D
@@ -655,26 +655,81 @@ Measure := class {
   }
 
   /*
-   * THE POSSIBILITY SPACE, INTEGRATED - and whether it is a line or an area is a result. What is felt
-   * is F_g of what arrives AND of the scale, and `crossing` derives that scale as the medium a carrier
-   * crossed getting there; both depend on what a source decides - how much mass, how wide a face, where
-   * the probe sits, how it moves and how it radiates - so at one arrival different galaxies can be felt
-   * differently. The weight is the change of variables: each track laid between neighbours, weighted by
-   * the length of its image. Then the same sweep once per freedom held still: a cell that was reachable
-   * and now is not NEEDS that freedom, whatever else is free - one bit apiece in `by`.
-   *
-   * This is the CPU sweep, hours of root solves; `npx ray measure` runs the same plan on the device.
+   * THE POSSIBILITY SPACE, SOLVED OVER THE FIELD (`Felt`): every galaxy's arrival and what is felt along its plane,
+   * with the made space's record solved over the whole field, laid as a density on (log g_N, log g) in a_0 - each
+   * track laid between neighbours, weighted by the length of its image - and each cell coloured by the fewest
+   * freedoms that reach it. Written at the theory's lattice as `<id>`, and as `<id>.solved` on every lattice from four
+   * ways to forty: in a_0 the space is the same on each, so a frame differs only in where a_0 stands in m/s^2 - the
+   * chain's a_0/cH_Lambda at that lattice, against the vacuum's own growth (`\\frac{{a_{{0}}}}{{cH}}`)
    */
+  static DEGS (): Real[] => Array.range(73).map(k => 4 + 0.5 * k)
   static density (model: Model, id: String, how: String) => {
-    sweep := Sweep(model: model, how: how)
-    fail("{id}: nothing derived to integrate") if sweep.arrival == None | sweep.felt == None | sweep.rho_at == None
-    lay := (vary: String[]): Real[] => {
-      got := sweep.tracks(vary)
-      sweep.rasterise(got["xs"], got["ys"], got["tracks"])
-    }
-    grid := lay(sweep.order)
-    without := sweep.order.map(held => lay(sweep.order.filter(n => n != held)))
-    sweep.save(id, grid, sweep.needs(grid, without))
+    felt := Felt()
+    got := felt.space(how)
+    p := got["p"]
+    by := got["by"]
+    needs := got["needs"]
+    cells := Array.range(Felt.XS * Felt.YS)
+    arrives := { }
+    arrives["from"] = Felt.X0
+    arrives["to"] = Felt.X1
+    arrives["n"] = Felt.XS
+    felt_axis := { }
+    felt_axis["from"] = Felt.Y0
+    felt_axis["to"] = Felt.Y1
+    felt_axis["n"] = Felt.YS
+    grid := { }
+    grid["arrives"] = arrives
+    grid["felt"] = felt_axis
+    columns := { }
+    columns["x"] = cells.map(i => Felt.X0 + (i % Felt.XS) * Felt.dx)
+    columns["y"] = cells.map(i => Felt.Y0 + (i / Felt.XS).floor * Felt.dy)
+    columns["p"] = p
+    columns["by"] = by
+    extra := { }
+    extra["a0"] = model.a0_lattice
+    extra["arrangement"] = how
+    extra["grid"] = grid
+    extra["freedoms"] = got["freedoms"]
+    extra["tracks"] = got["tracks"]
+    extra["stages"] = ["the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2"]
+    extra["about"] = "how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)"
+    Measure.save(id, ["x", "y", "p", "by"], columns, extra)
+    reached := cells.filter(i => p[i] > 0)
+    degs := Measure.DEGS
+    ratios := degs.map(d => model.value_of("\\frac{{a_{{0}}}}{{cH}}", model.settled(d)))
+    a0s := degs.map(d => model.value_of("a_{{0}}", model.settled(d)))
+    sparse := { }
+    ["deg", "cell", "p", "by", "needs", "size"].for(n => { sparse[n] = [] })
+    starts := []
+    degs.for(d => {
+      starts.push(sparse["cell"].length)
+      reached.for(i => {
+        sparse["deg"].push(d)
+        sparse["cell"].push(i)
+        sparse["p"].push(p[i])
+        sparse["by"].push(by[i])
+        sparse["needs"].push(needs[i])
+        sparse["size"].push(99)
+      })
+    })
+    table := { }
+    table["deg"] = degs
+    table["ratio"] = ratios
+    table["against"] = "H_Lambda"
+    solved := { }
+    solved["what"] = "the possibility space of a galaxy ({how}), solved over its whole field on every lattice"
+    solved["arrangement"] = how
+    solved["degs"] = degs
+    solved["starts"] = starts
+    solved["a0"] = a0s
+    solved["coincidence"] = table
+    solved["theory_deg"] = model.theory.lattice.DEG
+    solved["grid"] = grid
+    solved["freedoms"] = got["freedoms"]
+    solved["stages"] = extra["stages"]
+    solved["about"] = "per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)"
+    Measure.save("{id}.solved", ["deg", "cell", "p", "by", "needs", "size"], sparse, solved)
   }
 
   /* the law itself, on its own, with the rules' own constants beside it - keyed by the names the theory uses */

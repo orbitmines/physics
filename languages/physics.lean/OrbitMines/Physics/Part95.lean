@@ -7,87 +7,30 @@ set_option maxRecDepth 100000
 namespace OrbitMines.Physics
 
 
-namespace Shaded
-ray_impl_static "literal" (n_0 : Float) : String := do
-  if ωtruthy (← ωnev (← n_0.get) (← n_0.get)) then
-    if true then return ("1e30" : String)
-    pure ()
-  if ωtruthy (← ωgt (← dot! (← n_0.get) rabs ()) (← ωpow (10 : Float) (300 : Float))) then
-    if true then return (← ωtern (ωtruthy (← ωlt (← n_0.get) (0 : Float))) (do pure ("(-1e30)" : String)) (do pure ("1e30" : String)))
-    pure ()
-  if ωtruthy (← ωandV (← ωeqv (← n_0.get) (← dot! (← n_0.get) rfloor ())) (do pure (← ωlt (← dot! (← n_0.get) rabs ()) (1000000000 : Float)))) then
-    if true then return ("(" ++ (← ωtoStr (← n_0.get)) ++ ".0)" : String)
-    pure ()
-  if true then return ("(" ++ (← ωtoStr (← n_0.get)) ++ ")" : String)
+namespace Axis
+ray_impl_field "lo" : Float := do
   return ωnull
-ray_impl_static "wgsl" (e_0 : Expr) (names_0 : (RList String)) (bound_0 : String) : String := do
-  let k_0 ← IO.mkRef (← ωget (← e_0.get) "kind")
-  if ωtruthy (← ωeqv (← k_0.get) ("num" : String)) then
-    if true then return (← call! (← cls% Shaded) "literal" ((← ωget (← e_0.get) "value")))
-    pure ()
-  if ωtruthy (← ωorV (← ωeqv (← k_0.get) ("sym" : String)) (do pure (← ωeqv (← k_0.get) ("field" : String)))) then
-    if ωtruthy (← ωandV (!ωisNull (← bound_0.get)) (do pure (← ωeqv (← ωget (← e_0.get) "label") (← bound_0.get)))) then
-      if true then return ("x" : String)
-      pure ()
-    let i_0 ← IO.mkRef (← dot! (← names_0.get) rindex_of ((← ωget (← e_0.get) "label")))
-    if ωtruthy (ωisNull (← i_0.get)) then
-      (← app! fail (("the law stands on " ++ (← ωtoStr (← ωget (← e_0.get) "label")) ++ ", which the sweep does not bind" : String))) |> ωsink
-      pure ()
-    if true then return ("e[" ++ (← ωtoStr (← i_0.get)) ++ "]" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("add" : String)) then
-    let parts_0 ← IO.mkRef (← dot! (← ωget (← e_0.get) "of") rmap ((fn! [x_2] do
-      if true then return (← call! (← cls% Shaded) "wgsl" ((← x_2.get), (← names_0.get), (← bound_0.get)))
-      return ωnull)))
-    let summed_0 ← IO.mkRef (← dot! (← parts_0.get) rjoin ((" + " : String)))
-    if true then return ("(" ++ (← ωtoStr (← summed_0.get)) ++ ")" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("mul" : String)) then
-    let parts_0 ← IO.mkRef (← dot! (← ωget (← e_0.get) "of") rmap ((fn! [x_2] do
-      if true then return (← call! (← cls% Shaded) "wgsl" ((← x_2.get), (← names_0.get), (← bound_0.get)))
-      return ωnull)))
-    let multiplied_0 ← IO.mkRef (← dot! (← parts_0.get) rjoin ((" * " : String)))
-    if true then return ("(" ++ (← ωtoStr (← multiplied_0.get)) ++ ")" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("pow" : String)) then
-    let base_0 ← IO.mkRef (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "base"), (← names_0.get), (← bound_0.get)))
-    if ωtruthy (← ωeqv (← ωget (← ωget (← e_0.get) "power") "kind") ("num" : String)) then
-      let n_0 ← IO.mkRef (← ωget (← ωget (← e_0.get) "power") "value")
-      if ωtruthy (← ωeqv (← n_0.get) 0.5) then
-        if true then return ("sqrt(" ++ (← ωtoStr (← base_0.get)) ++ ")" : String)
-        pure ()
-      if ωtruthy (← ωandV (← ωeqv (← n_0.get) (← dot! (← n_0.get) rfloor ())) (do pure (← ωle (← dot! (← n_0.get) rabs ()) (64 : Float)))) then
-        if true then return ("powi(" ++ (← ωtoStr (← base_0.get)) ++ ", " ++ (← ωtoStr (← dot! (← n_0.get) rround ())) ++ ")" : String)
-        pure ()
-      if true then return ("pow(" ++ (← ωtoStr (← base_0.get)) ++ ", " ++ (← ωtoStr (← call! (← cls% Shaded) "literal" ((← n_0.get)))) ++ ")" : String)
-      pure ()
-    if true then return ("pow(" ++ (← ωtoStr (← base_0.get)) ++ ", " ++ (← ωtoStr (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "power"), (← names_0.get), (← bound_0.get)))) ++ ")" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("log" : String)) then
-    if true then return ("log(" ++ (← ωtoStr (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "base"), (← names_0.get), (← bound_0.get)))) ++ ")" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("exp" : String)) then
-    if true then return ("exp(" ++ (← ωtoStr (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "base"), (← names_0.get), (← bound_0.get)))) ++ ")" : String)
-    pure ()
-  if ωtruthy (← ωeqv (← k_0.get) ("choose" : String)) then
-    if true then return ("choose(" ++ (← ωtoStr (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "first_"), (← names_0.get), (← bound_0.get)))) ++ ", " ++ (← ωtoStr (← call! (← cls% Shaded) "wgsl" ((← ωget (← e_0.get) "second_"), (← names_0.get), (← bound_0.get)))) ++ ")" : String)
-    pure ()
-  if true then return (← app! fail (("a " ++ (← ωtoStr (← k_0.get)) ++ " cannot be written as shader code - only a root at the top of a law is solved there" : String)))
+ray_impl_field "hi" : Float := do
   return ωnull
-ray_impl_static "helpers" : String := do
-  if true then return ("fn powi(b: f32, n: i32) -> f32 {\n  var r: f32 = 1.0;\n  let m: i32 = abs(n);\n  for (var i: i32 = 0; i < m; i = i + 1) { r = r * b; }\n  if (n < 0) { return 1.0 / r; }\n  return r;\n}\nfn choose(n: f32, k: f32) -> f32 {\n  var r: f32 = 1.0;\n  var i: f32 = 0.0;\n  for (var c: i32 = 0; c < 64; c = c + 1) { if (i < k) { r = r * (n - i) / (i + 1.0); i = i + 1.0; } }\n  return r;\n}\nfn finite(v: f32) -> bool { return abs(v) < 1e30 && v == v; }" : String)
+ray_impl_field "n" : Float := do
   return ωnull
-ray_impl_static "points" : (RList Float) := do
-  if true then return (← ωget (← cls% Expr) "bracket_points")
+ray_impl_field "linear" : Bool := do
+  return false
+ray_impl_method "value" (i_0 : Float) : Float := do
+  let t_0 ← IO.mkRef (← ωtern (ωtruthy (← ωgt (← ωget self "n") (1 : Float))) (do pure (← ωdiv (← i_0.get) ((← ωsub (← ωget self "n") (1 : Float))))) (do pure 0.5))
+  let v_0 ← IO.mkRef (← ωadd (← ωget self "lo") (← ωmul ((← ωsub (← ωget self "hi") (← ωget self "lo"))) (← t_0.get)))
+  if true then return (← ωtern (ωtruthy (← ωget self "linear")) (do pure (← v_0.get)) (do pure (← ωpow (10 : Float) (← v_0.get))))
   return ωnull
-ray_impl_static "solver" (name_0 : String) (f_0 : String) : String := do
-  let pts_0 ← IO.mkRef (← ωget (← cls% Shaded) "points")
-  let lits_0 ← IO.mkRef (← dot! (← dot! (← pts_0.get) rmap ((fn! [v_2] do
-    if true then return (← call! (← cls% Shaded) "literal" ((← v_2.get)))
-    return ωnull))) rjoin ((", " : String)))
-  if true then return ("const PTS_" ++ (← ωtoStr (← name_0.get)) ++ ": array<f32, " ++ (← ωtoStr (← dot! (← pts_0.get) rlength ())) ++ "> = array<f32, " ++ (← ωtoStr (← dot! (← pts_0.get) rlength ())) ++ ">(" ++ (← ωtoStr (← lits_0.get)) ++ ");\nfn " ++ (← ωtoStr (← name_0.get)) ++ "() -> f32 {\n  var lo: f32 = 0.0;\n  var hi: f32 = 0.0;\n  var found: bool = false;\n  var px: f32 = PTS_" ++ (← ωtoStr (← name_0.get)) ++ "[0];\n  var pf: f32 = " ++ (← ωtoStr (← f_0.get)) ++ "(px);\n  for (var j: i32 = 1; j < " ++ (← ωtoStr (← dot! (← pts_0.get) rlength ())) ++ "; j = j + 1) {\n    let cx: f32 = PTS_" ++ (← ωtoStr (← name_0.get)) ++ "[j];\n    let cf: f32 = " ++ (← ωtoStr (← f_0.get)) ++ "(cx);\n    if (!found && finite(pf) && finite(cf) && pf * cf <= 0.0) { lo = px; hi = cx; found = true; }\n    px = cx;\n    pf = cf;\n  }\n  if (!found) { return 1e30; }\n  var flo: f32 = " ++ (← ωtoStr (← f_0.get)) ++ "(lo);\n  for (var n: i32 = 0; n < 60; n = n + 1) {\n    let mid: f32 = (lo + hi) / 2.0;\n    let fm: f32 = " ++ (← ωtoStr (← f_0.get)) ++ "(mid);\n    if (!finite(fm)) { break; }\n    if (flo * fm <= 0.0) { hi = mid; } else { lo = mid; flo = fm; }\n  }\n  return (lo + hi) / 2.0;\n}" : String)
+ray_impl_getter "mid" : Float := do
+  let v_0 ← IO.mkRef (← ωadd (← ωget self "lo") (← ωmul ((← ωsub (← ωget self "hi") (← ωget self "lo"))) 0.5))
+  if true then return (← ωtern (ωtruthy (← ωget self "linear")) (do pure (← v_0.get)) (do pure (← ωpow (10 : Float) (← v_0.get))))
   return ωnull
-end Shaded
+ray_impl_getter "values" : (RList Float) := do
+  if true then return (← dot! (← ωrrange (← ωget self "n")) rmap ((fn! [i_2] do
+    if true then return (← call! self "value" ((← i_2.get)))
+    return ωnull)))
+  return ωnull
+end Axis
 
 
 

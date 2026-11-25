@@ -13181,9 +13181,9 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
   static_field(cl, "YMIN", function() neg(3))
   static_field(cl, "YMAX", function() 3)
   static_field(cl, "SEVERAL", function() lst(86, 168, 235))
-  static_field(cl, "FREEDOMS", function() lst("mass", "face", "moving", "spread"))
+  static_field(cl, "FREEDOMS", function() lst("mass", "thickness", "middle", "gas"))
   static_field(cl, "TINTS", function() lst(lst(232, 193, 90), lst(90, 212, 193), lst(240, 122, 178), lst(169, 139, 224)))
-  static_field(cl, "NAMES_NOW", function() lst("mass", "face", "moving", "spread"))
+  static_field(cl, "NAMES_NOW", function() lst("mass", "thickness", "middle", "gas"))
   static_field(cl, "LEVELS", function() lst(neg(4), neg(2), 0, 1, 2, 3))
   static_field(cl, "WIDTHS", function() lst(0, 2))
   static_field(cl, "DISK_ID", function() "law.disk")
@@ -13951,7 +13951,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
   statik(cl, "ratio_at", function(data = NULL, deg = NULL, ...) {
     table <- mem(data$header, key_("coincidence"))
     if (truthy(eq(table, NULL))) {
-      (fail)("the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)")
+      (fail)("the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)")
     }
     ds <- mem(table, key_("deg"))
     rs <- mem(table, key_("ratio"))
@@ -13970,8 +13970,13 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     NULL
   })
   statik(cl, "shift_at", function(data = NULL, deg = NULL, ...) {
+    return(Fmt$log10(r_div(r_mul(r_mul(Galaxies$ratio_at(data, deg), Sparc$C_LIGHT), Galaxies$rate_of(data)), Galaxies$A0_DATA)))
+    NULL
+  })
+  statik(cl, "rate_of", function(data = NULL, ...) {
     H <- r_div(r_mul(Galaxies$H0, 1000), (r_mul(Sparc$KPC, 1000)))
-    return(Fmt$log10(r_div(r_mul(r_mul(Galaxies$ratio_at(data, deg), Sparc$C_LIGHT), H), Galaxies$A0_DATA)))
+    table <- mem(data$header, key_("coincidence"))
+    return((if (truthy((if (truthy(.x <- (!eq(table, NULL)))) eq(mem(table, key_("against")), "H_Lambda") else .x))) r_mul(H, m_sqrt((r_sub(1, Simulation$OMEGA_M)))) else H))
     NULL
   })
   statik(cl, "frame_of", function(solved = NULL, k = NULL, ...) {
@@ -14114,7 +14119,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
   statik(cl, "of", function(id = NULL, what = NULL, title = NULL, ...) {
     solved <- Measured$of("" %+% text_of(id) %+% ".solved")
     if (truthy(eq(solved, NULL))) {
-      (fail)("" %+% text_of(id) %+% ".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again")
+      (fail)("" %+% text_of(id) %+% ".solved is not on disk - solve the space (`npx ray measure " %+% text_of(id) %+% "`) and try again")
     }
     ks <- Galaxies$sweep_of(solved)
     return(Picture$new(id = id, what = what, width = 960, height = 720, frames = len(ks), paint = function(played = NULL, ...) {
@@ -14126,10 +14131,9 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
   statik(cl, "a0_at", function(deg = NULL, ...) {
     space <- Measured$of("galaxy.many.solved")
     if (truthy(eq(space, NULL))) {
-      (fail)("galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again")
+      (fail)("galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again")
     }
-    H <- r_div(r_mul(Galaxies$H0, 1000), (r_mul(Sparc$KPC, 1000)))
-    return(r_mul(r_mul(Galaxies$ratio_at(space, deg), Sparc$C_LIGHT), H))
+    return(r_mul(r_mul(Galaxies$ratio_at(space, deg), Sparc$C_LIGHT), Galaxies$rate_of(space)))
     NULL
   })
   static_getter(cl, "curve_pick", function() {
@@ -14885,11 +14889,11 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     NULL
   })
   static_getter(cl, "point", function() {
-    return(Galaxies$of("galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE"))
+    return(Galaxies$of("galaxy.point", "a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly", "A GALAXY AS ONE BODY"))
     NULL
   })
   static_getter(cl, "many", function() {
-    return(Galaxies$of("galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR"))
+    return(Galaxies$of("galaxy.many", "and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be", "EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD"))
     NULL
   })
 })
@@ -17077,7 +17081,7 @@ Model <- ray_class("Model", Node, function(cl) {
     NULL
   })
   method(cl, "boost", function(gN = NULL, a0 = NULL, ...) {
-    F <- self$fact("F_{g}")
+    F <- or_else(self$fact("F_{g} \\aside{closing}"), self$fact("F_{g}"))
     if (truthy(eq(F, NULL))) {
       return(NaN)
     }
@@ -17197,6 +17201,454 @@ Model <- ray_class("Model", Node, function(cl) {
   })
   statik(cl, "speed", function(g = NULL, R = NULL, ...) {
     return((if (truthy(gt(g, 0))) m_sqrt((r_mul(R, g))) else NaN))
+    NULL
+  })
+})
+
+Felt <- ray_class("Felt", Node, function(cl) {
+  static_field(cl, "NR", function() 96)
+  static_field(cl, "NMU", function() 40)
+  static_field(cl, "R0", function() 0.003)
+  static_field(cl, "R1", function() 30000)
+  static_field(cl, "SQ", function() 6)
+  static_field(cl, "KMAX", function() 7)
+  static_field(cl, "v_NA", function() 120)
+  static_field(cl, "NZ", function() 8)
+  static_field(cl, "NEAR", function() 0.25)
+  static_field(cl, "FAR", function() 30)
+  static_field(cl, "HERNQUIST", function() 0.1)
+  static_field(cl, "XS", function() 700)
+  static_field(cl, "X0", function() neg(5))
+  static_field(cl, "X1", function() 4)
+  static_field(cl, "YS", function() 520)
+  static_field(cl, "Y0", function() neg(4))
+  static_field(cl, "Y1", function() 4)
+  static_field(cl, "MASS", function() lst(neg(2.5), 5, 61))
+  static_field(cl, "THICK", function() lst(0.1, 0.02, 0.3))
+  static_field(cl, "MIDDLE", function() lst(0, 0.2, 0.5))
+  static_field(cl, "GAS", function() lst(lst(0, 0), lst(0.5, 4), lst(0.5, 7), lst(0.9, 4), lst(0.9, 7)))
+  static_field(cl, "FREEDOMS", function() lst("mass", "thickness", "middle", "gas"))
+  getter(cl, "step", function() {
+    return(r_div(m_ln((r_div(Felt$R1, Felt$R0))), Felt$NR))
+    NULL
+  })
+  method(cl, "edge", function(i = NULL, ...) {
+    return(r_mul(Felt$R0, m_exp((r_mul(self$step, i)))))
+    NULL
+  })
+  method(cl, "centre", function(i = NULL, ...) {
+    return(r_mul(Felt$R0, m_exp((r_mul(self$step, (r_add(i, 0.5)))))))
+    NULL
+  })
+  statik(cl, "sinh", function(x = NULL, ...) {
+    return(r_div((r_sub(m_exp(x), m_exp((r_sub(0, x))))), 2))
+    NULL
+  })
+  statik(cl, "mu_edge", function(j = NULL, ...) {
+    return(r_div(Felt$sinh(r_div(r_mul(Felt$SQ, j), Felt$NMU)), Felt$sinh(Felt$SQ)))
+    NULL
+  })
+  statik(cl, "mu_centre", function(j = NULL, ...) {
+    return(r_div((r_add(Felt$mu_edge(j), Felt$mu_edge(r_add(j, 1)))), 2))
+    NULL
+  })
+  field(cl, "re", function() m_map(rng(r_add(Felt$NR, 1)), function(i = NULL, ...) {
+    return(self$edge(i))
+    NULL
+  }))
+  field(cl, "rc", function() m_map(rng(Felt$NR), function(i = NULL, ...) {
+    return(self$centre(i))
+    NULL
+  }))
+  field(cl, "me", function() m_map(rng(r_add(Felt$NMU, 1)), function(j = NULL, ...) {
+    return(Felt$mu_edge(j))
+    NULL
+  }))
+  field(cl, "mc", function() m_map(rng(Felt$NMU), function(j = NULL, ...) {
+    return(Felt$mu_centre(j))
+    NULL
+  }))
+  getter(cl, "cells", function() {
+    return(r_mul(Felt$NR, Felt$NMU))
+    NULL
+  })
+  statik(cl, "ring", function(R = NULL, z = NULL, a = NULL, zs = NULL, eps2 = NULL, ...) {
+    dz <- r_sub(z, zs)
+    h2 <- r_add(r_mul(dz, dz), eps2)
+    q2 <- r_add(r_mul((r_add(a, R)), (r_add(a, R))), h2)
+    q <- m_sqrt(q2)
+    m <- r_div(r_mul(r_mul(4, a), R), q2)
+    d2 <- r_add(r_mul((r_sub(a, R)), (r_sub(a, R))), h2)
+    big <- 1
+    small <- m_sqrt((r_sub(1, m)))
+    tail <- r_mul(0.5, m)
+    twice <- 1
+    .r <- for_range(10, function(k) {
+      c <- r_div((r_sub(big, small)), 2)
+      mean <- r_div((r_add(big, small)), 2)
+      .w("small", m_sqrt((r_mul(big, small))))
+      .w("big", mean)
+      .w("twice", r_mul(twice, 2))
+      .w("tail", r_add(tail, r_div(r_mul(r_mul(twice, c), c), 2)))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    kk <- r_div(pi, (r_mul(2, big)))
+    ee <- r_mul(kk, (r_sub(1, tail)))
+    dk <- (if (truthy(gt(m, 0.00000001))) r_div((r_sub(ee, r_mul((r_sub(1, m)), kk))), (r_mul(r_mul(2, m), (r_sub(1, m))))) else r_div(pi, 8))
+    dm <- r_mul((r_div(r_mul(4, a), q2)), (r_sub(1, r_div(r_mul(r_mul(2, R), (r_add(a, R))), q2))))
+    return(lst(r_mul((r_div(2, pi)), (r_sub(r_div(r_mul(dk, dm), q), r_div(r_mul(kk, (r_add(a, R))), (r_mul(q2, q)))))), r_sub(0, r_div((r_mul(r_mul(2, dz), ee)), (r_mul(r_mul(pi, q), d2))))))
+    NULL
+  })
+  statik(cl, "rings", function(h = NULL, ...) {
+    out <- lst()
+    .r <- for_range(Felt$v_NA, function(k) {
+      e0 <- r_mul(20, r_pow((r_div(k, Felt$v_NA)), 2))
+      e1 <- r_mul(20, r_pow((r_div(r_add(k, 1), Felt$v_NA)), 2))
+      held <- r_sub(r_mul((r_add(1, e0)), m_exp((r_sub(0, e0)))), r_mul((r_add(1, e1)), m_exp((r_sub(0, e1)))))
+      .r <- for_range(Felt$NZ, function(l) {
+        z <- r_sub(0, r_mul(h, m_ln((r_sub(1, r_div((r_add(l, 0.5)), Felt$NZ))))))
+        m_push(out, lst(r_div((r_add(e0, e1)), 2), z, r_div(r_div(held, Felt$NZ), 2), r_sub(e1, e0)))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(out)
+    NULL
+  })
+  statik(cl, "disc_at", function(rings = NULL, h = NULL, R = NULL, z = NULL, ...) {
+    gr <- 0
+    gz <- 0
+    .r <- for_each(rings, function(b) {
+      e <- r_mul(0.5, Fmt$max(elem(b, 3), r_div(h, 4)))
+      up <- Felt$ring(R, z, elem(b, 0), elem(b, 1), r_mul(e, e))
+      down <- Felt$ring(R, z, elem(b, 0), r_sub(0, elem(b, 1)), r_mul(e, e))
+      .w("gr", r_add(gr, r_mul(elem(b, 2), (r_add(elem(up, 0), elem(down, 0))))))
+      .w("gz", r_add(gz, r_mul(elem(b, 2), (r_add(elem(up, 1), elem(down, 1))))))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(lst(gr, gz))
+    NULL
+  })
+  field(cl, "unit", function() Node$new())
+  method(cl, "unit_disc", function(h = NULL, ...) {
+    key <- "" %+% text_of(h) %+% ""
+    if (truthy((!eq(elem(self$unit, key), NULL)))) {
+      return(elem(self$unit, key))
+    }
+    rings <- Felt$rings(h)
+    rows <- r_add(Felt$NR, Felt$KMAX)
+    gr <- filled(r_mul(rows, Felt$NMU), 0)
+    gz <- filled(r_mul(rows, Felt$NMU), 0)
+    plane <- filled(rows, 0)
+    .r <- for_range(rows, function(ii) {
+      r <- self$centre(r_sub(ii, Felt$KMAX))
+      .r <- for_range(Felt$NMU, function(j) {
+        mu <- elem(self$mc, j)
+        g <- Felt$disc_at(rings, h, r_mul(r, m_sqrt((r_sub(1, r_mul(mu, mu))))), r_mul(r, mu))
+        set_at(gr, r_add(r_mul(ii, Felt$NMU), j), elem(g, 0))
+        set_at(gz, r_add(r_mul(ii, Felt$NMU), j), elem(g, 1))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      set_at(plane, ii, elem(Felt$disc_at(rings, h, r, 0), 0))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    set_at(self$unit, key, lst(gr, gz, plane))
+    return(elem(self$unit, key))
+    NULL
+  })
+  method(cl, "shape", function(h = NULL, middle = NULL, gas = NULL, wider = NULL, ...) {
+    stars <- r_mul((r_sub(1, gas)), (r_sub(1, middle)))
+    held <- r_mul((r_sub(1, gas)), middle)
+    u <- (if (truthy((if (truthy(.x <- gt(stars, 0))) .x else gt(gas, 0)))) self$unit_disc(h) else NULL)
+    w <- m_exp((r_mul(self$step, wider)))
+    gr <- filled(self$cells, 0)
+    gz <- filled(self$cells, 0)
+    plane <- filled(Felt$NR, 0)
+    a <- Felt$HERNQUIST
+    .r <- for_range(Felt$NR, function(i) {
+      ii <- r_add(i, Felt$KMAX)
+      r <- elem(self$rc, i)
+      .r <- for_range(Felt$NMU, function(j) {
+        mu <- elem(self$mc, j)
+        c <- r_add(r_mul(i, Felt$NMU), j)
+        pull <- r_div(held, (r_mul(r_mul(r, (r_add(r, a))), (r_add(r, a)))))
+        R <- r_mul(r, m_sqrt((r_sub(1, r_mul(mu, mu)))))
+        set_at(gr, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 0), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, elem(elem(u, 0), r_add(r_mul((r_sub(ii, wider)), Felt$NMU), j))), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, R)))))
+        set_at(gz, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 1), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, elem(elem(u, 1), r_add(r_mul((r_sub(ii, wider)), Felt$NMU), j))), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, r_mul(r, mu))))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      set_at(plane, i, r_sub(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 2), ii)), r_div(r_mul(gas, elem(elem(u, 2), r_sub(ii, wider))), (r_mul(w, w)))))), r_div(held, (r_mul((r_add(r, a)), (r_add(r, a)))))))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(lst(gr, gz, plane))
+    NULL
+  })
+  field(cl, "faces", function() m_map(rng(self$cells), function(c = NULL, ...) {
+    return(self$faces_of(c))
+    NULL
+  }))
+  method(cl, "faces_of", function(c = NULL, ...) {
+    i <- m_floor((r_div(c, Felt$NMU)))
+    j <- r_mod(c, Felt$NMU)
+    dmu <- r_sub(elem(self$me, r_add(j, 1)), elem(self$me, j))
+    dr <- r_sub(elem(self$re, r_add(i, 1)), elem(self$re, i))
+    out_ <- (if (truthy(lt(r_add(i, 1), Felt$NR))) r_div(r_mul(r_mul(r_mul(r_mul(2, pi), elem(self$re, r_add(i, 1))), elem(self$re, r_add(i, 1))), dmu), (r_sub(elem(self$rc, r_add(i, 1)), elem(self$rc, i)))) else r_div(r_mul(r_mul(r_mul(r_mul(2, pi), elem(self$re, r_add(i, 1))), elem(self$re, r_add(i, 1))), dmu), (r_sub(elem(self$re, r_add(i, 1)), elem(self$rc, i)))))
+    in_ <- (if (truthy(gt(i, 0))) r_div(r_mul(r_mul(r_mul(r_mul(2, pi), elem(self$re, i)), elem(self$re, i)), dmu), (r_sub(elem(self$rc, i), elem(self$rc, r_sub(i, 1))))) else 0)
+    up <- (if (truthy(lt(r_add(j, 1), Felt$NMU))) r_div(r_mul(r_mul(r_mul(2, pi), (r_sub(1, r_mul(elem(self$me, r_add(j, 1)), elem(self$me, r_add(j, 1)))))), dr), (r_sub(elem(self$mc, r_add(j, 1)), elem(self$mc, j)))) else 0)
+    down <- (if (truthy(gt(j, 0))) r_div(r_mul(r_mul(r_mul(2, pi), (r_sub(1, r_mul(elem(self$me, j), elem(self$me, j))))), dr), (r_sub(elem(self$mc, j), elem(self$mc, r_sub(j, 1))))) else 0)
+    return(lst(out_, in_, up, down))
+    NULL
+  })
+  getter(cl, "width", function() {
+    return(r_add(r_mul(2, Felt$NMU), 1))
+    NULL
+  })
+  method(cl, "at_band", function(k = NULL, l = NULL, ...) {
+    return(r_add(r_mul(k, self$width), (r_add(r_sub(l, k), Felt$NMU))))
+    NULL
+  })
+  field(cl, "band", function() self$factored)
+  getter(cl, "factored", function() {
+    n <- self$cells
+    B <- Felt$NMU
+    W <- self$width
+    m <- filled(r_mul(n, W), 0)
+    .r <- for_range(n, function(k) {
+      i <- m_floor((r_div(k, B)))
+      j <- r_mod(k, B)
+      f <- elem(self$faces, k)
+      set_at(m, r_add(r_mul(k, W), B), r_add(r_add(r_add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3)))
+      if (truthy(lt(r_add(i, 1), Felt$NR))) {
+        set_at(m, r_add(r_add(r_mul(k, W), B), B), r_sub(0, elem(f, 0)))
+      }
+      if (truthy(gt(i, 0))) {
+        set_at(m, r_mul(k, W), r_sub(0, elem(f, 1)))
+      }
+      if (truthy(lt(r_add(j, 1), B))) {
+        set_at(m, r_add(r_add(r_mul(k, W), B), 1), r_sub(0, elem(f, 2)))
+      }
+      if (truthy(gt(j, 0))) {
+        set_at(m, r_sub(r_add(r_mul(k, W), B), 1), r_sub(0, elem(f, 3)))
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .r <- for_range(n, function(k) {
+      p <- elem(m, r_add(r_mul(k, W), B))
+      last <- Fmt$min(r_sub(n, 1), r_add(k, B))
+      l <- r_add(k, 1)
+      while (truthy(le(l, last))) {
+        f <- r_div(elem(m, r_add(r_mul(l, W), (r_add(r_sub(k, l), B)))), p)
+        if (truthy((!eq(f, 0)))) {
+          set_at(m, r_add(r_mul(l, W), (r_add(r_sub(k, l), B))), f)
+          q <- r_add(k, 1)
+          while (truthy(le(q, last))) {
+            set_at(m, r_add(r_mul(l, W), (r_add(r_sub(q, l), B))), r_sub(elem(m, r_add(r_mul(l, W), (r_add(r_sub(q, l), B)))), r_mul(f, elem(m, r_add(r_mul(k, W), (r_add(r_sub(q, k), B)))))))
+            .w("q", r_add(q, 1))
+          }
+        }
+        .w("l", r_add(l, 1))
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(m)
+    NULL
+  })
+  method(cl, "solve_band", function(b = NULL, ...) {
+    n <- self$cells
+    B <- Felt$NMU
+    W <- self$width
+    m <- self$band
+    x <- m_map(b, function(v = NULL, ...) {
+      return(v)
+      NULL
+    })
+    .r <- for_range(n, function(k) {
+      last <- Fmt$min(r_sub(n, 1), r_add(k, B))
+      l <- r_add(k, 1)
+      while (truthy(le(l, last))) {
+        set_at(x, l, r_sub(elem(x, l), r_mul(elem(m, r_add(r_mul(l, W), (r_add(r_sub(k, l), B)))), elem(x, k))))
+        .w("l", r_add(l, 1))
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    back <- r_sub(n, 1)
+    while (truthy(ge(back, 0))) {
+      left <- elem(x, back)
+      last <- Fmt$min(r_sub(n, 1), r_add(back, B))
+      q <- r_add(back, 1)
+      while (truthy(le(q, last))) {
+        .w("left", r_sub(left, r_mul(elem(m, r_add(r_mul(back, W), (r_add(r_sub(q, back), B)))), elem(x, q))))
+        .w("q", r_add(q, 1))
+      }
+      set_at(x, back, r_div(left, elem(m, r_add(r_mul(back, W), B))))
+      .w("back", r_sub(back, 1))
+    }
+    return(x)
+    NULL
+  })
+  statik(cl, "over", function(gN = NULL, ...) {
+    return((if (truthy(gt(gN, 0))) r_add(0.5, m_sqrt((r_add(0.25, r_div(1, gN))))) else 1))
+    NULL
+  })
+  method(cl, "felt", function(shape = NULL, s = NULL, ...) {
+    n <- self$cells
+    B <- Felt$NMU
+    wr <- filled(n, 0)
+    wm <- filled(n, 0)
+    .r <- for_range(n, function(c) {
+      j <- r_mod(c, B)
+      gr <- r_mul(s, elem(elem(shape, 0), c))
+      gz <- r_mul(s, elem(elem(shape, 1), c))
+      f <- r_sub(Felt$over(Fmt$hypot(gr, gz)), 1)
+      mu <- elem(self$mc, j)
+      st <- m_sqrt((r_sub(1, r_mul(mu, mu))))
+      set_at(wr, c, r_mul(f, (r_add(r_mul(gr, st), r_mul(gz, mu)))))
+      set_at(wm, c, r_mul(f, (r_sub(r_mul(gz, st), r_mul(gr, mu)))))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    rhs <- filled(n, 0)
+    .r <- for_range(n, function(c) {
+      i <- m_floor((r_div(c, B)))
+      j <- r_mod(c, B)
+      dmu <- r_sub(elem(self$me, r_add(j, 1)), elem(self$me, j))
+      dr <- r_sub(elem(self$re, r_add(i, 1)), elem(self$re, i))
+      fo <- (if (truthy(lt(r_add(i, 1), Felt$NR))) r_div((r_add(elem(wr, c), elem(wr, r_add(c, B)))), 2) else elem(wr, c))
+      fi <- (if (truthy(gt(i, 0))) r_div((r_add(elem(wr, r_sub(c, B)), elem(wr, c))), 2) else elem(wr, c))
+      up <- (if (truthy(lt(r_add(j, 1), B))) r_div((r_add(elem(wm, c), elem(wm, r_add(c, 1)))), 2) else 0)
+      down <- (if (truthy(gt(j, 0))) r_div((r_add(elem(wm, r_sub(c, 1)), elem(wm, c))), 2) else 0)
+      made <- r_sub(r_add(r_mul(r_mul(r_mul(r_mul(r_mul(fo, 2), pi), elem(self$re, r_add(i, 1))), elem(self$re, r_add(i, 1))), dmu), r_mul(r_mul(r_mul(r_mul(up, 2), pi), (r_sub(1, r_mul(elem(self$me, r_add(j, 1)), elem(self$me, r_add(j, 1)))))), dr)), r_mul(r_mul(r_mul(r_mul(down, 2), pi), (r_sub(1, r_mul(elem(self$me, j), elem(self$me, j))))), dr))
+      set_at(rhs, c, (if (truthy(gt(i, 0))) r_sub(made, r_mul(r_mul(r_mul(r_mul(r_mul(fi, 2), pi), elem(self$re, i)), elem(self$re, i)), dmu)) else made))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    psi <- self$solve_band(rhs)
+    out <- lst()
+    .r <- for_range(Felt$NR, function(i) {
+      r <- elem(self$rc, i)
+      if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- gt(i, 0))) lt(r_add(i, 1), Felt$NR) else .x))) ge(r, Felt$NEAR) else .x))) le(r, Felt$FAR) else .x))) {
+        made <- r_sub(0, r_div((r_sub(elem(psi, r_mul((r_add(i, 1)), B)), elem(psi, r_mul((r_sub(i, 1)), B)))), (r_sub(elem(self$rc, r_add(i, 1)), elem(self$rc, r_sub(i, 1))))))
+        gN <- r_sub(0, r_mul(s, elem(elem(shape, 2), i)))
+        m_push(out, lst(r, gN, r_sub(gN, made)))
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(out)
+    NULL
+  })
+  method(cl, "off_law", function(shape = NULL, s = NULL, ...) {
+    return(m_reduce(self$felt(shape, s), 0, function(most = NULL, q = NULL, ...) {
+      return(Fmt$max(most, m_abs(Fmt$log10(r_div(elem(q, 2), (r_mul(elem(q, 1), Felt$over(elem(q, 1)))))))))
+      NULL
+    }))
+    NULL
+  })
+  static_getter(cl, "dx", function() {
+    return(r_div((r_sub(Felt$X1, Felt$X0)), r_sub(Felt$XS, 1)))
+    NULL
+  })
+  static_getter(cl, "dy", function() {
+    return(r_div((r_sub(Felt$Y1, Felt$Y0)), r_sub(Felt$YS, 1)))
+    NULL
+  })
+  statik(cl, "bits_in", function(mask = NULL, ...) {
+    return(len(filt(rng(4), function(k = NULL, ...) {
+      return(eq((r_mod(m_floor((r_div(mask, r_pow(2, k)))), 2)), 1))
+      NULL
+    })))
+    NULL
+  })
+  statik(cl, "uses", function(mi = NULL, ti = NULL, ci = NULL, gi = NULL, ...) {
+    held <- m_round((r_div((r_sub(0, elem(Felt$MASS, 0))), (r_div((r_sub(elem(Felt$MASS, 1), elem(Felt$MASS, 0))), r_sub(elem(Felt$MASS, 2), 1))))))
+    return(r_add(r_add(r_add(((if (truthy((!eq(mi, held)))) 1 else 0)), ((if (truthy((!eq(ti, 0)))) 2 else 0))), ((if (truthy((!eq(ci, 0)))) 4 else 0))), ((if (truthy((!eq(gi, 0)))) 8 else 0))))
+    NULL
+  })
+  statik(cl, "mass_at", function(mi = NULL, ...) {
+    return(r_add(elem(Felt$MASS, 0), r_div(r_mul((r_sub(elem(Felt$MASS, 1), elem(Felt$MASS, 0))), mi), r_sub(elem(Felt$MASS, 2), 1))))
+    NULL
+  })
+  method(cl, "space", function(how = NULL, ...) {
+    p <- filled(r_mul(Felt$XS, Felt$YS), 0)
+    by <- filled(r_mul(Felt$XS, Felt$YS), neg(1))
+    needs <- filled(r_mul(Felt$XS, Felt$YS), 99)
+    lay <- function(track = NULL, mask = NULL, dex = NULL, ...) {
+      .r <- for_range(r_sub(len(track), 1), function(k) {
+        xa <- Fmt$log10(elem(elem(track, k), 1))
+        xb <- Fmt$log10(elem(elem(track, r_add(k, 1)), 1))
+        ya <- Fmt$log10(elem(elem(track, k), 2))
+        yb <- Fmt$log10(elem(elem(track, r_add(k, 1)), 2))
+        if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- Fmt$finite(xa))) Fmt$finite(xb) else .x))) Fmt$finite(ya) else .x))) Fmt$finite(yb) else .x))) {
+          st <- Fmt$max(1, r_add(m_floor((Fmt$max(r_div(m_abs((r_sub(xb, xa))), Felt$dx), r_div(m_abs((r_sub(yb, ya))), Felt$dy)))), 1))
+          .r <- for_range(st, function(t) {
+            f <- r_div((r_add(t, 0.5)), st)
+            gx <- m_round((r_div((r_sub(r_add(xa, r_mul(f, (r_sub(xb, xa)))), Felt$X0)), Felt$dx)))
+            gy <- m_round((r_div((r_sub(r_add(ya, r_mul(f, (r_sub(yb, ya)))), Felt$Y0)), Felt$dy)))
+            if (!truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- lt(gx, 0))) .x else lt(gy, 0)))) .x else ge(gx, Felt$XS)))) .x else ge(gy, Felt$YS)))) {
+              c <- r_add(r_mul(gy, Felt$XS), gx)
+              set_at(p, c, r_add(elem(p, c), r_div(1, st)))
+              set_at(needs, c, Fmt$min(elem(needs, c), dex))
+              was <- elem(by, c)
+              fewer <- (if (truthy(.x <- (if (truthy(.x <- lt(was, 0))) .x else lt(Felt$bits_in(mask), Felt$bits_in(was))))) .x else ((if (truthy(.x <- eq(Felt$bits_in(mask), Felt$bits_in(was)))) lt(mask, was) else .x)))
+              if (truthy(fewer)) {
+                set_at(by, c, mask)
+              }
+            }
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      NULL
+    }
+    gathered <- eq(how, "gathered")
+    thick <- (if (truthy(gathered)) lst(elem(Felt$THICK, 0)) else Felt$THICK)
+    middles <- (if (truthy(gathered)) lst(1) else Felt$MIDDLE)
+    gases <- (if (truthy(gathered)) lst(elem(Felt$GAS, 0)) else Felt$GAS)
+    tracks <- 0
+    .r <- for_range(len(thick), function(ti) {
+      .r <- for_range(len(middles), function(ci) {
+        .r <- for_range(len(gases), function(gi) {
+          sh <- self$shape(elem(thick, ti), elem(middles, ci), elem(elem(gases, gi), 0), elem(elem(gases, gi), 1))
+          .r <- for_range(elem(Felt$MASS, 2), function(mi) {
+            dex <- Felt$mass_at(mi)
+            (lay)(self$felt(sh, r_pow(10, dex)), Felt$uses(mi, ti, ci, gi), dex)
+            .w("tracks", r_add(tracks, 1))
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    out <- Node$new()
+    .set(out, key_("p"), p)
+    .set(out, key_("by"), m_map(by, function(v = NULL, ...) {
+      return((if (truthy(lt(v, 0))) 0 else v))
+      NULL
+    }))
+    .set(out, key_("needs"), needs)
+    .set(out, key_("tracks"), tracks)
+    .set(out, key_("freedoms"), (if (truthy(gathered)) lst("mass") else Felt$FREEDOMS))
+    return(out)
     NULL
   })
 })
@@ -17731,25 +18183,103 @@ Measure <- ray_class("Measure", Node, function(cl) {
     return(Measured$save("visuals", id, id, names, columns, extra))
     NULL
   })
-  statik(cl, "density", function(model = NULL, id = NULL, how = NULL, ...) {
-    sweep <- Sweep$new(model = model, how = how)
-    if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(sweep$arrival, NULL))) .x else eq(sweep$felt, NULL)))) .x else eq(sweep$rho_at, NULL)))) {
-      (fail)("" %+% text_of(id) %+% ": nothing derived to integrate")
-    }
-    lay <- function(vary = NULL, ...) {
-      got <- sweep$tracks(vary)
-      return(sweep$rasterise(mem(got, key_("xs")), mem(got, key_("ys")), mem(got, key_("tracks"))))
+  static_getter(cl, "DEGS", function() {
+    return(m_map(rng(73), function(k = NULL, ...) {
+      return(r_add(4, r_mul(0.5, k)))
       NULL
-    }
-    grid <- (lay)(sweep$order)
-    without <- m_map(sweep$order, function(held = NULL, ...) {
-      return((lay)(filt(sweep$order, function(n = NULL, ...) {
-        return((!eq(n, held)))
-        NULL
-      })))
+    }))
+    NULL
+  })
+  statik(cl, "density", function(model = NULL, id = NULL, how = NULL, ...) {
+    felt <- Felt$new()
+    got <- felt$space(how)
+    p <- mem(got, key_("p"))
+    by <- mem(got, key_("by"))
+    needs <- mem(got, key_("needs"))
+    cells <- rng(r_mul(Felt$XS, Felt$YS))
+    arrives <- Node$new()
+    .set(arrives, key_("from"), Felt$X0)
+    .set(arrives, key_("to"), Felt$X1)
+    .set(arrives, key_("n"), Felt$XS)
+    felt_axis <- Node$new()
+    .set(felt_axis, key_("from"), Felt$Y0)
+    .set(felt_axis, key_("to"), Felt$Y1)
+    .set(felt_axis, key_("n"), Felt$YS)
+    grid <- Node$new()
+    .set(grid, key_("arrives"), arrives)
+    .set(grid, key_("felt"), felt_axis)
+    columns <- Node$new()
+    .set(columns, key_("x"), m_map(cells, function(i = NULL, ...) {
+      return(r_add(Felt$X0, r_mul((r_mod(i, Felt$XS)), Felt$dx)))
+      NULL
+    }))
+    .set(columns, key_("y"), m_map(cells, function(i = NULL, ...) {
+      return(r_add(Felt$Y0, r_mul(m_floor((r_div(i, Felt$XS))), Felt$dy)))
+      NULL
+    }))
+    .set(columns, key_("p"), p)
+    .set(columns, key_("by"), by)
+    extra <- Node$new()
+    .set(extra, key_("a0"), model$a0_lattice)
+    .set(extra, key_("arrangement"), how)
+    .set(extra, key_("grid"), grid)
+    .set(extra, key_("freedoms"), mem(got, key_("freedoms")))
+    .set(extra, key_("tracks"), mem(got, key_("tracks")))
+    .set(extra, key_("stages"), lst("the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2"))
+    .set(extra, key_("about"), "how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)")
+    Measure$save(id, lst("x", "y", "p", "by"), columns, extra)
+    reached <- filt(cells, function(i = NULL, ...) {
+      return(gt(elem(p, i), 0))
       NULL
     })
-    return(sweep$save(id, grid, sweep$needs(grid, without)))
+    degs <- Measure$DEGS
+    ratios <- m_map(degs, function(d = NULL, ...) {
+      return(model$value_of("\\frac{a_{0}}{cH}", model$settled(d)))
+      NULL
+    })
+    a0s <- m_map(degs, function(d = NULL, ...) {
+      return(model$value_of("a_{0}", model$settled(d)))
+      NULL
+    })
+    sparse <- Node$new()
+    .r <- for_each(lst("deg", "cell", "p", "by", "needs", "size"), function(n) {
+      set_at(sparse, n, lst())
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    starts <- lst()
+    .r <- for_each(degs, function(d) {
+      m_push(starts, len(mem(sparse, key_("cell"))))
+      .r <- for_each(reached, function(i) {
+        m_push(mem(sparse, key_("deg")), d)
+        m_push(mem(sparse, key_("cell")), i)
+        m_push(mem(sparse, key_("p")), elem(p, i))
+        m_push(mem(sparse, key_("by")), elem(by, i))
+        m_push(mem(sparse, key_("needs")), elem(needs, i))
+        m_push(mem(sparse, key_("size")), 99)
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    table <- Node$new()
+    .set(table, key_("deg"), degs)
+    .set(table, key_("ratio"), ratios)
+    .set(table, key_("against"), "H_Lambda")
+    solved <- Node$new()
+    .set(solved, key_("what"), "the possibility space of a galaxy (" %+% text_of(how) %+% "), solved over its whole field on every lattice")
+    .set(solved, key_("arrangement"), how)
+    .set(solved, key_("degs"), degs)
+    .set(solved, key_("starts"), starts)
+    .set(solved, key_("a0"), a0s)
+    .set(solved, key_("coincidence"), table)
+    .set(solved, key_("theory_deg"), model$theory$lattice$DEG)
+    .set(solved, key_("grid"), grid)
+    .set(solved, key_("freedoms"), mem(got, key_("freedoms")))
+    .set(solved, key_("stages"), mem(extra, key_("stages")))
+    .set(solved, key_("about"), "per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)")
+    return(Measure$save("" %+% text_of(id) %+% ".solved", lst("deg", "cell", "p", "by", "needs", "size"), sparse, solved))
     NULL
   })
   statik(cl, "law", function(model = NULL, ...) {

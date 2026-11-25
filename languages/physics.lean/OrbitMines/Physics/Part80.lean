@@ -51,11 +51,11 @@ ray_impl_sfield "YMAX" : Value := do
 ray_impl_sfield "SEVERAL" : Value := do
   return (← ωlst #[(86 : Float), (168 : Float), (235 : Float)])
 ray_impl_sfield "FREEDOMS" : Value := do
-  return (← ωlst #[("mass" : String), ("face" : String), ("moving" : String), ("spread" : String)])
+  return (← ωlst #[("mass" : String), ("thickness" : String), ("middle" : String), ("gas" : String)])
 ray_impl_sfield "TINTS" : Value := do
   return (← ωlst #[(← ωlst #[(232 : Float), (193 : Float), (90 : Float)]), (← ωlst #[(90 : Float), (212 : Float), (193 : Float)]), (← ωlst #[(240 : Float), (122 : Float), (178 : Float)]), (← ωlst #[(169 : Float), (139 : Float), (224 : Float)])])
 ray_impl_sfield "NAMES_NOW" : Value := do
-  return (← ωlst #[("mass" : String), ("face" : String), ("moving" : String), ("spread" : String)])
+  return (← ωlst #[("mass" : String), ("thickness" : String), ("middle" : String), ("gas" : String)])
 ray_impl_sfield "LEVELS" : Value := do
   return (← ωlst #[(← ωneg (4 : Float)), (← ωneg (2 : Float)), (0 : Float), (1 : Float), (2 : Float), (3 : Float)])
 ray_impl_sfield "WIDTHS" : Value := do
@@ -801,7 +801,7 @@ ray_impl_static "freedoms_in" (m_0 : Float) : (RList Float) := do
 ray_impl_static "ratio_at" (data_0 : Measured) (deg_0 : Float) : Float := do
   let table_0 ← IO.mkRef (← ωelem (← ωget (← data_0.get) "header") ("coincidence" : String))
   if ωtruthy (ωisNull (← table_0.get)) then
-    (← app! fail (("the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)" : String))) |> ωsink
+    (← app! fail (("the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)" : String))) |> ωsink
     pure ()
   let ds_0 ← IO.mkRef (← ωelem (← table_0.get) ("deg" : String))
   let rs_0 ← IO.mkRef (← ωelem (← table_0.get) ("ratio" : String))
@@ -819,8 +819,12 @@ ray_impl_static "ratio_at" (data_0 : Measured) (deg_0 : Float) : Float := do
   if true then return (← ωadd (← ωmul (← ωelem (← rs_0.get) (← k_0.get)) ((← ωsub (1 : Float) (← f_0.get)))) (← ωmul (← ωelem (← rs_0.get) (← ωadd (← k_0.get) (1 : Float))) (← f_0.get)))
   return ωnull
 ray_impl_static "shift_at" (data_0 : Measured) (deg_0 : Float) : Float := do
+  if true then return (← call! (← cls% Fmt) "log10" ((← ωdiv (← ωmul (← ωmul (← call! (← cls% Galaxies) "ratio_at" ((← data_0.get), (← deg_0.get))) (← ωget (← cls% Sparc) "C_LIGHT")) (← call! (← cls% Galaxies) "rate_of" ((← data_0.get)))) (← ωget (← cls% Galaxies) "A0_DATA"))))
+  return ωnull
+ray_impl_static "rate_of" (data_0 : Measured) : Float := do
   let H_0 ← IO.mkRef (← ωdiv (← ωmul (← ωget (← cls% Galaxies) "H0") (1000 : Float)) ((← ωmul (← ωget (← cls% Sparc) "KPC") (1000 : Float))))
-  if true then return (← call! (← cls% Fmt) "log10" ((← ωdiv (← ωmul (← ωmul (← call! (← cls% Galaxies) "ratio_at" ((← data_0.get), (← deg_0.get))) (← ωget (← cls% Sparc) "C_LIGHT")) (← H_0.get)) (← ωget (← cls% Galaxies) "A0_DATA"))))
+  let table_0 ← IO.mkRef (← ωelem (← ωget (← data_0.get) "header") ("coincidence" : String))
+  if true then return (← ωtern (ωtruthy (← ωandV (!ωisNull (← table_0.get)) (do pure (← ωeqv (← ωelem (← table_0.get) ("against" : String)) ("H_Lambda" : String))))) (do pure (← ωmul (← H_0.get) (← dot! ((← ωsub (1 : Float) (← ωget (← cls% Simulation) "OMEGA_M"))) rsqrt ()))) (do pure (← H_0.get)))
   return ωnull
 ray_impl_static "frame_of" (solved_0 : Measured) (k_0 : Float) : Measured := do
   let grid_0 ← IO.mkRef (← ωelem (← ωget (← solved_0.get) "header") ("grid" : String))
@@ -956,7 +960,7 @@ ray_impl_static "sweep_of" (solved_0 : Measured) : (RList Float) := do
 ray_impl_static "of" (id_0 : String) (what_0 : String) (title_0 : String) : Picture := do
   let solved_0 ← IO.mkRef (← call! (← cls% Measured) "of" (("" ++ (← ωtoStr (← id_0.get)) ++ ".solved" : String)))
   if ωtruthy (ωisNull (← solved_0.get)) then
-    (← app! fail (("" ++ (← ωtoStr (← id_0.get)) ++ ".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" : String))) |> ωsink
+    (← app! fail (("" ++ (← ωtoStr (← id_0.get)) ++ ".solved is not on disk - solve the space (`npx ray measure " ++ (← ωtoStr (← id_0.get)) ++ "`) and try again" : String))) |> ωsink
     pure ()
   let ks_0 ← IO.mkRef (← call! (← cls% Galaxies) "sweep_of" ((← solved_0.get)))
   if true then return (← new! Picture («id» := (← id_0.get), «what» := (← what_0.get), «width» := (960 : Float), «height» := (720 : Float), «frames» := (← dot! (← ks_0.get) rlength ()), «paint» := (fn! [(played_2 : Played)] do
@@ -966,10 +970,9 @@ ray_impl_static "of" (id_0 : String) (what_0 : String) (title_0 : String) : Pict
 ray_impl_static "a0_at" (deg_0 : Float) : Float := do
   let space_0 ← IO.mkRef (← call! (← cls% Measured) "of" (("galaxy.many.solved" : String)))
   if ωtruthy (ωisNull (← space_0.get)) then
-    (← app! fail (("galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" : String))) |> ωsink
+    (← app! fail (("galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again" : String))) |> ωsink
     pure ()
-  let H_0 ← IO.mkRef (← ωdiv (← ωmul (← ωget (← cls% Galaxies) "H0") (1000 : Float)) ((← ωmul (← ωget (← cls% Sparc) "KPC") (1000 : Float))))
-  if true then return (← ωmul (← ωmul (← call! (← cls% Galaxies) "ratio_at" ((← space_0.get), (← deg_0.get))) (← ωget (← cls% Sparc) "C_LIGHT")) (← H_0.get))
+  if true then return (← ωmul (← ωmul (← call! (← cls% Galaxies) "ratio_at" ((← space_0.get), (← deg_0.get))) (← ωget (← cls% Sparc) "C_LIGHT")) (← call! (← cls% Galaxies) "rate_of" ((← space_0.get))))
   return ωnull
 ray_impl_static "curve_pick" : (RList Float) := do
   if true then return (← call! (← cls% Galaxies) "pick" ((← ωmul (← ωget (← cls% Galaxies) "CURVE_ROWS") (← ωget (← cls% Galaxies) "CURVE_COLS"))))
@@ -1693,10 +1696,10 @@ ray_impl_static "rar_panel" (s_0 : Surface) : Value := do
   if true then return (← call! (← s_0.get) "fill_text" (("g_baryons / 1.2e-10 m/s²" : String), (← ωdiv ((← ωadd (← bx0_0.get) (← bx1_0.get))) (2 : Float)), (← ωadd (← by1_0.get) (34 : Float))))
   return ωnull
 ray_impl_static "point" : Picture := do
-  if true then return (← call! (← cls% Galaxies) "of" (("galaxy.point" : String), ("a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement" : String), ("A GALAXY AS ONE SOURCE" : String)))
+  if true then return (← call! (← cls% Galaxies) "of" (("galaxy.point" : String), ("a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly" : String), ("A GALAXY AS ONE BODY" : String)))
   return ωnull
 ray_impl_static "many" : Picture := do
-  if true then return (← call! (← cls% Galaxies) "of" (("galaxy.many" : String), ("and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin" : String), ("A GALAXY AS MANY SOURCES, ONE PER STAR" : String)))
+  if true then return (← call! (← cls% Galaxies) "of" (("galaxy.many" : String), ("and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be" : String), ("EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD" : String)))
   return ωnull
 end Galaxies
 

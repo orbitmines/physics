@@ -7,42 +7,37 @@ set_option maxRecDepth 100000
 namespace OrbitMines.Physics
 
 
-namespace Sky
-ray_impl_field "shot" : Shot := do
+namespace Shot
+ray_impl_field "film_id" : String := do
   return ωnull
-ray_impl_field "sol" : Measured := do
+ray_impl_field "seconds" : Float := do
   return ωnull
-ray_impl_field "meta" : (RList Float) := do
-  return (← ωlst #[])
-ray_impl_field "sol_stamp" : String := do
-  return ("" : String)
-ray_impl_field "shown_frames" : Float := do
-  return (0 : Float)
-ray_impl_field "film" : Measured := do
+ray_impl_field "from_zoom" : Float := do
   return ωnull
-ray_impl_field "tracks" : Measured := do
+ray_impl_field "to_zoom" : Float := do
   return ωnull
-ray_impl_method "frame" (s_0 : Surface) (dt_0 : Float) : Value := do
-  if ωtruthy (ωisNull (← ωget self "film")) then
-    (ωsetter self "film") (← call! (← cls% Measured) "of" ((← ωget (← ωget self "shot") "film_id")))
-    (ωsetter self "tracks") (← call! (← cls% Measured) "of" (("" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ ".stars" : String)))
-    pure ()
-  if ωtruthy (ωisNull (← ωget self "film")) then
-    (← app! fail (("" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ." : String))) |> ωsink
-    pure ()
-  if ωtruthy (← ωandV (← ωgt (← dot! (← ωget self "meta") rlength ()) (0 : Float)) (do pure (ωisNull (← ωget self "sol")))) then
-    (ωsetter self "sol") (← call! (← cls% Measured) "of" (("solar.inner.frames" : String)))
-    if ωtruthy (ωisNull (← ωget self "sol")) then
-      (← app! fail (("solar.inner is not recorded - run `npx ray visuals solar.inner` first" : String))) |> ωsink
-      pure ()
-    if ωtruthy (← ωnev (← ωelem (← ωget (← ωget self "sol") "header") ("stamp" : String)) (← ωget self "sol_stamp")) then
-      (← app! fail (("solar.inner's recording is stale - run `npx ray visuals solar.inner` again" : String))) |> ωsink
-      pure ()
-    pure ()
-  (← call! (← cls% Video) "sky" ((← s_0.get), (← ωget self "shot"), (← ωget self "film"), (← ωget self "tracks"), (← ωget self "shown_frames"), (← ωget self "sol"), (← ωget self "meta"))) |> ωsink
-  (ωsetter self "shown_frames") (← ωadd (← ωget self "shown_frames") (1 : Float))
+ray_impl_field "from_sun" : Float := do
   return ωnull
-end Sky
+ray_impl_field "to_sun" : Float := do
+  return ωnull
+ray_impl_field "from_at" : Float := do
+  return ωnull
+ray_impl_field "to_at" : Float := do
+  return ωnull
+ray_impl_field "tilt" : Float := do
+  return ωnull
+ray_impl_field "turn" : Float := do
+  return ωnull
+ray_impl_field "title" : String := do
+  return ωnull
+ray_impl_field "fade_in" : Float := do
+  return ωnull
+ray_impl_field "fade_out" : Float := do
+  return ωnull
+ray_impl_getter "frames" : Float := do
+  if true then return (← dot! ((← ωmul (← ωget self "seconds") (← ωget (← cls% Video) "FPS"))) rround ())
+  return ωnull
+end Shot
 
 
 

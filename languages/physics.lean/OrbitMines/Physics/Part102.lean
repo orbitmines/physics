@@ -7,85 +7,42 @@ set_option maxRecDepth 100000
 namespace OrbitMines.Physics
 
 
-namespace Band
-ray_impl_field "inner" : Surface := do
+namespace Sky
+ray_impl_field "shot" : Shot := do
   return ωnull
-ray_impl_method "fill_style" (colour_0 : String) : Value := do
-  if true then return (← call! (← ωget self "inner") "fill_style" ((← colour_0.get)))
+ray_impl_field "sol" : Measured := do
   return ωnull
-ray_impl_method "stroke_style" (colour_0 : String) : Value := do
-  if true then return (← call! (← ωget self "inner") "stroke_style" ((← colour_0.get)))
+ray_impl_field "meta" : (RList Float) := do
+  return (← ωlst #[])
+ray_impl_field "sol_stamp" : String := do
+  return ("" : String)
+ray_impl_field "shown_frames" : Float := do
+  return (0 : Float)
+ray_impl_field "film" : Measured := do
   return ωnull
-ray_impl_method "line_width" (w_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "line_width" ((← w_0.get)))
+ray_impl_field "tracks" : Measured := do
   return ωnull
-ray_impl_method "alpha" (v_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "alpha" ((← v_0.get)))
+ray_impl_method "frame" (s_0 : Surface) (dt_0 : Float) : Value := do
+  if ωtruthy (ωisNull (← ωget self "film")) then
+    (ωsetter self "film") (← call! (← cls% Measured) "of" ((← ωget (← ωget self "shot") "film_id")))
+    (ωsetter self "tracks") (← call! (← cls% Measured) "of" (("" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ ".stars" : String)))
+    pure ()
+  if ωtruthy (ωisNull (← ωget self "film")) then
+    (← app! fail (("" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ " is not on disk - run it: RAY_ONLY=medium-galaxy RAY_GALAXY=" ++ (← ωtoStr (← ωget (← ωget self "shot") "film_id")) ++ " deno run --unstable-webgpu --allow-all implementation/ray/bootstrap/galaxy.gpu.ts ." : String))) |> ωsink
+    pure ()
+  if ωtruthy (← ωandV (← ωgt (← dot! (← ωget self "meta") rlength ()) (0 : Float)) (do pure (ωisNull (← ωget self "sol")))) then
+    (ωsetter self "sol") (← call! (← cls% Measured) "of" (("solar.inner.frames" : String)))
+    if ωtruthy (ωisNull (← ωget self "sol")) then
+      (← app! fail (("solar.inner is not recorded - run `npx ray visuals solar.inner` first" : String))) |> ωsink
+      pure ()
+    if ωtruthy (← ωnev (← ωelem (← ωget (← ωget self "sol") "header") ("stamp" : String)) (← ωget self "sol_stamp")) then
+      (← app! fail (("solar.inner's recording is stale - run `npx ray visuals solar.inner` again" : String))) |> ωsink
+      pure ()
+    pure ()
+  (← call! (← cls% Video) "sky" ((← s_0.get), (← ωget self "shot"), (← ωget self "film"), (← ωget self "tracks"), (← ωget self "shown_frames"), (← ωget self "sol"), (← ωget self "meta"))) |> ωsink
+  (ωsetter self "shown_frames") (← ωadd (← ωget self "shown_frames") (1 : Float))
   return ωnull
-ray_impl_method "fill_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "fill_rect" ((← x_0.get), (← y_0.get), (← w_0.get), (← h_0.get)))
-  return ωnull
-ray_impl_method "stroke_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "stroke_rect" ((← x_0.get), (← y_0.get), (← w_0.get), (← h_0.get)))
-  return ωnull
-ray_impl_method "clear_rect" (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "clear_rect" ((← x_0.get), (← y_0.get), (← w_0.get), (← h_0.get)))
-  return ωnull
-ray_impl_getter "begin_path" : Value := do
-  if true then return (← ωget (← ωget self "inner") "begin_path")
-  return ωnull
-ray_impl_method "move_to" (x_0 : Float) (y_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "move_to" ((← x_0.get), (← y_0.get)))
-  return ωnull
-ray_impl_method "line_to" (x_0 : Float) (y_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "line_to" ((← x_0.get), (← y_0.get)))
-  return ωnull
-ray_impl_method "arc" (x_0 : Float) (y_0 : Float) (r_0 : Float) (start_at_0 : Float) (end_at_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "arc" ((← x_0.get), (← y_0.get), (← r_0.get), (← start_at_0.get), (← end_at_0.get)))
-  return ωnull
-ray_impl_getter "stroke" : Value := do
-  if true then return (← ωget (← ωget self "inner") "stroke")
-  return ωnull
-ray_impl_getter "fill" : Value := do
-  if true then return (← ωget (← ωget self "inner") "fill")
-  return ωnull
-ray_impl_method "font" (name_0 : String) : Value := do
-  if true then return (← call! (← ωget self "inner") "font" ((← name_0.get)))
-  return ωnull
-ray_impl_method "text_align" (how_0 : String) : Value := do
-  if true then return (← call! (← ωget self "inner") "text_align" ((← how_0.get)))
-  return ωnull
-ray_impl_method "text_baseline" (how_0 : String) : Value := do
-  if true then return (← call! (← ωget self "inner") "text_baseline" ((← how_0.get)))
-  return ωnull
-ray_impl_method "fill_text" (t_0 : String) (x_0 : Float) (y_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "fill_text" ((← t_0.get), (← x_0.get), (← y_0.get)))
-  return ωnull
-ray_impl_method "measure" (t_0 : String) : Float := do
-  if true then return (← call! (← ωget self "inner") "measure" ((← t_0.get)))
-  return ωnull
-ray_impl_getter "save" : Value := do
-  if true then return (← ωget (← ωget self "inner") "save")
-  return ωnull
-ray_impl_getter "restore" : Value := do
-  if true then return (← ωget (← ωget self "inner") "restore")
-  return ωnull
-ray_impl_method "translate" (x_0 : Float) (y_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "translate" ((← x_0.get), (← y_0.get)))
-  return ωnull
-ray_impl_method "rotate" (angle_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "rotate" ((← angle_0.get)))
-  return ωnull
-ray_impl_method "dash" (segments_0 : (RList Float)) : Value := do
-  if true then return (← call! (← ωget self "inner") "dash" ((← segments_0.get)))
-  return ωnull
-ray_impl_method "gradient_stroke" (x0_0 : Float) (x1_0 : Float) (stops_0 : (RList String)) (at__0 : (RList Float)) : Value := do
-  if true then return (← call! (← ωget self "inner") "gradient_stroke" ((← x0_0.get), (← x1_0.get), (← stops_0.get), (← at__0.get)))
-  return ωnull
-ray_impl_method "image" (src_0 : String) (x_0 : Float) (y_0 : Float) (w_0 : Float) (h_0 : Float) : Value := do
-  if true then return (← call! (← ωget self "inner") "image" ((← src_0.get), (← x_0.get), (← y_0.get), (← w_0.get), (← h_0.get)))
-  return ωnull
-end Band
+end Sky
 
 
 

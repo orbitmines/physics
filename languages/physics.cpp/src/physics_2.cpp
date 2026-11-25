@@ -2302,6 +2302,94 @@ static void C_Fact(Cls& c) {
 }
 static const bool R_Fact = define_class("Fact", "Node", &C_Fact);
 
+static void C_Step(Cls& c) {
+  c.field("fact", nullptr);
+  c.field("via", nullptr);
+  c.field("rule", [](const Value& self) -> Value { return null; });
+  c.field("upon", [](const Value& self) -> Value { return list({  }); });
+  c.field("because", [](const Value& self) -> Value { return ""; });
+  c.field("working", [](const Value& self) -> Value { return list({  }); });
+  c.field("derivation", [](const Value& self) -> Value { return list({  }); });
+  c.field("parts_", [](const Value& self) -> Value { return list({  }); });
+  c.field("round_", [](const Value& self) -> Value { return 0.0; });
+  c.statik("of", [](Value self, const Args& a1) -> Value {
+    auto fact_0 = cell(arg(a1, 0)); auto via_0 = cell(arg(a1, 1)); auto upon_0 = cell(arg(a1, 2)); auto because_0 = cell(arg(a1, 3)); auto working_0 = cell(arg(a1, 4));
+    return make(S<"Step">(), { kw(S<"fact">(), fact_0->v), kw(S<"via">(), via_0->v), kw(S<"upon">(), upon_0->v), kw(S<"because">(), because_0->v), kw(S<"working">(), working_0->v) });
+    return null;
+  });
+}
+static const bool R_Step = define_class("Step", "Node", &C_Step);
+
+static void C_Store(Cls& c) {
+  c.field("steps", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
+  c.field("keys", [](const Value& self) -> Value { return list({  }); });
+  c.field("version", [](const Value& self) -> Value { return 0.0; });
+  c.field("round_", [](const Value& self) -> Value { return 0.0; });
+  c.method("has", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto of_0 = cell(arg(a1, 1));
+    return (!eq(call(self, S<"get">(), { kind_0->v, of_0->v }), null));
+    return null;
+  });
+  c.method("get", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto of_0 = cell(arg(a1, 1));
+    auto k_0 = cell(); k_0->v = "" + str(kind_0->v) + "(" + str(of_0->v) + ")";
+    return elem(get(self, S<"steps">()), k_0->v);
+    return null;
+  });
+  c.method("fact", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto of_0 = cell(arg(a1, 1));
+    auto st_0 = cell(); st_0->v = call(self, S<"get">(), { kind_0->v, of_0->v });
+    return (truthy(eq(st_0->v, null)) ? Value(null) : Value(get(st_0->v, S<"fact">())));
+    return null;
+  });
+  c.method("stands", [](Value self, const Args& a1) -> Value {
+    auto of_0 = cell(arg(a1, 0));
+    auto st_0 = cell(); st_0->v = call(self, S<"get">(), { "is", of_0->v });
+    return (truthy(eq(st_0->v, null)) ? Value(null) : Value(get(get(st_0->v, S<"fact">()), S<"to">())));
+    return null;
+  });
+  c.method("all", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0));
+    return m_map(filt(m_map(get(self, S<"keys">()), fn([=](const Args& a5) -> Value {
+      auto k_4 = cell(arg(a5, 0));
+      return elem(get(self, S<"steps">()), k_4->v);
+      return null;
+    })), fn([=](const Args& a4) -> Value {
+      auto st_3 = cell(arg(a4, 0));
+      return eq(get(get(st_3->v, S<"fact">()), S<"kind">()), kind_0->v);
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto st_2 = cell(arg(a3, 0));
+      return get(st_2->v, S<"fact">());
+      return null;
+    }));
+    return null;
+  });
+  c.getter("nodes", [](Value self, const Args& a1) -> Value {
+    return m_map(get(self, S<"keys">()), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return elem(get(self, S<"steps">()), k_2->v);
+      return null;
+    }));
+    return null;
+  });
+  c.method("add", [](Value self, const Args& a1) -> Value {
+    auto st_0 = cell(arg(a1, 0));
+    auto k_0 = cell(); k_0->v = get(get(st_0->v, S<"fact">()), S<"key">());
+    if (truthy((!eq(elem(get(self, S<"steps">()), k_0->v), null)))) {
+      return false;
+    }
+    set(st_0->v, S<"round_">(), get(self, S<"round_">()));
+    setAt(get(self, S<"steps">()), k_0->v, st_0->v);
+    m_push(get(self, S<"keys">()), k_0->v);
+    set(self, S<"version">(), add(get(self, S<"version">()), 1.0));
+    return true;
+    return null;
+  });
+  c.field("known_", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
+}
+static const bool R_Store = define_class("Store", "Node", &C_Store);
+
 
 
 void part_2() { }

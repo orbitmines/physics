@@ -45,7 +45,7 @@ const t0 = Date.now();
 const secs = () => `${((Date.now() - t0) / 1000).toFixed(1)}s`;
 
 const space = physics.Measured.of("galaxy.many.solved");
-if (!space) throw new Error("galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) first: it carries each lattice's a_0/cH");
+if (!space) throw new Error("galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) first: it carries each lattice's a_0/cH");
 const deg = Number(Deno.env.get("RAY_DEG") ?? space.header.theory_deg ?? 18);
 
 /*

@@ -728,10 +728,21 @@ method body after loading.
   (`store`), `fact(name)`, `at(expr, env)` (names nobody bound looked up in the store, `l.choose(x)`
   read as `x`, then `Expr.numeric`), `settled(DEG)`, `a0_lattice`, `boost(gN, a0)` (fails loudly on a
   NaN, naming what is unbound), `delivered_by`, `as_point_parts`, `as_stars_parts`, `speed`.
-  `Measure.density(model, id, how)` integrates the possibility space (700×520 grid, five sweeps, one
-  bit per necessary freedom in `by`), `Measure.law(model)` writes the curve with the rules' constants;
-  `Measure.run(theory, only)` is what `npx ray measure` calls on the generated TypeScript (it is
-  millions of evaluations - not for the bootstrap; about an hour per density).
+  `Measure.density(model, id, how)` is the possibility space on the continuous chain, solved by **Felt.ray**
+  (`Felt(model)`): a galaxy in units of a_0 and its scale R_d is its shape and GM/(a_0 R_d^2); the chain's
+  closing (`F_{g} \aside{closing}`) gives at every place how much more is felt than arrives, w = (F_g/g_N - 1) g_N,
+  its divergence is the space made there, and that space's record is solved over the whole field by finite volumes
+  on an axisymmetric (log r, cos theta packed to the plane) grid, -lap psi = div w, felt = g_N - grad psi (a band LU
+  factored once). A lone body lands on the law to 1e-3 dex; a disc does not, and that is the area. `space(how)`
+  ("gathered": one body; "scattered": every thickness, middle and gas share at 61 masses) lays the tracks on the
+  700×520 grid with `by` the fewest freedoms (`mass thickness middle gas`) and `needs` the least mass; written as
+  `<id>` and `<id>.solved` (the same cells on DEG 4..40 by halves, with the chain's a_0/cH_Lambda per DEG, `against:
+  "H_Lambda"` - Galaxies.rate_of puts it in m/s^2 with sqrt(Omega_Lambda) H_0). A new class is registered in
+  `implementation/gen/Gen.ray`'s `core` list or it is not emitted, and in `TypeScript.exports`
+  (implementation/gen/languages/TypeScript.ray) or a generated test cannot name it. `Measure.law(model)` writes the curve with the
+  rules' constants (`Model.boost` reads `F_{g} \aside{closing}` first); `Measure.run(theory, only)` is what
+  `npx ray measure` calls on the generated TypeScript (a few minutes; the old device sweep, Sweep/Shaded and
+  measure.gpu.ts, is the older closure's and no longer run).
 - The recorder (`implementation/ray/bootstrap/visuals.ts`) is host tooling like the old
   RENDER.ts/RECORD.ts: esbuild bundles `visuals/visuals.ts`, Chrome is driven over CDP; a film's
   recording is refreshed only when its stamp or row count no longer match (`--record` forces it).

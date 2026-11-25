@@ -93,6 +93,54 @@ t("tests/coincidence.ray:20 on coincidence") {
   return ok ? PASS : "failed: " + "try lt(try mul(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [8.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.183)"
 }
 
+t("tests/felt.ray:10 on felt") {
+  let it: V = try makeNamed("Felt", [])
+  var guard_: Int = 0
+  while !truthy(try gt(try get(it, "cells"), 0.0)) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 0.0]), 1.0]), 0.003))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 0.0]), 1.0]), 0.003)"
+}
+
+t("tests/felt.ray:11 on felt") {
+  let it: V = try makeNamed("Felt", [])
+  var guard_: Int = 0
+  while !truthy(try gt(try get(it, "cells"), 0.0)) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 0.0]), 0.01]), 0.003))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 0.0]), 0.01]), 0.003)"
+}
+
+t("tests/felt.ray:12 on felt") {
+  let it: V = try makeNamed("Felt", [])
+  var guard_: Int = 0
+  while !truthy(try gt(try get(it, "cells"), 0.0)) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try gt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 0.0]), 0.01]), 0.05))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 0.0]), 0.01]), 0.05)"
+}
+
+t("tests/felt.ray:13 on felt") {
+  let it: V = try makeNamed("Felt", [])
+  var guard_: Int = 0
+  while !truthy(try gt(try get(it, "cells"), 0.0)) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 0.0]), 100.0]), 0.01))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 0.0]), 100.0]), 0.01)"
+}
+
 t("tests/field.ray:10 on line") {
   let it: V = try call((try K("G")), "field", [6.0, 8.0, 1.0, 1.0])
   var guard_: Int = 0

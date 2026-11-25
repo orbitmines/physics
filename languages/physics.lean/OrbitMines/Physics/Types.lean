@@ -108,6 +108,7 @@ ray_class Annulus < Node
 ray_class Simulation < Node
 ray_class Formed < Node
 ray_class Model < Node
+ray_class Felt < Node
 ray_class Axis < Node
 ray_class Shaded < Node
 ray_class Sweep < Node
@@ -1867,6 +1868,7 @@ ray_static "single" (m_0 : Float) : Bool
 ray_static "freedoms_in" (m_0 : Float) : (RList Float)
 ray_static "ratio_at" (data_0 : Measured) (deg_0 : Float) : Float
 ray_static "shift_at" (data_0 : Measured) (deg_0 : Float) : Float
+ray_static "rate_of" (data_0 : Measured) : Float
 ray_static "frame_of" (solved_0 : Measured) (k_0 : Float) : Measured
 ray_static "support_at" (solved_0 : Measured) (k_0 : Float) : (RList Float)
 ray_static "inside" (data_0 : Measured) (support_0 : (RList Float)) (shift_0 : Float) : Float
@@ -2185,6 +2187,64 @@ ray_method "as_stars_parts" (R_0 : Float) (M_0 : Float) (rd_0 : Float) : (RList 
 ray_static "speed" (g_0 : Float) (R_0 : Float) : Float
 end Model
 
+namespace Felt
+ray_sfield "NR" : Value
+ray_sfield "NMU" : Value
+ray_sfield "R0" : Value
+ray_sfield "R1" : Value
+ray_sfield "SQ" : Value
+ray_sfield "KMAX" : Value
+ray_sfield "NA" : Value
+ray_sfield "NZ" : Value
+ray_sfield "NEAR" : Value
+ray_sfield "FAR" : Value
+ray_sfield "HERNQUIST" : Value
+ray_sfield "XS" : Value
+ray_sfield "X0" : Value
+ray_sfield "X1" : Value
+ray_sfield "YS" : Value
+ray_sfield "Y0" : Value
+ray_sfield "Y1" : Value
+ray_sfield "MASS" : Value
+ray_sfield "THICK" : Value
+ray_sfield "MIDDLE" : Value
+ray_sfield "GAS" : Value
+ray_sfield "FREEDOMS" : Value
+ray_getter "step" : Float
+ray_method "edge" (i_0 : Float) : Float
+ray_method "centre" (i_0 : Float) : Float
+ray_static "sinh" (x_0 : Float) : Float
+ray_static "mu_edge" (j_0 : Float) : Float
+ray_static "mu_centre" (j_0 : Float) : Float
+ray_field "re" : (RList Float)
+ray_field "rc" : (RList Float)
+ray_field "me" : (RList Float)
+ray_field "mc" : (RList Float)
+ray_getter "cells" : Float
+ray_static "ring" (R_0 : Float) (z_0 : Float) (a_0 : Float) (zs_0 : Float) (eps2_0 : Float) : (RList Float)
+ray_static "rings" (h_0 : Float) : (RList (RList Float))
+ray_static "disc_at" (rings_0 : (RList (RList Float))) (h_0 : Float) (R_0 : Float) (z_0 : Float) : (RList Float)
+ray_field "unit" : object
+ray_method "unit_disc" (h_0 : Float) : (RList (RList Float))
+ray_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wider_0 : Float) : (RList (RList Float))
+ray_field "faces" : (RList (RList Float))
+ray_method "faces_of" (c_0 : Float) : (RList Float)
+ray_getter "width" : Float
+ray_method "at_band" (k_0 : Float) (l_0 : Float) : Float
+ray_field "band" : (RList Float)
+ray_getter "factored" : (RList Float)
+ray_method "solve_band" (b_0 : (RList Float)) : (RList Float)
+ray_static "over" (gN_0 : Float) : Float
+ray_method "felt" (shape_0 : (RList (RList Float))) (s_0 : Float) : (RList (RList Float))
+ray_method "off_law" (shape_0 : (RList (RList Float))) (s_0 : Float) : Float
+ray_static "dx" : Float
+ray_static "dy" : Float
+ray_static "bits_in" (mask_0 : Float) : Float
+ray_static "uses" (mi_0 : Float) (ti_0 : Float) (ci_0 : Float) (gi_0 : Float) : Float
+ray_static "mass_at" (mi_0 : Float) : Float
+ray_method "space" (how_0 : String) : object
+end Felt
+
 namespace Axis
 ray_field "lo" : Float
 ray_field "hi" : Float
@@ -2248,6 +2308,7 @@ end Sweep
 
 namespace Measure
 ray_static "save" (id_0 : String) (names_0 : (RList String)) (columns_0 : object) (extra_0 : object) : Value
+ray_static "DEGS" : (RList Float)
 ray_static "density" (model_0 : Model) (id_0 : String) (how_0 : String) : Value
 ray_static "law" (model_0 : Model) : Value
 ray_static "run" (theory_0 : Theory) (only_0 : (RList String)) : Value

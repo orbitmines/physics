@@ -155,6 +155,74 @@ func main() {
     return "failed: " + "Lt(Mul(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 8.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.183)"
   })
 
+  t("tests/felt.ray:10 on felt", func() any {
+    var it any = Make("Felt", []any{  }...)
+    _ = it
+    guard := 0.0
+    for !Truthy(Gt(Get(it, "cells"), 0.0)) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)"
+  })
+
+  t("tests/felt.ray:11 on felt", func() any {
+    var it any = Make("Felt", []any{  }...)
+    _ = it
+    guard := 0.0
+    for !Truthy(Gt(Get(it, "cells"), 0.0)) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)"
+  })
+
+  t("tests/felt.ray:12 on felt", func() any {
+    var it any = Make("Felt", []any{  }...)
+    _ = it
+    guard := 0.0
+    for !Truthy(Gt(Get(it, "cells"), 0.0)) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Gt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) {
+      return pass_
+    }
+    return "failed: " + "Gt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)"
+  })
+
+  t("tests/felt.ray:13 on felt", func() any {
+    var it any = Make("Felt", []any{  }...)
+    _ = it
+    guard := 0.0
+    for !Truthy(Gt(Get(it, "cells"), 0.0)) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) {
+      return pass_
+    }
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)"
+  })
+
   t("tests/field.ray:10 on line", func() any {
     var it any = Call(K("G"), "field", []any{ 6.0, 8.0, 1.0, 1.0 })
     _ = it

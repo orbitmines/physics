@@ -57,6 +57,34 @@ t["tests/coincidence.ray:20 on coincidence", Module[{it, guard = 0},
     If[truthy[lt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]], "pass", "failed: " <> "lt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]"],
     skip]]];
 
+t["tests/felt.ray:10 on felt", Module[{it, guard = 0},
+  it = Felt[{}];
+  Catch[
+    While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 0.], 1.], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 0.], 1.], 0.003]"],
+    skip]]];
+
+t["tests/felt.ray:11 on felt", Module[{it, guard = 0},
+  it = Felt[{}];
+  Catch[
+    While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 0.], 0.01], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 0.], 0.01], 0.003]"],
+    skip]]];
+
+t["tests/felt.ray:12 on felt", Module[{it, guard = 0},
+  it = Felt[{}];
+  Catch[
+    While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[gt[it["off_law", it["shape", 0.02, 0., 0., 0.], 0.01], 0.05]], "pass", "failed: " <> "gt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 0.], 0.01], 0.05]"],
+    skip]]];
+
+t["tests/felt.ray:13 on felt", Module[{it, guard = 0},
+  it = Felt[{}];
+  Catch[
+    While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[it["off_law", it["shape", 0.02, 0., 0., 0.], 100.], 0.01]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 0.], 100.], 0.01]"],
+    skip]]];
+
 t["tests/field.ray:10 on line", Module[{it, guard = 0},
   it = G["field", 6., 8., 1., 1.];
   Catch[

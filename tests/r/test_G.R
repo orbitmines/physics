@@ -90,6 +90,50 @@ t_case("tests/coincidence.ray:20 on coincidence", function() {
   if (truthy(lt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183))) "pass" else paste0("failed: ", "lt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183)")
 })
 
+t_case("tests/felt.ray:10 on felt", function() {
+  it <- Felt$new()
+  guard <- 0
+  while (!truthy(gt(it$cells, 0))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 0), 1), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 0), 1), 0.003)")
+})
+
+t_case("tests/felt.ray:11 on felt", function() {
+  it <- Felt$new()
+  guard <- 0
+  while (!truthy(gt(it$cells, 0))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 0), 0.01), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 0), 0.01), 0.003)")
+})
+
+t_case("tests/felt.ray:12 on felt", function() {
+  it <- Felt$new()
+  guard <- 0
+  while (!truthy(gt(it$cells, 0))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(gt(it$off_law(it$shape(0.02, 0, 0, 0), 0.01), 0.05))) "pass" else paste0("failed: ", "gt(it$off_law(it$shape(0.02, 0, 0, 0), 0.01), 0.05)")
+})
+
+t_case("tests/felt.ray:13 on felt", function() {
+  it <- Felt$new()
+  guard <- 0
+  while (!truthy(gt(it$cells, 0))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(lt(it$off_law(it$shape(0.02, 0, 0, 0), 100), 0.01))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.02, 0, 0, 0), 100), 0.01)")
+})
+
 t_case("tests/field.ray:10 on line", function() {
   it <- G$field(6, 8, 1, 1)
   guard <- 0

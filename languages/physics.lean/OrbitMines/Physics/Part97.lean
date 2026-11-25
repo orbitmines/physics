@@ -7,104 +7,393 @@ set_option maxRecDepth 100000
 namespace OrbitMines.Physics
 
 
-namespace Measure
-ray_impl_static "save" (id_0 : String) (names_0 : (RList String)) (columns_0 : object) (extra_0 : object) : Value := do
-  let rows_0 ← IO.mkRef (← dot! (← ωelem (← columns_0.get) (← ωelem (← names_0.get) (0 : Float))) rlength ())
-  for e1 in (← ωitems (← names_0.get)) do
-    let n_1 ← IO.mkRef e1
-    if ωtruthy (← ωnev (← dot! (← ωelem (← columns_0.get) (← n_1.get)) rlength ()) (← rows_0.get)) then
-      (← app! fail (("" ++ (← ωtoStr (← id_0.get)) ++ ": " ++ (← ωtoStr (← n_1.get)) ++ " has " ++ (← ωtoStr (← dot! (← ωelem (← columns_0.get) (← n_1.get)) rlength ())) ++ " rows where " ++ (← ωtoStr (← ωelem (← names_0.get) (0 : Float))) ++ " has " ++ (← ωtoStr (← rows_0.get)) ++ "" : String))) |> ωsink
-      pure ()
-    if ωtruthy (ωnotV (← dot! (← ωelem (← columns_0.get) (← n_1.get)) rsome ((fn! [v_3] do
-      if true then return (← call! (← cls% Fmt) "finite" ((← v_3.get)))
-      return ωnull)))) then
-      (← app! fail (("" ++ (← ωtoStr (← id_0.get)) ++ ": column " ++ (← ωtoStr (← n_1.get)) ++ " is not a number anywhere - the model did not answer, and a field of NaN drawn as a blank panel is worse than a failed run" : String))) |> ωsink
-      pure ()
-    pure ()
-  Value.null |> ωsink
-  if true then return (← call! (← cls% Measured) "save" (("visuals" : String), (← id_0.get), (← id_0.get), (← names_0.get), (← columns_0.get), (← extra_0.get)))
+namespace Sweep
+ray_impl_field "model" : Model := do
   return ωnull
-ray_impl_static "density" (model_0 : Model) (id_0 : String) (how_0 : String) : Value := do
-  let sweep_0 ← IO.mkRef (← new! Sweep («model» := (← model_0.get), «how» := (← how_0.get)))
-  if ωtruthy (← ωorV (← ωorV (ωisNull (← ωget (← sweep_0.get) "arrival")) (do pure (ωisNull (← ωget (← sweep_0.get) "felt")))) (do pure (ωisNull (← ωget (← sweep_0.get) "rho_at")))) then
-    (← app! fail (("" ++ (← ωtoStr (← id_0.get)) ++ ": nothing derived to integrate" : String))) |> ωsink
-    pure ()
-  let lay_0 ← IO.mkRef ωnull
-  lay_0.set (fn! [(vary : (RList String))] do
-      let got ← IO.mkRef (← call! (← sweep_0.get) "tracks" (vary))
-      if true then return (← call! (← sweep_0.get) "rasterise" ((← ωelem got ("xs" : String)), (← ωelem got ("ys" : String)), (← ωelem got ("tracks" : String))))
-      return ωnull)
-  let grid_0 ← IO.mkRef (← app! (← lay_0.get) ((← ωget (← sweep_0.get) "order")))
-  let without_0 ← IO.mkRef (← dot! (← ωget (← sweep_0.get) "order") rmap ((fn! [held_2] do
-    if true then return (← app! (← lay_0.get) ((← dot! (← ωget (← sweep_0.get) "order") rfilter ((fn! [n_4] do
-      if true then return (← ωnev (← n_4.get) (← held_2.get))
-      return ωnull)))))
-    return ωnull)))
-  if true then return (← call! (← sweep_0.get) "save" ((← id_0.get), (← grid_0.get), (← call! (← sweep_0.get) "needs" ((← grid_0.get), (← without_0.get)))))
+ray_impl_field "how" : String := do
   return ωnull
-ray_impl_static "law" (model_0 : Model) : Value := do
-  let a0_0 ← IO.mkRef (← ωget (← model_0.get) "a0_lattice")
-  let gN_0 ← IO.mkRef (← ωlst #[])
-  let g_0 ← IO.mkRef (← ωlst #[])
-  for i1 in [0:ωrangeN (901 : Float)] do
-    let i_1 ← IO.mkRef (ωnatF i1)
-    let x_1 ← IO.mkRef (← ωmul (← ωpow (10 : Float) ((← ωadd (← ωneg (5 : Float)) (← ωdiv (← ωmul (9 : Float) (← i_1.get)) (900 : Float))))) (← a0_0.get))
-    (← dot! (← gN_0.get) rpush ((← x_1.get))) |> ωsink
-    (← dot! (← g_0.get) rpush ((← call! (← model_0.get) "boost" ((← x_1.get), (← a0_0.get))))) |> ωsink
-    pure ()
-  Value.null |> ωsink
-  let DEG_0 ← IO.mkRef (← ωget (← ωget (← ωget (← model_0.get) "theory") "lattice") "DEG")
-  let e_0 ← IO.mkRef (← call! (← model_0.get) "settled" ((← DEG_0.get)))
-  (← (ωatSetter (← e_0.get) ("D" : String)) (← ωget (← ωget (← ωget (← model_0.get) "theory") "lattice") "D")) |> ωsink
-  (← (ωatSetter (← e_0.get) ("DEG" : String)) (← DEG_0.get)) |> ωsink
-  let symbols_0 ← IO.mkRef (← RMap.new)
-  (← (ωatSetter (← symbols_0.get) ("DEG" : String)) (← DEG_0.get)) |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("\\nu" : String)) (← ωelem (← e_0.get) ("\\nu" : String))) |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("\\sigma" : String)) (← ωelem (← e_0.get) ("\\sigma" : String))) |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("F" : String)) (← ωelem (← e_0.get) ("F" : String))) |> ωsink
-  let om_0 ← IO.mkRef (← call! (← model_0.get) "value_of" (("\\omega" : String), (← e_0.get)))
-  (← (ωatSetter (← symbols_0.get) ("\\omega" : String)) (← ωtern (ωtruthy (← call! (← cls% Fmt) "finite" ((← om_0.get)))) (do pure (← om_0.get)) (do pure (← ωelem (← e_0.get) ("\\omega" : String))))) |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("\\beta" : String)) (0 : Float)) |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("\\rho" : String)) (← ωelem (← e_0.get) ("\\rho" : String))) |> ωsink
-  for e1 in (← ωitems (← ωlst #[("\\lambda" : String), ("n_{f}" : String), ("\\bar{m}_{l}" : String)])) do
-    let n_1 ← IO.mkRef e1
-    let v_1 ← IO.mkRef (← call! (← model_0.get) "value_of" ((← n_1.get), (← e_0.get)))
-    if ωtruthy (← call! (← cls% Fmt) "finite" ((← v_1.get))) then
-      (ωatSetter (← symbols_0.get) (← n_1.get)) (← v_1.get)
+ray_impl_field "arrival" : Fact := do
+  return (← call! (← ωget self "model") "fact" (("what arrives with the mass " ++ (← ωtoStr (← ωget self "how")) ++ "" : String)))
+ray_impl_field "felt" : Fact := do
+  return (← call! (← ωget self "model") "fact" (("F_{g}" : String)))
+ray_impl_field "rho_at" : Fact := do
+  return (← call! (← ωget self "model") "fact" (("\\rho at R" : String)))
+ray_impl_field "scale" : Fact := do
+  return (← call! (← ωget self "model") "fact" (("a_{0} along the path" : String)))
+ray_impl_field "a0" : Float := do
+  return (← ωget (← ωget self "model") "a0_lattice")
+ray_impl_field "base" : object := do
+  return (← call! (← cls% Sweep) "base_env" ((← ωget self "model")))
+ray_impl_field "order" : (RList String) := do
+  return (← ωlst #[("mass" : String), ("face" : String), ("moving" : String), ("radiating" : String)])
+ray_impl_field "axes" : object := do
+  return (← ωget (← cls% Sweep) "axes_of")
+ray_impl_field "R0" : Float := do
+  return (← ωneg (1 : Float))
+ray_impl_field "R1" : Float := do
+  return (8 : Float)
+ray_impl_field "RS" : Float := do
+  return (170 : Float)
+ray_impl_field "XS" : Float := do
+  return (700 : Float)
+ray_impl_field "X0" : Float := do
+  return (← ωneg (5 : Float))
+ray_impl_field "X1" : Float := do
+  return (4 : Float)
+ray_impl_field "YS" : Float := do
+  return (520 : Float)
+ray_impl_field "Y0" : Float := do
+  return (← ωneg (4 : Float))
+ray_impl_field "Y1" : Float := do
+  return (4 : Float)
+ray_impl_field "rad" : (RList Float) := do
+  return (← dot! (← ωrrange (← ωget self "RS")) rmap ((fn! [i_1] do
+  if true then return (← ωpow (10 : Float) ((← ωadd (← ωget self "R0") (← ωdiv (← ωmul ((← ωsub (← ωget self "R1") (← ωget self "R0"))) (← i_1.get)) ((← ωsub (← ωget self "RS") (1 : Float)))))))
+  return ωnull)))
+ray_impl_field "env" : (RList Value) := do
+  return (← dot! (← ωget self "rad") rmap ((fn! [R_1] do
+  let e_1 ← IO.mkRef (← call! (← cls% Model) "copy" ((← ωget self "base")))
+  (← (ωatSetter (← e_1.get) ("R" : String)) (← R_1.get)) |> ωsink
+  (← (ωatSetter (← e_1.get) ("r" : String)) (← R_1.get)) |> ωsink
+  (← (ωatSetter (← e_1.get) ("\\bar{r}" : String)) (← R_1.get)) |> ωsink
+  for e2 in (← ωitems (← ωlst #[("n_{f}" : String), ("\\sigma_{tr}" : String), ("L" : String)])) do
+    let n_2 ← IO.mkRef e2
+    let g_2 ← IO.mkRef (← call! (← ωget self "model") "fact" ((← n_2.get)))
+    if ωtruthy (!ωisNull (← g_2.get)) then
+      (ωatSetter (← e_1.get) (← n_2.get)) (← call! (← ωget self "model") "at" ((← ωget (← g_2.get) "to"), (← e_1.get)))
       pure ()
     pure ()
   Value.null |> ωsink
-  (← (ωatSetter (← symbols_0.get) ("\\bar{m}_{x}" : String)) (1 : Float)) |> ωsink
+  if true then return (← e_1.get)
+  return ωnull)))
+ray_impl_static "base_env" (model_0 : Model) : object := do
+  let base_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← base_0.get) ("D" : String)) (← ωget (← ωget (← ωget (← model_0.get) "theory") "lattice") "D")) |> ωsink
+  (← (ωatSetter (← base_0.get) ("DEG" : String)) (← ωget (← ωget (← ωget (← model_0.get) "theory") "lattice") "DEG")) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\bar{c}" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("m'" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("A'" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\bar{R}'" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("m_{\\Sigma}" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("m_{\\Sigma}'" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\mathcal{D}" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\mathcal{D}'" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\beta'" : String)) (0 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\beta\\cdot\\hat{d}" : String)) (0 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\beta'\\cdot\\hat{d}" : String)) (0 : Float)) |> ωsink
+  for e1 in (← ωitems (← ωlst #[("\\nu" : String), ("\\sigma" : String), ("F" : String)])) do
+    let rate_1 ← IO.mkRef e1
+    let g_1 ← IO.mkRef (← call! (← model_0.get) "fact" ((← rate_1.get)))
+    if ωtruthy (!ωisNull (← g_1.get)) then
+      (ωatSetter (← base_0.get) (← rate_1.get)) (← call! (← model_0.get) "at" ((← ωget (← g_1.get) "to"), (← base_0.get)))
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  let rho_0 ← IO.mkRef (← call! (← model_0.get) "fact" (("\\rho_{\\infty}" : String)))
+  if ωtruthy (!ωisNull (← rho_0.get)) then
+    (← (ωatSetter (← base_0.get) ("\\rho" : String)) (← call! (← model_0.get) "at" ((← ωget (← rho_0.get) "to"), (← base_0.get)))) |> ωsink
+    pure ()
+  let om_0 ← IO.mkRef (← call! (← model_0.get) "fact" (("\\omega" : String)))
+  if ωtruthy (!ωisNull (← om_0.get)) then
+    (← (ωatSetter (← base_0.get) ("\\omega" : String)) (← call! (← model_0.get) "at" ((← ωget (← om_0.get) "to"), (← base_0.get)))) |> ωsink
+    pure ()
+  (← (ωatSetter (← base_0.get) ("\\bar{m}_{x}" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("A" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\bar{R}" : String)) (0 : Float)) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\beta" : String)) (0 : Float)) |> ωsink
+  if true then return (← base_0.get)
+  return ωnull
+ray_impl_static "axes_of" : object := do
+  let axes_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← axes_0.get) ("mass" : String)) (← new! Axis («lo» := (2 : Float), «hi» := (9 : Float), «n» := (46 : Float)))) |> ωsink
+  (← (ωatSetter (← axes_0.get) ("face" : String)) (← new! Axis («lo» := (1 : Float), «hi» := (6 : Float), «n» := (28 : Float)))) |> ωsink
+  let moving_0 ← IO.mkRef (← new! Axis («lo» := (0 : Float), «hi» := 0.9, «n» := (5 : Float)))
+  (ωsetter (← moving_0.get) "linear") true
+  (← (ωatSetter (← axes_0.get) ("moving" : String)) (← moving_0.get)) |> ωsink
+  (← (ωatSetter (← axes_0.get) ("radiating" : String)) (← new! Axis («lo» := (← ωneg (2 : Float)), «hi» := (2 : Float), «n» := (5 : Float)))) |> ωsink
+  if true then return (← axes_0.get)
+  return ωnull
+ray_impl_getter "dx" : Float := do
+  if true then return (← ωdiv ((← ωsub (← ωget self "X1") (← ωget self "X0"))) ((← ωsub (← ωget self "XS") (1 : Float))))
+  return ωnull
+ray_impl_getter "dy" : Float := do
+  if true then return (← ωdiv ((← ωsub (← ωget self "Y1") (← ωget self "Y0"))) ((← ωsub (← ωget self "YS") (1 : Float))))
+  return ωnull
+ray_impl_method "point" (k_0 : Float) (m_0 : Float) (A_0 : Float) (beta_0 : Float) (S0_0 : Float) : object := do
+  let e_0 ← IO.mkRef (← call! (← cls% Model) "copy" ((← ωelem (← ωget self "env") (← k_0.get))))
+  (← (ωatSetter (← e_0.get) ("m" : String)) (← m_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("A" : String)) (← A_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("\\bar{R}" : String)) (← ωdiv (← m_0.get) (← A_0.get))) |> ωsink
+  (← (ωatSetter (← e_0.get) ("\\beta" : String)) (← beta_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("m_{\\Sigma}" : String)) (← S0_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("m_{\\Sigma}'" : String)) (← S0_0.get)) |> ωsink
+  if true then return (← e_0.get)
+  return ωnull
+ray_impl_method "crossed" (m_0 : Float) (A_0 : Float) : (RList Float) := do
+  let out_0 ← IO.mkRef (← ωrfilled (← ωget self "RS") (0 : Float))
+  let total_0 ← IO.mkRef (0 : Float)
+  let last_0 ← IO.mkRef (0 : Float)
+  for i1 in [0:ωrangeN (← ωget self "RS")] do
+    let k_1 ← IO.mkRef (ωnatF i1)
+    let e_1 ← IO.mkRef (← call! self "point" ((← k_1.get), (← m_0.get), (← A_0.get), (0 : Float), (1 : Float)))
+    let r_1 ← IO.mkRef (← call! (← ωget self "model") "at" ((← ωget (← ωget self "rho_at") "to"), (← e_1.get)))
+    let here_1 ← IO.mkRef (← ωtern (ωtruthy (← ωandV (← ωandV (← call! (← cls% Fmt) "finite" ((← r_1.get))) (do pure (← ωgt (← r_1.get) (0 : Float)))) (do pure (← ωle (← r_1.get) (1 : Float))))) (do pure (← r_1.get)) (do pure (← ωelem (← ωget self "base") ("\\rho" : String))))
+    if ωtruthy (← ωgt (← k_1.get) (0 : Float)) then
+      (← ωwr total_0 (← ωadd (← total_0.get) (← ωmul (← ωmul 0.5 ((← ωadd (← here_1.get) (← last_0.get)))) ((← ωsub (← ωelem (← ωget self "rad") (← k_1.get)) (← ωelem (← ωget self "rad") (← ωsub (← k_1.get) (1 : Float)))))))) |> ωsink
+      pure ()
+    (← ωwr last_0 (← here_1.get)) |> ωsink
+    (ωatSetter (← out_0.get) (← k_1.get)) (← ωtern (ωtruthy (← ωeqv (← k_1.get) (0 : Float))) (do pure (← here_1.get)) (do pure (← ωdiv (← total_0.get) (← ωelem (← ωget self "rad") (← k_1.get)))))
+    pure ()
+  Value.null |> ωsink
+  if true then return (← out_0.get)
+  return ωnull
+ray_impl_method "landing" (k_0 : Float) (m_0 : Float) (A_0 : Float) (beta_0 : Float) (S0_0 : Float) (avg_k_0 : Float) : (RList Float) := do
+  let e_0 ← IO.mkRef (← call! self "point" ((← k_0.get), (← m_0.get), (← A_0.get), (← beta_0.get), (← S0_0.get)))
+  let gN_0 ← IO.mkRef (← call! (← ωget self "model") "at" ((← ωget (← ωget self "arrival") "to"), (← e_0.get)))
+  (← (ωatSetter (← e_0.get) ("g_{N}" : String)) (← gN_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("\\langle\\rho\\rangle" : String)) (← avg_k_0.get)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("a_{0}" : String)) (← call! (← ωget self "model") "at" ((← ωget (← ωget self "scale") "to"), (← e_0.get)))) |> ωsink
+  let g_0 ← IO.mkRef (← call! (← ωget self "model") "at" ((← ωget (← ωget self "felt") "to"), (← e_0.get)))
+  if true then return (← ωlst #[(← ωtern (ωtruthy (← ωgt (← gN_0.get) (0 : Float))) (do pure (← call! (← cls% Fmt) "log10" ((← ωdiv (← gN_0.get) (← ωget self "a0"))))) (do pure (0.0 / 0.0 : Float))), (← ωtern (ωtruthy (← ωgt (← g_0.get) (0 : Float))) (do pure (← call! (← cls% Fmt) "log10" ((← ωdiv (← g_0.get) (← ωget self "a0"))))) (do pure (0.0 / 0.0 : Float)))])
+  return ωnull
+ray_impl_method "steps" (vary_0 : (RList String)) (k_0 : String) : Float := do
+  if true then return (← ωtern (ωtruthy (← dot! (← vary_0.get) rcontains ((← k_0.get)))) (do pure (← ωget (← ωelem (← ωget self "axes") (← k_0.get)) "n")) (do pure (1 : Float)))
+  return ωnull
+ray_impl_method "pick" (vary_0 : (RList String)) (k_0 : String) (i_0 : Float) : Float := do
+  if true then return (← ωtern (ωtruthy (← dot! (← vary_0.get) rcontains ((← k_0.get)))) (do pure (← call! (← ωelem (← ωget self "axes") (← k_0.get)) "value" ((← i_0.get)))) (do pure (← ωget (← ωelem (← ωget self "axes") (← k_0.get)) "mid")))
+  return ωnull
+ray_impl_method "rasterise" (xs__0 : (RList Float)) (ys__0 : (RList Float)) (tracks_0 : Float) : (RList Float) := do
+  let grid_0 ← IO.mkRef (← ωrfilled (← ωmul (← ωget self "XS") (← ωget self "YS")) (0 : Float))
+  let dx_0 ← IO.mkRef (← ωget self "dx")
+  let dy_0 ← IO.mkRef (← ωget self "dy")
+  let RS_0 ← IO.mkRef (← ωget self "RS")
+  for i1 in [0:ωrangeN (← tracks_0.get)] do
+    let tr_1 ← IO.mkRef (ωnatF i1)
+    let at0_1 ← IO.mkRef (← ωmul (← tr_1.get) (← RS_0.get))
+    for i2 in [0:ωrangeN (← ωsub (← RS_0.get) (1 : Float))] do
+      let k_2 ← IO.mkRef (ωnatF i2)
+      let xa_2 ← IO.mkRef (← ωelem (← xs__0.get) (← ωadd (← at0_1.get) (← k_2.get)))
+      let xb_2 ← IO.mkRef (← ωelem (← xs__0.get) (← ωadd (← ωadd (← at0_1.get) (← k_2.get)) (1 : Float)))
+      let ya_2 ← IO.mkRef (← ωelem (← ys__0.get) (← ωadd (← at0_1.get) (← k_2.get)))
+      let yb_2 ← IO.mkRef (← ωelem (← ys__0.get) (← ωadd (← ωadd (← at0_1.get) (← k_2.get)) (1 : Float)))
+      if ωtruthy (← ωandV (← ωandV (← ωandV (← call! (← cls% Fmt) "finite" ((← xa_2.get))) (do pure (← call! (← cls% Fmt) "finite" ((← xb_2.get))))) (do pure (← call! (← cls% Fmt) "finite" ((← ya_2.get))))) (do pure (← call! (← cls% Fmt) "finite" ((← yb_2.get))))) then
+        let st_2 ← IO.mkRef (← call! (← cls% Fmt) "max" ((1 : Float), (← ωsub (0 : Float) (← dot! ((← ωsub (0 : Float) (← call! (← cls% Fmt) "max" ((← ωdiv (← dot! ((← ωsub (← xb_2.get) (← xa_2.get))) rabs ()) (← dx_0.get)), (← ωdiv (← dot! ((← ωsub (← yb_2.get) (← ya_2.get))) rabs ()) (← dy_0.get)))))) rfloor ()))))
+        for i3 in [0:ωrangeN (← st_2.get)] do
+          let t_3 ← IO.mkRef (ωnatF i3)
+          let f_3 ← IO.mkRef (← ωdiv ((← ωadd (← t_3.get) 0.5)) (← st_2.get))
+          let gx_3 ← IO.mkRef (← dot! ((← ωdiv ((← ωsub (← ωadd (← xa_2.get) (← ωmul (← f_3.get) ((← ωsub (← xb_2.get) (← xa_2.get))))) (← ωget self "X0"))) (← dx_0.get))) rround ())
+          let gy_3 ← IO.mkRef (← dot! ((← ωdiv ((← ωsub (← ωadd (← ya_2.get) (← ωmul (← f_3.get) ((← ωsub (← yb_2.get) (← ya_2.get))))) (← ωget self "Y0"))) (← dy_0.get))) rround ())
+          if ωtruthy (ωnotV ((← ωorV (← ωorV (← ωorV (← ωlt (← gx_3.get) (0 : Float)) (do pure (← ωlt (← gy_3.get) (0 : Float)))) (do pure (← ωge (← gx_3.get) (← ωget self "XS")))) (do pure (← ωge (← gy_3.get) (← ωget self "YS")))))) then
+            (ωatSetter (← grid_0.get) (← ωadd (← ωmul (← gy_3.get) (← ωget self "XS")) (← gx_3.get))) (← ωadd (← ωelem (← grid_0.get) (← ωadd (← ωmul (← gy_3.get) (← ωget self "XS")) (← gx_3.get))) (← ωdiv (1 : Float) (← st_2.get)))
+            pure ()
+          pure ()
+        Value.null |> ωsink
+        pure ()
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  if true then return (← grid_0.get)
+  return ωnull
+ray_impl_method "tracks" (vary_0 : (RList String)) : object := do
+  let nM_0 ← IO.mkRef (← call! self "steps" ((← vary_0.get), ("mass" : String)))
+  let nA_0 ← IO.mkRef (← call! self "steps" ((← vary_0.get), ("face" : String)))
+  let nB_0 ← IO.mkRef (← call! self "steps" ((← vary_0.get), ("moving" : String)))
+  let nS_0 ← IO.mkRef (← call! self "steps" ((← vary_0.get), ("radiating" : String)))
+  let xs__0 ← IO.mkRef (← ωlst #[])
+  let ys__0 ← IO.mkRef (← ωlst #[])
+  for i1 in [0:ωrangeN (← nM_0.get)] do
+    let mi_1 ← IO.mkRef (ωnatF i1)
+    let m_1 ← IO.mkRef (← call! self "pick" ((← vary_0.get), ("mass" : String), (← mi_1.get)))
+    for i2 in [0:ωrangeN (← nA_0.get)] do
+      let ai_2 ← IO.mkRef (ωnatF i2)
+      let A_2 ← IO.mkRef (← call! self "pick" ((← vary_0.get), ("face" : String), (← ai_2.get)))
+      let avg_2 ← IO.mkRef (← call! self "crossed" ((← m_1.get), (← A_2.get)))
+      for i3 in [0:ωrangeN (← nB_0.get)] do
+        let bi_3 ← IO.mkRef (ωnatF i3)
+        let beta_3 ← IO.mkRef (← call! self "pick" ((← vary_0.get), ("moving" : String), (← bi_3.get)))
+        for i4 in [0:ωrangeN (← nS_0.get)] do
+          let si_4 ← IO.mkRef (ωnatF i4)
+          let S0_4 ← IO.mkRef (← call! self "pick" ((← vary_0.get), ("radiating" : String), (← si_4.get)))
+          for i5 in [0:ωrangeN (← ωget self "RS")] do
+            let k_5 ← IO.mkRef (ωnatF i5)
+            let got_5 ← IO.mkRef (← call! self "landing" ((← k_5.get), (← m_1.get), (← A_2.get), (← beta_3.get), (← S0_4.get), (← ωelem (← avg_2.get) (← k_5.get))))
+            (← dot! (← xs__0.get) rpush ((← ωelem (← got_5.get) (0 : Float)))) |> ωsink
+            (← dot! (← ys__0.get) rpush ((← ωelem (← got_5.get) (1 : Float)))) |> ωsink
+            pure ()
+          Value.null |> ωsink
+          pure ()
+        Value.null |> ωsink
+        pure ()
+      Value.null |> ωsink
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  let out_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← out_0.get) ("xs" : String)) (← xs__0.get)) |> ωsink
+  (← (ωatSetter (← out_0.get) ("ys" : String)) (← ys__0.get)) |> ωsink
+  (← (ωatSetter (← out_0.get) ("tracks" : String)) (← ωmul (← ωmul (← ωmul (← nM_0.get) (← nA_0.get)) (← nB_0.get)) (← nS_0.get))) |> ωsink
+  if true then return (← out_0.get)
+  return ωnull
+ray_impl_method "needs" (grid_0 : (RList Float)) (without_0 : (RList (RList Float))) : (RList Float) := do
+  let need_0 ← IO.mkRef (← ωrfilled (← ωmul (← ωget self "XS") (← ωget self "YS")) (0 : Float))
+  for i1 in [0:ωrangeN (← dot! (← without_0.get) rlength ())] do
+    let k_1 ← IO.mkRef (ωnatF i1)
+    let g_1 ← IO.mkRef (← ωelem (← without_0.get) (← k_1.get))
+    for i2 in [0:ωrangeN (← dot! (← need_0.get) rlength ())] do
+      let i_2 ← IO.mkRef (ωnatF i2)
+      if ωtruthy (← ωandV (← ωgt (← ωelem (← grid_0.get) (← i_2.get)) (0 : Float)) (do pure (ωnotV ((← ωgt (← ωelem (← g_1.get) (← i_2.get)) (0 : Float)))))) then
+        (ωatSetter (← need_0.get) (← i_2.get)) (← ωadd (← ωelem (← need_0.get) (← i_2.get)) (← ωpow (2 : Float) (← k_1.get)))
+        pure ()
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  if true then return (← need_0.get)
+  return ωnull
+ray_impl_method "save" (id_0 : String) (grid_0 : (RList Float)) (need_0 : (RList Float)) : Value := do
+  let cells_0 ← IO.mkRef (← ωrrange (← ωmul (← ωget self "YS") (← ωget self "XS")))
   let columns_0 ← IO.mkRef (← RMap.new)
-  (← (ωatSetter (← columns_0.get) ("gN" : String)) (← gN_0.get)) |> ωsink
-  (← (ωatSetter (← columns_0.get) ("g" : String)) (← g_0.get)) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("x" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωadd (← ωget self "X0") (← ωmul ((← ωmodv (← i_2.get) (← ωget self "XS"))) (← ωget self "dx")))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("y" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωadd (← ωget self "Y0") (← ωmul (← dot! ((← ωdiv (← i_2.get) (← ωget self "XS"))) rfloor ()) (← ωget self "dy")))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("p" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωelem (← grid_0.get) (← i_2.get))
+    return ωnull)))) |> ωsink
+  (← (ωatSetter (← columns_0.get) ("by" : String)) (← dot! (← cells_0.get) rmap ((fn! [i_2] do
+    if true then return (← ωelem (← need_0.get) (← i_2.get))
+    return ωnull)))) |> ωsink
+  let most_0 ← IO.mkRef (← dot! (← ωelem (← columns_0.get) ("p" : String)) rreduce ((0 : Float), (fn! [m_2 v_2] do
+    if true then return (← ωtern (ωtruthy (← ωgt (← v_2.get) (← m_2.get))) (do pure (← v_2.get)) (do pure (← m_2.get)))
+    return ωnull)))
   let extra_0 ← IO.mkRef (← RMap.new)
-  (← (ωatSetter (← extra_0.get) ("a0" : String)) (← a0_0.get)) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("theory" : String)) (← ωget (← ωget (← model_0.get) "theory") "name")) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("symbols" : String)) (← symbols_0.get)) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("about" : String)) ("what arrives against what is felt, both in units of a_0" : String)) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("carries" : String)) (← ωget (← call! (← cls% Aggregate) "of" ((← ωget (← model_0.get) "theory"), (← DEG_0.get), (← ωget (← ωget (← ωget (← model_0.get) "theory") "lattice") "D"))) "carries")) |> ωsink
-  if true then return (← call! (← cls% Measure) "save" (("law" : String), (← ωlst #[("gN" : String), ("g" : String)]), (← columns_0.get), (← extra_0.get)))
+  (← (ωatSetter (← extra_0.get) ("a0" : String)) (← ωget self "a0")) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("arrangement" : String)) (← ωget self "how")) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("most" : String)) (← most_0.get)) |> ωsink
+  let arrives_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← arrives_0.get) ("from" : String)) (← ωget self "X0")) |> ωsink
+  (← (ωatSetter (← arrives_0.get) ("to" : String)) (← ωget self "X1")) |> ωsink
+  (← (ωatSetter (← arrives_0.get) ("n" : String)) (← ωget self "XS")) |> ωsink
+  let felt_axis_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← felt_axis_0.get) ("from" : String)) (← ωget self "Y0")) |> ωsink
+  (← (ωatSetter (← felt_axis_0.get) ("to" : String)) (← ωget self "Y1")) |> ωsink
+  (← (ωatSetter (← felt_axis_0.get) ("n" : String)) (← ωget self "YS")) |> ωsink
+  let grid_meta_0 ← IO.mkRef (← RMap.new)
+  (← (ωatSetter (← grid_meta_0.get) ("arrives" : String)) (← arrives_0.get)) |> ωsink
+  (← (ωatSetter (← grid_meta_0.get) ("felt" : String)) (← felt_axis_0.get)) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("grid" : String)) (← grid_meta_0.get)) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("freedoms" : String)) (← ωget self "order")) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("stages" : String)) (← ωlst #[("nought is: reachable several ways; otherwise one bit per freedom, in the order of `freedoms`, for each one that is NECESSARY there" : String)])) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("about" : String)) ("how much of the possible lands at each pair of what arrives and what is felt, and `by` is which freedom that cell NEEDS - found by taking each one away in turn, so it does not depend on any order they might be added in" : String)) |> ωsink
+  if true then return (← call! (← cls% Measure) "save" ((← id_0.get), (← ωlst #[("x" : String), ("y" : String), ("p" : String), ("by" : String)]), (← columns_0.get), (← extra_0.get)))
   return ωnull
-ray_impl_static "run" (theory_0 : Theory) (only_0 : (RList String)) : Value := do
-  let model_0 ← IO.mkRef (← new! Model («theory» := (← theory_0.get)))
-  let want_0 ← IO.mkRef ωnull
-  want_0.set (fn! [(n : String)] do
-      if true then return (← ωorV (← dot! (← only_0.get) rempty ()) (do pure (← dot! (← only_0.get) rsome ((fn! [o_2] do
-        if true then return (← dot! n rcontains ((← o_2.get)))
-        return ωnull)))))
+ray_impl_getter "probe" : object := do
+  let e_0 ← IO.mkRef (← call! self "point" ((0 : Float), (1 : Float), (1 : Float), (0 : Float), (1 : Float)))
+  (← (ωatSetter (← e_0.get) ("g_{N}" : String)) (1 : Float)) |> ωsink
+  (← (ωatSetter (← e_0.get) ("a_{0}" : String)) (1 : Float)) |> ωsink
+  if true then return (← e_0.get)
+  return ωnull
+ray_impl_getter "names" : (RList String) := do
+  let out_0 ← IO.mkRef (← ωlst #[])
+  let e0_0 ← IO.mkRef (← ωget self "probe")
+  for e1 in (← ωitems (← ωlst #[(← call! (← ωget self "model") "prepared" ((← ωget (← ωget (← ωget self "rho_at") "to") "base"), (← e0_0.get))), (← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "arrival") "to"), (← e0_0.get))), (← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "felt") "to"), (← e0_0.get))), (← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "scale") "to"), (← e0_0.get)))])) do
+    let x_1 ← IO.mkRef e1
+    for e2 in (← ωitems (← call! (← cls% Model) "unbound" ((← x_1.get)))) do
+      let n_2 ← IO.mkRef e2
+      if ωtruthy (ωnotV (← dot! (← out_0.get) rcontains ((← n_2.get)))) then
+        (← dot! (← out_0.get) rpush ((← n_2.get))) |> ωsink
+        pure ()
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  for e1 in (← ωitems (← ωlst #[("g_{N}" : String), ("a_{0}" : String), ("\\rho" : String), ("\\langle\\rho\\rangle" : String)])) do
+    let n_1 ← IO.mkRef e1
+    if ωtruthy (ωnotV (← dot! (← out_0.get) rcontains ((← n_1.get)))) then
+      (← dot! (← out_0.get) rpush ((← n_1.get))) |> ωsink
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  if true then return (← out_0.get)
+  return ωnull
+ray_impl_getter "constants" : (RList Float) := do
+  if true then return (← dot! (← ωget self "names") rmap ((fn! [n_2] do
+    if true then return (← ωtern (ωtruthy (ωisNull (← ωelem (← ωget self "base") (← n_2.get)))) (do pure (0.0 / 0.0 : Float)) (do pure (← ωelem (← ωget self "base") (← n_2.get))))
+    return ωnull)))
+  return ωnull
+ray_impl_method "slot" (n_0 : String) : Float := do
+  let i_0 ← IO.mkRef (← dot! (← ωget self "names") rindex_of ((← n_0.get)))
+  if true then return (← ωtern (ωtruthy (ωisNull (← i_0.get))) (do pure (← ωneg (1 : Float))) (do pure (← i_0.get)))
+  return ωnull
+ray_impl_getter "radii" : (RList Float) := do
+  if true then return (← dot! (← ωrrange (← ωget self "RS")) rreduce ((← ωlst #[]), (fn! [out_2 k_2] do
+    if true then return (← dot! (← ωlst #[(← ωelem (← ωget self "rad") (← k_2.get)), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("n_{f}" : String)) (do pure (0.0 / 0.0 : Float))), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("\\sigma_{tr}" : String)) (do pure (0.0 / 0.0 : Float))), (← ωorElse (← ωelem (← ωelem (← ωget self "env") (← k_2.get)) ("L" : String)) (do pure (0.0 / 0.0 : Float)))]) rreduce ((← out_2.get), (fn! [o_4 v_4] do
+      if true then return (← dot! (← o_4.get) rpush ((← v_4.get)))
+      return ωnull)))
+    return ωnull)))
+  return ωnull
+ray_impl_getter "kernel" : String := do
+  let names_0 ← IO.mkRef (← ωget self "names")
+  let NV_0 ← IO.mkRef (← dot! (← names_0.get) rlength ())
+  let e0_0 ← IO.mkRef (← ωget self "probe")
+  let f_rho_0 ← IO.mkRef (← call! (← cls% Shaded) "wgsl" ((← call! (← ωget self "model") "prepared" ((← ωget (← ωget (← ωget self "rho_at") "to") "base"), (← e0_0.get))), (← names_0.get), (← ωget (← ωget (← ωget self "rho_at") "to") "bound")))
+  let f_arr_0 ← IO.mkRef (← call! (← cls% Shaded) "wgsl" ((← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "arrival") "to"), (← e0_0.get))), (← names_0.get), ωnull))
+  let f_felt_0 ← IO.mkRef (← call! (← cls% Shaded) "wgsl" ((← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "felt") "to"), (← e0_0.get))), (← names_0.get), ωnull))
+  let f_scale_0 ← IO.mkRef (← call! (← cls% Shaded) "wgsl" ((← call! (← ωget self "model") "prepared" ((← ωget (← ωget self "scale") "to"), (← e0_0.get))), (← names_0.get), ωnull))
+  let savg_0 ← IO.mkRef (← call! self "slot" (("\\langle\\rho\\rangle" : String)))
+  let sR_0 ← IO.mkRef (← call! self "slot" (("R" : String)))
+  let sr_0 ← IO.mkRef (← call! self "slot" (("r" : String)))
+  let srb_0 ← IO.mkRef (← call! self "slot" (("\\bar{r}" : String)))
+  let snf_0 ← IO.mkRef (← call! self "slot" (("n_{f}" : String)))
+  let sst_0 ← IO.mkRef (← call! self "slot" (("\\sigma_{tr}" : String)))
+  let sL_0 ← IO.mkRef (← call! self "slot" (("L" : String)))
+  let sm_0 ← IO.mkRef (← call! self "slot" (("m" : String)))
+  let sA_0 ← IO.mkRef (← call! self "slot" (("A" : String)))
+  let sRb_0 ← IO.mkRef (← call! self "slot" (("\\bar{R}" : String)))
+  let sb_0 ← IO.mkRef (← call! self "slot" (("\\beta" : String)))
+  let sS_0 ← IO.mkRef (← call! self "slot" (("m_{\\Sigma}" : String)))
+  let sS2_0 ← IO.mkRef (← call! self "slot" (("m_{\\Sigma}'" : String)))
+  let sgN_0 ← IO.mkRef (← call! self "slot" (("g_{N}" : String)))
+  let sa0_0 ← IO.mkRef (← call! self "slot" (("a_{0}" : String)))
+  let srho_0 ← IO.mkRef (← call! self "slot" (("\\rho" : String)))
+  let set_0 ← IO.mkRef ωnull
+  set_0.set (fn! [(i : Float) (v : String)] do
+      if true then return (← ωtern (ωtruthy (← ωlt i (0 : Float))) (do pure ("" : String)) (do pure ("e[" ++ (← ωtoStr i) ++ "] = " ++ (← ωtoStr v) ++ ";" : String)))
       return ωnull)
-  if ωtruthy (← app! (← want_0.get) (("galaxy.point" : String))) then
-    (← call! (← cls% Measure) "density" ((← model_0.get), ("galaxy.point" : String), ("gathered" : String))) |> ωsink
-    pure ()
-  if ωtruthy (← app! (← want_0.get) (("galaxy.many" : String))) then
-    (← call! (← cls% Measure) "density" ((← model_0.get), ("galaxy.many" : String), ("scattered" : String))) |> ωsink
-    pure ()
-  if ωtruthy (← app! (← want_0.get) (("law" : String))) then
-    (← call! (← cls% Measure) "law" ((← model_0.get))) |> ωsink
-    pure ()
+  let helpers_0 ← IO.mkRef (← ωget (← cls% Shaded) "helpers")
+  let solver_0 ← IO.mkRef (← call! (← cls% Shaded) "solver" (("solve_rho" : String), ("f_rho" : String)))
+  let sigma_0 ← IO.mkRef (← ωelem (← ωget self "base") ("\\sigma" : String))
+  let ambient_0 ← IO.mkRef (← ωelem (← ωget self "base") ("\\rho" : String))
+  let r_R_0 ← IO.mkRef (← app! (← set_0.get) ((← sR_0.get), ("rad[4u * k]" : String)))
+  let r_r_0 ← IO.mkRef (← app! (← set_0.get) ((← sr_0.get), ("rad[4u * k]" : String)))
+  let r_rb_0 ← IO.mkRef (← app! (← set_0.get) ((← srb_0.get), ("rad[4u * k]" : String)))
+  let r_nf_0 ← IO.mkRef (← app! (← set_0.get) ((← snf_0.get), ("rad[4u * k + 1u]" : String)))
+  let r_st_0 ← IO.mkRef (← app! (← set_0.get) ((← sst_0.get), ("rad[4u * k + 2u]" : String)))
+  let r_L_0 ← IO.mkRef (← app! (← set_0.get) ((← sL_0.get), ("rad[4u * k + 3u]" : String)))
+  let radius_0 ← IO.mkRef ("" ++ (← ωtoStr (← r_R_0.get)) ++ " " ++ (← ωtoStr (← r_r_0.get)) ++ " " ++ (← ωtoStr (← r_rb_0.get)) ++ " " ++ (← ωtoStr (← r_nf_0.get)) ++ " " ++ (← ωtoStr (← r_st_0.get)) ++ " " ++ (← ωtoStr (← r_L_0.get)) ++ "" : String)
+  let s_m_0 ← IO.mkRef (← app! (← set_0.get) ((← sm_0.get), ("m" : String)))
+  let s_A_0 ← IO.mkRef (← app! (← set_0.get) ((← sA_0.get), ("A" : String)))
+  let s_Rb_0 ← IO.mkRef (← app! (← set_0.get) ((← sRb_0.get), ("m / A" : String)))
+  let s_b_0 ← IO.mkRef (← app! (← set_0.get) ((← sb_0.get), ("beta" : String)))
+  let s_S_0 ← IO.mkRef (← app! (← set_0.get) ((← sS_0.get), ("S0" : String)))
+  let s_S2_0 ← IO.mkRef (← app! (← set_0.get) ((← sS2_0.get), ("S0" : String)))
+  let source_0 ← IO.mkRef ("" ++ (← ωtoStr (← s_m_0.get)) ++ " " ++ (← ωtoStr (← s_A_0.get)) ++ " " ++ (← ωtoStr (← s_Rb_0.get)) ++ " " ++ (← ωtoStr (← s_b_0.get)) ++ " " ++ (← ωtoStr (← s_S_0.get)) ++ " " ++ (← ωtoStr (← s_S2_0.get)) ++ "" : String)
+  let set_gN_0 ← IO.mkRef (← app! (← set_0.get) ((← sgN_0.get), ("gN" : String)))
+  let sigma_lit_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← sigma_0.get)))
+  let set_avg_0 ← IO.mkRef (← app! (← set_0.get) ((← savg_0.get), ("avg[pair * P.RS + k]" : String)))
+  let scale_call_0 ← IO.mkRef ("f_scale()" : String)
+  let set_scale_0 ← IO.mkRef (← app! (← set_0.get) ((← sa0_0.get), (← scale_call_0.get)))
+  let set_a0_0 ← IO.mkRef ("" ++ (← ωtoStr (← set_avg_0.get)) ++ " " ++ (← ωtoStr (← set_scale_0.get)) ++ "" : String)
+  let ambient_lit_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ambient_0.get)))
+  let a0_lit_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωget self "a0")))
+  let fill_0 ← IO.mkRef ("for (var i: u32 = 0u; i < " ++ (← ωtoStr (← NV_0.get)) ++ "u; i = i + 1u) { e[i] = C[i]; }" : String)
+  if true then return (← dot! (← ωlst #[("// GENERATED by `npx ray measure` from the closed theory: the possibility space, swept on the device" : String), ("struct Par { RS: u32, nM: u32, nA: u32, nB: u32, nS: u32, pad0: u32, pad1: u32, pad2: u32 }" : String), ("@group(0) @binding(0) var<storage, read> P: Par;" : String), ("@group(0) @binding(1) var<storage, read> C: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read> rad: array<f32>;" : String), ("@group(0) @binding(3) var<storage, read> ax: array<f32>;" : String), ("@group(0) @binding(4) var<storage, read_write> avg: array<f32>;" : String), ("@group(0) @binding(5) var<storage, read_write> xs: array<f32>;" : String), ("@group(0) @binding(6) var<storage, read_write> ys: array<f32>;" : String), ("var<private> e: array<f32, " ++ (← ωtoStr (← NV_0.get)) ++ ">;" : String), (← helpers_0.get), ("fn f_rho(x: f32) -> f32 { return " ++ (← ωtoStr (← f_rho_0.get)) ++ "; }" : String), ("fn f_arrival() -> f32 { return " ++ (← ωtoStr (← f_arr_0.get)) ++ "; }" : String), ("fn f_felt() -> f32 { return " ++ (← ωtoStr (← f_felt_0.get)) ++ "; }" : String), ("fn f_scale() -> f32 { return " ++ (← ωtoStr (← f_scale_0.get)) ++ "; }" : String), (← solver_0.get), ("@compute @workgroup_size(64) fn PROFILE(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  if (i >= P.nM * P.nA) { return; }\n  let mi: u32 = i / P.nA;\n  let ai: u32 = i % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = 0.0;\n  let S0: f32 = 1.0;\n  " ++ (← ωtoStr (← fill_0.get)) ++ "\n  var total: f32 = 0.0;\n  var last: f32 = 0.0;\n  for (var k: u32 = 0u; k < P.RS; k = k + 1u) {\n    " ++ (← ωtoStr (← radius_0.get)) ++ "\n    " ++ (← ωtoStr (← source_0.get)) ++ "\n    let r: f32 = solve_rho();\n    var here: f32 = " ++ (← ωtoStr (← ambient_lit_0.get)) ++ ";\n    if (finite(r) && r > 0.0 && r <= 1.0) { here = r; }\n    if (k > 0u) { total = total + 0.5 * (here + last) * (rad[4u * k] - rad[4u * (k - 1u)]); }\n    last = here;\n    if (k == 0u) { avg[i * P.RS + k] = here; } else { avg[i * P.RS + k] = total / rad[4u * k]; }\n  }\n}" : String), ("@compute @workgroup_size(64) fn TRACK(@builtin(global_invocation_id) gid: vec3<u32>) {\n  let i: u32 = gid.y * 1024u * 64u + gid.x;\n  let per: u32 = P.nB * P.nS * P.RS;\n  if (i >= P.nM * P.nA * per) { return; }\n  let pair: u32 = i / per;\n  let rest: u32 = i % per;\n  let bi: u32 = rest / (P.nS * P.RS);\n  let si: u32 = (rest / P.RS) % P.nS;\n  let k: u32 = rest % P.RS;\n  let mi: u32 = pair / P.nA;\n  let ai: u32 = pair % P.nA;\n  let m: f32 = ax[mi];\n  let A: f32 = ax[P.nM + ai];\n  let beta: f32 = ax[P.nM + P.nA + bi];\n  let S0: f32 = ax[P.nM + P.nA + P.nB + si];\n  " ++ (← ωtoStr (← fill_0.get)) ++ "\n  " ++ (← ωtoStr (← radius_0.get)) ++ "\n  " ++ (← ωtoStr (← source_0.get)) ++ "\n  let gN: f32 = f_arrival();\n  " ++ (← ωtoStr (← set_gN_0.get)) ++ "\n  " ++ (← ωtoStr (← set_a0_0.get)) ++ "\n  let g: f32 = f_felt();\n  var lx: f32 = 1e30;\n  var ly: f32 = 1e30;\n  if (finite(gN) && gN > 0.0) { lx = log(gN / " ++ (← ωtoStr (← a0_lit_0.get)) ++ ") / log(10.0); }\n  if (finite(g) && g > 0.0) { ly = log(g / " ++ (← ωtoStr (← a0_lit_0.get)) ++ ") / log(10.0); }\n  xs[i] = lx;\n  ys[i] = ly;\n}" : String)]) rjoin (("\n\n" : String)))
   return ωnull
-end Measure
+end Sweep
 
 
 

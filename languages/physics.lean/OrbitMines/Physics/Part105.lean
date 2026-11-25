@@ -7,7 +7,7 @@ set_option maxRecDepth 100000
 namespace OrbitMines.Physics
 
 
-namespace Planets
+namespace Growing
 ray_impl_field "n" : Float := do
   return ωnull
 ray_impl_field "lane" : Lane := do
@@ -16,33 +16,18 @@ ray_impl_field "ink" : Ink := do
   return ωnull
 ray_impl_field "per" : Float := do
   return ωnull
-ray_impl_field "stamp" : String := do
-  return ωnull
-ray_impl_field "off" : Float := do
-  return ωnull
-ray_impl_field "width" : Float := do
-  return ωnull
-ray_impl_field "bodies" : Float := do
-  return ωnull
 ray_impl_field "shown_frames" : Float := do
   return (0 : Float)
-ray_impl_field "film" : Measured := do
-  return ωnull
 ray_impl_method "frame" (s_0 : Surface) (dt_0 : Float) : Value := do
-  if ωtruthy (ωisNull (← ωget self "film")) then
-    (ωsetter self "film") (← call! (← cls% Measured) "of" (("solar.inner.frames" : String)))
-    pure ()
-  if ωtruthy (ωisNull (← ωget self "film")) then
-    (← app! fail (("solar.inner is not recorded - run `npx ray visuals solar.inner` first" : String))) |> ωsink
-    pure ()
-  if ωtruthy (← ωnev (← ωelem (← ωget (← ωget self "film") "header") ("stamp" : String)) (← ωget self "stamp")) then
-    (← app! fail (("solar.inner's recording is stale - run `npx ray visuals solar.inner` again" : String))) |> ωsink
-    pure ()
+  (← call! (← s_0.get) "fill_style" ((← ωget (← cls% Galaxies) "BACK"))) |> ωsink
+  (← call! (← s_0.get) "fill_rect" ((0 : Float), (0 : Float), (← ωget (← s_0.get) "width"), (← ωget (← s_0.get) "height"))) |> ωsink
   let look_0 ← IO.mkRef (← call! (← cls% Video) "look" ((← ωget (← s_0.get) "width"), (← ωget self "lane"), (← ωget self "ink")))
-  (← call! (← cls% Video) "planets" ((← s_0.get), (← ωdiv (← ωget self "shown_frames") (← call! (← cls% Fmt) "max" ((1 : Float), (← ωsub (← ωget self "n") (1 : Float))))), (← ωget self "lane"), (← look_0.get), (← ωdiv ((← ωadd (← ωsub (← dot! ((← ωmul (4 : Float) (← ωget (← cls% Video) "FPS"))) rround ()) (1 : Float)) (← ωget self "shown_frames"))) (← ωget self "per")), (← ωget self "film"), (← ωget self "off"), (← ωget self "width"), (← ωget self "bodies"))) |> ωsink
+  let grow_0 ← IO.mkRef (← ωdiv (← ωget self "shown_frames") (← call! (← cls% Fmt) "max" ((1 : Float), (← ωsub (← ωget self "n") (1 : Float)))))
+  let cam_0 ← IO.mkRef (← call! (← cls% Video) "source_camera" ((← s_0.get), (← look_0.get), (← grow_0.get)))
+  (← call! (← cls% Video) "lattice" ((← s_0.get), (← ωget self "lane"), (← look_0.get), (← grow_0.get), (← ωdiv (← ωget self "shown_frames") (← ωget self "per")), (1 : Float), (0 : Float), (← ωelem (← cam_0.get) (0 : Float)), (← ωelem (← cam_0.get) (1 : Float)), (← ωelem (← cam_0.get) (2 : Float)), (1 : Float), (1000000 : Float), (16 : Float))) |> ωsink
   (ωsetter self "shown_frames") (← ωadd (← ωget self "shown_frames") (1 : Float))
   return ωnull
-end Planets
+end Growing
 
 
 

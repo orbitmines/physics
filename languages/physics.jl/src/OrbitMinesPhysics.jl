@@ -11289,9 +11289,9 @@ end
   @static_field YMIN = (-3.0)
   @static_field YMAX = 3.0
   @static_field SEVERAL = Any[86.0, 168.0, 235.0]
-  @static_field FREEDOMS = Any[Base.string(j"mass"), Base.string(j"face"), Base.string(j"moving"), Base.string(j"spread")]
+  @static_field FREEDOMS = Any[Base.string(j"mass"), Base.string(j"thickness"), Base.string(j"middle"), Base.string(j"gas")]
   @static_field TINTS = Any[Any[232.0, 193.0, 90.0], Any[90.0, 212.0, 193.0], Any[240.0, 122.0, 178.0], Any[169.0, 139.0, 224.0]]
-  @static_field NAMES_NOW = Any[Base.string(j"mass"), Base.string(j"face"), Base.string(j"moving"), Base.string(j"spread")]
+  @static_field NAMES_NOW = Any[Base.string(j"mass"), Base.string(j"thickness"), Base.string(j"middle"), Base.string(j"gas")]
   @static_field LEVELS = Any[(-4.0), (-2.0), 0.0, 1.0, 2.0, 3.0]
   @static_field WIDTHS = Any[0.0, 2.0]
   @static_field DISK_ID = Base.string(j"law.disk")
@@ -11961,7 +11961,7 @@ end
   function ratio_at(self::Type{<:__class__}, data_0 = nothing, deg_0 = nothing, _...)
     table_0 = getat(header(data_0), Base.string(j"coincidence"))
     if truthy((table_0 == nothing))
-      fail(Base.string(j"the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)"))
+      fail(Base.string(j"the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)"))
     end
     ds_0 = getat(table_0, Base.string(j"deg"))
     rs_0 = getat(table_0, Base.string(j"ratio"))
@@ -11979,8 +11979,12 @@ end
     return ((getat(rs_0, k_0) * ((1.0 - f_0))) + (getat(rs_0, (k_0 + 1.0)) * f_0))
   end
   function shift_at(self::Type{<:__class__}, data_0 = nothing, deg_0 = nothing, _...)
+    return log10(Fmt, (((ratio_at(Galaxies, data_0, deg_0) * C_LIGHT(Sparc)) * rate_of(Galaxies, data_0)) / A0_DATA(Galaxies)))
+  end
+  function rate_of(self::Type{<:__class__}, data_0 = nothing, _...)
     H_0 = ((H0(Galaxies) * 1000.0) / ((KPC(Sparc) * 1000.0)))
-    return log10(Fmt, (((ratio_at(Galaxies, data_0, deg_0) * C_LIGHT(Sparc)) * H_0) / A0_DATA(Galaxies)))
+    table_0 = getat(header(data_0), Base.string(j"coincidence"))
+    return (truthy((truthy((table_0 != nothing)) && truthy((getat(table_0, Base.string(j"against")) == Base.string(j"H_Lambda"))))) ? ((H_0 * sqrt(((1.0 - OMEGA_M(Simulation)))))) : (H_0))
   end
   function frame_of(self::Type{<:__class__}, solved_0 = nothing, k_0 = nothing, _...)
     grid_0 = getat(header(solved_0), Base.string(j"grid"))
@@ -12109,7 +12113,7 @@ end
   function of(self::Type{<:__class__}, id_0 = nothing, what_0 = nothing, title_0 = nothing, _...)
     solved_0 = of(Measured, Base.string(j"", str(id_0), j".solved"))
     if truthy((solved_0 == nothing))
-      fail(Base.string(j"", str(id_0), j".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again"))
+      fail(Base.string(j"", str(id_0), j".solved is not on disk - solve the space (`npx ray measure ", str(id_0), j"`) and try again"))
     end
     ks_0 = sweep_of(Galaxies, solved_0)
     return Picture(id = id_0, what = what_0, width = 960.0, height = 720.0, frames = length(ks_0), paint = (function (played_2 = nothing, _...)
@@ -12119,10 +12123,9 @@ end
   function a0_at(self::Type{<:__class__}, deg_0 = nothing, _...)
     space_0 = of(Measured, Base.string(j"galaxy.many.solved"))
     if truthy((space_0 == nothing))
-      fail(Base.string(j"galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again"))
+      fail(Base.string(j"galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again"))
     end
-    H_0 = ((H0(Galaxies) * 1000.0) / ((KPC(Sparc) * 1000.0)))
-    return ((ratio_at(Galaxies, space_0, deg_0) * C_LIGHT(Sparc)) * H_0)
+    return ((ratio_at(Galaxies, space_0, deg_0) * C_LIGHT(Sparc)) * rate_of(Galaxies, space_0))
   end
   function curve_pick(self::Type{<:__class__})
     return pick(Galaxies, (CURVE_ROWS(Galaxies) * CURVE_COLS(Galaxies)))
@@ -12805,10 +12808,10 @@ end
     return fill_text(s_0, Base.string(j"g_baryons / 1.2e-10 m/s²"), (((bx0_0 + bx1_0)) / 2.0), (by1_0 + 34.0))
   end
   function point(self::Type{<:__class__})
-    return of(Galaxies, Base.string(j"galaxy.point"), Base.string(j"a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement"), Base.string(j"A GALAXY AS ONE SOURCE"))
+    return of(Galaxies, Base.string(j"galaxy.point"), Base.string(j"a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly"), Base.string(j"A GALAXY AS ONE BODY"))
   end
   function many(self::Type{<:__class__})
-    return of(Galaxies, Base.string(j"galaxy.many"), Base.string(j"and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin"), Base.string(j"A GALAXY AS MANY SOURCES, ONE PER STAR"))
+    return of(Galaxies, Base.string(j"galaxy.many"), Base.string(j"and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be"), Base.string(j"EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD"))
   end
 end
 
@@ -14652,7 +14655,7 @@ end
     return getat(cache(self), Base.string(j"a0"))
   end
   function boost(self::__class__, gN_0 = nothing, a0_0 = nothing, _...)
-    F_0 = fact(self, Base.string(j"F_{g}"))
+    F_0 = (let q_ = fact(self, Base.string(j"F_{g} \\aside{closing}")); q_ === nothing ? (fact(self, Base.string(j"F_{g}"))) : q_ end)
     if truthy((F_0 == nothing))
       return NaN
     end
@@ -14762,6 +14765,397 @@ end
   end
   function speed(self::Type{<:__class__}, g_0 = nothing, R_0 = nothing, _...)
     return (truthy((g_0 > 0.0)) ? (sqrt(((R_0 * g_0)))) : (NaN))
+  end
+end
+
+@class Felt <: Node begin
+  @static_field NR = 96.0
+  @static_field NMU = 40.0
+  @static_field R0 = 0.003
+  @static_field R1 = 30000.0
+  @static_field SQ = 6.0
+  @static_field KMAX = 7.0
+  @static_field NA = 120.0
+  @static_field NZ = 8.0
+  @static_field NEAR = 0.25
+  @static_field FAR = 30.0
+  @static_field HERNQUIST = 0.1
+  @static_field XS = 700.0
+  @static_field X0 = (-5.0)
+  @static_field X1 = 4.0
+  @static_field YS = 520.0
+  @static_field Y0 = (-4.0)
+  @static_field Y1 = 4.0
+  @static_field MASS = Any[(-2.5), 5.0, 61.0]
+  @static_field THICK = Any[0.1, 0.02, 0.3]
+  @static_field MIDDLE = Any[0.0, 0.2, 0.5]
+  @static_field GAS = Any[Any[0.0, 0.0], Any[0.5, 4.0], Any[0.5, 7.0], Any[0.9, 4.0], Any[0.9, 7.0]]
+  @static_field FREEDOMS = Any[Base.string(j"mass"), Base.string(j"thickness"), Base.string(j"middle"), Base.string(j"gas")]
+  function step(self::__class__)
+    return (ln(((R1(Felt) / R0(Felt)))) / NR(Felt))
+  end
+  function edge(self::__class__, i_0 = nothing, _...)
+    return (R0(Felt) * exp(((step(self) * i_0))))
+  end
+  function centre(self::__class__, i_0 = nothing, _...)
+    return (R0(Felt) * exp(((step(self) * ((i_0 + 0.5))))))
+  end
+  function sinh(self::Type{<:__class__}, x_0 = nothing, _...)
+    return (((exp(x_0) - exp(((0.0 - x_0))))) / 2.0)
+  end
+  function mu_edge(self::Type{<:__class__}, j_0 = nothing, _...)
+    return (sinh(Felt, ((SQ(Felt) * j_0) / NMU(Felt))) / sinh(Felt, SQ(Felt)))
+  end
+  function mu_centre(self::Type{<:__class__}, j_0 = nothing, _...)
+    return (((mu_edge(Felt, j_0) + mu_edge(Felt, (j_0 + 1.0)))) / 2.0)
+  end
+  @field re::List = map(rng((NR(Felt) + 1.0)), (function (i_1 = nothing, _...)
+    return edge(self, i_1)
+  end))
+  @field rc::List = map(rng(NR(Felt)), (function (i_1 = nothing, _...)
+    return centre(self, i_1)
+  end))
+  @field me::List = map(rng((NMU(Felt) + 1.0)), (function (j_1 = nothing, _...)
+    return mu_edge(Felt, j_1)
+  end))
+  @field mc::List = map(rng(NMU(Felt)), (function (j_1 = nothing, _...)
+    return mu_centre(Felt, j_1)
+  end))
+  function cells(self::__class__)
+    return (NR(Felt) * NMU(Felt))
+  end
+  function ring(self::Type{<:__class__}, R_0 = nothing, z_0 = nothing, a_0 = nothing, zs_0 = nothing, eps2_0 = nothing, _...)
+    dz_0 = (z_0 - zs_0)
+    h2_0 = ((dz_0 * dz_0) + eps2_0)
+    q2_0 = ((((a_0 + R_0)) * ((a_0 + R_0))) + h2_0)
+    q_0 = sqrt(q2_0)
+    m_0 = (((4.0 * a_0) * R_0) / q2_0)
+    d2_0 = ((((a_0 - R_0)) * ((a_0 - R_0))) + h2_0)
+    big_0 = 1.0
+    small_0 = sqrt(((1.0 - m_0)))
+    tail_0 = (0.5 * m_0)
+    twice_0 = 1.0
+    for i1 in 0:(ceil(Int, Rt.num(10.0)) - 1)
+      k_1 = Float64(i1)
+      c_1 = (((big_0 - small_0)) / 2.0)
+      mean_1 = (((big_0 + small_0)) / 2.0)
+      small_0 = sqrt(((big_0 * small_0)))
+      big_0 = mean_1
+      twice_0 = (twice_0 * 2.0)
+      tail_0 = (tail_0 + (((twice_0 * c_1) * c_1) / 2.0))
+    end
+    kk_0 = (3.141592653589793 / ((2.0 * big_0)))
+    ee_0 = (kk_0 * ((1.0 - tail_0)))
+    dk_0 = (truthy((m_0 > 0.00000001)) ? ((((ee_0 - (((1.0 - m_0)) * kk_0))) / (((2.0 * m_0) * ((1.0 - m_0)))))) : ((3.141592653589793 / 8.0)))
+    dm_0 = ((((4.0 * a_0) / q2_0)) * ((1.0 - (((2.0 * R_0) * ((a_0 + R_0))) / q2_0))))
+    return Any[(((2.0 / 3.141592653589793)) * ((((dk_0 * dm_0) / q_0) - ((kk_0 * ((a_0 + R_0))) / ((q2_0 * q_0)))))), (0.0 - ((((2.0 * dz_0) * ee_0)) / (((3.141592653589793 * q_0) * d2_0))))]
+  end
+  function rings(self::Type{<:__class__}, h_0 = nothing, _...)
+    out_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(NA(Felt))) - 1)
+      k_1 = Float64(i1)
+      e0_1 = (20.0 * (((k_1 / NA(Felt))) ^ 2.0))
+      e1_1 = (20.0 * ((((k_1 + 1.0) / NA(Felt))) ^ 2.0))
+      held_1 = ((((1.0 + e0_1)) * exp(((0.0 - e0_1)))) - (((1.0 + e1_1)) * exp(((0.0 - e1_1)))))
+      for i2 in 0:(ceil(Int, Rt.num(NZ(Felt))) - 1)
+        l_2 = Float64(i2)
+        z_2 = (0.0 - (h_0 * ln(((1.0 - (((l_2 + 0.5)) / NZ(Felt)))))))
+        push(out_0, Any[(((e0_1 + e1_1)) / 2.0), z_2, ((held_1 / NZ(Felt)) / 2.0), (e1_1 - e0_1)])
+      end
+    end
+    return out_0
+  end
+  function disc_at(self::Type{<:__class__}, rings_0 = nothing, h_0 = nothing, R_0 = nothing, z_0 = nothing, _...)
+    gr_0 = 0.0
+    gz_0 = 0.0
+    for b_1 in items(rings_0)
+      e_1 = (0.5 * max(Fmt, getat(b_1, 3.0), (h_0 / 4.0)))
+      up_1 = ring(Felt, R_0, z_0, getat(b_1, 0.0), getat(b_1, 1.0), (e_1 * e_1))
+      down_1 = ring(Felt, R_0, z_0, getat(b_1, 0.0), (0.0 - getat(b_1, 1.0)), (e_1 * e_1))
+      gr_0 = (gr_0 + (getat(b_1, 2.0) * ((getat(up_1, 0.0) + getat(down_1, 0.0)))))
+      gz_0 = (gz_0 + (getat(b_1, 2.0) * ((getat(up_1, 1.0) + getat(down_1, 1.0)))))
+    end
+    return Any[gr_0, gz_0]
+  end
+  @field unit::object = Node()
+  function unit_disc(self::__class__, h_0 = nothing, _...)
+    key_0 = Base.string(j"", str(h_0), j"")
+    if truthy((getat(unit(self), key_0) != nothing))
+      return getat(unit(self), key_0)
+    end
+    rings_0 = rings(Felt, h_0)
+    rows_0 = (NR(Felt) + KMAX(Felt))
+    gr_0 = filled((rows_0 * NMU(Felt)), 0.0)
+    gz_0 = filled((rows_0 * NMU(Felt)), 0.0)
+    plane_0 = filled(rows_0, 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(rows_0)) - 1)
+      ii_1 = Float64(i1)
+      r_1 = centre(self, (ii_1 - KMAX(Felt)))
+      for i2 in 0:(ceil(Int, Rt.num(NMU(Felt))) - 1)
+        j_2 = Float64(i2)
+        mu_2 = getat(mc(self), j_2)
+        g_2 = disc_at(Felt, rings_0, h_0, (r_1 * sqrt(((1.0 - (mu_2 * mu_2))))), (r_1 * mu_2))
+        setat!(gr_0, ((ii_1 * NMU(Felt)) + j_2), getat(g_2, 0.0))
+        setat!(gz_0, ((ii_1 * NMU(Felt)) + j_2), getat(g_2, 1.0))
+      end
+      setat!(plane_0, ii_1, getat(disc_at(Felt, rings_0, h_0, r_1, 0.0), 0.0))
+    end
+    setat!(unit(self), key_0, Any[gr_0, gz_0, plane_0])
+    return getat(unit(self), key_0)
+  end
+  function shape(self::__class__, h_0 = nothing, middle_0 = nothing, gas_0 = nothing, wider_0 = nothing, _...)
+    stars_0 = (((1.0 - gas_0)) * ((1.0 - middle_0)))
+    held_0 = (((1.0 - gas_0)) * middle_0)
+    u_0 = (truthy((truthy((stars_0 > 0.0)) || truthy((gas_0 > 0.0)))) ? (unit_disc(self, h_0)) : (nothing))
+    w_0 = exp(((step(self) * wider_0)))
+    gr_0 = filled(cells(self), 0.0)
+    gz_0 = filled(cells(self), 0.0)
+    plane_0 = filled(NR(Felt), 0.0)
+    a_0 = HERNQUIST(Felt)
+    for i1 in 0:(ceil(Int, Rt.num(NR(Felt))) - 1)
+      i_1 = Float64(i1)
+      ii_1 = (i_1 + KMAX(Felt))
+      r_1 = getat(rc(self), i_1)
+      for i2 in 0:(ceil(Int, Rt.num(NMU(Felt))) - 1)
+        j_2 = Float64(i2)
+        mu_2 = getat(mc(self), j_2)
+        c_2 = ((i_1 * NMU(Felt)) + j_2)
+        pull_2 = (held_0 / (((r_1 * ((r_1 + a_0))) * ((r_1 + a_0)))))
+        R_2 = (r_1 * sqrt(((1.0 - (mu_2 * mu_2)))))
+        setat!(gr_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 0.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * getat(getat(u_0, 0.0), ((((ii_1 - wider_0)) * NMU(Felt)) + j_2))) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - R_2)))))
+        setat!(gz_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 1.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * getat(getat(u_0, 1.0), ((((ii_1 - wider_0)) * NMU(Felt)) + j_2))) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - (r_1 * mu_2))))))
+      end
+      setat!(plane_0, i_1, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 2.0), ii_1)) + ((gas_0 * getat(getat(u_0, 2.0), (ii_1 - wider_0))) / ((w_0 * w_0))))))) - (held_0 / ((((r_1 + a_0)) * ((r_1 + a_0)))))))
+    end
+    return Any[gr_0, gz_0, plane_0]
+  end
+  @field faces::List = map(rng(cells(self)), (function (c_1 = nothing, _...)
+    return faces_of(self, c_1)
+  end))
+  function faces_of(self::__class__, c_0 = nothing, _...)
+    i_0 = floor(((c_0 / NMU(Felt))))
+    j_0 = (c_0 % NMU(Felt))
+    dmu_0 = (getat(me(self), (j_0 + 1.0)) - getat(me(self), j_0))
+    dr_0 = (getat(re(self), (i_0 + 1.0)) - getat(re(self), i_0))
+    out__0 = (truthy(((i_0 + 1.0) < NR(Felt))) ? ((((((2.0 * 3.141592653589793) * getat(re(self), (i_0 + 1.0))) * getat(re(self), (i_0 + 1.0))) * dmu_0) / ((getat(rc(self), (i_0 + 1.0)) - getat(rc(self), i_0))))) : ((((((2.0 * 3.141592653589793) * getat(re(self), (i_0 + 1.0))) * getat(re(self), (i_0 + 1.0))) * dmu_0) / ((getat(re(self), (i_0 + 1.0)) - getat(rc(self), i_0))))))
+    in__0 = (truthy((i_0 > 0.0)) ? ((((((2.0 * 3.141592653589793) * getat(re(self), i_0)) * getat(re(self), i_0)) * dmu_0) / ((getat(rc(self), i_0) - getat(rc(self), (i_0 - 1.0)))))) : (0.0))
+    up_0 = (truthy(((j_0 + 1.0) < NMU(Felt))) ? (((((2.0 * 3.141592653589793) * ((1.0 - (getat(me(self), (j_0 + 1.0)) * getat(me(self), (j_0 + 1.0)))))) * dr_0) / ((getat(mc(self), (j_0 + 1.0)) - getat(mc(self), j_0))))) : (0.0))
+    down_0 = (truthy((j_0 > 0.0)) ? (((((2.0 * 3.141592653589793) * ((1.0 - (getat(me(self), j_0) * getat(me(self), j_0))))) * dr_0) / ((getat(mc(self), j_0) - getat(mc(self), (j_0 - 1.0)))))) : (0.0))
+    return Any[out__0, in__0, up_0, down_0]
+  end
+  function width(self::__class__)
+    return ((2.0 * NMU(Felt)) + 1.0)
+  end
+  function at_band(self::__class__, k_0 = nothing, l_0 = nothing, _...)
+    return ((k_0 * width(self)) + (((l_0 - k_0) + NMU(Felt))))
+  end
+  @field band::List = factored(self)
+  function factored(self::__class__)
+    n_0 = cells(self)
+    B_0 = NMU(Felt)
+    W_0 = width(self)
+    m_0 = filled((n_0 * W_0), 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      k_1 = Float64(i1)
+      i_1 = floor(((k_1 / B_0)))
+      j_1 = (k_1 % B_0)
+      f_1 = getat(faces(self), k_1)
+      setat!(m_0, ((k_1 * W_0) + B_0), (((getat(f_1, 0.0) + getat(f_1, 1.0)) + getat(f_1, 2.0)) + getat(f_1, 3.0)))
+      if truthy(((i_1 + 1.0) < NR(Felt)))
+        setat!(m_0, (((k_1 * W_0) + B_0) + B_0), (0.0 - getat(f_1, 0.0)))
+      end
+      if truthy((i_1 > 0.0))
+        setat!(m_0, (k_1 * W_0), (0.0 - getat(f_1, 1.0)))
+      end
+      if truthy(((j_1 + 1.0) < B_0))
+        setat!(m_0, (((k_1 * W_0) + B_0) + 1.0), (0.0 - getat(f_1, 2.0)))
+      end
+      if truthy((j_1 > 0.0))
+        setat!(m_0, (((k_1 * W_0) + B_0) - 1.0), (0.0 - getat(f_1, 3.0)))
+      end
+    end
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      k_1 = Float64(i1)
+      p_1 = getat(m_0, ((k_1 * W_0) + B_0))
+      last_1 = min(Fmt, (n_0 - 1.0), (k_1 + B_0))
+      l_1 = (k_1 + 1.0)
+      while truthy((l_1 <= last_1))
+        f_1 = (getat(m_0, ((l_1 * W_0) + (((k_1 - l_1) + B_0)))) / p_1)
+        if truthy((f_1 != 0.0))
+          setat!(m_0, ((l_1 * W_0) + (((k_1 - l_1) + B_0))), f_1)
+          q_1 = (k_1 + 1.0)
+          while truthy((q_1 <= last_1))
+            setat!(m_0, ((l_1 * W_0) + (((q_1 - l_1) + B_0))), (getat(m_0, ((l_1 * W_0) + (((q_1 - l_1) + B_0)))) - (f_1 * getat(m_0, ((k_1 * W_0) + (((q_1 - k_1) + B_0)))))))
+            q_1 = (q_1 + 1.0)
+          end
+        end
+        l_1 = (l_1 + 1.0)
+      end
+    end
+    return m_0
+  end
+  function solve_band(self::__class__, b_0 = nothing, _...)
+    n_0 = cells(self)
+    B_0 = NMU(Felt)
+    W_0 = width(self)
+    m_0 = band(self)
+    x_0 = map(b_0, (function (v_2 = nothing, _...)
+      return v_2
+    end))
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      k_1 = Float64(i1)
+      last_1 = min(Fmt, (n_0 - 1.0), (k_1 + B_0))
+      l_1 = (k_1 + 1.0)
+      while truthy((l_1 <= last_1))
+        setat!(x_0, l_1, (getat(x_0, l_1) - (getat(m_0, ((l_1 * W_0) + (((k_1 - l_1) + B_0)))) * getat(x_0, k_1))))
+        l_1 = (l_1 + 1.0)
+      end
+    end
+    back_0 = (n_0 - 1.0)
+    while truthy((back_0 >= 0.0))
+      left_0 = getat(x_0, back_0)
+      last_0 = min(Fmt, (n_0 - 1.0), (back_0 + B_0))
+      q_0 = (back_0 + 1.0)
+      while truthy((q_0 <= last_0))
+        left_0 = (left_0 - (getat(m_0, ((back_0 * W_0) + (((q_0 - back_0) + B_0)))) * getat(x_0, q_0)))
+        q_0 = (q_0 + 1.0)
+      end
+      setat!(x_0, back_0, (left_0 / getat(m_0, ((back_0 * W_0) + B_0))))
+      back_0 = (back_0 - 1.0)
+    end
+    return x_0
+  end
+  function over(self::Type{<:__class__}, gN_0 = nothing, _...)
+    return (truthy((gN_0 > 0.0)) ? ((0.5 + sqrt(((0.25 + (1.0 / gN_0)))))) : (1.0))
+  end
+  function felt(self::__class__, shape_0 = nothing, s_0 = nothing, _...)
+    n_0 = cells(self)
+    B_0 = NMU(Felt)
+    wr_0 = filled(n_0, 0.0)
+    wm_0 = filled(n_0, 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      c_1 = Float64(i1)
+      j_1 = (c_1 % B_0)
+      gr_1 = (s_0 * getat(getat(shape_0, 0.0), c_1))
+      gz_1 = (s_0 * getat(getat(shape_0, 1.0), c_1))
+      f_1 = (over(Felt, hypot(Fmt, gr_1, gz_1)) - 1.0)
+      mu_1 = getat(mc(self), j_1)
+      st_1 = sqrt(((1.0 - (mu_1 * mu_1))))
+      setat!(wr_0, c_1, (f_1 * (((gr_1 * st_1) + (gz_1 * mu_1)))))
+      setat!(wm_0, c_1, (f_1 * (((gz_1 * st_1) - (gr_1 * mu_1)))))
+    end
+    rhs_0 = filled(n_0, 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      c_1 = Float64(i1)
+      i_1 = floor(((c_1 / B_0)))
+      j_1 = (c_1 % B_0)
+      dmu_1 = (getat(me(self), (j_1 + 1.0)) - getat(me(self), j_1))
+      dr_1 = (getat(re(self), (i_1 + 1.0)) - getat(re(self), i_1))
+      fo_1 = (truthy(((i_1 + 1.0) < NR(Felt))) ? ((((getat(wr_0, c_1) + getat(wr_0, (c_1 + B_0)))) / 2.0)) : (getat(wr_0, c_1)))
+      fi_1 = (truthy((i_1 > 0.0)) ? ((((getat(wr_0, (c_1 - B_0)) + getat(wr_0, c_1))) / 2.0)) : (getat(wr_0, c_1)))
+      up_1 = (truthy(((j_1 + 1.0) < B_0)) ? ((((getat(wm_0, c_1) + getat(wm_0, (c_1 + 1.0)))) / 2.0)) : (0.0))
+      down_1 = (truthy((j_1 > 0.0)) ? ((((getat(wm_0, (c_1 - 1.0)) + getat(wm_0, c_1))) / 2.0)) : (0.0))
+      made_1 = (((((((fo_1 * 2.0) * 3.141592653589793) * getat(re(self), (i_1 + 1.0))) * getat(re(self), (i_1 + 1.0))) * dmu_1) + ((((up_1 * 2.0) * 3.141592653589793) * ((1.0 - (getat(me(self), (j_1 + 1.0)) * getat(me(self), (j_1 + 1.0)))))) * dr_1)) - ((((down_1 * 2.0) * 3.141592653589793) * ((1.0 - (getat(me(self), j_1) * getat(me(self), j_1))))) * dr_1))
+      setat!(rhs_0, c_1, (truthy((i_1 > 0.0)) ? ((made_1 - (((((fi_1 * 2.0) * 3.141592653589793) * getat(re(self), i_1)) * getat(re(self), i_1)) * dmu_1))) : (made_1)))
+    end
+    psi_0 = solve_band(self, rhs_0)
+    out_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(NR(Felt))) - 1)
+      i_1 = Float64(i1)
+      r_1 = getat(rc(self), i_1)
+      if truthy((truthy((truthy((truthy((i_1 > 0.0)) && truthy(((i_1 + 1.0) < NR(Felt))))) && truthy((r_1 >= NEAR(Felt))))) && truthy((r_1 <= FAR(Felt)))))
+        made_1 = (0.0 - (((getat(psi_0, (((i_1 + 1.0)) * B_0)) - getat(psi_0, (((i_1 - 1.0)) * B_0)))) / ((getat(rc(self), (i_1 + 1.0)) - getat(rc(self), (i_1 - 1.0))))))
+        gN_1 = (0.0 - (s_0 * getat(getat(shape_0, 2.0), i_1)))
+        push(out_0, Any[r_1, gN_1, (gN_1 - made_1)])
+      end
+    end
+    return out_0
+  end
+  function off_law(self::__class__, shape_0 = nothing, s_0 = nothing, _...)
+    return reduce(felt(self, shape_0, s_0), 0.0, (function (most_2 = nothing, q_2 = nothing, _...)
+      return max(Fmt, most_2, abs(log10(Fmt, (getat(q_2, 2.0) / ((getat(q_2, 1.0) * over(Felt, getat(q_2, 1.0))))))))
+    end))
+  end
+  function dx(self::Type{<:__class__})
+    return (((X1(Felt) - X0(Felt))) / (XS(Felt) - 1.0))
+  end
+  function dy(self::Type{<:__class__})
+    return (((Y1(Felt) - Y0(Felt))) / (YS(Felt) - 1.0))
+  end
+  function bits_in(self::Type{<:__class__}, mask_0 = nothing, _...)
+    return length(filter(rng(4.0), (function (k_2 = nothing, _...)
+      return (((floor(((mask_0 / (2.0 ^ k_2)))) % 2.0)) == 1.0)
+    end)))
+  end
+  function uses(self::Type{<:__class__}, mi_0 = nothing, ti_0 = nothing, ci_0 = nothing, gi_0 = nothing, _...)
+    held_0 = round(((((0.0 - getat(MASS(Felt), 0.0))) / ((((getat(MASS(Felt), 1.0) - getat(MASS(Felt), 0.0))) / (getat(MASS(Felt), 2.0) - 1.0))))))
+    return (((((truthy((mi_0 != held_0)) ? (1.0) : (0.0))) + ((truthy((ti_0 != 0.0)) ? (2.0) : (0.0)))) + ((truthy((ci_0 != 0.0)) ? (4.0) : (0.0)))) + ((truthy((gi_0 != 0.0)) ? (8.0) : (0.0))))
+  end
+  function mass_at(self::Type{<:__class__}, mi_0 = nothing, _...)
+    return (getat(MASS(Felt), 0.0) + ((((getat(MASS(Felt), 1.0) - getat(MASS(Felt), 0.0))) * mi_0) / (getat(MASS(Felt), 2.0) - 1.0)))
+  end
+  function space(self::__class__, how_0 = nothing, _...)
+    p_0 = filled((XS(Felt) * YS(Felt)), 0.0)
+    by_0 = filled((XS(Felt) * YS(Felt)), (-1.0))
+    needs_0 = filled((XS(Felt) * YS(Felt)), 99.0)
+    lay_0 = (function (track_1 = nothing, mask_1 = nothing, dex_1 = nothing, _...)
+      for i2 in 0:(ceil(Int, Rt.num((length(track_1) - 1.0))) - 1)
+        k_2 = Float64(i2)
+        xa_2 = log10(Fmt, getat(getat(track_1, k_2), 1.0))
+        xb_2 = log10(Fmt, getat(getat(track_1, (k_2 + 1.0)), 1.0))
+        ya_2 = log10(Fmt, getat(getat(track_1, k_2), 2.0))
+        yb_2 = log10(Fmt, getat(getat(track_1, (k_2 + 1.0)), 2.0))
+        if truthy((truthy((truthy((truthy(finite(Fmt, xa_2)) && truthy(finite(Fmt, xb_2)))) && truthy(finite(Fmt, ya_2)))) && truthy(finite(Fmt, yb_2))))
+          st_2 = max(Fmt, 1.0, (floor((max(Fmt, (abs(((xb_2 - xa_2))) / dx(Felt)), (abs(((yb_2 - ya_2))) / dy(Felt))))) + 1.0))
+          for i3 in 0:(ceil(Int, Rt.num(st_2)) - 1)
+            t_3 = Float64(i3)
+            f_3 = (((t_3 + 0.5)) / st_2)
+            gx_3 = round((((((xa_2 + (f_3 * ((xb_2 - xa_2)))) - X0(Felt))) / dx(Felt))))
+            gy_3 = round((((((ya_2 + (f_3 * ((yb_2 - ya_2)))) - Y0(Felt))) / dy(Felt))))
+            if !truthy((truthy((truthy((truthy((gx_3 < 0.0)) || truthy((gy_3 < 0.0)))) || truthy((gx_3 >= XS(Felt))))) || truthy((gy_3 >= YS(Felt)))))
+              c_3 = ((gy_3 * XS(Felt)) + gx_3)
+              setat!(p_0, c_3, (getat(p_0, c_3) + (1.0 / st_2)))
+              setat!(needs_0, c_3, min(Fmt, getat(needs_0, c_3), dex_1))
+              was_3 = getat(by_0, c_3)
+              fewer_3 = (truthy((truthy((was_3 < 0.0)) || truthy((bits_in(Felt, mask_1) < bits_in(Felt, was_3))))) || truthy(((truthy((bits_in(Felt, mask_1) == bits_in(Felt, was_3))) && truthy((mask_1 < was_3))))))
+              if truthy(fewer_3)
+                setat!(by_0, c_3, mask_1)
+              end
+            end
+          end
+        end
+      end
+    end)
+    gathered_0 = (how_0 == Base.string(j"gathered"))
+    thick_0 = (truthy(gathered_0) ? (Any[getat(THICK(Felt), 0.0)]) : (THICK(Felt)))
+    middles_0 = (truthy(gathered_0) ? (Any[1.0]) : (MIDDLE(Felt)))
+    gases_0 = (truthy(gathered_0) ? (Any[getat(GAS(Felt), 0.0)]) : (GAS(Felt)))
+    tracks_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(length(thick_0))) - 1)
+      ti_1 = Float64(i1)
+      for i2 in 0:(ceil(Int, Rt.num(length(middles_0))) - 1)
+        ci_2 = Float64(i2)
+        for i3 in 0:(ceil(Int, Rt.num(length(gases_0))) - 1)
+          gi_3 = Float64(i3)
+          sh_3 = shape(self, getat(thick_0, ti_1), getat(middles_0, ci_2), getat(getat(gases_0, gi_3), 0.0), getat(getat(gases_0, gi_3), 1.0))
+          for i4 in 0:(ceil(Int, Rt.num(getat(MASS(Felt), 2.0))) - 1)
+            mi_4 = Float64(i4)
+            dex_4 = mass_at(Felt, mi_4)
+            lay_0(felt(self, sh_3, (10.0 ^ dex_4)), uses(Felt, mi_4, ti_1, ci_2, gi_3), dex_4)
+            tracks_0 = (tracks_0 + 1.0)
+          end
+        end
+      end
+    end
+    out_0 = Node()
+    setat!(out_0, Base.string(j"p"), p_0)
+    setat!(out_0, Base.string(j"by"), map(by_0, (function (v_2 = nothing, _...)
+      return (truthy((v_2 < 0.0)) ? (0.0) : (v_2))
+    end)))
+    setat!(out_0, Base.string(j"needs"), needs_0)
+    setat!(out_0, Base.string(j"tracks"), tracks_0)
+    setat!(out_0, Base.string(j"freedoms"), (truthy(gathered_0) ? (Any[Base.string(j"mass")]) : (FREEDOMS(Felt))))
+    return out_0
   end
 end
 
@@ -15228,22 +15622,90 @@ end
     end
     return save(Measured, Base.string(j"visuals"), id_0, id_0, names_0, columns_0, extra_0)
   end
-  function density(self::Type{<:__class__}, model_0 = nothing, id_0 = nothing, how_0 = nothing, _...)
-    sweep_0 = Sweep(model = model_0, how = how_0)
-    if truthy((truthy((truthy((arrival(sweep_0) == nothing)) || truthy((felt(sweep_0) == nothing)))) || truthy((rho_at(sweep_0) == nothing))))
-      fail(Base.string(j"", str(id_0), j": nothing derived to integrate"))
-    end
-    lay_0 = (function (vary_1 = nothing, _...)
-      got_1 = tracks(sweep_0, vary_1)
-      return rasterise(sweep_0, getat(got_1, Base.string(j"xs")), getat(got_1, Base.string(j"ys")), getat(got_1, Base.string(j"tracks")))
-    end)
-    grid_0 = lay_0(order(sweep_0))
-    without_0 = map(order(sweep_0), (function (held_2 = nothing, _...)
-      return lay_0(filter(order(sweep_0), (function (n_4 = nothing, _...)
-        return (n_4 != held_2)
-      end)))
+  function DEGS(self::Type{<:__class__})
+    return map(rng(73.0), (function (k_2 = nothing, _...)
+      return (4.0 + (0.5 * k_2))
     end))
-    return save(sweep_0, id_0, grid_0, needs(sweep_0, grid_0, without_0))
+  end
+  function density(self::Type{<:__class__}, model_0 = nothing, id_0 = nothing, how_0 = nothing, _...)
+    felt_0 = Felt()
+    got_0 = space(felt_0, how_0)
+    p_0 = getat(got_0, Base.string(j"p"))
+    by_0 = getat(got_0, Base.string(j"by"))
+    needs_0 = getat(got_0, Base.string(j"needs"))
+    cells_0 = rng((XS(Felt) * YS(Felt)))
+    arrives_0 = Node()
+    setat!(arrives_0, Base.string(j"from"), X0(Felt))
+    setat!(arrives_0, Base.string(j"to"), X1(Felt))
+    setat!(arrives_0, Base.string(j"n"), XS(Felt))
+    felt_axis_0 = Node()
+    setat!(felt_axis_0, Base.string(j"from"), Y0(Felt))
+    setat!(felt_axis_0, Base.string(j"to"), Y1(Felt))
+    setat!(felt_axis_0, Base.string(j"n"), YS(Felt))
+    grid_0 = Node()
+    setat!(grid_0, Base.string(j"arrives"), arrives_0)
+    setat!(grid_0, Base.string(j"felt"), felt_axis_0)
+    columns_0 = Node()
+    setat!(columns_0, Base.string(j"x"), map(cells_0, (function (i_2 = nothing, _...)
+      return (X0(Felt) + (((i_2 % XS(Felt))) * dx(Felt)))
+    end)))
+    setat!(columns_0, Base.string(j"y"), map(cells_0, (function (i_2 = nothing, _...)
+      return (Y0(Felt) + (floor(((i_2 / XS(Felt)))) * dy(Felt)))
+    end)))
+    setat!(columns_0, Base.string(j"p"), p_0)
+    setat!(columns_0, Base.string(j"by"), by_0)
+    extra_0 = Node()
+    setat!(extra_0, Base.string(j"a0"), a0_lattice(model_0))
+    setat!(extra_0, Base.string(j"arrangement"), how_0)
+    setat!(extra_0, Base.string(j"grid"), grid_0)
+    setat!(extra_0, Base.string(j"freedoms"), getat(got_0, Base.string(j"freedoms")))
+    setat!(extra_0, Base.string(j"tracks"), getat(got_0, Base.string(j"tracks")))
+    setat!(extra_0, Base.string(j"stages"), Any[Base.string(j"the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2")])
+    setat!(extra_0, Base.string(j"about"), Base.string(j"how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)"))
+    save(Measure, id_0, Any[Base.string(j"x"), Base.string(j"y"), Base.string(j"p"), Base.string(j"by")], columns_0, extra_0)
+    reached_0 = filter(cells_0, (function (i_2 = nothing, _...)
+      return (getat(p_0, i_2) > 0.0)
+    end))
+    degs_0 = DEGS(Measure)
+    ratios_0 = map(degs_0, (function (d_2 = nothing, _...)
+      return value_of(model_0, Base.string(j"\\frac{a_{0}}{cH}"), settled(model_0, d_2))
+    end))
+    a0s_0 = map(degs_0, (function (d_2 = nothing, _...)
+      return value_of(model_0, Base.string(j"a_{0}"), settled(model_0, d_2))
+    end))
+    sparse_0 = Node()
+    for n_1 in items(Any[Base.string(j"deg"), Base.string(j"cell"), Base.string(j"p"), Base.string(j"by"), Base.string(j"needs"), Base.string(j"size")])
+      setat!(sparse_0, n_1, Any[])
+    end
+    starts_0 = Any[]
+    for d_1 in items(degs_0)
+      push(starts_0, length(getat(sparse_0, Base.string(j"cell"))))
+      for i_2 in items(reached_0)
+        push(getat(sparse_0, Base.string(j"deg")), d_1)
+        push(getat(sparse_0, Base.string(j"cell")), i_2)
+        push(getat(sparse_0, Base.string(j"p")), getat(p_0, i_2))
+        push(getat(sparse_0, Base.string(j"by")), getat(by_0, i_2))
+        push(getat(sparse_0, Base.string(j"needs")), getat(needs_0, i_2))
+        push(getat(sparse_0, Base.string(j"size")), 99.0)
+      end
+    end
+    table_0 = Node()
+    setat!(table_0, Base.string(j"deg"), degs_0)
+    setat!(table_0, Base.string(j"ratio"), ratios_0)
+    setat!(table_0, Base.string(j"against"), Base.string(j"H_Lambda"))
+    solved_0 = Node()
+    setat!(solved_0, Base.string(j"what"), Base.string(j"the possibility space of a galaxy (", str(how_0), j"), solved over its whole field on every lattice"))
+    setat!(solved_0, Base.string(j"arrangement"), how_0)
+    setat!(solved_0, Base.string(j"degs"), degs_0)
+    setat!(solved_0, Base.string(j"starts"), starts_0)
+    setat!(solved_0, Base.string(j"a0"), a0s_0)
+    setat!(solved_0, Base.string(j"coincidence"), table_0)
+    setat!(solved_0, Base.string(j"theory_deg"), DEG(lattice(theory(model_0))))
+    setat!(solved_0, Base.string(j"grid"), grid_0)
+    setat!(solved_0, Base.string(j"freedoms"), getat(got_0, Base.string(j"freedoms")))
+    setat!(solved_0, Base.string(j"stages"), getat(extra_0, Base.string(j"stages")))
+    setat!(solved_0, Base.string(j"about"), Base.string(j"per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)"))
+    return save(Measure, Base.string(j"", str(id_0), j".solved"), Any[Base.string(j"deg"), Base.string(j"cell"), Base.string(j"p"), Base.string(j"by"), Base.string(j"needs"), Base.string(j"size")], sparse_0, solved_0)
   end
   function law(self::Type{<:__class__}, model_0 = nothing, _...)
     a0_0 = a0_lattice(model_0)

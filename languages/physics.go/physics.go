@@ -22684,9 +22684,9 @@ func init() {
     c.StaticField("YMIN", func(self any) any { return Neg(3.0) })
     c.StaticField("YMAX", func(self any) any { return 3.0 })
     c.StaticField("SEVERAL", func(self any) any { return Lst(86.0, 168.0, 235.0) })
-    c.StaticField("FREEDOMS", func(self any) any { return Lst("mass", "face", "moving", "spread") })
+    c.StaticField("FREEDOMS", func(self any) any { return Lst("mass", "thickness", "middle", "gas") })
     c.StaticField("TINTS", func(self any) any { return Lst(Lst(232.0, 193.0, 90.0), Lst(90.0, 212.0, 193.0), Lst(240.0, 122.0, 178.0), Lst(169.0, 139.0, 224.0)) })
-    c.StaticField("NAMES_NOW", func(self any) any { return Lst("mass", "face", "moving", "spread") })
+    c.StaticField("NAMES_NOW", func(self any) any { return Lst("mass", "thickness", "middle", "gas") })
     c.StaticField("LEVELS", func(self any) any { return Lst(Neg(4.0), Neg(2.0), 0.0, 1.0, 2.0, 3.0) })
     c.StaticField("WIDTHS", func(self any) any { return Lst(0.0, 2.0) })
     c.StaticField("DISK_ID", func(self any) any { return "law.disk" })
@@ -23982,7 +23982,7 @@ func init() {
       table_0 = Get(Get(data_0, "header"), Str("coincidence"))
       _ = table_0
       if Truthy(Eq(table_0, nil)) {
-        Invoke(fail, []any{ "the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)" })
+        Invoke(fail, []any{ "the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)" })
       }
       var ds_0 any
       ds_0 = Get(table_0, Str("deg"))
@@ -24016,11 +24016,21 @@ func init() {
     })
     c.Static("shift_at", func(self any, a1 []any) any {
       var data_0 any = Arg(a1, 0); _ = data_0; var deg_0 any = Arg(a1, 1); _ = deg_0;
+      if true {
+        return Call(K("Fmt"), "log10", []any{ Div(Mul(Mul(Call(K("Galaxies"), "ratio_at", []any{ data_0, deg_0 }), Get(K("Sparc"), "C_LIGHT")), Call(K("Galaxies"), "rate_of", []any{ data_0 })), Get(K("Galaxies"), "A0_DATA")) })
+      }
+      return nil
+    })
+    c.Static("rate_of", func(self any, a1 []any) any {
+      var data_0 any = Arg(a1, 0); _ = data_0;
       var H_0 any
       H_0 = Div(Mul(Get(K("Galaxies"), "H0"), 1000.0), (Mul(Get(K("Sparc"), "KPC"), 1000.0)))
       _ = H_0
+      var table_0 any
+      table_0 = Get(Get(data_0, "header"), Str("coincidence"))
+      _ = table_0
       if true {
-        return Call(K("Fmt"), "log10", []any{ Div(Mul(Mul(Call(K("Galaxies"), "ratio_at", []any{ data_0, deg_0 }), Get(K("Sparc"), "C_LIGHT")), H_0), Get(K("Galaxies"), "A0_DATA")) })
+        return Tern(Truthy((Truthy(!Eq(table_0, nil)) && Truthy(Eq(Get(table_0, Str("against")), "H_Lambda")))), func() any { return Mul(H_0, M_sqrt((Sub(1.0, Get(K("Simulation"), "OMEGA_M"))))) }, func() any { return H_0 })
       }
       return nil
     })
@@ -24293,7 +24303,7 @@ func init() {
       solved_0 = Call(K("Measured"), "of", []any{ "" + Str(id_0) + ".solved" })
       _ = solved_0
       if Truthy(Eq(solved_0, nil)) {
-        Invoke(fail, []any{ "" + Str(id_0) + ".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" })
+        Invoke(fail, []any{ "" + Str(id_0) + ".solved is not on disk - solve the space (`npx ray measure " + Str(id_0) + "`) and try again" })
       }
       var ks_0 any
       ks_0 = Call(K("Galaxies"), "sweep_of", []any{ solved_0 })
@@ -24315,13 +24325,10 @@ func init() {
       space_0 = Call(K("Measured"), "of", []any{ "galaxy.many.solved" })
       _ = space_0
       if Truthy(Eq(space_0, nil)) {
-        Invoke(fail, []any{ "galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" })
+        Invoke(fail, []any{ "galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again" })
       }
-      var H_0 any
-      H_0 = Div(Mul(Get(K("Galaxies"), "H0"), 1000.0), (Mul(Get(K("Sparc"), "KPC"), 1000.0)))
-      _ = H_0
       if true {
-        return Mul(Mul(Call(K("Galaxies"), "ratio_at", []any{ space_0, deg_0 }), Get(K("Sparc"), "C_LIGHT")), H_0)
+        return Mul(Mul(Call(K("Galaxies"), "ratio_at", []any{ space_0, deg_0 }), Get(K("Sparc"), "C_LIGHT")), Call(K("Galaxies"), "rate_of", []any{ space_0 }))
       }
       return nil
     })
@@ -25639,13 +25646,13 @@ func init() {
     })
     c.Static("point", func(self any, a1 []any) any {
       if true {
-        return Call(K("Galaxies"), "of", []any{ "galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE" })
+        return Call(K("Galaxies"), "of", []any{ "galaxy.point", "a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly", "A GALAXY AS ONE BODY" })
       }
       return nil
     })
     c.Static("many", func(self any, a1 []any) any {
       if true {
-        return Call(K("Galaxies"), "of", []any{ "galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR" })
+        return Call(K("Galaxies"), "of", []any{ "galaxy.many", "and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be", "EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD" })
       }
       return nil
     })
@@ -29425,7 +29432,7 @@ func init() {
     c.Method("boost", func(self any, a1 []any) any {
       var gN_0 any = Arg(a1, 0); _ = gN_0; var a0_0 any = Arg(a1, 1); _ = a0_0;
       var F_0 any
-      F_0 = Call(self, "fact", []any{ "F_{g}" })
+      F_0 = OrElse(Call(self, "fact", []any{ "F_{g} \\aside{closing}" }), func() any { return Call(self, "fact", []any{ "F_{g}" }) })
       _ = F_0
       if Truthy(Eq(F_0, nil)) {
         if true {
@@ -29619,6 +29626,818 @@ func init() {
       var g_0 any = Arg(a1, 0); _ = g_0; var R_0 any = Arg(a1, 1); _ = R_0;
       if true {
         return Tern(Truthy(Gt(g_0, 0.0)), func() any { return M_sqrt((Mul(R_0, g_0))) }, func() any { return math.NaN() })
+      }
+      return nil
+    })
+  })
+}
+
+var Felt *Cls
+
+func init() {
+  Felt = cls("Felt", Node, func(c *Cls) {
+    c.StaticField("NR", func(self any) any { return 96.0 })
+    c.StaticField("NMU", func(self any) any { return 40.0 })
+    c.StaticField("R0", func(self any) any { return 0.003 })
+    c.StaticField("R1", func(self any) any { return 30000.0 })
+    c.StaticField("SQ", func(self any) any { return 6.0 })
+    c.StaticField("KMAX", func(self any) any { return 7.0 })
+    c.StaticField("NA", func(self any) any { return 120.0 })
+    c.StaticField("NZ", func(self any) any { return 8.0 })
+    c.StaticField("NEAR", func(self any) any { return 0.25 })
+    c.StaticField("FAR", func(self any) any { return 30.0 })
+    c.StaticField("HERNQUIST", func(self any) any { return 0.1 })
+    c.StaticField("XS", func(self any) any { return 700.0 })
+    c.StaticField("X0", func(self any) any { return Neg(5.0) })
+    c.StaticField("X1", func(self any) any { return 4.0 })
+    c.StaticField("YS", func(self any) any { return 520.0 })
+    c.StaticField("Y0", func(self any) any { return Neg(4.0) })
+    c.StaticField("Y1", func(self any) any { return 4.0 })
+    c.StaticField("MASS", func(self any) any { return Lst(Neg(2.5), 5.0, 61.0) })
+    c.StaticField("THICK", func(self any) any { return Lst(0.1, 0.02, 0.3) })
+    c.StaticField("MIDDLE", func(self any) any { return Lst(0.0, 0.2, 0.5) })
+    c.StaticField("GAS", func(self any) any { return Lst(Lst(0.0, 0.0), Lst(0.5, 4.0), Lst(0.5, 7.0), Lst(0.9, 4.0), Lst(0.9, 7.0)) })
+    c.StaticField("FREEDOMS", func(self any) any { return Lst("mass", "thickness", "middle", "gas") })
+    c.Getter("step", func(self any, a1 []any) any {
+      if true {
+        return Div(M_ln((Div(Get(K("Felt"), "R1"), Get(K("Felt"), "R0")))), Get(K("Felt"), "NR"))
+      }
+      return nil
+    })
+    c.Method("edge", func(self any, a1 []any) any {
+      var i_0 any = Arg(a1, 0); _ = i_0;
+      if true {
+        return Mul(Get(K("Felt"), "R0"), M_exp((Mul(Get(self, "step"), i_0))))
+      }
+      return nil
+    })
+    c.Method("centre", func(self any, a1 []any) any {
+      var i_0 any = Arg(a1, 0); _ = i_0;
+      if true {
+        return Mul(Get(K("Felt"), "R0"), M_exp((Mul(Get(self, "step"), (Add(i_0, 0.5))))))
+      }
+      return nil
+    })
+    c.Static("sinh", func(self any, a1 []any) any {
+      var x_0 any = Arg(a1, 0); _ = x_0;
+      if true {
+        return Div((Sub(M_exp(x_0), M_exp((Sub(0.0, x_0))))), 2.0)
+      }
+      return nil
+    })
+    c.Static("mu_edge", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0;
+      if true {
+        return Div(Call(K("Felt"), "sinh", []any{ Div(Mul(Get(K("Felt"), "SQ"), j_0), Get(K("Felt"), "NMU")) }), Call(K("Felt"), "sinh", []any{ Get(K("Felt"), "SQ") }))
+      }
+      return nil
+    })
+    c.Static("mu_centre", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0;
+      if true {
+        return Div((Add(Call(K("Felt"), "mu_edge", []any{ j_0 }), Call(K("Felt"), "mu_edge", []any{ Add(j_0, 1.0) }))), 2.0)
+      }
+      return nil
+    })
+    c.Field("re", func(self any) any { return M_map(Rng(Add(Get(K("Felt"), "NR"), 1.0)), Fn(func(a2 []any) any {
+      var i_1 any = Arg(a2, 0); _ = i_1;
+      if true {
+        return Call(self, "edge", []any{ i_1 })
+      }
+      return nil
+    })) })
+    c.Field("rc", func(self any) any { return M_map(Rng(Get(K("Felt"), "NR")), Fn(func(a2 []any) any {
+      var i_1 any = Arg(a2, 0); _ = i_1;
+      if true {
+        return Call(self, "centre", []any{ i_1 })
+      }
+      return nil
+    })) })
+    c.Field("me", func(self any) any { return M_map(Rng(Add(Get(K("Felt"), "NMU"), 1.0)), Fn(func(a2 []any) any {
+      var j_1 any = Arg(a2, 0); _ = j_1;
+      if true {
+        return Call(K("Felt"), "mu_edge", []any{ j_1 })
+      }
+      return nil
+    })) })
+    c.Field("mc", func(self any) any { return M_map(Rng(Get(K("Felt"), "NMU")), Fn(func(a2 []any) any {
+      var j_1 any = Arg(a2, 0); _ = j_1;
+      if true {
+        return Call(K("Felt"), "mu_centre", []any{ j_1 })
+      }
+      return nil
+    })) })
+    c.Getter("cells", func(self any, a1 []any) any {
+      if true {
+        return Mul(Get(K("Felt"), "NR"), Get(K("Felt"), "NMU"))
+      }
+      return nil
+    })
+    c.Static("ring", func(self any, a1 []any) any {
+      var R_0 any = Arg(a1, 0); _ = R_0; var z_0 any = Arg(a1, 1); _ = z_0; var a_0 any = Arg(a1, 2); _ = a_0; var zs_0 any = Arg(a1, 3); _ = zs_0; var eps2_0 any = Arg(a1, 4); _ = eps2_0;
+      var dz_0 any
+      dz_0 = Sub(z_0, zs_0)
+      _ = dz_0
+      var h2_0 any
+      h2_0 = Add(Mul(dz_0, dz_0), eps2_0)
+      _ = h2_0
+      var q2_0 any
+      q2_0 = Add(Mul((Add(a_0, R_0)), (Add(a_0, R_0))), h2_0)
+      _ = q2_0
+      var q_0 any
+      q_0 = M_sqrt(q2_0)
+      _ = q_0
+      var m_0 any
+      m_0 = Div(Mul(Mul(4.0, a_0), R_0), q2_0)
+      _ = m_0
+      var d2_0 any
+      d2_0 = Add(Mul((Sub(a_0, R_0)), (Sub(a_0, R_0))), h2_0)
+      _ = d2_0
+      var big_0 any
+      big_0 = 1.0
+      _ = big_0
+      var small_0 any
+      small_0 = M_sqrt((Sub(1.0, m_0)))
+      _ = small_0
+      var tail_0 any
+      tail_0 = Mul(0.5, m_0)
+      _ = tail_0
+      var twice_0 any
+      twice_0 = 1.0
+      _ = twice_0
+      for i1 := 0.0; i1 < Num(10.0); i1++ {
+        var k_1 any = Box(i1)
+        _ = k_1
+        var c__1 any
+        c__1 = Div((Sub(big_0, small_0)), 2.0)
+        _ = c__1
+        var mean_1 any
+        mean_1 = Div((Add(big_0, small_0)), 2.0)
+        _ = mean_1
+        small_0 = M_sqrt((Mul(big_0, small_0)))
+        big_0 = mean_1
+        twice_0 = Mul(twice_0, 2.0)
+        tail_0 = Add(tail_0, Div(Mul(Mul(twice_0, c__1), c__1), 2.0))
+      }
+      var kk_0 any
+      kk_0 = Div(math.Pi, (Mul(2.0, big_0)))
+      _ = kk_0
+      var ee_0 any
+      ee_0 = Mul(kk_0, (Sub(1.0, tail_0)))
+      _ = ee_0
+      var dk_0 any
+      dk_0 = Tern(Truthy(Gt(m_0, 0.00000001)), func() any { return Div((Sub(ee_0, Mul((Sub(1.0, m_0)), kk_0))), (Mul(Mul(2.0, m_0), (Sub(1.0, m_0))))) }, func() any { return Div(math.Pi, 8.0) })
+      _ = dk_0
+      var dm_0 any
+      dm_0 = Mul((Div(Mul(4.0, a_0), q2_0)), (Sub(1.0, Div(Mul(Mul(2.0, R_0), (Add(a_0, R_0))), q2_0))))
+      _ = dm_0
+      if true {
+        return Lst(Mul((Div(2.0, math.Pi)), (Sub(Div(Mul(dk_0, dm_0), q_0), Div(Mul(kk_0, (Add(a_0, R_0))), (Mul(q2_0, q_0)))))), Sub(0.0, Div((Mul(Mul(2.0, dz_0), ee_0)), (Mul(Mul(math.Pi, q_0), d2_0)))))
+      }
+      return nil
+    })
+    c.Static("rings", func(self any, a1 []any) any {
+      var h_0 any = Arg(a1, 0); _ = h_0;
+      var out_0 any
+      out_0 = Lst()
+      _ = out_0
+      for i1 := 0.0; i1 < Num(Get(K("Felt"), "NA")); i1++ {
+        var k_1 any = Box(i1)
+        _ = k_1
+        var e0_1 any
+        e0_1 = Mul(20.0, Power((Div(k_1, Get(K("Felt"), "NA"))), 2.0))
+        _ = e0_1
+        var e1_1 any
+        e1_1 = Mul(20.0, Power((Div(Add(k_1, 1.0), Get(K("Felt"), "NA"))), 2.0))
+        _ = e1_1
+        var held_1 any
+        held_1 = Sub(Mul((Add(1.0, e0_1)), M_exp((Sub(0.0, e0_1)))), Mul((Add(1.0, e1_1)), M_exp((Sub(0.0, e1_1)))))
+        _ = held_1
+        for i2 := 0.0; i2 < Num(Get(K("Felt"), "NZ")); i2++ {
+          var l_2 any = Box(i2)
+          _ = l_2
+          var z_2 any
+          z_2 = Sub(0.0, Mul(h_0, M_ln((Sub(1.0, Div((Add(l_2, 0.5)), Get(K("Felt"), "NZ")))))))
+          _ = z_2
+          M_push(out_0, Lst(Div((Add(e0_1, e1_1)), 2.0), z_2, Div(Div(held_1, Get(K("Felt"), "NZ")), 2.0), Sub(e1_1, e0_1)))
+        }
+      }
+      if true {
+        return out_0
+      }
+      return nil
+    })
+    c.Static("disc_at", func(self any, a1 []any) any {
+      var rings_0 any = Arg(a1, 0); _ = rings_0; var h_0 any = Arg(a1, 1); _ = h_0; var R_0 any = Arg(a1, 2); _ = R_0; var z_0 any = Arg(a1, 3); _ = z_0;
+      var gr_0 any
+      gr_0 = 0.0
+      _ = gr_0
+      var gz_0 any
+      gz_0 = 0.0
+      _ = gz_0
+      for _, e1 := range Items(rings_0) {
+        var b_1 any = e1
+        _ = b_1
+        var e_1 any
+        e_1 = Mul(0.5, Call(K("Fmt"), "max", []any{ Elem(b_1, 3.0), Div(h_0, 4.0) }))
+        _ = e_1
+        var up_1 any
+        up_1 = Call(K("Felt"), "ring", []any{ R_0, z_0, Elem(b_1, 0.0), Elem(b_1, 1.0), Mul(e_1, e_1) })
+        _ = up_1
+        var down_1 any
+        down_1 = Call(K("Felt"), "ring", []any{ R_0, z_0, Elem(b_1, 0.0), Sub(0.0, Elem(b_1, 1.0)), Mul(e_1, e_1) })
+        _ = down_1
+        gr_0 = Add(gr_0, Mul(Elem(b_1, 2.0), (Add(Elem(up_1, 0.0), Elem(down_1, 0.0)))))
+        gz_0 = Add(gz_0, Mul(Elem(b_1, 2.0), (Add(Elem(up_1, 1.0), Elem(down_1, 1.0)))))
+      }
+      if true {
+        return Lst(gr_0, gz_0)
+      }
+      return nil
+    })
+    c.Field("unit", func(self any) any { return Make(Node) })
+    c.Method("unit_disc", func(self any, a1 []any) any {
+      var h_0 any = Arg(a1, 0); _ = h_0;
+      var key_0 any
+      key_0 = "" + Str(h_0) + ""
+      _ = key_0
+      if Truthy(!Eq(Elem(Get(self, "unit"), key_0), nil)) {
+        if true {
+          return Elem(Get(self, "unit"), key_0)
+        }
+      }
+      var rings_0 any
+      rings_0 = Call(K("Felt"), "rings", []any{ h_0 })
+      _ = rings_0
+      var rows_0 any
+      rows_0 = Add(Get(K("Felt"), "NR"), Get(K("Felt"), "KMAX"))
+      _ = rows_0
+      var gr_0 any
+      gr_0 = Filled(Mul(rows_0, Get(K("Felt"), "NMU")), 0.0)
+      _ = gr_0
+      var gz_0 any
+      gz_0 = Filled(Mul(rows_0, Get(K("Felt"), "NMU")), 0.0)
+      _ = gz_0
+      var plane_0 any
+      plane_0 = Filled(rows_0, 0.0)
+      _ = plane_0
+      for i1 := 0.0; i1 < Num(rows_0); i1++ {
+        var ii_1 any = Box(i1)
+        _ = ii_1
+        var r_1 any
+        r_1 = Call(self, "centre", []any{ Sub(ii_1, Get(K("Felt"), "KMAX")) })
+        _ = r_1
+        for i2 := 0.0; i2 < Num(Get(K("Felt"), "NMU")); i2++ {
+          var j_2 any = Box(i2)
+          _ = j_2
+          var mu_2 any
+          mu_2 = Elem(Get(self, "mc"), j_2)
+          _ = mu_2
+          var g_2 any
+          g_2 = Call(K("Felt"), "disc_at", []any{ rings_0, h_0, Mul(r_1, M_sqrt((Sub(1.0, Mul(mu_2, mu_2))))), Mul(r_1, mu_2) })
+          _ = g_2
+          SetAt(gr_0, Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2), Elem(g_2, 0.0))
+          SetAt(gz_0, Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2), Elem(g_2, 1.0))
+        }
+        SetAt(plane_0, ii_1, Elem(Call(K("Felt"), "disc_at", []any{ rings_0, h_0, r_1, 0.0 }), 0.0))
+      }
+      SetAt(Get(self, "unit"), key_0, Lst(gr_0, gz_0, plane_0))
+      if true {
+        return Elem(Get(self, "unit"), key_0)
+      }
+      return nil
+    })
+    c.Method("shape", func(self any, a1 []any) any {
+      var h_0 any = Arg(a1, 0); _ = h_0; var middle_0 any = Arg(a1, 1); _ = middle_0; var gas_0 any = Arg(a1, 2); _ = gas_0; var wider_0 any = Arg(a1, 3); _ = wider_0;
+      var stars_0 any
+      stars_0 = Mul((Sub(1.0, gas_0)), (Sub(1.0, middle_0)))
+      _ = stars_0
+      var held_0 any
+      held_0 = Mul((Sub(1.0, gas_0)), middle_0)
+      _ = held_0
+      var u_0 any
+      u_0 = Tern(Truthy((Truthy(Gt(stars_0, 0.0)) || Truthy(Gt(gas_0, 0.0)))), func() any { return Call(self, "unit_disc", []any{ h_0 }) }, func() any { return nil })
+      _ = u_0
+      var w_0 any
+      w_0 = M_exp((Mul(Get(self, "step"), wider_0)))
+      _ = w_0
+      var gr_0 any
+      gr_0 = Filled(Get(self, "cells"), 0.0)
+      _ = gr_0
+      var gz_0 any
+      gz_0 = Filled(Get(self, "cells"), 0.0)
+      _ = gz_0
+      var plane_0 any
+      plane_0 = Filled(Get(K("Felt"), "NR"), 0.0)
+      _ = plane_0
+      var a_0 any
+      a_0 = Get(K("Felt"), "HERNQUIST")
+      _ = a_0
+      for i1 := 0.0; i1 < Num(Get(K("Felt"), "NR")); i1++ {
+        var i_1 any = Box(i1)
+        _ = i_1
+        var ii_1 any
+        ii_1 = Add(i_1, Get(K("Felt"), "KMAX"))
+        _ = ii_1
+        var r_1 any
+        r_1 = Elem(Get(self, "rc"), i_1)
+        _ = r_1
+        for i2 := 0.0; i2 < Num(Get(K("Felt"), "NMU")); i2++ {
+          var j_2 any = Box(i2)
+          _ = j_2
+          var mu_2 any
+          mu_2 = Elem(Get(self, "mc"), j_2)
+          _ = mu_2
+          var c__2 any
+          c__2 = Add(Mul(i_1, Get(K("Felt"), "NMU")), j_2)
+          _ = c__2
+          var pull_2 any
+          pull_2 = Div(held_0, (Mul(Mul(r_1, (Add(r_1, a_0))), (Add(r_1, a_0)))))
+          _ = pull_2
+          var R_2 any
+          R_2 = Mul(r_1, M_sqrt((Sub(1.0, Mul(mu_2, mu_2)))))
+          _ = R_2
+          SetAt(gr_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 0.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Elem(Elem(u_0, 0.0), Add(Mul((Sub(ii_1, wider_0)), Get(K("Felt"), "NMU")), j_2))), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, R_2)))))
+          SetAt(gz_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 1.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Elem(Elem(u_0, 1.0), Add(Mul((Sub(ii_1, wider_0)), Get(K("Felt"), "NMU")), j_2))), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, Mul(r_1, mu_2))))))
+        }
+        SetAt(plane_0, i_1, Sub((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 2.0), ii_1)), Div(Mul(gas_0, Elem(Elem(u_0, 2.0), Sub(ii_1, wider_0))), (Mul(w_0, w_0)))) })), Div(held_0, (Mul((Add(r_1, a_0)), (Add(r_1, a_0)))))))
+      }
+      if true {
+        return Lst(gr_0, gz_0, plane_0)
+      }
+      return nil
+    })
+    c.Field("faces", func(self any) any { return M_map(Rng(Get(self, "cells")), Fn(func(a2 []any) any {
+      var c__1 any = Arg(a2, 0); _ = c__1;
+      if true {
+        return Call(self, "faces_of", []any{ c__1 })
+      }
+      return nil
+    })) })
+    c.Method("faces_of", func(self any, a1 []any) any {
+      var c__0 any = Arg(a1, 0); _ = c__0;
+      var i_0 any
+      i_0 = M_floor((Div(c__0, Get(K("Felt"), "NMU"))))
+      _ = i_0
+      var j_0 any
+      j_0 = Mod(c__0, Get(K("Felt"), "NMU"))
+      _ = j_0
+      var dmu_0 any
+      dmu_0 = Sub(Elem(Get(self, "me"), Add(j_0, 1.0)), Elem(Get(self, "me"), j_0))
+      _ = dmu_0
+      var dr_0 any
+      dr_0 = Sub(Elem(Get(self, "re"), Add(i_0, 1.0)), Elem(Get(self, "re"), i_0))
+      _ = dr_0
+      var out__0 any
+      out__0 = Tern(Truthy(Lt(Add(i_0, 1.0), Get(K("Felt"), "NR"))), func() any { return Div(Mul(Mul(Mul(Mul(2.0, math.Pi), Elem(Get(self, "re"), Add(i_0, 1.0))), Elem(Get(self, "re"), Add(i_0, 1.0))), dmu_0), (Sub(Elem(Get(self, "rc"), Add(i_0, 1.0)), Elem(Get(self, "rc"), i_0)))) }, func() any { return Div(Mul(Mul(Mul(Mul(2.0, math.Pi), Elem(Get(self, "re"), Add(i_0, 1.0))), Elem(Get(self, "re"), Add(i_0, 1.0))), dmu_0), (Sub(Elem(Get(self, "re"), Add(i_0, 1.0)), Elem(Get(self, "rc"), i_0)))) })
+      _ = out__0
+      var in__0 any
+      in__0 = Tern(Truthy(Gt(i_0, 0.0)), func() any { return Div(Mul(Mul(Mul(Mul(2.0, math.Pi), Elem(Get(self, "re"), i_0)), Elem(Get(self, "re"), i_0)), dmu_0), (Sub(Elem(Get(self, "rc"), i_0), Elem(Get(self, "rc"), Sub(i_0, 1.0))))) }, func() any { return 0.0 })
+      _ = in__0
+      var up_0 any
+      up_0 = Tern(Truthy(Lt(Add(j_0, 1.0), Get(K("Felt"), "NMU"))), func() any { return Div(Mul(Mul(Mul(2.0, math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), Add(j_0, 1.0)), Elem(Get(self, "me"), Add(j_0, 1.0)))))), dr_0), (Sub(Elem(Get(self, "mc"), Add(j_0, 1.0)), Elem(Get(self, "mc"), j_0)))) }, func() any { return 0.0 })
+      _ = up_0
+      var down_0 any
+      down_0 = Tern(Truthy(Gt(j_0, 0.0)), func() any { return Div(Mul(Mul(Mul(2.0, math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), j_0), Elem(Get(self, "me"), j_0))))), dr_0), (Sub(Elem(Get(self, "mc"), j_0), Elem(Get(self, "mc"), Sub(j_0, 1.0))))) }, func() any { return 0.0 })
+      _ = down_0
+      if true {
+        return Lst(out__0, in__0, up_0, down_0)
+      }
+      return nil
+    })
+    c.Getter("width", func(self any, a1 []any) any {
+      if true {
+        return Add(Mul(2.0, Get(K("Felt"), "NMU")), 1.0)
+      }
+      return nil
+    })
+    c.Method("at_band", func(self any, a1 []any) any {
+      var k_0 any = Arg(a1, 0); _ = k_0; var l_0 any = Arg(a1, 1); _ = l_0;
+      if true {
+        return Add(Mul(k_0, Get(self, "width")), (Add(Sub(l_0, k_0), Get(K("Felt"), "NMU"))))
+      }
+      return nil
+    })
+    c.Field("band", func(self any) any { return Get(self, "factored") })
+    c.Getter("factored", func(self any, a1 []any) any {
+      var n_0 any
+      n_0 = Get(self, "cells")
+      _ = n_0
+      var B_0 any
+      B_0 = Get(K("Felt"), "NMU")
+      _ = B_0
+      var W_0 any
+      W_0 = Get(self, "width")
+      _ = W_0
+      var m_0 any
+      m_0 = Filled(Mul(n_0, W_0), 0.0)
+      _ = m_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var k_1 any = Box(i1)
+        _ = k_1
+        var i_1 any
+        i_1 = M_floor((Div(k_1, B_0)))
+        _ = i_1
+        var j_1 any
+        j_1 = Mod(k_1, B_0)
+        _ = j_1
+        var f_1 any
+        f_1 = Elem(Get(self, "faces"), k_1)
+        _ = f_1
+        SetAt(m_0, Add(Mul(k_1, W_0), B_0), Add(Add(Add(Elem(f_1, 0.0), Elem(f_1, 1.0)), Elem(f_1, 2.0)), Elem(f_1, 3.0)))
+        if Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))) {
+          SetAt(m_0, Add(Add(Mul(k_1, W_0), B_0), B_0), Sub(0.0, Elem(f_1, 0.0)))
+        }
+        if Truthy(Gt(i_1, 0.0)) {
+          SetAt(m_0, Mul(k_1, W_0), Sub(0.0, Elem(f_1, 1.0)))
+        }
+        if Truthy(Lt(Add(j_1, 1.0), B_0)) {
+          SetAt(m_0, Add(Add(Mul(k_1, W_0), B_0), 1.0), Sub(0.0, Elem(f_1, 2.0)))
+        }
+        if Truthy(Gt(j_1, 0.0)) {
+          SetAt(m_0, Sub(Add(Mul(k_1, W_0), B_0), 1.0), Sub(0.0, Elem(f_1, 3.0)))
+        }
+      }
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var k_1 any = Box(i1)
+        _ = k_1
+        var p_1 any
+        p_1 = Elem(m_0, Add(Mul(k_1, W_0), B_0))
+        _ = p_1
+        var last_1 any
+        last_1 = Call(K("Fmt"), "min", []any{ Sub(n_0, 1.0), Add(k_1, B_0) })
+        _ = last_1
+        var l_1 any
+        l_1 = Add(k_1, 1.0)
+        _ = l_1
+        for Truthy(Le(l_1, last_1)) {
+          var f_1 any
+          f_1 = Div(Elem(m_0, Add(Mul(l_1, W_0), (Add(Sub(k_1, l_1), B_0)))), p_1)
+          _ = f_1
+          if Truthy(!Eq(f_1, 0.0)) {
+            SetAt(m_0, Add(Mul(l_1, W_0), (Add(Sub(k_1, l_1), B_0))), f_1)
+            var q_1 any
+            q_1 = Add(k_1, 1.0)
+            _ = q_1
+            for Truthy(Le(q_1, last_1)) {
+              SetAt(m_0, Add(Mul(l_1, W_0), (Add(Sub(q_1, l_1), B_0))), Sub(Elem(m_0, Add(Mul(l_1, W_0), (Add(Sub(q_1, l_1), B_0)))), Mul(f_1, Elem(m_0, Add(Mul(k_1, W_0), (Add(Sub(q_1, k_1), B_0)))))))
+              q_1 = Add(q_1, 1.0)
+            }
+          }
+          l_1 = Add(l_1, 1.0)
+        }
+      }
+      if true {
+        return m_0
+      }
+      return nil
+    })
+    c.Method("solve_band", func(self any, a1 []any) any {
+      var b_0 any = Arg(a1, 0); _ = b_0;
+      var n_0 any
+      n_0 = Get(self, "cells")
+      _ = n_0
+      var B_0 any
+      B_0 = Get(K("Felt"), "NMU")
+      _ = B_0
+      var W_0 any
+      W_0 = Get(self, "width")
+      _ = W_0
+      var m_0 any
+      m_0 = Get(self, "band")
+      _ = m_0
+      var x_0 any
+      x_0 = M_map(b_0, Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return v_2
+        }
+        return nil
+      }))
+      _ = x_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var k_1 any = Box(i1)
+        _ = k_1
+        var last_1 any
+        last_1 = Call(K("Fmt"), "min", []any{ Sub(n_0, 1.0), Add(k_1, B_0) })
+        _ = last_1
+        var l_1 any
+        l_1 = Add(k_1, 1.0)
+        _ = l_1
+        for Truthy(Le(l_1, last_1)) {
+          SetAt(x_0, l_1, Sub(Elem(x_0, l_1), Mul(Elem(m_0, Add(Mul(l_1, W_0), (Add(Sub(k_1, l_1), B_0)))), Elem(x_0, k_1))))
+          l_1 = Add(l_1, 1.0)
+        }
+      }
+      var back_0 any
+      back_0 = Sub(n_0, 1.0)
+      _ = back_0
+      for Truthy(Ge(back_0, 0.0)) {
+        var left_0 any
+        left_0 = Elem(x_0, back_0)
+        _ = left_0
+        var last_0 any
+        last_0 = Call(K("Fmt"), "min", []any{ Sub(n_0, 1.0), Add(back_0, B_0) })
+        _ = last_0
+        var q_0 any
+        q_0 = Add(back_0, 1.0)
+        _ = q_0
+        for Truthy(Le(q_0, last_0)) {
+          left_0 = Sub(left_0, Mul(Elem(m_0, Add(Mul(back_0, W_0), (Add(Sub(q_0, back_0), B_0)))), Elem(x_0, q_0)))
+          q_0 = Add(q_0, 1.0)
+        }
+        SetAt(x_0, back_0, Div(left_0, Elem(m_0, Add(Mul(back_0, W_0), B_0))))
+        back_0 = Sub(back_0, 1.0)
+      }
+      if true {
+        return x_0
+      }
+      return nil
+    })
+    c.Static("over", func(self any, a1 []any) any {
+      var gN_0 any = Arg(a1, 0); _ = gN_0;
+      if true {
+        return Tern(Truthy(Gt(gN_0, 0.0)), func() any { return Add(0.5, M_sqrt((Add(0.25, Div(1.0, gN_0))))) }, func() any { return 1.0 })
+      }
+      return nil
+    })
+    c.Method("felt", func(self any, a1 []any) any {
+      var shape_0 any = Arg(a1, 0); _ = shape_0; var s_0 any = Arg(a1, 1); _ = s_0;
+      var n_0 any
+      n_0 = Get(self, "cells")
+      _ = n_0
+      var B_0 any
+      B_0 = Get(K("Felt"), "NMU")
+      _ = B_0
+      var wr_0 any
+      wr_0 = Filled(n_0, 0.0)
+      _ = wr_0
+      var wm_0 any
+      wm_0 = Filled(n_0, 0.0)
+      _ = wm_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var c__1 any = Box(i1)
+        _ = c__1
+        var j_1 any
+        j_1 = Mod(c__1, B_0)
+        _ = j_1
+        var gr_1 any
+        gr_1 = Mul(s_0, Elem(Elem(shape_0, 0.0), c__1))
+        _ = gr_1
+        var gz_1 any
+        gz_1 = Mul(s_0, Elem(Elem(shape_0, 1.0), c__1))
+        _ = gz_1
+        var f_1 any
+        f_1 = Sub(Call(K("Felt"), "over", []any{ Call(K("Fmt"), "hypot", []any{ gr_1, gz_1 }) }), 1.0)
+        _ = f_1
+        var mu_1 any
+        mu_1 = Elem(Get(self, "mc"), j_1)
+        _ = mu_1
+        var st_1 any
+        st_1 = M_sqrt((Sub(1.0, Mul(mu_1, mu_1))))
+        _ = st_1
+        SetAt(wr_0, c__1, Mul(f_1, (Add(Mul(gr_1, st_1), Mul(gz_1, mu_1)))))
+        SetAt(wm_0, c__1, Mul(f_1, (Sub(Mul(gz_1, st_1), Mul(gr_1, mu_1)))))
+      }
+      var rhs_0 any
+      rhs_0 = Filled(n_0, 0.0)
+      _ = rhs_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var c__1 any = Box(i1)
+        _ = c__1
+        var i_1 any
+        i_1 = M_floor((Div(c__1, B_0)))
+        _ = i_1
+        var j_1 any
+        j_1 = Mod(c__1, B_0)
+        _ = j_1
+        var dmu_1 any
+        dmu_1 = Sub(Elem(Get(self, "me"), Add(j_1, 1.0)), Elem(Get(self, "me"), j_1))
+        _ = dmu_1
+        var dr_1 any
+        dr_1 = Sub(Elem(Get(self, "re"), Add(i_1, 1.0)), Elem(Get(self, "re"), i_1))
+        _ = dr_1
+        var fo_1 any
+        fo_1 = Tern(Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))), func() any { return Div((Add(Elem(wr_0, c__1), Elem(wr_0, Add(c__1, B_0)))), 2.0) }, func() any { return Elem(wr_0, c__1) })
+        _ = fo_1
+        var fi_1 any
+        fi_1 = Tern(Truthy(Gt(i_1, 0.0)), func() any { return Div((Add(Elem(wr_0, Sub(c__1, B_0)), Elem(wr_0, c__1))), 2.0) }, func() any { return Elem(wr_0, c__1) })
+        _ = fi_1
+        var up_1 any
+        up_1 = Tern(Truthy(Lt(Add(j_1, 1.0), B_0)), func() any { return Div((Add(Elem(wm_0, c__1), Elem(wm_0, Add(c__1, 1.0)))), 2.0) }, func() any { return 0.0 })
+        _ = up_1
+        var down_1 any
+        down_1 = Tern(Truthy(Gt(j_1, 0.0)), func() any { return Div((Add(Elem(wm_0, Sub(c__1, 1.0)), Elem(wm_0, c__1))), 2.0) }, func() any { return 0.0 })
+        _ = down_1
+        var made_1 any
+        made_1 = Sub(Add(Mul(Mul(Mul(Mul(Mul(fo_1, 2.0), math.Pi), Elem(Get(self, "re"), Add(i_1, 1.0))), Elem(Get(self, "re"), Add(i_1, 1.0))), dmu_1), Mul(Mul(Mul(Mul(up_1, 2.0), math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), Add(j_1, 1.0)), Elem(Get(self, "me"), Add(j_1, 1.0)))))), dr_1)), Mul(Mul(Mul(Mul(down_1, 2.0), math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), j_1), Elem(Get(self, "me"), j_1))))), dr_1))
+        _ = made_1
+        SetAt(rhs_0, c__1, Tern(Truthy(Gt(i_1, 0.0)), func() any { return Sub(made_1, Mul(Mul(Mul(Mul(Mul(fi_1, 2.0), math.Pi), Elem(Get(self, "re"), i_1)), Elem(Get(self, "re"), i_1)), dmu_1)) }, func() any { return made_1 }))
+      }
+      var psi_0 any
+      psi_0 = Call(self, "solve_band", []any{ rhs_0 })
+      _ = psi_0
+      var out_0 any
+      out_0 = Lst()
+      _ = out_0
+      for i1 := 0.0; i1 < Num(Get(K("Felt"), "NR")); i1++ {
+        var i_1 any = Box(i1)
+        _ = i_1
+        var r_1 any
+        r_1 = Elem(Get(self, "rc"), i_1)
+        _ = r_1
+        if Truthy((Truthy((Truthy((Truthy(Gt(i_1, 0.0)) && Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))))) && Truthy(Ge(r_1, Get(K("Felt"), "NEAR"))))) && Truthy(Le(r_1, Get(K("Felt"), "FAR"))))) {
+          var made_1 any
+          made_1 = Sub(0.0, Div((Sub(Elem(psi_0, Mul((Add(i_1, 1.0)), B_0)), Elem(psi_0, Mul((Sub(i_1, 1.0)), B_0)))), (Sub(Elem(Get(self, "rc"), Add(i_1, 1.0)), Elem(Get(self, "rc"), Sub(i_1, 1.0))))))
+          _ = made_1
+          var gN_1 any
+          gN_1 = Sub(0.0, Mul(s_0, Elem(Elem(shape_0, 2.0), i_1)))
+          _ = gN_1
+          M_push(out_0, Lst(r_1, gN_1, Sub(gN_1, made_1)))
+        }
+      }
+      if true {
+        return out_0
+      }
+      return nil
+    })
+    c.Method("off_law", func(self any, a1 []any) any {
+      var shape_0 any = Arg(a1, 0); _ = shape_0; var s_0 any = Arg(a1, 1); _ = s_0;
+      if true {
+        return M_reduce(Call(self, "felt", []any{ shape_0, s_0 }), 0.0, Fn(func(a3 []any) any {
+        var most_2 any = Arg(a3, 0); _ = most_2; var q_2 any = Arg(a3, 1); _ = q_2;
+        if true {
+          return Call(K("Fmt"), "max", []any{ most_2, M_abs(Call(K("Fmt"), "log10", []any{ Div(Elem(q_2, 2.0), (Mul(Elem(q_2, 1.0), Call(K("Felt"), "over", []any{ Elem(q_2, 1.0) })))) })) })
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Static("dx", func(self any, a1 []any) any {
+      if true {
+        return Div((Sub(Get(K("Felt"), "X1"), Get(K("Felt"), "X0"))), Sub(Get(K("Felt"), "XS"), 1.0))
+      }
+      return nil
+    })
+    c.Static("dy", func(self any, a1 []any) any {
+      if true {
+        return Div((Sub(Get(K("Felt"), "Y1"), Get(K("Felt"), "Y0"))), Sub(Get(K("Felt"), "YS"), 1.0))
+      }
+      return nil
+    })
+    c.Static("bits_in", func(self any, a1 []any) any {
+      var mask_0 any = Arg(a1, 0); _ = mask_0;
+      if true {
+        return Len(Filt(Rng(4.0), Fn(func(a3 []any) any {
+        var k_2 any = Arg(a3, 0); _ = k_2;
+        if true {
+          return Eq((Mod(M_floor((Div(mask_0, Power(2.0, k_2)))), 2.0)), 1.0)
+        }
+        return nil
+      })))
+      }
+      return nil
+    })
+    c.Static("uses", func(self any, a1 []any) any {
+      var mi_0 any = Arg(a1, 0); _ = mi_0; var ti_0 any = Arg(a1, 1); _ = ti_0; var ci_0 any = Arg(a1, 2); _ = ci_0; var gi_0 any = Arg(a1, 3); _ = gi_0;
+      var held_0 any
+      held_0 = M_round((Div((Sub(0.0, Elem(Get(K("Felt"), "MASS"), 0.0))), (Div((Sub(Elem(Get(K("Felt"), "MASS"), 1.0), Elem(Get(K("Felt"), "MASS"), 0.0))), Sub(Elem(Get(K("Felt"), "MASS"), 2.0), 1.0))))))
+      _ = held_0
+      if true {
+        return Add(Add(Add((Tern(Truthy(!Eq(mi_0, held_0)), func() any { return 1.0 }, func() any { return 0.0 })), (Tern(Truthy(!Eq(ti_0, 0.0)), func() any { return 2.0 }, func() any { return 0.0 }))), (Tern(Truthy(!Eq(ci_0, 0.0)), func() any { return 4.0 }, func() any { return 0.0 }))), (Tern(Truthy(!Eq(gi_0, 0.0)), func() any { return 8.0 }, func() any { return 0.0 })))
+      }
+      return nil
+    })
+    c.Static("mass_at", func(self any, a1 []any) any {
+      var mi_0 any = Arg(a1, 0); _ = mi_0;
+      if true {
+        return Add(Elem(Get(K("Felt"), "MASS"), 0.0), Div(Mul((Sub(Elem(Get(K("Felt"), "MASS"), 1.0), Elem(Get(K("Felt"), "MASS"), 0.0))), mi_0), Sub(Elem(Get(K("Felt"), "MASS"), 2.0), 1.0)))
+      }
+      return nil
+    })
+    c.Method("space", func(self any, a1 []any) any {
+      var how_0 any = Arg(a1, 0); _ = how_0;
+      var p_0 any
+      p_0 = Filled(Mul(Get(K("Felt"), "XS"), Get(K("Felt"), "YS")), 0.0)
+      _ = p_0
+      var by_0 any
+      by_0 = Filled(Mul(Get(K("Felt"), "XS"), Get(K("Felt"), "YS")), Neg(1.0))
+      _ = by_0
+      var needs_0 any
+      needs_0 = Filled(Mul(Get(K("Felt"), "XS"), Get(K("Felt"), "YS")), 99.0)
+      _ = needs_0
+      var lay_0 any
+      lay_0 = Fn(func(a2 []any) any {
+        var track_1 any = Arg(a2, 0); _ = track_1; var mask_1 any = Arg(a2, 1); _ = mask_1; var dex_1 any = Arg(a2, 2); _ = dex_1;
+        for i2 := 0.0; i2 < Num(Sub(Len(track_1), 1.0)); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          var xa_2 any
+          xa_2 = Call(K("Fmt"), "log10", []any{ Elem(Elem(track_1, k_2), 1.0) })
+          _ = xa_2
+          var xb_2 any
+          xb_2 = Call(K("Fmt"), "log10", []any{ Elem(Elem(track_1, Add(k_2, 1.0)), 1.0) })
+          _ = xb_2
+          var ya_2 any
+          ya_2 = Call(K("Fmt"), "log10", []any{ Elem(Elem(track_1, k_2), 2.0) })
+          _ = ya_2
+          var yb_2 any
+          yb_2 = Call(K("Fmt"), "log10", []any{ Elem(Elem(track_1, Add(k_2, 1.0)), 2.0) })
+          _ = yb_2
+          if Truthy((Truthy((Truthy((Truthy(Call(K("Fmt"), "finite", []any{ xa_2 })) && Truthy(Call(K("Fmt"), "finite", []any{ xb_2 })))) && Truthy(Call(K("Fmt"), "finite", []any{ ya_2 })))) && Truthy(Call(K("Fmt"), "finite", []any{ yb_2 })))) {
+            var st_2 any
+            st_2 = Call(K("Fmt"), "max", []any{ 1.0, Add(M_floor((Call(K("Fmt"), "max", []any{ Div(M_abs((Sub(xb_2, xa_2))), Get(K("Felt"), "dx")), Div(M_abs((Sub(yb_2, ya_2))), Get(K("Felt"), "dy")) }))), 1.0) })
+            _ = st_2
+            for i3 := 0.0; i3 < Num(st_2); i3++ {
+              var t_3 any = Box(i3)
+              _ = t_3
+              var f_3 any
+              f_3 = Div((Add(t_3, 0.5)), st_2)
+              _ = f_3
+              var gx_3 any
+              gx_3 = M_round((Div((Sub(Add(xa_2, Mul(f_3, (Sub(xb_2, xa_2)))), Get(K("Felt"), "X0"))), Get(K("Felt"), "dx"))))
+              _ = gx_3
+              var gy_3 any
+              gy_3 = M_round((Div((Sub(Add(ya_2, Mul(f_3, (Sub(yb_2, ya_2)))), Get(K("Felt"), "Y0"))), Get(K("Felt"), "dy"))))
+              _ = gy_3
+              if !Truthy((Truthy((Truthy((Truthy(Lt(gx_3, 0.0)) || Truthy(Lt(gy_3, 0.0)))) || Truthy(Ge(gx_3, Get(K("Felt"), "XS"))))) || Truthy(Ge(gy_3, Get(K("Felt"), "YS"))))) {
+                var c__3 any
+                c__3 = Add(Mul(gy_3, Get(K("Felt"), "XS")), gx_3)
+                _ = c__3
+                SetAt(p_0, c__3, Add(Elem(p_0, c__3), Div(1.0, st_2)))
+                SetAt(needs_0, c__3, Call(K("Fmt"), "min", []any{ Elem(needs_0, c__3), dex_1 }))
+                var was_3 any
+                was_3 = Elem(by_0, c__3)
+                _ = was_3
+                var fewer_3 any
+                fewer_3 = (Truthy((Truthy(Lt(was_3, 0.0)) || Truthy(Lt(Call(K("Felt"), "bits_in", []any{ mask_1 }), Call(K("Felt"), "bits_in", []any{ was_3 }))))) || Truthy(((Truthy(Eq(Call(K("Felt"), "bits_in", []any{ mask_1 }), Call(K("Felt"), "bits_in", []any{ was_3 }))) && Truthy(Lt(mask_1, was_3))))))
+                _ = fewer_3
+                if Truthy(fewer_3) {
+                  SetAt(by_0, c__3, mask_1)
+                }
+              }
+            }
+          }
+        }
+        return nil
+      })
+      _ = lay_0
+      var gathered_0 any
+      gathered_0 = Eq(how_0, "gathered")
+      _ = gathered_0
+      var thick_0 any
+      thick_0 = Tern(Truthy(gathered_0), func() any { return Lst(Elem(Get(K("Felt"), "THICK"), 0.0)) }, func() any { return Get(K("Felt"), "THICK") })
+      _ = thick_0
+      var middles_0 any
+      middles_0 = Tern(Truthy(gathered_0), func() any { return Lst(1.0) }, func() any { return Get(K("Felt"), "MIDDLE") })
+      _ = middles_0
+      var gases_0 any
+      gases_0 = Tern(Truthy(gathered_0), func() any { return Lst(Elem(Get(K("Felt"), "GAS"), 0.0)) }, func() any { return Get(K("Felt"), "GAS") })
+      _ = gases_0
+      var tracks_0 any
+      tracks_0 = 0.0
+      _ = tracks_0
+      for i1 := 0.0; i1 < Num(Len(thick_0)); i1++ {
+        var ti_1 any = Box(i1)
+        _ = ti_1
+        for i2 := 0.0; i2 < Num(Len(middles_0)); i2++ {
+          var ci_2 any = Box(i2)
+          _ = ci_2
+          for i3 := 0.0; i3 < Num(Len(gases_0)); i3++ {
+            var gi_3 any = Box(i3)
+            _ = gi_3
+            var sh_3 any
+            sh_3 = Call(self, "shape", []any{ Elem(thick_0, ti_1), Elem(middles_0, ci_2), Elem(Elem(gases_0, gi_3), 0.0), Elem(Elem(gases_0, gi_3), 1.0) })
+            _ = sh_3
+            for i4 := 0.0; i4 < Num(Elem(Get(K("Felt"), "MASS"), 2.0)); i4++ {
+              var mi_4 any = Box(i4)
+              _ = mi_4
+              var dex_4 any
+              dex_4 = Call(K("Felt"), "mass_at", []any{ mi_4 })
+              _ = dex_4
+              Invoke(lay_0, []any{ Call(self, "felt", []any{ sh_3, Power(10.0, dex_4) }), Call(K("Felt"), "uses", []any{ mi_4, ti_1, ci_2, gi_3 }), dex_4 })
+              tracks_0 = Add(tracks_0, 1.0)
+            }
+          }
+        }
+      }
+      var out_0 any
+      out_0 = Make(Node)
+      _ = out_0
+      Set(out_0, Str("p"), p_0)
+      Set(out_0, Str("by"), M_map(by_0, Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return Tern(Truthy(Lt(v_2, 0.0)), func() any { return 0.0 }, func() any { return v_2 })
+        }
+        return nil
+      })))
+      Set(out_0, Str("needs"), needs_0)
+      Set(out_0, Str("tracks"), tracks_0)
+      Set(out_0, Str("freedoms"), Tern(Truthy(gathered_0), func() any { return Lst("mass") }, func() any { return Get(K("Felt"), "FREEDOMS") }))
+      if true {
+        return out_0
       }
       return nil
     })
@@ -30564,46 +31383,163 @@ func init() {
       }
       return nil
     })
-    c.Static("density", func(self any, a1 []any) any {
-      var model_0 any = Arg(a1, 0); _ = model_0; var id_0 any = Arg(a1, 1); _ = id_0; var how_0 any = Arg(a1, 2); _ = how_0;
-      var sweep_0 any
-      sweep_0 = Make("Sweep", []any{ Kw("model", model_0), Kw("how", how_0) }...)
-      _ = sweep_0
-      if Truthy((Truthy((Truthy(Eq(Get(sweep_0, "arrival"), nil)) || Truthy(Eq(Get(sweep_0, "felt"), nil)))) || Truthy(Eq(Get(sweep_0, "rho_at"), nil)))) {
-        Invoke(fail, []any{ "" + Str(id_0) + ": nothing derived to integrate" })
-      }
-      var lay_0 any
-      lay_0 = Fn(func(a2 []any) any {
-        var vary_1 any = Arg(a2, 0); _ = vary_1;
-        var got_1 any
-        got_1 = Call(sweep_0, "tracks", []any{ vary_1 })
-        _ = got_1
+    c.Static("DEGS", func(self any, a1 []any) any {
+      if true {
+        return M_map(Rng(73.0), Fn(func(a3 []any) any {
+        var k_2 any = Arg(a3, 0); _ = k_2;
         if true {
-          return Call(sweep_0, "rasterise", []any{ Get(got_1, Str("xs")), Get(got_1, Str("ys")), Get(got_1, Str("tracks")) })
-        }
-        return nil
-      })
-      _ = lay_0
-      var grid_0 any
-      grid_0 = Invoke(lay_0, []any{ Get(sweep_0, "order") })
-      _ = grid_0
-      var without_0 any
-      without_0 = M_map(Get(sweep_0, "order"), Fn(func(a3 []any) any {
-        var held_2 any = Arg(a3, 0); _ = held_2;
-        if true {
-          return Invoke(lay_0, []any{ Filt(Get(sweep_0, "order"), Fn(func(a5 []any) any {
-          var n_4 any = Arg(a5, 0); _ = n_4;
-          if true {
-            return !Eq(n_4, held_2)
-          }
-          return nil
-        })) })
+          return Add(4.0, Mul(0.5, k_2))
         }
         return nil
       }))
-      _ = without_0
+      }
+      return nil
+    })
+    c.Static("density", func(self any, a1 []any) any {
+      var model_0 any = Arg(a1, 0); _ = model_0; var id_0 any = Arg(a1, 1); _ = id_0; var how_0 any = Arg(a1, 2); _ = how_0;
+      var felt_0 any
+      felt_0 = Make("Felt", []any{  }...)
+      _ = felt_0
+      var got_0 any
+      got_0 = Call(felt_0, "space", []any{ how_0 })
+      _ = got_0
+      var p_0 any
+      p_0 = Get(got_0, Str("p"))
+      _ = p_0
+      var by_0 any
+      by_0 = Get(got_0, Str("by"))
+      _ = by_0
+      var needs_0 any
+      needs_0 = Get(got_0, Str("needs"))
+      _ = needs_0
+      var cells_0 any
+      cells_0 = Rng(Mul(Get(K("Felt"), "XS"), Get(K("Felt"), "YS")))
+      _ = cells_0
+      var arrives_0 any
+      arrives_0 = Make(Node)
+      _ = arrives_0
+      Set(arrives_0, Str("from"), Get(K("Felt"), "X0"))
+      Set(arrives_0, Str("to"), Get(K("Felt"), "X1"))
+      Set(arrives_0, Str("n"), Get(K("Felt"), "XS"))
+      var felt_axis_0 any
+      felt_axis_0 = Make(Node)
+      _ = felt_axis_0
+      Set(felt_axis_0, Str("from"), Get(K("Felt"), "Y0"))
+      Set(felt_axis_0, Str("to"), Get(K("Felt"), "Y1"))
+      Set(felt_axis_0, Str("n"), Get(K("Felt"), "YS"))
+      var grid_0 any
+      grid_0 = Make(Node)
+      _ = grid_0
+      Set(grid_0, Str("arrives"), arrives_0)
+      Set(grid_0, Str("felt"), felt_axis_0)
+      var columns_0 any
+      columns_0 = Make(Node)
+      _ = columns_0
+      Set(columns_0, Str("x"), M_map(cells_0, Fn(func(a3 []any) any {
+        var i_2 any = Arg(a3, 0); _ = i_2;
+        if true {
+          return Add(Get(K("Felt"), "X0"), Mul((Mod(i_2, Get(K("Felt"), "XS"))), Get(K("Felt"), "dx")))
+        }
+        return nil
+      })))
+      Set(columns_0, Str("y"), M_map(cells_0, Fn(func(a3 []any) any {
+        var i_2 any = Arg(a3, 0); _ = i_2;
+        if true {
+          return Add(Get(K("Felt"), "Y0"), Mul(M_floor((Div(i_2, Get(K("Felt"), "XS")))), Get(K("Felt"), "dy")))
+        }
+        return nil
+      })))
+      Set(columns_0, Str("p"), p_0)
+      Set(columns_0, Str("by"), by_0)
+      var extra_0 any
+      extra_0 = Make(Node)
+      _ = extra_0
+      Set(extra_0, Str("a0"), Get(model_0, "a0_lattice"))
+      Set(extra_0, Str("arrangement"), how_0)
+      Set(extra_0, Str("grid"), grid_0)
+      Set(extra_0, Str("freedoms"), Get(got_0, Str("freedoms")))
+      Set(extra_0, Str("tracks"), Get(got_0, Str("tracks")))
+      Set(extra_0, Str("stages"), Lst("the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2"))
+      Set(extra_0, Str("about"), "how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)")
+      Call(K("Measure"), "save", []any{ id_0, Lst("x", "y", "p", "by"), columns_0, extra_0 })
+      var reached_0 any
+      reached_0 = Filt(cells_0, Fn(func(a3 []any) any {
+        var i_2 any = Arg(a3, 0); _ = i_2;
+        if true {
+          return Gt(Elem(p_0, i_2), 0.0)
+        }
+        return nil
+      }))
+      _ = reached_0
+      var degs_0 any
+      degs_0 = Get(K("Measure"), "DEGS")
+      _ = degs_0
+      var ratios_0 any
+      ratios_0 = M_map(degs_0, Fn(func(a3 []any) any {
+        var d_2 any = Arg(a3, 0); _ = d_2;
+        if true {
+          return Call(model_0, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(model_0, "settled", []any{ d_2 }) })
+        }
+        return nil
+      }))
+      _ = ratios_0
+      var a0s_0 any
+      a0s_0 = M_map(degs_0, Fn(func(a3 []any) any {
+        var d_2 any = Arg(a3, 0); _ = d_2;
+        if true {
+          return Call(model_0, "value_of", []any{ "a_{0}", Call(model_0, "settled", []any{ d_2 }) })
+        }
+        return nil
+      }))
+      _ = a0s_0
+      var sparse_0 any
+      sparse_0 = Make(Node)
+      _ = sparse_0
+      for _, e1 := range Items(Lst("deg", "cell", "p", "by", "needs", "size")) {
+        var n_1 any = e1
+        _ = n_1
+        SetAt(sparse_0, n_1, Lst())
+      }
+      var starts_0 any
+      starts_0 = Lst()
+      _ = starts_0
+      for _, e1 := range Items(degs_0) {
+        var d_1 any = e1
+        _ = d_1
+        M_push(starts_0, Len(Get(sparse_0, Str("cell"))))
+        for _, e2 := range Items(reached_0) {
+          var i_2 any = e2
+          _ = i_2
+          M_push(Get(sparse_0, Str("deg")), d_1)
+          M_push(Get(sparse_0, Str("cell")), i_2)
+          M_push(Get(sparse_0, Str("p")), Elem(p_0, i_2))
+          M_push(Get(sparse_0, Str("by")), Elem(by_0, i_2))
+          M_push(Get(sparse_0, Str("needs")), Elem(needs_0, i_2))
+          M_push(Get(sparse_0, Str("size")), 99.0)
+        }
+      }
+      var table_0 any
+      table_0 = Make(Node)
+      _ = table_0
+      Set(table_0, Str("deg"), degs_0)
+      Set(table_0, Str("ratio"), ratios_0)
+      Set(table_0, Str("against"), "H_Lambda")
+      var solved_0 any
+      solved_0 = Make(Node)
+      _ = solved_0
+      Set(solved_0, Str("what"), "the possibility space of a galaxy (" + Str(how_0) + "), solved over its whole field on every lattice")
+      Set(solved_0, Str("arrangement"), how_0)
+      Set(solved_0, Str("degs"), degs_0)
+      Set(solved_0, Str("starts"), starts_0)
+      Set(solved_0, Str("a0"), a0s_0)
+      Set(solved_0, Str("coincidence"), table_0)
+      Set(solved_0, Str("theory_deg"), Get(Get(Get(model_0, "theory"), "lattice"), "DEG"))
+      Set(solved_0, Str("grid"), grid_0)
+      Set(solved_0, Str("freedoms"), Get(got_0, Str("freedoms")))
+      Set(solved_0, Str("stages"), Get(extra_0, Str("stages")))
+      Set(solved_0, Str("about"), "per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)")
       if true {
-        return Call(sweep_0, "save", []any{ id_0, grid_0, Call(sweep_0, "needs", []any{ grid_0, without_0 }) })
+        return Call(K("Measure"), "save", []any{ "" + Str(id_0) + ".solved", Lst("deg", "cell", "p", "by", "needs", "size"), sparse_0, solved_0 })
       }
       return nil
     })

@@ -9,9 +9,9 @@
  * closed off G, measured once; Newton is the diagonal beside it.
  *
  * Behind the measurements sits the region the theory ALLOWS - `visuals/galaxy.point` and
- * `visuals/galaxy.many`, the possibility space `Measure.density` integrated over every mass, face,
- * motion and emissivity a source may define - inked by rank, dim, and coloured by which freedom a cell
- * NEEDS.
+ * `visuals/galaxy.many`, the possibility space `Measure.density` solves (`Felt`): every galaxy's
+ * mass, thickness, middle and gas, with the space made at the edge of its field solved over the whole
+ * field - inked by rank, dim, and coloured by which freedom a cell NEEDS.
  */
 Galaxies := class {
   /* the borrowed data is scaled by ITS OWN a_0, the model by the rules': what is compared is the shape */
@@ -42,7 +42,7 @@ Galaxies := class {
   /* which freedom a cell needs, coloured; a combination is the colours of what is in it, mixed */
   static SEVERAL = [86, 168, 235]
   /* the freedoms a source has, in the order the space's own bits are in - the measurement names them, and this is only what to fall back on */
-  static FREEDOMS = ["mass", "face", "moving", "spread"]
+  static FREEDOMS = ["mass", "thickness", "middle", "gas"]
   static freedoms_of (data: Measured): String[] => data.header["freedoms"] ?? Galaxies.FREEDOMS
   static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]]
 
@@ -53,7 +53,7 @@ Galaxies := class {
     mask == 0 | on.empty ? Galaxies.SEVERAL : [0, 1, 2].map(c => on.map(i => Galaxies.TINTS[i][c]).sum / on.length)
   }
   /* the names the space being drawn uses, set as a panel starts (a picture draws one measurement at a time) */
-  static NAMES_NOW = ["mass", "face", "moving", "spread"]
+  static NAMES_NOW = ["mass", "thickness", "middle", "gas"]
   static name_of (mask: N): String => {
     /* the fewest freedoms that reach a cell; nought is the source as it starts - one mass, its own cell, at rest - the law's own line */
     return "the source as it starts" if mask == 0
@@ -664,7 +664,7 @@ Galaxies := class {
   /* the chain's a_0/cH at a lattice, off the table the space's run wrote (Inferences.coincidence, evaluated per DEG) */
   static ratio_at (data: Measured, deg: Real): Real => {
     table := data.header["coincidence"]
-    fail("the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)") if table == None
+    fail("the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)") if table == None
     ds := table["deg"]
     rs := table["ratio"]
     return rs[0] if deg <= ds[0]
@@ -675,9 +675,16 @@ Galaxies := class {
     rs[k] * (1 - f) + rs[k + 1] * f
   }
   /* how many dex the vacuum's a_0 at a lattice stands from the data's, in m/s^2 */
-  static shift_at (data: Measured, deg: Real): Real => {
+  static shift_at (data: Measured, deg: Real): Real => Fmt.log10(Galaxies.ratio_at(data, deg) * Sparc.C_LIGHT * Galaxies.rate_of(data) / Galaxies.A0_DATA)
+  /*
+   * the rate a_0/cH is against, in 1/s: H_0 where the table is against what is measured, and where it is against the
+   * vacuum's own growth (the chain's `H_{\\Lambda}`, had the mass not been there) that is sqrt(Omega_Lambda) of H_0, with
+   * Omega_Lambda borrowed as H_0 is (1 - Simulation.OMEGA_M)
+   */
+  static rate_of (data: Measured): Real => {
     H := Galaxies.H0 * 1000 / (Sparc.KPC * 1000)
-    Fmt.log10(Galaxies.ratio_at(data, deg) * Sparc.C_LIGHT * H / Galaxies.A0_DATA)
+    table := data.header["coincidence"]
+    table != None & table["against"] == "H_Lambda" ? H * (1 - Simulation.OMEGA_M).sqrt : H
   }
   /*
    * THE SPACE ON EVERY LATTICE, SOLVED (`<id>.solved`, record.gpu RAY_SOLVE): one row a reached cell a DEG, `starts[k]`
@@ -801,7 +808,7 @@ Galaxies := class {
   }
   static of (id: String, what: String, title: String): Picture => {
     solved := Measured.of("{id}.solved")
-    fail("{id}.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again") if solved == None
+    fail("{id}.solved is not on disk - solve the space (`npx ray measure {id}`) and try again") if solved == None
     ks := Galaxies.sweep_of(solved)
     Picture(id: id, what: what, width: 960, height: 720, frames: ks.length, paint: (played: Played?) => Sweeping(solved: solved, title: title, ks: ks))
   }
@@ -817,9 +824,8 @@ Galaxies := class {
   static CURVE_COLS = 4
   static a0_at (deg: Real): Real => {
     space := Measured.of("galaxy.many.solved")
-    fail("galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again") if space == None
-    H := Galaxies.H0 * 1000 / (Sparc.KPC * 1000)
-    Galaxies.ratio_at(space, deg) * Sparc.C_LIGHT * H
+    fail("galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again") if space == None
+    Galaxies.ratio_at(space, deg) * Sparc.C_LIGHT * Galaxies.rate_of(space)
   }
   /* the galaxies drawn: the usable ones with the most measured radii, so a curve is a curve */
   static curve_pick (): N[] => Galaxies.pick(Galaxies.CURVE_ROWS * Galaxies.CURVE_COLS)
@@ -1454,8 +1460,8 @@ Galaxies := class {
     s.fill_text("g_baryons / 1.2e-10 m/s²", (bx0 + bx1) / 2, by1 + 34)
   }
 
-  static point (): Picture => Galaxies.of("galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE")
-  static many (): Picture => Galaxies.of("galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR")
+  static point (): Picture => Galaxies.of("galaxy.point", "a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly", "A GALAXY AS ONE BODY")
+  static many (): Picture => Galaxies.of("galaxy.many", "and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be", "EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD")
 }
 
 /* the galaxy panel, frame by frame: one lattice a frame, in the order the sweep gives */

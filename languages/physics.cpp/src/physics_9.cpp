@@ -31,9 +31,9 @@ static void C_Galaxies(Cls& c) {
   c.staticField("YMIN", [](const Value& self) -> Value { return neg(3.0); });
   c.staticField("YMAX", [](const Value& self) -> Value { return 3.0; });
   c.staticField("SEVERAL", [](const Value& self) -> Value { return list({ 86.0, 168.0, 235.0 }); });
-  c.staticField("FREEDOMS", [](const Value& self) -> Value { return list({ "mass", "face", "moving", "spread" }); });
+  c.staticField("FREEDOMS", [](const Value& self) -> Value { return list({ "mass", "thickness", "middle", "gas" }); });
   c.staticField("TINTS", [](const Value& self) -> Value { return list({ list({ 232.0, 193.0, 90.0 }), list({ 90.0, 212.0, 193.0 }), list({ 240.0, 122.0, 178.0 }), list({ 169.0, 139.0, 224.0 }) }); });
-  c.staticField("NAMES_NOW", [](const Value& self) -> Value { return list({ "mass", "face", "moving", "spread" }); });
+  c.staticField("NAMES_NOW", [](const Value& self) -> Value { return list({ "mass", "thickness", "middle", "gas" }); });
   c.staticField("LEVELS", [](const Value& self) -> Value { return list({ neg(4.0), neg(2.0), 0.0, 1.0, 2.0, 3.0 }); });
   c.staticField("WIDTHS", [](const Value& self) -> Value { return list({ 0.0, 2.0 }); });
   c.staticField("DISK_ID", [](const Value& self) -> Value { return "law.disk"; });
@@ -829,7 +829,7 @@ static void C_Galaxies(Cls& c) {
     auto data_0 = cell(arg(a1, 0)); auto deg_0 = cell(arg(a1, 1));
     auto table_0 = cell(); table_0->v = get(get(data_0->v, S<"header">()), Sym(str("coincidence")));
     if (truthy(eq(table_0->v, null))) {
-      invoke(fail, { "the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)" });
+      invoke(fail, { "the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)" });
     }
     auto ds_0 = cell(); ds_0->v = get(table_0->v, Sym(str("deg")));
     auto rs_0 = cell(); rs_0->v = get(table_0->v, Sym(str("ratio")));
@@ -849,8 +849,14 @@ static void C_Galaxies(Cls& c) {
   });
   c.statik("shift_at", [](Value self, const Args& a1) -> Value {
     auto data_0 = cell(arg(a1, 0)); auto deg_0 = cell(arg(a1, 1));
+    return call(K(S<"Fmt">()), S<"log10">(), { div(mul(mul(call(K(S<"Galaxies">()), S<"ratio_at">(), { data_0->v, deg_0->v }), get(K(S<"Sparc">()), S<"C_LIGHT">())), call(K(S<"Galaxies">()), S<"rate_of">(), { data_0->v })), get(K(S<"Galaxies">()), S<"A0_DATA">())) });
+    return null;
+  });
+  c.statik("rate_of", [](Value self, const Args& a1) -> Value {
+    auto data_0 = cell(arg(a1, 0));
     auto H_0 = cell(); H_0->v = div(mul(get(K(S<"Galaxies">()), S<"H0">()), 1000.0), (mul(get(K(S<"Sparc">()), S<"KPC">()), 1000.0)));
-    return call(K(S<"Fmt">()), S<"log10">(), { div(mul(mul(call(K(S<"Galaxies">()), S<"ratio_at">(), { data_0->v, deg_0->v }), get(K(S<"Sparc">()), S<"C_LIGHT">())), H_0->v), get(K(S<"Galaxies">()), S<"A0_DATA">())) });
+    auto table_0 = cell(); table_0->v = get(get(data_0->v, S<"header">()), Sym(str("coincidence")));
+    return (truthy((truthy((!eq(table_0->v, null))) && truthy(eq(get(table_0->v, Sym(str("against"))), "H_Lambda")))) ? Value(mul(H_0->v, m_sqrt((sub(1.0, get(K(S<"Simulation">()), S<"OMEGA_M">())))))) : Value(H_0->v));
     return null;
   });
   c.statik("frame_of", [](Value self, const Args& a1) -> Value {
@@ -994,7 +1000,7 @@ static void C_Galaxies(Cls& c) {
     auto id_0 = cell(arg(a1, 0)); auto what_0 = cell(arg(a1, 1)); auto title_0 = cell(arg(a1, 2));
     auto solved_0 = cell(); solved_0->v = call(K(S<"Measured">()), S<"of">(), { "" + str(id_0->v) + ".solved" });
     if (truthy(eq(solved_0->v, null))) {
-      invoke(fail, { "" + str(id_0->v) + ".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" });
+      invoke(fail, { "" + str(id_0->v) + ".solved is not on disk - solve the space (`npx ray measure " + str(id_0->v) + "`) and try again" });
     }
     auto ks_0 = cell(); ks_0->v = call(K(S<"Galaxies">()), S<"sweep_of">(), { solved_0->v });
     return make(S<"Picture">(), { kw(S<"id">(), id_0->v), kw(S<"what">(), what_0->v), kw(S<"width">(), 960.0), kw(S<"height">(), 720.0), kw(S<"frames">(), len(ks_0->v)), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
@@ -1008,10 +1014,9 @@ static void C_Galaxies(Cls& c) {
     auto deg_0 = cell(arg(a1, 0));
     auto space_0 = cell(); space_0->v = call(K(S<"Measured">()), S<"of">(), { "galaxy.many.solved" });
     if (truthy(eq(space_0->v, null))) {
-      invoke(fail, { "galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again" });
+      invoke(fail, { "galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again" });
     }
-    auto H_0 = cell(); H_0->v = div(mul(get(K(S<"Galaxies">()), S<"H0">()), 1000.0), (mul(get(K(S<"Sparc">()), S<"KPC">()), 1000.0)));
-    return mul(mul(call(K(S<"Galaxies">()), S<"ratio_at">(), { space_0->v, deg_0->v }), get(K(S<"Sparc">()), S<"C_LIGHT">())), H_0->v);
+    return mul(mul(call(K(S<"Galaxies">()), S<"ratio_at">(), { space_0->v, deg_0->v }), get(K(S<"Sparc">()), S<"C_LIGHT">())), call(K(S<"Galaxies">()), S<"rate_of">(), { space_0->v }));
     return null;
   });
   c.statik("curve_pick", [](Value self, const Args& a1) -> Value {
@@ -1771,11 +1776,11 @@ static void C_Galaxies(Cls& c) {
     return null;
   });
   c.statik("point", [](Value self, const Args& a1) -> Value {
-    return call(K(S<"Galaxies">()), S<"of">(), { "galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE" });
+    return call(K(S<"Galaxies">()), S<"of">(), { "galaxy.point", "a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly", "A GALAXY AS ONE BODY" });
     return null;
   });
   c.statik("many", [](Value self, const Args& a1) -> Value {
-    return call(K(S<"Galaxies">()), S<"of">(), { "galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR" });
+    return call(K(S<"Galaxies">()), S<"of">(), { "galaxy.many", "and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be", "EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD" });
     return null;
   });
 }

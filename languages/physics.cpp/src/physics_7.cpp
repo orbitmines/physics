@@ -2005,6 +2005,111 @@ static void C_Picture(Cls& c) {
 }
 static const bool R_Picture = define_class("Picture", "Node", &C_Picture);
 
+static void C_Fmt(Cls& c) {
+  c.statik("log10", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0));
+    return div(m_ln(x_0->v), m_ln(10.0));
+    return null;
+  });
+  c.statik("finite", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0));
+    return (truthy(eq(x_0->v, x_0->v)) && truthy(lt(m_abs(x_0->v), power(10.0, 300.0))));
+    return null;
+  });
+  c.statik("fixed", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto d_0 = cell(arg(a1, 1));
+    if (truthy((!eq(x_0->v, x_0->v)))) {
+      return "NaN";
+    }
+    auto scale_0 = cell(); scale_0->v = power(10.0, d_0->v);
+    auto r_0 = cell(); r_0->v = m_round((mul(m_abs(x_0->v), scale_0->v)));
+    auto whole_0 = cell(); whole_0->v = m_floor((div(r_0->v, scale_0->v)));
+    auto frac_0 = cell(); frac_0->v = sub(r_0->v, mul(whole_0->v, scale_0->v));
+    auto sign_0 = cell(); sign_0->v = (truthy((truthy(lt(x_0->v, 0.0)) && truthy(gt(r_0->v, 0.0)))) ? Value("-") : Value(""));
+    if (truthy(eq(d_0->v, 0.0))) {
+      return "" + str(sign_0->v) + "" + str(whole_0->v) + "";
+    }
+    auto digits_0 = cell(); digits_0->v = "" + str(frac_0->v) + "";
+    while (truthy(lt(len(digits_0->v), d_0->v))) {
+      digits_0->v = "0" + str(digits_0->v) + "";
+    }
+    return "" + str(sign_0->v) + "" + str(whole_0->v) + "." + str(digits_0->v) + "";
+    return null;
+  });
+  c.statik("exponential", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto d_0 = cell(arg(a1, 1));
+    if (truthy((!eq(x_0->v, x_0->v)))) {
+      return "NaN";
+    }
+    auto zeros_0 = cell(); zeros_0->v = call("0", S<"repeat">(), { d_0->v });
+    if (truthy(eq(x_0->v, 0.0))) {
+      return (truthy(gt(d_0->v, 0.0)) ? Value("0." + str(zeros_0->v) + "e+0") : Value("0e+0"));
+    }
+    auto e_0 = cell(); e_0->v = m_floor(call(K(S<"Fmt">()), S<"log10">(), { m_abs(x_0->v) }));
+    auto m_0 = cell(); m_0->v = div(m_abs(x_0->v), power(10.0, e_0->v));
+    if (truthy(ge(m_round((mul(m_0->v, power(10.0, d_0->v)))), power(10.0, (add(d_0->v, 1.0)))))) {
+      m_0->v = div(m_0->v, 10.0);
+      e_0->v = add(e_0->v, 1.0);
+    }
+    if (truthy(lt(m_0->v, 1.0))) {
+      m_0->v = mul(m_0->v, 10.0);
+      e_0->v = sub(e_0->v, 1.0);
+    }
+    auto sign_0 = cell(); sign_0->v = (truthy(lt(x_0->v, 0.0)) ? Value("-") : Value(""));
+    auto mant_0 = cell(); mant_0->v = call(K(S<"Fmt">()), S<"fixed">(), { m_0->v, d_0->v });
+    return (truthy(ge(e_0->v, 0.0)) ? Value("" + str(sign_0->v) + "" + str(mant_0->v) + "e+" + str(e_0->v) + "") : Value("" + str(sign_0->v) + "" + str(mant_0->v) + "e-" + str(m_abs(e_0->v)) + ""));
+    return null;
+  });
+  c.statik("min", [](Value self, const Args& a1) -> Value {
+    auto p_0 = cell(arg(a1, 0)); auto q_0 = cell(arg(a1, 1));
+    return (truthy(lt(p_0->v, q_0->v)) ? Value(p_0->v) : Value(q_0->v));
+    return null;
+  });
+  c.statik("max", [](Value self, const Args& a1) -> Value {
+    auto p_0 = cell(arg(a1, 0)); auto q_0 = cell(arg(a1, 1));
+    return (truthy(gt(p_0->v, q_0->v)) ? Value(p_0->v) : Value(q_0->v));
+    return null;
+  });
+  c.statik("hypot", [](Value self, const Args& a1) -> Value {
+    auto x_0 = cell(arg(a1, 0)); auto y_0 = cell(arg(a1, 1));
+    return m_sqrt((add(mul(x_0->v, x_0->v), mul(y_0->v, y_0->v))));
+    return null;
+  });
+  c.statik("median", [](Value self, const Args& a1) -> Value {
+    auto xs__0 = cell(arg(a1, 0));
+    if (truthy(m_empty(xs__0->v))) {
+      return RAY_NAN;
+    }
+    auto s_0 = cell(); s_0->v = call(K(S<"Expr">()), S<"sorted">(), { xs__0->v });
+    return elem(s_0->v, m_floor((div(len(s_0->v), 2.0))));
+    return null;
+  });
+}
+static const bool R_Fmt = define_class("Fmt", "Node", &C_Fmt);
+
+static void C_Probe(Cls& c) {
+  c.field("N", nullptr);
+  c.field("A", nullptr);
+  c.field("K", nullptr);
+  c.field("ticks", nullptr);
+  c.field("mx", nullptr);
+  c.field("ways", nullptr);
+  c.field("radii", nullptr);
+}
+static const bool R_Probe = define_class("Probe", "Node", &C_Probe);
+
+static void C_Trial(Cls& c) {
+  c.field("N", nullptr);
+  c.field("A", nullptr);
+  c.field("K", nullptr);
+  c.field("ticks", nullptr);
+  c.field("mx", nullptr);
+  c.field("ways", nullptr);
+  c.field("v0", nullptr);
+  c.field("radii", nullptr);
+}
+static const bool R_Trial = define_class("Trial", "Node", &C_Trial);
+
 
 
 void part_7() { }

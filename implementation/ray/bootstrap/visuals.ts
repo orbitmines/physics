@@ -394,17 +394,8 @@ export async function measure(names: string[]) {
   const t0 = Date.now();
   const want = (n: string) => !names.length || names.some(o => n.includes(o));
   const cpu: string[] = [];
-  /* the two densities are millions of evaluations: on the device where there is one (measure.gpu.ts), else the CPU sweep */
-  for (const [id, how] of [["galaxy.point", "gathered"], ["galaxy.many", "scattered"]]) {
-    if (!want(id)) continue;
-    if (process.env.RAY_CPU_MEASURE !== "1") {
-      const r = spawnSync("deno", ["run", "--unstable-webgpu", "--allow-all", join(here, "measure.gpu.ts"), repo, id, how], { stdio: "inherit" });
-      if (r.status === 0) continue;
-      /* the sweep runs on the device; a failure there is fixed, never waited out on the CPU (RAY_CPU_MEASURE=1 asks for the CPU on purpose) */
-      throw new Error(`${id}: sweeping on the device failed (${r.error?.message ?? `deno exited ${r.status}`}) - fix the device path; set RAY_CPU_MEASURE=1 to sweep on the CPU on purpose`);
-    }
-    cpu.push(id);
-  }
+  /* the two densities are the field solved per galaxy (Felt.ray, Measure.density): a few thousand banded solves, on the CPU */
+  for (const id of ["galaxy.point", "galaxy.many"]) if (want(id)) cpu.push(id);
   if (cpu.length || want("law")) physics.Measure.run(physics.G, [...cpu, ...(want("law") ? ["law"] : [])]);
   /* the galaxies, run (Simulation.ray): only on the device, and only when named - `npx ray measure galaxy.simulated` */
   if (names.some(o => "galaxy.simulated".includes(o) && o.startsWith("galaxy.sim"))) {

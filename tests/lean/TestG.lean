@@ -64,6 +64,42 @@ initialize addTest "tests/coincidence.ray:20 on coincidence" (do
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← ωlt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183) then "pass" else "failed: " ++ "(← ωlt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183)"))
 
+initialize addTest "tests/felt.ray:10 on felt" (do
+  let it := (← new! Felt ())
+  let mut guard := 0
+  while !truthy (← ωgt (← ωget it "cells") (0 : Float)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "off_law" ((← call! it "shape" (0.1, (1 : Float), (0 : Float), (0 : Float))), (1 : Float))) 0.003) then "pass" else "failed: " ++ "(← ωlt (← call! it \"off_law\" ((← call! it \"shape\" (0.1, (1 : Float), (0 : Float), (0 : Float))), (1 : Float))) 0.003)"))
+
+initialize addTest "tests/felt.ray:11 on felt" (do
+  let it := (← new! Felt ())
+  let mut guard := 0
+  while !truthy (← ωgt (← ωget it "cells") (0 : Float)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "off_law" ((← call! it "shape" (0.1, (1 : Float), (0 : Float), (0 : Float))), 0.01)) 0.003) then "pass" else "failed: " ++ "(← ωlt (← call! it \"off_law\" ((← call! it \"shape\" (0.1, (1 : Float), (0 : Float), (0 : Float))), 0.01)) 0.003)"))
+
+initialize addTest "tests/felt.ray:12 on felt" (do
+  let it := (← new! Felt ())
+  let mut guard := 0
+  while !truthy (← ωgt (← ωget it "cells") (0 : Float)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωgt (← call! it "off_law" ((← call! it "shape" (0.02, (0 : Float), (0 : Float), (0 : Float))), 0.01)) 0.05) then "pass" else "failed: " ++ "(← ωgt (← call! it \"off_law\" ((← call! it \"shape\" (0.02, (0 : Float), (0 : Float), (0 : Float))), 0.01)) 0.05)"))
+
+initialize addTest "tests/felt.ray:13 on felt" (do
+  let it := (← new! Felt ())
+  let mut guard := 0
+  while !truthy (← ωgt (← ωget it "cells") (0 : Float)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← call! it "off_law" ((← call! it "shape" (0.02, (0 : Float), (0 : Float), (0 : Float))), (100 : Float))) 0.01) then "pass" else "failed: " ++ "(← ωlt (← call! it \"off_law\" ((← call! it \"shape\" (0.02, (0 : Float), (0 : Float), (0 : Float))), (100 : Float))) 0.01)"))
+
 initialize addTest "tests/field.ray:10 on line" (do
   let it := (← call! (← cls% G) "field" ((6 : Float), (8 : Float), (1 : Float), (1 : Float)))
   let mut guard := 0

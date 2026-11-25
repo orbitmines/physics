@@ -115,4 +115,5 @@ import OrbitMines.Physics.Part104
 import OrbitMines.Physics.Part105
 import OrbitMines.Physics.Part106
 import OrbitMines.Physics.Part107
+import OrbitMines.Physics.Part108
 import OrbitMines.Physics.Theorems

@@ -81,6 +81,46 @@ public static class TestG {
       return truthy(lt(mul(call(it, "value_of", new object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? PASS : "failed: " + "lt(mul(call(it, \"value_of\", new object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
     });
 
+    t("tests/felt.ray:10 on felt", () => {
+      object it = make("Felt", new object[] {  });
+      int guard = 0;
+      while (!truthy(gt(get(it, "cells"), 0.0))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(lt(call(it, "off_law", new object[] { call(it, "shape", new object[] { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new object[] { call(it, \"shape\", new object[] { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)";
+    });
+
+    t("tests/felt.ray:11 on felt", () => {
+      object it = make("Felt", new object[] {  });
+      int guard = 0;
+      while (!truthy(gt(get(it, "cells"), 0.0))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(lt(call(it, "off_law", new object[] { call(it, "shape", new object[] { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new object[] { call(it, \"shape\", new object[] { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)";
+    });
+
+    t("tests/felt.ray:12 on felt", () => {
+      object it = make("Felt", new object[] {  });
+      int guard = 0;
+      while (!truthy(gt(get(it, "cells"), 0.0))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(gt(call(it, "off_law", new object[] { call(it, "shape", new object[] { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) ? PASS : "failed: " + "gt(call(it, \"off_law\", new object[] { call(it, \"shape\", new object[] { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)";
+    });
+
+    t("tests/felt.ray:13 on felt", () => {
+      object it = make("Felt", new object[] {  });
+      int guard = 0;
+      while (!truthy(gt(get(it, "cells"), 0.0))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(lt(call(it, "off_law", new object[] { call(it, "shape", new object[] { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new object[] { call(it, \"shape\", new object[] { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)";
+    });
+
     t("tests/field.ray:10 on line", () => {
       object it = call(K("G"), "field", new object[] { 6.0, 8.0, 1.0, 1.0 });
       int guard = 0;

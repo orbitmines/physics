@@ -74,6 +74,50 @@ class TestG < Minitest::Test
     assert(Ops.lt(Ops.mul(it.value_of("\\frac{a_{0}}{cH}", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183), "Ops.lt(Ops.mul(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183)")
   end
 
+  def test_tests_felt_ray_10_on_felt
+    it = Felt.new()
+    guard = 0
+    until Ops.gt(it.cells, 0)
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003)")
+  end
+
+  def test_tests_felt_ray_11_on_felt
+    it = Felt.new()
+    guard = 0
+    until Ops.gt(it.cells, 0)
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003)")
+  end
+
+  def test_tests_felt_ray_12_on_felt
+    it = Felt.new()
+    guard = 0
+    until Ops.gt(it.cells, 0)
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05), "Ops.gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05)")
+  end
+
+  def test_tests_felt_ray_13_on_felt
+    it = Felt.new()
+    guard = 0
+    until Ops.gt(it.cells, 0)
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01), "Ops.lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01)")
+  end
+
   def test_tests_field_ray_10_on_line
     it = G.field(6, 8, 1, 1)
     guard = 0

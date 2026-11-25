@@ -1,0 +1,356 @@
+/*
+ * WHAT IS FELT, SOLVED OVER THE WHOLE FIELD - the possibility space of galaxies on the continuous chain.
+ *
+ * The chain closes what is felt as g = g_N(1 + a_0/g) (`F_{g} \aside{closing}`): what arrives, and the mismatch an
+ * acceleration piles up until the room the vacuum makes cuts it off. That room is SPACE, made where the body's field
+ * meets the vacuum's - at the edge of its influence, where its rays meet the vacuum's and the meeting leaves a point
+ * behind (`\varepsilon`). Space made is a source of the record like any other: what it holds walks out as 1/R^(D-1),
+ * the same far field a body's own does. So the closing is not read point by point. At every place the law says how
+ * much more is felt than arrives, w = (F_g/g_N - 1) g_N; where w changes, space was made, as much as it changes
+ * (its divergence); and what is felt is what arrives plus the record of all that made space - solved over the whole
+ * field at once: -lap psi = div w, felt = g_N - grad psi. Round a single body the made space is a shell, and its
+ * record is the closing law exactly; round a disc it is not round, and what is felt at a radius is not the law of
+ * what arrives there alone. That is the area: galaxies with one arrival at a place can be felt differently.
+ *
+ * In units of a_0 (G = 1) and of the disc's own scale R_d a galaxy is its shape and ONE number, GM/(a_0 R_d^2): the
+ * mass and how far it is spread out enter only together. The freedoms are that number (`mass`), how thick the disc
+ * is (`thickness`), how much of the stars sit in a middle (`middle`, a Hernquist sphere of a tenth of the scale) and
+ * how much is gas laid wider (`gas`, at two and three scales). The field is solved on an axisymmetric grid - the log
+ * of the radius, and cos theta packed toward the plane - by finite volumes, so a lone body lands on the law to a
+ * thousandth of a dex; the disc's own field is summed ring by ring (Legendre's K and E by the arithmetic-geometric
+ * mean), and what is read is the plane, from a quarter of the scale out to thirty.
+ */
+Felt := class {
+  static NR = 96
+  static NMU = 40
+  static R0 = 0.003
+  static R1 = 30000
+  static SQ = 6
+  /* the rows below the grid a wider gas disc is read from: a disc w scales across is the unit disc at r/w */
+  static KMAX = 7
+  static NA = 120
+  static NZ = 8
+  static NEAR = 0.25
+  static FAR = 30
+  static HERNQUIST = 0.1
+  static XS = 700
+  static X0 = -5
+  static X1 = 4
+  static YS = 520
+  static Y0 = -4
+  static Y1 = 4
+  static MASS = [-2.5, 5, 61]
+  static THICK = [0.1, 0.02, 0.3]
+  static MIDDLE = [0, 0.2, 0.5]
+  /* gas: [share, how many rows wider] - none first, then half and nine tenths at two and three scales */
+  static GAS = [[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]]
+  static FREEDOMS = ["mass", "thickness", "middle", "gas"]
+
+  step (): Real => (Felt.R1 / Felt.R0).ln / Real.of(Felt.NR)
+  /* the radii: edges and centres, row i from -KMAX up */
+  edge (i: Z): Real => Felt.R0 * (this.step * Real.of(i)).exp
+  centre (i: Z): Real => Felt.R0 * (this.step * (Real.of(i) + 0.5)).exp
+  static sinh (x: Real): Real => (x.exp - (0 - x).exp) / 2
+  static mu_edge (j: N): Real => Felt.sinh(Felt.SQ * Real.of(j) / Real.of(Felt.NMU)) / Felt.sinh(Felt.SQ)
+  static mu_centre (j: N): Real => (Felt.mu_edge(j) + Felt.mu_edge(j + 1)) / 2
+  re: Real[] = Array.range(Felt.NR + 1).map(i => this.edge(i))
+  rc: Real[] = Array.range(Felt.NR).map(i => this.centre(i))
+  me: Real[] = Array.range(Felt.NMU + 1).map(j => Felt.mu_edge(j))
+  mc: Real[] = Array.range(Felt.NMU).map(j => Felt.mu_centre(j))
+  cells (): N => Felt.NR * Felt.NMU
+
+  /* what a ring of unit mass at radius a and height zs pulls with at (R, z), softened by eps2: [inward-positive R part toward it, z part toward it] */
+  static ring (R: Real, z: Real, a: Real, zs: Real, eps2: Real): Real[] => {
+    dz := z - zs
+    h2 := dz * dz + eps2
+    q2 := (a + R) * (a + R) + h2
+    q := q2.sqrt
+    m := 4 * a * R / q2
+    d2 := (a - R) * (a - R) + h2
+    big := 1
+    small := (1 - m).sqrt
+    tail := 0.5 * m
+    twice := 1
+    Array.range(10).for(k => {
+      c := (big - small) / 2
+      mean := (big + small) / 2
+      small = (big * small).sqrt
+      big = mean
+      twice = twice * 2
+      tail = tail + twice * c * c / 2
+    })
+    kk := Real.PI / (2 * big)
+    ee := kk * (1 - tail)
+    dk := m > 0.00000001 ? (ee - (1 - m) * kk) / (2 * m * (1 - m)) : Real.PI / 8
+    dm := (4 * a / q2) * (1 - 2 * R * (a + R) / q2)
+    [(2 / Real.PI) * (dk * dm / q - kk * (a + R) / (q2 * q)), 0 - (2 * dz * ee) / (Real.PI * q * d2)]
+  }
+  /* the unit exponential disc of thickness h, as rings: [R, z, mass, width] - annuli packed toward the middle, layers by the exponential's own quantiles */
+  static rings (h: Real): Real[][] => {
+    out := []
+    Array.range(Felt.NA).for(k => {
+      e0 := 20 * (Real.of(k) / Real.of(Felt.NA)) ^ 2
+      e1 := 20 * (Real.of(k + 1) / Real.of(Felt.NA)) ^ 2
+      held := (1 + e0) * (0 - e0).exp - (1 + e1) * (0 - e1).exp
+      Array.range(Felt.NZ).for(l => {
+        z := 0 - h * (1 - (Real.of(l) + 0.5) / Real.of(Felt.NZ)).ln
+        out.push([(e0 + e1) / 2, z, held / Real.of(Felt.NZ) / 2, e1 - e0])
+      })
+    })
+    out
+  }
+  /* what that disc pulls with at (R, z): [R part, z part], both toward it */
+  static disc_at (rings: Real[][], h: Real, R: Real, z: Real): Real[] => {
+    gr := 0
+    gz := 0
+    rings.for(b => {
+      e := 0.5 * Fmt.max(b[3], h / 4)
+      up := Felt.ring(R, z, b[0], b[1], e * e)
+      down := Felt.ring(R, z, b[0], 0 - b[1], e * e)
+      gr = gr + b[2] * (up[0] + down[0])
+      gz = gz + b[2] * (up[1] + down[1])
+    })
+    [gr, gz]
+  }
+  /* the unit disc's field on every cell, rows from -KMAX, and in the plane: [R parts, z parts, plane] */
+  unit: {} = { }
+  unit_disc (h: Real): Real[][] => {
+    key := "{h}"
+    return this.unit[key] if this.unit[key] != None
+    rings := Felt.rings(h)
+    rows := Felt.NR + Felt.KMAX
+    gr := Array.filled(rows * Felt.NMU, 0)
+    gz := Array.filled(rows * Felt.NMU, 0)
+    plane := Array.filled(rows, 0)
+    Array.range(rows).for(ii => {
+      r := this.centre(ii - Felt.KMAX)
+      Array.range(Felt.NMU).for(j => {
+        mu := this.mc[j]
+        g := Felt.disc_at(rings, h, r * (1 - mu * mu).sqrt, r * mu)
+        gr[ii * Felt.NMU + j] = g[0]
+        gz[ii * Felt.NMU + j] = g[1]
+      })
+      plane[ii] = Felt.disc_at(rings, h, r, 0)[0]
+    })
+    this.unit[key] = [gr, gz, plane]
+    this.unit[key]
+  }
+  /* a galaxy's field per unit of its whole mass, on the grid and in the plane: [R parts, z parts, plane], all toward it */
+  shape (h: Real, middle: Real, gas: Real, wider: N): Real[][] => {
+    stars := (1 - gas) * (1 - middle)
+    held := (1 - gas) * middle
+    u := stars > 0 | gas > 0 ? this.unit_disc(h) : None
+    w := (this.step * Real.of(wider)).exp
+    gr := Array.filled(this.cells, 0)
+    gz := Array.filled(this.cells, 0)
+    plane := Array.filled(Felt.NR, 0)
+    a := Felt.HERNQUIST
+    Array.range(Felt.NR).for(i => {
+      ii := i + Felt.KMAX
+      r := this.rc[i]
+      Array.range(Felt.NMU).for(j => {
+        mu := this.mc[j]
+        c := i * Felt.NMU + j
+        pull := held / (r * (r + a) * (r + a))
+        R := r * (1 - mu * mu).sqrt
+        gr[c] = (u == None ? 0 : stars * u[0][ii * Felt.NMU + j] + gas * u[0][(ii - wider) * Felt.NMU + j] / (w * w)) + pull * (0 - R)
+        gz[c] = (u == None ? 0 : stars * u[1][ii * Felt.NMU + j] + gas * u[1][(ii - wider) * Felt.NMU + j] / (w * w)) + pull * (0 - r * mu)
+      })
+      plane[i] = (u == None ? 0 : stars * u[2][ii] + gas * u[2][ii - wider] / (w * w)) - held / ((r + a) * (r + a))
+    })
+    [gr, gz, plane]
+  }
+
+  /* THE RECORD OF MADE SPACE, by finite volumes: each cell's faces, and the band of the Laplacian factored once */
+  faces: Real[][] = Array.range(this.cells).map(c => this.faces_of(c))
+  faces_of (c: N): Real[] => {
+    i := (c / Felt.NMU).floor
+    j := c % Felt.NMU
+    dmu := this.me[j + 1] - this.me[j]
+    dr := this.re[i + 1] - this.re[i]
+    out_ := i + 1 < Felt.NR ? 2 * Real.PI * this.re[i + 1] * this.re[i + 1] * dmu / (this.rc[i + 1] - this.rc[i]) : 2 * Real.PI * this.re[i + 1] * this.re[i + 1] * dmu / (this.re[i + 1] - this.rc[i])
+    in_ := i > 0 ? 2 * Real.PI * this.re[i] * this.re[i] * dmu / (this.rc[i] - this.rc[i - 1]) : 0
+    up := j + 1 < Felt.NMU ? 2 * Real.PI * (1 - this.me[j + 1] * this.me[j + 1]) * dr / (this.mc[j + 1] - this.mc[j]) : 0
+    down := j > 0 ? 2 * Real.PI * (1 - this.me[j] * this.me[j]) * dr / (this.mc[j] - this.mc[j - 1]) : 0
+    [out_, in_, up, down]
+  }
+  width (): N => 2 * Felt.NMU + 1
+  at_band (k: N, l: N): N => k * this.width + (l - k + Felt.NMU)
+  band: Real[] = this.factored
+  factored (): Real[] => {
+    n := this.cells
+    B := Felt.NMU
+    W := this.width
+    m := Array.filled(n * W, 0)
+    Array.range(n).for(k => {
+      i := (k / B).floor
+      j := k % B
+      f := this.faces[k]
+      m[k * W + B] = f[0] + f[1] + f[2] + f[3]
+      m[k * W + B + B] = 0 - f[0] if i + 1 < Felt.NR
+      m[k * W] = 0 - f[1] if i > 0
+      m[k * W + B + 1] = 0 - f[2] if j + 1 < B
+      m[k * W + B - 1] = 0 - f[3] if j > 0
+    })
+    /* the band's LU, without pivoting: the operator is diagonally dominant */
+    Array.range(n).for(k => {
+      p := m[k * W + B]
+      last := Fmt.min(n - 1, k + B)
+      l := k + 1
+      while l <= last {
+        f := m[l * W + (k - l + B)] / p
+        if f != 0 {
+          m[l * W + (k - l + B)] = f
+          q := k + 1
+          while q <= last {
+            m[l * W + (q - l + B)] = m[l * W + (q - l + B)] - f * m[k * W + (q - k + B)]
+            q = q + 1
+          }
+        }
+        l = l + 1
+      }
+    })
+    m
+  }
+  solve_band (b: Real[]): Real[] => {
+    n := this.cells
+    B := Felt.NMU
+    W := this.width
+    m := this.band
+    x := b.map(v => v)
+    Array.range(n).for(k => {
+      last := Fmt.min(n - 1, k + B)
+      l := k + 1
+      while l <= last {
+        x[l] = x[l] - m[l * W + (k - l + B)] * x[k]
+        l = l + 1
+      }
+    })
+    back := n - 1
+    while back >= 0 {
+      left := x[back]
+      last := Fmt.min(n - 1, back + B)
+      q := back + 1
+      while q <= last {
+        left = left - m[back * W + (q - back + B)] * x[q]
+        q = q + 1
+      }
+      x[back] = left / m[back * W + B]
+      back = back - 1
+    }
+    x
+  }
+  /* the chain's closing, as a share over what arrives: F_g/g_N at a_0 = 1 */
+  static over (gN: Real): Real => gN > 0 ? 0.5 + (0.25 + 1 / gN).sqrt : 1
+  /* a galaxy of mass `s` (GM/(a_0 R_d^2)) of that shape: along the plane, [radius, what arrives, what is felt] per row read */
+  felt (shape: Real[][], s: Real): Real[][] => {
+    n := this.cells
+    B := Felt.NMU
+    wr := Array.filled(n, 0)
+    wm := Array.filled(n, 0)
+    Array.range(n).for(c => {
+      j := c % B
+      gr := s * shape[0][c]
+      gz := s * shape[1][c]
+      f := Felt.over(Fmt.hypot(gr, gz)) - 1
+      mu := this.mc[j]
+      st := (1 - mu * mu).sqrt
+      /* w points where g_N does - toward the galaxy - as the r part outward and the part toward the pole */
+      wr[c] = f * (gr * st + gz * mu)
+      wm[c] = f * (gz * st - gr * mu)
+    })
+    rhs := Array.filled(n, 0)
+    Array.range(n).for(c => {
+      i := (c / B).floor
+      j := c % B
+      dmu := this.me[j + 1] - this.me[j]
+      dr := this.re[i + 1] - this.re[i]
+      fo := i + 1 < Felt.NR ? (wr[c] + wr[c + B]) / 2 : wr[c]
+      fi := i > 0 ? (wr[c - B] + wr[c]) / 2 : wr[c]
+      up := j + 1 < B ? (wm[c] + wm[c + 1]) / 2 : 0
+      down := j > 0 ? (wm[c - 1] + wm[c]) / 2 : 0
+      made := fo * 2 * Real.PI * this.re[i + 1] * this.re[i + 1] * dmu + up * 2 * Real.PI * (1 - this.me[j + 1] * this.me[j + 1]) * dr - down * 2 * Real.PI * (1 - this.me[j] * this.me[j]) * dr
+      /* the innermost face lets in what the middle holds, as w gives it */
+      rhs[c] = i > 0 ? made - fi * 2 * Real.PI * this.re[i] * this.re[i] * dmu : made
+    })
+    psi := this.solve_band(rhs)
+    out := []
+    Array.range(Felt.NR).for(i => {
+      r := this.rc[i]
+      if i > 0 & i + 1 < Felt.NR & r >= Felt.NEAR & r <= Felt.FAR {
+        made := 0 - (psi[(i + 1) * B] - psi[(i - 1) * B]) / (this.rc[i + 1] - this.rc[i - 1])
+        gN := 0 - s * shape[2][i]
+        out.push([r, gN, gN - made])
+      }
+    })
+    out
+  }
+
+  /* how far a galaxy is felt from the closing law read point by point, at most along its plane, in dex */
+  off_law (shape: Real[][], s: Real): Real => this.felt(shape, s).reduce(0, (most, q) => Fmt.max(most, Fmt.log10(q[2] / (q[1] * Felt.over(q[1]))).abs))
+
+  /* THE SPACE: every galaxy laid as a density on (log g_N, log g), in a_0 */
+  static dx (): Real => (Felt.X1 - Felt.X0) / Real.of(Felt.XS - 1)
+  static dy (): Real => (Felt.Y1 - Felt.Y0) / Real.of(Felt.YS - 1)
+  static bits_in (mask: N): N => Array.range(4).filter(k => ((mask / 2 ^ k).floor % 2) == 1).length
+  /* which of the four a galaxy uses: a bit for each freedom away from where it is held */
+  static uses (mi: N, ti: N, ci: N, gi: N): N => {
+    held := ((0 - Felt.MASS[0]) / ((Felt.MASS[1] - Felt.MASS[0]) / Real.of(Felt.MASS[2] - 1))).round
+    (mi != held ? 1 : 0) + (ti != 0 ? 2 : 0) + (ci != 0 ? 4 : 0) + (gi != 0 ? 8 : 0)
+  }
+  static mass_at (mi: N): Real => Felt.MASS[0] + (Felt.MASS[1] - Felt.MASS[0]) * Real.of(mi) / Real.of(Felt.MASS[2] - 1)
+  /* gathered: the whole mass as one body, a middle and no disc; scattered: every shape */
+  space (how: String): {} => {
+    p := Array.filled(Felt.XS * Felt.YS, 0)
+    by := Array.filled(Felt.XS * Felt.YS, -1)
+    needs := Array.filled(Felt.XS * Felt.YS, 99)
+    lay := (track: Real[][], mask: N, dex: Real) => {
+      Array.range(track.length - 1).for(k => {
+        xa := Fmt.log10(track[k][1])
+        xb := Fmt.log10(track[k + 1][1])
+        ya := Fmt.log10(track[k][2])
+        yb := Fmt.log10(track[k + 1][2])
+        if Fmt.finite(xa) & Fmt.finite(xb) & Fmt.finite(ya) & Fmt.finite(yb) {
+          st := Fmt.max(1, (Fmt.max((xb - xa).abs / Felt.dx, (yb - ya).abs / Felt.dy)).floor + 1)
+          Array.range(st).for(t => {
+            f := (Real.of(t) + 0.5) / Real.of(st)
+            gx := ((xa + f * (xb - xa) - Felt.X0) / Felt.dx).round
+            gy := ((ya + f * (yb - ya) - Felt.Y0) / Felt.dy).round
+            unless gx < 0 | gy < 0 | gx >= Felt.XS | gy >= Felt.YS {
+              c := gy * Felt.XS + gx
+              p[c] = p[c] + 1 / Real.of(st)
+              needs[c] = Fmt.min(needs[c], dex)
+              was := by[c]
+              fewer := was < 0 | Felt.bits_in(mask) < Felt.bits_in(was) | (Felt.bits_in(mask) == Felt.bits_in(was) & mask < was)
+              by[c] = mask if fewer
+            }
+          })
+        }
+      })
+    }
+    gathered := how == "gathered"
+    thick := gathered ? [Felt.THICK[0]] : Felt.THICK
+    middles := gathered ? [1] : Felt.MIDDLE
+    gases := gathered ? [Felt.GAS[0]] : Felt.GAS
+    tracks := 0
+    Array.range(thick.length).for(ti => {
+      Array.range(middles.length).for(ci => {
+        Array.range(gases.length).for(gi => {
+          sh := this.shape(thick[ti], middles[ci], gases[gi][0], gases[gi][1])
+          Array.range(Felt.MASS[2]).for(mi => {
+            dex := Felt.mass_at(mi)
+            lay(this.felt(sh, 10 ^ dex), Felt.uses(mi, ti, ci, gi), dex)
+            tracks = tracks + 1
+          })
+        })
+      })
+    })
+    out := { }
+    out["p"] = p
+    out["by"] = by.map(v => v < 0 ? 0 : v)
+    out["needs"] = needs
+    out["tracks"] = tracks
+    out["freedoms"] = gathered ? ["mass"] : Felt.FREEDOMS
+    out
+  }
+}

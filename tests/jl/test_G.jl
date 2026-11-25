@@ -105,6 +105,54 @@ run_case(j"tests/coincidence.ray:20 on coincidence", @dynamic_names(() -> begin
 end))
 
 
+run_case(j"tests/felt.ray:10 on felt", @dynamic_names(() -> begin
+  it = Felt()
+  guard = 0
+  while !truthy((cells(it) > 0.0))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 1.0) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 1.0) < 0.003)")
+end))
+
+
+run_case(j"tests/felt.ray:11 on felt", @dynamic_names(() -> begin
+  it = Felt()
+  guard = 0
+  while !truthy((cells(it) > 0.0))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 0.01) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 0.01) < 0.003)")
+end))
+
+
+run_case(j"tests/felt.ray:12 on felt", @dynamic_names(() -> begin
+  it = Felt()
+  guard = 0
+  while !truthy((cells(it) > 0.0))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 0.01) > 0.05)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 0.01) > 0.05)")
+end))
+
+
+run_case(j"tests/felt.ray:13 on felt", @dynamic_names(() -> begin
+  it = Felt()
+  guard = 0
+  while !truthy((cells(it) > 0.0))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 100.0) < 0.01)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 100.0) < 0.01)")
+end))
+
+
 run_case(j"tests/field.ray:10 on line", @dynamic_names(() -> begin
   it = field(G, 6.0, 8.0, 1.0, 1.0)
   guard = 0

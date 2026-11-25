@@ -93,6 +93,54 @@ fn run(only: Option<String>) -> bool {
       if truthy(&lt(&mul(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)) { PASS.to_string() } else { format!("failed: {}", "lt(&mul(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)") }
     });
 
+    t(s, "tests/felt.ray:10 on felt", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Felt"), args![]))));
+      let mut guard = 0;
+      while !truthy(&gt(&get(&it, "cells"), &0.0)) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 0.0]), 1.0]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 0.0]), 1.0]), &0.003)") }
+    });
+
+    t(s, "tests/felt.ray:11 on felt", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Felt"), args![]))));
+      let mut guard = 0;
+      while !truthy(&gt(&get(&it, "cells"), &0.0)) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 0.0]), 0.01]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 0.0]), 0.01]), &0.003)") }
+    });
+
+    t(s, "tests/felt.ray:12 on felt", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Felt"), args![]))));
+      let mut guard = 0;
+      while !truthy(&gt(&get(&it, "cells"), &0.0)) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&gt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 0.0]), 0.01]), &0.05)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 0.0]), 0.01]), &0.05)") }
+    });
+
+    t(s, "tests/felt.ray:13 on felt", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Felt"), args![]))));
+      let mut guard = 0;
+      while !truthy(&gt(&get(&it, "cells"), &0.0)) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 0.0]), 100.0]), &0.01)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 0.0]), 100.0]), &0.01)") }
+    });
+
     t(s, "tests/field.ray:10 on line", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&call(&k!("G"), "field", args![6.0, 8.0, 1.0, 1.0]))));

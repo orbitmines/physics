@@ -193,7 +193,7 @@ ray_impl_getter "a0_lattice" : Float := do
   if true then return (← ωelem (← ωget self "cache") ("a0" : String))
   return ωnull
 ray_impl_method "boost" (gN_0 : Float) (a0_0 : Float) : Float := do
-  let F_0 ← IO.mkRef (← call! self "fact" (("F_{g}" : String)))
+  let F_0 ← IO.mkRef (← ωorElse (← call! self "fact" (("F_{g} \\aside{closing}" : String))) (do pure (← call! self "fact" (("F_{g}" : String)))))
   if ωtruthy (ωisNull (← F_0.get)) then
     if true then return (0.0 / 0.0 : Float)
     pure ()

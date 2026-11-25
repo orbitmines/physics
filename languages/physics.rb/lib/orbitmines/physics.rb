@@ -13721,7 +13721,7 @@ class Galaxies < Node
     @SEVERAL = v
   end
   def self.FREEDOMS
-    @FREEDOMS = (["mass", "face", "moving", "spread"]) unless instance_variable_defined?(:@FREEDOMS)
+    @FREEDOMS = (["mass", "thickness", "middle", "gas"]) unless instance_variable_defined?(:@FREEDOMS)
     @FREEDOMS
   end
   def self.FREEDOMS=(v)
@@ -13735,7 +13735,7 @@ class Galaxies < Node
     @TINTS = v
   end
   def self.NAMES_NOW
-    @NAMES_NOW = (["mass", "face", "moving", "spread"]) unless instance_variable_defined?(:@NAMES_NOW)
+    @NAMES_NOW = (["mass", "thickness", "middle", "gas"]) unless instance_variable_defined?(:@NAMES_NOW)
     @NAMES_NOW
   end
   def self.NAMES_NOW=(v)
@@ -14473,7 +14473,7 @@ class Galaxies < Node
   def self.ratio_at(data, deg)
     table = Ops.getattr(data.header, "coincidence")
     if Ops.eq(table, nil)
-      fail.("the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)")
+      fail.("the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)")
     end
     ds = Ops.getattr(table, "deg")
     rs = Ops.getattr(table, "ratio")
@@ -14491,8 +14491,12 @@ class Galaxies < Node
     return Ops.add(Ops.mul(Ops.elem(rs, k), (Ops.sub(1, f))), Ops.mul(Ops.elem(rs, Ops.add(k, 1)), f))
   end
   def self.shift_at(data, deg)
+    return Fmt.log10(Ops.div(Ops.mul(Ops.mul(Galaxies.ratio_at(data, deg), Sparc.C_LIGHT), Galaxies.rate_of(data)), Galaxies.A0_DATA))
+  end
+  def self.rate_of(data)
     _H = Ops.div(Ops.mul(Galaxies.H0, 1000), (Ops.mul(Sparc.KPC, 1000)))
-    return Fmt.log10(Ops.div(Ops.mul(Ops.mul(Galaxies.ratio_at(data, deg), Sparc.C_LIGHT), _H), Galaxies.A0_DATA))
+    table = Ops.getattr(data.header, "coincidence")
+    return ((!Ops.eq(table, nil) && Ops.eq(Ops.getattr(table, "against"), "H_Lambda")) ? Ops.mul(_H, Ops.m_sqrt((Ops.sub(1, Simulation.OMEGA_M)))) : _H)
   end
   def self.frame_of(solved, k)
     grid = Ops.getattr(solved.header, "grid")
@@ -14616,7 +14620,7 @@ class Galaxies < Node
   def self.of(id, what, title)
     solved = Measured.of("#{id}.solved")
     if Ops.eq(solved, nil)
-      fail.("#{id}.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again")
+      fail.("#{id}.solved is not on disk - solve the space (`npx ray measure #{id}`) and try again")
     end
     ks = Galaxies.sweep_of(solved)
     return Picture.new(id: id, what: what, width: 960, height: 720, frames: ks.length, paint: ->(played) {
@@ -14626,10 +14630,9 @@ class Galaxies < Node
   def self.a0_at(deg)
     space = Measured.of("galaxy.many.solved")
     if Ops.eq(space, nil)
-      fail.("galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again")
+      fail.("galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again")
     end
-    _H = Ops.div(Ops.mul(Galaxies.H0, 1000), (Ops.mul(Sparc.KPC, 1000)))
-    return Ops.mul(Ops.mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), _H)
+    return Ops.mul(Ops.mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), Galaxies.rate_of(space))
   end
   def self.curve_pick
     return Galaxies.pick(Ops.mul(Galaxies.CURVE_ROWS, Galaxies.CURVE_COLS))
@@ -15288,10 +15291,10 @@ class Galaxies < Node
     return s.fill_text("g_baryons / 1.2e-10 m/s²", Ops.div((Ops.add(bx0, bx1)), 2), Ops.add(by1, 34))
   end
   def self.point
-    return Galaxies.of("galaxy.point", "a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement", "A GALAXY AS ONE SOURCE")
+    return Galaxies.of("galaxy.point", "a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly", "A GALAXY AS ONE BODY")
   end
   def self.many
-    return Galaxies.of("galaxy.many", "and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin", "A GALAXY AS MANY SOURCES, ONE PER STAR")
+    return Galaxies.of("galaxy.many", "and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be", "EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD")
   end
   __exposed
 end
@@ -17715,7 +17718,7 @@ class Model < Node
     return Ops.getattr(self.cache, "a0")
   end
   def boost(gN, a0)
-    _F = self.fact("F_{g}")
+    _F = Ops.or_else(self.fact("F_{g} \\aside{closing}")) { self.fact("F_{g}") }
     if Ops.eq(_F, nil)
       return Float::NAN
     end
@@ -17823,6 +17826,539 @@ class Model < Node
   end
   def self.speed(g, _R)
     return (Ops.gt(g, 0) ? Ops.m_sqrt((Ops.mul(_R, g))) : Float::NAN)
+  end
+  __exposed
+end
+
+class Felt < Node
+  def self.NR
+    @NR = (96) unless instance_variable_defined?(:@NR)
+    @NR
+  end
+  def self.NR=(v)
+    @NR = v
+  end
+  def self.NMU
+    @NMU = (40) unless instance_variable_defined?(:@NMU)
+    @NMU
+  end
+  def self.NMU=(v)
+    @NMU = v
+  end
+  def self.R0
+    @R0 = (0.003) unless instance_variable_defined?(:@R0)
+    @R0
+  end
+  def self.R0=(v)
+    @R0 = v
+  end
+  def self.R1
+    @R1 = (30000) unless instance_variable_defined?(:@R1)
+    @R1
+  end
+  def self.R1=(v)
+    @R1 = v
+  end
+  def self.SQ
+    @SQ = (6) unless instance_variable_defined?(:@SQ)
+    @SQ
+  end
+  def self.SQ=(v)
+    @SQ = v
+  end
+  def self.KMAX
+    @KMAX = (7) unless instance_variable_defined?(:@KMAX)
+    @KMAX
+  end
+  def self.KMAX=(v)
+    @KMAX = v
+  end
+  def self.NA
+    @NA = (120) unless instance_variable_defined?(:@NA)
+    @NA
+  end
+  def self.NA=(v)
+    @NA = v
+  end
+  def self.NZ
+    @NZ = (8) unless instance_variable_defined?(:@NZ)
+    @NZ
+  end
+  def self.NZ=(v)
+    @NZ = v
+  end
+  def self.NEAR
+    @NEAR = (0.25) unless instance_variable_defined?(:@NEAR)
+    @NEAR
+  end
+  def self.NEAR=(v)
+    @NEAR = v
+  end
+  def self.FAR
+    @FAR = (30) unless instance_variable_defined?(:@FAR)
+    @FAR
+  end
+  def self.FAR=(v)
+    @FAR = v
+  end
+  def self.HERNQUIST
+    @HERNQUIST = (0.1) unless instance_variable_defined?(:@HERNQUIST)
+    @HERNQUIST
+  end
+  def self.HERNQUIST=(v)
+    @HERNQUIST = v
+  end
+  def self.XS
+    @XS = (700) unless instance_variable_defined?(:@XS)
+    @XS
+  end
+  def self.XS=(v)
+    @XS = v
+  end
+  def self.X0
+    @X0 = ((-5)) unless instance_variable_defined?(:@X0)
+    @X0
+  end
+  def self.X0=(v)
+    @X0 = v
+  end
+  def self.X1
+    @X1 = (4) unless instance_variable_defined?(:@X1)
+    @X1
+  end
+  def self.X1=(v)
+    @X1 = v
+  end
+  def self.YS
+    @YS = (520) unless instance_variable_defined?(:@YS)
+    @YS
+  end
+  def self.YS=(v)
+    @YS = v
+  end
+  def self.Y0
+    @Y0 = ((-4)) unless instance_variable_defined?(:@Y0)
+    @Y0
+  end
+  def self.Y0=(v)
+    @Y0 = v
+  end
+  def self.Y1
+    @Y1 = (4) unless instance_variable_defined?(:@Y1)
+    @Y1
+  end
+  def self.Y1=(v)
+    @Y1 = v
+  end
+  def self.MASS
+    @MASS = ([(-2.5), 5, 61]) unless instance_variable_defined?(:@MASS)
+    @MASS
+  end
+  def self.MASS=(v)
+    @MASS = v
+  end
+  def self.THICK
+    @THICK = ([0.1, 0.02, 0.3]) unless instance_variable_defined?(:@THICK)
+    @THICK
+  end
+  def self.THICK=(v)
+    @THICK = v
+  end
+  def self.MIDDLE
+    @MIDDLE = ([0, 0.2, 0.5]) unless instance_variable_defined?(:@MIDDLE)
+    @MIDDLE
+  end
+  def self.MIDDLE=(v)
+    @MIDDLE = v
+  end
+  def self.GAS
+    @GAS = ([[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]]) unless instance_variable_defined?(:@GAS)
+    @GAS
+  end
+  def self.GAS=(v)
+    @GAS = v
+  end
+  def self.FREEDOMS
+    @FREEDOMS = (["mass", "thickness", "middle", "gas"]) unless instance_variable_defined?(:@FREEDOMS)
+    @FREEDOMS
+  end
+  def self.FREEDOMS=(v)
+    @FREEDOMS = v
+  end
+  def step
+    return Ops.div(Ops.m_ln((Ops.div(Felt.R1, Felt.R0))), Felt.NR)
+  end
+  def edge(i)
+    return Ops.mul(Felt.R0, Ops.m_exp((Ops.mul(self.step, i))))
+  end
+  def centre(i)
+    return Ops.mul(Felt.R0, Ops.m_exp((Ops.mul(self.step, (Ops.add(i, 0.5))))))
+  end
+  def self.sinh(x)
+    return Ops.div((Ops.sub(Ops.m_exp(x), Ops.m_exp((Ops.sub(0, x))))), 2)
+  end
+  def self.mu_edge(j)
+    return Ops.div(Felt.sinh(Ops.div(Ops.mul(Felt.SQ, j), Felt.NMU)), Felt.sinh(Felt.SQ))
+  end
+  def self.mu_centre(j)
+    return Ops.div((Ops.add(Felt.mu_edge(j), Felt.mu_edge(Ops.add(j, 1)))), 2)
+  end
+  def re(*args_)
+    @re = (Ops.m_map(Ops.rng(Ops.add(Felt.NR, 1)), ->(i) {
+    return self.edge(i)
+  })) unless instance_variable_defined?(:@re)
+    args_.empty? ? @re : @re.(*args_)
+  end
+  attr_writer :re
+  def rc(*args_)
+    @rc = (Ops.m_map(Ops.rng(Felt.NR), ->(i) {
+    return self.centre(i)
+  })) unless instance_variable_defined?(:@rc)
+    args_.empty? ? @rc : @rc.(*args_)
+  end
+  attr_writer :rc
+  def me(*args_)
+    @me = (Ops.m_map(Ops.rng(Ops.add(Felt.NMU, 1)), ->(j) {
+    return Felt.mu_edge(j)
+  })) unless instance_variable_defined?(:@me)
+    args_.empty? ? @me : @me.(*args_)
+  end
+  attr_writer :me
+  def mc(*args_)
+    @mc = (Ops.m_map(Ops.rng(Felt.NMU), ->(j) {
+    return Felt.mu_centre(j)
+  })) unless instance_variable_defined?(:@mc)
+    args_.empty? ? @mc : @mc.(*args_)
+  end
+  attr_writer :mc
+  def cells
+    return Ops.mul(Felt.NR, Felt.NMU)
+  end
+  def self.ring(_R, z, a, zs, eps2)
+    dz = Ops.sub(z, zs)
+    h2 = Ops.add(Ops.mul(dz, dz), eps2)
+    q2 = Ops.add(Ops.mul((Ops.add(a, _R)), (Ops.add(a, _R))), h2)
+    q = Ops.m_sqrt(q2)
+    m = Ops.div(Ops.mul(Ops.mul(4, a), _R), q2)
+    d2 = Ops.add(Ops.mul((Ops.sub(a, _R)), (Ops.sub(a, _R))), h2)
+    big = 1
+    small = Ops.m_sqrt((Ops.sub(1, m)))
+    tail = Ops.mul(0.5, m)
+    twice = 1
+    10.times do |k|
+      c = Ops.div((Ops.sub(big, small)), 2)
+      mean = Ops.div((Ops.add(big, small)), 2)
+      small = Ops.m_sqrt((Ops.mul(big, small)))
+      big = mean
+      twice = Ops.mul(twice, 2)
+      tail = Ops.add(tail, Ops.div(Ops.mul(Ops.mul(twice, c), c), 2))
+    end
+    kk = Ops.div(Math::PI, (Ops.mul(2, big)))
+    ee = Ops.mul(kk, (Ops.sub(1, tail)))
+    dk = (Ops.gt(m, 0.00000001) ? Ops.div((Ops.sub(ee, Ops.mul((Ops.sub(1, m)), kk))), (Ops.mul(Ops.mul(2, m), (Ops.sub(1, m))))) : Ops.div(Math::PI, 8))
+    dm = Ops.mul((Ops.div(Ops.mul(4, a), q2)), (Ops.sub(1, Ops.div(Ops.mul(Ops.mul(2, _R), (Ops.add(a, _R))), q2))))
+    return [Ops.mul((Ops.div(2, Math::PI)), (Ops.sub(Ops.div(Ops.mul(dk, dm), q), Ops.div(Ops.mul(kk, (Ops.add(a, _R))), (Ops.mul(q2, q)))))), Ops.sub(0, Ops.div((Ops.mul(Ops.mul(2, dz), ee)), (Ops.mul(Ops.mul(Math::PI, q), d2))))]
+  end
+  def self.rings(h)
+    out = []
+    Felt.NA.times do |k|
+      e0 = Ops.mul(20, Ops.power((Ops.div(k, Felt.NA)), 2))
+      e1 = Ops.mul(20, Ops.power((Ops.div(Ops.add(k, 1), Felt.NA)), 2))
+      held = Ops.sub(Ops.mul((Ops.add(1, e0)), Ops.m_exp((Ops.sub(0, e0)))), Ops.mul((Ops.add(1, e1)), Ops.m_exp((Ops.sub(0, e1)))))
+      Felt.NZ.times do |l|
+        z = Ops.sub(0, Ops.mul(h, Ops.m_ln((Ops.sub(1, Ops.div((Ops.add(l, 0.5)), Felt.NZ))))))
+        Ops.m_push(out, [Ops.div((Ops.add(e0, e1)), 2), z, Ops.div(Ops.div(held, Felt.NZ), 2), Ops.sub(e1, e0)])
+      end
+    end
+    return out
+  end
+  def self.disc_at(rings, h, _R, z)
+    gr = 0
+    gz = 0
+    Ops.list(rings).each do |b|
+      e = Ops.mul(0.5, Fmt.max(Ops.elem(b, 3), Ops.div(h, 4)))
+      up = Felt.ring(_R, z, Ops.elem(b, 0), Ops.elem(b, 1), Ops.mul(e, e))
+      down = Felt.ring(_R, z, Ops.elem(b, 0), Ops.sub(0, Ops.elem(b, 1)), Ops.mul(e, e))
+      gr = Ops.add(gr, Ops.mul(Ops.elem(b, 2), (Ops.add(Ops.elem(up, 0), Ops.elem(down, 0)))))
+      gz = Ops.add(gz, Ops.mul(Ops.elem(b, 2), (Ops.add(Ops.elem(up, 1), Ops.elem(down, 1)))))
+    end
+    return [gr, gz]
+  end
+  def unit(*args_)
+    @unit = (Node.new) unless instance_variable_defined?(:@unit)
+    args_.empty? ? @unit : @unit.(*args_)
+  end
+  attr_writer :unit
+  def unit_disc(h)
+    key = "#{h}"
+    if !Ops.eq(Ops.elem(self.unit, key), nil)
+      return Ops.elem(self.unit, key)
+    end
+    rings = Felt.rings(h)
+    rows = Ops.add(Felt.NR, Felt.KMAX)
+    gr = Ops.filled(Ops.mul(rows, Felt.NMU), 0)
+    gz = Ops.filled(Ops.mul(rows, Felt.NMU), 0)
+    plane = Ops.filled(rows, 0)
+    rows.times do |ii|
+      r = self.centre(Ops.sub(ii, Felt.KMAX))
+      Felt.NMU.times do |j|
+        mu = Ops.elem(self.mc, j)
+        g = Felt.disc_at(rings, h, Ops.mul(r, Ops.m_sqrt((Ops.sub(1, Ops.mul(mu, mu))))), Ops.mul(r, mu))
+        Ops.set_at(gr, Ops.add(Ops.mul(ii, Felt.NMU), j), Ops.elem(g, 0))
+        Ops.set_at(gz, Ops.add(Ops.mul(ii, Felt.NMU), j), Ops.elem(g, 1))
+      end
+      Ops.set_at(plane, ii, Ops.elem(Felt.disc_at(rings, h, r, 0), 0))
+    end
+    Ops.set_at(self.unit, key, [gr, gz, plane])
+    return Ops.elem(self.unit, key)
+  end
+  def shape(h, middle, gas, wider)
+    stars = Ops.mul((Ops.sub(1, gas)), (Ops.sub(1, middle)))
+    held = Ops.mul((Ops.sub(1, gas)), middle)
+    u = ((Ops.gt(stars, 0) || Ops.gt(gas, 0)) ? self.unit_disc(h) : nil)
+    w = Ops.m_exp((Ops.mul(self.step, wider)))
+    gr = Ops.filled(self.cells, 0)
+    gz = Ops.filled(self.cells, 0)
+    plane = Ops.filled(Felt.NR, 0)
+    a = Felt.HERNQUIST
+    Felt.NR.times do |i|
+      ii = Ops.add(i, Felt.KMAX)
+      r = Ops.elem(self.rc, i)
+      Felt.NMU.times do |j|
+        mu = Ops.elem(self.mc, j)
+        c = Ops.add(Ops.mul(i, Felt.NMU), j)
+        pull = Ops.div(held, (Ops.mul(Ops.mul(r, (Ops.add(r, a))), (Ops.add(r, a)))))
+        _R = Ops.mul(r, Ops.m_sqrt((Ops.sub(1, Ops.mul(mu, mu)))))
+        Ops.set_at(gr, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 0), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 0), Ops.add(Ops.mul((Ops.sub(ii, wider)), Felt.NMU), j))), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, _R)))))
+        Ops.set_at(gz, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 1), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 1), Ops.add(Ops.mul((Ops.sub(ii, wider)), Felt.NMU), j))), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, Ops.mul(r, mu))))))
+      end
+      Ops.set_at(plane, i, Ops.sub(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 2), ii)), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 2), Ops.sub(ii, wider))), (Ops.mul(w, w)))))), Ops.div(held, (Ops.mul((Ops.add(r, a)), (Ops.add(r, a)))))))
+    end
+    return [gr, gz, plane]
+  end
+  def faces(*args_)
+    @faces = (Ops.m_map(Ops.rng(self.cells), ->(c) {
+    return self.faces_of(c)
+  })) unless instance_variable_defined?(:@faces)
+    args_.empty? ? @faces : @faces.(*args_)
+  end
+  attr_writer :faces
+  def faces_of(c)
+    i = Ops.m_floor((Ops.div(c, Felt.NMU)))
+    j = Ops.mod(c, Felt.NMU)
+    dmu = Ops.sub(Ops.elem(self.me, Ops.add(j, 1)), Ops.elem(self.me, j))
+    dr = Ops.sub(Ops.elem(self.re, Ops.add(i, 1)), Ops.elem(self.re, i))
+    out_ = (Ops.lt(Ops.add(i, 1), Felt.NR) ? Ops.div(Ops.mul(Ops.mul(Ops.mul(Ops.mul(2, Math::PI), Ops.elem(self.re, Ops.add(i, 1))), Ops.elem(self.re, Ops.add(i, 1))), dmu), (Ops.sub(Ops.elem(self.rc, Ops.add(i, 1)), Ops.elem(self.rc, i)))) : Ops.div(Ops.mul(Ops.mul(Ops.mul(Ops.mul(2, Math::PI), Ops.elem(self.re, Ops.add(i, 1))), Ops.elem(self.re, Ops.add(i, 1))), dmu), (Ops.sub(Ops.elem(self.re, Ops.add(i, 1)), Ops.elem(self.rc, i)))))
+    in_ = (Ops.gt(i, 0) ? Ops.div(Ops.mul(Ops.mul(Ops.mul(Ops.mul(2, Math::PI), Ops.elem(self.re, i)), Ops.elem(self.re, i)), dmu), (Ops.sub(Ops.elem(self.rc, i), Ops.elem(self.rc, Ops.sub(i, 1))))) : 0)
+    up = (Ops.lt(Ops.add(j, 1), Felt.NMU) ? Ops.div(Ops.mul(Ops.mul(Ops.mul(2, Math::PI), (Ops.sub(1, Ops.mul(Ops.elem(self.me, Ops.add(j, 1)), Ops.elem(self.me, Ops.add(j, 1)))))), dr), (Ops.sub(Ops.elem(self.mc, Ops.add(j, 1)), Ops.elem(self.mc, j)))) : 0)
+    down = (Ops.gt(j, 0) ? Ops.div(Ops.mul(Ops.mul(Ops.mul(2, Math::PI), (Ops.sub(1, Ops.mul(Ops.elem(self.me, j), Ops.elem(self.me, j))))), dr), (Ops.sub(Ops.elem(self.mc, j), Ops.elem(self.mc, Ops.sub(j, 1))))) : 0)
+    return [out_, in_, up, down]
+  end
+  def width
+    return Ops.add(Ops.mul(2, Felt.NMU), 1)
+  end
+  def at_band(k, l)
+    return Ops.add(Ops.mul(k, self.width), (Ops.add(Ops.sub(l, k), Felt.NMU)))
+  end
+  def band(*args_)
+    @band = (self.factored) unless instance_variable_defined?(:@band)
+    args_.empty? ? @band : @band.(*args_)
+  end
+  attr_writer :band
+  def factored
+    n = self.cells
+    _B = Felt.NMU
+    _W = self.width
+    m = Ops.filled(Ops.mul(n, _W), 0)
+    n.times do |k|
+      i = Ops.m_floor((Ops.div(k, _B)))
+      j = Ops.mod(k, _B)
+      f = Ops.elem(self.faces, k)
+      Ops.set_at(m, Ops.add(Ops.mul(k, _W), _B), Ops.add(Ops.add(Ops.add(Ops.elem(f, 0), Ops.elem(f, 1)), Ops.elem(f, 2)), Ops.elem(f, 3)))
+      if Ops.lt(Ops.add(i, 1), Felt.NR)
+        Ops.set_at(m, Ops.add(Ops.add(Ops.mul(k, _W), _B), _B), Ops.sub(0, Ops.elem(f, 0)))
+      end
+      if Ops.gt(i, 0)
+        Ops.set_at(m, Ops.mul(k, _W), Ops.sub(0, Ops.elem(f, 1)))
+      end
+      if Ops.lt(Ops.add(j, 1), _B)
+        Ops.set_at(m, Ops.add(Ops.add(Ops.mul(k, _W), _B), 1), Ops.sub(0, Ops.elem(f, 2)))
+      end
+      if Ops.gt(j, 0)
+        Ops.set_at(m, Ops.sub(Ops.add(Ops.mul(k, _W), _B), 1), Ops.sub(0, Ops.elem(f, 3)))
+      end
+    end
+    n.times do |k|
+      p = Ops.elem(m, Ops.add(Ops.mul(k, _W), _B))
+      last = Fmt.min(Ops.sub(n, 1), Ops.add(k, _B))
+      l = Ops.add(k, 1)
+      while Ops.le(l, last)
+        f = Ops.div(Ops.elem(m, Ops.add(Ops.mul(l, _W), (Ops.add(Ops.sub(k, l), _B)))), p)
+        if !Ops.eq(f, 0)
+          Ops.set_at(m, Ops.add(Ops.mul(l, _W), (Ops.add(Ops.sub(k, l), _B))), f)
+          q = Ops.add(k, 1)
+          while Ops.le(q, last)
+            Ops.set_at(m, Ops.add(Ops.mul(l, _W), (Ops.add(Ops.sub(q, l), _B))), Ops.sub(Ops.elem(m, Ops.add(Ops.mul(l, _W), (Ops.add(Ops.sub(q, l), _B)))), Ops.mul(f, Ops.elem(m, Ops.add(Ops.mul(k, _W), (Ops.add(Ops.sub(q, k), _B)))))))
+            q = Ops.add(q, 1)
+          end
+        end
+        l = Ops.add(l, 1)
+      end
+    end
+    return m
+  end
+  def solve_band(b)
+    n = self.cells
+    _B = Felt.NMU
+    _W = self.width
+    m = self.band
+    x = Ops.m_map(b, ->(v) {
+      return v
+    })
+    n.times do |k|
+      last = Fmt.min(Ops.sub(n, 1), Ops.add(k, _B))
+      l = Ops.add(k, 1)
+      while Ops.le(l, last)
+        Ops.set_at(x, l, Ops.sub(Ops.elem(x, l), Ops.mul(Ops.elem(m, Ops.add(Ops.mul(l, _W), (Ops.add(Ops.sub(k, l), _B)))), Ops.elem(x, k))))
+        l = Ops.add(l, 1)
+      end
+    end
+    back = Ops.sub(n, 1)
+    while Ops.ge(back, 0)
+      left = Ops.elem(x, back)
+      last = Fmt.min(Ops.sub(n, 1), Ops.add(back, _B))
+      q = Ops.add(back, 1)
+      while Ops.le(q, last)
+        left = Ops.sub(left, Ops.mul(Ops.elem(m, Ops.add(Ops.mul(back, _W), (Ops.add(Ops.sub(q, back), _B)))), Ops.elem(x, q)))
+        q = Ops.add(q, 1)
+      end
+      Ops.set_at(x, back, Ops.div(left, Ops.elem(m, Ops.add(Ops.mul(back, _W), _B))))
+      back = Ops.sub(back, 1)
+    end
+    return x
+  end
+  def self.over(gN)
+    return (Ops.gt(gN, 0) ? Ops.add(0.5, Ops.m_sqrt((Ops.add(0.25, Ops.div(1, gN))))) : 1)
+  end
+  def felt(shape, s)
+    n = self.cells
+    _B = Felt.NMU
+    wr = Ops.filled(n, 0)
+    wm = Ops.filled(n, 0)
+    n.times do |c|
+      j = Ops.mod(c, _B)
+      gr = Ops.mul(s, Ops.elem(Ops.elem(shape, 0), c))
+      gz = Ops.mul(s, Ops.elem(Ops.elem(shape, 1), c))
+      f = Ops.sub(Felt.over(Fmt.hypot(gr, gz)), 1)
+      mu = Ops.elem(self.mc, j)
+      st = Ops.m_sqrt((Ops.sub(1, Ops.mul(mu, mu))))
+      Ops.set_at(wr, c, Ops.mul(f, (Ops.add(Ops.mul(gr, st), Ops.mul(gz, mu)))))
+      Ops.set_at(wm, c, Ops.mul(f, (Ops.sub(Ops.mul(gz, st), Ops.mul(gr, mu)))))
+    end
+    rhs = Ops.filled(n, 0)
+    n.times do |c|
+      i = Ops.m_floor((Ops.div(c, _B)))
+      j = Ops.mod(c, _B)
+      dmu = Ops.sub(Ops.elem(self.me, Ops.add(j, 1)), Ops.elem(self.me, j))
+      dr = Ops.sub(Ops.elem(self.re, Ops.add(i, 1)), Ops.elem(self.re, i))
+      fo = (Ops.lt(Ops.add(i, 1), Felt.NR) ? Ops.div((Ops.add(Ops.elem(wr, c), Ops.elem(wr, Ops.add(c, _B)))), 2) : Ops.elem(wr, c))
+      fi = (Ops.gt(i, 0) ? Ops.div((Ops.add(Ops.elem(wr, Ops.sub(c, _B)), Ops.elem(wr, c))), 2) : Ops.elem(wr, c))
+      up = (Ops.lt(Ops.add(j, 1), _B) ? Ops.div((Ops.add(Ops.elem(wm, c), Ops.elem(wm, Ops.add(c, 1)))), 2) : 0)
+      down = (Ops.gt(j, 0) ? Ops.div((Ops.add(Ops.elem(wm, Ops.sub(c, 1)), Ops.elem(wm, c))), 2) : 0)
+      made = Ops.sub(Ops.add(Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.mul(fo, 2), Math::PI), Ops.elem(self.re, Ops.add(i, 1))), Ops.elem(self.re, Ops.add(i, 1))), dmu), Ops.mul(Ops.mul(Ops.mul(Ops.mul(up, 2), Math::PI), (Ops.sub(1, Ops.mul(Ops.elem(self.me, Ops.add(j, 1)), Ops.elem(self.me, Ops.add(j, 1)))))), dr)), Ops.mul(Ops.mul(Ops.mul(Ops.mul(down, 2), Math::PI), (Ops.sub(1, Ops.mul(Ops.elem(self.me, j), Ops.elem(self.me, j))))), dr))
+      Ops.set_at(rhs, c, (Ops.gt(i, 0) ? Ops.sub(made, Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.mul(fi, 2), Math::PI), Ops.elem(self.re, i)), Ops.elem(self.re, i)), dmu)) : made))
+    end
+    psi = self.solve_band(rhs)
+    out = []
+    Felt.NR.times do |i|
+      r = Ops.elem(self.rc, i)
+      if (((Ops.gt(i, 0) && Ops.lt(Ops.add(i, 1), Felt.NR)) && Ops.ge(r, Felt.NEAR)) && Ops.le(r, Felt.FAR))
+        made = Ops.sub(0, Ops.div((Ops.sub(Ops.elem(psi, Ops.mul((Ops.add(i, 1)), _B)), Ops.elem(psi, Ops.mul((Ops.sub(i, 1)), _B)))), (Ops.sub(Ops.elem(self.rc, Ops.add(i, 1)), Ops.elem(self.rc, Ops.sub(i, 1))))))
+        gN = Ops.sub(0, Ops.mul(s, Ops.elem(Ops.elem(shape, 2), i)))
+        Ops.m_push(out, [r, gN, Ops.sub(gN, made)])
+      end
+    end
+    return out
+  end
+  def off_law(shape, s)
+    return Ops.m_reduce(self.felt(shape, s), 0, ->(most, q) {
+      return Fmt.max(most, Ops.m_abs(Fmt.log10(Ops.div(Ops.elem(q, 2), (Ops.mul(Ops.elem(q, 1), Felt.over(Ops.elem(q, 1))))))))
+    })
+  end
+  def self.dx
+    return Ops.div((Ops.sub(Felt.X1, Felt.X0)), Ops.sub(Felt.XS, 1))
+  end
+  def self.dy
+    return Ops.div((Ops.sub(Felt.Y1, Felt.Y0)), Ops.sub(Felt.YS, 1))
+  end
+  def self.bits_in(mask)
+    return Ops.filt(Ops.rng(4), ->(k) {
+      return Ops.eq((Ops.mod(Ops.m_floor((Ops.div(mask, Ops.power(2, k)))), 2)), 1)
+    }).length
+  end
+  def self.uses(mi, ti, ci, gi)
+    held = Ops.m_round((Ops.div((Ops.sub(0, Ops.elem(Felt.MASS, 0))), (Ops.div((Ops.sub(Ops.elem(Felt.MASS, 1), Ops.elem(Felt.MASS, 0))), Ops.sub(Ops.elem(Felt.MASS, 2), 1))))))
+    return Ops.add(Ops.add(Ops.add(((!Ops.eq(mi, held) ? 1 : 0)), ((!Ops.eq(ti, 0) ? 2 : 0))), ((!Ops.eq(ci, 0) ? 4 : 0))), ((!Ops.eq(gi, 0) ? 8 : 0)))
+  end
+  def self.mass_at(mi)
+    return Ops.add(Ops.elem(Felt.MASS, 0), Ops.div(Ops.mul((Ops.sub(Ops.elem(Felt.MASS, 1), Ops.elem(Felt.MASS, 0))), mi), Ops.sub(Ops.elem(Felt.MASS, 2), 1)))
+  end
+  def space(how)
+    p = Ops.filled(Ops.mul(Felt.XS, Felt.YS), 0)
+    by = Ops.filled(Ops.mul(Felt.XS, Felt.YS), (-1))
+    needs = Ops.filled(Ops.mul(Felt.XS, Felt.YS), 99)
+    lay = ->(track, mask, dex) {
+      Ops.sub(track.length, 1).times do |k|
+        xa = Fmt.log10(Ops.elem(Ops.elem(track, k), 1))
+        xb = Fmt.log10(Ops.elem(Ops.elem(track, Ops.add(k, 1)), 1))
+        ya = Fmt.log10(Ops.elem(Ops.elem(track, k), 2))
+        yb = Fmt.log10(Ops.elem(Ops.elem(track, Ops.add(k, 1)), 2))
+        if (((Fmt.finite(xa) && Fmt.finite(xb)) && Fmt.finite(ya)) && Fmt.finite(yb))
+          st = Fmt.max(1, Ops.add(Ops.m_floor((Fmt.max(Ops.div(Ops.m_abs((Ops.sub(xb, xa))), Felt.dx), Ops.div(Ops.m_abs((Ops.sub(yb, ya))), Felt.dy)))), 1))
+          st.times do |t|
+            f = Ops.div((Ops.add(t, 0.5)), st)
+            gx = Ops.m_round((Ops.div((Ops.sub(Ops.add(xa, Ops.mul(f, (Ops.sub(xb, xa)))), Felt.X0)), Felt.dx)))
+            gy = Ops.m_round((Ops.div((Ops.sub(Ops.add(ya, Ops.mul(f, (Ops.sub(yb, ya)))), Felt.Y0)), Felt.dy)))
+            unless (((Ops.lt(gx, 0) || Ops.lt(gy, 0)) || Ops.ge(gx, Felt.XS)) || Ops.ge(gy, Felt.YS))
+              c = Ops.add(Ops.mul(gy, Felt.XS), gx)
+              Ops.set_at(p, c, Ops.add(Ops.elem(p, c), Ops.div(1, st)))
+              Ops.set_at(needs, c, Fmt.min(Ops.elem(needs, c), dex))
+              was = Ops.elem(by, c)
+              fewer = ((Ops.lt(was, 0) || Ops.lt(Felt.bits_in(mask), Felt.bits_in(was))) || ((Ops.eq(Felt.bits_in(mask), Felt.bits_in(was)) && Ops.lt(mask, was))))
+              if fewer
+                Ops.set_at(by, c, mask)
+              end
+            end
+          end
+        end
+      end
+    }
+    gathered = Ops.eq(how, "gathered")
+    thick = (gathered ? [Ops.elem(Felt.THICK, 0)] : Felt.THICK)
+    middles = (gathered ? [1] : Felt.MIDDLE)
+    gases = (gathered ? [Ops.elem(Felt.GAS, 0)] : Felt.GAS)
+    tracks = 0
+    thick.length.times do |ti|
+      middles.length.times do |ci|
+        gases.length.times do |gi|
+          sh = self.shape(Ops.elem(thick, ti), Ops.elem(middles, ci), Ops.elem(Ops.elem(gases, gi), 0), Ops.elem(Ops.elem(gases, gi), 1))
+          Ops.elem(Felt.MASS, 2).times do |mi|
+            dex = Felt.mass_at(mi)
+            lay.(self.felt(sh, Ops.power(10, dex)), Felt.uses(mi, ti, ci, gi), dex)
+            tracks = Ops.add(tracks, 1)
+          end
+        end
+      end
+    end
+    out = Node.new
+    Ops.setattr(out, "p", p)
+    Ops.setattr(out, "by", Ops.m_map(by, ->(v) {
+      return (Ops.lt(v, 0) ? 0 : v)
+    }))
+    Ops.setattr(out, "needs", needs)
+    Ops.setattr(out, "tracks", tracks)
+    Ops.setattr(out, "freedoms", (gathered ? ["mass"] : Felt.FREEDOMS))
+    return out
   end
   __exposed
 end
@@ -18377,22 +18913,90 @@ class Measure < Node
     end
     return Measured.save("visuals", id, id, names, columns, extra)
   end
-  def self.density(model, id, how)
-    sweep = Sweep.new(model: model, how: how)
-    if ((Ops.eq(sweep.arrival, nil) || Ops.eq(sweep.felt, nil)) || Ops.eq(sweep.rho_at, nil))
-      fail.("#{id}: nothing derived to integrate")
-    end
-    lay = ->(vary) {
-      got = sweep.tracks(vary)
-      return sweep.rasterise(Ops.getattr(got, "xs"), Ops.getattr(got, "ys"), Ops.getattr(got, "tracks"))
-    }
-    grid = lay.(sweep.order)
-    without = Ops.m_map(sweep.order, ->(held) {
-      return lay.(Ops.filt(sweep.order, ->(n) {
-        return !Ops.eq(n, held)
-      }))
+  def self.DEGS
+    return Ops.m_map(Ops.rng(73), ->(k) {
+      return Ops.add(4, Ops.mul(0.5, k))
     })
-    return sweep.save(id, grid, sweep.needs(grid, without))
+  end
+  def self.density(model, id, how)
+    felt = Felt.new()
+    got = felt.space(how)
+    p = Ops.getattr(got, "p")
+    by = Ops.getattr(got, "by")
+    needs = Ops.getattr(got, "needs")
+    cells = Ops.rng(Ops.mul(Felt.XS, Felt.YS))
+    arrives = Node.new
+    Ops.setattr(arrives, "from", Felt.X0)
+    Ops.setattr(arrives, "to", Felt.X1)
+    Ops.setattr(arrives, "n", Felt.XS)
+    felt_axis = Node.new
+    Ops.setattr(felt_axis, "from", Felt.Y0)
+    Ops.setattr(felt_axis, "to", Felt.Y1)
+    Ops.setattr(felt_axis, "n", Felt.YS)
+    grid = Node.new
+    Ops.setattr(grid, "arrives", arrives)
+    Ops.setattr(grid, "felt", felt_axis)
+    columns = Node.new
+    Ops.setattr(columns, "x", Ops.m_map(cells, ->(i) {
+      return Ops.add(Felt.X0, Ops.mul((Ops.mod(i, Felt.XS)), Felt.dx))
+    }))
+    Ops.setattr(columns, "y", Ops.m_map(cells, ->(i) {
+      return Ops.add(Felt.Y0, Ops.mul(Ops.m_floor((Ops.div(i, Felt.XS))), Felt.dy))
+    }))
+    Ops.setattr(columns, "p", p)
+    Ops.setattr(columns, "by", by)
+    extra = Node.new
+    Ops.setattr(extra, "a0", model.a0_lattice)
+    Ops.setattr(extra, "arrangement", how)
+    Ops.setattr(extra, "grid", grid)
+    Ops.setattr(extra, "freedoms", Ops.getattr(got, "freedoms"))
+    Ops.setattr(extra, "tracks", Ops.getattr(got, "tracks"))
+    Ops.setattr(extra, "stages", ["the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2"])
+    Ops.setattr(extra, "about", "how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)")
+    Measure.save(id, ["x", "y", "p", "by"], columns, extra)
+    reached = Ops.filt(cells, ->(i) {
+      return Ops.gt(Ops.elem(p, i), 0)
+    })
+    degs = Measure.DEGS
+    ratios = Ops.m_map(degs, ->(d) {
+      return model.value_of("\\frac{a_{0}}{cH}", model.settled(d))
+    })
+    a0s = Ops.m_map(degs, ->(d) {
+      return model.value_of("a_{0}", model.settled(d))
+    })
+    sparse = Node.new
+    Ops.list(["deg", "cell", "p", "by", "needs", "size"]).each do |n|
+      Ops.set_at(sparse, n, [])
+    end
+    starts = []
+    Ops.list(degs).each do |d|
+      Ops.m_push(starts, Ops.getattr(sparse, "cell").length)
+      Ops.list(reached).each do |i|
+        Ops.m_push(Ops.getattr(sparse, "deg"), d)
+        Ops.m_push(Ops.getattr(sparse, "cell"), i)
+        Ops.m_push(Ops.getattr(sparse, "p"), Ops.elem(p, i))
+        Ops.m_push(Ops.getattr(sparse, "by"), Ops.elem(by, i))
+        Ops.m_push(Ops.getattr(sparse, "needs"), Ops.elem(needs, i))
+        Ops.m_push(Ops.getattr(sparse, "size"), 99)
+      end
+    end
+    table = Node.new
+    Ops.setattr(table, "deg", degs)
+    Ops.setattr(table, "ratio", ratios)
+    Ops.setattr(table, "against", "H_Lambda")
+    solved = Node.new
+    Ops.setattr(solved, "what", "the possibility space of a galaxy (#{how}), solved over its whole field on every lattice")
+    Ops.setattr(solved, "arrangement", how)
+    Ops.setattr(solved, "degs", degs)
+    Ops.setattr(solved, "starts", starts)
+    Ops.setattr(solved, "a0", a0s)
+    Ops.setattr(solved, "coincidence", table)
+    Ops.setattr(solved, "theory_deg", model.theory.lattice.DEG)
+    Ops.setattr(solved, "grid", grid)
+    Ops.setattr(solved, "freedoms", Ops.getattr(got, "freedoms"))
+    Ops.setattr(solved, "stages", Ops.getattr(extra, "stages"))
+    Ops.setattr(solved, "about", "per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)")
+    return Measure.save("#{id}.solved", ["deg", "cell", "p", "by", "needs", "size"], sparse, solved)
   end
   def self.law(model)
     a0 = model.a0_lattice

@@ -11639,9 +11639,9 @@ export class Galaxies extends Node {
   static YMIN = (-3);
   static YMAX = 3;
   static SEVERAL = [86, 168, 235];
-  static FREEDOMS = [`mass`, `face`, `moving`, `spread`];
+  static FREEDOMS = [`mass`, `thickness`, `middle`, `gas`];
   static TINTS = [[232, 193, 90], [90, 212, 193], [240, 122, 178], [169, 139, 224]];
-  static NAMES_NOW = [`mass`, `face`, `moving`, `spread`];
+  static NAMES_NOW = [`mass`, `thickness`, `middle`, `gas`];
   static LEVELS = [(-4), (-2), 0, 1, 2, 3];
   static WIDTHS = [0, 2];
   static DISK_ID = `law.disk`;
@@ -12302,7 +12302,7 @@ export class Galaxies extends Node {
   static ratio_at(data: Measured, deg: number): number {
     let table = data.header[`coincidence`];
     if (eq(table, null)) {
-      fail(`the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)`);
+      fail(`the space carries no a_0/cH table - rerun it (\`npx ray measure galaxy.many\`)`);
     }
     let ds = table[`deg`];
     let rs = table[`ratio`];
@@ -12320,8 +12320,12 @@ export class Galaxies extends Node {
     return add(mul(elem(rs, k), (sub(1, f))), mul(elem(rs, add(k, 1)), f));
   }
   static shift_at(data: Measured, deg: number): number {
+    return Fmt.log10(div(mul(mul(Galaxies.ratio_at(data, deg), Sparc.C_LIGHT), Galaxies.rate_of(data)), Galaxies.A0_DATA));
+  }
+  static rate_of(data: Measured): number {
     let H = div(mul(Galaxies.H0, 1000), (mul(Sparc.KPC, 1000)));
-    return Fmt.log10(div(mul(mul(Galaxies.ratio_at(data, deg), Sparc.C_LIGHT), H), Galaxies.A0_DATA));
+    let table = data.header[`coincidence`];
+    return ((!eq(table, null) && eq(table[`against`], `H_Lambda`)) ? mul(H, Math.sqrt((sub(1, Simulation.OMEGA_M)))) : H);
   }
   static frame_of(solved: Measured, k: number): Measured {
     let grid = solved.header[`grid`];
@@ -12445,7 +12449,7 @@ export class Galaxies extends Node {
   static of(id: string, what: string, title: string): Picture {
     let solved = Measured.of(`${id}.solved`);
     if (eq(solved, null)) {
-      fail(`${id}.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again`);
+      fail(`${id}.solved is not on disk - solve the space (\`npx ray measure ${id}\`) and try again`);
     }
     let ks = Galaxies.sweep_of(solved);
     return new Picture({ id: id, what: what, width: 960, height: 720, frames: ks.length, paint: ((played: (Played | null)) => {
@@ -12455,10 +12459,9 @@ export class Galaxies extends Node {
   static a0_at(deg: number): number {
     let space = Measured.of(`galaxy.many.solved`);
     if (eq(space, null)) {
-      fail(`galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again`);
+      fail(`galaxy.many.solved is not on disk - solve the space (\`npx ray measure galaxy.many\`) and try again`);
     }
-    let H = div(mul(Galaxies.H0, 1000), (mul(Sparc.KPC, 1000)));
-    return mul(mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), H);
+    return mul(mul(Galaxies.ratio_at(space, deg), Sparc.C_LIGHT), Galaxies.rate_of(space));
   }
   static get curve_pick(): number[] {
     return Galaxies.pick(mul(Galaxies.CURVE_ROWS, Galaxies.CURVE_COLS));
@@ -13117,10 +13120,10 @@ export class Galaxies extends Node {
     return s.fill_text(`g_baryons / 1.2e-10 m/s²`, div((add(bx0, bx1)), 2), add(by1, 34));
   }
   static get point(): Picture {
-    return Galaxies.of(`galaxy.point`, `a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement`, `A GALAXY AS ONE SOURCE`);
+    return Galaxies.of(`galaxy.point`, `a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly`, `A GALAXY AS ONE BODY`);
   }
   static get many(): Picture {
-    return Galaxies.of(`galaxy.many`, `and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin`, `A GALAXY AS MANY SOURCES, ONE PER STAR`);
+    return Galaxies.of(`galaxy.many`, `and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be`, `EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD`);
   }
 }
 
@@ -14972,7 +14975,7 @@ export class Model extends Node {
     return this.cache[`a0`];
   }
   boost(gN: number, a0: number): number {
-    let F = this.fact(`F_{g}`);
+    let F = (this.fact(`F_{g} \\aside{closing}`) ?? this.fact(`F_{g}`));
     if (eq(F, null)) {
       return NaN;
     }
@@ -15080,6 +15083,385 @@ export class Model extends Node {
   }
   static speed(g: number, R: number): number {
     return (gt(g, 0) ? Math.sqrt((mul(R, g))) : NaN);
+  }
+}
+
+export class Felt extends Node {
+  static NR = 96;
+  static NMU = 40;
+  static R0 = 0.003;
+  static R1 = 30000;
+  static SQ = 6;
+  static KMAX = 7;
+  static NA = 120;
+  static NZ = 8;
+  static NEAR = 0.25;
+  static FAR = 30;
+  static HERNQUIST = 0.1;
+  static XS = 700;
+  static X0 = (-5);
+  static X1 = 4;
+  static YS = 520;
+  static Y0 = (-4);
+  static Y1 = 4;
+  static MASS = [(-2.5), 5, 61];
+  static THICK = [0.1, 0.02, 0.3];
+  static MIDDLE = [0, 0.2, 0.5];
+  static GAS = [[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]];
+  static FREEDOMS = [`mass`, `thickness`, `middle`, `gas`];
+  get step(): number {
+    return div(Math.log((div(Felt.R1, Felt.R0))), Felt.NR);
+  }
+  edge(i: number): number {
+    return mul(Felt.R0, Math.exp((mul(this.step, i))));
+  }
+  centre(i: number): number {
+    return mul(Felt.R0, Math.exp((mul(this.step, (add(i, 0.5))))));
+  }
+  static sinh(x: number): number {
+    return div((sub(Math.exp(x), Math.exp((sub(0, x))))), 2);
+  }
+  static mu_edge(j: number): number {
+    return div(Felt.sinh(div(mul(Felt.SQ, j), Felt.NMU)), Felt.sinh(Felt.SQ));
+  }
+  static mu_centre(j: number): number {
+    return div((add(Felt.mu_edge(j), Felt.mu_edge(add(j, 1)))), 2);
+  }
+  get re(): number[] { return this.read("re", () => range(add(Felt.NR, 1)).map(((i: any) => {
+    return this.edge(i);
+  }))); }
+  set re(v: number[]) { this.write("re", v); }
+  get rc(): number[] { return this.read("rc", () => range(Felt.NR).map(((i: any) => {
+    return this.centre(i);
+  }))); }
+  set rc(v: number[]) { this.write("rc", v); }
+  get me(): number[] { return this.read("me", () => range(add(Felt.NMU, 1)).map(((j: any) => {
+    return Felt.mu_edge(j);
+  }))); }
+  set me(v: number[]) { this.write("me", v); }
+  get mc(): number[] { return this.read("mc", () => range(Felt.NMU).map(((j: any) => {
+    return Felt.mu_centre(j);
+  }))); }
+  set mc(v: number[]) { this.write("mc", v); }
+  get cells(): number {
+    return mul(Felt.NR, Felt.NMU);
+  }
+  static ring(R: number, z: number, a: number, zs: number, eps2: number): number[] {
+    let dz = sub(z, zs);
+    let h2 = add(mul(dz, dz), eps2);
+    let q2 = add(mul((add(a, R)), (add(a, R))), h2);
+    let q = Math.sqrt(q2);
+    let m = div(mul(mul(4, a), R), q2);
+    let d2 = add(mul((sub(a, R)), (sub(a, R))), h2);
+    let big = 1;
+    let small = Math.sqrt((sub(1, m)));
+    let tail = mul(0.5, m);
+    let twice = 1;
+    for (let k = 0; k < 10; k++) {
+      let c = div((sub(big, small)), 2);
+      let mean = div((add(big, small)), 2);
+      small = Math.sqrt((mul(big, small)));
+      big = mean;
+      twice = mul(twice, 2);
+      tail = add(tail, div(mul(mul(twice, c), c), 2));
+    };
+    let kk = div(Math.PI, (mul(2, big)));
+    let ee = mul(kk, (sub(1, tail)));
+    let dk = (gt(m, 0.00000001) ? div((sub(ee, mul((sub(1, m)), kk))), (mul(mul(2, m), (sub(1, m))))) : div(Math.PI, 8));
+    let dm = mul((div(mul(4, a), q2)), (sub(1, div(mul(mul(2, R), (add(a, R))), q2))));
+    return [mul((div(2, Math.PI)), (sub(div(mul(dk, dm), q), div(mul(kk, (add(a, R))), (mul(q2, q)))))), sub(0, div((mul(mul(2, dz), ee)), (mul(mul(Math.PI, q), d2))))];
+  }
+  static rings(h: number): number[][] {
+    let out = [];
+    for (let k = 0; k < Felt.NA; k++) {
+      let e0 = mul(20, Math.pow((div(k, Felt.NA)), 2));
+      let e1 = mul(20, Math.pow((div(add(k, 1), Felt.NA)), 2));
+      let held = sub(mul((add(1, e0)), Math.exp((sub(0, e0)))), mul((add(1, e1)), Math.exp((sub(0, e1)))));
+      for (let l = 0; l < Felt.NZ; l++) {
+        let z = sub(0, mul(h, Math.log((sub(1, div((add(l, 0.5)), Felt.NZ))))));
+        push(out, [div((add(e0, e1)), 2), z, div(div(held, Felt.NZ), 2), sub(e1, e0)]);
+      };
+    };
+    return out;
+  }
+  static disc_at(rings: number[][], h: number, R: number, z: number): number[] {
+    let gr = 0;
+    let gz = 0;
+    for (const b of [...rings]) {
+      let e = mul(0.5, Fmt.max(elem(b, 3), div(h, 4)));
+      let up = Felt.ring(R, z, elem(b, 0), elem(b, 1), mul(e, e));
+      let down = Felt.ring(R, z, elem(b, 0), sub(0, elem(b, 1)), mul(e, e));
+      gr = add(gr, mul(elem(b, 2), (add(elem(up, 0), elem(down, 0)))));
+      gz = add(gz, mul(elem(b, 2), (add(elem(up, 1), elem(down, 1)))));
+    };
+    return [gr, gz];
+  }
+  get unit(): object { return this.read("unit", () => ({})); }
+  set unit(v: object) { this.write("unit", v); }
+  unit_disc(h: number): number[][] {
+    let key = `${h}`;
+    if (!eq(elem(this.unit, key), null)) {
+      return elem(this.unit, key);
+    }
+    let rings = Felt.rings(h);
+    let rows = add(Felt.NR, Felt.KMAX);
+    let gr = filled(mul(rows, Felt.NMU), 0);
+    let gz = filled(mul(rows, Felt.NMU), 0);
+    let plane = filled(rows, 0);
+    for (let ii = 0; ii < rows; ii++) {
+      let r = this.centre(sub(ii, Felt.KMAX));
+      for (let j = 0; j < Felt.NMU; j++) {
+        let mu = elem(this.mc, j);
+        let g = Felt.disc_at(rings, h, mul(r, Math.sqrt((sub(1, mul(mu, mu))))), mul(r, mu));
+        gr[add(mul(ii, Felt.NMU), j)] = elem(g, 0);
+        gz[add(mul(ii, Felt.NMU), j)] = elem(g, 1);
+      };
+      plane[ii] = elem(Felt.disc_at(rings, h, r, 0), 0);
+    };
+    this.unit[key] = [gr, gz, plane];
+    return elem(this.unit, key);
+  }
+  shape(h: number, middle: number, gas: number, wider: number): number[][] {
+    let stars = mul((sub(1, gas)), (sub(1, middle)));
+    let held = mul((sub(1, gas)), middle);
+    let u = ((gt(stars, 0) || gt(gas, 0)) ? this.unit_disc(h) : null);
+    let w = Math.exp((mul(this.step, wider)));
+    let gr = filled(this.cells, 0);
+    let gz = filled(this.cells, 0);
+    let plane = filled(Felt.NR, 0);
+    let a = Felt.HERNQUIST;
+    for (let i = 0; i < Felt.NR; i++) {
+      let ii = add(i, Felt.KMAX);
+      let r = elem(this.rc, i);
+      for (let j = 0; j < Felt.NMU; j++) {
+        let mu = elem(this.mc, j);
+        let c = add(mul(i, Felt.NMU), j);
+        let pull = div(held, (mul(mul(r, (add(r, a))), (add(r, a)))));
+        let R = mul(r, Math.sqrt((sub(1, mul(mu, mu)))));
+        gr[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 0), add(mul(ii, Felt.NMU), j))), div(mul(gas, elem(elem(u, 0), add(mul((sub(ii, wider)), Felt.NMU), j))), (mul(w, w)))))), mul(pull, (sub(0, R))));
+        gz[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 1), add(mul(ii, Felt.NMU), j))), div(mul(gas, elem(elem(u, 1), add(mul((sub(ii, wider)), Felt.NMU), j))), (mul(w, w)))))), mul(pull, (sub(0, mul(r, mu)))));
+      };
+      plane[i] = sub(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 2), ii)), div(mul(gas, elem(elem(u, 2), sub(ii, wider))), (mul(w, w)))))), div(held, (mul((add(r, a)), (add(r, a))))));
+    };
+    return [gr, gz, plane];
+  }
+  get faces(): number[][] { return this.read("faces", () => range(this.cells).map(((c: any) => {
+    return this.faces_of(c);
+  }))); }
+  set faces(v: number[][]) { this.write("faces", v); }
+  faces_of(c: number): number[] {
+    let i = Math.floor((div(c, Felt.NMU)));
+    let j = mod(c, Felt.NMU);
+    let dmu = sub(elem(this.me, add(j, 1)), elem(this.me, j));
+    let dr = sub(elem(this.re, add(i, 1)), elem(this.re, i));
+    let out_ = (lt(add(i, 1), Felt.NR) ? div(mul(mul(mul(mul(2, Math.PI), elem(this.re, add(i, 1))), elem(this.re, add(i, 1))), dmu), (sub(elem(this.rc, add(i, 1)), elem(this.rc, i)))) : div(mul(mul(mul(mul(2, Math.PI), elem(this.re, add(i, 1))), elem(this.re, add(i, 1))), dmu), (sub(elem(this.re, add(i, 1)), elem(this.rc, i)))));
+    let in_ = (gt(i, 0) ? div(mul(mul(mul(mul(2, Math.PI), elem(this.re, i)), elem(this.re, i)), dmu), (sub(elem(this.rc, i), elem(this.rc, sub(i, 1))))) : 0);
+    let up = (lt(add(j, 1), Felt.NMU) ? div(mul(mul(mul(2, Math.PI), (sub(1, mul(elem(this.me, add(j, 1)), elem(this.me, add(j, 1)))))), dr), (sub(elem(this.mc, add(j, 1)), elem(this.mc, j)))) : 0);
+    let down = (gt(j, 0) ? div(mul(mul(mul(2, Math.PI), (sub(1, mul(elem(this.me, j), elem(this.me, j))))), dr), (sub(elem(this.mc, j), elem(this.mc, sub(j, 1))))) : 0);
+    return [out_, in_, up, down];
+  }
+  get width(): number {
+    return add(mul(2, Felt.NMU), 1);
+  }
+  at_band(k: number, l: number): number {
+    return add(mul(k, this.width), (add(sub(l, k), Felt.NMU)));
+  }
+  get band(): number[] { return this.read("band", () => this.factored); }
+  set band(v: number[]) { this.write("band", v); }
+  get factored(): number[] {
+    let n = this.cells;
+    let B = Felt.NMU;
+    let W = this.width;
+    let m = filled(mul(n, W), 0);
+    for (let k = 0; k < n; k++) {
+      let i = Math.floor((div(k, B)));
+      let j = mod(k, B);
+      let f = elem(this.faces, k);
+      m[add(mul(k, W), B)] = add(add(add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3));
+      if (lt(add(i, 1), Felt.NR)) {
+        m[add(add(mul(k, W), B), B)] = sub(0, elem(f, 0));
+      }
+      if (gt(i, 0)) {
+        m[mul(k, W)] = sub(0, elem(f, 1));
+      }
+      if (lt(add(j, 1), B)) {
+        m[add(add(mul(k, W), B), 1)] = sub(0, elem(f, 2));
+      }
+      if (gt(j, 0)) {
+        m[sub(add(mul(k, W), B), 1)] = sub(0, elem(f, 3));
+      }
+    };
+    for (let k = 0; k < n; k++) {
+      let p = elem(m, add(mul(k, W), B));
+      let last = Fmt.min(sub(n, 1), add(k, B));
+      let l = add(k, 1);
+      while (le(l, last)) {
+        let f = div(elem(m, add(mul(l, W), (add(sub(k, l), B)))), p);
+        if (!eq(f, 0)) {
+          m[add(mul(l, W), (add(sub(k, l), B)))] = f;
+          let q = add(k, 1);
+          while (le(q, last)) {
+            m[add(mul(l, W), (add(sub(q, l), B)))] = sub(elem(m, add(mul(l, W), (add(sub(q, l), B)))), mul(f, elem(m, add(mul(k, W), (add(sub(q, k), B))))));
+            q = add(q, 1);
+          }
+        }
+        l = add(l, 1);
+      }
+    };
+    return m;
+  }
+  solve_band(b: number[]): number[] {
+    let n = this.cells;
+    let B = Felt.NMU;
+    let W = this.width;
+    let m = this.band;
+    let x = b.map(((v: any) => {
+      return v;
+    }));
+    for (let k = 0; k < n; k++) {
+      let last = Fmt.min(sub(n, 1), add(k, B));
+      let l = add(k, 1);
+      while (le(l, last)) {
+        x[l] = sub(elem(x, l), mul(elem(m, add(mul(l, W), (add(sub(k, l), B)))), elem(x, k)));
+        l = add(l, 1);
+      }
+    };
+    let back = sub(n, 1);
+    while (ge(back, 0)) {
+      let left = elem(x, back);
+      let last = Fmt.min(sub(n, 1), add(back, B));
+      let q = add(back, 1);
+      while (le(q, last)) {
+        left = sub(left, mul(elem(m, add(mul(back, W), (add(sub(q, back), B)))), elem(x, q)));
+        q = add(q, 1);
+      }
+      x[back] = div(left, elem(m, add(mul(back, W), B)));
+      back = sub(back, 1);
+    }
+    return x;
+  }
+  static over(gN: number): number {
+    return (gt(gN, 0) ? add(0.5, Math.sqrt((add(0.25, div(1, gN))))) : 1);
+  }
+  felt(shape: number[][], s: number): number[][] {
+    let n = this.cells;
+    let B = Felt.NMU;
+    let wr = filled(n, 0);
+    let wm = filled(n, 0);
+    for (let c = 0; c < n; c++) {
+      let j = mod(c, B);
+      let gr = mul(s, elem(elem(shape, 0), c));
+      let gz = mul(s, elem(elem(shape, 1), c));
+      let f = sub(Felt.over(Fmt.hypot(gr, gz)), 1);
+      let mu = elem(this.mc, j);
+      let st = Math.sqrt((sub(1, mul(mu, mu))));
+      wr[c] = mul(f, (add(mul(gr, st), mul(gz, mu))));
+      wm[c] = mul(f, (sub(mul(gz, st), mul(gr, mu))));
+    };
+    let rhs = filled(n, 0);
+    for (let c = 0; c < n; c++) {
+      let i = Math.floor((div(c, B)));
+      let j = mod(c, B);
+      let dmu = sub(elem(this.me, add(j, 1)), elem(this.me, j));
+      let dr = sub(elem(this.re, add(i, 1)), elem(this.re, i));
+      let fo = (lt(add(i, 1), Felt.NR) ? div((add(elem(wr, c), elem(wr, add(c, B)))), 2) : elem(wr, c));
+      let fi = (gt(i, 0) ? div((add(elem(wr, sub(c, B)), elem(wr, c))), 2) : elem(wr, c));
+      let up = (lt(add(j, 1), B) ? div((add(elem(wm, c), elem(wm, add(c, 1)))), 2) : 0);
+      let down = (gt(j, 0) ? div((add(elem(wm, sub(c, 1)), elem(wm, c))), 2) : 0);
+      let made = sub(add(mul(mul(mul(mul(mul(fo, 2), Math.PI), elem(this.re, add(i, 1))), elem(this.re, add(i, 1))), dmu), mul(mul(mul(mul(up, 2), Math.PI), (sub(1, mul(elem(this.me, add(j, 1)), elem(this.me, add(j, 1)))))), dr)), mul(mul(mul(mul(down, 2), Math.PI), (sub(1, mul(elem(this.me, j), elem(this.me, j))))), dr));
+      rhs[c] = (gt(i, 0) ? sub(made, mul(mul(mul(mul(mul(fi, 2), Math.PI), elem(this.re, i)), elem(this.re, i)), dmu)) : made);
+    };
+    let psi = this.solve_band(rhs);
+    let out = [];
+    for (let i = 0; i < Felt.NR; i++) {
+      let r = elem(this.rc, i);
+      if ((((gt(i, 0) && lt(add(i, 1), Felt.NR)) && ge(r, Felt.NEAR)) && le(r, Felt.FAR))) {
+        let made = sub(0, div((sub(elem(psi, mul((add(i, 1)), B)), elem(psi, mul((sub(i, 1)), B)))), (sub(elem(this.rc, add(i, 1)), elem(this.rc, sub(i, 1))))));
+        let gN = sub(0, mul(s, elem(elem(shape, 2), i)));
+        push(out, [r, gN, sub(gN, made)]);
+      }
+    };
+    return out;
+  }
+  off_law(shape: number[][], s: number): number {
+    return this.felt(shape, s).reduce(((most: any, q: any) => {
+      return Fmt.max(most, Math.abs(Fmt.log10(div(elem(q, 2), (mul(elem(q, 1), Felt.over(elem(q, 1))))))));
+    }), 0);
+  }
+  static get dx(): number {
+    return div((sub(Felt.X1, Felt.X0)), sub(Felt.XS, 1));
+  }
+  static get dy(): number {
+    return div((sub(Felt.Y1, Felt.Y0)), sub(Felt.YS, 1));
+  }
+  static bits_in(mask: number): number {
+    return range(4).filter(((k: any) => {
+      return eq((mod(Math.floor((div(mask, Math.pow(2, k)))), 2)), 1);
+    })).length;
+  }
+  static uses(mi: number, ti: number, ci: number, gi: number): number {
+    let held = Math.round((div((sub(0, elem(Felt.MASS, 0))), (div((sub(elem(Felt.MASS, 1), elem(Felt.MASS, 0))), sub(elem(Felt.MASS, 2), 1))))));
+    return add(add(add(((!eq(mi, held) ? 1 : 0)), ((!eq(ti, 0) ? 2 : 0))), ((!eq(ci, 0) ? 4 : 0))), ((!eq(gi, 0) ? 8 : 0)));
+  }
+  static mass_at(mi: number): number {
+    return add(elem(Felt.MASS, 0), div(mul((sub(elem(Felt.MASS, 1), elem(Felt.MASS, 0))), mi), sub(elem(Felt.MASS, 2), 1)));
+  }
+  space(how: string): object {
+    let p = filled(mul(Felt.XS, Felt.YS), 0);
+    let by = filled(mul(Felt.XS, Felt.YS), (-1));
+    let needs = filled(mul(Felt.XS, Felt.YS), 99);
+    let lay = ((track: number[][], mask: number, dex: number) => {
+      for (let k = 0; k < sub(track.length, 1); k++) {
+        let xa = Fmt.log10(elem(elem(track, k), 1));
+        let xb = Fmt.log10(elem(elem(track, add(k, 1)), 1));
+        let ya = Fmt.log10(elem(elem(track, k), 2));
+        let yb = Fmt.log10(elem(elem(track, add(k, 1)), 2));
+        if ((((Fmt.finite(xa) && Fmt.finite(xb)) && Fmt.finite(ya)) && Fmt.finite(yb))) {
+          let st = Fmt.max(1, add(Math.floor((Fmt.max(div(Math.abs((sub(xb, xa))), Felt.dx), div(Math.abs((sub(yb, ya))), Felt.dy)))), 1));
+          for (let t = 0; t < st; t++) {
+            let f = div((add(t, 0.5)), st);
+            let gx = Math.round((div((sub(add(xa, mul(f, (sub(xb, xa)))), Felt.X0)), Felt.dx)));
+            let gy = Math.round((div((sub(add(ya, mul(f, (sub(yb, ya)))), Felt.Y0)), Felt.dy)));
+            if (!((((lt(gx, 0) || lt(gy, 0)) || ge(gx, Felt.XS)) || ge(gy, Felt.YS)))) {
+              let c = add(mul(gy, Felt.XS), gx);
+              p[c] = add(elem(p, c), div(1, st));
+              needs[c] = Fmt.min(elem(needs, c), dex);
+              let was = elem(by, c);
+              let fewer = ((lt(was, 0) || lt(Felt.bits_in(mask), Felt.bits_in(was))) || ((eq(Felt.bits_in(mask), Felt.bits_in(was)) && lt(mask, was))));
+              if (fewer) {
+                by[c] = mask;
+              }
+            }
+          };
+        }
+      };
+    });
+    let gathered = eq(how, `gathered`);
+    let thick = (gathered ? [elem(Felt.THICK, 0)] : Felt.THICK);
+    let middles = (gathered ? [1] : Felt.MIDDLE);
+    let gases = (gathered ? [elem(Felt.GAS, 0)] : Felt.GAS);
+    let tracks = 0;
+    for (let ti = 0; ti < thick.length; ti++) {
+      for (let ci = 0; ci < middles.length; ci++) {
+        for (let gi = 0; gi < gases.length; gi++) {
+          let sh = this.shape(elem(thick, ti), elem(middles, ci), elem(elem(gases, gi), 0), elem(elem(gases, gi), 1));
+          for (let mi = 0; mi < elem(Felt.MASS, 2); mi++) {
+            let dex = Felt.mass_at(mi);
+            lay(this.felt(sh, Math.pow(10, dex)), Felt.uses(mi, ti, ci, gi), dex);
+            tracks = add(tracks, 1);
+          };
+        };
+      };
+    };
+    let out = ({});
+    out[`p`] = p;
+    out[`by`] = by.map(((v: any) => {
+      return (lt(v, 0) ? 0 : v);
+    }));
+    out[`needs`] = needs;
+    out[`tracks`] = tracks;
+    out[`freedoms`] = (gathered ? [`mass`] : Felt.FREEDOMS);
+    return out;
   }
 }
 
@@ -15560,22 +15942,90 @@ export class Measure extends Node {
     };
     return Measured.save(`visuals`, id, id, names, columns, extra);
   }
-  static density(model: Model, id: string, how: string) {
-    let sweep = new Sweep({ model: model, how: how });
-    if (((eq(sweep.arrival, null) || eq(sweep.felt, null)) || eq(sweep.rho_at, null))) {
-      fail(`${id}: nothing derived to integrate`);
-    }
-    let lay = ((vary: string[]) => {
-      let got = sweep.tracks(vary);
-      return sweep.rasterise(got[`xs`], got[`ys`], got[`tracks`]);
-    });
-    let grid = lay(sweep.order);
-    let without = sweep.order.map(((held: any) => {
-      return lay(sweep.order.filter(((n: any) => {
-        return !eq(n, held);
-      })));
+  static get DEGS(): number[] {
+    return range(73).map(((k: any) => {
+      return add(4, mul(0.5, k));
     }));
-    return sweep.save(id, grid, sweep.needs(grid, without));
+  }
+  static density(model: Model, id: string, how: string) {
+    let felt = new Felt({  });
+    let got = felt.space(how);
+    let p = got[`p`];
+    let by = got[`by`];
+    let needs = got[`needs`];
+    let cells = range(mul(Felt.XS, Felt.YS));
+    let arrives = ({});
+    arrives[`from`] = Felt.X0;
+    arrives[`to`] = Felt.X1;
+    arrives[`n`] = Felt.XS;
+    let felt_axis = ({});
+    felt_axis[`from`] = Felt.Y0;
+    felt_axis[`to`] = Felt.Y1;
+    felt_axis[`n`] = Felt.YS;
+    let grid = ({});
+    grid[`arrives`] = arrives;
+    grid[`felt`] = felt_axis;
+    let columns = ({});
+    columns[`x`] = cells.map(((i: any) => {
+      return add(Felt.X0, mul((mod(i, Felt.XS)), Felt.dx));
+    }));
+    columns[`y`] = cells.map(((i: any) => {
+      return add(Felt.Y0, mul(Math.floor((div(i, Felt.XS))), Felt.dy));
+    }));
+    columns[`p`] = p;
+    columns[`by`] = by;
+    let extra = ({});
+    extra[`a0`] = model.a0_lattice;
+    extra[`arrangement`] = how;
+    extra[`grid`] = grid;
+    extra[`freedoms`] = got[`freedoms`];
+    extra[`tracks`] = got[`tracks`];
+    extra[`stages`] = [`the fewest freedoms that reach the cell, one bit per freedom in the order of \`freedoms\`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2`];
+    extra[`about`] = `how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)`;
+    Measure.save(id, [`x`, `y`, `p`, `by`], columns, extra);
+    let reached = cells.filter(((i: any) => {
+      return gt(elem(p, i), 0);
+    }));
+    let degs = Measure.DEGS;
+    let ratios = degs.map(((d: any) => {
+      return model.value_of(`\\frac{a_{0}}{cH}`, model.settled(d));
+    }));
+    let a0s = degs.map(((d: any) => {
+      return model.value_of(`a_{0}`, model.settled(d));
+    }));
+    let sparse = ({});
+    for (const n of [...[`deg`, `cell`, `p`, `by`, `needs`, `size`]]) {
+      sparse[n] = [];
+    };
+    let starts = [];
+    for (const d of [...degs]) {
+      push(starts, sparse[`cell`].length);
+      for (const i of [...reached]) {
+        push(sparse[`deg`], d);
+        push(sparse[`cell`], i);
+        push(sparse[`p`], elem(p, i));
+        push(sparse[`by`], elem(by, i));
+        push(sparse[`needs`], elem(needs, i));
+        push(sparse[`size`], 99);
+      };
+    };
+    let table = ({});
+    table[`deg`] = degs;
+    table[`ratio`] = ratios;
+    table[`against`] = `H_Lambda`;
+    let solved = ({});
+    solved[`what`] = `the possibility space of a galaxy (${how}), solved over its whole field on every lattice`;
+    solved[`arrangement`] = how;
+    solved[`degs`] = degs;
+    solved[`starts`] = starts;
+    solved[`a0`] = a0s;
+    solved[`coincidence`] = table;
+    solved[`theory_deg`] = model.theory.lattice.DEG;
+    solved[`grid`] = grid;
+    solved[`freedoms`] = got[`freedoms`];
+    solved[`stages`] = extra[`stages`];
+    solved[`about`] = `per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); \`ratio\` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)`;
+    return Measure.save(`${id}.solved`, [`deg`, `cell`, `p`, `by`, `needs`, `size`], sparse, solved);
   }
   static law(model: Model) {
     let a0 = model.a0_lattice;

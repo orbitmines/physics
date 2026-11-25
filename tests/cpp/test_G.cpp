@@ -89,6 +89,46 @@ int main(int argc, char** argv) {
     return truthy(lt(mul(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? std::string(PASS) : std::string("failed: ") + "lt(mul(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
   });
 
+  t("tests/felt.ray:10 on felt", [&]() -> std::string {
+    Value it = make(S<"Felt">(), {  });
+    int guard = 0;
+    while (!truthy(gt(get(it, S<"cells">()), 0.0))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)";
+  });
+
+  t("tests/felt.ray:11 on felt", [&]() -> std::string {
+    Value it = make(S<"Felt">(), {  });
+    int guard = 0;
+    while (!truthy(gt(get(it, S<"cells">()), 0.0))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)";
+  });
+
+  t("tests/felt.ray:12 on felt", [&]() -> std::string {
+    Value it = make(S<"Felt">(), {  });
+    int guard = 0;
+    while (!truthy(gt(get(it, S<"cells">()), 0.0))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(gt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)";
+  });
+
+  t("tests/felt.ray:13 on felt", [&]() -> std::string {
+    Value it = make(S<"Felt">(), {  });
+    int guard = 0;
+    while (!truthy(gt(get(it, S<"cells">()), 0.0))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)";
+  });
+
   t("tests/field.ray:10 on line", [&]() -> std::string {
     Value it = call(K(S<"G">()), S<"field">(), { 6.0, 8.0, 1.0, 1.0 });
     int guard = 0;

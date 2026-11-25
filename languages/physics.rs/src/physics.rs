@@ -124,6 +124,7 @@ pub(crate) fn load() {
   cls("Simulation", "Node", c_Simulation::define);
   cls("Formed", "Node", c_Formed::define);
   cls("Model", "Node", c_Model::define);
+  cls("Felt", "Node", c_Felt::define);
   cls("Axis", "Node", c_Axis::define);
   cls("Shaded", "Node", c_Shaded::define);
   cls("Sweep", "Node", c_Sweep::define);
@@ -19133,7 +19134,7 @@ pub mod c_Galaxies {
     let data_0 = cell(&arg(a1, 0)); let deg_0 = cell(&arg(a1, 1));
       let table_0 = cell(&Value::Null); wr(&table_0, &get(&get(&rd(&data_0), "header"), &tos(&sv!["coincidence"])));
       if truthy(&eq(&rd(&table_0), &Value::Null)) {
-        invoke(&fail, args![sv!["the space carries no a_0/cH table - rerun it (record.gpu RAY_SPACE)"]]);
+        invoke(&fail, args![sv!["the space carries no a_0/cH table - rerun it (`npx ray measure galaxy.many`)"]]);
       }
       let ds_0 = cell(&Value::Null); wr(&ds_0, &get(&rd(&table_0), &tos(&sv!["deg"])));
       let rs_0 = cell(&Value::Null); wr(&rs_0, &get(&rd(&table_0), &tos(&sv!["ratio"])));
@@ -19156,8 +19157,17 @@ pub mod c_Galaxies {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let data_0 = cell(&arg(a1, 0)); let deg_0 = cell(&arg(a1, 1));
+      return own(&call(&k!("Fmt"), "log10", args![div(&mul(&mul(&call(&k!("Galaxies"), "ratio_at", args![rd(&data_0), rd(&deg_0)]), &get(&k!("Sparc"), "C_LIGHT")), &call(&k!("Galaxies"), "rate_of", args![rd(&data_0)])), &get(&k!("Galaxies"), "A0_DATA"))]));
+      Value::Null
+    }
+  }
+  pub mod s_rate_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let data_0 = cell(&arg(a1, 0));
       let H_0 = cell(&Value::Null); wr(&H_0, &div(&mul(&get(&k!("Galaxies"), "H0"), &1000.0), &(mul(&get(&k!("Sparc"), "KPC"), &1000.0))));
-      return own(&call(&k!("Fmt"), "log10", args![div(&mul(&mul(&call(&k!("Galaxies"), "ratio_at", args![rd(&data_0), rd(&deg_0)]), &get(&k!("Sparc"), "C_LIGHT")), &rd(&H_0)), &get(&k!("Galaxies"), "A0_DATA"))]));
+      let table_0 = cell(&Value::Null); wr(&table_0, &get(&get(&rd(&data_0), "header"), &tos(&sv!["coincidence"])));
+      return own(&(if truthy(&(truthy(&(!eq(&rd(&table_0), &Value::Null))) && truthy(&eq(&get(&rd(&table_0), &tos(&sv!["against"])), &sv!["H_Lambda"])))) { own(&mul(&rd(&H_0), &m_sqrt(&(sub(&1.0, &get(&k!("Simulation"), "OMEGA_M")))))) } else { own(&rd(&H_0)) }));
       Value::Null
     }
   }
@@ -19318,7 +19328,7 @@ pub mod c_Galaxies {
     let id_0 = cell(&arg(a1, 0)); let what_0 = cell(&arg(a1, 1)); let title_0 = cell(&arg(a1, 2));
       let solved_0 = cell(&Value::Null); wr(&solved_0, &call(&k!("Measured"), "of", args![sv!["", &tos(&rd(&id_0)), ".solved"]]));
       if truthy(&eq(&rd(&solved_0), &Value::Null)) {
-        invoke(&fail, args![sv!["", &tos(&rd(&id_0)), ".solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again"]]);
+        invoke(&fail, args![sv!["", &tos(&rd(&id_0)), ".solved is not on disk - solve the space (`npx ray measure ", &tos(&rd(&id_0)), "`) and try again"]]);
       }
       let ks_0 = cell(&Value::Null); wr(&ks_0, &call(&k!("Galaxies"), "sweep_of", args![rd(&solved_0)]));
       return own(&make_k(&k!("Picture"), args![kw("id", &rd(&id_0)), kw("what", &rd(&what_0)), kw("width", &960.0), kw("height", &720.0), kw("frames", &len(&rd(&ks_0))), kw("paint", &{ let self_: Value = self_.clone(); cl!(solved_0, title_0, ks_0); fnv(move |a3: &[&Value]| -> Value {
@@ -19336,10 +19346,9 @@ pub mod c_Galaxies {
     let deg_0 = cell(&arg(a1, 0));
       let space_0 = cell(&Value::Null); wr(&space_0, &call(&k!("Measured"), "of", args![sv!["galaxy.many.solved"]]));
       if truthy(&eq(&rd(&space_0), &Value::Null)) {
-        invoke(&fail, args![sv!["galaxy.many.solved is not on disk - solve the space (record.gpu RAY_SOLVE) and try again"]]);
+        invoke(&fail, args![sv!["galaxy.many.solved is not on disk - solve the space (`npx ray measure galaxy.many`) and try again"]]);
       }
-      let H_0 = cell(&Value::Null); wr(&H_0, &div(&mul(&get(&k!("Galaxies"), "H0"), &1000.0), &(mul(&get(&k!("Sparc"), "KPC"), &1000.0))));
-      return own(&mul(&mul(&call(&k!("Galaxies"), "ratio_at", args![rd(&space_0), rd(&deg_0)]), &get(&k!("Sparc"), "C_LIGHT")), &rd(&H_0)));
+      return own(&mul(&mul(&call(&k!("Galaxies"), "ratio_at", args![rd(&space_0), rd(&deg_0)]), &get(&k!("Sparc"), "C_LIGHT")), &call(&k!("Galaxies"), "rate_of", args![rd(&space_0)])));
       Value::Null
     }
   }
@@ -20184,14 +20193,14 @@ pub mod c_Galaxies {
   pub mod s_point {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&call(&k!("Galaxies"), "of", args![sv!["galaxy.point"], sv!["a galaxy as ONE source - the whole of its mass behind one face, so what it sends saturates at the face. Where the model puts galaxies, against every measurement"], sv!["A GALAXY AS ONE SOURCE"]]));
+      return own(&call(&k!("Galaxies"), "of", args![sv!["galaxy.point"], sv!["a galaxy as ONE body - the whole of its mass in a middle. The space it makes is a shell round it, and its record is the closing law exactly"], sv!["A GALAXY AS ONE BODY"]]));
       Value::Null
     }
   }
   pub mod s_many {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-      return own(&call(&k!("Galaxies"), "of", args![sv!["galaxy.many"], sv!["and as its stars - each thin enough to send all of itself, so what is sent is the total mass. The same axes, the same law, the other limit of the skin"], sv!["A GALAXY AS MANY SOURCES, ONE PER STAR"]]));
+      return own(&call(&k!("Galaxies"), "of", args![sv!["galaxy.many"], sv!["and as a disc of stars and gas - the space made at the edge of its field solved over the whole of it, so one arrival can be felt differently. Every disc there could be"], sv!["EVERY GALAXY THERE COULD BE, SOLVED OVER ITS FIELD"]]));
       Value::Null
     }
   }
@@ -20217,9 +20226,9 @@ pub mod c_Galaxies {
     c.static_field("YMIN", |self_: &Value| -> Value { own(&neg(&3.0)) });//<
     c.static_field("YMAX", |self_: &Value| -> Value { own(&3.0) });//<
     c.static_field("SEVERAL", |self_: &Value| -> Value { own(&list![86.0, 168.0, 235.0]) });//<
-    c.static_field("FREEDOMS", |self_: &Value| -> Value { own(&list![sv!["mass"], sv!["face"], sv!["moving"], sv!["spread"]]) });//<
+    c.static_field("FREEDOMS", |self_: &Value| -> Value { own(&list![sv!["mass"], sv!["thickness"], sv!["middle"], sv!["gas"]]) });//<
     c.static_field("TINTS", |self_: &Value| -> Value { own(&list![list![232.0, 193.0, 90.0], list![90.0, 212.0, 193.0], list![240.0, 122.0, 178.0], list![169.0, 139.0, 224.0]]) });//<
-    c.static_field("NAMES_NOW", |self_: &Value| -> Value { own(&list![sv!["mass"], sv!["face"], sv!["moving"], sv!["spread"]]) });//<
+    c.static_field("NAMES_NOW", |self_: &Value| -> Value { own(&list![sv!["mass"], sv!["thickness"], sv!["middle"], sv!["gas"]]) });//<
     c.static_field("LEVELS", |self_: &Value| -> Value { own(&list![neg(&4.0), neg(&2.0), 0.0, 1.0, 2.0, 3.0]) });//<
     c.static_field("WIDTHS", |self_: &Value| -> Value { own(&list![0.0, 2.0]) });//<
     c.static_field("DISK_ID", |self_: &Value| -> Value { own(&sv!["law.disk"]) });//<
@@ -20256,6 +20265,7 @@ pub mod c_Galaxies {
     c.statik("freedoms_in", s_freedoms_in::f);//<
     c.statik("ratio_at", s_ratio_at::f);//<
     c.statik("shift_at", s_shift_at::f);//<
+    c.statik("rate_of", s_rate_of::f);//<
     c.statik("frame_of", s_frame_of::f);//<
     c.statik("support_at", s_support_at::f);//<
     c.statik("inside", s_inside::f);//<
@@ -23090,7 +23100,7 @@ pub mod c_Model {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let gN_0 = cell(&arg(a1, 0)); let a0_0 = cell(&arg(a1, 1));
-      let F_0 = cell(&Value::Null); wr(&F_0, &call(&self_, "fact", args![sv!["F_{g}"]]));
+      let F_0 = cell(&Value::Null); wr(&F_0, &or_else(&call(&self_, "fact", args![sv!["F_{g} \\aside{closing}"]]), || own(&call(&self_, "fact", args![sv!["F_{g}"]]))));
       if truthy(&eq(&rd(&F_0), &Value::Null)) {
         return own(&f64::NAN);
       }
@@ -23256,6 +23266,581 @@ pub mod c_Model {
     c.method("as_point_parts", m_as_point_parts::f);//<
     c.method("as_stars_parts", m_as_stars_parts::f);//<
     c.statik("speed", s_speed::f);//<
+  }
+}
+
+pub mod c_Felt {
+  use crate::rt::*;
+  pub mod g_step {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&div(&m_ln(&(div(&get(&k!("Felt"), "R1"), &get(&k!("Felt"), "R0")))), &get(&k!("Felt"), "NR")));
+      Value::Null
+    }
+  }
+  pub mod m_edge {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let i_0 = cell(&arg(a1, 0));
+      return own(&mul(&get(&k!("Felt"), "R0"), &m_exp(&(mul(&get(&self_, "step"), &rd(&i_0))))));
+      Value::Null
+    }
+  }
+  pub mod m_centre {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let i_0 = cell(&arg(a1, 0));
+      return own(&mul(&get(&k!("Felt"), "R0"), &m_exp(&(mul(&get(&self_, "step"), &(add(&rd(&i_0), &0.5)))))));
+      Value::Null
+    }
+  }
+  pub mod s_sinh {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0));
+      return own(&div(&(sub(&m_exp(&rd(&x_0)), &m_exp(&(sub(&0.0, &rd(&x_0)))))), &2.0));
+      Value::Null
+    }
+  }
+  pub mod s_mu_edge {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let j_0 = cell(&arg(a1, 0));
+      return own(&div(&call(&k!("Felt"), "sinh", args![div(&mul(&get(&k!("Felt"), "SQ"), &rd(&j_0)), &get(&k!("Felt"), "NMU"))]), &call(&k!("Felt"), "sinh", args![get(&k!("Felt"), "SQ")])));
+      Value::Null
+    }
+  }
+  pub mod s_mu_centre {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let j_0 = cell(&arg(a1, 0));
+      return own(&div(&(add(&call(&k!("Felt"), "mu_edge", args![rd(&j_0)]), &call(&k!("Felt"), "mu_edge", args![add(&rd(&j_0), &1.0)]))), &2.0));
+      Value::Null
+    }
+  }
+  pub mod g_cells {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&mul(&get(&k!("Felt"), "NR"), &get(&k!("Felt"), "NMU")));
+      Value::Null
+    }
+  }
+  pub mod s_ring {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let R_0 = cell(&arg(a1, 0)); let z_0 = cell(&arg(a1, 1)); let a_0 = cell(&arg(a1, 2)); let zs_0 = cell(&arg(a1, 3)); let eps2_0 = cell(&arg(a1, 4));
+      let dz_0 = cell(&Value::Null); wr(&dz_0, &sub(&rd(&z_0), &rd(&zs_0)));
+      let h2_0 = cell(&Value::Null); wr(&h2_0, &add(&mul(&rd(&dz_0), &rd(&dz_0)), &rd(&eps2_0)));
+      let q2_0 = cell(&Value::Null); wr(&q2_0, &add(&mul(&(add(&rd(&a_0), &rd(&R_0))), &(add(&rd(&a_0), &rd(&R_0)))), &rd(&h2_0)));
+      let q_0 = cell(&Value::Null); wr(&q_0, &m_sqrt(&rd(&q2_0)));
+      let m_0 = cell(&Value::Null); wr(&m_0, &div(&mul(&mul(&4.0, &rd(&a_0)), &rd(&R_0)), &rd(&q2_0)));
+      let d2_0 = cell(&Value::Null); wr(&d2_0, &add(&mul(&(sub(&rd(&a_0), &rd(&R_0))), &(sub(&rd(&a_0), &rd(&R_0)))), &rd(&h2_0)));
+      let big_0 = cell(&Value::Null); wr(&big_0, &1.0);
+      let small_0 = cell(&Value::Null); wr(&small_0, &m_sqrt(&(sub(&1.0, &rd(&m_0)))));
+      let tail_0 = cell(&Value::Null); wr(&tail_0, &mul(&0.5, &rd(&m_0)));
+      let twice_0 = cell(&Value::Null); wr(&twice_0, &1.0);
+      for i1 in 0..(num(&10.0).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let c__1 = cell(&Value::Null); wr(&c__1, &div(&(sub(&rd(&big_0), &rd(&small_0))), &2.0));
+        let mean_1 = cell(&Value::Null); wr(&mean_1, &div(&(add(&rd(&big_0), &rd(&small_0))), &2.0));
+        wr(&small_0, &m_sqrt(&(mul(&rd(&big_0), &rd(&small_0)))));
+        wr(&big_0, &rd(&mean_1));
+        wr(&twice_0, &mul(&rd(&twice_0), &2.0));
+        wr(&tail_0, &add(&rd(&tail_0), &div(&mul(&mul(&rd(&twice_0), &rd(&c__1)), &rd(&c__1)), &2.0)));
+      };
+      let kk_0 = cell(&Value::Null); wr(&kk_0, &div(&std::f64::consts::PI, &(mul(&2.0, &rd(&big_0)))));
+      let ee_0 = cell(&Value::Null); wr(&ee_0, &mul(&rd(&kk_0), &(sub(&1.0, &rd(&tail_0)))));
+      let dk_0 = cell(&Value::Null); wr(&dk_0, &(if truthy(&gt(&rd(&m_0), &0.00000001)) { own(&div(&(sub(&rd(&ee_0), &mul(&(sub(&1.0, &rd(&m_0))), &rd(&kk_0)))), &(mul(&mul(&2.0, &rd(&m_0)), &(sub(&1.0, &rd(&m_0))))))) } else { own(&div(&std::f64::consts::PI, &8.0)) }));
+      let dm_0 = cell(&Value::Null); wr(&dm_0, &mul(&(div(&mul(&4.0, &rd(&a_0)), &rd(&q2_0))), &(sub(&1.0, &div(&mul(&mul(&2.0, &rd(&R_0)), &(add(&rd(&a_0), &rd(&R_0)))), &rd(&q2_0))))));
+      return own(&list![mul(&(div(&2.0, &std::f64::consts::PI)), &(sub(&div(&mul(&rd(&dk_0), &rd(&dm_0)), &rd(&q_0)), &div(&mul(&rd(&kk_0), &(add(&rd(&a_0), &rd(&R_0)))), &(mul(&rd(&q2_0), &rd(&q_0))))))), sub(&0.0, &div(&(mul(&mul(&2.0, &rd(&dz_0)), &rd(&ee_0))), &(mul(&mul(&std::f64::consts::PI, &rd(&q_0)), &rd(&d2_0)))))]);
+      Value::Null
+    }
+  }
+  pub mod s_rings {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let h_0 = cell(&arg(a1, 0));
+      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
+      for i1 in 0..(num(&get(&k!("Felt"), "NA")).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let e0_1 = cell(&Value::Null); wr(&e0_1, &mul(&20.0, &power(&(div(&rd(&k_1), &get(&k!("Felt"), "NA"))), &2.0)));
+        let e1_1 = cell(&Value::Null); wr(&e1_1, &mul(&20.0, &power(&(div(&add(&rd(&k_1), &1.0), &get(&k!("Felt"), "NA"))), &2.0)));
+        let held_1 = cell(&Value::Null); wr(&held_1, &sub(&mul(&(add(&1.0, &rd(&e0_1))), &m_exp(&(sub(&0.0, &rd(&e0_1))))), &mul(&(add(&1.0, &rd(&e1_1))), &m_exp(&(sub(&0.0, &rd(&e1_1)))))));
+        for i2 in 0..(num(&get(&k!("Felt"), "NZ")).ceil() as i64) {
+          let l_2 = cell(&(i2 as f64));
+          let z_2 = cell(&Value::Null); wr(&z_2, &sub(&0.0, &mul(&rd(&h_0), &m_ln(&(sub(&1.0, &div(&(add(&rd(&l_2), &0.5)), &get(&k!("Felt"), "NZ"))))))));
+          m_push(&rd(&out_0), args![list![div(&(add(&rd(&e0_1), &rd(&e1_1))), &2.0), rd(&z_2), div(&div(&rd(&held_1), &get(&k!("Felt"), "NZ")), &2.0), sub(&rd(&e1_1), &rd(&e0_1))]]);
+        };
+      };
+      return own(&rd(&out_0));
+      Value::Null
+    }
+  }
+  pub mod s_disc_at {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let rings_0 = cell(&arg(a1, 0)); let h_0 = cell(&arg(a1, 1)); let R_0 = cell(&arg(a1, 2)); let z_0 = cell(&arg(a1, 3));
+      let gr_0 = cell(&Value::Null); wr(&gr_0, &0.0);
+      let gz_0 = cell(&Value::Null); wr(&gz_0, &0.0);
+      for e1 in items(&rd(&rings_0)) {
+        let b_1 = cell(&e1);
+        let e_1 = cell(&Value::Null); wr(&e_1, &mul(&0.5, &call(&k!("Fmt"), "max", args![elem(&rd(&b_1), &3.0), div(&rd(&h_0), &4.0)])));
+        let up_1 = cell(&Value::Null); wr(&up_1, &call(&k!("Felt"), "ring", args![rd(&R_0), rd(&z_0), elem(&rd(&b_1), &0.0), elem(&rd(&b_1), &1.0), mul(&rd(&e_1), &rd(&e_1))]));
+        let down_1 = cell(&Value::Null); wr(&down_1, &call(&k!("Felt"), "ring", args![rd(&R_0), rd(&z_0), elem(&rd(&b_1), &0.0), sub(&0.0, &elem(&rd(&b_1), &1.0)), mul(&rd(&e_1), &rd(&e_1))]));
+        wr(&gr_0, &add(&rd(&gr_0), &mul(&elem(&rd(&b_1), &2.0), &(add(&elem(&rd(&up_1), &0.0), &elem(&rd(&down_1), &0.0))))));
+        wr(&gz_0, &add(&rd(&gz_0), &mul(&elem(&rd(&b_1), &2.0), &(add(&elem(&rd(&up_1), &1.0), &elem(&rd(&down_1), &1.0))))));
+      };
+      return own(&list![rd(&gr_0), rd(&gz_0)]);
+      Value::Null
+    }
+  }
+  pub mod m_unit_disc {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let h_0 = cell(&arg(a1, 0));
+      let key_0 = cell(&Value::Null); wr(&key_0, &sv!["", &tos(&rd(&h_0)), ""]);
+      if truthy(&(!eq(&elem(&get(&self_, "unit"), &rd(&key_0)), &Value::Null))) {
+        return own(&elem(&get(&self_, "unit"), &rd(&key_0)));
+      }
+      let rings_0 = cell(&Value::Null); wr(&rings_0, &call(&k!("Felt"), "rings", args![rd(&h_0)]));
+      let rows_0 = cell(&Value::Null); wr(&rows_0, &add(&get(&k!("Felt"), "NR"), &get(&k!("Felt"), "KMAX")));
+      let gr_0 = cell(&Value::Null); wr(&gr_0, &filled(&mul(&rd(&rows_0), &get(&k!("Felt"), "NMU")), &0.0));
+      let gz_0 = cell(&Value::Null); wr(&gz_0, &filled(&mul(&rd(&rows_0), &get(&k!("Felt"), "NMU")), &0.0));
+      let plane_0 = cell(&Value::Null); wr(&plane_0, &filled(&rd(&rows_0), &0.0));
+      for i1 in 0..(num(&rd(&rows_0)).ceil() as i64) {
+        let ii_1 = cell(&(i1 as f64));
+        let r_1 = cell(&Value::Null); wr(&r_1, &call(&self_, "centre", args![sub(&rd(&ii_1), &get(&k!("Felt"), "KMAX"))]));
+        for i2 in 0..(num(&get(&k!("Felt"), "NMU")).ceil() as i64) {
+          let j_2 = cell(&(i2 as f64));
+          let mu_2 = cell(&Value::Null); wr(&mu_2, &elem(&get(&self_, "mc"), &rd(&j_2)));
+          let g_2 = cell(&Value::Null); wr(&g_2, &call(&k!("Felt"), "disc_at", args![rd(&rings_0), rd(&h_0), mul(&rd(&r_1), &m_sqrt(&(sub(&1.0, &mul(&rd(&mu_2), &rd(&mu_2)))))), mul(&rd(&r_1), &rd(&mu_2))]));
+          set_at(&rd(&gr_0), &add(&mul(&rd(&ii_1), &get(&k!("Felt"), "NMU")), &rd(&j_2)), &elem(&rd(&g_2), &0.0));
+          set_at(&rd(&gz_0), &add(&mul(&rd(&ii_1), &get(&k!("Felt"), "NMU")), &rd(&j_2)), &elem(&rd(&g_2), &1.0));
+        };
+        set_at(&rd(&plane_0), &rd(&ii_1), &elem(&call(&k!("Felt"), "disc_at", args![rd(&rings_0), rd(&h_0), rd(&r_1), 0.0]), &0.0));
+      };
+      set_at(&get(&self_, "unit"), &rd(&key_0), &list![rd(&gr_0), rd(&gz_0), rd(&plane_0)]);
+      return own(&elem(&get(&self_, "unit"), &rd(&key_0)));
+      Value::Null
+    }
+  }
+  pub mod m_shape {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let h_0 = cell(&arg(a1, 0)); let middle_0 = cell(&arg(a1, 1)); let gas_0 = cell(&arg(a1, 2)); let wider_0 = cell(&arg(a1, 3));
+      let stars_0 = cell(&Value::Null); wr(&stars_0, &mul(&(sub(&1.0, &rd(&gas_0))), &(sub(&1.0, &rd(&middle_0)))));
+      let held_0 = cell(&Value::Null); wr(&held_0, &mul(&(sub(&1.0, &rd(&gas_0))), &rd(&middle_0)));
+      let u_0 = cell(&Value::Null); wr(&u_0, &(if truthy(&(truthy(&gt(&rd(&stars_0), &0.0)) || truthy(&gt(&rd(&gas_0), &0.0)))) { own(&call(&self_, "unit_disc", args![rd(&h_0)])) } else { own(&Value::Null) }));
+      let w_0 = cell(&Value::Null); wr(&w_0, &m_exp(&(mul(&get(&self_, "step"), &rd(&wider_0)))));
+      let gr_0 = cell(&Value::Null); wr(&gr_0, &filled(&get(&self_, "cells"), &0.0));
+      let gz_0 = cell(&Value::Null); wr(&gz_0, &filled(&get(&self_, "cells"), &0.0));
+      let plane_0 = cell(&Value::Null); wr(&plane_0, &filled(&get(&k!("Felt"), "NR"), &0.0));
+      let a_0 = cell(&Value::Null); wr(&a_0, &get(&k!("Felt"), "HERNQUIST"));
+      for i1 in 0..(num(&get(&k!("Felt"), "NR")).ceil() as i64) {
+        let i_1 = cell(&(i1 as f64));
+        let ii_1 = cell(&Value::Null); wr(&ii_1, &add(&rd(&i_1), &get(&k!("Felt"), "KMAX")));
+        let r_1 = cell(&Value::Null); wr(&r_1, &elem(&get(&self_, "rc"), &rd(&i_1)));
+        for i2 in 0..(num(&get(&k!("Felt"), "NMU")).ceil() as i64) {
+          let j_2 = cell(&(i2 as f64));
+          let mu_2 = cell(&Value::Null); wr(&mu_2, &elem(&get(&self_, "mc"), &rd(&j_2)));
+          let c__2 = cell(&Value::Null); wr(&c__2, &add(&mul(&rd(&i_1), &get(&k!("Felt"), "NMU")), &rd(&j_2)));
+          let pull_2 = cell(&Value::Null); wr(&pull_2, &div(&rd(&held_0), &(mul(&mul(&rd(&r_1), &(add(&rd(&r_1), &rd(&a_0)))), &(add(&rd(&r_1), &rd(&a_0)))))));
+          let R_2 = cell(&Value::Null); wr(&R_2, &mul(&rd(&r_1), &m_sqrt(&(sub(&1.0, &mul(&rd(&mu_2), &rd(&mu_2)))))));
+          set_at(&rd(&gr_0), &rd(&c__2), &add(&((if truthy(&eq(&rd(&u_0), &Value::Null)) { own(&0.0) } else { own(&add(&mul(&rd(&stars_0), &elem(&elem(&rd(&u_0), &0.0), &add(&mul(&rd(&ii_1), &get(&k!("Felt"), "NMU")), &rd(&j_2)))), &div(&mul(&rd(&gas_0), &elem(&elem(&rd(&u_0), &0.0), &add(&mul(&(sub(&rd(&ii_1), &rd(&wider_0))), &get(&k!("Felt"), "NMU")), &rd(&j_2)))), &(mul(&rd(&w_0), &rd(&w_0)))))) })), &mul(&rd(&pull_2), &(sub(&0.0, &rd(&R_2))))));
+          set_at(&rd(&gz_0), &rd(&c__2), &add(&((if truthy(&eq(&rd(&u_0), &Value::Null)) { own(&0.0) } else { own(&add(&mul(&rd(&stars_0), &elem(&elem(&rd(&u_0), &1.0), &add(&mul(&rd(&ii_1), &get(&k!("Felt"), "NMU")), &rd(&j_2)))), &div(&mul(&rd(&gas_0), &elem(&elem(&rd(&u_0), &1.0), &add(&mul(&(sub(&rd(&ii_1), &rd(&wider_0))), &get(&k!("Felt"), "NMU")), &rd(&j_2)))), &(mul(&rd(&w_0), &rd(&w_0)))))) })), &mul(&rd(&pull_2), &(sub(&0.0, &mul(&rd(&r_1), &rd(&mu_2)))))));
+        };
+        set_at(&rd(&plane_0), &rd(&i_1), &sub(&((if truthy(&eq(&rd(&u_0), &Value::Null)) { own(&0.0) } else { own(&add(&mul(&rd(&stars_0), &elem(&elem(&rd(&u_0), &2.0), &rd(&ii_1))), &div(&mul(&rd(&gas_0), &elem(&elem(&rd(&u_0), &2.0), &sub(&rd(&ii_1), &rd(&wider_0)))), &(mul(&rd(&w_0), &rd(&w_0)))))) })), &div(&rd(&held_0), &(mul(&(add(&rd(&r_1), &rd(&a_0))), &(add(&rd(&r_1), &rd(&a_0))))))));
+      };
+      return own(&list![rd(&gr_0), rd(&gz_0), rd(&plane_0)]);
+      Value::Null
+    }
+  }
+  pub mod m_faces_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let c__0 = cell(&arg(a1, 0));
+      let i_0 = cell(&Value::Null); wr(&i_0, &m_floor(&(div(&rd(&c__0), &get(&k!("Felt"), "NMU")))));
+      let j_0 = cell(&Value::Null); wr(&j_0, &modulo(&rd(&c__0), &get(&k!("Felt"), "NMU")));
+      let dmu_0 = cell(&Value::Null); wr(&dmu_0, &sub(&elem(&get(&self_, "me"), &add(&rd(&j_0), &1.0)), &elem(&get(&self_, "me"), &rd(&j_0))));
+      let dr_0 = cell(&Value::Null); wr(&dr_0, &sub(&elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0)), &elem(&get(&self_, "re"), &rd(&i_0))));
+      let out__0 = cell(&Value::Null); wr(&out__0, &(if truthy(&lt(&add(&rd(&i_0), &1.0), &get(&k!("Felt"), "NR"))) { own(&div(&mul(&mul(&mul(&mul(&2.0, &std::f64::consts::PI), &elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0))), &elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0))), &rd(&dmu_0)), &(sub(&elem(&get(&self_, "rc"), &add(&rd(&i_0), &1.0)), &elem(&get(&self_, "rc"), &rd(&i_0)))))) } else { own(&div(&mul(&mul(&mul(&mul(&2.0, &std::f64::consts::PI), &elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0))), &elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0))), &rd(&dmu_0)), &(sub(&elem(&get(&self_, "re"), &add(&rd(&i_0), &1.0)), &elem(&get(&self_, "rc"), &rd(&i_0)))))) }));
+      let in__0 = cell(&Value::Null); wr(&in__0, &(if truthy(&gt(&rd(&i_0), &0.0)) { own(&div(&mul(&mul(&mul(&mul(&2.0, &std::f64::consts::PI), &elem(&get(&self_, "re"), &rd(&i_0))), &elem(&get(&self_, "re"), &rd(&i_0))), &rd(&dmu_0)), &(sub(&elem(&get(&self_, "rc"), &rd(&i_0)), &elem(&get(&self_, "rc"), &sub(&rd(&i_0), &1.0)))))) } else { own(&0.0) }));
+      let up_0 = cell(&Value::Null); wr(&up_0, &(if truthy(&lt(&add(&rd(&j_0), &1.0), &get(&k!("Felt"), "NMU"))) { own(&div(&mul(&mul(&mul(&2.0, &std::f64::consts::PI), &(sub(&1.0, &mul(&elem(&get(&self_, "me"), &add(&rd(&j_0), &1.0)), &elem(&get(&self_, "me"), &add(&rd(&j_0), &1.0)))))), &rd(&dr_0)), &(sub(&elem(&get(&self_, "mc"), &add(&rd(&j_0), &1.0)), &elem(&get(&self_, "mc"), &rd(&j_0)))))) } else { own(&0.0) }));
+      let down_0 = cell(&Value::Null); wr(&down_0, &(if truthy(&gt(&rd(&j_0), &0.0)) { own(&div(&mul(&mul(&mul(&2.0, &std::f64::consts::PI), &(sub(&1.0, &mul(&elem(&get(&self_, "me"), &rd(&j_0)), &elem(&get(&self_, "me"), &rd(&j_0)))))), &rd(&dr_0)), &(sub(&elem(&get(&self_, "mc"), &rd(&j_0)), &elem(&get(&self_, "mc"), &sub(&rd(&j_0), &1.0)))))) } else { own(&0.0) }));
+      return own(&list![rd(&out__0), rd(&in__0), rd(&up_0), rd(&down_0)]);
+      Value::Null
+    }
+  }
+  pub mod g_width {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&add(&mul(&2.0, &get(&k!("Felt"), "NMU")), &1.0));
+      Value::Null
+    }
+  }
+  pub mod m_at_band {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let k_0 = cell(&arg(a1, 0)); let l_0 = cell(&arg(a1, 1));
+      return own(&add(&mul(&rd(&k_0), &get(&self_, "width")), &(add(&sub(&rd(&l_0), &rd(&k_0)), &get(&k!("Felt"), "NMU")))));
+      Value::Null
+    }
+  }
+  pub mod g_factored {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      let n_0 = cell(&Value::Null); wr(&n_0, &get(&self_, "cells"));
+      let B_0 = cell(&Value::Null); wr(&B_0, &get(&k!("Felt"), "NMU"));
+      let W_0 = cell(&Value::Null); wr(&W_0, &get(&self_, "width"));
+      let m_0 = cell(&Value::Null); wr(&m_0, &filled(&mul(&rd(&n_0), &rd(&W_0)), &0.0));
+      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let i_1 = cell(&Value::Null); wr(&i_1, &m_floor(&(div(&rd(&k_1), &rd(&B_0)))));
+        let j_1 = cell(&Value::Null); wr(&j_1, &modulo(&rd(&k_1), &rd(&B_0)));
+        let f_1 = cell(&Value::Null); wr(&f_1, &elem(&get(&self_, "faces"), &rd(&k_1)));
+        set_at(&rd(&m_0), &add(&mul(&rd(&k_1), &rd(&W_0)), &rd(&B_0)), &add(&add(&add(&elem(&rd(&f_1), &0.0), &elem(&rd(&f_1), &1.0)), &elem(&rd(&f_1), &2.0)), &elem(&rd(&f_1), &3.0)));
+        if truthy(&lt(&add(&rd(&i_1), &1.0), &get(&k!("Felt"), "NR"))) {
+          set_at(&rd(&m_0), &add(&add(&mul(&rd(&k_1), &rd(&W_0)), &rd(&B_0)), &rd(&B_0)), &sub(&0.0, &elem(&rd(&f_1), &0.0)));
+        }
+        if truthy(&gt(&rd(&i_1), &0.0)) {
+          set_at(&rd(&m_0), &mul(&rd(&k_1), &rd(&W_0)), &sub(&0.0, &elem(&rd(&f_1), &1.0)));
+        }
+        if truthy(&lt(&add(&rd(&j_1), &1.0), &rd(&B_0))) {
+          set_at(&rd(&m_0), &add(&add(&mul(&rd(&k_1), &rd(&W_0)), &rd(&B_0)), &1.0), &sub(&0.0, &elem(&rd(&f_1), &2.0)));
+        }
+        if truthy(&gt(&rd(&j_1), &0.0)) {
+          set_at(&rd(&m_0), &sub(&add(&mul(&rd(&k_1), &rd(&W_0)), &rd(&B_0)), &1.0), &sub(&0.0, &elem(&rd(&f_1), &3.0)));
+        }
+      };
+      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let p_1 = cell(&Value::Null); wr(&p_1, &elem(&rd(&m_0), &add(&mul(&rd(&k_1), &rd(&W_0)), &rd(&B_0))));
+        let last_1 = cell(&Value::Null); wr(&last_1, &call(&k!("Fmt"), "min", args![sub(&rd(&n_0), &1.0), add(&rd(&k_1), &rd(&B_0))]));
+        let l_1 = cell(&Value::Null); wr(&l_1, &add(&rd(&k_1), &1.0));
+        while truthy(&le(&rd(&l_1), &rd(&last_1))) {
+          let f_1 = cell(&Value::Null); wr(&f_1, &div(&elem(&rd(&m_0), &add(&mul(&rd(&l_1), &rd(&W_0)), &(add(&sub(&rd(&k_1), &rd(&l_1)), &rd(&B_0))))), &rd(&p_1)));
+          if truthy(&(!eq(&rd(&f_1), &0.0))) {
+            set_at(&rd(&m_0), &add(&mul(&rd(&l_1), &rd(&W_0)), &(add(&sub(&rd(&k_1), &rd(&l_1)), &rd(&B_0)))), &rd(&f_1));
+            let q_1 = cell(&Value::Null); wr(&q_1, &add(&rd(&k_1), &1.0));
+            while truthy(&le(&rd(&q_1), &rd(&last_1))) {
+              set_at(&rd(&m_0), &add(&mul(&rd(&l_1), &rd(&W_0)), &(add(&sub(&rd(&q_1), &rd(&l_1)), &rd(&B_0)))), &sub(&elem(&rd(&m_0), &add(&mul(&rd(&l_1), &rd(&W_0)), &(add(&sub(&rd(&q_1), &rd(&l_1)), &rd(&B_0))))), &mul(&rd(&f_1), &elem(&rd(&m_0), &add(&mul(&rd(&k_1), &rd(&W_0)), &(add(&sub(&rd(&q_1), &rd(&k_1)), &rd(&B_0))))))));
+              wr(&q_1, &add(&rd(&q_1), &1.0));
+            }
+          }
+          wr(&l_1, &add(&rd(&l_1), &1.0));
+        }
+      };
+      return own(&rd(&m_0));
+      Value::Null
+    }
+  }
+  pub mod m_solve_band {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let b_0 = cell(&arg(a1, 0));
+      let n_0 = cell(&Value::Null); wr(&n_0, &get(&self_, "cells"));
+      let B_0 = cell(&Value::Null); wr(&B_0, &get(&k!("Felt"), "NMU"));
+      let W_0 = cell(&Value::Null); wr(&W_0, &get(&self_, "width"));
+      let m_0 = cell(&Value::Null); wr(&m_0, &get(&self_, "band"));
+      let x_0 = cell(&Value::Null); wr(&x_0, &m_map(&rd(&b_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let v_2 = cell(&arg(a3, 0));
+        return own(&rd(&v_2));
+        Value::Null
+      }) }]));
+      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
+        let k_1 = cell(&(i1 as f64));
+        let last_1 = cell(&Value::Null); wr(&last_1, &call(&k!("Fmt"), "min", args![sub(&rd(&n_0), &1.0), add(&rd(&k_1), &rd(&B_0))]));
+        let l_1 = cell(&Value::Null); wr(&l_1, &add(&rd(&k_1), &1.0));
+        while truthy(&le(&rd(&l_1), &rd(&last_1))) {
+          set_at(&rd(&x_0), &rd(&l_1), &sub(&elem(&rd(&x_0), &rd(&l_1)), &mul(&elem(&rd(&m_0), &add(&mul(&rd(&l_1), &rd(&W_0)), &(add(&sub(&rd(&k_1), &rd(&l_1)), &rd(&B_0))))), &elem(&rd(&x_0), &rd(&k_1)))));
+          wr(&l_1, &add(&rd(&l_1), &1.0));
+        }
+      };
+      let back_0 = cell(&Value::Null); wr(&back_0, &sub(&rd(&n_0), &1.0));
+      while truthy(&ge(&rd(&back_0), &0.0)) {
+        let left_0 = cell(&Value::Null); wr(&left_0, &elem(&rd(&x_0), &rd(&back_0)));
+        let last_0 = cell(&Value::Null); wr(&last_0, &call(&k!("Fmt"), "min", args![sub(&rd(&n_0), &1.0), add(&rd(&back_0), &rd(&B_0))]));
+        let q_0 = cell(&Value::Null); wr(&q_0, &add(&rd(&back_0), &1.0));
+        while truthy(&le(&rd(&q_0), &rd(&last_0))) {
+          wr(&left_0, &sub(&rd(&left_0), &mul(&elem(&rd(&m_0), &add(&mul(&rd(&back_0), &rd(&W_0)), &(add(&sub(&rd(&q_0), &rd(&back_0)), &rd(&B_0))))), &elem(&rd(&x_0), &rd(&q_0)))));
+          wr(&q_0, &add(&rd(&q_0), &1.0));
+        }
+        set_at(&rd(&x_0), &rd(&back_0), &div(&rd(&left_0), &elem(&rd(&m_0), &add(&mul(&rd(&back_0), &rd(&W_0)), &rd(&B_0)))));
+        wr(&back_0, &sub(&rd(&back_0), &1.0));
+      }
+      return own(&rd(&x_0));
+      Value::Null
+    }
+  }
+  pub mod s_over {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let gN_0 = cell(&arg(a1, 0));
+      return own(&(if truthy(&gt(&rd(&gN_0), &0.0)) { own(&add(&0.5, &m_sqrt(&(add(&0.25, &div(&1.0, &rd(&gN_0))))))) } else { own(&1.0) }));
+      Value::Null
+    }
+  }
+  pub mod m_felt {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let shape_0 = cell(&arg(a1, 0)); let s_0 = cell(&arg(a1, 1));
+      let n_0 = cell(&Value::Null); wr(&n_0, &get(&self_, "cells"));
+      let B_0 = cell(&Value::Null); wr(&B_0, &get(&k!("Felt"), "NMU"));
+      let wr_0 = cell(&Value::Null); wr(&wr_0, &filled(&rd(&n_0), &0.0));
+      let wm_0 = cell(&Value::Null); wr(&wm_0, &filled(&rd(&n_0), &0.0));
+      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
+        let c__1 = cell(&(i1 as f64));
+        let j_1 = cell(&Value::Null); wr(&j_1, &modulo(&rd(&c__1), &rd(&B_0)));
+        let gr_1 = cell(&Value::Null); wr(&gr_1, &mul(&rd(&s_0), &elem(&elem(&rd(&shape_0), &0.0), &rd(&c__1))));
+        let gz_1 = cell(&Value::Null); wr(&gz_1, &mul(&rd(&s_0), &elem(&elem(&rd(&shape_0), &1.0), &rd(&c__1))));
+        let f_1 = cell(&Value::Null); wr(&f_1, &sub(&call(&k!("Felt"), "over", args![call(&k!("Fmt"), "hypot", args![rd(&gr_1), rd(&gz_1)])]), &1.0));
+        let mu_1 = cell(&Value::Null); wr(&mu_1, &elem(&get(&self_, "mc"), &rd(&j_1)));
+        let st_1 = cell(&Value::Null); wr(&st_1, &m_sqrt(&(sub(&1.0, &mul(&rd(&mu_1), &rd(&mu_1))))));
+        set_at(&rd(&wr_0), &rd(&c__1), &mul(&rd(&f_1), &(add(&mul(&rd(&gr_1), &rd(&st_1)), &mul(&rd(&gz_1), &rd(&mu_1))))));
+        set_at(&rd(&wm_0), &rd(&c__1), &mul(&rd(&f_1), &(sub(&mul(&rd(&gz_1), &rd(&st_1)), &mul(&rd(&gr_1), &rd(&mu_1))))));
+      };
+      let rhs_0 = cell(&Value::Null); wr(&rhs_0, &filled(&rd(&n_0), &0.0));
+      for i1 in 0..(num(&rd(&n_0)).ceil() as i64) {
+        let c__1 = cell(&(i1 as f64));
+        let i_1 = cell(&Value::Null); wr(&i_1, &m_floor(&(div(&rd(&c__1), &rd(&B_0)))));
+        let j_1 = cell(&Value::Null); wr(&j_1, &modulo(&rd(&c__1), &rd(&B_0)));
+        let dmu_1 = cell(&Value::Null); wr(&dmu_1, &sub(&elem(&get(&self_, "me"), &add(&rd(&j_1), &1.0)), &elem(&get(&self_, "me"), &rd(&j_1))));
+        let dr_1 = cell(&Value::Null); wr(&dr_1, &sub(&elem(&get(&self_, "re"), &add(&rd(&i_1), &1.0)), &elem(&get(&self_, "re"), &rd(&i_1))));
+        let fo_1 = cell(&Value::Null); wr(&fo_1, &(if truthy(&lt(&add(&rd(&i_1), &1.0), &get(&k!("Felt"), "NR"))) { own(&div(&(add(&elem(&rd(&wr_0), &rd(&c__1)), &elem(&rd(&wr_0), &add(&rd(&c__1), &rd(&B_0))))), &2.0)) } else { own(&elem(&rd(&wr_0), &rd(&c__1))) }));
+        let fi_1 = cell(&Value::Null); wr(&fi_1, &(if truthy(&gt(&rd(&i_1), &0.0)) { own(&div(&(add(&elem(&rd(&wr_0), &sub(&rd(&c__1), &rd(&B_0))), &elem(&rd(&wr_0), &rd(&c__1)))), &2.0)) } else { own(&elem(&rd(&wr_0), &rd(&c__1))) }));
+        let up_1 = cell(&Value::Null); wr(&up_1, &(if truthy(&lt(&add(&rd(&j_1), &1.0), &rd(&B_0))) { own(&div(&(add(&elem(&rd(&wm_0), &rd(&c__1)), &elem(&rd(&wm_0), &add(&rd(&c__1), &1.0)))), &2.0)) } else { own(&0.0) }));
+        let down_1 = cell(&Value::Null); wr(&down_1, &(if truthy(&gt(&rd(&j_1), &0.0)) { own(&div(&(add(&elem(&rd(&wm_0), &sub(&rd(&c__1), &1.0)), &elem(&rd(&wm_0), &rd(&c__1)))), &2.0)) } else { own(&0.0) }));
+        let made_1 = cell(&Value::Null); wr(&made_1, &sub(&add(&mul(&mul(&mul(&mul(&mul(&rd(&fo_1), &2.0), &std::f64::consts::PI), &elem(&get(&self_, "re"), &add(&rd(&i_1), &1.0))), &elem(&get(&self_, "re"), &add(&rd(&i_1), &1.0))), &rd(&dmu_1)), &mul(&mul(&mul(&mul(&rd(&up_1), &2.0), &std::f64::consts::PI), &(sub(&1.0, &mul(&elem(&get(&self_, "me"), &add(&rd(&j_1), &1.0)), &elem(&get(&self_, "me"), &add(&rd(&j_1), &1.0)))))), &rd(&dr_1))), &mul(&mul(&mul(&mul(&rd(&down_1), &2.0), &std::f64::consts::PI), &(sub(&1.0, &mul(&elem(&get(&self_, "me"), &rd(&j_1)), &elem(&get(&self_, "me"), &rd(&j_1)))))), &rd(&dr_1))));
+        set_at(&rd(&rhs_0), &rd(&c__1), &(if truthy(&gt(&rd(&i_1), &0.0)) { own(&sub(&rd(&made_1), &mul(&mul(&mul(&mul(&mul(&rd(&fi_1), &2.0), &std::f64::consts::PI), &elem(&get(&self_, "re"), &rd(&i_1))), &elem(&get(&self_, "re"), &rd(&i_1))), &rd(&dmu_1)))) } else { own(&rd(&made_1)) }));
+      };
+      let psi_0 = cell(&Value::Null); wr(&psi_0, &call(&self_, "solve_band", args![rd(&rhs_0)]));
+      let out_0 = cell(&Value::Null); wr(&out_0, &list![]);
+      for i1 in 0..(num(&get(&k!("Felt"), "NR")).ceil() as i64) {
+        let i_1 = cell(&(i1 as f64));
+        let r_1 = cell(&Value::Null); wr(&r_1, &elem(&get(&self_, "rc"), &rd(&i_1)));
+        if truthy(&(truthy(&(truthy(&(truthy(&gt(&rd(&i_1), &0.0)) && truthy(&lt(&add(&rd(&i_1), &1.0), &get(&k!("Felt"), "NR"))))) && truthy(&ge(&rd(&r_1), &get(&k!("Felt"), "NEAR"))))) && truthy(&le(&rd(&r_1), &get(&k!("Felt"), "FAR"))))) {
+          let made_1 = cell(&Value::Null); wr(&made_1, &sub(&0.0, &div(&(sub(&elem(&rd(&psi_0), &mul(&(add(&rd(&i_1), &1.0)), &rd(&B_0))), &elem(&rd(&psi_0), &mul(&(sub(&rd(&i_1), &1.0)), &rd(&B_0))))), &(sub(&elem(&get(&self_, "rc"), &add(&rd(&i_1), &1.0)), &elem(&get(&self_, "rc"), &sub(&rd(&i_1), &1.0)))))));
+          let gN_1 = cell(&Value::Null); wr(&gN_1, &sub(&0.0, &mul(&rd(&s_0), &elem(&elem(&rd(&shape_0), &2.0), &rd(&i_1)))));
+          m_push(&rd(&out_0), args![list![rd(&r_1), rd(&gN_1), sub(&rd(&gN_1), &rd(&made_1))]]);
+        }
+      };
+      return own(&rd(&out_0));
+      Value::Null
+    }
+  }
+  pub mod m_off_law {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let shape_0 = cell(&arg(a1, 0)); let s_0 = cell(&arg(a1, 1));
+      return own(&m_reduce(&call(&self_, "felt", args![rd(&shape_0), rd(&s_0)]), args![0.0, { let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let most_2 = cell(&arg(a3, 0)); let q_2 = cell(&arg(a3, 1));
+        return own(&call(&k!("Fmt"), "max", args![rd(&most_2), m_abs(&call(&k!("Fmt"), "log10", args![div(&elem(&rd(&q_2), &2.0), &(mul(&elem(&rd(&q_2), &1.0), &call(&k!("Felt"), "over", args![elem(&rd(&q_2), &1.0)]))))]))]));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
+  pub mod s_dx {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&div(&(sub(&get(&k!("Felt"), "X1"), &get(&k!("Felt"), "X0"))), &sub(&get(&k!("Felt"), "XS"), &1.0)));
+      Value::Null
+    }
+  }
+  pub mod s_dy {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&div(&(sub(&get(&k!("Felt"), "Y1"), &get(&k!("Felt"), "Y0"))), &sub(&get(&k!("Felt"), "YS"), &1.0)));
+      Value::Null
+    }
+  }
+  pub mod s_bits_in {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let mask_0 = cell(&arg(a1, 0));
+      return own(&len(&filt(&rng(&4.0), &{ let self_: Value = self_.clone(); cl!(mask_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&eq(&(modulo(&m_floor(&(div(&rd(&mask_0), &power(&2.0, &rd(&k_2))))), &2.0)), &1.0));
+        Value::Null
+      }) })));
+      Value::Null
+    }
+  }
+  pub mod s_uses {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let mi_0 = cell(&arg(a1, 0)); let ti_0 = cell(&arg(a1, 1)); let ci_0 = cell(&arg(a1, 2)); let gi_0 = cell(&arg(a1, 3));
+      let held_0 = cell(&Value::Null); wr(&held_0, &m_round(&(div(&(sub(&0.0, &elem(&get(&k!("Felt"), "MASS"), &0.0))), &(div(&(sub(&elem(&get(&k!("Felt"), "MASS"), &1.0), &elem(&get(&k!("Felt"), "MASS"), &0.0))), &sub(&elem(&get(&k!("Felt"), "MASS"), &2.0), &1.0)))))));
+      return own(&add(&add(&add(&((if truthy(&(!eq(&rd(&mi_0), &rd(&held_0)))) { own(&1.0) } else { own(&0.0) })), &((if truthy(&(!eq(&rd(&ti_0), &0.0))) { own(&2.0) } else { own(&0.0) }))), &((if truthy(&(!eq(&rd(&ci_0), &0.0))) { own(&4.0) } else { own(&0.0) }))), &((if truthy(&(!eq(&rd(&gi_0), &0.0))) { own(&8.0) } else { own(&0.0) }))));
+      Value::Null
+    }
+  }
+  pub mod s_mass_at {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let mi_0 = cell(&arg(a1, 0));
+      return own(&add(&elem(&get(&k!("Felt"), "MASS"), &0.0), &div(&mul(&(sub(&elem(&get(&k!("Felt"), "MASS"), &1.0), &elem(&get(&k!("Felt"), "MASS"), &0.0))), &rd(&mi_0)), &sub(&elem(&get(&k!("Felt"), "MASS"), &2.0), &1.0))));
+      Value::Null
+    }
+  }
+  pub mod m_space {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let how_0 = cell(&arg(a1, 0));
+      let p_0 = cell(&Value::Null); wr(&p_0, &filled(&mul(&get(&k!("Felt"), "XS"), &get(&k!("Felt"), "YS")), &0.0));
+      let by_0 = cell(&Value::Null); wr(&by_0, &filled(&mul(&get(&k!("Felt"), "XS"), &get(&k!("Felt"), "YS")), &neg(&1.0)));
+      let needs_0 = cell(&Value::Null); wr(&needs_0, &filled(&mul(&get(&k!("Felt"), "XS"), &get(&k!("Felt"), "YS")), &99.0));
+      let lay_0 = cell(&Value::Null); wr(&lay_0, &{ let self_: Value = self_.clone(); cl!(p_0, needs_0, by_0); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let track_1 = cell(&arg(a2, 0)); let mask_1 = cell(&arg(a2, 1)); let dex_1 = cell(&arg(a2, 2));
+        for i2 in 0..(num(&sub(&len(&rd(&track_1)), &1.0)).ceil() as i64) {
+          let k_2 = cell(&(i2 as f64));
+          let xa_2 = cell(&Value::Null); wr(&xa_2, &call(&k!("Fmt"), "log10", args![elem(&elem(&rd(&track_1), &rd(&k_2)), &1.0)]));
+          let xb_2 = cell(&Value::Null); wr(&xb_2, &call(&k!("Fmt"), "log10", args![elem(&elem(&rd(&track_1), &add(&rd(&k_2), &1.0)), &1.0)]));
+          let ya_2 = cell(&Value::Null); wr(&ya_2, &call(&k!("Fmt"), "log10", args![elem(&elem(&rd(&track_1), &rd(&k_2)), &2.0)]));
+          let yb_2 = cell(&Value::Null); wr(&yb_2, &call(&k!("Fmt"), "log10", args![elem(&elem(&rd(&track_1), &add(&rd(&k_2), &1.0)), &2.0)]));
+          if truthy(&(truthy(&(truthy(&(truthy(&call(&k!("Fmt"), "finite", args![rd(&xa_2)])) && truthy(&call(&k!("Fmt"), "finite", args![rd(&xb_2)])))) && truthy(&call(&k!("Fmt"), "finite", args![rd(&ya_2)])))) && truthy(&call(&k!("Fmt"), "finite", args![rd(&yb_2)])))) {
+            let st_2 = cell(&Value::Null); wr(&st_2, &call(&k!("Fmt"), "max", args![1.0, add(&m_floor(&(call(&k!("Fmt"), "max", args![div(&m_abs(&(sub(&rd(&xb_2), &rd(&xa_2)))), &get(&k!("Felt"), "dx")), div(&m_abs(&(sub(&rd(&yb_2), &rd(&ya_2)))), &get(&k!("Felt"), "dy"))]))), &1.0)]));
+            for i3 in 0..(num(&rd(&st_2)).ceil() as i64) {
+              let t_3 = cell(&(i3 as f64));
+              let f_3 = cell(&Value::Null); wr(&f_3, &div(&(add(&rd(&t_3), &0.5)), &rd(&st_2)));
+              let gx_3 = cell(&Value::Null); wr(&gx_3, &m_round(&(div(&(sub(&add(&rd(&xa_2), &mul(&rd(&f_3), &(sub(&rd(&xb_2), &rd(&xa_2))))), &get(&k!("Felt"), "X0"))), &get(&k!("Felt"), "dx")))));
+              let gy_3 = cell(&Value::Null); wr(&gy_3, &m_round(&(div(&(sub(&add(&rd(&ya_2), &mul(&rd(&f_3), &(sub(&rd(&yb_2), &rd(&ya_2))))), &get(&k!("Felt"), "Y0"))), &get(&k!("Felt"), "dy")))));
+              if !truthy(&(truthy(&(truthy(&(truthy(&lt(&rd(&gx_3), &0.0)) || truthy(&lt(&rd(&gy_3), &0.0)))) || truthy(&ge(&rd(&gx_3), &get(&k!("Felt"), "XS"))))) || truthy(&ge(&rd(&gy_3), &get(&k!("Felt"), "YS"))))) {
+                let c__3 = cell(&Value::Null); wr(&c__3, &add(&mul(&rd(&gy_3), &get(&k!("Felt"), "XS")), &rd(&gx_3)));
+                set_at(&rd(&p_0), &rd(&c__3), &add(&elem(&rd(&p_0), &rd(&c__3)), &div(&1.0, &rd(&st_2))));
+                set_at(&rd(&needs_0), &rd(&c__3), &call(&k!("Fmt"), "min", args![elem(&rd(&needs_0), &rd(&c__3)), rd(&dex_1)]));
+                let was_3 = cell(&Value::Null); wr(&was_3, &elem(&rd(&by_0), &rd(&c__3)));
+                let fewer_3 = cell(&Value::Null); wr(&fewer_3, &(truthy(&(truthy(&lt(&rd(&was_3), &0.0)) || truthy(&lt(&call(&k!("Felt"), "bits_in", args![rd(&mask_1)]), &call(&k!("Felt"), "bits_in", args![rd(&was_3)]))))) || truthy(&((truthy(&eq(&call(&k!("Felt"), "bits_in", args![rd(&mask_1)]), &call(&k!("Felt"), "bits_in", args![rd(&was_3)]))) && truthy(&lt(&rd(&mask_1), &rd(&was_3))))))));
+                if truthy(&rd(&fewer_3)) {
+                  set_at(&rd(&by_0), &rd(&c__3), &rd(&mask_1));
+                }
+              }
+            };
+          }
+        };
+        Value::Null
+      }) });
+      let gathered_0 = cell(&Value::Null); wr(&gathered_0, &eq(&rd(&how_0), &sv!["gathered"]));
+      let thick_0 = cell(&Value::Null); wr(&thick_0, &(if truthy(&rd(&gathered_0)) { own(&list![elem(&get(&k!("Felt"), "THICK"), &0.0)]) } else { own(&get(&k!("Felt"), "THICK")) }));
+      let middles_0 = cell(&Value::Null); wr(&middles_0, &(if truthy(&rd(&gathered_0)) { own(&list![1.0]) } else { own(&get(&k!("Felt"), "MIDDLE")) }));
+      let gases_0 = cell(&Value::Null); wr(&gases_0, &(if truthy(&rd(&gathered_0)) { own(&list![elem(&get(&k!("Felt"), "GAS"), &0.0)]) } else { own(&get(&k!("Felt"), "GAS")) }));
+      let tracks_0 = cell(&Value::Null); wr(&tracks_0, &0.0);
+      for i1 in 0..(num(&len(&rd(&thick_0))).ceil() as i64) {
+        let ti_1 = cell(&(i1 as f64));
+        for i2 in 0..(num(&len(&rd(&middles_0))).ceil() as i64) {
+          let ci_2 = cell(&(i2 as f64));
+          for i3 in 0..(num(&len(&rd(&gases_0))).ceil() as i64) {
+            let gi_3 = cell(&(i3 as f64));
+            let sh_3 = cell(&Value::Null); wr(&sh_3, &call(&self_, "shape", args![elem(&rd(&thick_0), &rd(&ti_1)), elem(&rd(&middles_0), &rd(&ci_2)), elem(&elem(&rd(&gases_0), &rd(&gi_3)), &0.0), elem(&elem(&rd(&gases_0), &rd(&gi_3)), &1.0)]));
+            for i4 in 0..(num(&elem(&get(&k!("Felt"), "MASS"), &2.0)).ceil() as i64) {
+              let mi_4 = cell(&(i4 as f64));
+              let dex_4 = cell(&Value::Null); wr(&dex_4, &call(&k!("Felt"), "mass_at", args![rd(&mi_4)]));
+              invoke(&rd(&lay_0), args![call(&self_, "felt", args![rd(&sh_3), power(&10.0, &rd(&dex_4))]), call(&k!("Felt"), "uses", args![rd(&mi_4), rd(&ti_1), rd(&ci_2), rd(&gi_3)]), rd(&dex_4)]);
+              wr(&tracks_0, &add(&rd(&tracks_0), &1.0));
+            };
+          };
+        };
+      };
+      let out_0 = cell(&Value::Null); wr(&out_0, &node());
+      set(&rd(&out_0), &tos(&sv!["p"]), &rd(&p_0));
+      set(&rd(&out_0), &tos(&sv!["by"]), &m_map(&rd(&by_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let v_2 = cell(&arg(a3, 0));
+        return own(&(if truthy(&lt(&rd(&v_2), &0.0)) { own(&0.0) } else { own(&rd(&v_2)) }));
+        Value::Null
+      }) }]));
+      set(&rd(&out_0), &tos(&sv!["needs"]), &rd(&needs_0));
+      set(&rd(&out_0), &tos(&sv!["tracks"]), &rd(&tracks_0));
+      set(&rd(&out_0), &tos(&sv!["freedoms"]), &(if truthy(&rd(&gathered_0)) { own(&list![sv!["mass"]]) } else { own(&get(&k!("Felt"), "FREEDOMS")) }));
+      return own(&rd(&out_0));
+      Value::Null
+    }
+  }
+  pub fn define(c: &mut Cls) {
+    c.static_field("NR", |self_: &Value| -> Value { own(&96.0) });//<
+    c.static_field("NMU", |self_: &Value| -> Value { own(&40.0) });//<
+    c.static_field("R0", |self_: &Value| -> Value { own(&0.003) });//<
+    c.static_field("R1", |self_: &Value| -> Value { own(&30000.0) });//<
+    c.static_field("SQ", |self_: &Value| -> Value { own(&6.0) });//<
+    c.static_field("KMAX", |self_: &Value| -> Value { own(&7.0) });//<
+    c.static_field("NA", |self_: &Value| -> Value { own(&120.0) });//<
+    c.static_field("NZ", |self_: &Value| -> Value { own(&8.0) });//<
+    c.static_field("NEAR", |self_: &Value| -> Value { own(&0.25) });//<
+    c.static_field("FAR", |self_: &Value| -> Value { own(&30.0) });//<
+    c.static_field("HERNQUIST", |self_: &Value| -> Value { own(&0.1) });//<
+    c.static_field("XS", |self_: &Value| -> Value { own(&700.0) });//<
+    c.static_field("X0", |self_: &Value| -> Value { own(&neg(&5.0)) });//<
+    c.static_field("X1", |self_: &Value| -> Value { own(&4.0) });//<
+    c.static_field("YS", |self_: &Value| -> Value { own(&520.0) });//<
+    c.static_field("Y0", |self_: &Value| -> Value { own(&neg(&4.0)) });//<
+    c.static_field("Y1", |self_: &Value| -> Value { own(&4.0) });//<
+    c.static_field("MASS", |self_: &Value| -> Value { own(&list![neg(&2.5), 5.0, 61.0]) });//<
+    c.static_field("THICK", |self_: &Value| -> Value { own(&list![0.1, 0.02, 0.3]) });//<
+    c.static_field("MIDDLE", |self_: &Value| -> Value { own(&list![0.0, 0.2, 0.5]) });//<
+    c.static_field("GAS", |self_: &Value| -> Value { own(&list![list![0.0, 0.0], list![0.5, 4.0], list![0.5, 7.0], list![0.9, 4.0], list![0.9, 7.0]]) });//<
+    c.static_field("FREEDOMS", |self_: &Value| -> Value { own(&list![sv!["mass"], sv!["thickness"], sv!["middle"], sv!["gas"]]) });//<
+    c.getter("step", g_step::f);//<
+    c.method("edge", m_edge::f);//<
+    c.method("centre", m_centre::f);//<
+    c.statik("sinh", s_sinh::f);//<
+    c.statik("mu_edge", s_mu_edge::f);//<
+    c.statik("mu_centre", s_mu_centre::f);//<
+    c.field("re", |self_: &Value| -> Value { own(&m_map(&rng(&add(&get(&k!("Felt"), "NR"), &1.0)), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_1 = cell(&arg(a2, 0));
+        return own(&call(&self_, "edge", args![rd(&i_1)]));
+        Value::Null
+      }) }])) });//<
+    c.field("rc", |self_: &Value| -> Value { own(&m_map(&rng(&get(&k!("Felt"), "NR")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_1 = cell(&arg(a2, 0));
+        return own(&call(&self_, "centre", args![rd(&i_1)]));
+        Value::Null
+      }) }])) });//<
+    c.field("me", |self_: &Value| -> Value { own(&m_map(&rng(&add(&get(&k!("Felt"), "NMU"), &1.0)), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let j_1 = cell(&arg(a2, 0));
+        return own(&call(&k!("Felt"), "mu_edge", args![rd(&j_1)]));
+        Value::Null
+      }) }])) });//<
+    c.field("mc", |self_: &Value| -> Value { own(&m_map(&rng(&get(&k!("Felt"), "NMU")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let j_1 = cell(&arg(a2, 0));
+        return own(&call(&k!("Felt"), "mu_centre", args![rd(&j_1)]));
+        Value::Null
+      }) }])) });//<
+    c.getter("cells", g_cells::f);//<
+    c.statik("ring", s_ring::f);//<
+    c.statik("rings", s_rings::f);//<
+    c.statik("disc_at", s_disc_at::f);//<
+    c.field("unit", |self_: &Value| -> Value { own(&node()) });//<
+    c.method("unit_disc", m_unit_disc::f);//<
+    c.method("shape", m_shape::f);//<
+    c.field("faces", |self_: &Value| -> Value { own(&m_map(&rng(&get(&self_, "cells")), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a2: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let c__1 = cell(&arg(a2, 0));
+        return own(&call(&self_, "faces_of", args![rd(&c__1)]));
+        Value::Null
+      }) }])) });//<
+    c.method("faces_of", m_faces_of::f);//<
+    c.getter("width", g_width::f);//<
+    c.method("at_band", m_at_band::f);//<
+    c.field("band", |self_: &Value| -> Value { own(&get(&self_, "factored")) });//<
+    c.getter("factored", g_factored::f);//<
+    c.method("solve_band", m_solve_band::f);//<
+    c.statik("over", s_over::f);//<
+    c.method("felt", m_felt::f);//<
+    c.method("off_law", m_off_law::f);//<
+    c.statik("dx", s_dx::f);//<
+    c.statik("dy", s_dy::f);//<
+    c.statik("bits_in", s_bits_in::f);//<
+    c.statik("uses", s_uses::f);//<
+    c.statik("mass_at", s_mass_at::f);//<
+    c.method("space", m_space::f);//<
   }
 }
 
@@ -23941,34 +24526,118 @@ pub mod c_Measure {
       Value::Null
     }
   }
+  pub mod s_DEGS {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&m_map(&rng(&73.0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let k_2 = cell(&arg(a3, 0));
+        return own(&add(&4.0, &mul(&0.5, &rd(&k_2))));
+        Value::Null
+      }) }]));
+      Value::Null
+    }
+  }
   pub mod s_density {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let model_0 = cell(&arg(a1, 0)); let id_0 = cell(&arg(a1, 1)); let how_0 = cell(&arg(a1, 2));
-      let sweep_0 = cell(&Value::Null); wr(&sweep_0, &make_k(&k!("Sweep"), args![kw("model", &rd(&model_0)), kw("how", &rd(&how_0))]));
-      if truthy(&(truthy(&(truthy(&eq(&get(&rd(&sweep_0), "arrival"), &Value::Null)) || truthy(&eq(&get(&rd(&sweep_0), "felt"), &Value::Null)))) || truthy(&eq(&get(&rd(&sweep_0), "rho_at"), &Value::Null)))) {
-        invoke(&fail, args![sv!["", &tos(&rd(&id_0)), ": nothing derived to integrate"]]);
-      }
-      let lay_0 = cell(&Value::Null); wr(&lay_0, &{ let self_: Value = self_.clone(); cl!(sweep_0); fnv(move |a2: &[&Value]| -> Value {
+      let felt_0 = cell(&Value::Null); wr(&felt_0, &make_k(&k!("Felt"), args![]));
+      let got_0 = cell(&Value::Null); wr(&got_0, &call(&rd(&felt_0), "space", args![rd(&how_0)]));
+      let p_0 = cell(&Value::Null); wr(&p_0, &get(&rd(&got_0), &tos(&sv!["p"])));
+      let by_0 = cell(&Value::Null); wr(&by_0, &get(&rd(&got_0), &tos(&sv!["by"])));
+      let needs_0 = cell(&Value::Null); wr(&needs_0, &get(&rd(&got_0), &tos(&sv!["needs"])));
+      let cells_0 = cell(&Value::Null); wr(&cells_0, &rng(&mul(&get(&k!("Felt"), "XS"), &get(&k!("Felt"), "YS"))));
+      let arrives_0 = cell(&Value::Null); wr(&arrives_0, &node());
+      set(&rd(&arrives_0), &tos(&sv!["from"]), &get(&k!("Felt"), "X0"));
+      set(&rd(&arrives_0), &tos(&sv!["to"]), &get(&k!("Felt"), "X1"));
+      set(&rd(&arrives_0), &tos(&sv!["n"]), &get(&k!("Felt"), "XS"));
+      let felt_axis_0 = cell(&Value::Null); wr(&felt_axis_0, &node());
+      set(&rd(&felt_axis_0), &tos(&sv!["from"]), &get(&k!("Felt"), "Y0"));
+      set(&rd(&felt_axis_0), &tos(&sv!["to"]), &get(&k!("Felt"), "Y1"));
+      set(&rd(&felt_axis_0), &tos(&sv!["n"]), &get(&k!("Felt"), "YS"));
+      let grid_0 = cell(&Value::Null); wr(&grid_0, &node());
+      set(&rd(&grid_0), &tos(&sv!["arrives"]), &rd(&arrives_0));
+      set(&rd(&grid_0), &tos(&sv!["felt"]), &rd(&felt_axis_0));
+      let columns_0 = cell(&Value::Null); wr(&columns_0, &node());
+      set(&rd(&columns_0), &tos(&sv!["x"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
         let self_: &Value = &self_;
-        let vary_1 = cell(&arg(a2, 0));
-        let got_1 = cell(&Value::Null); wr(&got_1, &call(&rd(&sweep_0), "tracks", args![rd(&vary_1)]));
-        return own(&call(&rd(&sweep_0), "rasterise", args![get(&rd(&got_1), &tos(&sv!["xs"])), get(&rd(&got_1), &tos(&sv!["ys"])), get(&rd(&got_1), &tos(&sv!["tracks"]))]));
-        Value::Null
-      }) });
-      let grid_0 = cell(&Value::Null); wr(&grid_0, &invoke(&rd(&lay_0), args![get(&rd(&sweep_0), "order")]));
-      let without_0 = cell(&Value::Null); wr(&without_0, &m_map(&get(&rd(&sweep_0), "order"), args![{ let self_: Value = self_.clone(); cl!(lay_0, sweep_0); fnv(move |a3: &[&Value]| -> Value {
-        let self_: &Value = &self_;
-        let held_2 = cell(&arg(a3, 0));
-        return own(&invoke(&rd(&lay_0), args![filt(&get(&rd(&sweep_0), "order"), &{ let self_: Value = self_.clone(); cl!(held_2); fnv(move |a5: &[&Value]| -> Value {
-          let self_: &Value = &self_;
-          let n_4 = cell(&arg(a5, 0));
-          return own(&(!eq(&rd(&n_4), &rd(&held_2))));
-          Value::Null
-        }) })]));
+        let i_2 = cell(&arg(a3, 0));
+        return own(&add(&get(&k!("Felt"), "X0"), &mul(&(modulo(&rd(&i_2), &get(&k!("Felt"), "XS"))), &get(&k!("Felt"), "dx"))));
         Value::Null
       }) }]));
-      return own(&call(&rd(&sweep_0), "save", args![rd(&id_0), rd(&grid_0), call(&rd(&sweep_0), "needs", args![rd(&grid_0), rd(&without_0)])]));
+      set(&rd(&columns_0), &tos(&sv!["y"]), &m_map(&rd(&cells_0), args![{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&add(&get(&k!("Felt"), "Y0"), &mul(&m_floor(&(div(&rd(&i_2), &get(&k!("Felt"), "XS")))), &get(&k!("Felt"), "dy"))));
+        Value::Null
+      }) }]));
+      set(&rd(&columns_0), &tos(&sv!["p"]), &rd(&p_0));
+      set(&rd(&columns_0), &tos(&sv!["by"]), &rd(&by_0));
+      let extra_0 = cell(&Value::Null); wr(&extra_0, &node());
+      set(&rd(&extra_0), &tos(&sv!["a0"]), &get(&rd(&model_0), "a0_lattice"));
+      set(&rd(&extra_0), &tos(&sv!["arrangement"]), &rd(&how_0));
+      set(&rd(&extra_0), &tos(&sv!["grid"]), &rd(&grid_0));
+      set(&rd(&extra_0), &tos(&sv!["freedoms"]), &get(&rd(&got_0), &tos(&sv!["freedoms"])));
+      set(&rd(&extra_0), &tos(&sv!["tracks"]), &get(&rd(&got_0), &tos(&sv!["tracks"])));
+      set(&rd(&extra_0), &tos(&sv!["stages"]), &list![sv!["the fewest freedoms that reach the cell, one bit per freedom in the order of `freedoms`; nought is the galaxy as it starts - a disc a tenth as thick as it is wide, no middle, no gas, at GM = a_0 R_d^2"]]);
+      set(&rd(&extra_0), &tos(&sv!["about"]), &sv!["how much of every possible galaxy lands at each pair of what arrives and what is felt, in a_0, with the record of the space made at the edge of its field solved over the whole field (Felt)"]);
+      call(&k!("Measure"), "save", args![rd(&id_0), list![sv!["x"], sv!["y"], sv!["p"], sv!["by"]], rd(&columns_0), rd(&extra_0)]);
+      let reached_0 = cell(&Value::Null); wr(&reached_0, &filt(&rd(&cells_0), &{ let self_: Value = self_.clone(); cl!(p_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let i_2 = cell(&arg(a3, 0));
+        return own(&gt(&elem(&rd(&p_0), &rd(&i_2)), &0.0));
+        Value::Null
+      }) }));
+      let degs_0 = cell(&Value::Null); wr(&degs_0, &get(&k!("Measure"), "DEGS"));
+      let ratios_0 = cell(&Value::Null); wr(&ratios_0, &m_map(&rd(&degs_0), args![{ let self_: Value = self_.clone(); cl!(model_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let d_2 = cell(&arg(a3, 0));
+        return own(&call(&rd(&model_0), "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&rd(&model_0), "settled", args![rd(&d_2)])]));
+        Value::Null
+      }) }]));
+      let a0s_0 = cell(&Value::Null); wr(&a0s_0, &m_map(&rd(&degs_0), args![{ let self_: Value = self_.clone(); cl!(model_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let d_2 = cell(&arg(a3, 0));
+        return own(&call(&rd(&model_0), "value_of", args![sv!["a_{0}"], call(&rd(&model_0), "settled", args![rd(&d_2)])]));
+        Value::Null
+      }) }]));
+      let sparse_0 = cell(&Value::Null); wr(&sparse_0, &node());
+      for e1 in items(&list![sv!["deg"], sv!["cell"], sv!["p"], sv!["by"], sv!["needs"], sv!["size"]]) {
+        let n_1 = cell(&e1);
+        set_at(&rd(&sparse_0), &rd(&n_1), &list![]);
+      };
+      let starts_0 = cell(&Value::Null); wr(&starts_0, &list![]);
+      for e1 in items(&rd(&degs_0)) {
+        let d_1 = cell(&e1);
+        m_push(&rd(&starts_0), args![len(&get(&rd(&sparse_0), &tos(&sv!["cell"])))]);
+        for e2 in items(&rd(&reached_0)) {
+          let i_2 = cell(&e2);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["deg"])), args![rd(&d_1)]);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["cell"])), args![rd(&i_2)]);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["p"])), args![elem(&rd(&p_0), &rd(&i_2))]);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["by"])), args![elem(&rd(&by_0), &rd(&i_2))]);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["needs"])), args![elem(&rd(&needs_0), &rd(&i_2))]);
+          m_push(&get(&rd(&sparse_0), &tos(&sv!["size"])), args![99.0]);
+        };
+      };
+      let table_0 = cell(&Value::Null); wr(&table_0, &node());
+      set(&rd(&table_0), &tos(&sv!["deg"]), &rd(&degs_0));
+      set(&rd(&table_0), &tos(&sv!["ratio"]), &rd(&ratios_0));
+      set(&rd(&table_0), &tos(&sv!["against"]), &sv!["H_Lambda"]);
+      let solved_0 = cell(&Value::Null); wr(&solved_0, &node());
+      set(&rd(&solved_0), &tos(&sv!["what"]), &sv!["the possibility space of a galaxy (", &tos(&rd(&how_0)), "), solved over its whole field on every lattice"]);
+      set(&rd(&solved_0), &tos(&sv!["arrangement"]), &rd(&how_0));
+      set(&rd(&solved_0), &tos(&sv!["degs"]), &rd(&degs_0));
+      set(&rd(&solved_0), &tos(&sv!["starts"]), &rd(&starts_0));
+      set(&rd(&solved_0), &tos(&sv!["a0"]), &rd(&a0s_0));
+      set(&rd(&solved_0), &tos(&sv!["coincidence"]), &rd(&table_0));
+      set(&rd(&solved_0), &tos(&sv!["theory_deg"]), &get(&get(&get(&rd(&model_0), "theory"), "lattice"), "DEG"));
+      set(&rd(&solved_0), &tos(&sv!["grid"]), &rd(&grid_0));
+      set(&rd(&solved_0), &tos(&sv!["freedoms"]), &get(&rd(&got_0), &tos(&sv!["freedoms"])));
+      set(&rd(&solved_0), &tos(&sv!["stages"]), &get(&rd(&extra_0), &tos(&sv!["stages"])));
+      set(&rd(&solved_0), &tos(&sv!["about"]), &sv!["per DEG: every reached cell (index gy*n+gx of the grid, in a_0), how much of the space lands there, which freedoms it needs and the least mass that reaches it (log GM/(a_0 R_d^2)); `ratio` is the chain's a_0/cH_Lambda, against the vacuum's own growth, which is sqrt(Omega_Lambda) of H_0 (Felt, Measure.density)"]);
+      return own(&call(&k!("Measure"), "save", args![sv!["", &tos(&rd(&id_0)), ".solved"], list![sv!["deg"], sv!["cell"], sv!["p"], sv!["by"], sv!["needs"], sv!["size"]], rd(&sparse_0), rd(&solved_0)]));
       Value::Null
     }
   }
@@ -24049,6 +24718,7 @@ pub mod c_Measure {
   }
   pub fn define(c: &mut Cls) {
     c.statik("save", s_save::f);//<
+    c.statik("DEGS", s_DEGS::f);//<
     c.statik("density", s_density::f);//<
     c.statik("law", s_law::f);//<
     c.statik("run", s_run::f);//<
