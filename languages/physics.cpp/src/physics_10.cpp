@@ -1283,13 +1283,13 @@ static void C_Simulation(Cls& c) {
           return list({ elem(es_1->v, a_3->v), elem(es_1->v, add(a_3->v, 1.0)), add(mul(get(K(S<"Sparc">()), S<"YD">()), elem(elem(get(self, S<"w_discs">()), j_1->v), a_3->v)), elem(elem(get(self, S<"w_gases">()), j_1->v), a_3->v)) });
           return null;
         }));
-        auto last_1 = cell(); last_1->v = 0.0;
+        auto held_in_1 = cell(); held_in_1->v = 0.0;
         for (double i2 = 0, n2 = num(len(rs_1->v)); i2 < n2; i2++) {
           auto i_2 = cell(i2);
           auto inside_2 = cell(); inside_2->v = mul(mul(mul(get(K(S<"Sparc">()), S<"YB">()), elem(elem(rs_1->v, i_2->v), 5.0)), m_abs(elem(elem(rs_1->v, i_2->v), 5.0))), elem(elem(rs_1->v, i_2->v), 0.0));
-          if (truthy(gt(inside_2->v, last_1->v))) {
-            m_push(masses_1->v, list({ (truthy(eq(i_2->v, 0.0)) ? Value(0.0) : Value(elem(elem(rs_1->v, sub(i_2->v, 1.0)), 0.0))), elem(elem(rs_1->v, i_2->v), 0.0), sub(inside_2->v, last_1->v) }));
-            last_1->v = inside_2->v;
+          if (truthy(gt(inside_2->v, held_in_1->v))) {
+            m_push(masses_1->v, list({ (truthy(eq(i_2->v, 0.0)) ? Value(0.0) : Value(elem(elem(rs_1->v, sub(i_2->v, 1.0)), 0.0))), elem(elem(rs_1->v, i_2->v), 0.0), sub(inside_2->v, held_in_1->v) }));
+            held_in_1->v = inside_2->v;
           }
         };
         auto run_1 = cell(); run_1->v = m_reduce(masses_1->v, list({  }), fn([=](const Args& a4) -> Value {

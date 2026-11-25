@@ -220,9 +220,9 @@ ray_impl_static "medium_at" (lx_0 : Float) : Float := do
   let got_0 ← IO.mkRef (← ωadd (← ωmul (← ωelem (← ys__0.get) (← lo_0.get)) ((← ωsub (1 : Float) (← f_0.get)))) (← ωmul (← ωelem (← ys__0.get) (← hi_0.get)) (← f_0.get)))
   if true then return (← ωtern (ωtruthy (← ωgt (← got_0.get) (0 : Float))) (do pure (← call! (← cls% Fmt) "log10" ((← ωdiv (← got_0.get) (← a0_0.get))))) (do pure (0.0 / 0.0 : Float)))
   return ωnull
-ray_impl_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (range_0 : (RList Float)) (under_0 : Float) : Value := do
-  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← range_0.get) (1 : Float)) (← ωelem (← range_0.get) (0 : Float))) (1 : Float))) rmap ((fn! [i_3] do
-    if true then return (← ωadd (← ωelem (← range_0.get) (0 : Float)) (← i_3.get))
+ray_impl_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (span_0 : (RList Float)) (under_0 : Float) : Value := do
+  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← span_0.get) (1 : Float)) (← ωelem (← span_0.get) (0 : Float))) (1 : Float))) rmap ((fn! [i_3] do
+    if true then return (← ωadd (← ωelem (← span_0.get) (0 : Float)) (← i_3.get))
     return ωnull)))) do
     let l_1 ← IO.mkRef e1
     (← ωget (← s_0.get) "begin_path") |> ωsink
@@ -233,8 +233,8 @@ ray_impl_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (
     pure ()
   Value.null |> ωsink
   (← call! (← s_0.get) "text_align" (("right" : String))) |> ωsink
-  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← range_0.get) (3 : Float)) (← ωelem (← range_0.get) (2 : Float))) (1 : Float))) rmap ((fn! [i_3] do
-    if true then return (← ωadd (← ωelem (← range_0.get) (2 : Float)) (← i_3.get))
+  for e1 in (← ωitems (← dot! (← ωrrange (← ωadd (← ωsub (← ωelem (← span_0.get) (3 : Float)) (← ωelem (← span_0.get) (2 : Float))) (1 : Float))) rmap ((fn! [i_3] do
+    if true then return (← ωadd (← ωelem (← span_0.get) (2 : Float)) (← i_3.get))
     return ωnull)))) do
     let l_1 ← IO.mkRef e1
     (← ωget (← s_0.get) "begin_path") |> ωsink

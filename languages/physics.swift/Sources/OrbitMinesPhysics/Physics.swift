@@ -15175,10 +15175,10 @@ enum C_Galaxies {
       return V.null
     })
     c.statik("decades", { (this_: V, a1: [V]) throws -> V in
-      var s_0: V = arg(a1, 0); var X_0: V = arg(a1, 1); var Y_0: V = arg(a1, 2); var box_0: V = arg(a1, 3); var range_0: V = arg(a1, 4); var under_0: V = arg(a1, 5);
-      for e1 in try items(try m_map(rng(try add(try sub(try elem(range_0, 1.0), try elem(range_0, 0.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var X_0: V = arg(a1, 1); var Y_0: V = arg(a1, 2); var box_0: V = arg(a1, 3); var span_0: V = arg(a1, 4); var under_0: V = arg(a1, 5);
+      for e1 in try items(try m_map(rng(try add(try sub(try elem(span_0, 1.0), try elem(span_0, 0.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
         var i_3: V = arg(a4, 0);
-        return try add(try elem(range_0, 0.0), i_3)
+        return try add(try elem(span_0, 0.0), i_3)
         return V.null
       }))) {
         var l_1: V = e1
@@ -15189,9 +15189,9 @@ enum C_Galaxies {
         try call(s_0, "fill_text", [V.s(cat("10^", try str(l_1), "")), try invoke(X_0, [l_1]), try add(try elem(box_0, 3.0), under_0)])
       }
       try call(s_0, "text_align", [V.s(cat("right"))])
-      for e1 in try items(try m_map(rng(try add(try sub(try elem(range_0, 3.0), try elem(range_0, 2.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
+      for e1 in try items(try m_map(rng(try add(try sub(try elem(span_0, 3.0), try elem(span_0, 2.0)), 1.0)), V.fn({ (a4: [V]) throws -> V in
         var i_3: V = arg(a4, 0);
-        return try add(try elem(range_0, 2.0), i_3)
+        return try add(try elem(span_0, 2.0), i_3)
         return V.null
       }))) {
         var l_1: V = e1
@@ -18458,15 +18458,15 @@ enum C_Simulation {
             return list(try elem(es_1, a_3), try elem(es_1, try add(a_3, 1.0)), try add(try mul(try get((try K("Sparc")), "YD"), try elem(try elem(try get(this_, "w_discs"), j_1), a_3)), try elem(try elem(try get(this_, "w_gases"), j_1), a_3)))
             return V.null
           }))
-          var last_1: V = V.null; last_1 = 0.0
+          var held_in_1: V = V.null; held_in_1 = 0.0
           do {
             var i2: Double = 0
             while i2 < num(try len(rs_1)) {
               var i_2: V = V.num(i2)
               var inside_2: V = V.null; inside_2 = try mul(try mul(try mul(try get((try K("Sparc")), "YB"), try elem(try elem(rs_1, i_2), 5.0)), try m_abs(try elem(try elem(rs_1, i_2), 5.0))), try elem(try elem(rs_1, i_2), 0.0))
-              if truthy(try gt(inside_2, last_1)) {
-                try m_push(masses_1, list(try sel(truthy(V.b(try eq(i_2, 0.0))), 0.0, try elem(try elem(rs_1, try sub(i_2, 1.0)), 0.0)), try elem(try elem(rs_1, i_2), 0.0), try sub(inside_2, last_1)))
-                last_1 = inside_2
+              if truthy(try gt(inside_2, held_in_1)) {
+                try m_push(masses_1, list(try sel(truthy(V.b(try eq(i_2, 0.0))), 0.0, try elem(try elem(rs_1, try sub(i_2, 1.0)), 0.0)), try elem(try elem(rs_1, i_2), 0.0), try sub(inside_2, held_in_1)))
+                held_in_1 = inside_2
               }
               i2 += 1
             }

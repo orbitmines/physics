@@ -22994,11 +22994,11 @@ func init() {
       return nil
     })
     c.Static("decades", func(self any, a1 []any) any {
-      var s_0 any = Arg(a1, 0); _ = s_0; var X_0 any = Arg(a1, 1); _ = X_0; var Y_0 any = Arg(a1, 2); _ = Y_0; var box_0 any = Arg(a1, 3); _ = box_0; var range__0 any = Arg(a1, 4); _ = range__0; var under_0 any = Arg(a1, 5); _ = under_0;
-      for _, e1 := range Items(M_map(Rng(Add(Sub(Elem(range__0, 1.0), Elem(range__0, 0.0)), 1.0)), Fn(func(a4 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var X_0 any = Arg(a1, 1); _ = X_0; var Y_0 any = Arg(a1, 2); _ = Y_0; var box_0 any = Arg(a1, 3); _ = box_0; var span_0 any = Arg(a1, 4); _ = span_0; var under_0 any = Arg(a1, 5); _ = under_0;
+      for _, e1 := range Items(M_map(Rng(Add(Sub(Elem(span_0, 1.0), Elem(span_0, 0.0)), 1.0)), Fn(func(a4 []any) any {
         var i_3 any = Arg(a4, 0); _ = i_3;
         if true {
-          return Add(Elem(range__0, 0.0), i_3)
+          return Add(Elem(span_0, 0.0), i_3)
         }
         return nil
       }))) {
@@ -23011,10 +23011,10 @@ func init() {
         Call(s_0, "fill_text", []any{ "10^" + Str(l_1) + "", Invoke(X_0, []any{ l_1 }), Add(Elem(box_0, 3.0), under_0) })
       }
       Call(s_0, "text_align", []any{ "right" })
-      for _, e1 := range Items(M_map(Rng(Add(Sub(Elem(range__0, 3.0), Elem(range__0, 2.0)), 1.0)), Fn(func(a4 []any) any {
+      for _, e1 := range Items(M_map(Rng(Add(Sub(Elem(span_0, 3.0), Elem(span_0, 2.0)), 1.0)), Fn(func(a4 []any) any {
         var i_3 any = Arg(a4, 0); _ = i_3;
         if true {
-          return Add(Elem(range__0, 2.0), i_3)
+          return Add(Elem(span_0, 2.0), i_3)
         }
         return nil
       }))) {
@@ -27930,18 +27930,18 @@ func init() {
             return nil
           }))
           _ = masses_1
-          var last_1 any
-          last_1 = 0.0
-          _ = last_1
+          var held_in_1 any
+          held_in_1 = 0.0
+          _ = held_in_1
           for i2 := 0.0; i2 < Num(Len(rs_1)); i2++ {
             var i_2 any = Box(i2)
             _ = i_2
             var inside_2 any
             inside_2 = Mul(Mul(Mul(Get(K("Sparc"), "YB"), Elem(Elem(rs_1, i_2), 5.0)), M_abs(Elem(Elem(rs_1, i_2), 5.0))), Elem(Elem(rs_1, i_2), 0.0))
             _ = inside_2
-            if Truthy(Gt(inside_2, last_1)) {
-              M_push(masses_1, Lst(Tern(Truthy(Eq(i_2, 0.0)), func() any { return 0.0 }, func() any { return Elem(Elem(rs_1, Sub(i_2, 1.0)), 0.0) }), Elem(Elem(rs_1, i_2), 0.0), Sub(inside_2, last_1)))
-              last_1 = inside_2
+            if Truthy(Gt(inside_2, held_in_1)) {
+              M_push(masses_1, Lst(Tern(Truthy(Eq(i_2, 0.0)), func() any { return 0.0 }, func() any { return Elem(Elem(rs_1, Sub(i_2, 1.0)), 0.0) }), Elem(Elem(rs_1, i_2), 0.0), Sub(inside_2, held_in_1)))
+              held_in_1 = inside_2
             }
           }
           var run_1 any

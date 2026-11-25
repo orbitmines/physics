@@ -14344,10 +14344,10 @@ public static class C_Galaxies {
       return null;
     });
     c.statik("decades", (self, a1) => {
-      object s_0 = arg(a1, 0); object X_0 = arg(a1, 1); object Y_0 = arg(a1, 2); object box_0 = arg(a1, 3); object range_0 = arg(a1, 4); object under_0 = arg(a1, 5);
-      foreach (object e1 in each_of(m_map(rng(add(sub(elem(range_0, 1.0), elem(range_0, 0.0)), 1.0)), new Fn((a4) => {
+      object s_0 = arg(a1, 0); object X_0 = arg(a1, 1); object Y_0 = arg(a1, 2); object box_0 = arg(a1, 3); object span_0 = arg(a1, 4); object under_0 = arg(a1, 5);
+      foreach (object e1 in each_of(m_map(rng(add(sub(elem(span_0, 1.0), elem(span_0, 0.0)), 1.0)), new Fn((a4) => {
         object i_3 = arg(a4, 0);
-        return add(elem(range_0, 0.0), i_3);
+        return add(elem(span_0, 0.0), i_3);
         return null;
       })))) {
         object l_1 = e1;
@@ -14358,9 +14358,9 @@ public static class C_Galaxies {
         call(s_0, "fill_text", new object[] { "10^" + str(l_1) + "", invoke(X_0, new object[] { l_1 }), add(elem(box_0, 3.0), under_0) });
       };
       call(s_0, "text_align", new object[] { "right" });
-      foreach (object e1 in each_of(m_map(rng(add(sub(elem(range_0, 3.0), elem(range_0, 2.0)), 1.0)), new Fn((a4) => {
+      foreach (object e1 in each_of(m_map(rng(add(sub(elem(span_0, 3.0), elem(span_0, 2.0)), 1.0)), new Fn((a4) => {
         object i_3 = arg(a4, 0);
-        return add(elem(range_0, 2.0), i_3);
+        return add(elem(span_0, 2.0), i_3);
         return null;
       })))) {
         object l_1 = e1;
@@ -17308,13 +17308,13 @@ public static class C_Simulation {
             return list(elem(es_2, a_4), elem(es_2, add(a_4, 1.0)), add(mul(get(K("Sparc"), "YD"), elem(elem(get(self, "w_discs"), j_1), a_4)), elem(elem(get(self, "w_gases"), j_1), a_4)));
             return null;
           }));
-          object last_2 = null; last_2 = 0.0;
+          object held_in_2 = null; held_in_2 = 0.0;
           for (double i3 = 0; i3 < num(len(rs_2)); i3++) {
             object i_3 = i3;
             object inside_3 = null; inside_3 = mul(mul(mul(get(K("Sparc"), "YB"), elem(elem(rs_2, i_3), 5.0)), m_abs(elem(elem(rs_2, i_3), 5.0))), elem(elem(rs_2, i_3), 0.0));
-            if (truthy(gt(inside_3, last_2))) {
-              m_push(masses_2, list((truthy(eq(i_3, 0.0)) ? (object) 0.0 : (object) elem(elem(rs_2, sub(i_3, 1.0)), 0.0)), elem(elem(rs_2, i_3), 0.0), sub(inside_3, last_2)));
-              last_2 = inside_3;
+            if (truthy(gt(inside_3, held_in_2))) {
+              m_push(masses_2, list((truthy(eq(i_3, 0.0)) ? (object) 0.0 : (object) elem(elem(rs_2, sub(i_3, 1.0)), 0.0)), elem(elem(rs_2, i_3), 0.0), sub(inside_3, held_in_2)));
+              held_in_2 = inside_3;
             };
           };
           object run_2 = null; run_2 = m_reduce(masses_2, list(), new Fn((a5) => {

@@ -13352,9 +13352,9 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     return((if (truthy(gt(got, 0))) Fmt$log10(r_div(got, a0)) else NaN))
     NULL
   })
-  statik(cl, "decades", function(s = NULL, X = NULL, Y = NULL, box = NULL, range = NULL, under = NULL, ...) {
-    .r <- for_each(m_map(rng(r_add(r_sub(elem(range, 1), elem(range, 0)), 1)), function(i = NULL, ...) {
-      return(r_add(elem(range, 0), i))
+  statik(cl, "decades", function(s = NULL, X = NULL, Y = NULL, box = NULL, span = NULL, under = NULL, ...) {
+    .r <- for_each(m_map(rng(r_add(r_sub(elem(span, 1), elem(span, 0)), 1)), function(i = NULL, ...) {
+      return(r_add(elem(span, 0), i))
       NULL
     }), function(l) {
       s$begin_path
@@ -13366,8 +13366,8 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     })
     if (!is.null(.r)) return(.r[[1]])
     s$text_align("right")
-    .r <- for_each(m_map(rng(r_add(r_sub(elem(range, 3), elem(range, 2)), 1)), function(i = NULL, ...) {
-      return(r_add(elem(range, 2), i))
+    .r <- for_each(m_map(rng(r_add(r_sub(elem(span, 3), elem(span, 2)), 1)), function(i = NULL, ...) {
+      return(r_add(elem(span, 2), i))
       NULL
     }), function(l) {
       s$begin_path
@@ -16199,12 +16199,12 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
           return(lst(elem(es, a), elem(es, r_add(a, 1)), r_add(r_mul(Sparc$YD, elem(elem(self$w_discs, j), a)), elem(elem(self$w_gases, j), a))))
           NULL
         })
-        last <- 0
+        held_in <- 0
         .r <- for_range(len(rs), function(i) {
           inside <- r_mul(r_mul(r_mul(Sparc$YB, elem(elem(rs, i), 5)), m_abs(elem(elem(rs, i), 5))), elem(elem(rs, i), 0))
-          if (truthy(gt(inside, last))) {
-            m_push(masses, lst((if (truthy(eq(i, 0))) 0 else elem(elem(rs, r_sub(i, 1)), 0)), elem(elem(rs, i), 0), r_sub(inside, last)))
-            .w("last", inside)
+          if (truthy(gt(inside, held_in))) {
+            m_push(masses, lst((if (truthy(eq(i, 0))) 0 else elem(elem(rs, r_sub(i, 1)), 0)), elem(elem(rs, i), 0), r_sub(inside, held_in)))
+            .w("held_in", inside)
           }
           CONTINUE
         })

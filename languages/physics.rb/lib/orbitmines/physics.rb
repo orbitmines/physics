@@ -13957,9 +13957,9 @@ class Galaxies < Node
     got = Ops.add(Ops.mul(Ops.elem(ys_, lo), (Ops.sub(1, f))), Ops.mul(Ops.elem(ys_, hi), f))
     return (Ops.gt(got, 0) ? Fmt.log10(Ops.div(got, a0)) : Float::NAN)
   end
-  def self.decades(s, _X, _Y, box, range, under)
-    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(range, 1), Ops.elem(range, 0)), 1)), ->(i) {
-      return Ops.add(Ops.elem(range, 0), i)
+  def self.decades(s, _X, _Y, box, span, under)
+    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(span, 1), Ops.elem(span, 0)), 1)), ->(i) {
+      return Ops.add(Ops.elem(span, 0), i)
     })).each do |l|
       s.begin_path
       s.move_to(_X.(l), Ops.elem(box, 1))
@@ -13968,8 +13968,8 @@ class Galaxies < Node
       s.fill_text("10^#{l}", _X.(l), Ops.add(Ops.elem(box, 3), under))
     end
     s.text_align("right")
-    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(range, 3), Ops.elem(range, 2)), 1)), ->(i) {
-      return Ops.add(Ops.elem(range, 2), i)
+    Ops.list(Ops.m_map(Ops.rng(Ops.add(Ops.sub(Ops.elem(span, 3), Ops.elem(span, 2)), 1)), ->(i) {
+      return Ops.add(Ops.elem(span, 2), i)
     })).each do |l|
       s.begin_path
       s.move_to(Ops.elem(box, 0), _Y.(l))
@@ -16888,12 +16888,12 @@ class Simulation < Node
         masses = Ops.m_map(Ops.rng(Ops.sub(es.length, 1)), ->(a) {
           return [Ops.elem(es, a), Ops.elem(es, Ops.add(a, 1)), Ops.add(Ops.mul(Sparc.YD, Ops.elem(Ops.elem(self.w_discs, j), a)), Ops.elem(Ops.elem(self.w_gases, j), a))]
         })
-        last = 0
+        held_in = 0
         rs.length.times do |i|
           inside = Ops.mul(Ops.mul(Ops.mul(Sparc.YB, Ops.elem(Ops.elem(rs, i), 5)), Ops.m_abs(Ops.elem(Ops.elem(rs, i), 5))), Ops.elem(Ops.elem(rs, i), 0))
-          if Ops.gt(inside, last)
-            Ops.m_push(masses, [(Ops.eq(i, 0) ? 0 : Ops.elem(Ops.elem(rs, Ops.sub(i, 1)), 0)), Ops.elem(Ops.elem(rs, i), 0), Ops.sub(inside, last)])
-            last = inside
+          if Ops.gt(inside, held_in)
+            Ops.m_push(masses, [(Ops.eq(i, 0) ? 0 : Ops.elem(Ops.elem(rs, Ops.sub(i, 1)), 0)), Ops.elem(Ops.elem(rs, i), 0), Ops.sub(inside, held_in)])
+            held_in = inside
           end
         end
         run = Ops.m_reduce(masses, [], ->(run, m) {

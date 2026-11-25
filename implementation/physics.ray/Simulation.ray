@@ -1020,12 +1020,12 @@ Simulation := class < deg: Real {
         rs := this.rows[j]
         masses := Array.range(es.length - 1).map(a => [es[a], es[a + 1], Sparc.YD * this.w_discs[j][a] + this.w_gases[j][a]])
         /* the bulge's shells, seen face on as rings of their own */
-        last := 0
+        held_in := 0
         Array.range(rs.length).for(i => {
           inside := Sparc.YB * rs[i][5] * rs[i][5].abs * rs[i][0]
-          if inside > last {
-            masses.push([i == 0 ? 0 : rs[i - 1][0], rs[i][0], inside - last])
-            last = inside
+          if inside > held_in {
+            masses.push([i == 0 ? 0 : rs[i - 1][0], rs[i][0], inside - held_in])
+            held_in = inside
           }
         })
         /* the mass inside each ring and every ring before it */

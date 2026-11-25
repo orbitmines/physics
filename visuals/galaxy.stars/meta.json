@@ -5,7 +5,7 @@
     "y"
   ],
   "rows": 1966080,
-  "measured": "2026-09-24T21:12:32.128Z",
+  "measured": "2026-11-25T16:45:57.130Z",
   "film": [
     31,
     35,
@@ -27,22 +27,22 @@
     104.49399642944336
   ],
   "source": [
-    "unWISE W1 3.4um",
-    "S4G 3.6um",
-    "S4G 3.6um",
-    "unWISE W1 3.4um"
+    "the run's own annuli",
+    "the run's own annuli",
+    "the run's own annuli",
+    "the run's own annuli"
   ],
   "pa": [
-    5.1936649806973065,
-    178,
-    100,
-    75
+    null,
+    null,
+    null,
+    null
   ],
   "span": [
-    224.51351502219904,
-    261.6466881232749,
-    535.7625355001792,
-    774.918115431173
+    198.9635846605674,
+    235.38260179480923,
+    471.7274889692666,
+    738.7499495480478
   ],
   "about": "the filmed galaxies face on, their stars laid where the light is (or the laid mass, where there is no image): x and y in kpc, star after star, frame after frame, from the moment the picture was taken, over FILM_TURNS of the outermost radius; span in Myr"
 }

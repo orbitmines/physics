@@ -18468,11 +18468,11 @@ pub mod c_Galaxies {
   pub mod s_decades {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
-    let s_0 = cell(&arg(a1, 0)); let X_0 = cell(&arg(a1, 1)); let Y_0 = cell(&arg(a1, 2)); let box__0 = cell(&arg(a1, 3)); let range_0 = cell(&arg(a1, 4)); let under_0 = cell(&arg(a1, 5));
-      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&range_0), &1.0), &elem(&rd(&range_0), &0.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(range_0); fnv(move |a4: &[&Value]| -> Value {
+    let s_0 = cell(&arg(a1, 0)); let X_0 = cell(&arg(a1, 1)); let Y_0 = cell(&arg(a1, 2)); let box__0 = cell(&arg(a1, 3)); let span_0 = cell(&arg(a1, 4)); let under_0 = cell(&arg(a1, 5));
+      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&span_0), &1.0), &elem(&rd(&span_0), &0.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(span_0); fnv(move |a4: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let i_3 = cell(&arg(a4, 0));
-        return own(&add(&elem(&rd(&range_0), &0.0), &rd(&i_3)));
+        return own(&add(&elem(&rd(&span_0), &0.0), &rd(&i_3)));
         Value::Null
       }) }])) {
         let l_1 = cell(&e1);
@@ -18483,10 +18483,10 @@ pub mod c_Galaxies {
         call(&rd(&s_0), "fill_text", args![sv!["10^", &tos(&rd(&l_1)), ""], invoke(&rd(&X_0), args![rd(&l_1)]), add(&elem(&rd(&box__0), &3.0), &rd(&under_0))]);
       };
       call(&rd(&s_0), "text_align", args![sv!["right"]]);
-      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&range_0), &3.0), &elem(&rd(&range_0), &2.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(range_0); fnv(move |a4: &[&Value]| -> Value {
+      for e1 in items(&m_map(&rng(&add(&sub(&elem(&rd(&span_0), &3.0), &elem(&rd(&span_0), &2.0)), &1.0)), args![{ let self_: Value = self_.clone(); cl!(span_0); fnv(move |a4: &[&Value]| -> Value {
         let self_: &Value = &self_;
         let i_3 = cell(&arg(a4, 0));
-        return own(&add(&elem(&rd(&range_0), &2.0), &rd(&i_3)));
+        return own(&add(&elem(&rd(&span_0), &2.0), &rd(&i_3)));
         Value::Null
       }) }])) {
         let l_1 = cell(&e1);
@@ -21892,13 +21892,13 @@ pub mod c_Simulation {
             return own(&list![elem(&rd(&es_1), &rd(&a_3)), elem(&rd(&es_1), &add(&rd(&a_3), &1.0)), add(&mul(&get(&k!("Sparc"), "YD"), &elem(&elem(&get(&self_, "w_discs"), &rd(&j_1)), &rd(&a_3))), &elem(&elem(&get(&self_, "w_gases"), &rd(&j_1)), &rd(&a_3)))]);
             Value::Null
           }) }]));
-          let last_1 = cell(&Value::Null); wr(&last_1, &0.0);
+          let held_in_1 = cell(&Value::Null); wr(&held_in_1, &0.0);
           for i2 in 0..(num(&len(&rd(&rs_1))).ceil() as i64) {
             let i_2 = cell(&(i2 as f64));
             let inside_2 = cell(&Value::Null); wr(&inside_2, &mul(&mul(&mul(&get(&k!("Sparc"), "YB"), &elem(&elem(&rd(&rs_1), &rd(&i_2)), &5.0)), &m_abs(&elem(&elem(&rd(&rs_1), &rd(&i_2)), &5.0))), &elem(&elem(&rd(&rs_1), &rd(&i_2)), &0.0)));
-            if truthy(&gt(&rd(&inside_2), &rd(&last_1))) {
-              m_push(&rd(&masses_1), args![list![(if truthy(&eq(&rd(&i_2), &0.0)) { own(&0.0) } else { own(&elem(&elem(&rd(&rs_1), &sub(&rd(&i_2), &1.0)), &0.0)) }), elem(&elem(&rd(&rs_1), &rd(&i_2)), &0.0), sub(&rd(&inside_2), &rd(&last_1))]]);
-              wr(&last_1, &rd(&inside_2));
+            if truthy(&gt(&rd(&inside_2), &rd(&held_in_1))) {
+              m_push(&rd(&masses_1), args![list![(if truthy(&eq(&rd(&i_2), &0.0)) { own(&0.0) } else { own(&elem(&elem(&rd(&rs_1), &sub(&rd(&i_2), &1.0)), &0.0)) }), elem(&elem(&rd(&rs_1), &rd(&i_2)), &0.0), sub(&rd(&inside_2), &rd(&held_in_1))]]);
+              wr(&held_in_1, &rd(&inside_2));
             }
           };
           let run_1 = cell(&Value::Null); wr(&run_1, &m_reduce(&rd(&masses_1), args![list![], { let self_: Value = self_.clone(); cl!(); fnv(move |a4: &[&Value]| -> Value {

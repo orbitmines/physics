@@ -180,8 +180,8 @@ Galaxies := class {
 
   /* a label laid along the line it names, at the angle the line has on screen: the position off `at`, the lean off `leans` */
   /* a log-log panel's decades: a faint line and a label at every power of ten across `box`, along x then along y */
-  static decades (s: Surface, X: Program, Y: Program, box: Real[], range: Real[], under: Real) => {
-    Array.range(range[1] - range[0] + 1).map(i => range[0] + i).for(l => {
+  static decades (s: Surface, X: Program, Y: Program, box: Real[], span: Real[], under: Real) => {
+    Array.range(span[1] - span[0] + 1).map(i => span[0] + i).for(l => {
       s.begin_path
       s.move_to(X(l), box[1])
       s.line_to(X(l), box[3])
@@ -189,7 +189,7 @@ Galaxies := class {
       s.fill_text("10^{l}", X(l), box[3] + under)
     })
     s.text_align("right")
-    Array.range(range[3] - range[2] + 1).map(i => range[2] + i).for(l => {
+    Array.range(span[3] - span[2] + 1).map(i => span[2] + i).for(l => {
       s.begin_path
       s.move_to(box[0], Y(l))
       s.line_to(box[2], Y(l))

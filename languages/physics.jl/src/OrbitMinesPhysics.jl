@@ -11438,9 +11438,9 @@ end
     got_0 = ((getat(ys__0, lo_0) * ((1.0 - f_0))) + (getat(ys__0, hi_0) * f_0))
     return (truthy((got_0 > 0.0)) ? (log10(Fmt, (got_0 / a0_0))) : (NaN))
   end
-  function decades(self::Type{<:__class__}, s_0 = nothing, X_0 = nothing, Y_0 = nothing, box_0 = nothing, range_0 = nothing, under_0 = nothing, _...)
-    for l_1 in items(map(rng(((getat(range_0, 1.0) - getat(range_0, 0.0)) + 1.0)), (function (i_3 = nothing, _...)
-      return (getat(range_0, 0.0) + i_3)
+  function decades(self::Type{<:__class__}, s_0 = nothing, X_0 = nothing, Y_0 = nothing, box_0 = nothing, span_0 = nothing, under_0 = nothing, _...)
+    for l_1 in items(map(rng(((getat(span_0, 1.0) - getat(span_0, 0.0)) + 1.0)), (function (i_3 = nothing, _...)
+      return (getat(span_0, 0.0) + i_3)
     end)))
       begin_path(s_0)
       move_to(s_0, X_0(l_1), getat(box_0, 1.0))
@@ -11449,8 +11449,8 @@ end
       fill_text(s_0, Base.string(j"10^", str(l_1), j""), X_0(l_1), (getat(box_0, 3.0) + under_0))
     end
     text_align(s_0, Base.string(j"right"))
-    for l_1 in items(map(rng(((getat(range_0, 3.0) - getat(range_0, 2.0)) + 1.0)), (function (i_3 = nothing, _...)
-      return (getat(range_0, 2.0) + i_3)
+    for l_1 in items(map(rng(((getat(span_0, 3.0) - getat(span_0, 2.0)) + 1.0)), (function (i_3 = nothing, _...)
+      return (getat(span_0, 2.0) + i_3)
     end)))
       begin_path(s_0)
       move_to(s_0, getat(box_0, 0.0), Y_0(l_1))
@@ -13909,13 +13909,13 @@ end
         masses_1 = map(rng((length(es_1) - 1.0)), (function (a_3 = nothing, _...)
           return Any[getat(es_1, a_3), getat(es_1, (a_3 + 1.0)), ((YD(Sparc) * getat(getat(w_discs(self), j_1), a_3)) + getat(getat(w_gases(self), j_1), a_3))]
         end))
-        last_1 = 0.0
+        held_in_1 = 0.0
         for i2 in 0:(ceil(Int, Rt.num(length(rs_1))) - 1)
           i_2 = Float64(i2)
           inside_2 = (((YB(Sparc) * getat(getat(rs_1, i_2), 5.0)) * abs(getat(getat(rs_1, i_2), 5.0))) * getat(getat(rs_1, i_2), 0.0))
-          if truthy((inside_2 > last_1))
-            push(masses_1, Any[(truthy((i_2 == 0.0)) ? (0.0) : (getat(getat(rs_1, (i_2 - 1.0)), 0.0))), getat(getat(rs_1, i_2), 0.0), (inside_2 - last_1)])
-            last_1 = inside_2
+          if truthy((inside_2 > held_in_1))
+            push(masses_1, Any[(truthy((i_2 == 0.0)) ? (0.0) : (getat(getat(rs_1, (i_2 - 1.0)), 0.0))), getat(getat(rs_1, i_2), 0.0), (inside_2 - held_in_1)])
+            held_in_1 = inside_2
           end
         end
         run_1 = reduce(masses_1, Any[], (function (run_3 = nothing, m_3 = nothing, _...)

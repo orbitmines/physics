@@ -11786,9 +11786,9 @@ export class Galaxies extends Node {
     let got = add(mul(elem(ys_, lo), (sub(1, f))), mul(elem(ys_, hi), f));
     return (gt(got, 0) ? Fmt.log10(div(got, a0)) : NaN);
   }
-  static decades(s: Surface, X: Program, Y: Program, box: number[], range: number[], under: number) {
-    for (const l of [...range(add(sub(elem(range, 1), elem(range, 0)), 1)).map(((i: any) => {
-      return add(elem(range, 0), i);
+  static decades(s: Surface, X: Program, Y: Program, box: number[], span: number[], under: number) {
+    for (const l of [...range(add(sub(elem(span, 1), elem(span, 0)), 1)).map(((i: any) => {
+      return add(elem(span, 0), i);
     }))]) {
       s.begin_path;
       s.move_to(X(l), elem(box, 1));
@@ -11797,8 +11797,8 @@ export class Galaxies extends Node {
       s.fill_text(`10^${l}`, X(l), add(elem(box, 3), under));
     };
     s.text_align(`right`);
-    for (const l of [...range(add(sub(elem(range, 3), elem(range, 2)), 1)).map(((i: any) => {
-      return add(elem(range, 2), i);
+    for (const l of [...range(add(sub(elem(span, 3), elem(span, 2)), 1)).map(((i: any) => {
+      return add(elem(span, 2), i);
     }))]) {
       s.begin_path;
       s.move_to(elem(box, 0), Y(l));
@@ -14253,12 +14253,12 @@ export class Simulation extends Node {
         let masses = range(sub(es.length, 1)).map(((a: any) => {
           return [elem(es, a), elem(es, add(a, 1)), add(mul(Sparc.YD, elem(elem(this.w_discs, j), a)), elem(elem(this.w_gases, j), a))];
         }));
-        let last = 0;
+        let held_in = 0;
         for (let i = 0; i < rs.length; i++) {
           let inside = mul(mul(mul(Sparc.YB, elem(elem(rs, i), 5)), Math.abs(elem(elem(rs, i), 5))), elem(elem(rs, i), 0));
-          if (gt(inside, last)) {
-            push(masses, [(eq(i, 0) ? 0 : elem(elem(rs, sub(i, 1)), 0)), elem(elem(rs, i), 0), sub(inside, last)]);
-            last = inside;
+          if (gt(inside, held_in)) {
+            push(masses, [(eq(i, 0) ? 0 : elem(elem(rs, sub(i, 1)), 0)), elem(elem(rs, i), 0), sub(inside, held_in)]);
+            held_in = inside;
           }
         };
         let run = masses.reduce(((run: any, m: any) => {

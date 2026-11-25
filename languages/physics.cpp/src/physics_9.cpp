@@ -216,10 +216,10 @@ static void C_Galaxies(Cls& c) {
     return null;
   });
   c.statik("decades", [](Value self, const Args& a1) -> Value {
-    auto s_0 = cell(arg(a1, 0)); auto X_0 = cell(arg(a1, 1)); auto Y_0 = cell(arg(a1, 2)); auto box_0 = cell(arg(a1, 3)); auto range_0 = cell(arg(a1, 4)); auto under_0 = cell(arg(a1, 5));
-    for (const Value& e1 : Each(m_map(rng(add(sub(elem(range_0->v, 1.0), elem(range_0->v, 0.0)), 1.0)), fn([=](const Args& a4) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto X_0 = cell(arg(a1, 1)); auto Y_0 = cell(arg(a1, 2)); auto box_0 = cell(arg(a1, 3)); auto span_0 = cell(arg(a1, 4)); auto under_0 = cell(arg(a1, 5));
+    for (const Value& e1 : Each(m_map(rng(add(sub(elem(span_0->v, 1.0), elem(span_0->v, 0.0)), 1.0)), fn([=](const Args& a4) -> Value {
       auto i_3 = cell(arg(a4, 0));
-      return add(elem(range_0->v, 0.0), i_3->v);
+      return add(elem(span_0->v, 0.0), i_3->v);
       return null;
     })))) {
       auto l_1 = cell(e1);
@@ -230,9 +230,9 @@ static void C_Galaxies(Cls& c) {
       call(s_0->v, S<"fill_text">(), { "10^" + str(l_1->v) + "", invoke(X_0->v, { l_1->v }), add(elem(box_0->v, 3.0), under_0->v) });
     };
     call(s_0->v, S<"text_align">(), { "right" });
-    for (const Value& e1 : Each(m_map(rng(add(sub(elem(range_0->v, 3.0), elem(range_0->v, 2.0)), 1.0)), fn([=](const Args& a4) -> Value {
+    for (const Value& e1 : Each(m_map(rng(add(sub(elem(span_0->v, 3.0), elem(span_0->v, 2.0)), 1.0)), fn([=](const Args& a4) -> Value {
       auto i_3 = cell(arg(a4, 0));
-      return add(elem(range_0->v, 2.0), i_3->v);
+      return add(elem(span_0->v, 2.0), i_3->v);
       return null;
     })))) {
       auto l_1 = cell(e1);

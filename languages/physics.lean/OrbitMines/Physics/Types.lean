@@ -1858,7 +1858,7 @@ ray_static "offsets" (YD_0 : Float) : (RList Float)
 ray_static "middle" (xs_0 : (RList Float)) : Float
 ray_static "asks" : Float
 ray_static "medium_at" (lx_0 : Float) : Float
-ray_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (range_0 : (RList Float)) (under_0 : Float) : Value
+ray_static "decades" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (box_0 : (RList Float)) (span_0 : (RList Float)) (under_0 : Float) : Value
 ray_static "curve" (s_0 : Surface) (X_0 : Value) (Y_0 : Value) (f_0 : Value) (low_0 : Float) (high_0 : Float) (step_0 : Float) : Value
 ray_static "along" (s_0 : Surface) (at__0 : Value) (t_0 : Float) (text_0 : String) (colour_0 : String) (lift_0 : Float) (leans_0 : Value) : Value
 ray_static "ceiling_of" (data_0 : Measured) : Value

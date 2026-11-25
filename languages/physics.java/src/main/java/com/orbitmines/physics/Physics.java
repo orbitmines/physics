@@ -14346,10 +14346,10 @@ static final class C_Galaxies {
       return null;
     });
     c.statik("decades", (self, a1) -> {
-      Object[] s_0 = { arg(a1, 0) }; Object[] X_0 = { arg(a1, 1) }; Object[] Y_0 = { arg(a1, 2) }; Object[] box_0 = { arg(a1, 3) }; Object[] range_0 = { arg(a1, 4) }; Object[] under_0 = { arg(a1, 5) };
-      for (Object e1 : items(m_map(rng(add(sub(elem(range_0[0], 1.0), elem(range_0[0], 0.0)), 1.0)), (Fn) (a4) -> {
+      Object[] s_0 = { arg(a1, 0) }; Object[] X_0 = { arg(a1, 1) }; Object[] Y_0 = { arg(a1, 2) }; Object[] box_0 = { arg(a1, 3) }; Object[] span_0 = { arg(a1, 4) }; Object[] under_0 = { arg(a1, 5) };
+      for (Object e1 : items(m_map(rng(add(sub(elem(span_0[0], 1.0), elem(span_0[0], 0.0)), 1.0)), (Fn) (a4) -> {
         Object[] i_3 = { arg(a4, 0) };
-        if (true) return add(elem(range_0[0], 0.0), i_3[0]);
+        if (true) return add(elem(span_0[0], 0.0), i_3[0]);
         return null;
       }))) {
         Object[] l_1 = { e1 };
@@ -14360,9 +14360,9 @@ static final class C_Galaxies {
         call(s_0[0], "fill_text", new Object[] { "10^" + str(l_1[0]) + "", invoke(X_0[0], new Object[] { l_1[0] }), add(elem(box_0[0], 3.0), under_0[0]) });
       };
       call(s_0[0], "text_align", new Object[] { "right" });
-      for (Object e1 : items(m_map(rng(add(sub(elem(range_0[0], 3.0), elem(range_0[0], 2.0)), 1.0)), (Fn) (a4) -> {
+      for (Object e1 : items(m_map(rng(add(sub(elem(span_0[0], 3.0), elem(span_0[0], 2.0)), 1.0)), (Fn) (a4) -> {
         Object[] i_3 = { arg(a4, 0) };
-        if (true) return add(elem(range_0[0], 2.0), i_3[0]);
+        if (true) return add(elem(span_0[0], 2.0), i_3[0]);
         return null;
       }))) {
         Object[] l_1 = { e1 };
@@ -17310,13 +17310,13 @@ static final class C_Simulation {
             if (true) return list(elem(es_1[0], a_3[0]), elem(es_1[0], add(a_3[0], 1.0)), add(mul(get(K("Sparc"), "YD"), elem(elem(get(self, "w_discs"), j_1[0]), a_3[0])), elem(elem(get(self, "w_gases"), j_1[0]), a_3[0])));
             return null;
           });
-          Object[] last_1 = new Object[1]; last_1[0] = 0.0;
+          Object[] held_in_1 = new Object[1]; held_in_1[0] = 0.0;
           for (double i2 = 0; i2 < num(len(rs_1[0])); i2++) {
             Object[] i_2 = { i2 };
             Object[] inside_2 = new Object[1]; inside_2[0] = mul(mul(mul(get(K("Sparc"), "YB"), elem(elem(rs_1[0], i_2[0]), 5.0)), m_abs(elem(elem(rs_1[0], i_2[0]), 5.0))), elem(elem(rs_1[0], i_2[0]), 0.0));
-            if (truthy(gt(inside_2[0], last_1[0]))) {
-              m_push(masses_1[0], list((truthy(eq(i_2[0], 0.0)) ? (Object) 0.0 : (Object) elem(elem(rs_1[0], sub(i_2[0], 1.0)), 0.0)), elem(elem(rs_1[0], i_2[0]), 0.0), sub(inside_2[0], last_1[0])));
-              last_1[0] = inside_2[0];
+            if (truthy(gt(inside_2[0], held_in_1[0]))) {
+              m_push(masses_1[0], list((truthy(eq(i_2[0], 0.0)) ? (Object) 0.0 : (Object) elem(elem(rs_1[0], sub(i_2[0], 1.0)), 0.0)), elem(elem(rs_1[0], i_2[0]), 0.0), sub(inside_2[0], held_in_1[0])));
+              held_in_1[0] = inside_2[0];
             }
           };
           Object[] run_1 = new Object[1]; run_1[0] = m_reduce(masses_1[0], list(), (Fn) (a4) -> {

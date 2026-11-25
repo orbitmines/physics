@@ -1052,13 +1052,13 @@ ray_impl_getter "film_seeds" : (RList Float) := do
       let masses_1 ← IO.mkRef (← dot! (← ωrrange (← ωsub (← dot! (← es_1.get) rlength ()) (1 : Float))) rmap ((fn! [a_3] do
         if true then return (← ωlst #[(← ωelem (← es_1.get) (← a_3.get)), (← ωelem (← es_1.get) (← ωadd (← a_3.get) (1 : Float))), (← ωadd (← ωmul (← ωget (← cls% Sparc) "YD") (← ωelem (← ωelem (← ωget self "w_discs") (← j_1.get)) (← a_3.get))) (← ωelem (← ωelem (← ωget self "w_gases") (← j_1.get)) (← a_3.get)))])
         return ωnull)))
-      let last_1 ← IO.mkRef (0 : Float)
+      let held_in_1 ← IO.mkRef (0 : Float)
       for i2 in [0:ωrangeN (← dot! (← rs_1.get) rlength ())] do
         let i_2 ← IO.mkRef (ωnatF i2)
         let inside_2 ← IO.mkRef (← ωmul (← ωmul (← ωmul (← ωget (← cls% Sparc) "YB") (← ωelem (← ωelem (← rs_1.get) (← i_2.get)) (5 : Float))) (← dot! (← ωelem (← ωelem (← rs_1.get) (← i_2.get)) (5 : Float)) rabs ())) (← ωelem (← ωelem (← rs_1.get) (← i_2.get)) (0 : Float)))
-        if ωtruthy (← ωgt (← inside_2.get) (← last_1.get)) then
-          (← dot! (← masses_1.get) rpush ((← ωlst #[(← ωtern (ωtruthy (← ωeqv (← i_2.get) (0 : Float))) (do pure (0 : Float)) (do pure (← ωelem (← ωelem (← rs_1.get) (← ωsub (← i_2.get) (1 : Float))) (0 : Float)))), (← ωelem (← ωelem (← rs_1.get) (← i_2.get)) (0 : Float)), (← ωsub (← inside_2.get) (← last_1.get))]))) |> ωsink
-          (← ωwr last_1 (← inside_2.get)) |> ωsink
+        if ωtruthy (← ωgt (← inside_2.get) (← held_in_1.get)) then
+          (← dot! (← masses_1.get) rpush ((← ωlst #[(← ωtern (ωtruthy (← ωeqv (← i_2.get) (0 : Float))) (do pure (0 : Float)) (do pure (← ωelem (← ωelem (← rs_1.get) (← ωsub (← i_2.get) (1 : Float))) (0 : Float)))), (← ωelem (← ωelem (← rs_1.get) (← i_2.get)) (0 : Float)), (← ωsub (← inside_2.get) (← held_in_1.get))]))) |> ωsink
+          (← ωwr held_in_1 (← inside_2.get)) |> ωsink
           pure ()
         pure ()
       Value.null |> ωsink

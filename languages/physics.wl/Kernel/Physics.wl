@@ -8936,22 +8936,22 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["f"] = If[truthy[gt[env0["span"], 0.]], div[(sub[env0["want"], elem[env0["xs_"], env0["lo"]]]), env0["span"]], 0.];
     env0["got"] = add[mul[elem[env0["ys_"], env0["lo"]], (sub[1., env0["f"]])], mul[elem[env0["ys_"], env0["hi"]], env0["f"]]];
     Throw[If[truthy[gt[env0["got"], 0.]], Fmt["log10", div[env0["got"], env0["a0"]]], Indeterminate], ret]]];
-  statik[klass, "decades", mfn[1, { env0["s"] = arg[args1, 0], env0["X"] = arg[args1, 1], env0["Y"] = arg[args1, 2], env0["box"] = arg[args1, 3], env0["range"] = arg[args1, 4], env0["under"] = arg[args1, 5] };
+  statik[klass, "decades", mfn[1, { env0["s"] = arg[args1, 0], env0["X"] = arg[args1, 1], env0["Y"] = arg[args1, 2], env0["box"] = arg[args1, 3], env0["span"] = arg[args1, 4], env0["under"] = arg[args1, 5] };
     Do[loopScope[1, env1["l"] = iter1;
       env0["s"]["begin_path"];
       env0["s"]["move_to", env0["X"][env1["l"]], elem[env0["box"], 1.]];
       env0["s"]["line_to", env0["X"][env1["l"]], elem[env0["box"], 3.]];
       env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", env0["X"][env1["l"]], add[elem[env0["box"], 3.], env0["under"]]]], {iter1, items[mMap[rng[add[sub[elem[env0["range"], 1.], elem[env0["range"], 0.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
-      Throw[add[elem[env0["range"], 0.], env3["i"]], ret]]]]}];
+      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", env0["X"][env1["l"]], add[elem[env0["box"], 3.], env0["under"]]]], {iter1, items[mMap[rng[add[sub[elem[env0["span"], 1.], elem[env0["span"], 0.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[add[elem[env0["span"], 0.], env3["i"]], ret]]]]}];
     env0["s"]["text_align", "right"];
     Do[loopScope[1, env1["l"] = iter1;
       env0["s"]["begin_path"];
       env0["s"]["move_to", elem[env0["box"], 0.], env0["Y"][env1["l"]]];
       env0["s"]["line_to", elem[env0["box"], 2.], env0["Y"][env1["l"]]];
       env0["s"]["stroke"];
-      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", sub[elem[env0["box"], 0.], 8.], add[env0["Y"][env1["l"]], 4.]]], {iter1, items[mMap[rng[add[sub[elem[env0["range"], 3.], elem[env0["range"], 2.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
-      Throw[add[elem[env0["range"], 2.], env3["i"]], ret]]]]}]]];
+      env0["s"]["fill_text", "10^" <> str[env1["l"]] <> "", sub[elem[env0["box"], 0.], 8.], add[env0["Y"][env1["l"]], 4.]]], {iter1, items[mMap[rng[add[sub[elem[env0["span"], 3.], elem[env0["span"], 2.]], 1.]], lfn[4, { env3["i"] = arg[args4, 0] };
+      Throw[add[elem[env0["span"], 2.], env3["i"]], ret]]]]}]]];
   statik[klass, "curve", mfn[1, { env0["s"] = arg[args1, 0], env0["X"] = arg[args1, 1], env0["Y"] = arg[args1, 2], env0["f"] = arg[args1, 3], env0["low"] = arg[args1, 4], env0["high"] = arg[args1, 5], env0["step"] = arg[args1, 6] };
     env0["s"]["begin_path"];
     env0["l"] = env0["low"];
@@ -10855,12 +10855,12 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
         env1["rs"] = elem[self["rows"], env1["j"]];
         env1["masses"] = mMap[rng[sub[len[env1["es"]], 1.]], lfn[4, { env3["a"] = arg[args4, 0] };
           Throw[list[elem[env1["es"], env3["a"]], elem[env1["es"], add[env3["a"], 1.]], add[mul[Sparc["YD"], elem[elem[self["w_discs"], env1["j"]], env3["a"]]], elem[elem[self["w_gases"], env1["j"]], env3["a"]]]], ret]]];
-        env1["last"] = 0.;
+        env1["held_in"] = 0.;
         Do[loopScope[2, env2["i"] = iter2;
           env2["inside"] = mul[mul[mul[Sparc["YB"], elem[elem[env1["rs"], env2["i"]], 5.]], mAbs[elem[elem[env1["rs"], env2["i"]], 5.]]], elem[elem[env1["rs"], env2["i"]], 0.]];
-          If[truthy[gt[env2["inside"], env1["last"]]],
-            mPush[env1["masses"], list[If[truthy[eq[env2["i"], 0.]], 0., elem[elem[env1["rs"], sub[env2["i"], 1.]], 0.]], elem[elem[env1["rs"], env2["i"]], 0.], sub[env2["inside"], env1["last"]]]];
-            env1["last"] = env2["inside"]]], {iter2, 0., num[len[env1["rs"]]] - 1.}];
+          If[truthy[gt[env2["inside"], env1["held_in"]]],
+            mPush[env1["masses"], list[If[truthy[eq[env2["i"], 0.]], 0., elem[elem[env1["rs"], sub[env2["i"], 1.]], 0.]], elem[elem[env1["rs"], env2["i"]], 0.], sub[env2["inside"], env1["held_in"]]]];
+            env1["held_in"] = env2["inside"]]], {iter2, 0., num[len[env1["rs"]]] - 1.}];
         env1["run"] = mReduce[env1["masses"], list[], lfn[4, { env3["run"] = arg[args4, 0], env3["m"] = arg[args4, 1] };
           Throw[mPush[env3["run"], add[(orElse[mLast[env3["run"]], 0.]), Fmt["max", elem[env3["m"], 2.], 0.]]], ret]]];
         env1["total"] = orElse[mLast[env1["run"]], 0.];
