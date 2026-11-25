@@ -102,7 +102,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 0.0]), 1.0]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 0.0]), 1.0]), &0.003)") }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 1.0]), 1.0]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 1.0]), 1.0]), &0.003)") }
     });
 
     t(s, "tests/felt.ray:11 on felt", || {
@@ -114,7 +114,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 0.0]), 0.01]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 0.0]), 0.01]), &0.003)") }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.1, 1.0, 0.0, 1.0]), 0.01]), &0.003)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.1, 1.0, 0.0, 1.0]), 0.01]), &0.003)") }
     });
 
     t(s, "tests/felt.ray:12 on felt", || {
@@ -126,7 +126,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 0.0]), 0.01]), &0.05)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 0.0]), 0.01]), &0.05)") }
+      if truthy(&gt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 1.0]), 0.01]), &0.05)) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 1.0]), 0.01]), &0.05)") }
     });
 
     t(s, "tests/felt.ray:13 on felt", || {
@@ -138,7 +138,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 0.0]), 100.0]), &0.01)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 0.0]), 100.0]), &0.01)") }
+      if truthy(&lt(&call(&it, "off_law", args![call(&it, "shape", args![0.02, 0.0, 0.0, 1.0]), 100.0]), &0.01)) { PASS.to_string() } else { format!("failed: {}", "lt(&call(&it, \"off_law\", args![call(&it, \"shape\", args![0.02, 0.0, 0.0, 1.0]), 100.0]), &0.01)") }
     });
 
     t(s, "tests/field.ray:10 on line", || {

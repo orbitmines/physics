@@ -25,7 +25,7 @@ ray_impl_sfield "NA" : Value := do
 ray_impl_sfield "NZ" : Value := do
   return (8 : Float)
 ray_impl_sfield "NEAR" : Value := do
-  return 0.25
+  return 0.18
 ray_impl_sfield "FAR" : Value := do
   return (30 : Float)
 ray_impl_sfield "HERNQUIST" : Value := do
@@ -49,9 +49,11 @@ ray_impl_sfield "THICK" : Value := do
 ray_impl_sfield "MIDDLE" : Value := do
   return (← ωlst #[(0 : Float), 0.2, 0.5])
 ray_impl_sfield "GAS" : Value := do
-  return (← ωlst #[(← ωlst #[(0 : Float), (0 : Float)]), (← ωlst #[0.5, (4 : Float)]), (← ωlst #[0.5, (7 : Float)]), (← ωlst #[0.9, (4 : Float)]), (← ωlst #[0.9, (7 : Float)])])
+  return (← ωlst #[(← ωlst #[(0 : Float), (1 : Float)]), (← ωlst #[0.5, (2 : Float)]), (← ωlst #[0.5, (3 : Float)]), (← ωlst #[0.9, (2 : Float)]), (← ωlst #[0.9, (3 : Float)])])
 ray_impl_sfield "FREEDOMS" : Value := do
   return (← ωlst #[("mass" : String), ("thickness" : String), ("middle" : String), ("gas" : String)])
+ray_impl_sfield "LADDER" : Value := do
+  return (← ωlst #[(← ωneg 6.5), 5.5, (193 : Float)])
 ray_impl_getter "step" : Float := do
   if true then return (← ωdiv (← dot! ((← ωdiv (← ωget (← cls% Felt) "R1") (← ωget (← cls% Felt) "R0"))) rln ()) (← ωget (← cls% Felt) "NR"))
   return ωnull
@@ -176,11 +178,18 @@ ray_impl_method "unit_disc" (h_0 : Float) : (RList (RList Float)) := do
   (ωatSetter (← ωget self "unit") (← key_0.get)) (← ωlst #[(← gr_0.get), (← gz_0.get), (← plane_0.get)])
   if true then return (← ωelem (← ωget self "unit") (← key_0.get))
   return ωnull
-ray_impl_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wider_0 : Float) : (RList (RList Float)) := do
+ray_impl_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wide_0 : Float) : (RList (RList Float)) := do
   let stars_0 ← IO.mkRef (← ωmul ((← ωsub (1 : Float) (← gas_0.get))) ((← ωsub (1 : Float) (← middle_0.get))))
   let held_0 ← IO.mkRef (← ωmul ((← ωsub (1 : Float) (← gas_0.get))) (← middle_0.get))
   let u_0 ← IO.mkRef (← ωtern (ωtruthy (← ωorV (← ωgt (← stars_0.get) (0 : Float)) (do pure (← ωgt (← gas_0.get) (0 : Float))))) (do pure (← call! self "unit_disc" ((← h_0.get)))) (do pure ωnull))
-  let w_0 ← IO.mkRef (← dot! ((← ωmul (← ωget self "step") (← wider_0.get))) rexp ())
+  let w_0 ← IO.mkRef (← ωtern (ωtruthy (← ωgt (← wide_0.get) (1 : Float))) (do pure (← wide_0.get)) (do pure (1 : Float)))
+  let shift_0 ← IO.mkRef (← ωdiv (← dot! (← w_0.get) rln ()) (← ωget self "step"))
+  let wider_0 ← IO.mkRef (← dot! (← shift_0.get) rfloor ())
+  let frac_0 ← IO.mkRef (← ωsub (← shift_0.get) (← wider_0.get))
+  let lower_0 ← IO.mkRef ωnull
+  lower_0.set (fn! [(q : (RList Float)) (ii : Float) (j : Float)] do
+      if true then return (← ωadd (← ωmul ((← ωsub (1 : Float) (← frac_0.get))) (← ωelem q (← ωadd (← ωmul ((← ωsub ii (← wider_0.get))) (← ωget (← cls% Felt) "NMU")) j))) (← ωmul (← frac_0.get) (← ωelem q (← ωadd (← ωmul ((← ωsub (← ωsub ii (← wider_0.get)) (1 : Float))) (← ωget (← cls% Felt) "NMU")) j))))
+      return ωnull)
   let gr_0 ← IO.mkRef (← ωrfilled (← ωget self "cells") (0 : Float))
   let gz_0 ← IO.mkRef (← ωrfilled (← ωget self "cells") (0 : Float))
   let plane_0 ← IO.mkRef (← ωrfilled (← ωget (← cls% Felt) "NR") (0 : Float))
@@ -195,11 +204,11 @@ ray_impl_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wider_
       let c_2 ← IO.mkRef (← ωadd (← ωmul (← i_1.get) (← ωget (← cls% Felt) "NMU")) (← j_2.get))
       let pull_2 ← IO.mkRef (← ωdiv (← held_0.get) ((← ωmul (← ωmul (← r_1.get) ((← ωadd (← r_1.get) (← a_0.get)))) ((← ωadd (← r_1.get) (← a_0.get))))))
       let R_2 ← IO.mkRef (← ωmul (← r_1.get) (← dot! ((← ωsub (1 : Float) (← ωmul (← mu_2.get) (← mu_2.get)))) rsqrt ()))
-      (ωatSetter (← gr_0.get) (← c_2.get)) (← ωadd ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (0 : Float)) (← ωadd (← ωmul (← ii_1.get) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) (← ωdiv (← ωmul (← gas_0.get) (← ωelem (← ωelem (← u_0.get) (0 : Float)) (← ωadd (← ωmul ((← ωsub (← ii_1.get) (← wider_0.get))) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωmul (← pull_2.get) ((← ωsub (0 : Float) (← R_2.get)))))
-      (ωatSetter (← gz_0.get) (← c_2.get)) (← ωadd ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (1 : Float)) (← ωadd (← ωmul (← ii_1.get) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) (← ωdiv (← ωmul (← gas_0.get) (← ωelem (← ωelem (← u_0.get) (1 : Float)) (← ωadd (← ωmul ((← ωsub (← ii_1.get) (← wider_0.get))) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωmul (← pull_2.get) ((← ωsub (0 : Float) (← ωmul (← r_1.get) (← mu_2.get))))))
+      (ωatSetter (← gr_0.get) (← c_2.get)) (← ωadd ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (0 : Float)) (← ωadd (← ωmul (← ii_1.get) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) (← ωdiv (← ωmul (← gas_0.get) (← app! (← lower_0.get) ((← ωelem (← u_0.get) (0 : Float)), (← ii_1.get), (← j_2.get)))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωmul (← pull_2.get) ((← ωsub (0 : Float) (← R_2.get)))))
+      (ωatSetter (← gz_0.get) (← c_2.get)) (← ωadd ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (1 : Float)) (← ωadd (← ωmul (← ii_1.get) (← ωget (← cls% Felt) "NMU")) (← j_2.get)))) (← ωdiv (← ωmul (← gas_0.get) (← app! (← lower_0.get) ((← ωelem (← u_0.get) (1 : Float)), (← ii_1.get), (← j_2.get)))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωmul (← pull_2.get) ((← ωsub (0 : Float) (← ωmul (← r_1.get) (← mu_2.get))))))
       pure ()
     Value.null |> ωsink
-    (ωatSetter (← plane_0.get) (← i_1.get)) (← ωsub ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (2 : Float)) (← ii_1.get))) (← ωdiv (← ωmul (← gas_0.get) (← ωelem (← ωelem (← u_0.get) (2 : Float)) (← ωsub (← ii_1.get) (← wider_0.get)))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωdiv (← held_0.get) ((← ωmul ((← ωadd (← r_1.get) (← a_0.get))) ((← ωadd (← r_1.get) (← a_0.get)))))))
+    (ωatSetter (← plane_0.get) (← i_1.get)) (← ωsub ((← ωtern (ωtruthy (ωisNull (← u_0.get))) (do pure (0 : Float)) (do pure (← ωadd (← ωmul (← stars_0.get) (← ωelem (← ωelem (← u_0.get) (2 : Float)) (← ii_1.get))) (← ωdiv (← ωmul (← gas_0.get) ((← ωadd (← ωmul ((← ωsub (1 : Float) (← frac_0.get))) (← ωelem (← ωelem (← u_0.get) (2 : Float)) (← ωsub (← ii_1.get) (← wider_0.get)))) (← ωmul (← frac_0.get) (← ωelem (← ωelem (← u_0.get) (2 : Float)) (← ωsub (← ωsub (← ii_1.get) (← wider_0.get)) (1 : Float))))))) ((← ωmul (← w_0.get) (← w_0.get)))))))) (← ωdiv (← held_0.get) ((← ωmul ((← ωadd (← r_1.get) (← a_0.get))) ((← ωadd (← r_1.get) (← a_0.get)))))))
     pure ()
   Value.null |> ωsink
   if true then return (← ωlst #[(← gr_0.get), (← gz_0.get), (← plane_0.get)])
@@ -353,6 +362,32 @@ ray_impl_method "felt" (shape_0 : (RList (RList Float))) (s_0 : Float) : (RList 
     pure ()
   Value.null |> ωsink
   if true then return (← out_0.get)
+  return ωnull
+ray_impl_method "ladder" (shape_0 : (RList (RList Float))) : (RList (RList (RList Float))) := do
+  if true then return (← dot! (← ωrrange (← ωelem (← ωget (← cls% Felt) "LADDER") (2 : Float))) rmap ((fn! [k_2] do
+    if true then return (← call! self "felt" ((← shape_0.get), (← ωpow (10 : Float) ((← ωadd (← ωelem (← ωget (← cls% Felt) "LADDER") (0 : Float)) (← ωdiv (← ωmul ((← ωsub (← ωelem (← ωget (← cls% Felt) "LADDER") (1 : Float)) (← ωelem (← ωget (← cls% Felt) "LADDER") (0 : Float)))) (← k_2.get)) (← ωsub (← ωelem (← ωget (← cls% Felt) "LADDER") (2 : Float)) (1 : Float))))))))
+    return ωnull)))
+  return ωnull
+ray_impl_method "read_off" (ladder_0 : (RList (RList (RList Float)))) (dex_0 : Float) (x_0 : Float) : (RList Float) := do
+  let n_0 ← IO.mkRef (← ωelem (← ωget (← cls% Felt) "LADDER") (2 : Float))
+  let u_0 ← IO.mkRef (← call! (← cls% Fmt) "min" ((← call! (← cls% Fmt) "max" ((← ωdiv ((← ωsub (← dex_0.get) (← ωelem (← ωget (← cls% Felt) "LADDER") (0 : Float)))) ((← ωdiv ((← ωsub (← ωelem (← ωget (← cls% Felt) "LADDER") (1 : Float)) (← ωelem (← ωget (← cls% Felt) "LADDER") (0 : Float)))) (← ωsub (← n_0.get) (1 : Float))))), (0 : Float))), (← ωsub (← ωsub (← n_0.get) (1 : Float)) 0.000001)))
+  let k_0 ← IO.mkRef (← dot! (← u_0.get) rfloor ())
+  let f_0 ← IO.mkRef (← ωsub (← u_0.get) (← k_0.get))
+  let rows_0 ← IO.mkRef (← dot! (← ωelem (← ladder_0.get) (0 : Float)) rlength ())
+  let v_0 ← IO.mkRef (← call! (← cls% Fmt) "min" ((← call! (← cls% Fmt) "max" ((← ωdiv (← dot! ((← ωdiv (← x_0.get) (← ωelem (← ωelem (← ωelem (← ladder_0.get) (0 : Float)) (0 : Float)) (0 : Float)))) rln ()) (← ωget self "step")), (0 : Float))), (← ωsub (← ωsub (← rows_0.get) (1 : Float)) 0.000001)))
+  let t_0 ← IO.mkRef (← dot! (← v_0.get) rfloor ())
+  let e_0 ← IO.mkRef (← ωsub (← v_0.get) (← t_0.get))
+  let both_0 ← IO.mkRef ωnull
+  both_0.set (fn! [(col : Float)] do
+      let at_ ← IO.mkRef ωnull
+      at_.set (fn! [(kk : Float) (tt : Float)] do
+          if true then return (← call! (← cls% Fmt) "log10" ((← ωelem (← ωelem (← ωelem (← ladder_0.get) kk) tt) col)))
+          return ωnull)
+      let lo ← IO.mkRef (← ωadd (← ωmul ((← ωsub (1 : Float) (← e_0.get))) (← app! at_ ((← k_0.get), (← t_0.get)))) (← ωmul (← e_0.get) (← app! at_ ((← k_0.get), (← ωadd (← t_0.get) (1 : Float))))))
+      let hi ← IO.mkRef (← ωadd (← ωmul ((← ωsub (1 : Float) (← e_0.get))) (← app! at_ ((← ωadd (← k_0.get) (1 : Float)), (← t_0.get)))) (← ωmul (← e_0.get) (← app! at_ ((← ωadd (← k_0.get) (1 : Float)), (← ωadd (← t_0.get) (1 : Float))))))
+      if true then return (← ωpow (10 : Float) ((← ωadd (← ωmul ((← ωsub (1 : Float) (← f_0.get))) lo) (← ωmul (← f_0.get) hi))))
+      return ωnull)
+  if true then return (← ωlst #[(← app! (← both_0.get) ((1 : Float))), (← app! (← both_0.get) ((2 : Float)))])
   return ωnull
 ray_impl_method "off_law" (shape_0 : (RList (RList Float))) (s_0 : Float) : Float := do
   if true then return (← dot! (← call! self "felt" ((← shape_0.get), (← s_0.get))) rreduce ((0 : Float), (fn! [most_2 q_2] do

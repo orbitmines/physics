@@ -61,28 +61,28 @@ t["tests/felt.ray:10 on felt", Module[{it, guard = 0},
   it = Felt[{}];
   Catch[
     While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 0.], 1.], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 0.], 1.], 0.003]"],
+    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 1.], 1.], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 1.], 1.], 0.003]"],
     skip]]];
 
 t["tests/felt.ray:11 on felt", Module[{it, guard = 0},
   it = Felt[{}];
   Catch[
     While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 0.], 0.01], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 0.], 0.01], 0.003]"],
+    If[truthy[lt[it["off_law", it["shape", 0.1, 1., 0., 1.], 0.01], 0.003]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.1, 1., 0., 1.], 0.01], 0.003]"],
     skip]]];
 
 t["tests/felt.ray:12 on felt", Module[{it, guard = 0},
   it = Felt[{}];
   Catch[
     While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[it["off_law", it["shape", 0.02, 0., 0., 0.], 0.01], 0.05]], "pass", "failed: " <> "gt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 0.], 0.01], 0.05]"],
+    If[truthy[gt[it["off_law", it["shape", 0.02, 0., 0., 1.], 0.01], 0.05]], "pass", "failed: " <> "gt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 1.], 0.01], 0.05]"],
     skip]]];
 
 t["tests/felt.ray:13 on felt", Module[{it, guard = 0},
   it = Felt[{}];
   Catch[
     While[!truthy[gt[it["cells"], 0.]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[it["off_law", it["shape", 0.02, 0., 0., 0.], 100.], 0.01]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 0.], 100.], 0.01]"],
+    If[truthy[lt[it["off_law", it["shape", 0.02, 0., 0., 1.], 100.], 0.01]], "pass", "failed: " <> "lt[it[\"off_law\", it[\"shape\", 0.02, 0., 0., 1.], 100.], 0.01]"],
     skip]]];
 
 t["tests/field.ray:10 on line", Module[{it, guard = 0},

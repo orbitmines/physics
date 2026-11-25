@@ -28,7 +28,7 @@ items::usage = "items[xs] is a Ray list (a DynamicArray), a text or a Many as a 
 list::usage = "list[a, b, ...] is a Ray list.";
 str::usage = "str[x] is a value as the bootstrap writes it.";
 (* the heads of the classes, made here in the package's own context *)
-{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Measure, Formed, Felt, RayAxis, Sweep, Sighted, Video, Sky, Banded, Growing, Planets, EndCard, Shot, Band, G};
+{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Measure, Felt, Formed, RayAxis, Sweep, Sighted, Video, Sky, Banded, Growing, Planets, EndCard, Shot, Band, G};
 
 Begin["`Private`"];
 
@@ -11070,6 +11070,38 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
                 Do[loopScope[7, env7["v"] = iter7;
                   mPush[env0["out"], env7["v"]]], {iter7, items[list[0., env6["r"], env6["gN"], 0., 0., 0.]]}]], {iter6, 0., num[Simulation["RADII"]] - 1.}]], {iter5, items[Simulation["BULGE"]]}]], {iter4, items[Simulation["GAS_WIDE"]]}]], {iter3, items[Simulation["GAS"]]}]], {iter2, 0., num[elem[Simulation["SCALES"], 2.]] - 1.}]], {iter1, 0., num[elem[Simulation["MASSES"], 2.]] - 1.}];
     Throw[env0["out"], ret]]];
+  statik[klass, "solve_possible", mfn[1, { env0["degs"] = arg[args1, 0] };
+    env0["felt"] = Felt[{}];
+    env0["ladders"] = Node[{}];
+    env0["ladder_of"] = lfn[2, { env1["fg"] = arg[args2, 0], env1["wide"] = arg[args2, 1], env1["fb"] = arg[args2, 2] };
+      env1["key"] = "" <> str[env1["fg"]] <> "|" <> str[env1["wide"]] <> "|" <> str[env1["fb"]] <> "";
+      If[truthy[eq[elem[env0["ladders"], env1["key"]], Null]],
+        setAt[env0["ladders"], env1["key"], env0["felt"]["ladder", env0["felt"]["shape", Simulation["SHAPE_H"], env1["fb"], env1["fg"], If[truthy[gt[env1["fg"], 0.]], env1["wide"], 1.]]]]];
+      Throw[elem[env0["ladders"], env1["key"]], ret]];
+    env0["a0s"] = list[];
+    env0["bins"] = list[];
+    Do[loopScope[1, env1["d"] = iter1;
+      env1["a0"] = div[Galaxies["a0_at", env1["d"]], Simulation["UNIT_G"]];
+      env1["points"] = list[];
+      env1["felts"] = list[];
+      Do[loopScope[2, env2["which_m"] = iter2;
+        env2["M"] = power[10., Simulation["axis", Simulation["MASSES"], env2["which_m"]]];
+        Do[loopScope[3, env3["which_s"] = iter3;
+          env3["rd"] = power[10., Simulation["axis", Simulation["SCALES"], env3["which_s"]]];
+          env3["dex"] = Fmt["log10", div[mul[Simulation["G_KPC"], env2["M"]], (mul[mul[env1["a0"], env3["rd"]], env3["rd"]])]];
+          Do[loopScope[4, env4["fg"] = iter4;
+            Do[loopScope[5, env5["wide"] = iter5;
+              Do[loopScope[6, env6["fb"] = iter6;
+                env6["L"] = env0["ladder_of"][env4["fg"], env5["wide"], env6["fb"]];
+                Do[loopScope[7, env7["k"] = iter7;
+                  env7["x"] = power[10., (add[neg[0.7], div[mul[1.6, env7["k"]], sub[Simulation["RADII"], 1.]]])];
+                  env7["got"] = env0["felt"]["read_off", env6["L"], env3["dex"], env7["x"]];
+                  Do[loopScope[8, env8["v"] = iter8;
+                    mPush[env1["points"], env8["v"]]], {iter8, items[list[0., mul[env3["rd"], env7["x"]], mul[elem[env7["got"], 0.], env1["a0"]], 0., 0., 0.]]}];
+                  mPush[env1["felts"], mul[elem[env7["got"], 1.], env1["a0"]]]], {iter7, 0., num[Simulation["RADII"]] - 1.}]], {iter6, items[Simulation["BULGE"]]}]], {iter5, items[Simulation["GAS_WIDE"]]}]], {iter4, items[Simulation["GAS"]]}]], {iter3, 0., num[elem[Simulation["SCALES"], 2.]] - 1.}]], {iter2, 0., num[elem[Simulation["MASSES"], 2.]] - 1.}];
+      mPush[env0["a0s"], mul[env1["a0"], Simulation["UNIT_G"]]];
+      mPush[env0["bins"], Simulation["binned", env1["points"], env1["felts"]]]], {iter1, items[env0["degs"]]}];
+    Throw[Simulation["save_possible", env0["degs"], env0["a0s"], env0["bins"]], ret]]];
   statik[klass, "binned", mfn[1, { env0["points"] = arg[args1, 0], env0["felt"] = arg[args1, 1] };
     env0["n"] = add[mRound[(div[(sub[Galaxies["XMAX"], Galaxies["XMIN"]]), Simulation["BIN"]])], 1.];
     env0["landed"] = filled[env0["n"], 0.];
@@ -11099,7 +11131,7 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["extra"][str["from"] -> Galaxies["XMIN"]];
     env0["extra"][str["step"] -> Simulation["BIN"]];
     env0["extra"][str["axes"] -> list["log M (Msun)", Simulation["MASSES"], "log R_d (kpc)", Simulation["SCALES"], "gas share", Simulation["GAS"], "gas scale / R_d", Simulation["GAS_WIDE"], "bulge share of the stars", Simulation["BULGE"]]];
-    env0["extra"][str["about"] -> "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"];
+    env0["extra"][str["about"] -> "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"];
     Throw[Measure["save", "galaxy.possible", list["deg", "a0"], env0["cols"], env0["extra"]], ret]]]]];
 
 DefineClass[Formed, "Formed", Node, Function[{klass},
@@ -11520,7 +11552,7 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
   staticField[klass, "KMAX", dfn[7.]];
   staticField[klass, "NA", dfn[120.]];
   staticField[klass, "NZ", dfn[8.]];
-  staticField[klass, "NEAR", dfn[0.25]];
+  staticField[klass, "NEAR", dfn[0.18]];
   staticField[klass, "FAR", dfn[30.]];
   staticField[klass, "HERNQUIST", dfn[0.1]];
   staticField[klass, "XS", dfn[700.]];
@@ -11532,8 +11564,9 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
   staticField[klass, "MASS", dfn[list[neg[2.5], 5., 61.]]];
   staticField[klass, "THICK", dfn[list[0.1, 0.02, 0.3]]];
   staticField[klass, "MIDDLE", dfn[list[0., 0.2, 0.5]]];
-  staticField[klass, "GAS", dfn[list[list[0., 0.], list[0.5, 4.], list[0.5, 7.], list[0.9, 4.], list[0.9, 7.]]]];
+  staticField[klass, "GAS", dfn[list[list[0., 1.], list[0.5, 2.], list[0.5, 3.], list[0.9, 2.], list[0.9, 3.]]]];
   staticField[klass, "FREEDOMS", dfn[list["mass", "thickness", "middle", "gas"]]];
+  staticField[klass, "LADDER", dfn[list[neg[6.5], 5.5, 193.]]];
   getter[klass, "step", mfn[1,
     Throw[div[mLn[(div[Felt["R1"], Felt["R0"]])], Felt["NR"]], ret]]];
   method[klass, "edge", mfn[1, { env0["i"] = arg[args1, 0] };
@@ -11619,11 +11652,16 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
       setAt[env0["plane"], env1["ii"], elem[Felt["disc_at", env0["rings"], env0["h"], env1["r"], 0.], 0.]]], {iter1, 0., num[env0["rows"]] - 1.}];
     setAt[self["unit"], env0["key"], list[env0["gr"], env0["gz"], env0["plane"]]];
     Throw[elem[self["unit"], env0["key"]], ret]]];
-  method[klass, "shape", mfn[1, { env0["h"] = arg[args1, 0], env0["middle"] = arg[args1, 1], env0["gas"] = arg[args1, 2], env0["wider"] = arg[args1, 3] };
+  method[klass, "shape", mfn[1, { env0["h"] = arg[args1, 0], env0["middle"] = arg[args1, 1], env0["gas"] = arg[args1, 2], env0["wide"] = arg[args1, 3] };
     env0["stars"] = mul[(sub[1., env0["gas"]]), (sub[1., env0["middle"]])];
     env0["held"] = mul[(sub[1., env0["gas"]]), env0["middle"]];
     env0["u"] = If[truthy[orV[gt[env0["stars"], 0.], gt[env0["gas"], 0.]]], self["unit_disc", env0["h"]], Null];
-    env0["w"] = mExp[(mul[self["step"], env0["wider"]])];
+    env0["w"] = If[truthy[gt[env0["wide"], 1.]], env0["wide"], 1.];
+    env0["shift"] = div[mLn[env0["w"]], self["step"]];
+    env0["wider"] = mFloor[env0["shift"]];
+    env0["frac"] = sub[env0["shift"], env0["wider"]];
+    env0["lower"] = lfn[2, { env1["q"] = arg[args2, 0], env1["ii"] = arg[args2, 1], env1["j"] = arg[args2, 2] };
+      Throw[add[mul[(sub[1., env0["frac"]]), elem[env1["q"], add[mul[(sub[env1["ii"], env0["wider"]]), Felt["NMU"]], env1["j"]]]], mul[env0["frac"], elem[env1["q"], add[mul[(sub[sub[env1["ii"], env0["wider"]], 1.]), Felt["NMU"]], env1["j"]]]]], ret]];
     env0["gr"] = filled[self["cells"], 0.];
     env0["gz"] = filled[self["cells"], 0.];
     env0["plane"] = filled[Felt["NR"], 0.];
@@ -11636,9 +11674,9 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
         env2["c"] = add[mul[env1["i"], Felt["NMU"]], env2["j"]];
         env2["pull"] = div[env0["held"], (mul[mul[env1["r"], (add[env1["r"], env0["a"]])], (add[env1["r"], env0["a"]])])];
         env2["R"] = mul[env1["r"], mSqrt[(sub[1., mul[env2["mu"], env2["mu"]]])]];
-        setAt[env0["gr"], env2["c"], add[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 0.], add[mul[env1["ii"], Felt["NMU"]], env2["j"]]]], div[mul[env0["gas"], elem[elem[env0["u"], 0.], add[mul[(sub[env1["ii"], env0["wider"]]), Felt["NMU"]], env2["j"]]]], (mul[env0["w"], env0["w"]])]]]), mul[env2["pull"], (sub[0., env2["R"]])]]];
-        setAt[env0["gz"], env2["c"], add[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 1.], add[mul[env1["ii"], Felt["NMU"]], env2["j"]]]], div[mul[env0["gas"], elem[elem[env0["u"], 1.], add[mul[(sub[env1["ii"], env0["wider"]]), Felt["NMU"]], env2["j"]]]], (mul[env0["w"], env0["w"]])]]]), mul[env2["pull"], (sub[0., mul[env1["r"], env2["mu"]]])]]]], {iter2, 0., num[Felt["NMU"]] - 1.}];
-      setAt[env0["plane"], env1["i"], sub[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 2.], env1["ii"]]], div[mul[env0["gas"], elem[elem[env0["u"], 2.], sub[env1["ii"], env0["wider"]]]], (mul[env0["w"], env0["w"]])]]]), div[env0["held"], (mul[(add[env1["r"], env0["a"]]), (add[env1["r"], env0["a"]])])]]]], {iter1, 0., num[Felt["NR"]] - 1.}];
+        setAt[env0["gr"], env2["c"], add[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 0.], add[mul[env1["ii"], Felt["NMU"]], env2["j"]]]], div[mul[env0["gas"], env0["lower"][elem[env0["u"], 0.], env1["ii"], env2["j"]]], (mul[env0["w"], env0["w"]])]]]), mul[env2["pull"], (sub[0., env2["R"]])]]];
+        setAt[env0["gz"], env2["c"], add[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 1.], add[mul[env1["ii"], Felt["NMU"]], env2["j"]]]], div[mul[env0["gas"], env0["lower"][elem[env0["u"], 1.], env1["ii"], env2["j"]]], (mul[env0["w"], env0["w"]])]]]), mul[env2["pull"], (sub[0., mul[env1["r"], env2["mu"]]])]]]], {iter2, 0., num[Felt["NMU"]] - 1.}];
+      setAt[env0["plane"], env1["i"], sub[(If[truthy[eq[env0["u"], Null]], 0., add[mul[env0["stars"], elem[elem[env0["u"], 2.], env1["ii"]]], div[mul[env0["gas"], (add[mul[(sub[1., env0["frac"]]), elem[elem[env0["u"], 2.], sub[env1["ii"], env0["wider"]]]], mul[env0["frac"], elem[elem[env0["u"], 2.], sub[sub[env1["ii"], env0["wider"]], 1.]]]])], (mul[env0["w"], env0["w"]])]]]), div[env0["held"], (mul[(add[env1["r"], env0["a"]]), (add[env1["r"], env0["a"]])])]]]], {iter1, 0., num[Felt["NR"]] - 1.}];
     Throw[list[env0["gr"], env0["gz"], env0["plane"]], ret]]];
   field[klass, "faces", dfn[mMap[rng[self["cells"]], lfn[2, { env1["c"] = arg[args2, 0] };
     Throw[self["faces_of", env1["c"]], ret]]]]];
@@ -11750,6 +11788,25 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
         env1["gN"] = sub[0., mul[env0["s"], elem[elem[env0["shape"], 2.], env1["i"]]]];
         mPush[env0["out"], list[env1["r"], env1["gN"], sub[env1["gN"], env1["made"]]]]]], {iter1, 0., num[Felt["NR"]] - 1.}];
     Throw[env0["out"], ret]]];
+  method[klass, "ladder", mfn[1, { env0["shape"] = arg[args1, 0] };
+    Throw[mMap[rng[elem[Felt["LADDER"], 2.]], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[self["felt", env0["shape"], power[10., (add[elem[Felt["LADDER"], 0.], div[mul[(sub[elem[Felt["LADDER"], 1.], elem[Felt["LADDER"], 0.]]), env2["k"]], sub[elem[Felt["LADDER"], 2.], 1.]]])]], ret]]], ret]]];
+  method[klass, "read_off", mfn[1, { env0["ladder"] = arg[args1, 0], env0["dex"] = arg[args1, 1], env0["x"] = arg[args1, 2] };
+    env0["n"] = elem[Felt["LADDER"], 2.];
+    env0["u"] = Fmt["min", Fmt["max", div[(sub[env0["dex"], elem[Felt["LADDER"], 0.]]), (div[(sub[elem[Felt["LADDER"], 1.], elem[Felt["LADDER"], 0.]]), sub[env0["n"], 1.]])], 0.], sub[sub[env0["n"], 1.], 0.000001]];
+    env0["k"] = mFloor[env0["u"]];
+    env0["f"] = sub[env0["u"], env0["k"]];
+    env0["rows"] = len[elem[env0["ladder"], 0.]];
+    env0["v"] = Fmt["min", Fmt["max", div[mLn[(div[env0["x"], elem[elem[elem[env0["ladder"], 0.], 0.], 0.]])], self["step"]], 0.], sub[sub[env0["rows"], 1.], 0.000001]];
+    env0["t"] = mFloor[env0["v"]];
+    env0["e"] = sub[env0["v"], env0["t"]];
+    env0["both"] = lfn[2, { env1["col"] = arg[args2, 0] };
+      env1["at"] = lfn[3, { env2["kk"] = arg[args3, 0], env2["tt"] = arg[args3, 1] };
+        Throw[Fmt["log10", elem[elem[elem[env0["ladder"], env2["kk"]], env2["tt"]], env1["col"]]], ret]];
+      env1["lo"] = add[mul[(sub[1., env0["e"]]), env1["at"][env0["k"], env0["t"]]], mul[env0["e"], env1["at"][env0["k"], add[env0["t"], 1.]]]];
+      env1["hi"] = add[mul[(sub[1., env0["e"]]), env1["at"][add[env0["k"], 1.], env0["t"]]], mul[env0["e"], env1["at"][add[env0["k"], 1.], add[env0["t"], 1.]]]];
+      Throw[power[10., (add[mul[(sub[1., env0["f"]]), env1["lo"]], mul[env0["f"], env1["hi"]]])], ret]];
+    Throw[list[env0["both"][1.], env0["both"][2.]], ret]]];
   method[klass, "off_law", mfn[1, { env0["shape"] = arg[args1, 0], env0["s"] = arg[args1, 1] };
     Throw[mReduce[self["felt", env0["shape"], env0["s"]], 0., lfn[3, { env2["most"] = arg[args3, 0], env2["q"] = arg[args3, 1] };
       Throw[Fmt["max", env2["most"], mAbs[Fmt["log10", div[elem[env2["q"], 2.], (mul[elem[env2["q"], 1.], Felt["over", elem[env2["q"], 1.]]])]]]], ret]]], ret]]];
@@ -12290,6 +12347,8 @@ DefineClass[Measure, "Measure", Node, Function[{klass},
       Measure["density", env0["model"], "galaxy.point", "gathered"]];
     If[truthy[env0["want"]["galaxy.many"]],
       Measure["density", env0["model"], "galaxy.many", "scattered"]];
+    If[truthy[env0["want"]["galaxy.possible"]],
+      Simulation["solve_possible", Measure["DEGS"]]];
     If[truthy[env0["want"]["law"]],
       Measure["law", env0["model"]]]]]]];
 

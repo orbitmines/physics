@@ -113,7 +113,7 @@ run_case(j"tests/felt.ray:10 on felt", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 1.0) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 1.0) < 0.003)")
+  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 1.0), 1.0) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 1.0), 1.0) < 0.003)")
 end))
 
 
@@ -125,7 +125,7 @@ run_case(j"tests/felt.ray:11 on felt", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 0.01) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 0.0), 0.01) < 0.003)")
+  truthy((off_law(it, shape(it, 0.1, 1.0, 0.0, 1.0), 0.01) < 0.003)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.1, 1.0, 0.0, 1.0), 0.01) < 0.003)")
 end))
 
 
@@ -137,7 +137,7 @@ run_case(j"tests/felt.ray:12 on felt", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 0.01) > 0.05)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 0.01) > 0.05)")
+  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 1.0), 0.01) > 0.05)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 1.0), 0.01) > 0.05)")
 end))
 
 
@@ -149,7 +149,7 @@ run_case(j"tests/felt.ray:13 on felt", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 100.0) < 0.01)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 0.0), 100.0) < 0.01)")
+  truthy((off_law(it, shape(it, 0.02, 0.0, 0.0, 1.0), 100.0) < 0.01)) ? TEST_PASS : Base.:*("failed: ", j"(off_law(it, shape(it, 0.02, 0.0, 0.0, 1.0), 100.0) < 0.01)")
 end))
 
 

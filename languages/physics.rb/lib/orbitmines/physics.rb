@@ -17166,6 +17166,49 @@ class Simulation < Node
     end
     return out
   end
+  def self.solve_possible(degs)
+    felt = Felt.new()
+    ladders = Node.new
+    ladder_of = ->(fg, wide, fb) {
+      key = "#{fg}|#{wide}|#{fb}"
+      if Ops.eq(Ops.elem(ladders, key), nil)
+        Ops.set_at(ladders, key, felt.ladder(felt.shape(Simulation.SHAPE_H, fb, fg, (Ops.gt(fg, 0) ? wide : 1))))
+      end
+      return Ops.elem(ladders, key)
+    }
+    a0s = []
+    bins = []
+    Ops.list(degs).each do |d|
+      a0 = Ops.div(Galaxies.a0_at(d), Simulation.UNIT_G)
+      points = []
+      felts = []
+      Ops.elem(Simulation.MASSES, 2).times do |which_m|
+        _M = Ops.power(10, Simulation.axis(Simulation.MASSES, which_m))
+        Ops.elem(Simulation.SCALES, 2).times do |which_s|
+          rd = Ops.power(10, Simulation.axis(Simulation.SCALES, which_s))
+          dex = Fmt.log10(Ops.div(Ops.mul(Simulation.G_KPC, _M), (Ops.mul(Ops.mul(a0, rd), rd))))
+          Ops.list(Simulation.GAS).each do |fg|
+            Ops.list(Simulation.GAS_WIDE).each do |wide|
+              Ops.list(Simulation.BULGE).each do |fb|
+                _L = ladder_of.(fg, wide, fb)
+                Simulation.RADII.times do |k|
+                  x = Ops.power(10, (Ops.add((-0.7), Ops.div(Ops.mul(1.6, k), Ops.sub(Simulation.RADII, 1)))))
+                  got = felt.read_off(_L, dex, x)
+                  Ops.list([0, Ops.mul(rd, x), Ops.mul(Ops.elem(got, 0), a0), 0, 0, 0]).each do |v|
+                    Ops.m_push(points, v)
+                  end
+                  Ops.m_push(felts, Ops.mul(Ops.elem(got, 1), a0))
+                end
+              end
+            end
+          end
+        end
+      end
+      Ops.m_push(a0s, Ops.mul(a0, Simulation.UNIT_G))
+      Ops.m_push(bins, Simulation.binned(points, felts))
+    end
+    return Simulation.save_possible(degs, a0s, bins)
+  end
   def self.binned(points, felt)
     n = Ops.add(Ops.m_round((Ops.div((Ops.sub(Galaxies.XMAX, Galaxies.XMIN)), Simulation.BIN))), 1)
     landed = Ops.filled(n, 0)
@@ -17200,7 +17243,7 @@ class Simulation < Node
     Ops.setattr(extra, "from", Galaxies.XMIN)
     Ops.setattr(extra, "step", Simulation.BIN)
     Ops.setattr(extra, "axes", ["log M (Msun)", Simulation.MASSES, "log R_d (kpc)", Simulation.SCALES, "gas share", Simulation.GAS, "gas scale / R_d", Simulation.GAS_WIDE, "bulge share of the stars", Simulation.BULGE])
-    Ops.setattr(extra, "about", "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
+    Ops.setattr(extra, "about", "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
     return Measure.save("galaxy.possible", ["deg", "a0"], cols, extra)
   end
   __exposed
@@ -17888,7 +17931,7 @@ class Felt < Node
     @NZ = v
   end
   def self.NEAR
-    @NEAR = (0.25) unless instance_variable_defined?(:@NEAR)
+    @NEAR = (0.18) unless instance_variable_defined?(:@NEAR)
     @NEAR
   end
   def self.NEAR=(v)
@@ -17972,7 +18015,7 @@ class Felt < Node
     @MIDDLE = v
   end
   def self.GAS
-    @GAS = ([[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]]) unless instance_variable_defined?(:@GAS)
+    @GAS = ([[0, 1], [0.5, 2], [0.5, 3], [0.9, 2], [0.9, 3]]) unless instance_variable_defined?(:@GAS)
     @GAS
   end
   def self.GAS=(v)
@@ -17984,6 +18027,13 @@ class Felt < Node
   end
   def self.FREEDOMS=(v)
     @FREEDOMS = v
+  end
+  def self.LADDER
+    @LADDER = ([(-6.5), 5.5, 193]) unless instance_variable_defined?(:@LADDER)
+    @LADDER
+  end
+  def self.LADDER=(v)
+    @LADDER = v
   end
   def step
     return Ops.div(Ops.m_ln((Ops.div(Felt.R1, Felt.R0))), Felt.NR)
@@ -18112,11 +18162,17 @@ class Felt < Node
     Ops.set_at(self.unit, key, [gr, gz, plane])
     return Ops.elem(self.unit, key)
   end
-  def shape(h, middle, gas, wider)
+  def shape(h, middle, gas, wide)
     stars = Ops.mul((Ops.sub(1, gas)), (Ops.sub(1, middle)))
     held = Ops.mul((Ops.sub(1, gas)), middle)
     u = ((Ops.gt(stars, 0) || Ops.gt(gas, 0)) ? self.unit_disc(h) : nil)
-    w = Ops.m_exp((Ops.mul(self.step, wider)))
+    w = (Ops.gt(wide, 1) ? wide : 1)
+    shift = Ops.div(Ops.m_ln(w), self.step)
+    wider = Ops.m_floor(shift)
+    frac = Ops.sub(shift, wider)
+    lower = ->(q, ii, j) {
+      return Ops.add(Ops.mul((Ops.sub(1, frac)), Ops.elem(q, Ops.add(Ops.mul((Ops.sub(ii, wider)), Felt.NMU), j))), Ops.mul(frac, Ops.elem(q, Ops.add(Ops.mul((Ops.sub(Ops.sub(ii, wider), 1)), Felt.NMU), j))))
+    }
     gr = Ops.filled(self.cells, 0)
     gz = Ops.filled(self.cells, 0)
     plane = Ops.filled(Felt.NR, 0)
@@ -18129,10 +18185,10 @@ class Felt < Node
         c = Ops.add(Ops.mul(i, Felt.NMU), j)
         pull = Ops.div(held, (Ops.mul(Ops.mul(r, (Ops.add(r, a))), (Ops.add(r, a)))))
         _R = Ops.mul(r, Ops.m_sqrt((Ops.sub(1, Ops.mul(mu, mu)))))
-        Ops.set_at(gr, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 0), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 0), Ops.add(Ops.mul((Ops.sub(ii, wider)), Felt.NMU), j))), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, _R)))))
-        Ops.set_at(gz, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 1), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 1), Ops.add(Ops.mul((Ops.sub(ii, wider)), Felt.NMU), j))), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, Ops.mul(r, mu))))))
+        Ops.set_at(gr, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 0), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, lower.(Ops.elem(u, 0), ii, j)), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, _R)))))
+        Ops.set_at(gz, c, Ops.add(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 1), Ops.add(Ops.mul(ii, Felt.NMU), j))), Ops.div(Ops.mul(gas, lower.(Ops.elem(u, 1), ii, j)), (Ops.mul(w, w)))))), Ops.mul(pull, (Ops.sub(0, Ops.mul(r, mu))))))
       end
-      Ops.set_at(plane, i, Ops.sub(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 2), ii)), Ops.div(Ops.mul(gas, Ops.elem(Ops.elem(u, 2), Ops.sub(ii, wider))), (Ops.mul(w, w)))))), Ops.div(held, (Ops.mul((Ops.add(r, a)), (Ops.add(r, a)))))))
+      Ops.set_at(plane, i, Ops.sub(((Ops.eq(u, nil) ? 0 : Ops.add(Ops.mul(stars, Ops.elem(Ops.elem(u, 2), ii)), Ops.div(Ops.mul(gas, (Ops.add(Ops.mul((Ops.sub(1, frac)), Ops.elem(Ops.elem(u, 2), Ops.sub(ii, wider))), Ops.mul(frac, Ops.elem(Ops.elem(u, 2), Ops.sub(Ops.sub(ii, wider), 1)))))), (Ops.mul(w, w)))))), Ops.div(held, (Ops.mul((Ops.add(r, a)), (Ops.add(r, a)))))))
     end
     return [gr, gz, plane]
   end
@@ -18279,6 +18335,30 @@ class Felt < Node
       end
     end
     return out
+  end
+  def ladder(shape)
+    return Ops.m_map(Ops.rng(Ops.elem(Felt.LADDER, 2)), ->(k) {
+      return self.felt(shape, Ops.power(10, (Ops.add(Ops.elem(Felt.LADDER, 0), Ops.div(Ops.mul((Ops.sub(Ops.elem(Felt.LADDER, 1), Ops.elem(Felt.LADDER, 0))), k), Ops.sub(Ops.elem(Felt.LADDER, 2), 1))))))
+    })
+  end
+  def read_off(ladder, dex, x)
+    n = Ops.elem(Felt.LADDER, 2)
+    u = Fmt.min(Fmt.max(Ops.div((Ops.sub(dex, Ops.elem(Felt.LADDER, 0))), (Ops.div((Ops.sub(Ops.elem(Felt.LADDER, 1), Ops.elem(Felt.LADDER, 0))), Ops.sub(n, 1)))), 0), Ops.sub(Ops.sub(n, 1), 0.000001))
+    k = Ops.m_floor(u)
+    f = Ops.sub(u, k)
+    rows = Ops.elem(ladder, 0).length
+    v = Fmt.min(Fmt.max(Ops.div(Ops.m_ln((Ops.div(x, Ops.elem(Ops.elem(Ops.elem(ladder, 0), 0), 0)))), self.step), 0), Ops.sub(Ops.sub(rows, 1), 0.000001))
+    t = Ops.m_floor(v)
+    e = Ops.sub(v, t)
+    both = ->(col) {
+      at = ->(kk, tt) {
+        return Fmt.log10(Ops.elem(Ops.elem(Ops.elem(ladder, kk), tt), col))
+      }
+      lo = Ops.add(Ops.mul((Ops.sub(1, e)), at.(k, t)), Ops.mul(e, at.(k, Ops.add(t, 1))))
+      hi = Ops.add(Ops.mul((Ops.sub(1, e)), at.(Ops.add(k, 1), t)), Ops.mul(e, at.(Ops.add(k, 1), Ops.add(t, 1))))
+      return Ops.power(10, (Ops.add(Ops.mul((Ops.sub(1, f)), lo), Ops.mul(f, hi))))
+    }
+    return [both.(1), both.(2)]
   end
   def off_law(shape, s)
     return Ops.m_reduce(self.felt(shape, s), 0, ->(most, q) {
@@ -19050,6 +19130,9 @@ class Measure < Node
     end
     if want.("galaxy.many")
       Measure.density(model, "galaxy.many", "scattered")
+    end
+    if want.("galaxy.possible")
+      Simulation.solve_possible(Measure.DEGS)
     end
     if want.("law")
       Measure.law(model)

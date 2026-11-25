@@ -57,37 +57,37 @@ def _outcome(fixture, label):
 
 
 class TestG(unittest.TestCase):
-    _want("felt", lambda: Felt(), "tests/felt.ray:10 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003))
+    _want("felt", lambda: Felt(), "tests/felt.ray:10 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003))
 
     def test_tests_felt_ray_10_on_felt(self):
         got = _outcome("felt", "tests/felt.ray:10 on felt")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003)")
+        self.assertTrue(got, "lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003)")
 
-    _want("felt", lambda: Felt(), "tests/felt.ray:11 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003))
+    _want("felt", lambda: Felt(), "tests/felt.ray:11 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003))
 
     def test_tests_felt_ray_11_on_felt(self):
         got = _outcome("felt", "tests/felt.ray:11 on felt")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003)")
+        self.assertTrue(got, "lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003)")
 
-    _want("felt", lambda: Felt(), "tests/felt.ray:12 on felt", lambda it: gt(it.cells, 0), 8, lambda it: gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05))
+    _want("felt", lambda: Felt(), "tests/felt.ray:12 on felt", lambda it: gt(it.cells, 0), 8, lambda it: gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05))
 
     def test_tests_felt_ray_12_on_felt(self):
         got = _outcome("felt", "tests/felt.ray:12 on felt")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05)")
+        self.assertTrue(got, "gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05)")
 
-    _want("felt", lambda: Felt(), "tests/felt.ray:13 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01))
+    _want("felt", lambda: Felt(), "tests/felt.ray:13 on felt", lambda it: gt(it.cells, 0), 8, lambda it: lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01))
 
     def test_tests_felt_ray_13_on_felt(self):
         got = _outcome("felt", "tests/felt.ray:13 on felt")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01)")
+        self.assertTrue(got, "lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01)")
 
 
 if __name__ == "__main__":

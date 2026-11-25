@@ -1633,6 +1633,61 @@ static void C_Simulation(Cls& c) {
     return out_0->v;
     return null;
   });
+  c.statik("solve_possible", [](Value self, const Args& a1) -> Value {
+    auto degs_0 = cell(arg(a1, 0));
+    auto felt_0 = cell(); felt_0->v = make(S<"Felt">(), {  });
+    auto ladders_0 = cell(); ladders_0->v = make(S<"Node">(), { });
+    auto ladder_of_0 = cell(); ladder_of_0->v = fn([=](const Args& a2) -> Value {
+      auto fg_1 = cell(arg(a2, 0)); auto wide_1 = cell(arg(a2, 1)); auto fb_1 = cell(arg(a2, 2));
+      auto key_1 = cell(); key_1->v = "" + str(fg_1->v) + "|" + str(wide_1->v) + "|" + str(fb_1->v) + "";
+      if (truthy(eq(elem(ladders_0->v, key_1->v), null))) {
+        setAt(ladders_0->v, key_1->v, call(felt_0->v, S<"ladder">(), { call(felt_0->v, S<"shape">(), { get(K(S<"Simulation">()), S<"SHAPE_H">()), fb_1->v, fg_1->v, (truthy(gt(fg_1->v, 0.0)) ? Value(wide_1->v) : Value(1.0)) }) }));
+      }
+      return elem(ladders_0->v, key_1->v);
+      return null;
+    });
+    auto a0s_0 = cell(); a0s_0->v = list({  });
+    auto bins_0 = cell(); bins_0->v = list({  });
+    for (const Value& e1 : Each(degs_0->v)) {
+      auto d_1 = cell(e1);
+      auto a0_1 = cell(); a0_1->v = div(call(K(S<"Galaxies">()), S<"a0_at">(), { d_1->v }), get(K(S<"Simulation">()), S<"UNIT_G">()));
+      auto points_1 = cell(); points_1->v = list({  });
+      auto felts_1 = cell(); felts_1->v = list({  });
+      for (double i2 = 0, n2 = num(elem(get(K(S<"Simulation">()), S<"MASSES">()), 2.0)); i2 < n2; i2++) {
+        auto which_m_2 = cell(i2);
+        auto M_2 = cell(); M_2->v = power(10.0, call(K(S<"Simulation">()), S<"axis">(), { get(K(S<"Simulation">()), S<"MASSES">()), which_m_2->v }));
+        for (double i3 = 0, n3 = num(elem(get(K(S<"Simulation">()), S<"SCALES">()), 2.0)); i3 < n3; i3++) {
+          auto which_s_3 = cell(i3);
+          auto rd_3 = cell(); rd_3->v = power(10.0, call(K(S<"Simulation">()), S<"axis">(), { get(K(S<"Simulation">()), S<"SCALES">()), which_s_3->v }));
+          auto dex_3 = cell(); dex_3->v = call(K(S<"Fmt">()), S<"log10">(), { div(mul(get(K(S<"Simulation">()), S<"G_KPC">()), M_2->v), (mul(mul(a0_1->v, rd_3->v), rd_3->v))) });
+          for (const Value& e4 : Each(get(K(S<"Simulation">()), S<"GAS">()))) {
+            auto fg_4 = cell(e4);
+            for (const Value& e5 : Each(get(K(S<"Simulation">()), S<"GAS_WIDE">()))) {
+              auto wide_5 = cell(e5);
+              for (const Value& e6 : Each(get(K(S<"Simulation">()), S<"BULGE">()))) {
+                auto fb_6 = cell(e6);
+                auto L_6 = cell(); L_6->v = invoke(ladder_of_0->v, { fg_4->v, wide_5->v, fb_6->v });
+                for (double i7 = 0, n7 = num(get(K(S<"Simulation">()), S<"RADII">())); i7 < n7; i7++) {
+                  auto k_7 = cell(i7);
+                  auto x_7 = cell(); x_7->v = power(10.0, (add(neg(0.7), div(mul(1.6, k_7->v), sub(get(K(S<"Simulation">()), S<"RADII">()), 1.0)))));
+                  auto got_7 = cell(); got_7->v = call(felt_0->v, S<"read_off">(), { L_6->v, dex_3->v, x_7->v });
+                  for (const Value& e8 : Each(list({ 0.0, mul(rd_3->v, x_7->v), mul(elem(got_7->v, 0.0), a0_1->v), 0.0, 0.0, 0.0 }))) {
+                    auto v_8 = cell(e8);
+                    m_push(points_1->v, v_8->v);
+                  };
+                  m_push(felts_1->v, mul(elem(got_7->v, 1.0), a0_1->v));
+                };
+              };
+            };
+          };
+        };
+      };
+      m_push(a0s_0->v, mul(a0_1->v, get(K(S<"Simulation">()), S<"UNIT_G">())));
+      m_push(bins_0->v, call(K(S<"Simulation">()), S<"binned">(), { points_1->v, felts_1->v }));
+    };
+    return call(K(S<"Simulation">()), S<"save_possible">(), { degs_0->v, a0s_0->v, bins_0->v });
+    return null;
+  });
   c.statik("binned", [](Value self, const Args& a1) -> Value {
     auto points_0 = cell(arg(a1, 0)); auto felt_0 = cell(arg(a1, 1));
     auto n_0 = cell(); n_0->v = add(m_round((div((sub(get(K(S<"Galaxies">()), S<"XMAX">()), get(K(S<"Galaxies">()), S<"XMIN">()))), get(K(S<"Simulation">()), S<"BIN">())))), 1.0);
@@ -1673,7 +1728,7 @@ static void C_Simulation(Cls& c) {
     set(extra_0->v, Sym(str("from")), get(K(S<"Galaxies">()), S<"XMIN">()));
     set(extra_0->v, Sym(str("step")), get(K(S<"Simulation">()), S<"BIN">()));
     set(extra_0->v, Sym(str("axes")), list({ "log M (Msun)", get(K(S<"Simulation">()), S<"MASSES">()), "log R_d (kpc)", get(K(S<"Simulation">()), S<"SCALES">()), "gas share", get(K(S<"Simulation">()), S<"GAS">()), "gas scale / R_d", get(K(S<"Simulation">()), S<"GAS_WIDE">()), "bulge share of the stars", get(K(S<"Simulation">()), S<"BULGE">()) }));
-    set(extra_0->v, Sym(str("about")), "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest");
+    set(extra_0->v, Sym(str("about")), "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest");
     return call(K(S<"Measure">()), S<"save">(), { "galaxy.possible", list({ "deg", "a0" }), cols_0->v, extra_0->v });
     return null;
   });

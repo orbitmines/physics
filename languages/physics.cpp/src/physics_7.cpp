@@ -2110,6 +2110,25 @@ static void C_Trial(Cls& c) {
 }
 static const bool R_Trial = define_class("Trial", "Node", &C_Trial);
 
+static void C_Orbit(Cls& c) {
+  c.field("N", nullptr);
+  c.field("A", nullptr);
+  c.field("K", nullptr);
+  c.field("ticks", nullptr);
+  c.field("mx", nullptr);
+  c.field("ways", nullptr);
+  c.field("R", nullptr);
+  c.field("lo", nullptr);
+  c.field("hi", nullptr);
+  c.field("steps", nullptr);
+  c.field("held_mx", nullptr);
+  c.field("held_ways", nullptr);
+  c.field("mode", [](const Value& self) -> Value { return "fall"; });
+  c.field("burn", [](const Value& self) -> Value { return 0.0; });
+  c.field("alone", [](const Value& self) -> Value { return false; });
+}
+static const bool R_Orbit = define_class("Orbit", "Node", &C_Orbit);
+
 
 
 void part_7() { }

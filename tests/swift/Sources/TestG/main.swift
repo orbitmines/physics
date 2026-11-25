@@ -101,8 +101,8 @@ t("tests/felt.ray:10 on felt") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 0.0]), 1.0]), 0.003))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 0.0]), 1.0]), 0.003)"
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 1.0]), 1.0]), 0.003))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 1.0]), 1.0]), 0.003)"
 }
 
 t("tests/felt.ray:11 on felt") {
@@ -113,8 +113,8 @@ t("tests/felt.ray:11 on felt") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 0.0]), 0.01]), 0.003))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 0.0]), 0.01]), 0.003)"
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.1, 1.0, 0.0, 1.0]), 0.01]), 0.003))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.1, 1.0, 0.0, 1.0]), 0.01]), 0.003)"
 }
 
 t("tests/felt.ray:12 on felt") {
@@ -125,8 +125,8 @@ t("tests/felt.ray:12 on felt") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 0.0]), 0.01]), 0.05))
-  return ok ? PASS : "failed: " + "try gt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 0.0]), 0.01]), 0.05)"
+  let ok: Bool = truthy(try gt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 1.0]), 0.01]), 0.05))
+  return ok ? PASS : "failed: " + "try gt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 1.0]), 0.01]), 0.05)"
 }
 
 t("tests/felt.ray:13 on felt") {
@@ -137,8 +137,8 @@ t("tests/felt.ray:13 on felt") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 0.0]), 100.0]), 0.01))
-  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 0.0]), 100.0]), 0.01)"
+  let ok: Bool = truthy(try lt(try call(it, "off_law", [try call(it, "shape", [0.02, 0.0, 0.0, 1.0]), 100.0]), 0.01))
+  return ok ? PASS : "failed: " + "try lt(try call(it, \"off_law\", [try call(it, \"shape\", [0.02, 0.0, 0.0, 1.0]), 100.0]), 0.01)"
 }
 
 t("tests/field.ray:10 on line") {

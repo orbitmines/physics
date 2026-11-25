@@ -98,7 +98,7 @@ t_case("tests/felt.ray:10 on felt", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 0), 1), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 0), 1), 0.003)")
+  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 1), 1), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 1), 1), 0.003)")
 })
 
 t_case("tests/felt.ray:11 on felt", function() {
@@ -109,7 +109,7 @@ t_case("tests/felt.ray:11 on felt", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 0), 0.01), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 0), 0.01), 0.003)")
+  if (truthy(lt(it$off_law(it$shape(0.1, 1, 0, 1), 0.01), 0.003))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.1, 1, 0, 1), 0.01), 0.003)")
 })
 
 t_case("tests/felt.ray:12 on felt", function() {
@@ -120,7 +120,7 @@ t_case("tests/felt.ray:12 on felt", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(it$off_law(it$shape(0.02, 0, 0, 0), 0.01), 0.05))) "pass" else paste0("failed: ", "gt(it$off_law(it$shape(0.02, 0, 0, 0), 0.01), 0.05)")
+  if (truthy(gt(it$off_law(it$shape(0.02, 0, 0, 1), 0.01), 0.05))) "pass" else paste0("failed: ", "gt(it$off_law(it$shape(0.02, 0, 0, 1), 0.01), 0.05)")
 })
 
 t_case("tests/felt.ray:13 on felt", function() {
@@ -131,7 +131,7 @@ t_case("tests/felt.ray:13 on felt", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(it$off_law(it$shape(0.02, 0, 0, 0), 100), 0.01))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.02, 0, 0, 0), 100), 0.01)")
+  if (truthy(lt(it$off_law(it$shape(0.02, 0, 0, 1), 100), 0.01))) "pass" else paste0("failed: ", "lt(it$off_law(it$shape(0.02, 0, 0, 1), 100), 0.01)")
 })
 
 t_case("tests/field.ray:10 on line", function() {

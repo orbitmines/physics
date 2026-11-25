@@ -166,10 +166,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) {
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)"
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)"
   })
 
   t("tests/felt.ray:11 on felt", func() any {
@@ -183,10 +183,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) {
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)"
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)"
   })
 
   t("tests/felt.ray:12 on felt", func() any {
@@ -200,10 +200,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) {
+    if Truthy(Gt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)) {
       return pass_
     }
-    return "failed: " + "Gt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)"
+    return "failed: " + "Gt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)"
   })
 
   t("tests/felt.ray:13 on felt", func() any {
@@ -217,10 +217,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) {
+    if Truthy(Lt(Call(it, "off_law", []any{ Call(it, "shape", []any{ 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)) {
       return pass_
     }
-    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)"
+    return "failed: " + "Lt(Call(it, \"off_law\", []any{ Call(it, \"shape\", []any{ 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)"
   })
 
   t("tests/field.ray:10 on line", func() any {

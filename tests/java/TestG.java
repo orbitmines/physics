@@ -87,7 +87,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)";
+      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)";
     });
 
     t("tests/felt.ray:11 on felt", () -> {
@@ -97,7 +97,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)";
+      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)";
     });
 
     t("tests/felt.ray:12 on felt", () -> {
@@ -107,7 +107,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) ? PASS : "failed: " + "gt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)";
+      return truthy(gt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)) ? PASS : "failed: " + "gt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)";
     });
 
     t("tests/felt.ray:13 on felt", () -> {
@@ -117,7 +117,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)";
+      return truthy(lt(call(it, "off_law", new Object[] { call(it, "shape", new Object[] { 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)) ? PASS : "failed: " + "lt(call(it, \"off_law\", new Object[] { call(it, \"shape\", new Object[] { 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)";
     });
 
     t("tests/field.ray:10 on line", () -> {

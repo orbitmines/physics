@@ -2390,6 +2390,23 @@ static void C_Store(Cls& c) {
 }
 static const bool R_Store = define_class("Store", "Node", &C_Store);
 
+static void C_Inference(Cls& c) {
+  c.field("name", nullptr);
+  c.field("because", nullptr);
+  c.field("fire", nullptr);
+}
+static const bool R_Inference = define_class("Inference", "Node", &C_Inference);
+
+static void C_Asked(Cls& c) {
+  c.field("asks", nullptr);
+  c.field("about", nullptr);
+  c.field("also", [](const Value& self) -> Value { return null; });
+  c.field("leads", [](const Value& self) -> Value { return null; });
+  c.field("then", [](const Value& self) -> Value { return null; });
+  c.field("chain", [](const Value& self) -> Value { return null; });
+}
+static const bool R_Asked = define_class("Asked", "Node", &C_Asked);
+
 
 
 void part_2() { }

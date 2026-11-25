@@ -1272,6 +1272,51 @@ Simulation := class < deg: Real {
     })
     out
   }
+  /*
+   * AND THE SAME GALAXIES SOLVED OVER THEIR FIELDS (Felt): each shape - the disc SHAPE_H thick, a share of gas GAS laid
+   * GAS_WIDE scales wide, a share of the stars in a middle BULGE - is solved once on a ladder of masses, and every
+   * galaxy of it is read off that solve at its own GM/(a_0 R_d^2) on each lattice's a_0: what arrives at a radius, and
+   * what is felt there with the record of the space made at the edge of its field. Nothing is read point by point
+   */
+  static solve_possible (degs: Real[]) => {
+    felt := Felt()
+    ladders := { }
+    ladder_of := (fg: Real, wide: Real, fb: Real): Real[][][] => {
+      key := "{fg}|{wide}|{fb}"
+      ladders[key] = felt.ladder(felt.shape(Simulation.SHAPE_H, fb, fg, fg > 0 ? wide : 1)) if ladders[key] == None
+      ladders[key]
+    }
+    a0s := []
+    bins := []
+    degs.for(d => {
+      a0 := Galaxies.a0_at(d) / Simulation.UNIT_G
+      points := []
+      felts := []
+      Array.range(Simulation.MASSES[2]).for(which_m => {
+        M := 10 ^ Simulation.axis(Simulation.MASSES, which_m)
+        Array.range(Simulation.SCALES[2]).for(which_s => {
+          rd := 10 ^ Simulation.axis(Simulation.SCALES, which_s)
+          dex := Fmt.log10(Simulation.G_KPC * M / (a0 * rd * rd))
+          Simulation.GAS.for(fg => {
+            Simulation.GAS_WIDE.for(wide => {
+              Simulation.BULGE.for(fb => {
+                L := ladder_of(fg, wide, fb)
+                Array.range(Simulation.RADII).for(k => {
+                  x := 10 ^ (-0.7 + 1.6 * Real.of(k) / Real.of(Simulation.RADII - 1))
+                  got := felt.read_off(L, dex, x)
+                  [0, rd * x, got[0] * a0, 0, 0, 0].for(v => { points.push(v) })
+                  felts.push(got[1] * a0)
+                })
+              })
+            })
+          })
+        })
+      })
+      a0s.push(a0 * Simulation.UNIT_G)
+      bins.push(Simulation.binned(points, felts))
+    })
+    Simulation.save_possible(degs, a0s, bins)
+  }
   /* one lattice's reading of them, laid in the panels' bins in the data's a_0: how many land in each, and where what is felt sits, low, middle and high */
   static BIN = 0.05
   static binned (points: Real[], felt: Real[]): Real[][] => {
@@ -1306,7 +1351,7 @@ Simulation := class < deg: Real {
     extra["from"] = Galaxies.XMIN
     extra["step"] = Simulation.BIN
     extra["axes"] = ["log M (Msun)", Simulation.MASSES, "log R_d (kpc)", Simulation.SCALES, "gas share", Simulation.GAS, "gas scale / R_d", Simulation.GAS_WIDE, "bulge share of the stars", Simulation.BULGE]
-    extra["about"] = "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"
+    extra["about"] = "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"
     Measure.save("galaxy.possible", ["deg", "a0"], cols, extra)
   }
 }

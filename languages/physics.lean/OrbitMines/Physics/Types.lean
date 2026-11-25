@@ -2125,6 +2125,7 @@ ray_static "shape_of" (pulls_0 : (RList Float)) : (RList Float)
 ray_static "shape_at" (shape_0 : (RList Float)) (x_0 : Float) : Float
 ray_static "axis" (a_0 : (RList Float)) (i_0 : Float) : Float
 ray_static "possible_points" (shape_0 : (RList Float)) : (RList Float)
+ray_static "solve_possible" (degs_0 : (RList Float)) : Value
 ray_static "binned" (points_0 : (RList Float)) (felt_0 : (RList Float)) : (RList (RList Float))
 ray_static "save_possible" (degs_0 : (RList Float)) (a0s_0 : (RList Float)) (bins_0 : (RList Value)) : Value
 end Simulation
@@ -2210,6 +2211,7 @@ ray_sfield "THICK" : Value
 ray_sfield "MIDDLE" : Value
 ray_sfield "GAS" : Value
 ray_sfield "FREEDOMS" : Value
+ray_sfield "LADDER" : Value
 ray_getter "step" : Float
 ray_method "edge" (i_0 : Float) : Float
 ray_method "centre" (i_0 : Float) : Float
@@ -2226,7 +2228,7 @@ ray_static "rings" (h_0 : Float) : (RList (RList Float))
 ray_static "disc_at" (rings_0 : (RList (RList Float))) (h_0 : Float) (R_0 : Float) (z_0 : Float) : (RList Float)
 ray_field "unit" : object
 ray_method "unit_disc" (h_0 : Float) : (RList (RList Float))
-ray_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wider_0 : Float) : (RList (RList Float))
+ray_method "shape" (h_0 : Float) (middle_0 : Float) (gas_0 : Float) (wide_0 : Float) : (RList (RList Float))
 ray_field "faces" : (RList (RList Float))
 ray_method "faces_of" (c_0 : Float) : (RList Float)
 ray_getter "width" : Float
@@ -2236,6 +2238,8 @@ ray_getter "factored" : (RList Float)
 ray_method "solve_band" (b_0 : (RList Float)) : (RList Float)
 ray_static "over" (gN_0 : Float) : Float
 ray_method "felt" (shape_0 : (RList (RList Float))) (s_0 : Float) : (RList (RList Float))
+ray_method "ladder" (shape_0 : (RList (RList Float))) : (RList (RList (RList Float)))
+ray_method "read_off" (ladder_0 : (RList (RList (RList Float)))) (dex_0 : Float) (x_0 : Float) : (RList Float)
 ray_method "off_law" (shape_0 : (RList (RList Float))) (s_0 : Float) : Float
 ray_static "dx" : Float
 ray_static "dy" : Float

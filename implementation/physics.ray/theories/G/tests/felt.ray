@@ -7,8 +7,8 @@
 felt: Felt = Felt()
 
 Felt{cells > 0} += {
-  dynamically assert off_law(shape(0.1, 1, 0, 0), 1) < 0.003
-  dynamically assert off_law(shape(0.1, 1, 0, 0), 0.01) < 0.003
-  dynamically assert off_law(shape(0.02, 0, 0, 0), 0.01) > 0.05
-  dynamically assert off_law(shape(0.02, 0, 0, 0), 100) < 0.01
+  dynamically assert off_law(shape(0.1, 1, 0, 1), 1) < 0.003
+  dynamically assert off_law(shape(0.1, 1, 0, 1), 0.01) < 0.003
+  dynamically assert off_law(shape(0.02, 0, 0, 1), 0.01) > 0.05
+  dynamically assert off_law(shape(0.02, 0, 0, 1), 100) < 0.01
 }

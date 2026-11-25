@@ -739,7 +739,8 @@ method body after loading.
   `<id>` and `<id>.solved` (the same cells on DEG 4..40 by halves, with the chain's a_0/cH_Lambda per DEG, `against:
   "H_Lambda"` - Galaxies.rate_of puts it in m/s^2 with sqrt(Omega_Lambda) H_0). A new class is registered in
   `implementation/gen/Gen.ray`'s `core` list or it is not emitted, and in `TypeScript.exports`
-  (implementation/gen/languages/TypeScript.ray) or a generated test cannot name it. `Measure.law(model)` writes the curve with the
+  (implementation/gen/languages/TypeScript.ray) or a generated test cannot name it. A member may not be named
+  `read` or `write`: the generated TypeScript's lazy fields are `this.read(name, init)` / `this.write(name, v)`. `Measure.law(model)` writes the curve with the
   rules' constants (`Model.boost` reads `F_{g} \aside{closing}` first); `Measure.run(theory, only)` is what
   `npx ray measure` calls on the generated TypeScript (a few minutes; the old device sweep, Sweep/Shaded and
   measure.gpu.ts, is the older closure's and no longer run).

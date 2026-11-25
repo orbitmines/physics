@@ -37,34 +37,34 @@ const walk = (fixture: string) => {
 };
 const outcome = (fixture: string, label: string): any => { if (!outcomes.has(label)) walk(fixture); return outcomes.get(label); };
 
-want("felt", () => new Felt({  }), { label: "tests/felt.ray:10 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003) });
+want("felt", () => new Felt({  }), { label: "tests/felt.ray:10 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003) });
 test("tests/felt.ray:10 on felt", (t) => {
   const got = outcome("felt", "tests/felt.ray:10 on felt");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003)");
+  assert.ok(got, "lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003)");
 });
 
-want("felt", () => new Felt({  }), { label: "tests/felt.ray:11 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003) });
+want("felt", () => new Felt({  }), { label: "tests/felt.ray:11 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003) });
 test("tests/felt.ray:11 on felt", (t) => {
   const got = outcome("felt", "tests/felt.ray:11 on felt");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003)");
+  assert.ok(got, "lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003)");
 });
 
-want("felt", () => new Felt({  }), { label: "tests/felt.ray:12 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05) });
+want("felt", () => new Felt({  }), { label: "tests/felt.ray:12 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05) });
 test("tests/felt.ray:12 on felt", (t) => {
   const got = outcome("felt", "tests/felt.ray:12 on felt");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05)");
+  assert.ok(got, "gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05)");
 });
 
-want("felt", () => new Felt({  }), { label: "tests/felt.ray:13 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01) });
+want("felt", () => new Felt({  }), { label: "tests/felt.ray:13 on felt", holds: (it) => gt(it.cells, 0), until: 8, requirement: (it) => lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01) });
 test("tests/felt.ray:13 on felt", (t) => {
   const got = outcome("felt", "tests/felt.ray:13 on felt");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01)");
+  assert.ok(got, "lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01)");
 });

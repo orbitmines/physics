@@ -14204,6 +14204,52 @@ end
     end
     return out_0
   end
+  function solve_possible(self::Type{<:__class__}, degs_0 = nothing, _...)
+    felt_0 = Felt()
+    ladders_0 = Node()
+    ladder_of_0 = (function (fg_1 = nothing, wide_1 = nothing, fb_1 = nothing, _...)
+      key_1 = Base.string(j"", str(fg_1), j"|", str(wide_1), j"|", str(fb_1), j"")
+      if truthy((getat(ladders_0, key_1) == nothing))
+        setat!(ladders_0, key_1, ladder(felt_0, shape(felt_0, SHAPE_H(Simulation), fb_1, fg_1, (truthy((fg_1 > 0.0)) ? (wide_1) : (1.0)))))
+      end
+      return getat(ladders_0, key_1)
+    end)
+    a0s_0 = Any[]
+    bins_0 = Any[]
+    for d_1 in items(degs_0)
+      a0_1 = (a0_at(Galaxies, d_1) / UNIT_G(Simulation))
+      points_1 = Any[]
+      felts_1 = Any[]
+      for i2 in 0:(ceil(Int, Rt.num(getat(MASSES(Simulation), 2.0))) - 1)
+        which_m_2 = Float64(i2)
+        M_2 = (10.0 ^ axis(Simulation, MASSES(Simulation), which_m_2))
+        for i3 in 0:(ceil(Int, Rt.num(getat(SCALES(Simulation), 2.0))) - 1)
+          which_s_3 = Float64(i3)
+          rd_3 = (10.0 ^ axis(Simulation, SCALES(Simulation), which_s_3))
+          dex_3 = log10(Fmt, ((G_KPC(Simulation) * M_2) / (((a0_1 * rd_3) * rd_3))))
+          for fg_4 in items(GAS(Simulation))
+            for wide_5 in items(GAS_WIDE(Simulation))
+              for fb_6 in items(BULGE(Simulation))
+                L_6 = ladder_of_0(fg_4, wide_5, fb_6)
+                for i7 in 0:(ceil(Int, Rt.num(RADII(Simulation))) - 1)
+                  k_7 = Float64(i7)
+                  x_7 = (10.0 ^ (((-0.7) + ((1.6 * k_7) / (RADII(Simulation) - 1.0)))))
+                  got_7 = read_off(felt_0, L_6, dex_3, x_7)
+                  for v_8 in items(Any[0.0, (rd_3 * x_7), (getat(got_7, 0.0) * a0_1), 0.0, 0.0, 0.0])
+                    push(points_1, v_8)
+                  end
+                  push(felts_1, (getat(got_7, 1.0) * a0_1))
+                end
+              end
+            end
+          end
+        end
+      end
+      push(a0s_0, (a0_1 * UNIT_G(Simulation)))
+      push(bins_0, binned(Simulation, points_1, felts_1))
+    end
+    return save_possible(Simulation, degs_0, a0s_0, bins_0)
+  end
   function binned(self::Type{<:__class__}, points_0 = nothing, felt_0 = nothing, _...)
     n_0 = (round(((((XMAX(Galaxies) - XMIN(Galaxies))) / BIN(Simulation)))) + 1.0)
     landed_0 = filled(n_0, 0.0)
@@ -14239,7 +14285,7 @@ end
     setat!(extra_0, Base.string(j"from"), XMIN(Galaxies))
     setat!(extra_0, Base.string(j"step"), BIN(Simulation))
     setat!(extra_0, Base.string(j"axes"), Any[Base.string(j"log M (Msun)"), MASSES(Simulation), Base.string(j"log R_d (kpc)"), SCALES(Simulation), Base.string(j"gas share"), GAS(Simulation), Base.string(j"gas scale / R_d"), GAS_WIDE(Simulation), Base.string(j"bulge share of the stars"), BULGE(Simulation)])
-    setat!(extra_0, Base.string(j"about"), Base.string(j"every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"))
+    setat!(extra_0, Base.string(j"about"), Base.string(j"every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest"))
     return save(Measure, Base.string(j"galaxy.possible"), Any[Base.string(j"deg"), Base.string(j"a0")], cols_0, extra_0)
   end
 end
@@ -14777,7 +14823,7 @@ end
   @static_field KMAX = 7.0
   @static_field NA = 120.0
   @static_field NZ = 8.0
-  @static_field NEAR = 0.25
+  @static_field NEAR = 0.18
   @static_field FAR = 30.0
   @static_field HERNQUIST = 0.1
   @static_field XS = 700.0
@@ -14789,8 +14835,9 @@ end
   @static_field MASS = Any[(-2.5), 5.0, 61.0]
   @static_field THICK = Any[0.1, 0.02, 0.3]
   @static_field MIDDLE = Any[0.0, 0.2, 0.5]
-  @static_field GAS = Any[Any[0.0, 0.0], Any[0.5, 4.0], Any[0.5, 7.0], Any[0.9, 4.0], Any[0.9, 7.0]]
+  @static_field GAS = Any[Any[0.0, 1.0], Any[0.5, 2.0], Any[0.5, 3.0], Any[0.9, 2.0], Any[0.9, 3.0]]
   @static_field FREEDOMS = Any[Base.string(j"mass"), Base.string(j"thickness"), Base.string(j"middle"), Base.string(j"gas")]
+  @static_field LADDER = Any[(-6.5), 5.5, 193.0]
   function step(self::__class__)
     return (ln(((R1(Felt) / R0(Felt)))) / NR(Felt))
   end
@@ -14903,11 +14950,17 @@ end
     setat!(unit(self), key_0, Any[gr_0, gz_0, plane_0])
     return getat(unit(self), key_0)
   end
-  function shape(self::__class__, h_0 = nothing, middle_0 = nothing, gas_0 = nothing, wider_0 = nothing, _...)
+  function shape(self::__class__, h_0 = nothing, middle_0 = nothing, gas_0 = nothing, wide_0 = nothing, _...)
     stars_0 = (((1.0 - gas_0)) * ((1.0 - middle_0)))
     held_0 = (((1.0 - gas_0)) * middle_0)
     u_0 = (truthy((truthy((stars_0 > 0.0)) || truthy((gas_0 > 0.0)))) ? (unit_disc(self, h_0)) : (nothing))
-    w_0 = exp(((step(self) * wider_0)))
+    w_0 = (truthy((wide_0 > 1.0)) ? (wide_0) : (1.0))
+    shift_0 = (ln(w_0) / step(self))
+    wider_0 = floor(shift_0)
+    frac_0 = (shift_0 - wider_0)
+    lower_0 = (function (q_1 = nothing, ii_1 = nothing, j_1 = nothing, _...)
+      return ((((1.0 - frac_0)) * getat(q_1, ((((ii_1 - wider_0)) * NMU(Felt)) + j_1))) + (frac_0 * getat(q_1, (((((ii_1 - wider_0) - 1.0)) * NMU(Felt)) + j_1))))
+    end)
     gr_0 = filled(cells(self), 0.0)
     gz_0 = filled(cells(self), 0.0)
     plane_0 = filled(NR(Felt), 0.0)
@@ -14922,10 +14975,10 @@ end
         c_2 = ((i_1 * NMU(Felt)) + j_2)
         pull_2 = (held_0 / (((r_1 * ((r_1 + a_0))) * ((r_1 + a_0)))))
         R_2 = (r_1 * sqrt(((1.0 - (mu_2 * mu_2)))))
-        setat!(gr_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 0.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * getat(getat(u_0, 0.0), ((((ii_1 - wider_0)) * NMU(Felt)) + j_2))) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - R_2)))))
-        setat!(gz_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 1.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * getat(getat(u_0, 1.0), ((((ii_1 - wider_0)) * NMU(Felt)) + j_2))) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - (r_1 * mu_2))))))
+        setat!(gr_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 0.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * lower_0(getat(u_0, 0.0), ii_1, j_2)) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - R_2)))))
+        setat!(gz_0, c_2, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 1.0), ((ii_1 * NMU(Felt)) + j_2))) + ((gas_0 * lower_0(getat(u_0, 1.0), ii_1, j_2)) / ((w_0 * w_0))))))) + (pull_2 * ((0.0 - (r_1 * mu_2))))))
       end
-      setat!(plane_0, i_1, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 2.0), ii_1)) + ((gas_0 * getat(getat(u_0, 2.0), (ii_1 - wider_0))) / ((w_0 * w_0))))))) - (held_0 / ((((r_1 + a_0)) * ((r_1 + a_0)))))))
+      setat!(plane_0, i_1, (((truthy((u_0 == nothing)) ? (0.0) : (((stars_0 * getat(getat(u_0, 2.0), ii_1)) + ((gas_0 * (((((1.0 - frac_0)) * getat(getat(u_0, 2.0), (ii_1 - wider_0))) + (frac_0 * getat(getat(u_0, 2.0), ((ii_1 - wider_0) - 1.0)))))) / ((w_0 * w_0))))))) - (held_0 / ((((r_1 + a_0)) * ((r_1 + a_0)))))))
     end
     return Any[gr_0, gz_0, plane_0]
   end
@@ -15070,6 +15123,30 @@ end
       end
     end
     return out_0
+  end
+  function ladder(self::__class__, shape_0 = nothing, _...)
+    return map(rng(getat(LADDER(Felt), 2.0)), (function (k_2 = nothing, _...)
+      return felt(self, shape_0, (10.0 ^ ((getat(LADDER(Felt), 0.0) + ((((getat(LADDER(Felt), 1.0) - getat(LADDER(Felt), 0.0))) * k_2) / (getat(LADDER(Felt), 2.0) - 1.0))))))
+    end))
+  end
+  function read_off(self::__class__, ladder_0 = nothing, dex_0 = nothing, x_0 = nothing, _...)
+    n_0 = getat(LADDER(Felt), 2.0)
+    u_0 = min(Fmt, max(Fmt, (((dex_0 - getat(LADDER(Felt), 0.0))) / ((((getat(LADDER(Felt), 1.0) - getat(LADDER(Felt), 0.0))) / (n_0 - 1.0)))), 0.0), ((n_0 - 1.0) - 0.000001))
+    k_0 = floor(u_0)
+    f_0 = (u_0 - k_0)
+    rows_0 = length(getat(ladder_0, 0.0))
+    v_0 = min(Fmt, max(Fmt, (ln(((x_0 / getat(getat(getat(ladder_0, 0.0), 0.0), 0.0)))) / step(self)), 0.0), ((rows_0 - 1.0) - 0.000001))
+    t_0 = floor(v_0)
+    e_0 = (v_0 - t_0)
+    both_0 = (function (col_1 = nothing, _...)
+      at_1 = (function (kk_2 = nothing, tt_2 = nothing, _...)
+        return log10(Fmt, getat(getat(getat(ladder_0, kk_2), tt_2), col_1))
+      end)
+      lo_1 = ((((1.0 - e_0)) * at_1(k_0, t_0)) + (e_0 * at_1(k_0, (t_0 + 1.0))))
+      hi_1 = ((((1.0 - e_0)) * at_1((k_0 + 1.0), t_0)) + (e_0 * at_1((k_0 + 1.0), (t_0 + 1.0))))
+      return (10.0 ^ (((((1.0 - f_0)) * lo_1) + (f_0 * hi_1))))
+    end)
+    return Any[both_0(1.0), both_0(2.0)]
   end
   function off_law(self::__class__, shape_0 = nothing, s_0 = nothing, _...)
     return reduce(felt(self, shape_0, s_0), 0.0, (function (most_2 = nothing, q_2 = nothing, _...)
@@ -15760,6 +15837,9 @@ end
     end
     if truthy(want_0(Base.string(j"galaxy.many")))
       density(Measure, model_0, Base.string(j"galaxy.many"), Base.string(j"scattered"))
+    end
+    if truthy(want_0(Base.string(j"galaxy.possible")))
+      solve_possible(Simulation, DEGS(Measure))
     end
     if truthy(want_0(Base.string(j"law")))
       law(Measure, model_0)

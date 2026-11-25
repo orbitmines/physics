@@ -642,7 +642,7 @@ static void C_Felt(Cls& c) {
   c.staticField("KMAX", [](const Value& self) -> Value { return 7.0; });
   c.staticField("NA", [](const Value& self) -> Value { return 120.0; });
   c.staticField("NZ", [](const Value& self) -> Value { return 8.0; });
-  c.staticField("NEAR", [](const Value& self) -> Value { return 0.25; });
+  c.staticField("NEAR", [](const Value& self) -> Value { return 0.18; });
   c.staticField("FAR", [](const Value& self) -> Value { return 30.0; });
   c.staticField("HERNQUIST", [](const Value& self) -> Value { return 0.1; });
   c.staticField("XS", [](const Value& self) -> Value { return 700.0; });
@@ -654,8 +654,9 @@ static void C_Felt(Cls& c) {
   c.staticField("MASS", [](const Value& self) -> Value { return list({ neg(2.5), 5.0, 61.0 }); });
   c.staticField("THICK", [](const Value& self) -> Value { return list({ 0.1, 0.02, 0.3 }); });
   c.staticField("MIDDLE", [](const Value& self) -> Value { return list({ 0.0, 0.2, 0.5 }); });
-  c.staticField("GAS", [](const Value& self) -> Value { return list({ list({ 0.0, 0.0 }), list({ 0.5, 4.0 }), list({ 0.5, 7.0 }), list({ 0.9, 4.0 }), list({ 0.9, 7.0 }) }); });
+  c.staticField("GAS", [](const Value& self) -> Value { return list({ list({ 0.0, 1.0 }), list({ 0.5, 2.0 }), list({ 0.5, 3.0 }), list({ 0.9, 2.0 }), list({ 0.9, 3.0 }) }); });
   c.staticField("FREEDOMS", [](const Value& self) -> Value { return list({ "mass", "thickness", "middle", "gas" }); });
+  c.staticField("LADDER", [](const Value& self) -> Value { return list({ neg(6.5), 5.5, 193.0 }); });
   c.getter("step", [](Value self, const Args& a1) -> Value {
     return div(m_ln((div(get(K(S<"Felt">()), S<"R1">()), get(K(S<"Felt">()), S<"R0">())))), get(K(S<"Felt">()), S<"NR">()));
     return null;
@@ -798,11 +799,19 @@ static void C_Felt(Cls& c) {
     return null;
   });
   c.method("shape", [](Value self, const Args& a1) -> Value {
-    auto h_0 = cell(arg(a1, 0)); auto middle_0 = cell(arg(a1, 1)); auto gas_0 = cell(arg(a1, 2)); auto wider_0 = cell(arg(a1, 3));
+    auto h_0 = cell(arg(a1, 0)); auto middle_0 = cell(arg(a1, 1)); auto gas_0 = cell(arg(a1, 2)); auto wide_0 = cell(arg(a1, 3));
     auto stars_0 = cell(); stars_0->v = mul((sub(1.0, gas_0->v)), (sub(1.0, middle_0->v)));
     auto held_0 = cell(); held_0->v = mul((sub(1.0, gas_0->v)), middle_0->v);
     auto u_0 = cell(); u_0->v = (truthy((truthy(gt(stars_0->v, 0.0)) || truthy(gt(gas_0->v, 0.0)))) ? Value(call(self, S<"unit_disc">(), { h_0->v })) : Value(null));
-    auto w_0 = cell(); w_0->v = m_exp((mul(get(self, S<"step">()), wider_0->v)));
+    auto w_0 = cell(); w_0->v = (truthy(gt(wide_0->v, 1.0)) ? Value(wide_0->v) : Value(1.0));
+    auto shift_0 = cell(); shift_0->v = div(m_ln(w_0->v), get(self, S<"step">()));
+    auto wider_0 = cell(); wider_0->v = m_floor(shift_0->v);
+    auto frac_0 = cell(); frac_0->v = sub(shift_0->v, wider_0->v);
+    auto lower_0 = cell(); lower_0->v = fn([=](const Args& a2) -> Value {
+      auto q_1 = cell(arg(a2, 0)); auto ii_1 = cell(arg(a2, 1)); auto j_1 = cell(arg(a2, 2));
+      return add(mul((sub(1.0, frac_0->v)), elem(q_1->v, add(mul((sub(ii_1->v, wider_0->v)), get(K(S<"Felt">()), S<"NMU">())), j_1->v))), mul(frac_0->v, elem(q_1->v, add(mul((sub(sub(ii_1->v, wider_0->v), 1.0)), get(K(S<"Felt">()), S<"NMU">())), j_1->v))));
+      return null;
+    });
     auto gr_0 = cell(); gr_0->v = filled(get(self, S<"cells">()), 0.0);
     auto gz_0 = cell(); gz_0->v = filled(get(self, S<"cells">()), 0.0);
     auto plane_0 = cell(); plane_0->v = filled(get(K(S<"Felt">()), S<"NR">()), 0.0);
@@ -817,10 +826,10 @@ static void C_Felt(Cls& c) {
         auto c__2 = cell(); c__2->v = add(mul(i_1->v, get(K(S<"Felt">()), S<"NMU">())), j_2->v);
         auto pull_2 = cell(); pull_2->v = div(held_0->v, (mul(mul(r_1->v, (add(r_1->v, a_0->v))), (add(r_1->v, a_0->v)))));
         auto R_2 = cell(); R_2->v = mul(r_1->v, m_sqrt((sub(1.0, mul(mu_2->v, mu_2->v)))));
-        setAt(gr_0->v, c__2->v, add(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 0.0), add(mul(ii_1->v, get(K(S<"Felt">()), S<"NMU">())), j_2->v))), div(mul(gas_0->v, elem(elem(u_0->v, 0.0), add(mul((sub(ii_1->v, wider_0->v)), get(K(S<"Felt">()), S<"NMU">())), j_2->v))), (mul(w_0->v, w_0->v))))))), mul(pull_2->v, (sub(0.0, R_2->v)))));
-        setAt(gz_0->v, c__2->v, add(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 1.0), add(mul(ii_1->v, get(K(S<"Felt">()), S<"NMU">())), j_2->v))), div(mul(gas_0->v, elem(elem(u_0->v, 1.0), add(mul((sub(ii_1->v, wider_0->v)), get(K(S<"Felt">()), S<"NMU">())), j_2->v))), (mul(w_0->v, w_0->v))))))), mul(pull_2->v, (sub(0.0, mul(r_1->v, mu_2->v))))));
+        setAt(gr_0->v, c__2->v, add(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 0.0), add(mul(ii_1->v, get(K(S<"Felt">()), S<"NMU">())), j_2->v))), div(mul(gas_0->v, invoke(lower_0->v, { elem(u_0->v, 0.0), ii_1->v, j_2->v })), (mul(w_0->v, w_0->v))))))), mul(pull_2->v, (sub(0.0, R_2->v)))));
+        setAt(gz_0->v, c__2->v, add(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 1.0), add(mul(ii_1->v, get(K(S<"Felt">()), S<"NMU">())), j_2->v))), div(mul(gas_0->v, invoke(lower_0->v, { elem(u_0->v, 1.0), ii_1->v, j_2->v })), (mul(w_0->v, w_0->v))))))), mul(pull_2->v, (sub(0.0, mul(r_1->v, mu_2->v))))));
       };
-      setAt(plane_0->v, i_1->v, sub(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 2.0), ii_1->v)), div(mul(gas_0->v, elem(elem(u_0->v, 2.0), sub(ii_1->v, wider_0->v))), (mul(w_0->v, w_0->v))))))), div(held_0->v, (mul((add(r_1->v, a_0->v)), (add(r_1->v, a_0->v)))))));
+      setAt(plane_0->v, i_1->v, sub(((truthy(eq(u_0->v, null)) ? Value(0.0) : Value(add(mul(stars_0->v, elem(elem(u_0->v, 2.0), ii_1->v)), div(mul(gas_0->v, (add(mul((sub(1.0, frac_0->v)), elem(elem(u_0->v, 2.0), sub(ii_1->v, wider_0->v))), mul(frac_0->v, elem(elem(u_0->v, 2.0), sub(sub(ii_1->v, wider_0->v), 1.0)))))), (mul(w_0->v, w_0->v))))))), div(held_0->v, (mul((add(r_1->v, a_0->v)), (add(r_1->v, a_0->v)))))));
     };
     return list({ gr_0->v, gz_0->v, plane_0->v });
     return null;
@@ -981,6 +990,40 @@ static void C_Felt(Cls& c) {
       }
     };
     return out_0->v;
+    return null;
+  });
+  c.method("ladder", [](Value self, const Args& a1) -> Value {
+    auto shape_0 = cell(arg(a1, 0));
+    return m_map(rng(elem(get(K(S<"Felt">()), S<"LADDER">()), 2.0)), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return call(self, S<"felt">(), { shape_0->v, power(10.0, (add(elem(get(K(S<"Felt">()), S<"LADDER">()), 0.0), div(mul((sub(elem(get(K(S<"Felt">()), S<"LADDER">()), 1.0), elem(get(K(S<"Felt">()), S<"LADDER">()), 0.0))), k_2->v), sub(elem(get(K(S<"Felt">()), S<"LADDER">()), 2.0), 1.0))))) });
+      return null;
+    }));
+    return null;
+  });
+  c.method("read_off", [](Value self, const Args& a1) -> Value {
+    auto ladder_0 = cell(arg(a1, 0)); auto dex_0 = cell(arg(a1, 1)); auto x_0 = cell(arg(a1, 2));
+    auto n_0 = cell(); n_0->v = elem(get(K(S<"Felt">()), S<"LADDER">()), 2.0);
+    auto u_0 = cell(); u_0->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div((sub(dex_0->v, elem(get(K(S<"Felt">()), S<"LADDER">()), 0.0))), (div((sub(elem(get(K(S<"Felt">()), S<"LADDER">()), 1.0), elem(get(K(S<"Felt">()), S<"LADDER">()), 0.0))), sub(n_0->v, 1.0)))), 0.0 }), sub(sub(n_0->v, 1.0), 0.000001) });
+    auto k_0 = cell(); k_0->v = m_floor(u_0->v);
+    auto f_0 = cell(); f_0->v = sub(u_0->v, k_0->v);
+    auto rows_0 = cell(); rows_0->v = len(elem(ladder_0->v, 0.0));
+    auto v_0 = cell(); v_0->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div(m_ln((div(x_0->v, elem(elem(elem(ladder_0->v, 0.0), 0.0), 0.0)))), get(self, S<"step">())), 0.0 }), sub(sub(rows_0->v, 1.0), 0.000001) });
+    auto t_0 = cell(); t_0->v = m_floor(v_0->v);
+    auto e_0 = cell(); e_0->v = sub(v_0->v, t_0->v);
+    auto both_0 = cell(); both_0->v = fn([=](const Args& a2) -> Value {
+      auto col_1 = cell(arg(a2, 0));
+      auto at_1 = cell(); at_1->v = fn([=](const Args& a3) -> Value {
+        auto kk_2 = cell(arg(a3, 0)); auto tt_2 = cell(arg(a3, 1));
+        return call(K(S<"Fmt">()), S<"log10">(), { elem(elem(elem(ladder_0->v, kk_2->v), tt_2->v), col_1->v) });
+        return null;
+      });
+      auto lo_1 = cell(); lo_1->v = add(mul((sub(1.0, e_0->v)), invoke(at_1->v, { k_0->v, t_0->v })), mul(e_0->v, invoke(at_1->v, { k_0->v, add(t_0->v, 1.0) })));
+      auto hi_1 = cell(); hi_1->v = add(mul((sub(1.0, e_0->v)), invoke(at_1->v, { add(k_0->v, 1.0), t_0->v })), mul(e_0->v, invoke(at_1->v, { add(k_0->v, 1.0), add(t_0->v, 1.0) })));
+      return power(10.0, (add(mul((sub(1.0, f_0->v)), lo_1->v), mul(f_0->v, hi_1->v))));
+      return null;
+    });
+    return list({ invoke(both_0->v, { 1.0 }), invoke(both_0->v, { 2.0 }) });
     return null;
   });
   c.method("off_law", [](Value self, const Args& a1) -> Value {
@@ -1804,6 +1847,9 @@ static void C_Measure(Cls& c) {
     }
     if (truthy(invoke(want_0->v, { "galaxy.many" }))) {
       call(K(S<"Measure">()), S<"density">(), { model_0->v, "galaxy.many", "scattered" });
+    }
+    if (truthy(invoke(want_0->v, { "galaxy.possible" }))) {
+      call(K(S<"Simulation">()), S<"solve_possible">(), { get(K(S<"Measure">()), S<"DEGS">()) });
     }
     if (truthy(invoke(want_0->v, { "law" }))) {
       call(K(S<"Measure">()), S<"law">(), { model_0->v });

@@ -1385,6 +1385,66 @@ ray_impl_static "possible_points" (shape_0 : (RList Float)) : (RList Float) := d
   Value.null |> ωsink
   if true then return (← out_0.get)
   return ωnull
+ray_impl_static "solve_possible" (degs_0 : (RList Float)) : Value := do
+  let felt_0 ← IO.mkRef (← new! Felt ())
+  let ladders_0 ← IO.mkRef (← RMap.new)
+  let ladder_of_0 ← IO.mkRef ωnull
+  ladder_of_0.set (fn! [(fg : Float) (wide : Float) (fb : Float)] do
+      let key ← IO.mkRef ("" ++ (← ωtoStr fg) ++ "|" ++ (← ωtoStr wide) ++ "|" ++ (← ωtoStr fb) ++ "" : String)
+      if ωtruthy (ωisNull (← ωelem (← ladders_0.get) key)) then
+        (ωatSetter (← ladders_0.get) key) (← call! (← felt_0.get) "ladder" ((← call! (← felt_0.get) "shape" ((← ωget (← cls% Simulation) "SHAPE_H"), fb, fg, (← ωtern (ωtruthy (← ωgt fg (0 : Float))) (do pure wide) (do pure (1 : Float)))))))
+        pure ()
+      if true then return (← ωelem (← ladders_0.get) key)
+      return ωnull)
+  let a0s_0 ← IO.mkRef (← ωlst #[])
+  let bins_0 ← IO.mkRef (← ωlst #[])
+  for e1 in (← ωitems (← degs_0.get)) do
+    let d_1 ← IO.mkRef e1
+    let a0_1 ← IO.mkRef (← ωdiv (← call! (← cls% Galaxies) "a0_at" ((← d_1.get))) (← ωget (← cls% Simulation) "UNIT_G"))
+    let points_1 ← IO.mkRef (← ωlst #[])
+    let felts_1 ← IO.mkRef (← ωlst #[])
+    for i2 in [0:ωrangeN (← ωelem (← ωget (← cls% Simulation) "MASSES") (2 : Float))] do
+      let which_m_2 ← IO.mkRef (ωnatF i2)
+      let M_2 ← IO.mkRef (← ωpow (10 : Float) (← call! (← cls% Simulation) "axis" ((← ωget (← cls% Simulation) "MASSES"), (← which_m_2.get))))
+      for i3 in [0:ωrangeN (← ωelem (← ωget (← cls% Simulation) "SCALES") (2 : Float))] do
+        let which_s_3 ← IO.mkRef (ωnatF i3)
+        let rd_3 ← IO.mkRef (← ωpow (10 : Float) (← call! (← cls% Simulation) "axis" ((← ωget (← cls% Simulation) "SCALES"), (← which_s_3.get))))
+        let dex_3 ← IO.mkRef (← call! (← cls% Fmt) "log10" ((← ωdiv (← ωmul (← ωget (← cls% Simulation) "G_KPC") (← M_2.get)) ((← ωmul (← ωmul (← a0_1.get) (← rd_3.get)) (← rd_3.get))))))
+        for e4 in (← ωitems (← ωget (← cls% Simulation) "GAS")) do
+          let fg_4 ← IO.mkRef e4
+          for e5 in (← ωitems (← ωget (← cls% Simulation) "GAS_WIDE")) do
+            let wide_5 ← IO.mkRef e5
+            for e6 in (← ωitems (← ωget (← cls% Simulation) "BULGE")) do
+              let fb_6 ← IO.mkRef e6
+              let L_6 ← IO.mkRef (← app! (← ladder_of_0.get) ((← fg_4.get), (← wide_5.get), (← fb_6.get)))
+              for i7 in [0:ωrangeN (← ωget (← cls% Simulation) "RADII")] do
+                let k_7 ← IO.mkRef (ωnatF i7)
+                let x_7 ← IO.mkRef (← ωpow (10 : Float) ((← ωadd (← ωneg 0.7) (← ωdiv (← ωmul 1.6 (← k_7.get)) (← ωsub (← ωget (← cls% Simulation) "RADII") (1 : Float))))))
+                let got_7 ← IO.mkRef (← call! (← felt_0.get) "read_off" ((← L_6.get), (← dex_3.get), (← x_7.get)))
+                for e8 in (← ωitems (← ωlst #[(0 : Float), (← ωmul (← rd_3.get) (← x_7.get)), (← ωmul (← ωelem (← got_7.get) (0 : Float)) (← a0_1.get)), (0 : Float), (0 : Float), (0 : Float)])) do
+                  let v_8 ← IO.mkRef e8
+                  (← dot! (← points_1.get) rpush ((← v_8.get))) |> ωsink
+                  pure ()
+                Value.null |> ωsink
+                (← dot! (← felts_1.get) rpush ((← ωmul (← ωelem (← got_7.get) (1 : Float)) (← a0_1.get)))) |> ωsink
+                pure ()
+              Value.null |> ωsink
+              pure ()
+            Value.null |> ωsink
+            pure ()
+          Value.null |> ωsink
+          pure ()
+        Value.null |> ωsink
+        pure ()
+      Value.null |> ωsink
+      pure ()
+    Value.null |> ωsink
+    (← dot! (← a0s_0.get) rpush ((← ωmul (← a0_1.get) (← ωget (← cls% Simulation) "UNIT_G")))) |> ωsink
+    (← dot! (← bins_0.get) rpush ((← call! (← cls% Simulation) "binned" ((← points_1.get), (← felts_1.get))))) |> ωsink
+    pure ()
+  Value.null |> ωsink
+  if true then return (← call! (← cls% Simulation) "save_possible" ((← degs_0.get), (← a0s_0.get), (← bins_0.get)))
+  return ωnull
 ray_impl_static "binned" (points_0 : (RList Float)) (felt_0 : (RList Float)) : (RList (RList Float)) := do
   let n_0 ← IO.mkRef (← ωadd (← dot! ((← ωdiv ((← ωsub (← ωget (← cls% Galaxies) "XMAX") (← ωget (← cls% Galaxies) "XMIN"))) (← ωget (← cls% Simulation) "BIN"))) rround ()) (1 : Float))
   let landed_0 ← IO.mkRef (← ωrfilled (← n_0.get) (0 : Float))
@@ -1421,7 +1481,7 @@ ray_impl_static "save_possible" (degs_0 : (RList Float)) (a0s_0 : (RList Float))
   (← (ωatSetter (← extra_0.get) ("from" : String)) (← ωget (← cls% Galaxies) "XMIN")) |> ωsink
   (← (ωatSetter (← extra_0.get) ("step" : String)) (← ωget (← cls% Simulation) "BIN")) |> ωsink
   (← (ωatSetter (← extra_0.get) ("axes" : String)) (← ωlst #[("log M (Msun)" : String), (← ωget (← cls% Simulation) "MASSES"), ("log R_d (kpc)" : String), (← ωget (← cls% Simulation) "SCALES"), ("gas share" : String), (← ωget (← cls% Simulation) "GAS"), ("gas scale / R_d" : String), (← ωget (← cls% Simulation) "GAS_WIDE"), ("bulge share of the stars" : String), (← ωget (← cls% Simulation) "BULGE")])) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("about" : String)) ("every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest" : String)) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("about" : String)) ("every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest" : String)) |> ωsink
   if true then return (← call! (← cls% Measure) "save" (("galaxy.possible" : String), (← ωlst #[("deg" : String), ("a0" : String)]), (← cols_0.get), (← extra_0.get)))
   return ωnull
 end Simulation

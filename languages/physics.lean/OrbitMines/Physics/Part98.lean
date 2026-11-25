@@ -173,6 +173,9 @@ ray_impl_static "run" (theory_0 : Theory) (only_0 : (RList String)) : Value := d
   if ωtruthy (← app! (← want_0.get) (("galaxy.many" : String))) then
     (← call! (← cls% Measure) "density" ((← model_0.get), ("galaxy.many" : String), ("scattered" : String))) |> ωsink
     pure ()
+  if ωtruthy (← app! (← want_0.get) (("galaxy.possible" : String))) then
+    (← call! (← cls% Simulation) "solve_possible" ((← ωget (← cls% Measure) "DEGS"))) |> ωsink
+    pure ()
   if ωtruthy (← app! (← want_0.get) (("law" : String))) then
     (← call! (← cls% Measure) "law" ((← model_0.get))) |> ωsink
     pure ()

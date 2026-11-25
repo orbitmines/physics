@@ -396,7 +396,8 @@ export async function measure(names: string[]) {
   const cpu: string[] = [];
   /* the two densities are the field solved per galaxy (Felt.ray, Measure.density): a few thousand banded solves, on the CPU */
   for (const id of ["galaxy.point", "galaxy.many"]) if (want(id)) cpu.push(id);
-  if (cpu.length || want("law")) physics.Measure.run(physics.G, [...cpu, ...(want("law") ? ["law"] : [])]);
+  const extra = ["law", "galaxy.possible"].filter(want);
+  if (cpu.length || extra.length) physics.Measure.run(physics.G, [...cpu, ...extra]);
   /* the galaxies, run (Simulation.ray): only on the device, and only when named - `npx ray measure galaxy.simulated` */
   if (names.some(o => "galaxy.simulated".includes(o) && o.startsWith("galaxy.sim"))) {
     const r = spawnSync("deno", ["run", "--unstable-webgpu", "--allow-all", join(here, "galaxy.gpu.ts"), repo], { stdio: "inherit" });

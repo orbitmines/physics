@@ -14531,6 +14531,49 @@ export class Simulation extends Node {
     };
     return out;
   }
+  static solve_possible(degs: number[]) {
+    let felt = new Felt({  });
+    let ladders = ({});
+    let ladder_of = ((fg: number, wide: number, fb: number) => {
+      let key = `${fg}|${wide}|${fb}`;
+      if (eq(elem(ladders, key), null)) {
+        ladders[key] = felt.ladder(felt.shape(Simulation.SHAPE_H, fb, fg, (gt(fg, 0) ? wide : 1)));
+      }
+      return elem(ladders, key);
+    });
+    let a0s = [];
+    let bins = [];
+    for (const d of [...degs]) {
+      let a0 = div(Galaxies.a0_at(d), Simulation.UNIT_G);
+      let points = [];
+      let felts = [];
+      for (let which_m = 0; which_m < elem(Simulation.MASSES, 2); which_m++) {
+        let M = Math.pow(10, Simulation.axis(Simulation.MASSES, which_m));
+        for (let which_s = 0; which_s < elem(Simulation.SCALES, 2); which_s++) {
+          let rd = Math.pow(10, Simulation.axis(Simulation.SCALES, which_s));
+          let dex = Fmt.log10(div(mul(Simulation.G_KPC, M), (mul(mul(a0, rd), rd))));
+          for (const fg of [...Simulation.GAS]) {
+            for (const wide of [...Simulation.GAS_WIDE]) {
+              for (const fb of [...Simulation.BULGE]) {
+                let L = ladder_of(fg, wide, fb);
+                for (let k = 0; k < Simulation.RADII; k++) {
+                  let x = Math.pow(10, (add((-0.7), div(mul(1.6, k), sub(Simulation.RADII, 1)))));
+                  let got = felt.read_off(L, dex, x);
+                  for (const v of [...[0, mul(rd, x), mul(elem(got, 0), a0), 0, 0, 0]]) {
+                    push(points, v);
+                  };
+                  push(felts, mul(elem(got, 1), a0));
+                };
+              };
+            };
+          };
+        };
+      };
+      push(a0s, mul(a0, Simulation.UNIT_G));
+      push(bins, Simulation.binned(points, felts));
+    };
+    return Simulation.save_possible(degs, a0s, bins);
+  }
   static binned(points: number[], felt: number[]): number[][] {
     let n = add(Math.round((div((sub(Galaxies.XMAX, Galaxies.XMIN)), Simulation.BIN))), 1);
     let landed = filled(n, 0);
@@ -14565,7 +14608,7 @@ export class Simulation extends Node {
     extra[`from`] = Galaxies.XMIN;
     extra[`step`] = Simulation.BIN;
     extra[`axes`] = [`log M (Msun)`, Simulation.MASSES, `log R_d (kpc)`, Simulation.SCALES, `gas share`, Simulation.GAS, `gas scale / R_d`, Simulation.GAS_WIDE, `bulge share of the stars`, Simulation.BULGE];
-    extra[`about`] = `every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest`;
+    extra[`about`] = `every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest`;
     return Measure.save(`galaxy.possible`, [`deg`, `a0`], cols, extra);
   }
 }
@@ -15095,7 +15138,7 @@ export class Felt extends Node {
   static KMAX = 7;
   static NA = 120;
   static NZ = 8;
-  static NEAR = 0.25;
+  static NEAR = 0.18;
   static FAR = 30;
   static HERNQUIST = 0.1;
   static XS = 700;
@@ -15107,8 +15150,9 @@ export class Felt extends Node {
   static MASS = [(-2.5), 5, 61];
   static THICK = [0.1, 0.02, 0.3];
   static MIDDLE = [0, 0.2, 0.5];
-  static GAS = [[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]];
+  static GAS = [[0, 1], [0.5, 2], [0.5, 3], [0.9, 2], [0.9, 3]];
   static FREEDOMS = [`mass`, `thickness`, `middle`, `gas`];
+  static LADDER = [(-6.5), 5.5, 193];
   get step(): number {
     return div(Math.log((div(Felt.R1, Felt.R0))), Felt.NR);
   }
@@ -15221,11 +15265,17 @@ export class Felt extends Node {
     this.unit[key] = [gr, gz, plane];
     return elem(this.unit, key);
   }
-  shape(h: number, middle: number, gas: number, wider: number): number[][] {
+  shape(h: number, middle: number, gas: number, wide: number): number[][] {
     let stars = mul((sub(1, gas)), (sub(1, middle)));
     let held = mul((sub(1, gas)), middle);
     let u = ((gt(stars, 0) || gt(gas, 0)) ? this.unit_disc(h) : null);
-    let w = Math.exp((mul(this.step, wider)));
+    let w = (gt(wide, 1) ? wide : 1);
+    let shift = div(Math.log(w), this.step);
+    let wider = Math.floor(shift);
+    let frac = sub(shift, wider);
+    let lower = ((q: number[], ii: number, j: number) => {
+      return add(mul((sub(1, frac)), elem(q, add(mul((sub(ii, wider)), Felt.NMU), j))), mul(frac, elem(q, add(mul((sub(sub(ii, wider), 1)), Felt.NMU), j))));
+    });
     let gr = filled(this.cells, 0);
     let gz = filled(this.cells, 0);
     let plane = filled(Felt.NR, 0);
@@ -15238,10 +15288,10 @@ export class Felt extends Node {
         let c = add(mul(i, Felt.NMU), j);
         let pull = div(held, (mul(mul(r, (add(r, a))), (add(r, a)))));
         let R = mul(r, Math.sqrt((sub(1, mul(mu, mu)))));
-        gr[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 0), add(mul(ii, Felt.NMU), j))), div(mul(gas, elem(elem(u, 0), add(mul((sub(ii, wider)), Felt.NMU), j))), (mul(w, w)))))), mul(pull, (sub(0, R))));
-        gz[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 1), add(mul(ii, Felt.NMU), j))), div(mul(gas, elem(elem(u, 1), add(mul((sub(ii, wider)), Felt.NMU), j))), (mul(w, w)))))), mul(pull, (sub(0, mul(r, mu)))));
+        gr[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 0), add(mul(ii, Felt.NMU), j))), div(mul(gas, lower(elem(u, 0), ii, j)), (mul(w, w)))))), mul(pull, (sub(0, R))));
+        gz[c] = add(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 1), add(mul(ii, Felt.NMU), j))), div(mul(gas, lower(elem(u, 1), ii, j)), (mul(w, w)))))), mul(pull, (sub(0, mul(r, mu)))));
       };
-      plane[i] = sub(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 2), ii)), div(mul(gas, elem(elem(u, 2), sub(ii, wider))), (mul(w, w)))))), div(held, (mul((add(r, a)), (add(r, a))))));
+      plane[i] = sub(((eq(u, null) ? 0 : add(mul(stars, elem(elem(u, 2), ii)), div(mul(gas, (add(mul((sub(1, frac)), elem(elem(u, 2), sub(ii, wider))), mul(frac, elem(elem(u, 2), sub(sub(ii, wider), 1)))))), (mul(w, w)))))), div(held, (mul((add(r, a)), (add(r, a))))));
     };
     return [gr, gz, plane];
   }
@@ -15382,6 +15432,30 @@ export class Felt extends Node {
       }
     };
     return out;
+  }
+  ladder(shape: number[][]): number[][][] {
+    return range(elem(Felt.LADDER, 2)).map(((k: any) => {
+      return this.felt(shape, Math.pow(10, (add(elem(Felt.LADDER, 0), div(mul((sub(elem(Felt.LADDER, 1), elem(Felt.LADDER, 0))), k), sub(elem(Felt.LADDER, 2), 1))))));
+    }));
+  }
+  read_off(ladder: number[][][], dex: number, x: number): number[] {
+    let n = elem(Felt.LADDER, 2);
+    let u = Fmt.min(Fmt.max(div((sub(dex, elem(Felt.LADDER, 0))), (div((sub(elem(Felt.LADDER, 1), elem(Felt.LADDER, 0))), sub(n, 1)))), 0), sub(sub(n, 1), 0.000001));
+    let k = Math.floor(u);
+    let f = sub(u, k);
+    let rows = elem(ladder, 0).length;
+    let v = Fmt.min(Fmt.max(div(Math.log((div(x, elem(elem(elem(ladder, 0), 0), 0)))), this.step), 0), sub(sub(rows, 1), 0.000001));
+    let t = Math.floor(v);
+    let e = sub(v, t);
+    let both = ((col: number) => {
+      let at = ((kk: number, tt: number) => {
+        return Fmt.log10(elem(elem(elem(ladder, kk), tt), col));
+      });
+      let lo = add(mul((sub(1, e)), at(k, t)), mul(e, at(k, add(t, 1))));
+      let hi = add(mul((sub(1, e)), at(add(k, 1), t)), mul(e, at(add(k, 1), add(t, 1))));
+      return Math.pow(10, (add(mul((sub(1, f)), lo), mul(f, hi))));
+    });
+    return [both(1), both(2)];
   }
   off_law(shape: number[][], s: number): number {
     return this.felt(shape, s).reduce(((most: any, q: any) => {
@@ -16079,6 +16153,9 @@ export class Measure extends Node {
     }
     if (want(`galaxy.many`)) {
       Measure.density(model, `galaxy.many`, `scattered`);
+    }
+    if (want(`galaxy.possible`)) {
+      Simulation.solve_possible(Measure.DEGS);
     }
     if (want(`law`)) {
       Measure.law(model);

@@ -16557,6 +16557,67 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     return(out)
     NULL
   })
+  statik(cl, "solve_possible", function(degs = NULL, ...) {
+    felt <- Felt$new()
+    ladders <- Node$new()
+    ladder_of <- function(fg = NULL, wide = NULL, fb = NULL, ...) {
+      key <- "" %+% text_of(fg) %+% "|" %+% text_of(wide) %+% "|" %+% text_of(fb) %+% ""
+      if (truthy(eq(elem(ladders, key), NULL))) {
+        set_at(ladders, key, felt$ladder(felt$shape(Simulation$SHAPE_H, fb, fg, (if (truthy(gt(fg, 0))) wide else 1))))
+      }
+      return(elem(ladders, key))
+      NULL
+    }
+    a0s <- lst()
+    bins <- lst()
+    .r <- for_each(degs, function(d) {
+      a0 <- r_div(Galaxies$a0_at(d), Simulation$UNIT_G)
+      points <- lst()
+      felts <- lst()
+      .r <- for_range(elem(Simulation$MASSES, 2), function(which_m) {
+        M <- r_pow(10, Simulation$axis(Simulation$MASSES, which_m))
+        .r <- for_range(elem(Simulation$SCALES, 2), function(which_s) {
+          rd <- r_pow(10, Simulation$axis(Simulation$SCALES, which_s))
+          dex <- Fmt$log10(r_div(r_mul(Simulation$G_KPC, M), (r_mul(r_mul(a0, rd), rd))))
+          .r <- for_each(Simulation$GAS, function(fg) {
+            .r <- for_each(Simulation$GAS_WIDE, function(wide) {
+              .r <- for_each(Simulation$BULGE, function(fb) {
+                L <- (ladder_of)(fg, wide, fb)
+                .r <- for_range(Simulation$RADII, function(k) {
+                  x <- r_pow(10, (r_add(neg(0.7), r_div(r_mul(1.6, k), r_sub(Simulation$RADII, 1)))))
+                  got <- felt$read_off(L, dex, x)
+                  .r <- for_each(lst(0, r_mul(rd, x), r_mul(elem(got, 0), a0), 0, 0, 0), function(v) {
+                    m_push(points, v)
+                    CONTINUE
+                  })
+                  if (!is.null(.r)) return(.r[[1]])
+                  m_push(felts, r_mul(elem(got, 1), a0))
+                  CONTINUE
+                })
+                if (!is.null(.r)) return(.r[[1]])
+                CONTINUE
+              })
+              if (!is.null(.r)) return(.r[[1]])
+              CONTINUE
+            })
+            if (!is.null(.r)) return(.r[[1]])
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      m_push(a0s, r_mul(a0, Simulation$UNIT_G))
+      m_push(bins, Simulation$binned(points, felts))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(Simulation$save_possible(degs, a0s, bins))
+    NULL
+  })
   statik(cl, "binned", function(points = NULL, felt = NULL, ...) {
     n <- r_add(m_round((r_div((r_sub(Galaxies$XMAX, Galaxies$XMIN)), Simulation$BIN))), 1)
     landed <- filled(n, 0)
@@ -16595,7 +16656,7 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     .set(extra, key_("from"), Galaxies$XMIN)
     .set(extra, key_("step"), Simulation$BIN)
     .set(extra, key_("axes"), lst("log M (Msun)", Simulation$MASSES, "log R_d (kpc)", Simulation$SCALES, "gas share", Simulation$GAS, "gas scale / R_d", Simulation$GAS_WIDE, "bulge share of the stars", Simulation$BULGE))
-    .set(extra, key_("about"), "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
+    .set(extra, key_("about"), "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
     return(Measure$save("galaxy.possible", lst("deg", "a0"), cols, extra))
     NULL
   })
@@ -17214,7 +17275,7 @@ Felt <- ray_class("Felt", Node, function(cl) {
   static_field(cl, "KMAX", function() 7)
   static_field(cl, "v_NA", function() 120)
   static_field(cl, "NZ", function() 8)
-  static_field(cl, "NEAR", function() 0.25)
+  static_field(cl, "NEAR", function() 0.18)
   static_field(cl, "FAR", function() 30)
   static_field(cl, "HERNQUIST", function() 0.1)
   static_field(cl, "XS", function() 700)
@@ -17226,8 +17287,9 @@ Felt <- ray_class("Felt", Node, function(cl) {
   static_field(cl, "MASS", function() lst(neg(2.5), 5, 61))
   static_field(cl, "THICK", function() lst(0.1, 0.02, 0.3))
   static_field(cl, "MIDDLE", function() lst(0, 0.2, 0.5))
-  static_field(cl, "GAS", function() lst(lst(0, 0), lst(0.5, 4), lst(0.5, 7), lst(0.9, 4), lst(0.9, 7)))
+  static_field(cl, "GAS", function() lst(lst(0, 1), lst(0.5, 2), lst(0.5, 3), lst(0.9, 2), lst(0.9, 3)))
   static_field(cl, "FREEDOMS", function() lst("mass", "thickness", "middle", "gas"))
+  static_field(cl, "LADDER", function() lst(neg(6.5), 5.5, 193))
   getter(cl, "step", function() {
     return(r_div(m_ln((r_div(Felt$R1, Felt$R0))), Felt$NR))
     NULL
@@ -17362,11 +17424,18 @@ Felt <- ray_class("Felt", Node, function(cl) {
     return(elem(self$unit, key))
     NULL
   })
-  method(cl, "shape", function(h = NULL, middle = NULL, gas = NULL, wider = NULL, ...) {
+  method(cl, "shape", function(h = NULL, middle = NULL, gas = NULL, wide = NULL, ...) {
     stars <- r_mul((r_sub(1, gas)), (r_sub(1, middle)))
     held <- r_mul((r_sub(1, gas)), middle)
     u <- (if (truthy((if (truthy(.x <- gt(stars, 0))) .x else gt(gas, 0)))) self$unit_disc(h) else NULL)
-    w <- m_exp((r_mul(self$step, wider)))
+    w <- (if (truthy(gt(wide, 1))) wide else 1)
+    shift <- r_div(m_ln(w), self$step)
+    wider <- m_floor(shift)
+    frac <- r_sub(shift, wider)
+    lower <- function(q = NULL, ii = NULL, j = NULL, ...) {
+      return(r_add(r_mul((r_sub(1, frac)), elem(q, r_add(r_mul((r_sub(ii, wider)), Felt$NMU), j))), r_mul(frac, elem(q, r_add(r_mul((r_sub(r_sub(ii, wider), 1)), Felt$NMU), j)))))
+      NULL
+    }
     gr <- filled(self$cells, 0)
     gz <- filled(self$cells, 0)
     plane <- filled(Felt$NR, 0)
@@ -17379,12 +17448,12 @@ Felt <- ray_class("Felt", Node, function(cl) {
         c <- r_add(r_mul(i, Felt$NMU), j)
         pull <- r_div(held, (r_mul(r_mul(r, (r_add(r, a))), (r_add(r, a)))))
         R <- r_mul(r, m_sqrt((r_sub(1, r_mul(mu, mu)))))
-        set_at(gr, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 0), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, elem(elem(u, 0), r_add(r_mul((r_sub(ii, wider)), Felt$NMU), j))), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, R)))))
-        set_at(gz, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 1), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, elem(elem(u, 1), r_add(r_mul((r_sub(ii, wider)), Felt$NMU), j))), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, r_mul(r, mu))))))
+        set_at(gr, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 0), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, (lower)(elem(u, 0), ii, j)), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, R)))))
+        set_at(gz, c, r_add(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 1), r_add(r_mul(ii, Felt$NMU), j))), r_div(r_mul(gas, (lower)(elem(u, 1), ii, j)), (r_mul(w, w)))))), r_mul(pull, (r_sub(0, r_mul(r, mu))))))
         CONTINUE
       })
       if (!is.null(.r)) return(.r[[1]])
-      set_at(plane, i, r_sub(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 2), ii)), r_div(r_mul(gas, elem(elem(u, 2), r_sub(ii, wider))), (r_mul(w, w)))))), r_div(held, (r_mul((r_add(r, a)), (r_add(r, a)))))))
+      set_at(plane, i, r_sub(((if (truthy(eq(u, NULL))) 0 else r_add(r_mul(stars, elem(elem(u, 2), ii)), r_div(r_mul(gas, (r_add(r_mul((r_sub(1, frac)), elem(elem(u, 2), r_sub(ii, wider))), r_mul(frac, elem(elem(u, 2), r_sub(r_sub(ii, wider), 1)))))), (r_mul(w, w)))))), r_div(held, (r_mul((r_add(r, a)), (r_add(r, a)))))))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -17546,6 +17615,35 @@ Felt <- ray_class("Felt", Node, function(cl) {
     })
     if (!is.null(.r)) return(.r[[1]])
     return(out)
+    NULL
+  })
+  method(cl, "ladder", function(shape = NULL, ...) {
+    return(m_map(rng(elem(Felt$LADDER, 2)), function(k = NULL, ...) {
+      return(self$felt(shape, r_pow(10, (r_add(elem(Felt$LADDER, 0), r_div(r_mul((r_sub(elem(Felt$LADDER, 1), elem(Felt$LADDER, 0))), k), r_sub(elem(Felt$LADDER, 2), 1)))))))
+      NULL
+    }))
+    NULL
+  })
+  method(cl, "read_off", function(ladder = NULL, dex = NULL, x = NULL, ...) {
+    n <- elem(Felt$LADDER, 2)
+    u <- Fmt$min(Fmt$max(r_div((r_sub(dex, elem(Felt$LADDER, 0))), (r_div((r_sub(elem(Felt$LADDER, 1), elem(Felt$LADDER, 0))), r_sub(n, 1)))), 0), r_sub(r_sub(n, 1), 0.000001))
+    k <- m_floor(u)
+    f <- r_sub(u, k)
+    rows <- len(elem(ladder, 0))
+    v <- Fmt$min(Fmt$max(r_div(m_ln((r_div(x, elem(elem(elem(ladder, 0), 0), 0)))), self$step), 0), r_sub(r_sub(rows, 1), 0.000001))
+    t <- m_floor(v)
+    e <- r_sub(v, t)
+    both <- function(col = NULL, ...) {
+      at <- function(kk = NULL, tt = NULL, ...) {
+        return(Fmt$log10(elem(elem(elem(ladder, kk), tt), col)))
+        NULL
+      }
+      lo <- r_add(r_mul((r_sub(1, e)), (at)(k, t)), r_mul(e, (at)(k, r_add(t, 1))))
+      hi <- r_add(r_mul((r_sub(1, e)), (at)(r_add(k, 1), t)), r_mul(e, (at)(r_add(k, 1), r_add(t, 1))))
+      return(r_pow(10, (r_add(r_mul((r_sub(1, f)), lo), r_mul(f, hi)))))
+      NULL
+    }
+    return(lst((both)(1), (both)(2)))
     NULL
   })
   method(cl, "off_law", function(shape = NULL, s = NULL, ...) {
@@ -18341,6 +18439,9 @@ Measure <- ray_class("Measure", Node, function(cl) {
     }
     if (truthy((want)("galaxy.many"))) {
       Measure$density(model, "galaxy.many", "scattered")
+    }
+    if (truthy((want)("galaxy.possible"))) {
+      Simulation$solve_possible(Measure$DEGS)
     }
     if (truthy((want)("law"))) {
       Measure$law(model)

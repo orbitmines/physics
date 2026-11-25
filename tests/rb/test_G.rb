@@ -82,7 +82,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 1), 0.003)")
+    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 1), 1), 0.003)")
   end
 
   def test_tests_felt_ray_11_on_felt
@@ -93,7 +93,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 0), 0.01), 0.003)")
+    assert(Ops.lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003), "Ops.lt(it.off_law(it.shape(0.1, 1, 0, 1), 0.01), 0.003)")
   end
 
   def test_tests_felt_ray_12_on_felt
@@ -104,7 +104,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05), "Ops.gt(it.off_law(it.shape(0.02, 0, 0, 0), 0.01), 0.05)")
+    assert(Ops.gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05), "Ops.gt(it.off_law(it.shape(0.02, 0, 0, 1), 0.01), 0.05)")
   end
 
   def test_tests_felt_ray_13_on_felt
@@ -115,7 +115,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01), "Ops.lt(it.off_law(it.shape(0.02, 0, 0, 0), 100), 0.01)")
+    assert(Ops.lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01), "Ops.lt(it.off_law(it.shape(0.02, 0, 0, 1), 100), 0.01)")
   end
 
   def test_tests_field_ray_10_on_line

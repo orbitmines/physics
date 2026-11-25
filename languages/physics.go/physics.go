@@ -28523,6 +28523,103 @@ func init() {
       }
       return nil
     })
+    c.Static("solve_possible", func(self any, a1 []any) any {
+      var degs_0 any = Arg(a1, 0); _ = degs_0;
+      var felt_0 any
+      felt_0 = Make("Felt", []any{  }...)
+      _ = felt_0
+      var ladders_0 any
+      ladders_0 = Make(Node)
+      _ = ladders_0
+      var ladder_of_0 any
+      ladder_of_0 = Fn(func(a2 []any) any {
+        var fg_1 any = Arg(a2, 0); _ = fg_1; var wide_1 any = Arg(a2, 1); _ = wide_1; var fb_1 any = Arg(a2, 2); _ = fb_1;
+        var key_1 any
+        key_1 = "" + Str(fg_1) + "|" + Str(wide_1) + "|" + Str(fb_1) + ""
+        _ = key_1
+        if Truthy(Eq(Elem(ladders_0, key_1), nil)) {
+          SetAt(ladders_0, key_1, Call(felt_0, "ladder", []any{ Call(felt_0, "shape", []any{ Get(K("Simulation"), "SHAPE_H"), fb_1, fg_1, Tern(Truthy(Gt(fg_1, 0.0)), func() any { return wide_1 }, func() any { return 1.0 }) }) }))
+        }
+        if true {
+          return Elem(ladders_0, key_1)
+        }
+        return nil
+      })
+      _ = ladder_of_0
+      var a0s_0 any
+      a0s_0 = Lst()
+      _ = a0s_0
+      var bins_0 any
+      bins_0 = Lst()
+      _ = bins_0
+      for _, e1 := range Items(degs_0) {
+        var d_1 any = e1
+        _ = d_1
+        var a0_1 any
+        a0_1 = Div(Call(K("Galaxies"), "a0_at", []any{ d_1 }), Get(K("Simulation"), "UNIT_G"))
+        _ = a0_1
+        var points_1 any
+        points_1 = Lst()
+        _ = points_1
+        var felts_1 any
+        felts_1 = Lst()
+        _ = felts_1
+        for i2 := 0.0; i2 < Num(Elem(Get(K("Simulation"), "MASSES"), 2.0)); i2++ {
+          var which_m_2 any = Box(i2)
+          _ = which_m_2
+          var M_2 any
+          M_2 = Power(10.0, Call(K("Simulation"), "axis", []any{ Get(K("Simulation"), "MASSES"), which_m_2 }))
+          _ = M_2
+          for i3 := 0.0; i3 < Num(Elem(Get(K("Simulation"), "SCALES"), 2.0)); i3++ {
+            var which_s_3 any = Box(i3)
+            _ = which_s_3
+            var rd_3 any
+            rd_3 = Power(10.0, Call(K("Simulation"), "axis", []any{ Get(K("Simulation"), "SCALES"), which_s_3 }))
+            _ = rd_3
+            var dex_3 any
+            dex_3 = Call(K("Fmt"), "log10", []any{ Div(Mul(Get(K("Simulation"), "G_KPC"), M_2), (Mul(Mul(a0_1, rd_3), rd_3))) })
+            _ = dex_3
+            for _, e4 := range Items(Get(K("Simulation"), "GAS")) {
+              var fg_4 any = e4
+              _ = fg_4
+              for _, e5 := range Items(Get(K("Simulation"), "GAS_WIDE")) {
+                var wide_5 any = e5
+                _ = wide_5
+                for _, e6 := range Items(Get(K("Simulation"), "BULGE")) {
+                  var fb_6 any = e6
+                  _ = fb_6
+                  var L_6 any
+                  L_6 = Invoke(ladder_of_0, []any{ fg_4, wide_5, fb_6 })
+                  _ = L_6
+                  for i7 := 0.0; i7 < Num(Get(K("Simulation"), "RADII")); i7++ {
+                    var k_7 any = Box(i7)
+                    _ = k_7
+                    var x_7 any
+                    x_7 = Power(10.0, (Add(Neg(0.7), Div(Mul(1.6, k_7), Sub(Get(K("Simulation"), "RADII"), 1.0)))))
+                    _ = x_7
+                    var got_7 any
+                    got_7 = Call(felt_0, "read_off", []any{ L_6, dex_3, x_7 })
+                    _ = got_7
+                    for _, e8 := range Items(Lst(0.0, Mul(rd_3, x_7), Mul(Elem(got_7, 0.0), a0_1), 0.0, 0.0, 0.0)) {
+                      var v_8 any = e8
+                      _ = v_8
+                      M_push(points_1, v_8)
+                    }
+                    M_push(felts_1, Mul(Elem(got_7, 1.0), a0_1))
+                  }
+                }
+              }
+            }
+          }
+        }
+        M_push(a0s_0, Mul(a0_1, Get(K("Simulation"), "UNIT_G")))
+        M_push(bins_0, Call(K("Simulation"), "binned", []any{ points_1, felts_1 }))
+      }
+      if true {
+        return Call(K("Simulation"), "save_possible", []any{ degs_0, a0s_0, bins_0 })
+      }
+      return nil
+    })
     c.Static("binned", func(self any, a1 []any) any {
       var points_0 any = Arg(a1, 0); _ = points_0; var felt_0 any = Arg(a1, 1); _ = felt_0;
       var n_0 any
@@ -28592,7 +28689,7 @@ func init() {
       Set(extra_0, Str("from"), Get(K("Galaxies"), "XMIN"))
       Set(extra_0, Str("step"), Get(K("Simulation"), "BIN"))
       Set(extra_0, Str("axes"), Lst("log M (Msun)", Get(K("Simulation"), "MASSES"), "log R_d (kpc)", Get(K("Simulation"), "SCALES"), "gas share", Get(K("Simulation"), "GAS"), "gas scale / R_d", Get(K("Simulation"), "GAS_WIDE"), "bulge share of the stars", Get(K("Simulation"), "BULGE")))
-      Set(extra_0, Str("about"), "every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
+      Set(extra_0, Str("about"), "every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")
       if true {
         return Call(K("Measure"), "save", []any{ "galaxy.possible", Lst("deg", "a0"), cols_0, extra_0 })
       }
@@ -29644,7 +29741,7 @@ func init() {
     c.StaticField("KMAX", func(self any) any { return 7.0 })
     c.StaticField("NA", func(self any) any { return 120.0 })
     c.StaticField("NZ", func(self any) any { return 8.0 })
-    c.StaticField("NEAR", func(self any) any { return 0.25 })
+    c.StaticField("NEAR", func(self any) any { return 0.18 })
     c.StaticField("FAR", func(self any) any { return 30.0 })
     c.StaticField("HERNQUIST", func(self any) any { return 0.1 })
     c.StaticField("XS", func(self any) any { return 700.0 })
@@ -29656,8 +29753,9 @@ func init() {
     c.StaticField("MASS", func(self any) any { return Lst(Neg(2.5), 5.0, 61.0) })
     c.StaticField("THICK", func(self any) any { return Lst(0.1, 0.02, 0.3) })
     c.StaticField("MIDDLE", func(self any) any { return Lst(0.0, 0.2, 0.5) })
-    c.StaticField("GAS", func(self any) any { return Lst(Lst(0.0, 0.0), Lst(0.5, 4.0), Lst(0.5, 7.0), Lst(0.9, 4.0), Lst(0.9, 7.0)) })
+    c.StaticField("GAS", func(self any) any { return Lst(Lst(0.0, 1.0), Lst(0.5, 2.0), Lst(0.5, 3.0), Lst(0.9, 2.0), Lst(0.9, 3.0)) })
     c.StaticField("FREEDOMS", func(self any) any { return Lst("mass", "thickness", "middle", "gas") })
+    c.StaticField("LADDER", func(self any) any { return Lst(Neg(6.5), 5.5, 193.0) })
     c.Getter("step", func(self any, a1 []any) any {
       if true {
         return Div(M_ln((Div(Get(K("Felt"), "R1"), Get(K("Felt"), "R0")))), Get(K("Felt"), "NR"))
@@ -29908,7 +30006,7 @@ func init() {
       return nil
     })
     c.Method("shape", func(self any, a1 []any) any {
-      var h_0 any = Arg(a1, 0); _ = h_0; var middle_0 any = Arg(a1, 1); _ = middle_0; var gas_0 any = Arg(a1, 2); _ = gas_0; var wider_0 any = Arg(a1, 3); _ = wider_0;
+      var h_0 any = Arg(a1, 0); _ = h_0; var middle_0 any = Arg(a1, 1); _ = middle_0; var gas_0 any = Arg(a1, 2); _ = gas_0; var wide_0 any = Arg(a1, 3); _ = wide_0;
       var stars_0 any
       stars_0 = Mul((Sub(1.0, gas_0)), (Sub(1.0, middle_0)))
       _ = stars_0
@@ -29919,8 +30017,26 @@ func init() {
       u_0 = Tern(Truthy((Truthy(Gt(stars_0, 0.0)) || Truthy(Gt(gas_0, 0.0)))), func() any { return Call(self, "unit_disc", []any{ h_0 }) }, func() any { return nil })
       _ = u_0
       var w_0 any
-      w_0 = M_exp((Mul(Get(self, "step"), wider_0)))
+      w_0 = Tern(Truthy(Gt(wide_0, 1.0)), func() any { return wide_0 }, func() any { return 1.0 })
       _ = w_0
+      var shift_0 any
+      shift_0 = Div(M_ln(w_0), Get(self, "step"))
+      _ = shift_0
+      var wider_0 any
+      wider_0 = M_floor(shift_0)
+      _ = wider_0
+      var frac_0 any
+      frac_0 = Sub(shift_0, wider_0)
+      _ = frac_0
+      var lower_0 any
+      lower_0 = Fn(func(a2 []any) any {
+        var q_1 any = Arg(a2, 0); _ = q_1; var ii_1 any = Arg(a2, 1); _ = ii_1; var j_1 any = Arg(a2, 2); _ = j_1;
+        if true {
+          return Add(Mul((Sub(1.0, frac_0)), Elem(q_1, Add(Mul((Sub(ii_1, wider_0)), Get(K("Felt"), "NMU")), j_1))), Mul(frac_0, Elem(q_1, Add(Mul((Sub(Sub(ii_1, wider_0), 1.0)), Get(K("Felt"), "NMU")), j_1))))
+        }
+        return nil
+      })
+      _ = lower_0
       var gr_0 any
       gr_0 = Filled(Get(self, "cells"), 0.0)
       _ = gr_0
@@ -29957,10 +30073,10 @@ func init() {
           var R_2 any
           R_2 = Mul(r_1, M_sqrt((Sub(1.0, Mul(mu_2, mu_2)))))
           _ = R_2
-          SetAt(gr_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 0.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Elem(Elem(u_0, 0.0), Add(Mul((Sub(ii_1, wider_0)), Get(K("Felt"), "NMU")), j_2))), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, R_2)))))
-          SetAt(gz_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 1.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Elem(Elem(u_0, 1.0), Add(Mul((Sub(ii_1, wider_0)), Get(K("Felt"), "NMU")), j_2))), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, Mul(r_1, mu_2))))))
+          SetAt(gr_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 0.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Invoke(lower_0, []any{ Elem(u_0, 0.0), ii_1, j_2 })), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, R_2)))))
+          SetAt(gz_0, c__2, Add((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 1.0), Add(Mul(ii_1, Get(K("Felt"), "NMU")), j_2))), Div(Mul(gas_0, Invoke(lower_0, []any{ Elem(u_0, 1.0), ii_1, j_2 })), (Mul(w_0, w_0)))) })), Mul(pull_2, (Sub(0.0, Mul(r_1, mu_2))))))
         }
-        SetAt(plane_0, i_1, Sub((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 2.0), ii_1)), Div(Mul(gas_0, Elem(Elem(u_0, 2.0), Sub(ii_1, wider_0))), (Mul(w_0, w_0)))) })), Div(held_0, (Mul((Add(r_1, a_0)), (Add(r_1, a_0)))))))
+        SetAt(plane_0, i_1, Sub((Tern(Truthy(Eq(u_0, nil)), func() any { return 0.0 }, func() any { return Add(Mul(stars_0, Elem(Elem(u_0, 2.0), ii_1)), Div(Mul(gas_0, (Add(Mul((Sub(1.0, frac_0)), Elem(Elem(u_0, 2.0), Sub(ii_1, wider_0))), Mul(frac_0, Elem(Elem(u_0, 2.0), Sub(Sub(ii_1, wider_0), 1.0)))))), (Mul(w_0, w_0)))) })), Div(held_0, (Mul((Add(r_1, a_0)), (Add(r_1, a_0)))))))
       }
       if true {
         return Lst(gr_0, gz_0, plane_0)
@@ -30258,6 +30374,74 @@ func init() {
       }
       if true {
         return out_0
+      }
+      return nil
+    })
+    c.Method("ladder", func(self any, a1 []any) any {
+      var shape_0 any = Arg(a1, 0); _ = shape_0;
+      if true {
+        return M_map(Rng(Elem(Get(K("Felt"), "LADDER"), 2.0)), Fn(func(a3 []any) any {
+        var k_2 any = Arg(a3, 0); _ = k_2;
+        if true {
+          return Call(self, "felt", []any{ shape_0, Power(10.0, (Add(Elem(Get(K("Felt"), "LADDER"), 0.0), Div(Mul((Sub(Elem(Get(K("Felt"), "LADDER"), 1.0), Elem(Get(K("Felt"), "LADDER"), 0.0))), k_2), Sub(Elem(Get(K("Felt"), "LADDER"), 2.0), 1.0))))) })
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Method("read_off", func(self any, a1 []any) any {
+      var ladder_0 any = Arg(a1, 0); _ = ladder_0; var dex_0 any = Arg(a1, 1); _ = dex_0; var x_0 any = Arg(a1, 2); _ = x_0;
+      var n_0 any
+      n_0 = Elem(Get(K("Felt"), "LADDER"), 2.0)
+      _ = n_0
+      var u_0 any
+      u_0 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div((Sub(dex_0, Elem(Get(K("Felt"), "LADDER"), 0.0))), (Div((Sub(Elem(Get(K("Felt"), "LADDER"), 1.0), Elem(Get(K("Felt"), "LADDER"), 0.0))), Sub(n_0, 1.0)))), 0.0 }), Sub(Sub(n_0, 1.0), 0.000001) })
+      _ = u_0
+      var k_0 any
+      k_0 = M_floor(u_0)
+      _ = k_0
+      var f_0 any
+      f_0 = Sub(u_0, k_0)
+      _ = f_0
+      var rows_0 any
+      rows_0 = Len(Elem(ladder_0, 0.0))
+      _ = rows_0
+      var v_0 any
+      v_0 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div(M_ln((Div(x_0, Elem(Elem(Elem(ladder_0, 0.0), 0.0), 0.0)))), Get(self, "step")), 0.0 }), Sub(Sub(rows_0, 1.0), 0.000001) })
+      _ = v_0
+      var t_0 any
+      t_0 = M_floor(v_0)
+      _ = t_0
+      var e_0 any
+      e_0 = Sub(v_0, t_0)
+      _ = e_0
+      var both_0 any
+      both_0 = Fn(func(a2 []any) any {
+        var col_1 any = Arg(a2, 0); _ = col_1;
+        var at_1 any
+        at_1 = Fn(func(a3 []any) any {
+          var kk_2 any = Arg(a3, 0); _ = kk_2; var tt_2 any = Arg(a3, 1); _ = tt_2;
+          if true {
+            return Call(K("Fmt"), "log10", []any{ Elem(Elem(Elem(ladder_0, kk_2), tt_2), col_1) })
+          }
+          return nil
+        })
+        _ = at_1
+        var lo_1 any
+        lo_1 = Add(Mul((Sub(1.0, e_0)), Invoke(at_1, []any{ k_0, t_0 })), Mul(e_0, Invoke(at_1, []any{ k_0, Add(t_0, 1.0) })))
+        _ = lo_1
+        var hi_1 any
+        hi_1 = Add(Mul((Sub(1.0, e_0)), Invoke(at_1, []any{ Add(k_0, 1.0), t_0 })), Mul(e_0, Invoke(at_1, []any{ Add(k_0, 1.0), Add(t_0, 1.0) })))
+        _ = hi_1
+        if true {
+          return Power(10.0, (Add(Mul((Sub(1.0, f_0)), lo_1), Mul(f_0, hi_1))))
+        }
+        return nil
+      })
+      _ = both_0
+      if true {
+        return Lst(Invoke(both_0, []any{ 1.0 }), Invoke(both_0, []any{ 2.0 }))
       }
       return nil
     })
@@ -31638,6 +31822,9 @@ func init() {
       }
       if Truthy(Invoke(want_0, []any{ "galaxy.many" })) {
         Call(K("Measure"), "density", []any{ model_0, "galaxy.many", "scattered" })
+      }
+      if Truthy(Invoke(want_0, []any{ "galaxy.possible" })) {
+        Call(K("Simulation"), "solve_possible", []any{ Get(K("Measure"), "DEGS") })
       }
       if Truthy(Invoke(want_0, []any{ "law" })) {
         Call(K("Measure"), "law", []any{ model_0 })

@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 0.0 }), 1.0 }), 0.003)";
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 1.0 }), 1.0 }), 0.003)";
   });
 
   t("tests/felt.ray:11 on felt", [&]() -> std::string {
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 0.0 }), 0.01 }), 0.003)";
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.1, 1.0, 0.0, 1.0 }), 0.01 }), 0.003)";
   });
 
   t("tests/felt.ray:12 on felt", [&]() -> std::string {
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 0.0 }), 0.01 }), 0.05)";
+    return truthy(gt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 1.0 }), 0.01 }), 0.05)";
   });
 
   t("tests/felt.ray:13 on felt", [&]() -> std::string {
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 0.0 }), 100.0 }), 0.01)";
+    return truthy(lt(call(it, S<"off_law">(), { call(it, S<"shape">(), { 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)) ? std::string(PASS) : std::string("failed: ") + "lt(call(it, S<\"off_law\">(), { call(it, S<\"shape\">(), { 0.02, 0.0, 0.0, 1.0 }), 100.0 }), 0.01)";
   });
 
   t("tests/field.ray:10 on line", [&]() -> std::string {

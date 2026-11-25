@@ -776,6 +776,8 @@ Measure := class {
     want := (n: String): boolean => only.empty | only.some(o => n.contains(o))
     Measure.density(model, "galaxy.point", "gathered") if want("galaxy.point")
     Measure.density(model, "galaxy.many", "scattered") if want("galaxy.many")
+    /* every galaxy there could be, solved over its field on every lattice the space was (it reads each lattice's a_0 off galaxy.many.solved) */
+    Simulation.solve_possible(Measure.DEGS) if want("galaxy.possible")
     Measure.law(model) if want("law")
   }
 }

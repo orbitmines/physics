@@ -18876,6 +18876,73 @@ enum C_Simulation {
       return out_0
       return V.null
     })
+    c.statik("solve_possible", { (this_: V, a1: [V]) throws -> V in
+      var degs_0: V = arg(a1, 0);
+      var felt_0: V = V.null; felt_0 = try makeNamed("Felt", [])
+      var ladders_0: V = V.null; ladders_0 = makeNode()
+      var ladder_of_0: V = V.null; ladder_of_0 = V.fn({ (a2: [V]) throws -> V in
+        var fg_1: V = arg(a2, 0); var wide_1: V = arg(a2, 1); var fb_1: V = arg(a2, 2);
+        var key_1: V = V.null; key_1 = V.s(cat("", try str(fg_1), "|", try str(wide_1), "|", try str(fb_1), ""))
+        if truthy(V.b(try eq(try elem(ladders_0, key_1), V.null))) {
+          try setAt(ladders_0, key_1, try call(felt_0, "ladder", [try call(felt_0, "shape", [try get((try K("Simulation")), "SHAPE_H"), fb_1, fg_1, try sel(truthy(try gt(fg_1, 0.0)), wide_1, 1.0)])]))
+        }
+        return try elem(ladders_0, key_1)
+        return V.null
+      })
+      var a0s_0: V = V.null; a0s_0 = list()
+      var bins_0: V = V.null; bins_0 = list()
+      for e1 in try items(degs_0) {
+        var d_1: V = e1
+        var a0_1: V = V.null; a0_1 = try div(try call((try K("Galaxies")), "a0_at", [d_1]), try get((try K("Simulation")), "UNIT_G"))
+        var points_1: V = V.null; points_1 = list()
+        var felts_1: V = V.null; felts_1 = list()
+        do {
+          var i2: Double = 0
+          while i2 < num(try elem(try get((try K("Simulation")), "MASSES"), 2.0)) {
+            var which_m_2: V = V.num(i2)
+            var M_2: V = V.null; M_2 = try power(10.0, try call((try K("Simulation")), "axis", [try get((try K("Simulation")), "MASSES"), which_m_2]))
+            do {
+              var i3: Double = 0
+              while i3 < num(try elem(try get((try K("Simulation")), "SCALES"), 2.0)) {
+                var which_s_3: V = V.num(i3)
+                var rd_3: V = V.null; rd_3 = try power(10.0, try call((try K("Simulation")), "axis", [try get((try K("Simulation")), "SCALES"), which_s_3]))
+                var dex_3: V = V.null; dex_3 = try call((try K("Fmt")), "log10", [try div(try mul(try get((try K("Simulation")), "G_KPC"), M_2), (try mul(try mul(a0_1, rd_3), rd_3)))])
+                for e4 in try items(try get((try K("Simulation")), "GAS")) {
+                  var fg_4: V = e4
+                  for e5 in try items(try get((try K("Simulation")), "GAS_WIDE")) {
+                    var wide_5: V = e5
+                    for e6 in try items(try get((try K("Simulation")), "BULGE")) {
+                      var fb_6: V = e6
+                      var L_6: V = V.null; L_6 = try invoke(ladder_of_0, [fg_4, wide_5, fb_6])
+                      do {
+                        var i7: Double = 0
+                        while i7 < num(try get((try K("Simulation")), "RADII")) {
+                          var k_7: V = V.num(i7)
+                          var x_7: V = V.null; x_7 = try power(10.0, (try add(try neg(0.7), try div(try mul(1.6, k_7), try sub(try get((try K("Simulation")), "RADII"), 1.0)))))
+                          var got_7: V = V.null; got_7 = try call(felt_0, "read_off", [L_6, dex_3, x_7])
+                          for e8 in try items(list(0.0, try mul(rd_3, x_7), try mul(try elem(got_7, 0.0), a0_1), 0.0, 0.0, 0.0)) {
+                            var v_8: V = e8
+                            try m_push(points_1, v_8)
+                          }
+                          try m_push(felts_1, try mul(try elem(got_7, 1.0), a0_1))
+                          i7 += 1
+                        }
+                      }
+                    }
+                  }
+                }
+                i3 += 1
+              }
+            }
+            i2 += 1
+          }
+        }
+        try m_push(a0s_0, try mul(a0_1, try get((try K("Simulation")), "UNIT_G")))
+        try m_push(bins_0, try call((try K("Simulation")), "binned", [points_1, felts_1]))
+      }
+      return try call((try K("Simulation")), "save_possible", [degs_0, a0s_0, bins_0])
+      return V.null
+    })
     c.statik("binned", { (this_: V, a1: [V]) throws -> V in
       var points_0: V = arg(a1, 0); var felt_0: V = arg(a1, 1);
       var n_0: V = V.null; n_0 = try add(try m_round((try div((try sub(try get((try K("Galaxies")), "XMAX"), try get((try K("Galaxies")), "XMIN"))), try get((try K("Simulation")), "BIN")))), 1.0)
@@ -18920,7 +18987,7 @@ enum C_Simulation {
       try set(extra_0, Name(try str(V.s(cat("from")))), try get((try K("Galaxies")), "XMIN"))
       try set(extra_0, Name(try str(V.s(cat("step")))), try get((try K("Simulation")), "BIN"))
       try set(extra_0, Name(try str(V.s(cat("axes")))), list(V.s(cat("log M (Msun)")), try get((try K("Simulation")), "MASSES"), V.s(cat("log R_d (kpc)")), try get((try K("Simulation")), "SCALES"), V.s(cat("gas share")), try get((try K("Simulation")), "GAS"), V.s(cat("gas scale / R_d")), try get((try K("Simulation")), "GAS_WIDE"), V.s(cat("bulge share of the stars")), try get((try K("Simulation")), "BULGE")))
-      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("every galaxy there could be, run through the same field and law, per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")))
+      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("every galaxy there could be, solved over its whole field (Felt), per lattice: in bins of log(g_bar / 1.2e-10), how many (galaxy, radius) land there, and log(g / 1.2e-10) - mean, lowest, highest")))
       return try call((try K("Measure")), "save", [V.s(cat("galaxy.possible")), list(V.s(cat("deg")), V.s(cat("a0"))), cols_0, extra_0])
       return V.null
     })
@@ -19633,7 +19700,7 @@ enum C_Felt {
     c.staticField("KMAX", { (this_: V) throws -> V in return 7.0 })
     c.staticField("NA", { (this_: V) throws -> V in return 120.0 })
     c.staticField("NZ", { (this_: V) throws -> V in return 8.0 })
-    c.staticField("NEAR", { (this_: V) throws -> V in return 0.25 })
+    c.staticField("NEAR", { (this_: V) throws -> V in return 0.18 })
     c.staticField("FAR", { (this_: V) throws -> V in return 30.0 })
     c.staticField("HERNQUIST", { (this_: V) throws -> V in return 0.1 })
     c.staticField("XS", { (this_: V) throws -> V in return 700.0 })
@@ -19645,8 +19712,9 @@ enum C_Felt {
     c.staticField("MASS", { (this_: V) throws -> V in return list(try neg(2.5), 5.0, 61.0) })
     c.staticField("THICK", { (this_: V) throws -> V in return list(0.1, 0.02, 0.3) })
     c.staticField("MIDDLE", { (this_: V) throws -> V in return list(0.0, 0.2, 0.5) })
-    c.staticField("GAS", { (this_: V) throws -> V in return list(list(0.0, 0.0), list(0.5, 4.0), list(0.5, 7.0), list(0.9, 4.0), list(0.9, 7.0)) })
+    c.staticField("GAS", { (this_: V) throws -> V in return list(list(0.0, 1.0), list(0.5, 2.0), list(0.5, 3.0), list(0.9, 2.0), list(0.9, 3.0)) })
     c.staticField("FREEDOMS", { (this_: V) throws -> V in return list(V.s(cat("mass")), V.s(cat("thickness")), V.s(cat("middle")), V.s(cat("gas"))) })
+    c.staticField("LADDER", { (this_: V) throws -> V in return list(try neg(6.5), 5.5, 193.0) })
     c.getter("step", { (this_: V, a1: [V]) throws -> V in
       return try div(try m_ln((try div(try get((try K("Felt")), "R1"), try get((try K("Felt")), "R0")))), try get((try K("Felt")), "NR"))
       return V.null
@@ -19809,11 +19877,19 @@ enum C_Felt {
       return V.null
     })
     c.method("shape", { (this_: V, a1: [V]) throws -> V in
-      var h_0: V = arg(a1, 0); var middle_0: V = arg(a1, 1); var gas_0: V = arg(a1, 2); var wider_0: V = arg(a1, 3);
+      var h_0: V = arg(a1, 0); var middle_0: V = arg(a1, 1); var gas_0: V = arg(a1, 2); var wide_0: V = arg(a1, 3);
       var stars_0: V = V.null; stars_0 = try mul((try sub(1.0, gas_0)), (try sub(1.0, middle_0)))
       var held_0: V = V.null; held_0 = try mul((try sub(1.0, gas_0)), middle_0)
       var u_0: V = V.null; u_0 = try sel(truthy(try or_(try gt(stars_0, 0.0), try gt(gas_0, 0.0))), try call(this_, "unit_disc", [h_0]), V.null)
-      var w_0: V = V.null; w_0 = try m_exp((try mul(try get(this_, "step"), wider_0)))
+      var w_0: V = V.null; w_0 = try sel(truthy(try gt(wide_0, 1.0)), wide_0, 1.0)
+      var shift_0: V = V.null; shift_0 = try div(try m_ln(w_0), try get(this_, "step"))
+      var wider_0: V = V.null; wider_0 = try m_floor(shift_0)
+      var frac_0: V = V.null; frac_0 = try sub(shift_0, wider_0)
+      var lower_0: V = V.null; lower_0 = V.fn({ (a2: [V]) throws -> V in
+        var q_1: V = arg(a2, 0); var ii_1: V = arg(a2, 1); var j_1: V = arg(a2, 2);
+        return try add(try mul((try sub(1.0, frac_0)), try elem(q_1, try add(try mul((try sub(ii_1, wider_0)), try get((try K("Felt")), "NMU")), j_1))), try mul(frac_0, try elem(q_1, try add(try mul((try sub(try sub(ii_1, wider_0), 1.0)), try get((try K("Felt")), "NMU")), j_1))))
+        return V.null
+      })
       var gr_0: V = V.null; gr_0 = filled(try get(this_, "cells"), 0.0)
       var gz_0: V = V.null; gz_0 = filled(try get(this_, "cells"), 0.0)
       var plane_0: V = V.null; plane_0 = filled(try get((try K("Felt")), "NR"), 0.0)
@@ -19832,12 +19908,12 @@ enum C_Felt {
               var c_2: V = V.null; c_2 = try add(try mul(i_1, try get((try K("Felt")), "NMU")), j_2)
               var pull_2: V = V.null; pull_2 = try div(held_0, (try mul(try mul(r_1, (try add(r_1, a_0))), (try add(r_1, a_0)))))
               var R_2: V = V.null; R_2 = try mul(r_1, try m_sqrt((try sub(1.0, try mul(mu_2, mu_2)))))
-              try setAt(gr_0, c_2, try add((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 0.0), try add(try mul(ii_1, try get((try K("Felt")), "NMU")), j_2))), try div(try mul(gas_0, try elem(try elem(u_0, 0.0), try add(try mul((try sub(ii_1, wider_0)), try get((try K("Felt")), "NMU")), j_2))), (try mul(w_0, w_0)))))), try mul(pull_2, (try sub(0.0, R_2)))))
-              try setAt(gz_0, c_2, try add((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 1.0), try add(try mul(ii_1, try get((try K("Felt")), "NMU")), j_2))), try div(try mul(gas_0, try elem(try elem(u_0, 1.0), try add(try mul((try sub(ii_1, wider_0)), try get((try K("Felt")), "NMU")), j_2))), (try mul(w_0, w_0)))))), try mul(pull_2, (try sub(0.0, try mul(r_1, mu_2))))))
+              try setAt(gr_0, c_2, try add((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 0.0), try add(try mul(ii_1, try get((try K("Felt")), "NMU")), j_2))), try div(try mul(gas_0, try invoke(lower_0, [try elem(u_0, 0.0), ii_1, j_2])), (try mul(w_0, w_0)))))), try mul(pull_2, (try sub(0.0, R_2)))))
+              try setAt(gz_0, c_2, try add((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 1.0), try add(try mul(ii_1, try get((try K("Felt")), "NMU")), j_2))), try div(try mul(gas_0, try invoke(lower_0, [try elem(u_0, 1.0), ii_1, j_2])), (try mul(w_0, w_0)))))), try mul(pull_2, (try sub(0.0, try mul(r_1, mu_2))))))
               i2 += 1
             }
           }
-          try setAt(plane_0, i_1, try sub((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 2.0), ii_1)), try div(try mul(gas_0, try elem(try elem(u_0, 2.0), try sub(ii_1, wider_0))), (try mul(w_0, w_0)))))), try div(held_0, (try mul((try add(r_1, a_0)), (try add(r_1, a_0)))))))
+          try setAt(plane_0, i_1, try sub((try sel(truthy(V.b(try eq(u_0, V.null))), 0.0, try add(try mul(stars_0, try elem(try elem(u_0, 2.0), ii_1)), try div(try mul(gas_0, (try add(try mul((try sub(1.0, frac_0)), try elem(try elem(u_0, 2.0), try sub(ii_1, wider_0))), try mul(frac_0, try elem(try elem(u_0, 2.0), try sub(try sub(ii_1, wider_0), 1.0)))))), (try mul(w_0, w_0)))))), try div(held_0, (try mul((try add(r_1, a_0)), (try add(r_1, a_0)))))))
           i1 += 1
         }
       }
@@ -20024,6 +20100,40 @@ enum C_Felt {
         }
       }
       return out_0
+      return V.null
+    })
+    c.method("ladder", { (this_: V, a1: [V]) throws -> V in
+      var shape_0: V = arg(a1, 0);
+      return try m_map(rng(try elem(try get((try K("Felt")), "LADDER"), 2.0)), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return try call(this_, "felt", [shape_0, try power(10.0, (try add(try elem(try get((try K("Felt")), "LADDER"), 0.0), try div(try mul((try sub(try elem(try get((try K("Felt")), "LADDER"), 1.0), try elem(try get((try K("Felt")), "LADDER"), 0.0))), k_2), try sub(try elem(try get((try K("Felt")), "LADDER"), 2.0), 1.0)))))])
+        return V.null
+      }))
+      return V.null
+    })
+    c.method("read_off", { (this_: V, a1: [V]) throws -> V in
+      var ladder_0: V = arg(a1, 0); var dex_0: V = arg(a1, 1); var x_0: V = arg(a1, 2);
+      var n_0: V = V.null; n_0 = try elem(try get((try K("Felt")), "LADDER"), 2.0)
+      var u_0: V = V.null; u_0 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div((try sub(dex_0, try elem(try get((try K("Felt")), "LADDER"), 0.0))), (try div((try sub(try elem(try get((try K("Felt")), "LADDER"), 1.0), try elem(try get((try K("Felt")), "LADDER"), 0.0))), try sub(n_0, 1.0)))), 0.0]), try sub(try sub(n_0, 1.0), 0.000001)])
+      var k_0: V = V.null; k_0 = try m_floor(u_0)
+      var f_0: V = V.null; f_0 = try sub(u_0, k_0)
+      var rows_0: V = V.null; rows_0 = try len(try elem(ladder_0, 0.0))
+      var v_0: V = V.null; v_0 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div(try m_ln((try div(x_0, try elem(try elem(try elem(ladder_0, 0.0), 0.0), 0.0)))), try get(this_, "step")), 0.0]), try sub(try sub(rows_0, 1.0), 0.000001)])
+      var t_0: V = V.null; t_0 = try m_floor(v_0)
+      var e_0: V = V.null; e_0 = try sub(v_0, t_0)
+      var both_0: V = V.null; both_0 = V.fn({ (a2: [V]) throws -> V in
+        var col_1: V = arg(a2, 0);
+        var at_1: V = V.null; at_1 = V.fn({ (a3: [V]) throws -> V in
+          var kk_2: V = arg(a3, 0); var tt_2: V = arg(a3, 1);
+          return try call((try K("Fmt")), "log10", [try elem(try elem(try elem(ladder_0, kk_2), tt_2), col_1)])
+          return V.null
+        })
+        var lo_1: V = V.null; lo_1 = try add(try mul((try sub(1.0, e_0)), try invoke(at_1, [k_0, t_0])), try mul(e_0, try invoke(at_1, [k_0, try add(t_0, 1.0)])))
+        var hi_1: V = V.null; hi_1 = try add(try mul((try sub(1.0, e_0)), try invoke(at_1, [try add(k_0, 1.0), t_0])), try mul(e_0, try invoke(at_1, [try add(k_0, 1.0), try add(t_0, 1.0)])))
+        return try power(10.0, (try add(try mul((try sub(1.0, f_0)), lo_1), try mul(f_0, hi_1))))
+        return V.null
+      })
+      return list(try invoke(both_0, [1.0]), try invoke(both_0, [2.0]))
       return V.null
     })
     c.method("off_law", { (this_: V, a1: [V]) throws -> V in
@@ -20931,6 +21041,9 @@ enum C_Measure {
       }
       if truthy(try invoke(want_0, [V.s(cat("galaxy.many"))])) {
         try call((try K("Measure")), "density", [model_0, V.s(cat("galaxy.many")), V.s(cat("scattered"))])
+      }
+      if truthy(try invoke(want_0, [V.s(cat("galaxy.possible"))])) {
+        try call((try K("Simulation")), "solve_possible", [try get((try K("Measure")), "DEGS")])
       }
       if truthy(try invoke(want_0, [V.s(cat("law"))])) {
         try call((try K("Measure")), "law", [model_0])

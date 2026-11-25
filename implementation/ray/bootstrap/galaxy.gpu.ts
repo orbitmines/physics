@@ -1430,26 +1430,7 @@ plan.save(Array.from(felt0), Array.from(felt1), Array.from(stars), Array.from(fi
   console.log(`  the tracers against the circles (stir ${S.SIGMA} km/s): median v_tracers / v_circle ${med(driftAll).toFixed(4)} over ${driftAll.length} radii, ${med(drift).toFixed(4)} over the kept ones`);
 }
 
-/* EVERY GALAXY THERE COULD BE: the unit disc summed once, then every galaxy scaled from it, read on every lattice */
-const shapeTasks: number[] = S.shape_tasks;
-const shapePulls = await pullOf(shapeTasks);
-const shape = S.shape_of(Array.from(shapePulls));
-const possible = new Float32Array(S.possible_points(shape));
-const npos = possible.length / 6;
-const possibleBuf = upload(possible);
-const degs: number[] = space.header.degs;
-const a0s: number[] = [], bins: any[] = [];
-for (const d of degs) {
-  const a0 = physics.Galaxies.a0_at(d) / S.UNIT_G;
-  const out = blank(npos);
-  await run(LAW, [u32(npos), lawBuf, possibleBuf, upload(new Float32Array([1, 1, a0, 0])), out], npos);
-  const felt = await read(out, npos);
-  out.destroy();
-  a0s.push(a0 * S.UNIT_G);
-  bins.push(S.binned(Array.from(possible), Array.from(felt)));
-}
-S.save_possible(degs, a0s, bins);
-console.log(`  every galaxy there could be: ${npos} (galaxy, radius) pairs on ${degs.length} lattices (${secs()})\n`);
+/* EVERY GALAXY THERE COULD BE is solved over its field on the CPU (Simulation.solve_possible, `npx ray measure galaxy.possible`), not read point by point here */
 
 }
 

@@ -30,7 +30,7 @@ Felt := class {
   static KMAX = 7
   static NA = 120
   static NZ = 8
-  static NEAR = 0.25
+  static NEAR = 0.18
   static FAR = 30
   static HERNQUIST = 0.1
   static XS = 700
@@ -42,8 +42,8 @@ Felt := class {
   static MASS = [-2.5, 5, 61]
   static THICK = [0.1, 0.02, 0.3]
   static MIDDLE = [0, 0.2, 0.5]
-  /* gas: [share, how many rows wider] - none first, then half and nine tenths at two and three scales */
-  static GAS = [[0, 0], [0.5, 4], [0.5, 7], [0.9, 4], [0.9, 7]]
+  /* gas: [share, how many scales wide] - none first, then half and nine tenths at two and three scales */
+  static GAS = [[0, 1], [0.5, 2], [0.5, 3], [0.9, 2], [0.9, 3]]
   static FREEDOMS = ["mass", "thickness", "middle", "gas"]
 
   step (): Real => (Felt.R1 / Felt.R0).ln / Real.of(Felt.NR)
@@ -136,11 +136,16 @@ Felt := class {
     this.unit[key]
   }
   /* a galaxy's field per unit of its whole mass, on the grid and in the plane: [R parts, z parts, plane], all toward it */
-  shape (h: Real, middle: Real, gas: Real, wider: N): Real[][] => {
+  shape (h: Real, middle: Real, gas: Real, wide: Real): Real[][] => {
     stars := (1 - gas) * (1 - middle)
     held := (1 - gas) * middle
     u := stars > 0 | gas > 0 ? this.unit_disc(h) : None
-    w := (this.step * Real.of(wider)).exp
+    w := wide > 1 ? wide : 1
+    /* the gas disc is the unit disc read at r / w: that many rows down, between two rows */
+    shift := w.ln / this.step
+    wider := shift.floor
+    frac := shift - wider
+    lower := (q: Real[], ii: N, j: N): Real => (1 - frac) * q[(ii - wider) * Felt.NMU + j] + frac * q[(ii - wider - 1) * Felt.NMU + j]
     gr := Array.filled(this.cells, 0)
     gz := Array.filled(this.cells, 0)
     plane := Array.filled(Felt.NR, 0)
@@ -153,10 +158,10 @@ Felt := class {
         c := i * Felt.NMU + j
         pull := held / (r * (r + a) * (r + a))
         R := r * (1 - mu * mu).sqrt
-        gr[c] = (u == None ? 0 : stars * u[0][ii * Felt.NMU + j] + gas * u[0][(ii - wider) * Felt.NMU + j] / (w * w)) + pull * (0 - R)
-        gz[c] = (u == None ? 0 : stars * u[1][ii * Felt.NMU + j] + gas * u[1][(ii - wider) * Felt.NMU + j] / (w * w)) + pull * (0 - r * mu)
+        gr[c] = (u == None ? 0 : stars * u[0][ii * Felt.NMU + j] + gas * lower(u[0], ii, j) / (w * w)) + pull * (0 - R)
+        gz[c] = (u == None ? 0 : stars * u[1][ii * Felt.NMU + j] + gas * lower(u[1], ii, j) / (w * w)) + pull * (0 - r * mu)
       })
-      plane[i] = (u == None ? 0 : stars * u[2][ii] + gas * u[2][ii - wider] / (w * w)) - held / ((r + a) * (r + a))
+      plane[i] = (u == None ? 0 : stars * u[2][ii] + gas * ((1 - frac) * u[2][ii - wider] + frac * u[2][ii - wider - 1]) / (w * w)) - held / ((r + a) * (r + a))
     })
     [gr, gz, plane]
   }
@@ -284,6 +289,32 @@ Felt := class {
       }
     })
     out
+  }
+
+  /*
+   * A SHAPE ON A LADDER OF MASSES: solved once at every sixteenth of a dex of GM/(a_0 R_d^2), so a galaxy of that shape
+   * at any mass is read between the two solves either side of it and the two rows either side of its radius - each
+   * read is the field solved, never the law read at a place
+   */
+  static LADDER = [-6.5, 5.5, 193]
+  ladder (shape: Real[][]): Real[][][] => Array.range(Felt.LADDER[2]).map(k => this.felt(shape, 10 ^ (Felt.LADDER[0] + (Felt.LADDER[1] - Felt.LADDER[0]) * Real.of(k) / Real.of(Felt.LADDER[2] - 1))))
+  /* [what arrives, what is felt], in a_0, for the mass `dex` (log GM/(a_0 R_d^2)) at x scales out */
+  read_off (ladder: Real[][][], dex: Real, x: Real): Real[] => {
+    n := Felt.LADDER[2]
+    u := Fmt.min(Fmt.max((dex - Felt.LADDER[0]) / ((Felt.LADDER[1] - Felt.LADDER[0]) / Real.of(n - 1)), 0), Real.of(n - 1) - 0.000001)
+    k := u.floor
+    f := u - Real.of(k)
+    rows := ladder[0].length
+    v := Fmt.min(Fmt.max((x / ladder[0][0][0]).ln / this.step, 0), Real.of(rows - 1) - 0.000001)
+    t := v.floor
+    e := v - Real.of(t)
+    both := (col: N): Real => {
+      at := (kk: N, tt: N): Real => Fmt.log10(ladder[kk][tt][col])
+      lo := (1 - e) * at(k, t) + e * at(k, t + 1)
+      hi := (1 - e) * at(k + 1, t) + e * at(k + 1, t + 1)
+      10 ^ ((1 - f) * lo + f * hi)
+    }
+    [both(1), both(2)]
   }
 
   /* how far a galaxy is felt from the closing law read point by point, at most along its plane, in dex */
