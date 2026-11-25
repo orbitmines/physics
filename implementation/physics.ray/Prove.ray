@@ -1187,16 +1187,18 @@ Prover := class < theory: Theory {
           at := named == None ? share : Expr.field(named.fact.of)
           /* what the branch found around the match - which of l's ways hold a fold - read off the record l holds */
           gate := t.around == None ? Expr.num(1) : Prover.neat(Expr.replace(Expr.replace(t.around, "n_{{f}}", Prover.neat(Expr.sub(Prover.WAYS, Prover.LATTICE))), "DEG", Prover.WAYS))
-          got := Prover.neat(Expr.mul([Expr.num(w), Prover.WAYS, gate, at]))
+          /* a meeting fires on an edge, and l's edges are its lattice's: a fold weighs a way, it is no new edge. What reads the folds l holds counts over all its ways */
+          over := t.around == None ? Prover.LATTICE : Prover.WAYS
+          got := Prover.neat(Expr.mul([Expr.num(w), over, gate, at]))
           parts.push(got)
-          said.push("{t.term.rule.name.upper}: {Expr.show(Expr.num(w))} a fold on each of l's ways, {Expr.show(gate)} of them, at {Expr.show(at)} - {Expr.show(got)}")
+          said.push("{t.term.rule.name.upper}: {Expr.show(Expr.num(w))} a fold on each of {Expr.show(over)} of l's ways, {Expr.show(gate)} of them, at {Expr.show(at)} - {Expr.show(got)}")
         }
       }
     })
     return None if parts.empty
     rhs := Expr.add(parts)
     st := Step.of(Fact.stands("\\Delta DEG", rhs), Prover.WAYS_LINE, [line.fact.key, moved.fact.key, ways.fact.key].concat(pieces.map(x => x.fact.key)),
-      "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - {Expr.show(folds_of)} of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back",
+      "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - {Expr.show(folds_of)} of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back",
       said.concat(["\\Delta DEG = {Expr.show(rhs)}"]))
     st.derivation = [line, moved, ways].concat(pieces)
     st
@@ -1250,17 +1252,158 @@ Prover := class < theory: Theory {
      * holds outward at c-bar (D - 2) lambda / (D R) across the shell at R, so beyond the free path it stands that much
      * deeper than streaming would leave it: 1/R^{D-2} and not 1/R^{D-1}. lambda is what one step keeps of a ray, off the reach
      */
-    reach := s.fact("is", "l.reach\\paren{{\\bar{{R}}}}")
-    walks := (reach != None & reach.to.kind == "pow") ? Prover.neat(Expr.replace(Expr.pown(Prover.neat(Expr.sub(Expr.num(1), reach.to.base)), -1), "\\rho", vac)) : None
+    relights := this.relights
+    walks := this.walk_of(s)
     dim := Expr.field("D")
     deeper := walks == None ? Expr.num(1) : Expr.add([Expr.num(1), Prover.neat(Expr.div(Expr.mul([dim, R]), Expr.mul([Expr.sub(dim, Expr.num(2)), walks])))])
     per := Expr.mul([Expr.field("x.\\bar{{m}}"), Expr.sub(Expr.num(1), Prover.reach("x.\\bar{{R}}")), Expr.pown(shell, -1), deeper])
     walked := walks == None ? "-" : Expr.show(walks)
+    afresh := relights == None ? "-" : relights.term.rule.name.upper
     rhs := Expr.add([base, Expr.mul([Expr.pown(k, -1), Expr.call("\\sum_{{x = x_{{@t}}}}", per)])])
     lhs := "\\Delta\\paren{{DEG·\\rho + {Expr.show(k)}·n_{{f}}}}"
     Step.of(Fact.stands("n_{{f,l}}\\paren{{t}}", rhs), "the record every body leaves at a local", [rays_c.fact.key, ways_c.fact.key, settles.fact.key],
       "a meeting turns {Expr.show(k)} of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and {Expr.show(k)} times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{{\\infty}}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{{D-2}} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over {Expr.show(k)}, on the settled record. Each body is read as it was when its rays left it, at its own distance then",
-      ["{lhs} = {Expr.show(both)}", "the settled vacuum underneath: n_{{f}} at \\rho_{{\\infty}}, {Expr.show(base)}", "x = x_{{@t}}: every body at its own time, bound once in the sum; x.\\bar{{R}} = l.distance\\paren{{x.l}}, from the local now to the body then", "the walk: \\lambda = {walked}, outward at \\bar{{c}}·\\paren{{D - 2}}\\lambda / \\paren{{D·x.\\bar{{R}}}}", "n_{{f,l}}\\paren{{t}} = {Expr.show(rhs)}"])
+      ["{lhs} = {Expr.show(both)}", "the settled vacuum underneath: n_{{f}} at \\rho_{{\\infty}}, {Expr.show(base)}", "x = x_{{@t}}: every body at its own time, bound once in the sum; x.\\bar{{R}} = l.distance\\paren{{x.l}}, from the local now to the body then", "the walk: {afresh} lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = {walked}, outward at \\bar{{c}}·\\paren{{D - 2}}\\lambda / \\paren{{D·x.\\bar{{R}}}}", "n_{{f,l}}\\paren{{t}} = {Expr.show(rhs)}"])
+  }
+  /* a heading drawn afresh: CREATION lights every one of a point's ways, so what it reads back out leaves on all of them alike */
+  relights (): TermInfo? => this.infos.filter(t => t.term.rule != None & t.degree == 0 & Expr.show(Expr.simplify(t.ray_count)) == "DEG").first
+  /* the free path a walk flies, off the reach: what one step keeps of a ray, at the settled vacuum - None where creation does not relight every way */
+  walk_of (s: Store): Expr? => {
+    reach := s.fact("is", "l.reach\\paren{{\\bar{{R}}}}")
+    return None if this.relights == None | reach == None
+    return None if reach.to.kind != "pow"
+    Prover.neat(Expr.replace(Expr.pown(Prover.neat(Expr.sub(Expr.num(1), reach.to.base)), -1), "\\rho", Expr.field("\\rho_{{\\infty}}")))
+  }
+  /*
+   * GENERAL RELATIVITY, OFF THE RECORD AND THE TICK. Far from a body the record falls as the walk leaves it, and a body
+   * feels its slope: that is the pull, and its integral from far off is the potential - the record itself, in rays' worth.
+   * Then the tick: every ray steps a cell a tick, and a body is rays turning, so the share of a step a body spends going
+   * somewhere is the share it does not spend standing and sending - it moves or it emits. Its beat is what is left, and
+   * a clock held at R is passed by a body falling in from far at the speed the potential gives it: the held clock runs
+   * at that body's beat, and a ruler laid along the fall is short by the same factor. Those are A and B, and light reads both
+   */
+  relativity_of (s: Store, left: Step, mass: Step): Step[] => {
+    walks := this.walk_of(s)
+    return [] if walks == None
+    dim := Expr.field("D")
+    R := Expr.field("x.\\bar{{R}}")
+    m := Expr.field("x.\\bar{{m}}")
+    k := this.fold_weight
+    /* the record far out: what the walk leaves, past the free path and past the reach */
+    far := Prover.neat(Expr.mul([Expr.pown(k, -1), m, dim, Expr.pown(Expr.mul([Expr.sub(dim, Expr.num(2)), walks]), -1), Expr.to_power(R, Expr.sub(Expr.num(2), dim))]))
+    strength := Prover.neat(Expr.div(dim, Expr.mul([Expr.num(2), walks])))
+    pull := Prover.neat(Expr.mul([strength, m, Expr.to_power(R, Expr.sub(Expr.num(1), dim))]))
+    g_ := Step.of(Fact.stands("g \\aside{{far}}", pull), "the pull far from a body", [left.fact.key],
+      "what a body feels is the record's slope in rays' worth, g = \\frac{{1}}{{2}}\\nabla S_{{l}}, and S_{{l}} = {Expr.show(k)}n_{{f,l}}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path",
+      ["n_{{f,l}} - n_{{f}}\\paren{{\\rho_{{\\infty}}}} \\to {Expr.show(far)}, past the free path", "g = \\frac{{{Expr.show(k)}}}{{2}}·\\frac{{-\\partial n_{{f,l}}}}{{\\partial x.\\bar{{R}}}} = {Expr.show(pull)}", "G = \\frac{{D}}{{2\\lambda}} = {Expr.show(strength)}"])
+    pot := Prover.neat(Expr.mul([strength, m, Expr.pown(Expr.sub(dim, Expr.num(2)), -1), Expr.to_power(R, Expr.sub(Expr.num(2), dim))]))
+    phi := Step.of(Fact.stands("\\Phi \\aside{{far}}", pot), "the potential is the record", [g_.fact.key],
+      "the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record",
+      ["\\Phi = \\int_{{x.\\bar{{R}}}}^{{\\infty}} g = {Expr.show(pot)}", "= \\frac{{{Expr.show(k)}}}{{2}}\\paren{{n_{{f,l}} - n_{{f}}\\paren{{\\rho_{{\\infty}}}}}}, far out"])
+    beta := Expr.field("\\beta")
+    beat := Expr.pown(Expr.sub(Expr.num(1), Expr.pown(beta, 2)), 0.5)
+    mover := this.infos.filter(t => t.term.rule != None & t.carries).first
+    moved := mover == None ? "MOVEMENT" : mover.term.rule.name.upper
+    tick := Step.of(Fact.stands("\\frac{{d\\tau}}{{dt}}", beat), "a body moves or it emits", [mass.fact.key],
+      "{moved} steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{{2}} + \\paren{{d\\tau/dt}}^{{2}} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{{\\paren{{1 - \\beta}}\\paren{{1 + \\beta}}}}",
+      ["{moved}: every ray a cell a tick, so a body's step is c-bar whatever it does", "a source moves or it emits: what it spends going, it does not spend shining", "\\beta^{{2}} + \\paren{{d\\tau/dt}}^{{2}} = 1", "fore 1 - \\beta, aft 1 + \\beta: \\sqrt{{\\paren{{1 - \\beta}}\\paren{{1 + \\beta}}}} = {Expr.show(beat)}"])
+    fall := Prover.neat(Expr.mul([Expr.num(2), Expr.field("\\Phi")]))
+    falls := Step.of(Fact.stands("\\beta^{{2}} \\aside{{falling}}", fall), "a body falling in from far", [phi.fact.key],
+      "a body let go at rest far off gains speed as the pull does work on it: \\frac{{d}}{{dt}}\\frac{{\\beta^{{2}}}}{{2}} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it",
+      ["\\frac{{d}}{{dt}}\\frac{{\\beta^{{2}}}}{{2}} = g·\\beta = -\\frac{{d\\Phi}}{{dt}}", "from rest far off: \\beta^{{2}} = 2\\Phi"])
+    rs := Prover.neat(Expr.mul([Expr.num(2), strength, m, Expr.pown(Expr.sub(dim, Expr.num(2)), -1)]))
+    r := Expr.sym("r")
+    A := Prover.neat(Expr.sub(Expr.num(1), Expr.mul([Expr.field("r_{{s}}"), Expr.to_power(r, Expr.sub(Expr.num(2), dim))])))
+    held := Step.of(Fact.stands("A \\aside{{held}}", A), "a clock held where a body falls", [tick.fact.key, falls.fact.key],
+      "a clock held at r is passed by a body falling in from far at \\beta^{{2}} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{{2}} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{{s}}/r, with r_{{s}} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat",
+      ["\\paren{{d\\tau/dt}}^{{2}} = 1 - \\beta^{{2}} = 1 - 2\\Phi", "r_{{s}} = {Expr.show(rs)}", "A = {Expr.show(A)}"])
+    B := Prover.neat(Expr.pown(A, -1))
+    ruler := Step.of(Fact.stands("B \\aside{{held}}", B), "a ruler held where a body falls", [held.fact.key],
+      "and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it",
+      ["B = \\frac{{1}}{{A}} = {Expr.show(B)}", "A·B = 1"])
+    b := Expr.sym("b")
+    bend := Prover.neat(Expr.mul([Expr.num(2), Expr.field("r_{{s}}"), Expr.pown(b, -1)]))
+    defl := Step.of(Fact.stands("\\alpha \\aside{{held}}", bend), "light crossing a held field", [held.fact.key, ruler.fact.key],
+      "light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{{B/A}} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured",
+      ["the index: \\sqrt{{B/A}} = 1 + r_{{s}}/r + \\ldots", "\\alpha = \\int \\partial_{{b}}\\paren{{r_{{s}}/\\sqrt{{b^{{2}} + z^{{2}}}}}}\\,dz = 2r_{{s}}/b at D = 3", "a stone at c-bar reads A alone: r_{{s}}/b, half of it"])
+    g_.derivation = [left]
+    phi.derivation = [g_]
+    tick.derivation = [mass]
+    falls.derivation = [phi]
+    held.derivation = [tick, falls]
+    ruler.derivation = [held]
+    defl.derivation = [held, ruler]
+    [g_, phi, tick, falls, held, ruler, defl]
+  }
+  /*
+   * THE EXPANSION, OFF THE GROWTH LEDGER: inside the settled vacuum every ray has room ahead, so nothing grows there; the
+   * one rule that grows a point is a ray with nowhere to step, and that is only at the world's frontier. The frontier
+   * advances a cell a tick, since a ray never waits, so the world's radius is its age and its rate of growth one over it
+   */
+  expansion_of (s: Store, settles: Step): Step[] => {
+    grown := this.growth_filled(s)
+    inside := Prover.neat(grown.fact.to)
+    frontier := this.infos.filter(t => t.term.rule != None & t.carries & t.grows != "0").first
+    return [] if frontier == None
+    named := frontier.term.rule.name.upper
+    gate := frontier.share == None ? "-" : Expr.show(frontier.share)
+    st := Step.of(Fact.stands("\\partial_{{t}}V \\aside{{inside}}", inside), "what the settled vacuum grows", [grown.fact.key],
+      "the growth ledger read where the vacuum has settled: every ray there has room ahead, so {named} grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing",
+      ["{grown.fact.of} = {Expr.show(grown.fact.to)}", "{named} grows at {gate}: nought where every ray has room ahead"])
+    t := Expr.sym("t")
+    rate := Expr.pown(t, -1)
+    hub := Step.of(Fact.stands("H \\aside{{frontier}}", rate), "the world grows at its frontier", [st.fact.key],
+      "so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{{c}}t, and its rate of growth is one over its age: H = \\dot{{R}}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age",
+      ["inside: {Expr.show(inside)}", "at the frontier: {named} at {gate}, one cell a tick", "R = \\bar{{c}}t, so H = \\dot{{R}}/R = {Expr.show(rate)}"])
+    st.derivation = [grown]
+    hub.derivation = [st]
+    [st, hub].concat(this.scale_of(hub, settles))
+  }
+  /*
+   * THE SCALE, OFF THE AGE. A source moves or it emits, and the vacuum it emits into pulses: CREATION fires only at a free
+   * point and lights every way of it, so a point fires, its rays leave, and it is free again - every other tick. Whether
+   * what a source sends arrives in the vacuum's lit half or its dark half is a parity, and each tick it moves flips it.
+   * At a steady speed the flips fore and aft cancel; while it accelerates they do not, and they have been piling up since
+   * the world began - the age, one over the frontier's rate. What a heading keeps straight is v, so the mismatch an
+   * acceleration g has built is v H / g of what arrives, and what is felt is what arrives and that: g = g_N(1 + a_0/g),
+   * a_0 = v H. H is the vacuum's own growth - what the frontier would grow it at had no mass been there; the rate a world
+   * with matter in it is measured at carries the matter's growth too, so against that a_0 is v sqrt(Omega_Lambda)
+   */
+  scale_of (hub: Step, settles: Step): Step[] => {
+    vac := Expr.field("\\rho_{{\\infty}}")
+    /* far from every body a place's ways are its lattice's */
+    nf := Prover.neat(Expr.replace(Expr.replace(settles.fact.to, "\\rho", vac), "DEG_{{0}}", Expr.field("DEG")))
+    v := Prover.neat(Expr.pown(Expr.add([Expr.num(1), nf]), -1))
+    mover := this.infos.filter(t => t.term.rule != None & t.carries).first
+    moved := mover == None ? "MOVEMENT" : mover.term.rule.name.upper
+    straight := Step.of(Fact.stands("v \\aside{{straight}}", v), "what a heading keeps straight", [settles.fact.key],
+      "{moved} draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at",
+      ["the draw: 1 straight on against n_{{f}} folded", "n_{{f}} at \\rho_{{\\infty}} = {Expr.show(nf)}", "v = \\frac{{1}}{{1 + n_{{f}}}} = {Expr.show(v)}"])
+    straight.derivation = [settles]
+    lights := this.relights
+    lit := lights == None ? "CREATION" : lights.term.rule.name.upper
+    sends := this.infos.filter(t => t.outside).first
+    sent := sends == None ? "EMISSION" : sends.term.rule.name.upper
+    a0 := Prover.neat(Expr.mul([v, hub.fact.to]))
+    scale := Step.of(Fact.stands("a_{{0}} \\aside{{age}}", a0), "the scale is the vacuum's own growth", [straight.fact.key, hub.fact.key],
+      "{lit} fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. {sent} sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against",
+      ["{lit}: fires at a free point, lights every way - the vacuum pulses, every other tick", "{sent}: a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, {Expr.show(hub.fact.to)}", "a_{{0}} = vH = {Expr.show(a0)}"])
+    scale.derivation = [straight, hub]
+    g := Expr.field("g_{{N}}")
+    a := Expr.field("a_{{0}}")
+    half := Expr.mul([g, Expr.num(0.5)])
+    got := Prover.neat(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]))
+    closing := Step.of(Fact.stands("F_{{g}} \\aside{{closing}}", got), "what is felt, with the mismatch closed", [scale.fact.key],
+      "what is felt is what arrives, g_{{N}}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{{0}}/g of it. So g = g_{{N}}\\paren{{1 + a_{{0}}/g}}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{{g_{{N}}a_{{0}}}}: g_{{N}} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling",
+      ["g = g_{{N}}\\paren{{1 + \\frac{{a_{{0}}}}{{g}}}}", "g^{{2}} - g_{{N}}g - g_{{N}}a_{{0}} = 0", "strong: g \\to g_{{N}};  weak: g \\to \\sqrt{{g_{{N}}a_{{0}}}}, so v^{{4}} = G m a_{{0}} at D = 3", "F_{{g}} = {Expr.show(got)}"])
+    closing.derivation = [scale]
+    ratio := Prover.neat(Expr.div(a0, Expr.mul([Expr.field("\\bar{{c}}"), hub.fact.to])))
+    ratio = Expr.replace(ratio, "\\bar{{c}}", Expr.num(1))
+    against := Step.of(Fact.stands("\\frac{{a_{{0}}}}{{cH}}", Prover.neat(ratio)), "the scale against the vacuum's growth", [scale.fact.key, hub.fact.key],
+      "a_{{0}} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{{0}}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{{\\Omega_{{\\Lambda}}}} of it - so a_{{0}}/cH_{{0}} = v\\sqrt{{\\Omega_{{\\Lambda}}}}. Measured it is 0.155 to 0.183",
+      ["a_{{0}} = vH_{{vac}}, cH_{{vac}} = \\bar{{c}}H_{{vac}}", "\\frac{{a_{{0}}}}{{cH_{{vac}}}} = {Expr.show(Prover.neat(ratio))}", "against what is measured: a_{{0}}/cH_{{0}} = v\\sqrt{{\\Omega_{{\\Lambda}}}}, \\Omega_{{\\Lambda}} = \\paren{{H_{{vac}}/H_{{0}}}}^{{2}}"])
+    against.derivation = [scale]
+    [straight, scale, closing, against]
   }
   /* THE MASS IS THE LEFTOVER: the rays' line solved for what a source puts in - how the lit share moved, less what the vacuum's own rules did to it */
   leftover (rays_c: Step): Step? => {
@@ -1294,7 +1437,7 @@ Prover := class < theory: Theory {
     left := this.record_left(s, rays_c, ways_c, settles)
     mass := this.leftover(rays_c)
     return [] if mass == None
-    [rays_l, space_l, ways, moved].concat(pieces).concat([moving_, rays_c, ways_c, moves, settles, left, mass])
+    [rays_l, space_l, ways, moved].concat(pieces).concat([moving_, rays_c, ways_c, moves, settles, left]).concat(this.relativity_of(s, left, mass)).concat(this.expansion_of(s, settles)).concat([mass])
   }
   /* THE LEAN: how the heading is being turned - half the density's difference across the headings, since a fold turns a heading by the weight it was folded. It is the velocity the record is followed along: the force term's velocity, as the streaming term's is the heading */
   lean (rec: Step): Step => {

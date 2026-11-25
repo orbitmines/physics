@@ -11,7 +11,7 @@ namespace Model
 ray_impl_field "theory" : Theory := do
   return ωnull
 ray_impl_sfield "NAMES" : Value := do
-  return (← ωlst #[("\\langle\\rho\\rangle" : String), ("D" : String), ("DEG" : String), ("l.DEG" : String), ("\\nu" : String), ("\\sigma" : String), ("F" : String), ("\\bar{c}" : String), ("m'" : String), ("A'" : String), ("\\bar{R}'" : String), ("m_{\\Sigma}" : String), ("m_{\\Sigma}'" : String), ("\\mathcal{D}" : String), ("\\mathcal{D}'" : String), ("\\beta'" : String), ("\\beta\\cdot\\hat{d}" : String), ("\\beta'\\cdot\\hat{d}" : String), ("\\rho" : String), ("\\omega" : String), ("R" : String), ("r" : String), ("\\bar{r}" : String), ("\\bar{m}_{x}" : String), ("A" : String), ("\\bar{R}" : String), ("\\beta" : String), ("n_{f}" : String), ("\\sigma_{tr}" : String), ("L" : String), ("m" : String), ("\\delta" : String), ("g_{N}" : String), ("a_{0}" : String), ("\\Phi" : String)])
+  return (← ωlst #[("\\langle\\rho\\rangle" : String), ("D" : String), ("DEG" : String), ("l.DEG" : String), ("\\nu" : String), ("\\sigma" : String), ("F" : String), ("\\bar{c}" : String), ("m'" : String), ("A'" : String), ("\\bar{R}'" : String), ("m_{\\Sigma}" : String), ("m_{\\Sigma}'" : String), ("\\mathcal{D}" : String), ("\\mathcal{D}'" : String), ("\\beta'" : String), ("\\beta\\cdot\\hat{d}" : String), ("\\beta'\\cdot\\hat{d}" : String), ("\\rho" : String), ("\\rho_{\\infty}" : String), ("DEG_{0}" : String), ("\\omega" : String), ("R" : String), ("r" : String), ("\\bar{r}" : String), ("\\bar{m}_{x}" : String), ("A" : String), ("\\bar{R}" : String), ("\\beta" : String), ("n_{f}" : String), ("\\sigma_{tr}" : String), ("L" : String), ("m" : String), ("\\delta" : String), ("g_{N}" : String), ("a_{0}" : String), ("\\Phi" : String)])
 ray_impl_sfield "RD" : Value := do
   return (30 : Float)
 ray_impl_field "store" : Store := do
@@ -19,6 +19,11 @@ ray_impl_field "store" : Store := do
 ray_impl_field "cache" : object := do
   return (← RMap.new)
 ray_impl_method "fact" (of__0 : String) : Fact := do
+  let law_0 ← IO.mkRef (← call! (← cls% Aggregate) "of" ((← ωget self "theory")))
+  let st_0 ← IO.mkRef (← call! (← ωget (← law_0.get) "chain") "get" (("of:" ++ (← ωtoStr (← of__0.get)) ++ "" : String)))
+  if ωtruthy (!ωisNull (← st_0.get)) then
+    if true then return (← ωget (← st_0.get) "fact")
+    pure ()
   let found_0 ← IO.mkRef ωnull
   for e1 in (← ωitems (← call! (← ωget self "store") "all" (("is" : String)))) do
     let f_1 ← IO.mkRef e1
@@ -152,10 +157,10 @@ ray_impl_method "settled" (DEG_0 : Float := ωnull) : object := do
   (← (ωatSetter (← base_0.get) ("\\beta'" : String)) (0 : Float)) |> ωsink
   (← (ωatSetter (← base_0.get) ("\\beta\\cdot\\hat{d}" : String)) (0 : Float)) |> ωsink
   (← (ωatSetter (← base_0.get) ("\\beta'\\cdot\\hat{d}" : String)) (0 : Float)) |> ωsink
-  let rho_0 ← IO.mkRef (← call! self "fact" (("\\rho_{\\infty}" : String)))
-  if ωtruthy (!ωisNull (← rho_0.get)) then
-    (← (ωatSetter (← base_0.get) ("\\rho" : String)) (← call! self "at" ((← ωget (← rho_0.get) "to"), (← base_0.get)))) |> ωsink
-    pure ()
+  let law_0 ← IO.mkRef (← call! (← cls% Aggregate) "of" ((← ωget self "theory"), (← deg_0.get), (← ωget (← ωget (← ωget self "theory") "lattice") "D")))
+  (← (ωatSetter (← base_0.get) ("\\rho" : String)) (← ωget (← law_0.get) "rho_inf")) |> ωsink
+  (← (ωatSetter (← base_0.get) ("\\rho_{\\infty}" : String)) (← ωget (← law_0.get) "rho_inf")) |> ωsink
+  (← (ωatSetter (← base_0.get) ("DEG_{0}" : String)) (← deg_0.get)) |> ωsink
   let om_0 ← IO.mkRef (← call! self "fact" (("\\omega" : String)))
   if ωtruthy (!ωisNull (← om_0.get)) then
     (← (ωatSetter (← base_0.get) ("\\omega" : String)) (← call! self "at" ((← ωget (← om_0.get) "to"), (← base_0.get)))) |> ωsink
@@ -176,6 +181,7 @@ ray_impl_method "settled" (DEG_0 : Float := ωnull) : object := do
       pure ()
     pure ()
   Value.null |> ωsink
+  (← (ωatSetter (← far_0.get) ("n_{f}" : String)) (← ωget (← law_0.get) "nf_inf")) |> ωsink
   if true then return (← far_0.get)
   return ωnull
 ray_impl_getter "a0_lattice" : Float := do

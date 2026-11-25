@@ -11548,11 +11548,14 @@ func init() {
             var gate_1 any
             gate_1 = Tern(Truthy(Eq(Get(t_1, "around"), nil)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Get(t_1, "around"), "n_{f}", Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Get(K("Prover"), "WAYS"), Get(K("Prover"), "LATTICE") }) }) }), "DEG", Get(K("Prover"), "WAYS") }) }) })
             _ = gate_1
+            var over_1 any
+            over_1 = Tern(Truthy(Eq(Get(t_1, "around"), nil)), func() any { return Get(K("Prover"), "LATTICE") }, func() any { return Get(K("Prover"), "WAYS") })
+            _ = over_1
             var got_1 any
-            got_1 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ w_1 }), Get(K("Prover"), "WAYS"), gate_1, at_1) }) })
+            got_1 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ w_1 }), over_1, gate_1, at_1) }) })
             _ = got_1
             M_push(parts_0, got_1)
-            M_push(said_0, "" + Str(M_upper(Get(Get(Get(t_1, "term"), "rule"), "name"))) + ": " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ w_1 }) })) + " a fold on each of l's ways, " + Str(Call(K("Expr"), "show", []any{ gate_1 })) + " of them, at " + Str(Call(K("Expr"), "show", []any{ at_1 })) + " - " + Str(Call(K("Expr"), "show", []any{ got_1 })) + "")
+            M_push(said_0, "" + Str(M_upper(Get(Get(Get(t_1, "term"), "rule"), "name"))) + ": " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "num", []any{ w_1 }) })) + " a fold on each of " + Str(Call(K("Expr"), "show", []any{ over_1 })) + " of l's ways, " + Str(Call(K("Expr"), "show", []any{ gate_1 })) + " of them, at " + Str(Call(K("Expr"), "show", []any{ at_1 })) + " - " + Str(Call(K("Expr"), "show", []any{ got_1 })) + "")
           }
         }
       }
@@ -11571,7 +11574,7 @@ func init() {
           return Get(Get(x_2, "fact"), "key")
         }
         return nil
-      }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + Str(Call(K("Expr"), "show", []any{ folds_of_0 })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", M_concat(said_0, Lst("\\Delta DEG = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "")) })
+      }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + Str(Call(K("Expr"), "show", []any{ folds_of_0 })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", M_concat(said_0, Lst("\\Delta DEG = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "")) })
       _ = st_0
       Set(st_0, "derivation", M_concat(Lst(line_0, moved_0, ways_0), pieces_0))
       if true {
@@ -11663,11 +11666,11 @@ func init() {
       var R_0 any
       R_0 = Call(K("Expr"), "field", []any{ "x.\\bar{R}" })
       _ = R_0
-      var reach_0 any
-      reach_0 = Call(s_0, "fact", []any{ "is", "l.reach\\paren{\\bar{R}}" })
-      _ = reach_0
+      var relights_0 any
+      relights_0 = Get(self, "relights")
+      _ = relights_0
       var walks_0 any
-      walks_0 = Tern(Truthy(((Truthy(!Eq(reach_0, nil)) && Truthy(Eq(Get(Get(reach_0, "to"), "kind"), "pow"))))), func() any { return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "pown", []any{ Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Get(Get(reach_0, "to"), "base") }) }), Neg(1.0) }), "\\rho", vac_0 }) }) }, func() any { return nil })
+      walks_0 = Call(self, "walk_of", []any{ s_0 })
       _ = walks_0
       var dim_0 any
       dim_0 = Call(K("Expr"), "field", []any{ "D" })
@@ -11681,6 +11684,9 @@ func init() {
       var walked_0 any
       walked_0 = Tern(Truthy(Eq(walks_0, nil)), func() any { return "-" }, func() any { return Call(K("Expr"), "show", []any{ walks_0 }) })
       _ = walked_0
+      var afresh_0 any
+      afresh_0 = Tern(Truthy(Eq(relights_0, nil)), func() any { return "-" }, func() any { return M_upper(Get(Get(Get(relights_0, "term"), "rule"), "name")) })
+      _ = afresh_0
       var rhs_0 any
       rhs_0 = Call(K("Expr"), "add", []any{ Lst(base_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ k_0, Neg(1.0) }), Call(K("Expr"), "call", []any{ "\\sum_{x = x_{@t}}", per_0 })) })) })
       _ = rhs_0
@@ -11688,7 +11694,273 @@ func init() {
       lhs_0 = "\\Delta\\paren{DEG·\\rho + " + Str(Call(K("Expr"), "show", []any{ k_0 })) + "·n_{f}}"
       _ = lhs_0
       if true {
-        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", Lst(Get(Get(rays_c_0, "fact"), "key"), Get(Get(ways_c_0, "fact"), "key"), Get(Get(settles_0, "fact"), "key")), "a meeting turns " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " + Str(Call(K("Expr"), "show", []any{ k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + Str(Call(K("Expr"), "show", []any{ base_0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " + Str(walked_0) + ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
+        return Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "n_{f,l}\\paren{t}", rhs_0 }), "the record every body leaves at a local", Lst(Get(Get(rays_c_0, "fact"), "key"), Get(Get(ways_c_0, "fact"), "key"), Get(Get(settles_0, "fact"), "key")), "a meeting turns " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + Str(Call(K("Expr"), "show", []any{ k_0 })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " + Str(Call(K("Expr"), "show", []any{ k_0 })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", Lst("" + Str(lhs_0) + " = " + Str(Call(K("Expr"), "show", []any{ both_0 })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + Str(Call(K("Expr"), "show", []any{ base_0 })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: " + Str(afresh_0) + " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = " + Str(walked_0) + ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " + Str(Call(K("Expr"), "show", []any{ rhs_0 })) + "") })
+      }
+      return nil
+    })
+    c.Getter("relights", func(self any, a1 []any) any {
+      if true {
+        return M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)) && Truthy(Eq(Get(t_2, "degree"), 0.0)))) && Truthy(Eq(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ Get(t_2, "ray_count") }) }), "DEG")))
+        }
+        return nil
+      })))
+      }
+      return nil
+    })
+    c.Method("walk_of", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0;
+      var reach_0 any
+      reach_0 = Call(s_0, "fact", []any{ "is", "l.reach\\paren{\\bar{R}}" })
+      _ = reach_0
+      if Truthy((Truthy(Eq(Get(self, "relights"), nil)) || Truthy(Eq(reach_0, nil)))) {
+        if true {
+          return nil
+        }
+      }
+      if Truthy(!Eq(Get(Get(reach_0, "to"), "kind"), "pow")) {
+        if true {
+          return nil
+        }
+      }
+      if true {
+        return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "pown", []any{ Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Get(Get(reach_0, "to"), "base") }) }), Neg(1.0) }), "\\rho", Call(K("Expr"), "field", []any{ "\\rho_{\\infty}" }) }) })
+      }
+      return nil
+    })
+    c.Method("relativity_of", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var left_0 any = Arg(a1, 1); _ = left_0; var mass_0 any = Arg(a1, 2); _ = mass_0;
+      var walks_0 any
+      walks_0 = Call(self, "walk_of", []any{ s_0 })
+      _ = walks_0
+      if Truthy(Eq(walks_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      var dim_0 any
+      dim_0 = Call(K("Expr"), "field", []any{ "D" })
+      _ = dim_0
+      var R_0 any
+      R_0 = Call(K("Expr"), "field", []any{ "x.\\bar{R}" })
+      _ = R_0
+      var m_0 any
+      m_0 = Call(K("Expr"), "field", []any{ "x.\\bar{m}" })
+      _ = m_0
+      var k_0 any
+      k_0 = Get(self, "fold_weight")
+      _ = k_0
+      var far_0 any
+      far_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ k_0, Neg(1.0) }), m_0, dim_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "sub", []any{ dim_0, Call(K("Expr"), "num", []any{ 2.0 }) }), walks_0) }), Neg(1.0) }), Call(K("Expr"), "to_power", []any{ R_0, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 2.0 }), dim_0 }) })) }) })
+      _ = far_0
+      var strength_0 any
+      strength_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ dim_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), walks_0) }) }) })
+      _ = strength_0
+      var pull_0 any
+      pull_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(strength_0, m_0, Call(K("Expr"), "to_power", []any{ R_0, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), dim_0 }) })) }) })
+      _ = pull_0
+      var g__0 any
+      g__0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "g \\aside{far}", pull_0 }), "the pull far from a body", Lst(Get(Get(left_0, "fact"), "key")), "what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = " + Str(Call(K("Expr"), "show", []any{ k_0 })) + "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path", Lst("n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to " + Str(Call(K("Expr"), "show", []any{ far_0 })) + ", past the free path", "g = \\frac{" + Str(Call(K("Expr"), "show", []any{ k_0 })) + "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = " + Str(Call(K("Expr"), "show", []any{ pull_0 })) + "", "G = \\frac{D}{2\\lambda} = " + Str(Call(K("Expr"), "show", []any{ strength_0 })) + "") })
+      _ = g__0
+      var pot_0 any
+      pot_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(strength_0, m_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "sub", []any{ dim_0, Call(K("Expr"), "num", []any{ 2.0 }) }), Neg(1.0) }), Call(K("Expr"), "to_power", []any{ R_0, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 2.0 }), dim_0 }) })) }) })
+      _ = pot_0
+      var phi_0 any
+      phi_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\Phi \\aside{far}", pot_0 }), "the potential is the record", Lst(Get(Get(g__0, "fact"), "key")), "the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record", Lst("\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = " + Str(Call(K("Expr"), "show", []any{ pot_0 })) + "", "= \\frac{" + Str(Call(K("Expr"), "show", []any{ k_0 })) + "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out") })
+      _ = phi_0
+      var beta_0 any
+      beta_0 = Call(K("Expr"), "field", []any{ "\\beta" })
+      _ = beta_0
+      var beat_0 any
+      beat_0 = Call(K("Expr"), "pown", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "pown", []any{ beta_0, 2.0 }) }), 0.5 })
+      _ = beat_0
+      var mover_0 any
+      mover_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)) && Truthy(Get(t_2, "carries")))
+        }
+        return nil
+      })))
+      _ = mover_0
+      var moved_0 any
+      moved_0 = Tern(Truthy(Eq(mover_0, nil)), func() any { return "MOVEMENT" }, func() any { return M_upper(Get(Get(Get(mover_0, "term"), "rule"), "name")) })
+      _ = moved_0
+      var tick_0 any
+      tick_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\frac{d\\tau}{dt}", beat_0 }), "a body moves or it emits", Lst(Get(Get(mass_0, "fact"), "key")), "" + Str(moved_0) + " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}", Lst("" + Str(moved_0) + ": every ray a cell a tick, so a body's step is c-bar whatever it does", "a source moves or it emits: what it spends going, it does not spend shining", "\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1", "fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = " + Str(Call(K("Expr"), "show", []any{ beat_0 })) + "") })
+      _ = tick_0
+      var fall_0 any
+      fall_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "\\Phi" })) }) })
+      _ = fall_0
+      var falls_0 any
+      falls_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\beta^{2} \\aside{falling}", fall_0 }), "a body falling in from far", Lst(Get(Get(phi_0, "fact"), "key")), "a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it", Lst("\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}", "from rest far off: \\beta^{2} = 2\\Phi") })
+      _ = falls_0
+      var rs_0 any
+      rs_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), strength_0, m_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "sub", []any{ dim_0, Call(K("Expr"), "num", []any{ 2.0 }) }), Neg(1.0) })) }) })
+      _ = rs_0
+      var r_0 any
+      r_0 = Call(K("Expr"), "sym", []any{ "r" })
+      _ = r_0
+      var A_0 any
+      A_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "r_{s}" }), Call(K("Expr"), "to_power", []any{ r_0, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 2.0 }), dim_0 }) })) }) }) })
+      _ = A_0
+      var held_0 any
+      held_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "A \\aside{held}", A_0 }), "a clock held where a body falls", Lst(Get(Get(tick_0, "fact"), "key"), Get(Get(falls_0, "fact"), "key")), "a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat", Lst("\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi", "r_{s} = " + Str(Call(K("Expr"), "show", []any{ rs_0 })) + "", "A = " + Str(Call(K("Expr"), "show", []any{ A_0 })) + "") })
+      _ = held_0
+      var B_0 any
+      B_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "pown", []any{ A_0, Neg(1.0) }) })
+      _ = B_0
+      var ruler_0 any
+      ruler_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "B \\aside{held}", B_0 }), "a ruler held where a body falls", Lst(Get(Get(held_0, "fact"), "key")), "and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it", Lst("B = \\frac{1}{A} = " + Str(Call(K("Expr"), "show", []any{ B_0 })) + "", "A·B = 1") })
+      _ = ruler_0
+      var b_0 any
+      b_0 = Call(K("Expr"), "sym", []any{ "b" })
+      _ = b_0
+      var bend_0 any
+      bend_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "r_{s}" }), Call(K("Expr"), "pown", []any{ b_0, Neg(1.0) })) }) })
+      _ = bend_0
+      var defl_0 any
+      defl_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\alpha \\aside{held}", bend_0 }), "light crossing a held field", Lst(Get(Get(held_0, "fact"), "key"), Get(Get(ruler_0, "fact"), "key")), "light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured", Lst("the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots", "\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3", "a stone at c-bar reads A alone: r_{s}/b, half of it") })
+      _ = defl_0
+      Set(g__0, "derivation", Lst(left_0))
+      Set(phi_0, "derivation", Lst(g__0))
+      Set(tick_0, "derivation", Lst(mass_0))
+      Set(falls_0, "derivation", Lst(phi_0))
+      Set(held_0, "derivation", Lst(tick_0, falls_0))
+      Set(ruler_0, "derivation", Lst(held_0))
+      Set(defl_0, "derivation", Lst(held_0, ruler_0))
+      if true {
+        return Lst(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0)
+      }
+      return nil
+    })
+    c.Method("expansion_of", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var settles_0 any = Arg(a1, 1); _ = settles_0;
+      var grown_0 any
+      grown_0 = Call(self, "growth_filled", []any{ s_0 })
+      _ = grown_0
+      var inside_0 any
+      inside_0 = Call(K("Prover"), "neat", []any{ Get(Get(grown_0, "fact"), "to") })
+      _ = inside_0
+      var frontier_0 any
+      frontier_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)) && Truthy(Get(t_2, "carries")))) && Truthy(!Eq(Get(t_2, "grows"), "0")))
+        }
+        return nil
+      })))
+      _ = frontier_0
+      if Truthy(Eq(frontier_0, nil)) {
+        if true {
+          return Lst()
+        }
+      }
+      var named_0 any
+      named_0 = M_upper(Get(Get(Get(frontier_0, "term"), "rule"), "name"))
+      _ = named_0
+      var gate_0 any
+      gate_0 = Tern(Truthy(Eq(Get(frontier_0, "share"), nil)), func() any { return "-" }, func() any { return Call(K("Expr"), "show", []any{ Get(frontier_0, "share") }) })
+      _ = gate_0
+      var st_0 any
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\partial_{t}V \\aside{inside}", inside_0 }), "what the settled vacuum grows", Lst(Get(Get(grown_0, "fact"), "key")), "the growth ledger read where the vacuum has settled: every ray there has room ahead, so " + Str(named_0) + " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing", Lst("" + Str(Get(Get(grown_0, "fact"), "of")) + " = " + Str(Call(K("Expr"), "show", []any{ Get(Get(grown_0, "fact"), "to") })) + "", "" + Str(named_0) + " grows at " + Str(gate_0) + ": nought where every ray has room ahead") })
+      _ = st_0
+      var t_0 any
+      t_0 = Call(K("Expr"), "sym", []any{ "t" })
+      _ = t_0
+      var rate_0 any
+      rate_0 = Call(K("Expr"), "pown", []any{ t_0, Neg(1.0) })
+      _ = rate_0
+      var hub_0 any
+      hub_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "H \\aside{frontier}", rate_0 }), "the world grows at its frontier", Lst(Get(Get(st_0, "fact"), "key")), "so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age", Lst("inside: " + Str(Call(K("Expr"), "show", []any{ inside_0 })) + "", "at the frontier: " + Str(named_0) + " at " + Str(gate_0) + ", one cell a tick", "R = \\bar{c}t, so H = \\dot{R}/R = " + Str(Call(K("Expr"), "show", []any{ rate_0 })) + "") })
+      _ = hub_0
+      Set(st_0, "derivation", Lst(grown_0))
+      Set(hub_0, "derivation", Lst(st_0))
+      if true {
+        return M_concat(Lst(st_0, hub_0), Call(self, "scale_of", []any{ hub_0, settles_0 }))
+      }
+      return nil
+    })
+    c.Method("scale_of", func(self any, a1 []any) any {
+      var hub_0 any = Arg(a1, 0); _ = hub_0; var settles_0 any = Arg(a1, 1); _ = settles_0;
+      var vac_0 any
+      vac_0 = Call(K("Expr"), "field", []any{ "\\rho_{\\infty}" })
+      _ = vac_0
+      var nf_0 any
+      nf_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Get(Get(settles_0, "fact"), "to"), "\\rho", vac_0 }), "DEG_{0}", Call(K("Expr"), "field", []any{ "DEG" }) }) })
+      _ = nf_0
+      var v_0 any
+      v_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), nf_0) }), Neg(1.0) }) })
+      _ = v_0
+      var mover_0 any
+      mover_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy(!Eq(Get(Get(t_2, "term"), "rule"), nil)) && Truthy(Get(t_2, "carries")))
+        }
+        return nil
+      })))
+      _ = mover_0
+      var moved_0 any
+      moved_0 = Tern(Truthy(Eq(mover_0, nil)), func() any { return "MOVEMENT" }, func() any { return M_upper(Get(Get(Get(mover_0, "term"), "rule"), "name")) })
+      _ = moved_0
+      var straight_0 any
+      straight_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "v \\aside{straight}", v_0 }), "what a heading keeps straight", Lst(Get(Get(settles_0, "fact"), "key")), "" + Str(moved_0) + " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", Lst("the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " + Str(Call(K("Expr"), "show", []any{ nf_0 })) + "", "v = \\frac{1}{1 + n_{f}} = " + Str(Call(K("Expr"), "show", []any{ v_0 })) + "") })
+      _ = straight_0
+      Set(straight_0, "derivation", Lst(settles_0))
+      var lights_0 any
+      lights_0 = Get(self, "relights")
+      _ = lights_0
+      var lit_0 any
+      lit_0 = Tern(Truthy(Eq(lights_0, nil)), func() any { return "CREATION" }, func() any { return M_upper(Get(Get(Get(lights_0, "term"), "rule"), "name")) })
+      _ = lit_0
+      var sends_0 any
+      sends_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return Get(t_2, "outside")
+        }
+        return nil
+      })))
+      _ = sends_0
+      var sent_0 any
+      sent_0 = Tern(Truthy(Eq(sends_0, nil)), func() any { return "EMISSION" }, func() any { return M_upper(Get(Get(Get(sends_0, "term"), "rule"), "name")) })
+      _ = sent_0
+      var a0_0 any
+      a0_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(v_0, Get(Get(hub_0, "fact"), "to")) }) })
+      _ = a0_0
+      var scale_0 any
+      scale_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "a_{0} \\aside{age}", a0_0 }), "the scale is the vacuum's own growth", Lst(Get(Get(straight_0, "fact"), "key"), Get(Get(hub_0, "fact"), "key")), "" + Str(lit_0) + " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " + Str(sent_0) + " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against", Lst("" + Str(lit_0) + ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" + Str(sent_0) + ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, " + Str(Call(K("Expr"), "show", []any{ Get(Get(hub_0, "fact"), "to") })) + "", "a_{0} = vH = " + Str(Call(K("Expr"), "show", []any{ a0_0 })) + "") })
+      _ = scale_0
+      Set(scale_0, "derivation", Lst(straight_0, hub_0))
+      var g_0 any
+      g_0 = Call(K("Expr"), "field", []any{ "g_{N}" })
+      _ = g_0
+      var a_0 any
+      a_0 = Call(K("Expr"), "field", []any{ "a_{0}" })
+      _ = a_0
+      var half_0 any
+      half_0 = Call(K("Expr"), "mul", []any{ Lst(g_0, Call(K("Expr"), "num", []any{ 0.5 })) })
+      _ = half_0
+      var got_0 any
+      got_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "add", []any{ Lst(half_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "mul", []any{ Lst(half_0, half_0) }), Call(K("Expr"), "mul", []any{ Lst(g_0, a_0) })) }), 0.5 })) }) })
+      _ = got_0
+      var closing_0 any
+      closing_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "F_{g} \\aside{closing}", got_0 }), "what is felt, with the mismatch closed", Lst(Get(Get(scale_0, "fact"), "key")), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", Lst("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      _ = closing_0
+      Set(closing_0, "derivation", Lst(scale_0))
+      var ratio_0 any
+      ratio_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ a0_0, Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "\\bar{c}" }), Get(Get(hub_0, "fact"), "to")) }) }) })
+      _ = ratio_0
+      ratio_0 = Call(K("Expr"), "replace", []any{ ratio_0, "\\bar{c}", Call(K("Expr"), "num", []any{ 1.0 }) })
+      var against_0 any
+      against_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\frac{a_{0}}{cH}", Call(K("Prover"), "neat", []any{ ratio_0 }) }), "the scale against the vacuum's growth", Lst(Get(Get(scale_0, "fact"), "key"), Get(Get(hub_0, "fact"), "key")), "a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", Lst("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Prover"), "neat", []any{ ratio_0 }) })) + "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}") })
+      _ = against_0
+      Set(against_0, "derivation", Lst(scale_0))
+      if true {
+        return Lst(straight_0, scale_0, closing_0, against_0)
       }
       return nil
     })
@@ -11821,7 +12093,7 @@ func init() {
         }
       }
       if true {
-        return M_concat(M_concat(Lst(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), Lst(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0))
+        return M_concat(M_concat(M_concat(M_concat(M_concat(Lst(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), Lst(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0)), Call(self, "relativity_of", []any{ s_0, left_0, mass_0 })), Call(self, "expansion_of", []any{ s_0, settles_0 })), Lst(mass_0))
       }
       return nil
     })
@@ -12800,6 +13072,11 @@ func init() {
         if Truthy(!Eq(Elem(steps_0, i_1), nil)) {
           Call(out_0, "set", []any{ Elem(roles_0, i_1), Elem(steps_0, i_1) })
         }
+      }
+      for _, e1 := range Items(model_0) {
+        var x_1 any = e1
+        _ = x_1
+        Call(out_0, "set", []any{ "of:" + Str(Get(Get(x_1, "fact"), "of")) + "", x_1 })
       }
       if true {
         return out_0
@@ -28802,12 +29079,23 @@ var Model *Cls
 func init() {
   Model = cls("Model", Node, func(c *Cls) {
     c.Field("theory", nil)
-    c.StaticField("NAMES", func(self any) any { return Lst("\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi") })
+    c.StaticField("NAMES", func(self any) any { return Lst("\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\rho_{\\infty}", "DEG_{0}", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi") })
     c.StaticField("RD", func(self any) any { return 30.0 })
     c.Field("store", func(self any) any { return Get(Make("Prover", []any{ Kw("theory", Get(self, "theory")) }...), "closure") })
     c.Field("cache", func(self any) any { return Make(Node) })
     c.Method("fact", func(self any, a1 []any) any {
       var of__0 any = Arg(a1, 0); _ = of__0;
+      var law_0 any
+      law_0 = Call(K("Aggregate"), "of", []any{ Get(self, "theory") })
+      _ = law_0
+      var st_0 any
+      st_0 = Call(Get(law_0, "chain"), "get", []any{ "of:" + Str(of__0) + "" })
+      _ = st_0
+      if Truthy(!Eq(st_0, nil)) {
+        if true {
+          return Get(st_0, "fact")
+        }
+      }
       var found_0 any
       found_0 = nil
       _ = found_0
@@ -29042,12 +29330,12 @@ func init() {
       Set(base_0, Str("\\beta'"), 0.0)
       Set(base_0, Str("\\beta\\cdot\\hat{d}"), 0.0)
       Set(base_0, Str("\\beta'\\cdot\\hat{d}"), 0.0)
-      var rho_0 any
-      rho_0 = Call(self, "fact", []any{ "\\rho_{\\infty}" })
-      _ = rho_0
-      if Truthy(!Eq(rho_0, nil)) {
-        Set(base_0, Str("\\rho"), Call(self, "at", []any{ Get(rho_0, "to"), base_0 }))
-      }
+      var law_0 any
+      law_0 = Call(K("Aggregate"), "of", []any{ Get(self, "theory"), deg_0, Get(Get(Get(self, "theory"), "lattice"), "D") })
+      _ = law_0
+      Set(base_0, Str("\\rho"), Get(law_0, "rho_inf"))
+      Set(base_0, Str("\\rho_{\\infty}"), Get(law_0, "rho_inf"))
+      Set(base_0, Str("DEG_{0}"), deg_0)
       var om_0 any
       om_0 = Call(self, "fact", []any{ "\\omega" })
       _ = om_0
@@ -29074,6 +29362,7 @@ func init() {
           SetAt(far_0, n_1, Call(self, "at", []any{ Get(f_1, "to"), far_0 }))
         }
       }
+      Set(far_0, Str("n_{f}"), Get(law_0, "nf_inf"))
       if true {
         return far_0
       }
@@ -33101,7 +33390,7 @@ func init() {
     c.StaticField("theorem vacuum.ways", func(self any) any {
       return Make(Theorem, Kw("id", "vacuum.ways"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "a fold is a way. How many ways does a local have, and what moves them?"), Kw("about", "\\Delta DEG"), Kw("also", "DEG"), Kw("leads", "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."), Kw("then", "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") }...)
+          return Make("Asked", []any{ Kw("asks", "a fold is a way. How many ways does a local have, and what moves them?"), Kw("about", "\\Delta DEG"), Kw("also", "DEG"), Kw("leads", "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own."), Kw("then", "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") }...)
         }
         return nil
       })))
@@ -33437,7 +33726,7 @@ func init() {
     c.StaticField("theorem gravity.schwarzschild", func(self any) any {
       return Make(Theorem, Kw("id", "gravity.schwarzschild"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?"), Kw("about", "A in r as GR writes it"), Kw("also", "A in r"), Kw("leads", "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it."), Kw("then", "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.") }...)
+          return Make("Asked", []any{ Kw("asks", "a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?"), Kw("about", "A \\aside{held}"), Kw("also", "B \\aside{held}"), Kw("leads", "THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes."), Kw("then", "AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it.") }...)
         }
         return nil
       })))
@@ -33493,7 +33782,7 @@ func init() {
     c.StaticField("theorem gravity.einstein", func(self any) any {
       return Make(Theorem, Kw("id", "gravity.einstein"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "and the metric in terms of that potential - does it come out as general relativity writes it?"), Kw("about", "A, off the record a ray crosses") }...)
+          return Make("Asked", []any{ Kw("asks", "the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?"), Kw("about", "\\beta^{2} \\aside{falling}") }...)
         }
         return nil
       })))
@@ -33501,7 +33790,47 @@ func init() {
     c.StaticField("theorem gravity.deflection", func(self any) any {
       return Make(Theorem, Kw("id", "gravity.deflection"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?"), Kw("about", "the deflection this model gives"), Kw("also", "the deflection, as general relativity gives it"), Kw("leads", "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value."), Kw("then", "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.") }...)
+          return Make("Asked", []any{ Kw("asks", "light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?"), Kw("about", "\\alpha \\aside{held}"), Kw("leads", "TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since.") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.beat", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.beat"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?"), Kw("about", "\\frac{d\\tau}{dt}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.far", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.far"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?"), Kw("about", "g \\aside{far}"), Kw("also", "\\Phi \\aside{far}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem vacuum.age", func(self any) any {
+      return Make(Theorem, Kw("id", "vacuum.age"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?"), Kw("about", "H \\aside{frontier}"), Kw("also", "\\partial_{t}V \\aside{inside}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.scale", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.scale"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"), Kw("about", "a_{0} \\aside{age}"), Kw("also", "v \\aside{straight}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.closing", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.closing"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), Kw("about", "F_{g} \\aside{closing}") }...)
         }
         return nil
       })))
@@ -33509,7 +33838,7 @@ func init() {
     c.StaticField("theorem gravity.metric", func(self any) any {
       return Make(Theorem, Kw("id", "gravity.metric"), Kw("body", Fn(func(a1 []any) any {
         if true {
-          return Make("Asked", []any{ Kw("asks", "light goes at one over the index. What metric is the medium, then?"), Kw("about", "A in r") }...)
+          return Make("Asked", []any{ Kw("asks", "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"), Kw("about", "B \\aside{held}"), Kw("also", "A \\aside{held}") }...)
         }
         return nil
       })))

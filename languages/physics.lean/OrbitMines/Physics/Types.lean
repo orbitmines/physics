@@ -1034,6 +1034,11 @@ ray_method "in_record" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step
 ray_method "record_moves" (ways_c_0 : Step) (ways_0 : Step) (pieces_0 : (RList Step)) : Step
 ray_method "record_settles" (moves_0 : Step) : Step
 ray_method "record_left" (s_0 : Store) (rays_c_0 : Step) (ways_c_0 : Step) (settles_0 : Step) : Step
+ray_getter "relights" : TermInfo
+ray_method "walk_of" (s_0 : Store) : Expr
+ray_method "relativity_of" (s_0 : Store) (left_0 : Step) (mass_0 : Step) : (RList Step)
+ray_method "expansion_of" (s_0 : Store) (settles_0 : Step) : (RList Step)
+ray_method "scale_of" (hub_0 : Step) (settles_0 : Step) : (RList Step)
 ray_method "leftover" (rays_c_0 : Step) : Step
 ray_method "model_chain" (s_0 : Store) (rays_l_0 : Step) (space_l_0 : Step) (spaced_0 : Step) (folded_0 : Step) (one_0 : Step) : (RList Step)
 ray_method "lean" (rec_0 : Step) : Step
@@ -2504,6 +2509,11 @@ ray_sfield "theorem gravity.field" : Theorem
 ray_sfield "theorem gravity.coupling" : Theorem
 ray_sfield "theorem gravity.einstein" : Theorem
 ray_sfield "theorem gravity.deflection" : Theorem
+ray_sfield "theorem gravity.beat" : Theorem
+ray_sfield "theorem gravity.far" : Theorem
+ray_sfield "theorem vacuum.age" : Theorem
+ray_sfield "theorem gravity.scale" : Theorem
+ray_sfield "theorem gravity.closing" : Theorem
 ray_sfield "theorem gravity.metric" : Theorem
 ray_sfield "theorem gravity.shadow" : Theorem
 ray_sfield "rule S.2" : Rule

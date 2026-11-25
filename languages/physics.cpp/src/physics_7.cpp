@@ -1964,6 +1964,47 @@ static void C_Pane(Cls& c) {
 }
 static const bool R_Pane = define_class("Pane", "Node", &C_Pane);
 
+static void C_Picture(Cls& c) {
+  c.field("id", nullptr);
+  c.field("what", nullptr);
+  c.field("width", nullptr);
+  c.field("height", nullptr);
+  c.field("frames", nullptr);
+  c.field("record", [](const Value& self) -> Value { return null; });
+  c.field("panes", [](const Value& self) -> Value { return list({  }); });
+  c.field("on_request", [](const Value& self) -> Value { return false; });
+  c.field("images", [](const Value& self) -> Value { return list({  }); });
+  c.field("parts", [](const Value& self) -> Value { return list({  }); });
+  c.field("uses", [](const Value& self) -> Value { return list({  }); });
+  c.field("paint", nullptr);
+  c.getter("played", [](Value self, const Args& a1) -> Value {
+    auto r_0 = cell(); r_0->v = get(self, S<"record">());
+    if (truthy(eq(r_0->v, null))) {
+      return null;
+    }
+    auto film_0 = cell(); film_0->v = call(K(S<"Measured">()), S<"of">(), { "" + str(get(self, S<"id">())) + ".frames" });
+    if (truthy((truthy((truthy((!eq(film_0->v, null))) && truthy(eq(get(get(film_0->v, S<"header">()), Sym(str("stamp"))), get(r_0->v, S<"stamp">()))))) && truthy(eq(get(film_0->v, S<"rows">()), mul(get(r_0->v, S<"width">()), get(self, S<"frames">()))))))) {
+      return make(S<"Cached">(), { kw(S<"cached">(), true), kw(S<"film">(), film_0->v), kw(S<"names">(), get(r_0->v, S<"names">())), kw(S<"sizes">(), get(r_0->v, S<"sizes">())) });
+    }
+    return make(S<"Live">(), { kw(S<"cached">(), false), kw(S<"recording">(), r_0->v) });
+    return null;
+  });
+  c.getter("painter", [](Value self, const Args& a1) -> Value {
+    return call(self, S<"paint">(), { get(self, S<"played">()) });
+    return null;
+  });
+  c.statik("still", [](Value self, const Args& a1) -> Value {
+    auto id_0 = cell(arg(a1, 0)); auto what_0 = cell(arg(a1, 1)); auto width_0 = cell(arg(a1, 2)); auto height_0 = cell(arg(a1, 3)); auto paints_0 = cell(arg(a1, 4));
+    return make(S<"Picture">(), { kw(S<"id">(), id_0->v), kw(S<"what">(), what_0->v), kw(S<"width">(), width_0->v), kw(S<"height">(), height_0->v), kw(S<"frames">(), 1.0), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+      auto played_2 = cell(arg(a3, 0));
+      return make(S<"Still">(), { kw(S<"paints">(), paints_0->v) });
+      return null;
+    })) });
+    return null;
+  });
+}
+static const bool R_Picture = define_class("Picture", "Node", &C_Picture);
+
 
 
 void part_7() { }

@@ -57,6 +57,11 @@ import OrbitMines.Physics.Proofs.G.gravity_field
 import OrbitMines.Physics.Proofs.G.gravity_coupling
 import OrbitMines.Physics.Proofs.G.gravity_einstein
 import OrbitMines.Physics.Proofs.G.gravity_deflection
+import OrbitMines.Physics.Proofs.G.gravity_beat
+import OrbitMines.Physics.Proofs.G.gravity_far
+import OrbitMines.Physics.Proofs.G.vacuum_age
+import OrbitMines.Physics.Proofs.G.gravity_scale
+import OrbitMines.Physics.Proofs.G.gravity_closing
 import OrbitMines.Physics.Proofs.G.gravity_metric
 import OrbitMines.Physics.Proofs.G.gravity_shadow
 

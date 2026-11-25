@@ -115,50 +115,193 @@ the rays at a local, per way: \Delta\rho = S^(+) + m̄ - S^(-)
 
 the rays' line over l's ways: each narrowing is l's ways times the share it holds, so over the ways every rule is its own share a tick - creation's, the meetings', and a source's - and the movement on the left. Nothing in it counts l's ways: they are in how the rays move, at every place
 
-**\Delta DEG = \frac{DEG·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)**  
+**\Delta DEG = \frac{DEG_0·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)**  
 <sub>theorem · the ways at a local, a tick on</sub>  
 
 ```
-ANNIHILATION: \frac{1}{2} a fold on each of l's ways, 1 of them, at S^(-) - \frac{DEG·S^(-)}{2}
-CREATION: -1 a fold on each of l's ways, \frac{\paren{DEG - DEG_0}}{DEG} of them, at S^(+) - -\paren{DEG - DEG_0}·S^(+)
-\Delta DEG = \frac{DEG·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)
+ANNIHILATION: \frac{1}{2} a fold on each of DEG_0 of l's ways, 1 of them, at S^(-) - \frac{DEG_0·S^(-)}{2}
+CREATION: -1 a fold on each of DEG of l's ways, \frac{\paren{DEG - DEG_0}}{DEG} of them, at S^(+) - -\paren{DEG - DEG_0}·S^(+)
+\Delta DEG = \frac{DEG_0·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)
 ```
 
-l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - DEG_0 + n_f,l - DEG_0 of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back
+l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - DEG_0 + n_f,l - DEG_0 of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back
 
-**\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + \frac{n_f·\rho^(2)}{4} + n_f·\rho - n_f**  
+**\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + n_f·\rho - n_f**  
 <sub>theorem · the record's own line</sub>  
 
 ```
-\Delta DEG = \frac{DEG·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)
+\Delta DEG = \frac{DEG_0·S^(-)}{2} - \paren{DEG - DEG_0}·S^(+)
 DEG = DEG_0 + n_f,l
-\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + \frac{n_f·\rho^(2)}{4} + n_f·\rho - n_f
+\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + n_f·\rho - n_f
 ```
 
 the ways move one for one with the record, so the ways' line is the record's: every rule's share put back for its name, the ray across l's edge the same vacuum as l's own, and l's ways its lattice's and the folds it holds. It is what a cell's record does a tick, from the density and the record there alone
 
-**n_f = \frac{DEG_0·\rho^(2)}{4·\paren{1 - \frac{\rho^(2)}{4} - \rho}}**  
+**n_f = \frac{DEG_0·\rho^(2)}{4·\paren{1 - \rho}}**  
 <sub>theorem · the record settled against the density</sub>  
 
 ```
-\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + \frac{n_f·\rho^(2)}{4} + n_f·\rho - n_f = 0
-n_f = \frac{DEG_0·\rho^(2)}{4·\paren{1 - \frac{\rho^(2)}{4} - \rho}}
+\Delta n_f = \frac{DEG_0·\rho^(2)}{4} + n_f·\rho - n_f = 0
+n_f = \frac{DEG_0·\rho^(2)}{4·\paren{1 - \rho}}
 ```
 
 the record's line is linear in the record: a meeting writes a fold whatever l holds, a creation takes one off every way that holds one, and the more folds l holds the more ways it has to write them on. Where the record has stopped moving the line is nought, and it says what the record is at a density. It settles: the record's slope in its own line is what a creation takes back less what the extra way gives the meetings, and at the settled density that is below nought
 
-**n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}·\paren{1 + \frac{D·x.R̄·\sigma·F·\rho_{\infty}}{D - 2}}}{l.shell\paren{x.R̄}}}}{2}**  
+**n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}·\paren{1 + \frac{D·x.R̄·\sigma·F·\rho_{\infty}}{D - 2}}}{l.shell\paren{x.R̄}}}}{2}**  
 <sub>theorem · the record every body leaves at a local</sub>  
 
 ```
-\Delta\paren{DEG·\rho + 2·n_f} = DEG·m̄ + 2·DEG_0·S^(+) - DEG·S^(+)
-the settled vacuum underneath: n_f at \rho_\infty, \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}}
+\Delta\paren{DEG·\rho + 2·n_f} = DEG·m̄ + DEG_0·S^(-) + 2·DEG_0·S^(+) - DEG·S^(-) - DEG·S^(+)
+the settled vacuum underneath: n_f at \rho_\infty, \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}}
 x = x_@t: every body at its own time, bound once in the sum; x.R̄ = l.distance\paren{x.l}, from the local now to the body then
-the walk: \lambda = \frac{1}{\sigma·F·\rho_\infty}, outward at c̄·\paren{D - 2}\lambda / \paren{D·x.R̄}
-n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \frac{\rho_\infty^(2)}{4} - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}·\paren{1 + \frac{D·x.R̄·\sigma·F·\rho_{\infty}}{D - 2}}}{l.shell\paren{x.R̄}}}}{2}
+the walk: CREATION lights all DEG of a point's ways, so a heading is drawn afresh; \lambda = \frac{1}{\sigma·F·\rho_\infty}, outward at c̄·\paren{D - 2}\lambda / \paren{D·x.R̄}
+n_f,l\paren{t} = \frac{DEG_0·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + \frac{\sum_{x = x_{@t}}\paren{\frac{x.m̄·\paren{1 - l.reach\paren{x.R̄}}·\paren{1 + \frac{D·x.R̄·\sigma·F·\rho_{\infty}}{D - 2}}}{l.shell\paren{x.R̄}}}}{2}
 ```
 
 a meeting turns 2 of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and 2 times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \rho_\infty. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^(D-2) deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over 2, on the settled record. Each body is read as it was when its rays left it, at its own distance then
+
+**g \aside{far} = \frac{D·\sigma·F·\rho_\infty·x.m̄·x.R̄^(1 - D)}{2}**  
+<sub>theorem · the pull far from a body</sub>  
+
+```
+n_f,l - n_f\paren{\rho_\infty} \to \frac{x.m̄·D·\sigma·F·\rho_\infty·x.R̄^(2 - D)}{2·\paren{D - 2}}, past the free path
+g = \frac{2}{2}·\frac{-\partial n_f,l}{\partial x.R̄} = \frac{D·\sigma·F·\rho_\infty·x.m̄·x.R̄^(1 - D)}{2}
+G = \frac{D}{2\lambda} = \frac{D·\sigma·F·\rho_\infty}{2}
+```
+
+what a body feels is the record's slope in rays' worth, g = \frac{1}{2}\nabla S_l, and S_l = 2n_f,l. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path
+
+**\Phi \aside{far} = \frac{D·\sigma·F·\rho_\infty·x.m̄·x.R̄^(2 - D)}{2·\paren{D - 2}}**  
+<sub>theorem · the potential is the record</sub>  
+
+```
+\Phi = \int_x.R̄^(\infty) g = \frac{D·\sigma·F·\rho_\infty·x.m̄·x.R̄^(2 - D)}{2·\paren{D - 2}}
+= \frac{2}{2}\paren{n_f,l - n_f\paren{\rho_\infty}}, far out
+```
+
+the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record
+
+**\frac{d\tau}{dt} = \sqrt{1 - \beta^(2)}**  
+<sub>theorem · a body moves or it emits</sub>  
+
+```
+MOVEMENT: every ray a cell a tick, so a body's step is c-bar whatever it does
+a source moves or it emits: what it spends going, it does not spend shining
+\beta^(2) + \paren{d\tau/dt}^(2) = 1
+fore 1 - \beta, aft 1 + \beta: \sqrt{\paren{1 - \beta}\paren{1 + \beta}} = \sqrt{1 - \beta^(2)}
+```
+
+MOVEMENT steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \beta^(2) + \paren{d\tau/dt}^(2) = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \beta and what it leaves behind by 1 + \beta, and the beat is the mean of the two, \sqrt{\paren{1 - \beta}\paren{1 + \beta}}
+
+**\beta^(2) \aside{falling} = 2·\Phi**  
+<sub>theorem · a body falling in from far</sub>  
+
+```
+\frac{d}{dt}\frac{\beta^(2)}{2} = g·\beta = -\frac{d\Phi}{dt}
+from rest far off: \beta^(2) = 2\Phi
+```
+
+a body let go at rest far off gains speed as the pull does work on it: \frac{d}{dt}\frac{\beta^(2)}{2} = g·\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it
+
+**A \aside{held} = 1 - r_s·r^(2 - D)**  
+<sub>theorem · a clock held where a body falls</sub>  
+
+```
+\paren{d\tau/dt}^(2) = 1 - \beta^(2) = 1 - 2\Phi
+r_s = \frac{D·\sigma·F·\rho_\infty·x.m̄}{D - 2}
+A = 1 - r_s·r^(2 - D)
+```
+
+a clock held at r is passed by a body falling in from far at \beta^(2) = 2\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \beta^(2) = 1 - 2\Phi. In the mass the pull fixes this is 1 - r_s/r, with r_s twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat
+
+**B \aside{held} = \frac{1}{1 - r_s·r^(2 - D)}**  
+<sub>theorem · a ruler held where a body falls</sub>  
+
+```
+B = \frac{1}{A} = \frac{1}{1 - r_s·r^(2 - D)}
+A·B = 1
+```
+
+and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it
+
+**\alpha \aside{held} = \frac{2·r_s}{b}**  
+<sub>theorem · light crossing a held field</sub>  
+
+```
+the index: \sqrt{B/A} = 1 + r_s/r + \ldots
+\alpha = \int \partial_b\paren{r_s/\sqrt{b^(2) + z^(2)}}\,dz = 2r_s/b at D = 3
+a stone at c-bar reads A alone: r_s/b, half of it
+```
+
+light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \sqrt{B/A} = 1 + 2\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured
+
+**\partial_tV \aside{inside} = 0**  
+<sub>theorem · what the settled vacuum grows</sub>  
+
+```
+\partial_tV = 0
+MOVEMENT grows at 1 - \omega: nought where every ray has room ahead
+```
+
+the growth ledger read where the vacuum has settled: every ray there has room ahead, so MOVEMENT grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing
+
+**H \aside{frontier} = \frac{1}{t}**  
+<sub>theorem · the world grows at its frontier</sub>  
+
+```
+inside: 0
+at the frontier: MOVEMENT at 1 - \omega, one cell a tick
+R = c̄t, so H = \dot{R}/R = \frac{1}{t}
+```
+
+so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = c̄t, and its rate of growth is one over its age: H = \dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age
+
+**v \aside{straight} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}**  
+<sub>theorem · what a heading keeps straight</sub>  
+
+```
+the draw: 1 straight on against n_f folded
+n_f at \rho_\infty = \frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}}
+v = \frac{1}{1 + n_f} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}
+```
+
+MOVEMENT draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at
+
+**a_0 \aside{age} = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·t}**  
+<sub>theorem · the scale is the vacuum's own growth</sub>  
+
+```
+CREATION: fires at a free point, lights every way - the vacuum pulses, every other tick
+EMISSION: a source moves or emits, so each move flips the parity, fore against aft
+steady: the flips cancel; accelerating: they pile up, since the beginning
+the age is one over the vacuum's growth, \frac{1}{t}
+a_0 = vH = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·t}
+```
+
+CREATION fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. EMISSION sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against
+
+**F_g \aside{closing} = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}**  
+<sub>theorem · what is felt, with the mismatch closed</sub>  
+
+```
+g = g_N\paren{1 + \frac{a_0}{g}}
+g^(2) - g_Ng - g_Na_0 = 0
+strong: g \to g_N;  weak: g \to \sqrt{g_Na_0}, so v^(4) = G m a_0 at D = 3
+F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
+```
+
+what is felt is what arrives, g_N, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_0/g of it. So g = g_N\paren{1 + a_0/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \sqrt{g_Na_0}: g_N falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling
+
+**\frac{a_0}{cH} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}**  
+<sub>theorem · the scale against the vacuum's growth</sub>  
+
+```
+a_0 = vH_vac, cH_vac = c̄H_vac
+\frac{a_0}{cH_vac} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}
+against what is measured: a_0/cH_0 = v\sqrt{\Omega_\Lambda}, \Omega_\Lambda = \paren{H_vac/H_0}^(2)
+```
+
+a_0 is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_0, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \sqrt{\Omega_\Lambda} of it - so a_0/cH_0 = v\sqrt{\Omega_\Lambda}. Measured it is 0.155 to 0.183
 
 **m̄ = \Delta\rho + S^(-) - S^(+)**  
 <sub>theorem · the mass is what the vacuum leaves over</sub>  

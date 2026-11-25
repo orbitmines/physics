@@ -9,14 +9,12 @@ open OrbitMines.Physics.Proofs
 /-!
 # gravity.deflection (G)
 
-the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?
+light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?
 
-Lean checked 1 of its 5 steps; 2 are premises read off the program and 2 are not checked. And the answer is CHECKED (claim 5 with the settled numbers put in).
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names \alpha \aside{held} again (claim 2), and its value is the earlier one's by algebra).
 
-- step 3 (what a place stands for, counted off what a fold does), NOT checked: the inference 'what a place stands for, counted off what a fold does' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it
-- step 4 (an index is a metric), checked: the inference's relation (claim 6, read off its code) with the lines it stands on put in - N = \frac{1}{1 - \delta n_{f}} - is this line, by algebra
-- step 5 (the metric as general relativity writes it), NOT checked: the inference 'the metric as general relativity writes it' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it
-- answer (the answer), checked: claim 5 with the settled numbers put in
+- step 2 (light crossing a held field), NOT checked: the inference 'light crossing a held field' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names \alpha \aside{held} again (claim 2), and its value is the earlier one's by algebra
 -/
 
 namespace OrbitMines.Physics.Proofs.G.«gravity.deflection»
@@ -24,57 +22,26 @@ namespace OrbitMines.Physics.Proofs.G.«gravity.deflection»
 /-- What the prover takes from the rules: the premises, read off the program BY DESIGN - a rule's own body, the
 continuous model the rules were read into, the lattice, a count. None is believed or measured; each is already in the
 theory's .ray. -/
-structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D» : ℝ) : Prop where
+structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b» : ℝ) : Prop where
   /-- step 1 (the reading): the continuous model = DEG·\nu·\paren{1 - \rho} + l.\bar{m}·\omega - 2·\sigma·F·n^{2} - the rules read as a line (Reading.ray): the root every derivation passes through -/
   «the reading: the continuous model» : «the continuous model» = (((-1 : ℝ) * (2 : ℝ) * «\sigma» * «F» * («n» ^ 2)) + («DEG» * «\nu» * ((1 : ℝ) + ((-1 : ℝ) * «\rho»))) + ((1 : ℝ) * «l.\bar{m}» * «\omega»))
-  /-- step 2 (read off the continuous model): what swings a heading = \nabla n_{f} - read off the continuous model - a term of the line the rules were read into, or how the line is made -/
-  «read off the continuous model: what swings a heading» : «what swings a heading» = (Grad «n_{f}»)
-  /-- the relation its inference applies (the inference 'an index is a metric'): A in r = N^{-2} - read off its own code (Inferences.ray, or the method of Prove.ray that builds the equation's chain): run on the store as it stood when step 4 arrived, with the lines it stands on as their names, it concludes this - the relation it applies, taken from the program as every premise is -/
-  «the inference 'an index is a metric': A in r» : «A in r» = («N» ^ 2)⁻¹
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
-structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D» : ℝ) : Prop where
-  /-- step 3 (what a place stands for, counted off what a fold does): N = \frac{1}{1 - \delta n_{f}} - NOT CHECKED: the inference 'what a place stands for, counted off what a fold does' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it -/
-  unchecked_gravity_deflection_3 : «N» = ((((-1 : ℝ) * «\delta n_{f}») + (1 : ℝ)))⁻¹
-  /-- step 5 (the metric as general relativity writes it): the deflection this model gives = 2·r_{s}·b^{-\paren{D - 2}} - NOT CHECKED: the inference 'the metric as general relativity writes it' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it -/
-  unchecked_gravity_deflection_5 : «the deflection this model gives» = ((2 : ℝ) * «r_{s}» * («b» ^ ((-1 : ℝ) * («D» + (-2 : ℝ)))))
+structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b» : ℝ) : Prop where
+  /-- step 2 (light crossing a held field): \alpha \aside{held} = \frac{2·r_{s}}{b} - NOT CHECKED: the inference 'light crossing a held field' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_gravity_deflection_2 : «\alpha \aside{held}» = ((2 : ℝ) * «r_{s}» * («b»)⁻¹)
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/
-structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D» : ℝ) : Prop where
-  /-- 1 - \delta n_{f} is not nought -/
-  ne_0 : (((-1 : ℝ) * «\delta n_{f}») + (1 : ℝ)) ≠ 0
-  /-- N is not nought -/
-  ne_1 : «N» ≠ 0
-  /-- b is positive: it is raised to a real power -/
-  pos_0 : 0 < «b»
+structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b» : ℝ) : Prop where
+  /-- b is not nought -/
+  ne_0 : «b» ≠ 0
 
-/-- step 4 (an index is a metric): A in r = \paren{1 - \delta n_{f}}^{2} - CHECKED: the inference's relation (claim 6, read off its code) with the lines it stands on put in - N = \frac{1}{1 - \delta n_{f}} - is this line, by algebra -/
-theorem check_4 («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D» : ℝ)
-    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») :
-    «A in r» = ((((-1 : ℝ) * «\delta n_{f}») + (1 : ℝ)) ^ 2) := by
-  have h6 := p.«the inference 'an index is a metric': A in r»
-  have h3 := u.unchecked_gravity_deflection_3
+/-- the answer (the answer): \alpha \aside{held} = \frac{2·r_{s}}{b} - CHECKED: it names \alpha \aside{held} again (claim 2), and its value is the earlier one's by algebra -/
+theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b» : ℝ)
+    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\alpha \aside{held}» «r_{s}» «b») :
+    «\alpha \aside{held}» = ((2 : ℝ) * «r_{s}» * («b»)⁻¹) := by
+  have h2 := u.unchecked_gravity_deflection_2
   have w0 := w.ne_0
-  have w1 := w.ne_1
-  have p0 := w.pos_0
-  have r0 := fun (y : ℝ) => Real.rpow_neg (le_of_lt w.pos_0) y
-  have q0 := fun (y : ℝ) => (Real.rpow_pos_of_pos w.pos_0 y).ne'
-  subst_vars
-  try simp only [neg_one_mul, r0] at *
-  check_algebra
-
-/-- the answer (the answer): the deflection this model gives = 2·r_{s}·b^{-\paren{D - 2}} - CHECKED: claim 5 with the settled numbers put in -/
-theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D» : ℝ)
-    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «what swings a heading» «n_{f}» «N» «\delta n_{f}» «A in r» «the deflection this model gives» «r_{s}» «b» «D») :
-    «the deflection this model gives» = ((2 : ℝ) * «r_{s}» * («b» ^ ((-1 : ℝ) * («D» + (-2 : ℝ))))) := by
-  have h5 := u.unchecked_gravity_deflection_5
-  have w0 := w.ne_0
-  have w1 := w.ne_1
-  have p0 := w.pos_0
-  have r0 := fun (y : ℝ) => Real.rpow_neg (le_of_lt w.pos_0) y
-  have q0 := fun (y : ℝ) => (Real.rpow_pos_of_pos w.pos_0 y).ne'
-  subst_vars
-  try simp only [neg_one_mul, r0] at *
   check_algebra
 
 

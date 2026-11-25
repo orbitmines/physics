@@ -1265,9 +1265,10 @@ static void C_Prover(Cls& c) {
           })));
           auto at_1 = cell(); at_1->v = (truthy(eq(named_1->v, null)) ? Value(share_1->v) : Value(call(K(S<"Expr">()), S<"field">(), { get(get(named_1->v, S<"fact">()), S<"of">()) })));
           auto gate_1 = cell(); gate_1->v = (truthy(eq(get(t_1->v, S<"around">()), null)) ? Value(call(K(S<"Expr">()), S<"num">(), { 1.0 })) : Value(call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"replace">(), { get(t_1->v, S<"around">()), "n_{f}", call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"sub">(), { get(K(S<"Prover">()), S<"WAYS">()), get(K(S<"Prover">()), S<"LATTICE">()) }) }) }), "DEG", get(K(S<"Prover">()), S<"WAYS">()) }) })));
-          auto got_1 = cell(); got_1->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { w_1->v }), get(K(S<"Prover">()), S<"WAYS">()), gate_1->v, at_1->v }) }) });
+          auto over_1 = cell(); over_1->v = (truthy(eq(get(t_1->v, S<"around">()), null)) ? Value(get(K(S<"Prover">()), S<"LATTICE">())) : Value(get(K(S<"Prover">()), S<"WAYS">())));
+          auto got_1 = cell(); got_1->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { w_1->v }), over_1->v, gate_1->v, at_1->v }) }) });
           m_push(parts_0->v, got_1->v);
-          m_push(said_0->v, "" + str(m_upper(get(get(get(t_1->v, S<"term">()), S<"rule">()), S<"name">()))) + ": " + str(call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"num">(), { w_1->v }) })) + " a fold on each of l's ways, " + str(call(K(S<"Expr">()), S<"show">(), { gate_1->v })) + " of them, at " + str(call(K(S<"Expr">()), S<"show">(), { at_1->v })) + " - " + str(call(K(S<"Expr">()), S<"show">(), { got_1->v })) + "");
+          m_push(said_0->v, "" + str(m_upper(get(get(get(t_1->v, S<"term">()), S<"rule">()), S<"name">()))) + ": " + str(call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"num">(), { w_1->v }) })) + " a fold on each of " + str(call(K(S<"Expr">()), S<"show">(), { over_1->v })) + " of l's ways, " + str(call(K(S<"Expr">()), S<"show">(), { gate_1->v })) + " of them, at " + str(call(K(S<"Expr">()), S<"show">(), { at_1->v })) + " - " + str(call(K(S<"Expr">()), S<"show">(), { got_1->v })) + "");
         }
       }
     };
@@ -1279,7 +1280,7 @@ static void C_Prover(Cls& c) {
       auto x_2 = cell(arg(a3, 0));
       return get(get(x_2->v, S<"fact">()), S<"key">());
       return null;
-    }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + str(call(K(S<"Expr">()), S<"show">(), { folds_of_0->v })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said_0->v, list({ "\\Delta DEG = " + str(call(K(S<"Expr">()), S<"show">(), { rhs_0->v })) + "" })) });
+    }))), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " + str(call(K(S<"Expr">()), S<"show">(), { folds_of_0->v })) + " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said_0->v, list({ "\\Delta DEG = " + str(call(K(S<"Expr">()), S<"show">(), { rhs_0->v })) + "" })) });
     set(st_0->v, S<"derivation">(), m_concat(list({ line_0->v, moved_0->v, ways_0->v }), pieces_0->v));
     return st_0->v;
     return null;
@@ -1331,15 +1332,142 @@ static void C_Prover(Cls& c) {
     auto base_0 = cell(); base_0->v = call(K(S<"Expr">()), S<"replace">(), { get(get(settles_0->v, S<"fact">()), S<"to">()), "\\rho", vac_0->v });
     auto shell_0 = cell(); shell_0->v = call(K(S<"Expr">()), S<"field">(), { "l.shell\\paren{x.\\bar{R}}" });
     auto R_0 = cell(); R_0->v = call(K(S<"Expr">()), S<"field">(), { "x.\\bar{R}" });
-    auto reach_0 = cell(); reach_0->v = call(s_0->v, S<"fact">(), { "is", "l.reach\\paren{\\bar{R}}" });
-    auto walks_0 = cell(); walks_0->v = (truthy(((truthy((!eq(reach_0->v, null))) && truthy(eq(get(get(reach_0->v, S<"to">()), S<"kind">()), "pow"))))) ? Value(call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), get(get(reach_0->v, S<"to">()), S<"base">()) }) }), neg(1.0) }), "\\rho", vac_0->v }) })) : Value(null));
+    auto relights_0 = cell(); relights_0->v = get(self, S<"relights">());
+    auto walks_0 = cell(); walks_0->v = call(self, S<"walk_of">(), { s_0->v });
     auto dim_0 = cell(); dim_0->v = call(K(S<"Expr">()), S<"field">(), { "D" });
     auto deeper_0 = cell(); deeper_0->v = (truthy(eq(walks_0->v, null)) ? Value(call(K(S<"Expr">()), S<"num">(), { 1.0 })) : Value(call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"div">(), { call(K(S<"Expr">()), S<"mul">(), { list({ dim_0->v, R_0->v }) }), call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"sub">(), { dim_0->v, call(K(S<"Expr">()), S<"num">(), { 2.0 }) }), walks_0->v }) }) }) }) }) })));
     auto per_0 = cell(); per_0->v = call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"field">(), { "x.\\bar{m}" }), call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Prover">()), S<"reach">(), { "x.\\bar{R}" }) }), call(K(S<"Expr">()), S<"pown">(), { shell_0->v, neg(1.0) }), deeper_0->v }) });
     auto walked_0 = cell(); walked_0->v = (truthy(eq(walks_0->v, null)) ? Value("-") : Value(call(K(S<"Expr">()), S<"show">(), { walks_0->v })));
+    auto afresh_0 = cell(); afresh_0->v = (truthy(eq(relights_0->v, null)) ? Value("-") : Value(m_upper(get(get(get(relights_0->v, S<"term">()), S<"rule">()), S<"name">()))));
     auto rhs_0 = cell(); rhs_0->v = call(K(S<"Expr">()), S<"add">(), { list({ base_0->v, call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"pown">(), { k_0->v, neg(1.0) }), call(K(S<"Expr">()), S<"call">(), { "\\sum_{x = x_{@t}}", per_0->v }) }) }) }) });
     auto lhs_0 = cell(); lhs_0->v = "\\Delta\\paren{DEG·\\rho + " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + "·n_{f}}";
-    return call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "n_{f,l}\\paren{t}", rhs_0->v }), "the record every body leaves at a local", list({ get(get(rays_c_0->v, S<"fact">()), S<"key">()), get(get(ways_c_0->v, S<"fact">()), S<"key">()), get(get(settles_0->v, S<"fact">()), S<"key">()) }), "a meeting turns " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", list({ "" + str(lhs_0->v) + " = " + str(call(K(S<"Expr">()), S<"show">(), { both_0->v })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + str(call(K(S<"Expr">()), S<"show">(), { base_0->v })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " + str(walked_0->v) + ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " + str(call(K(S<"Expr">()), S<"show">(), { rhs_0->v })) + "" }) });
+    return call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "n_{f,l}\\paren{t}", rhs_0->v }), "the record every body leaves at a local", list({ get(get(rays_c_0->v, S<"fact">()), S<"key">()), get(get(ways_c_0->v, S<"fact">()), S<"key">()), get(get(settles_0->v, S<"fact">()), S<"key">()) }), "a meeting turns " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", list({ "" + str(lhs_0->v) + " = " + str(call(K(S<"Expr">()), S<"show">(), { both_0->v })) + "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " + str(call(K(S<"Expr">()), S<"show">(), { base_0->v })) + "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: " + str(afresh_0->v) + " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = " + str(walked_0->v) + ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " + str(call(K(S<"Expr">()), S<"show">(), { rhs_0->v })) + "" }) });
+    return null;
+  });
+  c.getter("relights", [](Value self, const Args& a1) -> Value {
+    return m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy(eq(get(t_2->v, S<"degree">()), 0.0)))) && truthy(eq(call(K(S<"Expr">()), S<"show">(), { call(K(S<"Expr">()), S<"simplify">(), { get(t_2->v, S<"ray_count">()) }) }), "DEG")));
+      return null;
+    })));
+    return null;
+  });
+  c.method("walk_of", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0));
+    auto reach_0 = cell(); reach_0->v = call(s_0->v, S<"fact">(), { "is", "l.reach\\paren{\\bar{R}}" });
+    if (truthy((truthy(eq(get(self, S<"relights">()), null)) || truthy(eq(reach_0->v, null))))) {
+      return null;
+    }
+    if (truthy((!eq(get(get(reach_0->v, S<"to">()), S<"kind">()), "pow")))) {
+      return null;
+    }
+    return call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), get(get(reach_0->v, S<"to">()), S<"base">()) }) }), neg(1.0) }), "\\rho", call(K(S<"Expr">()), S<"field">(), { "\\rho_{\\infty}" }) }) });
+    return null;
+  });
+  c.method("relativity_of", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto left_0 = cell(arg(a1, 1)); auto mass_0 = cell(arg(a1, 2));
+    auto walks_0 = cell(); walks_0->v = call(self, S<"walk_of">(), { s_0->v });
+    if (truthy(eq(walks_0->v, null))) {
+      return list({  });
+    }
+    auto dim_0 = cell(); dim_0->v = call(K(S<"Expr">()), S<"field">(), { "D" });
+    auto R_0 = cell(); R_0->v = call(K(S<"Expr">()), S<"field">(), { "x.\\bar{R}" });
+    auto m_0 = cell(); m_0->v = call(K(S<"Expr">()), S<"field">(), { "x.\\bar{m}" });
+    auto k_0 = cell(); k_0->v = get(self, S<"fold_weight">());
+    auto far_0 = cell(); far_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"pown">(), { k_0->v, neg(1.0) }), m_0->v, dim_0->v, call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"sub">(), { dim_0->v, call(K(S<"Expr">()), S<"num">(), { 2.0 }) }), walks_0->v }) }), neg(1.0) }), call(K(S<"Expr">()), S<"to_power">(), { R_0->v, call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 2.0 }), dim_0->v }) }) }) }) });
+    auto strength_0 = cell(); strength_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"div">(), { dim_0->v, call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { 2.0 }), walks_0->v }) }) }) });
+    auto pull_0 = cell(); pull_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ strength_0->v, m_0->v, call(K(S<"Expr">()), S<"to_power">(), { R_0->v, call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), dim_0->v }) }) }) }) });
+    auto g__0 = cell(); g__0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "g \\aside{far}", pull_0->v }), "the pull far from a body", list({ get(get(left_0->v, S<"fact">()), S<"key">()) }), "what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = " + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path", list({ "n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to " + str(call(K(S<"Expr">()), S<"show">(), { far_0->v })) + ", past the free path", "g = \\frac{" + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = " + str(call(K(S<"Expr">()), S<"show">(), { pull_0->v })) + "", "G = \\frac{D}{2\\lambda} = " + str(call(K(S<"Expr">()), S<"show">(), { strength_0->v })) + "" }) });
+    auto pot_0 = cell(); pot_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ strength_0->v, m_0->v, call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"sub">(), { dim_0->v, call(K(S<"Expr">()), S<"num">(), { 2.0 }) }), neg(1.0) }), call(K(S<"Expr">()), S<"to_power">(), { R_0->v, call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 2.0 }), dim_0->v }) }) }) }) });
+    auto phi_0 = cell(); phi_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\Phi \\aside{far}", pot_0->v }), "the potential is the record", list({ get(get(g__0->v, S<"fact">()), S<"key">()) }), "the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record", list({ "\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = " + str(call(K(S<"Expr">()), S<"show">(), { pot_0->v })) + "", "= \\frac{" + str(call(K(S<"Expr">()), S<"show">(), { k_0->v })) + "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out" }) });
+    auto beta_0 = cell(); beta_0->v = call(K(S<"Expr">()), S<"field">(), { "\\beta" });
+    auto beat_0 = cell(); beat_0->v = call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Expr">()), S<"pown">(), { beta_0->v, 2.0 }) }), 0.5 });
+    auto mover_0 = cell(); mover_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy(get(t_2->v, S<"carries">())));
+      return null;
+    })));
+    auto moved_0 = cell(); moved_0->v = (truthy(eq(mover_0->v, null)) ? Value("MOVEMENT") : Value(m_upper(get(get(get(mover_0->v, S<"term">()), S<"rule">()), S<"name">()))));
+    auto tick_0 = cell(); tick_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\frac{d\\tau}{dt}", beat_0->v }), "a body moves or it emits", list({ get(get(mass_0->v, S<"fact">()), S<"key">()) }), "" + str(moved_0->v) + " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}", list({ "" + str(moved_0->v) + ": every ray a cell a tick, so a body's step is c-bar whatever it does", "a source moves or it emits: what it spends going, it does not spend shining", "\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1", "fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = " + str(call(K(S<"Expr">()), S<"show">(), { beat_0->v })) + "" }) });
+    auto fall_0 = cell(); fall_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { 2.0 }), call(K(S<"Expr">()), S<"field">(), { "\\Phi" }) }) }) });
+    auto falls_0 = cell(); falls_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\beta^{2} \\aside{falling}", fall_0->v }), "a body falling in from far", list({ get(get(phi_0->v, S<"fact">()), S<"key">()) }), "a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it", list({ "\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}", "from rest far off: \\beta^{2} = 2\\Phi" }) });
+    auto rs_0 = cell(); rs_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { 2.0 }), strength_0->v, m_0->v, call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"sub">(), { dim_0->v, call(K(S<"Expr">()), S<"num">(), { 2.0 }) }), neg(1.0) }) }) }) });
+    auto r_0 = cell(); r_0->v = call(K(S<"Expr">()), S<"sym">(), { "r" });
+    auto A_0 = cell(); A_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"field">(), { "r_{s}" }), call(K(S<"Expr">()), S<"to_power">(), { r_0->v, call(K(S<"Expr">()), S<"sub">(), { call(K(S<"Expr">()), S<"num">(), { 2.0 }), dim_0->v }) }) }) }) }) });
+    auto held_0 = cell(); held_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "A \\aside{held}", A_0->v }), "a clock held where a body falls", list({ get(get(tick_0->v, S<"fact">()), S<"key">()), get(get(falls_0->v, S<"fact">()), S<"key">()) }), "a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat", list({ "\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi", "r_{s} = " + str(call(K(S<"Expr">()), S<"show">(), { rs_0->v })) + "", "A = " + str(call(K(S<"Expr">()), S<"show">(), { A_0->v })) + "" }) });
+    auto B_0 = cell(); B_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"pown">(), { A_0->v, neg(1.0) }) });
+    auto ruler_0 = cell(); ruler_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "B \\aside{held}", B_0->v }), "a ruler held where a body falls", list({ get(get(held_0->v, S<"fact">()), S<"key">()) }), "and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it", list({ "B = \\frac{1}{A} = " + str(call(K(S<"Expr">()), S<"show">(), { B_0->v })) + "", "A·B = 1" }) });
+    auto b_0 = cell(); b_0->v = call(K(S<"Expr">()), S<"sym">(), { "b" });
+    auto bend_0 = cell(); bend_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"num">(), { 2.0 }), call(K(S<"Expr">()), S<"field">(), { "r_{s}" }), call(K(S<"Expr">()), S<"pown">(), { b_0->v, neg(1.0) }) }) }) });
+    auto defl_0 = cell(); defl_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\alpha \\aside{held}", bend_0->v }), "light crossing a held field", list({ get(get(held_0->v, S<"fact">()), S<"key">()), get(get(ruler_0->v, S<"fact">()), S<"key">()) }), "light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured", list({ "the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots", "\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3", "a stone at c-bar reads A alone: r_{s}/b, half of it" }) });
+    set(g__0->v, S<"derivation">(), list({ left_0->v }));
+    set(phi_0->v, S<"derivation">(), list({ g__0->v }));
+    set(tick_0->v, S<"derivation">(), list({ mass_0->v }));
+    set(falls_0->v, S<"derivation">(), list({ phi_0->v }));
+    set(held_0->v, S<"derivation">(), list({ tick_0->v, falls_0->v }));
+    set(ruler_0->v, S<"derivation">(), list({ held_0->v }));
+    set(defl_0->v, S<"derivation">(), list({ held_0->v, ruler_0->v }));
+    return list({ g__0->v, phi_0->v, tick_0->v, falls_0->v, held_0->v, ruler_0->v, defl_0->v });
+    return null;
+  });
+  c.method("expansion_of", [](Value self, const Args& a1) -> Value {
+    auto s_0 = cell(arg(a1, 0)); auto settles_0 = cell(arg(a1, 1));
+    auto grown_0 = cell(); grown_0->v = call(self, S<"growth_filled">(), { s_0->v });
+    auto inside_0 = cell(); inside_0->v = call(K(S<"Prover">()), S<"neat">(), { get(get(grown_0->v, S<"fact">()), S<"to">()) });
+    auto frontier_0 = cell(); frontier_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy(get(t_2->v, S<"carries">())))) && truthy((!eq(get(t_2->v, S<"grows">()), "0"))));
+      return null;
+    })));
+    if (truthy(eq(frontier_0->v, null))) {
+      return list({  });
+    }
+    auto named_0 = cell(); named_0->v = m_upper(get(get(get(frontier_0->v, S<"term">()), S<"rule">()), S<"name">()));
+    auto gate_0 = cell(); gate_0->v = (truthy(eq(get(frontier_0->v, S<"share">()), null)) ? Value("-") : Value(call(K(S<"Expr">()), S<"show">(), { get(frontier_0->v, S<"share">()) })));
+    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\partial_{t}V \\aside{inside}", inside_0->v }), "what the settled vacuum grows", list({ get(get(grown_0->v, S<"fact">()), S<"key">()) }), "the growth ledger read where the vacuum has settled: every ray there has room ahead, so " + str(named_0->v) + " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing", list({ "" + str(get(get(grown_0->v, S<"fact">()), S<"of">())) + " = " + str(call(K(S<"Expr">()), S<"show">(), { get(get(grown_0->v, S<"fact">()), S<"to">()) })) + "", "" + str(named_0->v) + " grows at " + str(gate_0->v) + ": nought where every ray has room ahead" }) });
+    auto t_0 = cell(); t_0->v = call(K(S<"Expr">()), S<"sym">(), { "t" });
+    auto rate_0 = cell(); rate_0->v = call(K(S<"Expr">()), S<"pown">(), { t_0->v, neg(1.0) });
+    auto hub_0 = cell(); hub_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "H \\aside{frontier}", rate_0->v }), "the world grows at its frontier", list({ get(get(st_0->v, S<"fact">()), S<"key">()) }), "so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age", list({ "inside: " + str(call(K(S<"Expr">()), S<"show">(), { inside_0->v })) + "", "at the frontier: " + str(named_0->v) + " at " + str(gate_0->v) + ", one cell a tick", "R = \\bar{c}t, so H = \\dot{R}/R = " + str(call(K(S<"Expr">()), S<"show">(), { rate_0->v })) + "" }) });
+    set(st_0->v, S<"derivation">(), list({ grown_0->v }));
+    set(hub_0->v, S<"derivation">(), list({ st_0->v }));
+    return m_concat(list({ st_0->v, hub_0->v }), call(self, S<"scale_of">(), { hub_0->v, settles_0->v }));
+    return null;
+  });
+  c.method("scale_of", [](Value self, const Args& a1) -> Value {
+    auto hub_0 = cell(arg(a1, 0)); auto settles_0 = cell(arg(a1, 1));
+    auto vac_0 = cell(); vac_0->v = call(K(S<"Expr">()), S<"field">(), { "\\rho_{\\infty}" });
+    auto nf_0 = cell(); nf_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"replace">(), { get(get(settles_0->v, S<"fact">()), S<"to">()), "\\rho", vac_0->v }), "DEG_{0}", call(K(S<"Expr">()), S<"field">(), { "DEG" }) }) });
+    auto v_0 = cell(); v_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), nf_0->v }) }), neg(1.0) }) });
+    auto mover_0 = cell(); mover_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy(get(t_2->v, S<"carries">())));
+      return null;
+    })));
+    auto moved_0 = cell(); moved_0->v = (truthy(eq(mover_0->v, null)) ? Value("MOVEMENT") : Value(m_upper(get(get(get(mover_0->v, S<"term">()), S<"rule">()), S<"name">()))));
+    auto straight_0 = cell(); straight_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "v \\aside{straight}", v_0->v }), "what a heading keeps straight", list({ get(get(settles_0->v, S<"fact">()), S<"key">()) }), "" + str(moved_0->v) + " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list({ "the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " + str(call(K(S<"Expr">()), S<"show">(), { nf_0->v })) + "", "v = \\frac{1}{1 + n_{f}} = " + str(call(K(S<"Expr">()), S<"show">(), { v_0->v })) + "" }) });
+    set(straight_0->v, S<"derivation">(), list({ settles_0->v }));
+    auto lights_0 = cell(); lights_0->v = get(self, S<"relights">());
+    auto lit_0 = cell(); lit_0->v = (truthy(eq(lights_0->v, null)) ? Value("CREATION") : Value(m_upper(get(get(get(lights_0->v, S<"term">()), S<"rule">()), S<"name">()))));
+    auto sends_0 = cell(); sends_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return get(t_2->v, S<"outside">());
+      return null;
+    })));
+    auto sent_0 = cell(); sent_0->v = (truthy(eq(sends_0->v, null)) ? Value("EMISSION") : Value(m_upper(get(get(get(sends_0->v, S<"term">()), S<"rule">()), S<"name">()))));
+    auto a0_0 = cell(); a0_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ v_0->v, get(get(hub_0->v, S<"fact">()), S<"to">()) }) }) });
+    auto scale_0 = cell(); scale_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "a_{0} \\aside{age}", a0_0->v }), "the scale is the vacuum's own growth", list({ get(get(straight_0->v, S<"fact">()), S<"key">()), get(get(hub_0->v, S<"fact">()), S<"key">()) }), "" + str(lit_0->v) + " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " + str(sent_0->v) + " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against", list({ "" + str(lit_0->v) + ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" + str(sent_0->v) + ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, " + str(call(K(S<"Expr">()), S<"show">(), { get(get(hub_0->v, S<"fact">()), S<"to">()) })) + "", "a_{0} = vH = " + str(call(K(S<"Expr">()), S<"show">(), { a0_0->v })) + "" }) });
+    set(scale_0->v, S<"derivation">(), list({ straight_0->v, hub_0->v }));
+    auto g_0 = cell(); g_0->v = call(K(S<"Expr">()), S<"field">(), { "g_{N}" });
+    auto a_0 = cell(); a_0->v = call(K(S<"Expr">()), S<"field">(), { "a_{0}" });
+    auto half_0 = cell(); half_0->v = call(K(S<"Expr">()), S<"mul">(), { list({ g_0->v, call(K(S<"Expr">()), S<"num">(), { 0.5 }) }) });
+    auto got_0 = cell(); got_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"add">(), { list({ half_0->v, call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"mul">(), { list({ half_0->v, half_0->v }) }), call(K(S<"Expr">()), S<"mul">(), { list({ g_0->v, a_0->v }) }) }) }), 0.5 }) }) }) });
+    auto closing_0 = cell(); closing_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "F_{g} \\aside{closing}", got_0->v }), "what is felt, with the mismatch closed", list({ get(get(scale_0->v, S<"fact">()), S<"key">()) }), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", list({ "g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " + str(call(K(S<"Expr">()), S<"show">(), { got_0->v })) + "" }) });
+    set(closing_0->v, S<"derivation">(), list({ scale_0->v }));
+    auto ratio_0 = cell(); ratio_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"div">(), { a0_0->v, call(K(S<"Expr">()), S<"mul">(), { list({ call(K(S<"Expr">()), S<"field">(), { "\\bar{c}" }), get(get(hub_0->v, S<"fact">()), S<"to">()) }) }) }) });
+    ratio_0->v = call(K(S<"Expr">()), S<"replace">(), { ratio_0->v, "\\bar{c}", call(K(S<"Expr">()), S<"num">(), { 1.0 }) });
+    auto against_0 = cell(); against_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "\\frac{a_{0}}{cH}", call(K(S<"Prover">()), S<"neat">(), { ratio_0->v }) }), "the scale against the vacuum's growth", list({ get(get(scale_0->v, S<"fact">()), S<"key">()), get(get(hub_0->v, S<"fact">()), S<"key">()) }), "a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", list({ "a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " + str(call(K(S<"Expr">()), S<"show">(), { call(K(S<"Prover">()), S<"neat">(), { ratio_0->v }) })) + "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}" }) });
+    set(against_0->v, S<"derivation">(), list({ scale_0->v }));
+    return list({ straight_0->v, scale_0->v, closing_0->v, against_0->v });
     return null;
   });
   c.method("leftover", [](Value self, const Args& a1) -> Value {
@@ -1410,7 +1538,7 @@ static void C_Prover(Cls& c) {
     if (truthy(eq(mass_0->v, null))) {
       return list({  });
     }
-    return m_concat(m_concat(list({ rays_l_0->v, space_l_0->v, ways_0->v, moved_0->v }), pieces_0->v), list({ moving__0->v, rays_c_0->v, ways_c_0->v, moves_0->v, settles_0->v, left_0->v, mass_0->v }));
+    return m_concat(m_concat(m_concat(m_concat(m_concat(list({ rays_l_0->v, space_l_0->v, ways_0->v, moved_0->v }), pieces_0->v), list({ moving__0->v, rays_c_0->v, ways_c_0->v, moves_0->v, settles_0->v, left_0->v })), call(self, S<"relativity_of">(), { s_0->v, left_0->v, mass_0->v })), call(self, S<"expansion_of">(), { s_0->v, settles_0->v })), list({ mass_0->v }));
     return null;
   });
   c.method("lean", [](Value self, const Args& a1) -> Value {
@@ -1969,6 +2097,10 @@ static void C_Prover(Cls& c) {
       if (truthy((!eq(elem(steps_0->v, i_1->v), null)))) {
         call(out_0->v, S<"set">(), { elem(roles_0->v, i_1->v), elem(steps_0->v, i_1->v) });
       }
+    };
+    for (const Value& e1 : Each(model_0->v)) {
+      auto x_1 = cell(e1);
+      call(out_0->v, S<"set">(), { "of:" + str(get(get(x_1->v, S<"fact">()), S<"of">())) + "", x_1->v });
     };
     return out_0->v;
     return null;

@@ -9748,9 +9748,10 @@ pub mod c_Prover {
             }) })));
             let at_1 = cell(&Value::Null); wr(&at_1, &(if truthy(&eq(&rd(&named_1), &Value::Null)) { own(&rd(&share_1)) } else { own(&call(&k!("Expr"), "field", args![get(&get(&rd(&named_1), "fact"), "of")])) }));
             let gate_1 = cell(&Value::Null); wr(&gate_1, &(if truthy(&eq(&get(&rd(&t_1), "around"), &Value::Null)) { own(&call(&k!("Expr"), "num", args![1.0])) } else { own(&call(&k!("Prover"), "neat", args![call(&k!("Expr"), "replace", args![call(&k!("Expr"), "replace", args![get(&rd(&t_1), "around"), sv!["n_{f}"], call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![get(&k!("Prover"), "WAYS"), get(&k!("Prover"), "LATTICE")])])]), sv!["DEG"], get(&k!("Prover"), "WAYS")])])) }));
-            let got_1 = cell(&Value::Null); wr(&got_1, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![rd(&w_1)]), get(&k!("Prover"), "WAYS"), rd(&gate_1), rd(&at_1)]])]));
+            let over_1 = cell(&Value::Null); wr(&over_1, &(if truthy(&eq(&get(&rd(&t_1), "around"), &Value::Null)) { own(&get(&k!("Prover"), "LATTICE")) } else { own(&get(&k!("Prover"), "WAYS")) }));
+            let got_1 = cell(&Value::Null); wr(&got_1, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![rd(&w_1)]), rd(&over_1), rd(&gate_1), rd(&at_1)]])]));
             m_push(&rd(&parts_0), args![rd(&got_1)]);
-            m_push(&rd(&said_0), args![sv!["", &tos(&m_upper(&get(&get(&get(&rd(&t_1), "term"), "rule"), "name"))), ": ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "num", args![rd(&w_1)])])), " a fold on each of l's ways, ", &tos(&call(&k!("Expr"), "show", args![rd(&gate_1)])), " of them, at ", &tos(&call(&k!("Expr"), "show", args![rd(&at_1)])), " - ", &tos(&call(&k!("Expr"), "show", args![rd(&got_1)])), ""]]);
+            m_push(&rd(&said_0), args![sv!["", &tos(&m_upper(&get(&get(&get(&rd(&t_1), "term"), "rule"), "name"))), ": ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "num", args![rd(&w_1)])])), " a fold on each of ", &tos(&call(&k!("Expr"), "show", args![rd(&over_1)])), " of l's ways, ", &tos(&call(&k!("Expr"), "show", args![rd(&gate_1)])), " of them, at ", &tos(&call(&k!("Expr"), "show", args![rd(&at_1)])), " - ", &tos(&call(&k!("Expr"), "show", args![rd(&got_1)])), ""]]);
           }
         }
       };
@@ -9763,7 +9764,7 @@ pub mod c_Prover {
         let x_2 = cell(&arg(a3, 0));
         return own(&get(&get(&rd(&x_2), "fact"), "key"));
         Value::Null
-      }) }])]), sv!["l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", &tos(&call(&k!("Expr"), "show", args![rd(&folds_of_0)])), " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back"], m_concat(&rd(&said_0), args![list![sv!["\\Delta DEG = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]])]));
+      }) }])]), sv!["l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", &tos(&call(&k!("Expr"), "show", args![rd(&folds_of_0)])), " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back"], m_concat(&rd(&said_0), args![list![sv!["\\Delta DEG = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]])]));
       set(&rd(&st_0), "derivation", &m_concat(&list![rd(&line_0), rd(&moved_0), rd(&ways_0)], args![rd(&pieces_0)]));
       return own(&rd(&st_0));
       Value::Null
@@ -9828,15 +9829,162 @@ pub mod c_Prover {
       let base_0 = cell(&Value::Null); wr(&base_0, &call(&k!("Expr"), "replace", args![get(&get(&rd(&settles_0), "fact"), "to"), sv!["\\rho"], rd(&vac_0)]));
       let shell_0 = cell(&Value::Null); wr(&shell_0, &call(&k!("Expr"), "field", args![sv!["l.shell\\paren{x.\\bar{R}}"]]));
       let R_0 = cell(&Value::Null); wr(&R_0, &call(&k!("Expr"), "field", args![sv!["x.\\bar{R}"]]));
-      let reach_0 = cell(&Value::Null); wr(&reach_0, &call(&rd(&s_0), "fact", args![sv!["is"], sv!["l.reach\\paren{\\bar{R}}"]]));
-      let walks_0 = cell(&Value::Null); wr(&walks_0, &(if truthy(&((truthy(&(!eq(&rd(&reach_0), &Value::Null))) && truthy(&eq(&get(&get(&rd(&reach_0), "to"), "kind"), &sv!["pow"]))))) { own(&call(&k!("Prover"), "neat", args![call(&k!("Expr"), "replace", args![call(&k!("Expr"), "pown", args![call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), get(&get(&rd(&reach_0), "to"), "base")])]), neg(&1.0)]), sv!["\\rho"], rd(&vac_0)])])) } else { own(&Value::Null) }));
+      let relights_0 = cell(&Value::Null); wr(&relights_0, &get(&self_, "relights"));
+      let walks_0 = cell(&Value::Null); wr(&walks_0, &call(&self_, "walk_of", args![rd(&s_0)]));
       let dim_0 = cell(&Value::Null); wr(&dim_0, &call(&k!("Expr"), "field", args![sv!["D"]]));
       let deeper_0 = cell(&Value::Null); wr(&deeper_0, &(if truthy(&eq(&rd(&walks_0), &Value::Null)) { own(&call(&k!("Expr"), "num", args![1.0])) } else { own(&call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "num", args![1.0]), call(&k!("Prover"), "neat", args![call(&k!("Expr"), "div", args![call(&k!("Expr"), "mul", args![list![rd(&dim_0), rd(&R_0)]]), call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "sub", args![rd(&dim_0), call(&k!("Expr"), "num", args![2.0])]), rd(&walks_0)]])])])]])) }));
       let per_0 = cell(&Value::Null); wr(&per_0, &call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "field", args![sv!["x.\\bar{m}"]]), call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), call(&k!("Prover"), "reach", args![sv!["x.\\bar{R}"]])]), call(&k!("Expr"), "pown", args![rd(&shell_0), neg(&1.0)]), rd(&deeper_0)]]));
       let walked_0 = cell(&Value::Null); wr(&walked_0, &(if truthy(&eq(&rd(&walks_0), &Value::Null)) { own(&sv!["-"]) } else { own(&call(&k!("Expr"), "show", args![rd(&walks_0)])) }));
+      let afresh_0 = cell(&Value::Null); wr(&afresh_0, &(if truthy(&eq(&rd(&relights_0), &Value::Null)) { own(&sv!["-"]) } else { own(&m_upper(&get(&get(&get(&rd(&relights_0), "term"), "rule"), "name"))) }));
       let rhs_0 = cell(&Value::Null); wr(&rhs_0, &call(&k!("Expr"), "add", args![list![rd(&base_0), call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "pown", args![rd(&k_0), neg(&1.0)]), call(&k!("Expr"), "call", args![sv!["\\sum_{x = x_{@t}}"], rd(&per_0)])]])]]));
       let lhs_0 = cell(&Value::Null); wr(&lhs_0, &sv!["\\Delta\\paren{DEG·\\rho + ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), "·n_{f}}"]);
-      return own(&call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["n_{f,l}\\paren{t}"], rd(&rhs_0)]), sv!["the record every body leaves at a local"], list![get(&get(&rd(&rays_c_0), "fact"), "key"), get(&get(&rd(&ways_c_0), "fact"), "key"), get(&get(&rd(&settles_0), "fact"), "key")], sv!["a meeting turns ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), ", on the settled record. Each body is read as it was when its rays left it, at its own distance then"], list![sv!["", &tos(&rd(&lhs_0)), " = ", &tos(&call(&k!("Expr"), "show", args![rd(&both_0)])), ""], sv!["the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", &tos(&call(&k!("Expr"), "show", args![rd(&base_0)])), ""], sv!["x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"], sv!["the walk: \\lambda = ", &tos(&rd(&walked_0)), ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}"], sv!["n_{f,l}\\paren{t} = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]]));
+      return own(&call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["n_{f,l}\\paren{t}"], rd(&rhs_0)]), sv!["the record every body leaves at a local"], list![get(&get(&rd(&rays_c_0), "fact"), "key"), get(&get(&rd(&ways_c_0), "fact"), "key"), get(&get(&rd(&settles_0), "fact"), "key")], sv!["a meeting turns ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), ", on the settled record. Each body is read as it was when its rays left it, at its own distance then"], list![sv!["", &tos(&rd(&lhs_0)), " = ", &tos(&call(&k!("Expr"), "show", args![rd(&both_0)])), ""], sv!["the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", &tos(&call(&k!("Expr"), "show", args![rd(&base_0)])), ""], sv!["x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"], sv!["the walk: ", &tos(&rd(&afresh_0)), " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = ", &tos(&rd(&walked_0)), ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}"], sv!["n_{f,l}\\paren{t} = ", &tos(&call(&k!("Expr"), "show", args![rd(&rhs_0)])), ""]]]));
+      Value::Null
+    }
+  }
+  pub mod g_relights {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+      return own(&m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))) && truthy(&eq(&get(&rd(&t_2), "degree"), &0.0)))) && truthy(&eq(&call(&k!("Expr"), "show", args![call(&k!("Expr"), "simplify", args![get(&rd(&t_2), "ray_count")])]), &sv!["DEG"]))));
+        Value::Null
+      }) })));
+      Value::Null
+    }
+  }
+  pub mod m_walk_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0));
+      let reach_0 = cell(&Value::Null); wr(&reach_0, &call(&rd(&s_0), "fact", args![sv!["is"], sv!["l.reach\\paren{\\bar{R}}"]]));
+      if truthy(&(truthy(&eq(&get(&self_, "relights"), &Value::Null)) || truthy(&eq(&rd(&reach_0), &Value::Null)))) {
+        return own(&Value::Null);
+      }
+      if truthy(&(!eq(&get(&get(&rd(&reach_0), "to"), "kind"), &sv!["pow"]))) {
+        return own(&Value::Null);
+      }
+      return own(&call(&k!("Prover"), "neat", args![call(&k!("Expr"), "replace", args![call(&k!("Expr"), "pown", args![call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), get(&get(&rd(&reach_0), "to"), "base")])]), neg(&1.0)]), sv!["\\rho"], call(&k!("Expr"), "field", args![sv!["\\rho_{\\infty}"]])])]));
+      Value::Null
+    }
+  }
+  pub mod m_relativity_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let left_0 = cell(&arg(a1, 1)); let mass_0 = cell(&arg(a1, 2));
+      let walks_0 = cell(&Value::Null); wr(&walks_0, &call(&self_, "walk_of", args![rd(&s_0)]));
+      if truthy(&eq(&rd(&walks_0), &Value::Null)) {
+        return own(&list![]);
+      }
+      let dim_0 = cell(&Value::Null); wr(&dim_0, &call(&k!("Expr"), "field", args![sv!["D"]]));
+      let R_0 = cell(&Value::Null); wr(&R_0, &call(&k!("Expr"), "field", args![sv!["x.\\bar{R}"]]));
+      let m_0 = cell(&Value::Null); wr(&m_0, &call(&k!("Expr"), "field", args![sv!["x.\\bar{m}"]]));
+      let k_0 = cell(&Value::Null); wr(&k_0, &get(&self_, "fold_weight"));
+      let far_0 = cell(&Value::Null); wr(&far_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "pown", args![rd(&k_0), neg(&1.0)]), rd(&m_0), rd(&dim_0), call(&k!("Expr"), "pown", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "sub", args![rd(&dim_0), call(&k!("Expr"), "num", args![2.0])]), rd(&walks_0)]]), neg(&1.0)]), call(&k!("Expr"), "to_power", args![rd(&R_0), call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![2.0]), rd(&dim_0)])])]])]));
+      let strength_0 = cell(&Value::Null); wr(&strength_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "div", args![rd(&dim_0), call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![2.0]), rd(&walks_0)]])])]));
+      let pull_0 = cell(&Value::Null); wr(&pull_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![rd(&strength_0), rd(&m_0), call(&k!("Expr"), "to_power", args![rd(&R_0), call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), rd(&dim_0)])])]])]));
+      let g__0 = cell(&Value::Null); wr(&g__0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["g \\aside{far}"], rd(&pull_0)]), sv!["the pull far from a body"], list![get(&get(&rd(&left_0), "fact"), "key")], sv!["what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = ", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path"], list![sv!["n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to ", &tos(&call(&k!("Expr"), "show", args![rd(&far_0)])), ", past the free path"], sv!["g = \\frac{", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = ", &tos(&call(&k!("Expr"), "show", args![rd(&pull_0)])), ""], sv!["G = \\frac{D}{2\\lambda} = ", &tos(&call(&k!("Expr"), "show", args![rd(&strength_0)])), ""]]]));
+      let pot_0 = cell(&Value::Null); wr(&pot_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![rd(&strength_0), rd(&m_0), call(&k!("Expr"), "pown", args![call(&k!("Expr"), "sub", args![rd(&dim_0), call(&k!("Expr"), "num", args![2.0])]), neg(&1.0)]), call(&k!("Expr"), "to_power", args![rd(&R_0), call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![2.0]), rd(&dim_0)])])]])]));
+      let phi_0 = cell(&Value::Null); wr(&phi_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\Phi \\aside{far}"], rd(&pot_0)]), sv!["the potential is the record"], list![get(&get(&rd(&g__0), "fact"), "key")], sv!["the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record"], list![sv!["\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = ", &tos(&call(&k!("Expr"), "show", args![rd(&pot_0)])), ""], sv!["= \\frac{", &tos(&call(&k!("Expr"), "show", args![rd(&k_0)])), "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out"]]]));
+      let beta_0 = cell(&Value::Null); wr(&beta_0, &call(&k!("Expr"), "field", args![sv!["\\beta"]]));
+      let beat_0 = cell(&Value::Null); wr(&beat_0, &call(&k!("Expr"), "pown", args![call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), call(&k!("Expr"), "pown", args![rd(&beta_0), 2.0])]), 0.5]));
+      let mover_0 = cell(&Value::Null); wr(&mover_0, &m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))) && truthy(&get(&rd(&t_2), "carries"))));
+        Value::Null
+      }) })));
+      let moved_0 = cell(&Value::Null); wr(&moved_0, &(if truthy(&eq(&rd(&mover_0), &Value::Null)) { own(&sv!["MOVEMENT"]) } else { own(&m_upper(&get(&get(&get(&rd(&mover_0), "term"), "rule"), "name"))) }));
+      let tick_0 = cell(&Value::Null); wr(&tick_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\frac{d\\tau}{dt}"], rd(&beat_0)]), sv!["a body moves or it emits"], list![get(&get(&rd(&mass_0), "fact"), "key")], sv!["", &tos(&rd(&moved_0)), " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}"], list![sv!["", &tos(&rd(&moved_0)), ": every ray a cell a tick, so a body's step is c-bar whatever it does"], sv!["a source moves or it emits: what it spends going, it does not spend shining"], sv!["\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1"], sv!["fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = ", &tos(&call(&k!("Expr"), "show", args![rd(&beat_0)])), ""]]]));
+      let fall_0 = cell(&Value::Null); wr(&fall_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![2.0]), call(&k!("Expr"), "field", args![sv!["\\Phi"]])]])]));
+      let falls_0 = cell(&Value::Null); wr(&falls_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\beta^{2} \\aside{falling}"], rd(&fall_0)]), sv!["a body falling in from far"], list![get(&get(&rd(&phi_0), "fact"), "key")], sv!["a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it"], list![sv!["\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}"], sv!["from rest far off: \\beta^{2} = 2\\Phi"]]]));
+      let rs_0 = cell(&Value::Null); wr(&rs_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![2.0]), rd(&strength_0), rd(&m_0), call(&k!("Expr"), "pown", args![call(&k!("Expr"), "sub", args![rd(&dim_0), call(&k!("Expr"), "num", args![2.0])]), neg(&1.0)])]])]));
+      let r_0 = cell(&Value::Null); wr(&r_0, &call(&k!("Expr"), "sym", args![sv!["r"]]));
+      let A_0 = cell(&Value::Null); wr(&A_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![1.0]), call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "field", args![sv!["r_{s}"]]), call(&k!("Expr"), "to_power", args![rd(&r_0), call(&k!("Expr"), "sub", args![call(&k!("Expr"), "num", args![2.0]), rd(&dim_0)])])]])])]));
+      let held_0 = cell(&Value::Null); wr(&held_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["A \\aside{held}"], rd(&A_0)]), sv!["a clock held where a body falls"], list![get(&get(&rd(&tick_0), "fact"), "key"), get(&get(&rd(&falls_0), "fact"), "key")], sv!["a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat"], list![sv!["\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi"], sv!["r_{s} = ", &tos(&call(&k!("Expr"), "show", args![rd(&rs_0)])), ""], sv!["A = ", &tos(&call(&k!("Expr"), "show", args![rd(&A_0)])), ""]]]));
+      let B_0 = cell(&Value::Null); wr(&B_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "pown", args![rd(&A_0), neg(&1.0)])]));
+      let ruler_0 = cell(&Value::Null); wr(&ruler_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["B \\aside{held}"], rd(&B_0)]), sv!["a ruler held where a body falls"], list![get(&get(&rd(&held_0), "fact"), "key")], sv!["and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it"], list![sv!["B = \\frac{1}{A} = ", &tos(&call(&k!("Expr"), "show", args![rd(&B_0)])), ""], sv!["A·B = 1"]]]));
+      let b_0 = cell(&Value::Null); wr(&b_0, &call(&k!("Expr"), "sym", args![sv!["b"]]));
+      let bend_0 = cell(&Value::Null); wr(&bend_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "num", args![2.0]), call(&k!("Expr"), "field", args![sv!["r_{s}"]]), call(&k!("Expr"), "pown", args![rd(&b_0), neg(&1.0)])]])]));
+      let defl_0 = cell(&Value::Null); wr(&defl_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\alpha \\aside{held}"], rd(&bend_0)]), sv!["light crossing a held field"], list![get(&get(&rd(&held_0), "fact"), "key"), get(&get(&rd(&ruler_0), "fact"), "key")], sv!["light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured"], list![sv!["the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots"], sv!["\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3"], sv!["a stone at c-bar reads A alone: r_{s}/b, half of it"]]]));
+      set(&rd(&g__0), "derivation", &list![rd(&left_0)]);
+      set(&rd(&phi_0), "derivation", &list![rd(&g__0)]);
+      set(&rd(&tick_0), "derivation", &list![rd(&mass_0)]);
+      set(&rd(&falls_0), "derivation", &list![rd(&phi_0)]);
+      set(&rd(&held_0), "derivation", &list![rd(&tick_0), rd(&falls_0)]);
+      set(&rd(&ruler_0), "derivation", &list![rd(&held_0)]);
+      set(&rd(&defl_0), "derivation", &list![rd(&held_0), rd(&ruler_0)]);
+      return own(&list![rd(&g__0), rd(&phi_0), rd(&tick_0), rd(&falls_0), rd(&held_0), rd(&ruler_0), rd(&defl_0)]);
+      Value::Null
+    }
+  }
+  pub mod m_expansion_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let s_0 = cell(&arg(a1, 0)); let settles_0 = cell(&arg(a1, 1));
+      let grown_0 = cell(&Value::Null); wr(&grown_0, &call(&self_, "growth_filled", args![rd(&s_0)]));
+      let inside_0 = cell(&Value::Null); wr(&inside_0, &call(&k!("Prover"), "neat", args![get(&get(&rd(&grown_0), "fact"), "to")]));
+      let frontier_0 = cell(&Value::Null); wr(&frontier_0, &m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))) && truthy(&get(&rd(&t_2), "carries")))) && truthy(&(!eq(&get(&rd(&t_2), "grows"), &sv!["0"])))));
+        Value::Null
+      }) })));
+      if truthy(&eq(&rd(&frontier_0), &Value::Null)) {
+        return own(&list![]);
+      }
+      let named_0 = cell(&Value::Null); wr(&named_0, &m_upper(&get(&get(&get(&rd(&frontier_0), "term"), "rule"), "name")));
+      let gate_0 = cell(&Value::Null); wr(&gate_0, &(if truthy(&eq(&get(&rd(&frontier_0), "share"), &Value::Null)) { own(&sv!["-"]) } else { own(&call(&k!("Expr"), "show", args![get(&rd(&frontier_0), "share")])) }));
+      let st_0 = cell(&Value::Null); wr(&st_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\partial_{t}V \\aside{inside}"], rd(&inside_0)]), sv!["what the settled vacuum grows"], list![get(&get(&rd(&grown_0), "fact"), "key")], sv!["the growth ledger read where the vacuum has settled: every ray there has room ahead, so ", &tos(&rd(&named_0)), " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing"], list![sv!["", &tos(&get(&get(&rd(&grown_0), "fact"), "of")), " = ", &tos(&call(&k!("Expr"), "show", args![get(&get(&rd(&grown_0), "fact"), "to")])), ""], sv!["", &tos(&rd(&named_0)), " grows at ", &tos(&rd(&gate_0)), ": nought where every ray has room ahead"]]]));
+      let t_0 = cell(&Value::Null); wr(&t_0, &call(&k!("Expr"), "sym", args![sv!["t"]]));
+      let rate_0 = cell(&Value::Null); wr(&rate_0, &call(&k!("Expr"), "pown", args![rd(&t_0), neg(&1.0)]));
+      let hub_0 = cell(&Value::Null); wr(&hub_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["H \\aside{frontier}"], rd(&rate_0)]), sv!["the world grows at its frontier"], list![get(&get(&rd(&st_0), "fact"), "key")], sv!["so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age"], list![sv!["inside: ", &tos(&call(&k!("Expr"), "show", args![rd(&inside_0)])), ""], sv!["at the frontier: ", &tos(&rd(&named_0)), " at ", &tos(&rd(&gate_0)), ", one cell a tick"], sv!["R = \\bar{c}t, so H = \\dot{R}/R = ", &tos(&call(&k!("Expr"), "show", args![rd(&rate_0)])), ""]]]));
+      set(&rd(&st_0), "derivation", &list![rd(&grown_0)]);
+      set(&rd(&hub_0), "derivation", &list![rd(&st_0)]);
+      return own(&m_concat(&list![rd(&st_0), rd(&hub_0)], args![call(&self_, "scale_of", args![rd(&hub_0), rd(&settles_0)])]));
+      Value::Null
+    }
+  }
+  pub mod m_scale_of {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let hub_0 = cell(&arg(a1, 0)); let settles_0 = cell(&arg(a1, 1));
+      let vac_0 = cell(&Value::Null); wr(&vac_0, &call(&k!("Expr"), "field", args![sv!["\\rho_{\\infty}"]]));
+      let nf_0 = cell(&Value::Null); wr(&nf_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "replace", args![call(&k!("Expr"), "replace", args![get(&get(&rd(&settles_0), "fact"), "to"), sv!["\\rho"], rd(&vac_0)]), sv!["DEG_{0}"], call(&k!("Expr"), "field", args![sv!["DEG"]])])]));
+      let v_0 = cell(&Value::Null); wr(&v_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "pown", args![call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "num", args![1.0]), rd(&nf_0)]]), neg(&1.0)])]));
+      let mover_0 = cell(&Value::Null); wr(&mover_0, &m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&(truthy(&(!eq(&get(&get(&rd(&t_2), "term"), "rule"), &Value::Null))) && truthy(&get(&rd(&t_2), "carries"))));
+        Value::Null
+      }) })));
+      let moved_0 = cell(&Value::Null); wr(&moved_0, &(if truthy(&eq(&rd(&mover_0), &Value::Null)) { own(&sv!["MOVEMENT"]) } else { own(&m_upper(&get(&get(&get(&rd(&mover_0), "term"), "rule"), "name"))) }));
+      let straight_0 = cell(&Value::Null); wr(&straight_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["v \\aside{straight}"], rd(&v_0)]), sv!["what a heading keeps straight"], list![get(&get(&rd(&settles_0), "fact"), "key")], sv!["", &tos(&rd(&moved_0)), " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at"], list![sv!["the draw: 1 straight on against n_{f} folded"], sv!["n_{f} at \\rho_{\\infty} = ", &tos(&call(&k!("Expr"), "show", args![rd(&nf_0)])), ""], sv!["v = \\frac{1}{1 + n_{f}} = ", &tos(&call(&k!("Expr"), "show", args![rd(&v_0)])), ""]]]));
+      set(&rd(&straight_0), "derivation", &list![rd(&settles_0)]);
+      let lights_0 = cell(&Value::Null); wr(&lights_0, &get(&self_, "relights"));
+      let lit_0 = cell(&Value::Null); wr(&lit_0, &(if truthy(&eq(&rd(&lights_0), &Value::Null)) { own(&sv!["CREATION"]) } else { own(&m_upper(&get(&get(&get(&rd(&lights_0), "term"), "rule"), "name"))) }));
+      let sends_0 = cell(&Value::Null); wr(&sends_0, &m_first(&filt(&get(&self_, "infos"), &{ let self_: Value = self_.clone(); cl!(); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let t_2 = cell(&arg(a3, 0));
+        return own(&get(&rd(&t_2), "outside"));
+        Value::Null
+      }) })));
+      let sent_0 = cell(&Value::Null); wr(&sent_0, &(if truthy(&eq(&rd(&sends_0), &Value::Null)) { own(&sv!["EMISSION"]) } else { own(&m_upper(&get(&get(&get(&rd(&sends_0), "term"), "rule"), "name"))) }));
+      let a0_0 = cell(&Value::Null); wr(&a0_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![rd(&v_0), get(&get(&rd(&hub_0), "fact"), "to")]])]));
+      let scale_0 = cell(&Value::Null); wr(&scale_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["a_{0} \\aside{age}"], rd(&a0_0)]), sv!["the scale is the vacuum's own growth"], list![get(&get(&rd(&straight_0), "fact"), "key"), get(&get(&rd(&hub_0), "fact"), "key")], sv!["", &tos(&rd(&lit_0)), " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. ", &tos(&rd(&sent_0)), " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against"], list![sv!["", &tos(&rd(&lit_0)), ": fires at a free point, lights every way - the vacuum pulses, every other tick"], sv!["", &tos(&rd(&sent_0)), ": a source moves or emits, so each move flips the parity, fore against aft"], sv!["steady: the flips cancel; accelerating: they pile up, since the beginning"], sv!["the age is one over the vacuum's growth, ", &tos(&call(&k!("Expr"), "show", args![get(&get(&rd(&hub_0), "fact"), "to")])), ""], sv!["a_{0} = vH = ", &tos(&call(&k!("Expr"), "show", args![rd(&a0_0)])), ""]]]));
+      set(&rd(&scale_0), "derivation", &list![rd(&straight_0), rd(&hub_0)]);
+      let g_0 = cell(&Value::Null); wr(&g_0, &call(&k!("Expr"), "field", args![sv!["g_{N}"]]));
+      let a_0 = cell(&Value::Null); wr(&a_0, &call(&k!("Expr"), "field", args![sv!["a_{0}"]]));
+      let half_0 = cell(&Value::Null); wr(&half_0, &call(&k!("Expr"), "mul", args![list![rd(&g_0), call(&k!("Expr"), "num", args![0.5])]]));
+      let got_0 = cell(&Value::Null); wr(&got_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "add", args![list![rd(&half_0), call(&k!("Expr"), "pown", args![call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "mul", args![list![rd(&half_0), rd(&half_0)]]), call(&k!("Expr"), "mul", args![list![rd(&g_0), rd(&a_0)]])]]), 0.5])]])]));
+      let closing_0 = cell(&Value::Null); wr(&closing_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["F_{g} \\aside{closing}"], rd(&got_0)]), sv!["what is felt, with the mismatch closed"], list![get(&get(&rd(&scale_0), "fact"), "key")], sv!["what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling"], list![sv!["g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"], sv!["g^{2} - g_{N}g - g_{N}a_{0} = 0"], sv!["strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3"], sv!["F_{g} = ", &tos(&call(&k!("Expr"), "show", args![rd(&got_0)])), ""]]]));
+      set(&rd(&closing_0), "derivation", &list![rd(&scale_0)]);
+      let ratio_0 = cell(&Value::Null); wr(&ratio_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "div", args![rd(&a0_0), call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "field", args![sv!["\\bar{c}"]]), get(&get(&rd(&hub_0), "fact"), "to")]])])]));
+      wr(&ratio_0, &call(&k!("Expr"), "replace", args![rd(&ratio_0), sv!["\\bar{c}"], call(&k!("Expr"), "num", args![1.0])]));
+      let against_0 = cell(&Value::Null); wr(&against_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\frac{a_{0}}{cH}"], call(&k!("Prover"), "neat", args![rd(&ratio_0)])]), sv!["the scale against the vacuum's growth"], list![get(&get(&rd(&scale_0), "fact"), "key"), get(&get(&rd(&hub_0), "fact"), "key")], sv!["a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183"], list![sv!["a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}"], sv!["\\frac{a_{0}}{cH_{vac}} = ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Prover"), "neat", args![rd(&ratio_0)])])), ""], sv!["against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"]]]));
+      set(&rd(&against_0), "derivation", &list![rd(&scale_0)]);
+      return own(&list![rd(&straight_0), rd(&scale_0), rd(&closing_0), rd(&against_0)]);
       Value::Null
     }
   }
@@ -9919,7 +10067,7 @@ pub mod c_Prover {
       if truthy(&eq(&rd(&mass_0), &Value::Null)) {
         return own(&list![]);
       }
-      return own(&m_concat(&m_concat(&list![rd(&rays_l_0), rd(&space_l_0), rd(&ways_0), rd(&moved_0)], args![rd(&pieces_0)]), args![list![rd(&moving__0), rd(&rays_c_0), rd(&ways_c_0), rd(&moves_0), rd(&settles_0), rd(&left_0), rd(&mass_0)]]));
+      return own(&m_concat(&m_concat(&m_concat(&m_concat(&m_concat(&list![rd(&rays_l_0), rd(&space_l_0), rd(&ways_0), rd(&moved_0)], args![rd(&pieces_0)]), args![list![rd(&moving__0), rd(&rays_c_0), rd(&ways_c_0), rd(&moves_0), rd(&settles_0), rd(&left_0)]]), args![call(&self_, "relativity_of", args![rd(&s_0), rd(&left_0), rd(&mass_0)])]), args![call(&self_, "expansion_of", args![rd(&s_0), rd(&settles_0)])]), args![list![rd(&mass_0)]]));
       Value::Null
     }
   }
@@ -10583,6 +10731,10 @@ pub mod c_Prover {
           call(&rd(&out_0), "set", args![elem(&rd(&roles_0), &rd(&i_1)), elem(&rd(&steps_0), &rd(&i_1))]);
         }
       };
+      for e1 in items(&rd(&model_0)) {
+        let x_1 = cell(&e1);
+        call(&rd(&out_0), "set", args![sv!["of:", &tos(&get(&get(&rd(&x_1), "fact"), "of")), ""], rd(&x_1)]);
+      };
       return own(&rd(&out_0));
       Value::Null
     }
@@ -10685,6 +10837,11 @@ pub mod c_Prover {
     c.method("record_moves", m_record_moves::f);//<
     c.method("record_settles", m_record_settles::f);//<
     c.method("record_left", m_record_left::f);//<
+    c.getter("relights", g_relights::f);//<
+    c.method("walk_of", m_walk_of::f);//<
+    c.method("relativity_of", m_relativity_of::f);//<
+    c.method("expansion_of", m_expansion_of::f);//<
+    c.method("scale_of", m_scale_of::f);//<
     c.method("leftover", m_leftover::f);//<
     c.method("model_chain", m_model_chain::f);//<
     c.method("lean", m_lean::f);//<
@@ -22685,6 +22842,11 @@ pub mod c_Model {
     use crate::rt::*;
     pub fn f(self_: &Value, a1: &[&Value]) -> Value {
     let of__0 = cell(&arg(a1, 0));
+      let law_0 = cell(&Value::Null); wr(&law_0, &call(&k!("Aggregate"), "of", args![get(&self_, "theory")]));
+      let st_0 = cell(&Value::Null); wr(&st_0, &call(&get(&rd(&law_0), "chain"), "get", args![sv!["of:", &tos(&rd(&of__0)), ""]]));
+      if truthy(&(!eq(&rd(&st_0), &Value::Null))) {
+        return own(&get(&rd(&st_0), "fact"));
+      }
       let found_0 = cell(&Value::Null); wr(&found_0, &Value::Null);
       for e1 in items(&call(&get(&self_, "store"), "all", args![sv!["is"]])) {
         let f_1 = cell(&e1);
@@ -22866,10 +23028,10 @@ pub mod c_Model {
       set(&rd(&base_0), &tos(&sv!["\\beta'"]), &0.0);
       set(&rd(&base_0), &tos(&sv!["\\beta\\cdot\\hat{d}"]), &0.0);
       set(&rd(&base_0), &tos(&sv!["\\beta'\\cdot\\hat{d}"]), &0.0);
-      let rho_0 = cell(&Value::Null); wr(&rho_0, &call(&self_, "fact", args![sv!["\\rho_{\\infty}"]]));
-      if truthy(&(!eq(&rd(&rho_0), &Value::Null))) {
-        set(&rd(&base_0), &tos(&sv!["\\rho"]), &call(&self_, "at", args![get(&rd(&rho_0), "to"), rd(&base_0)]));
-      }
+      let law_0 = cell(&Value::Null); wr(&law_0, &call(&k!("Aggregate"), "of", args![get(&self_, "theory"), rd(&deg_0), get(&get(&get(&self_, "theory"), "lattice"), "D")]));
+      set(&rd(&base_0), &tos(&sv!["\\rho"]), &get(&rd(&law_0), "rho_inf"));
+      set(&rd(&base_0), &tos(&sv!["\\rho_{\\infty}"]), &get(&rd(&law_0), "rho_inf"));
+      set(&rd(&base_0), &tos(&sv!["DEG_{0}"]), &rd(&deg_0));
       let om_0 = cell(&Value::Null); wr(&om_0, &call(&self_, "fact", args![sv!["\\omega"]]));
       if truthy(&(!eq(&rd(&om_0), &Value::Null))) {
         set(&rd(&base_0), &tos(&sv!["\\omega"]), &call(&self_, "at", args![get(&rd(&om_0), "to"), rd(&base_0)]));
@@ -22889,6 +23051,7 @@ pub mod c_Model {
           set_at(&rd(&far_0), &rd(&n_1), &call(&self_, "at", args![get(&rd(&f_1), "to"), rd(&far_0)]));
         }
       };
+      set(&rd(&far_0), &tos(&sv!["n_{f}"]), &get(&rd(&law_0), "nf_inf"));
       return own(&rd(&far_0));
       Value::Null
     }
@@ -23053,7 +23216,7 @@ pub mod c_Model {
   }
   pub fn define(c: &mut Cls) {
     c.field_none("theory");//<
-    c.static_field("NAMES", |self_: &Value| -> Value { own(&list![sv!["\\langle\\rho\\rangle"], sv!["D"], sv!["DEG"], sv!["l.DEG"], sv!["\\nu"], sv!["\\sigma"], sv!["F"], sv!["\\bar{c}"], sv!["m'"], sv!["A'"], sv!["\\bar{R}'"], sv!["m_{\\Sigma}"], sv!["m_{\\Sigma}'"], sv!["\\mathcal{D}"], sv!["\\mathcal{D}'"], sv!["\\beta'"], sv!["\\beta\\cdot\\hat{d}"], sv!["\\beta'\\cdot\\hat{d}"], sv!["\\rho"], sv!["\\omega"], sv!["R"], sv!["r"], sv!["\\bar{r}"], sv!["\\bar{m}_{x}"], sv!["A"], sv!["\\bar{R}"], sv!["\\beta"], sv!["n_{f}"], sv!["\\sigma_{tr}"], sv!["L"], sv!["m"], sv!["\\delta"], sv!["g_{N}"], sv!["a_{0}"], sv!["\\Phi"]]) });//<
+    c.static_field("NAMES", |self_: &Value| -> Value { own(&list![sv!["\\langle\\rho\\rangle"], sv!["D"], sv!["DEG"], sv!["l.DEG"], sv!["\\nu"], sv!["\\sigma"], sv!["F"], sv!["\\bar{c}"], sv!["m'"], sv!["A'"], sv!["\\bar{R}'"], sv!["m_{\\Sigma}"], sv!["m_{\\Sigma}'"], sv!["\\mathcal{D}"], sv!["\\mathcal{D}'"], sv!["\\beta'"], sv!["\\beta\\cdot\\hat{d}"], sv!["\\beta'\\cdot\\hat{d}"], sv!["\\rho"], sv!["\\rho_{\\infty}"], sv!["DEG_{0}"], sv!["\\omega"], sv!["R"], sv!["r"], sv!["\\bar{r}"], sv!["\\bar{m}_{x}"], sv!["A"], sv!["\\bar{R}"], sv!["\\beta"], sv!["n_{f}"], sv!["\\sigma_{tr}"], sv!["L"], sv!["m"], sv!["\\delta"], sv!["g_{N}"], sv!["a_{0}"], sv!["\\Phi"]]) });//<
     c.static_field("RD", |self_: &Value| -> Value { own(&30.0) });//<
     c.field("store", |self_: &Value| -> Value { own(&get(&make_k(&k!("Prover"), args![kw("theory", &get(&self_, "theory"))]), "closure")) });//<
     c.field("cache", |self_: &Value| -> Value { own(&node()) });//<
@@ -25985,7 +26148,7 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "vacuum.ways"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a fold is a way. How many ways does a local have, and what moves them?"]), kw("about", &sv!["\\Delta DEG"]), kw("also", &sv!["DEG"]), kw("leads", &sv!["THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."]), kw("then", &sv!["AND WHAT THEY ARE: the lattice's own ways and one for every fold."])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a fold is a way. How many ways does a local have, and what moves them?"]), kw("about", &sv!["\\Delta DEG"]), kw("also", &sv!["DEG"]), kw("leads", &sv!["THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own."]), kw("then", &sv!["AND WHAT THEY ARE: the lattice's own ways and one for every fold."])]));
     Value::Null
   }) })])
     }
@@ -26405,7 +26568,7 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "gravity.schwarzschild"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?"]), kw("about", &sv!["A in r as GR writes it"]), kw("also", &sv!["A in r"]), kw("leads", &sv!["AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it."]), kw("then", &sv!["AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of."])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?"]), kw("about", &sv!["A \\aside{held}"]), kw("also", &sv!["B \\aside{held}"]), kw("leads", &sv!["THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes."]), kw("then", &sv!["AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it."])]));
     Value::Null
   }) })])
     }
@@ -26475,7 +26638,7 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "gravity.einstein"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["and the metric in terms of that potential - does it come out as general relativity writes it?"]), kw("about", &sv!["A, off the record a ray crosses"])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?"]), kw("about", &sv!["\\beta^{2} \\aside{falling}"])]));
     Value::Null
   }) })])
     }
@@ -26485,7 +26648,57 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "gravity.deflection"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?"]), kw("about", &sv!["the deflection this model gives"]), kw("also", &sv!["the deflection, as general relativity gives it"]), kw("leads", &sv!["WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value."]), kw("then", &sv!["AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means."])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?"]), kw("about", &sv!["\\alpha \\aside{held}"]), kw("leads", &sv!["TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since."])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_gravity_beat {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "gravity.beat"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?"]), kw("about", &sv!["\\frac{d\\tau}{dt}"])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_gravity_far {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "gravity.far"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?"]), kw("about", &sv!["g \\aside{far}"]), kw("also", &sv!["\\Phi \\aside{far}"])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_vacuum_age {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "vacuum.age"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?"]), kw("about", &sv!["H \\aside{frontier}"]), kw("also", &sv!["\\partial_{t}V \\aside{inside}"])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_gravity_scale {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "gravity.scale"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"]), kw("about", &sv!["a_{0} \\aside{age}"]), kw("also", &sv!["v \\aside{straight}"])]));
+    Value::Null
+  }) })])
+    }
+  }
+  pub mod h_gravity_closing {
+    use crate::rt::*;
+    pub fn f(self_: &Value) -> Value {
+      make("Theorem", args![kw("id", "gravity.closing"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
+    let self_: &Value = &self_;
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"]), kw("about", &sv!["F_{g} \\aside{closing}"])]));
     Value::Null
   }) })])
     }
@@ -26495,7 +26708,7 @@ pub mod c_G {
     pub fn f(self_: &Value) -> Value {
       make("Theorem", args![kw("id", "gravity.metric"), kw("body", &{ let self_: Value = self_.clone(); fnv(move |a1: &[&Value]| -> Value {
     let self_: &Value = &self_;
-    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["light goes at one over the index. What metric is the medium, then?"]), kw("about", &sv!["A in r"])]));
+    return own(&make_k(&k!("Asked"), args![kw("asks", &sv!["a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"]), kw("about", &sv!["B \\aside{held}"]), kw("also", &sv!["A \\aside{held}"])]));
     Value::Null
   }) })])
     }
@@ -26651,6 +26864,11 @@ pub mod c_G {
     c.static_field("theorem gravity.coupling", h_gravity_coupling::f);//<
     c.static_field("theorem gravity.einstein", h_gravity_einstein::f);//<
     c.static_field("theorem gravity.deflection", h_gravity_deflection::f);//<
+    c.static_field("theorem gravity.beat", h_gravity_beat::f);//<
+    c.static_field("theorem gravity.far", h_gravity_far::f);//<
+    c.static_field("theorem vacuum.age", h_vacuum_age::f);//<
+    c.static_field("theorem gravity.scale", h_gravity_scale::f);//<
+    c.static_field("theorem gravity.closing", h_gravity_closing::f);//<
     c.static_field("theorem gravity.metric", h_gravity_metric::f);//<
     c.static_field("theorem gravity.shadow", h_gravity_shadow::f);//<
     c.static_field("rule S.2", r_S_2::f);//<

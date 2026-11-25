@@ -37,6 +37,8 @@ Prover += {
     roles := ["population", "space", "growth", "rays", "line", "ways", "folds", "settled", "record", "mass"]
     steps := [filled, spaced, grown, rays_c, rays_c, by(Prover.WAYS_LINE), by("the record's own line"), by("the record settled against the density"), by("the record every body leaves at a local"), mass]
     Array.range(roles.length).for(i => { out.set(roles[i], steps[i]) if steps[i] != None })
+    /* and every step of the model by the name it stands, so a law is looked up on the continuous model first (`Model.fact`) */
+    model.for(x => { out.set("of:{x.fact.of}", x) })
     out
   }
 }

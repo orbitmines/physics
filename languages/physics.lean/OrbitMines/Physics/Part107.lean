@@ -405,7 +405,7 @@ ray_impl_sfield "theorem vacuum.movement" : Theorem := do
     return ωnull)))
 ray_impl_sfield "theorem vacuum.ways" : Theorem := do
   return (← new! Theorem (id := "vacuum.ways", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("a fold is a way. How many ways does a local have, and what moves them?" : String), «about» := ("\\Delta DEG" : String), «also» := ("DEG" : String), «leads» := ("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own." : String), «then» := ("AND WHAT THEY ARE: the lattice's own ways and one for every fold." : String)))
+    if true then return (← new! Asked («asks» := ("a fold is a way. How many ways does a local have, and what moves them?" : String), «about» := ("\\Delta DEG" : String), «also» := ("DEG" : String), «leads» := ("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own." : String), «then» := ("AND WHAT THEY ARE: the lattice's own ways and one for every fold." : String)))
     return ωnull)))
 ray_impl_sfield "theorem vacuum.at" : Theorem := do
   return (← new! Theorem (id := "vacuum.at", body := (fn! [] do
@@ -573,7 +573,7 @@ ray_impl_sfield "theorem transport.exchange" : Theorem := do
     return ωnull)))
 ray_impl_sfield "theorem gravity.schwarzschild" : Theorem := do
   return (← new! Theorem (id := "gravity.schwarzschild", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?" : String), «about» := ("A in r as GR writes it" : String), «also» := ("A in r" : String), «leads» := ("AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it." : String), «then» := ("AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of." : String)))
+    if true then return (← new! Asked («asks» := ("a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?" : String), «about» := ("A \\aside{held}" : String), «also» := ("B \\aside{held}" : String), «leads» := ("THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes." : String), «then» := ("AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it." : String)))
     return ωnull)))
 ray_impl_sfield "theorem gravity.gauss" : Theorem := do
   return (← new! Theorem (id := "gravity.gauss", body := (fn! [] do
@@ -601,15 +601,35 @@ ray_impl_sfield "theorem gravity.coupling" : Theorem := do
     return ωnull)))
 ray_impl_sfield "theorem gravity.einstein" : Theorem := do
   return (← new! Theorem (id := "gravity.einstein", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("and the metric in terms of that potential - does it come out as general relativity writes it?" : String), «about» := ("A, off the record a ray crosses" : String)))
+    if true then return (← new! Asked («asks» := ("the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?" : String), «about» := ("\\beta^{2} \\aside{falling}" : String)))
     return ωnull)))
 ray_impl_sfield "theorem gravity.deflection" : Theorem := do
   return (← new! Theorem (id := "gravity.deflection", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?" : String), «about» := ("the deflection this model gives" : String), «also» := ("the deflection, as general relativity gives it" : String), «leads» := ("WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value." : String), «then» := ("AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means." : String)))
+    if true then return (← new! Asked («asks» := ("light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?" : String), «about» := ("\\alpha \\aside{held}" : String), «leads» := ("TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since." : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.beat" : Theorem := do
+  return (← new! Theorem (id := "gravity.beat", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?" : String), «about» := ("\\frac{d\\tau}{dt}" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.far" : Theorem := do
+  return (← new! Theorem (id := "gravity.far", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?" : String), «about» := ("g \\aside{far}" : String), «also» := ("\\Phi \\aside{far}" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem vacuum.age" : Theorem := do
+  return (← new! Theorem (id := "vacuum.age", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?" : String), «about» := ("H \\aside{frontier}" : String), «also» := ("\\partial_{t}V \\aside{inside}" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.scale" : Theorem := do
+  return (← new! Theorem (id := "gravity.scale", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?" : String), «about» := ("a_{0} \\aside{age}" : String), «also» := ("v \\aside{straight}" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.closing" : Theorem := do
+  return (← new! Theorem (id := "gravity.closing", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?" : String), «about» := ("F_{g} \\aside{closing}" : String)))
     return ωnull)))
 ray_impl_sfield "theorem gravity.metric" : Theorem := do
   return (← new! Theorem (id := "gravity.metric", body := (fn! [] do
-    if true then return (← new! Asked («asks» := ("light goes at one over the index. What metric is the medium, then?" : String), «about» := ("A in r" : String)))
+    if true then return (← new! Asked («asks» := ("a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?" : String), «about» := ("B \\aside{held}" : String), «also» := ("A \\aside{held}" : String)))
     return ωnull)))
 ray_impl_sfield "theorem gravity.shadow" : Theorem := do
   return (← new! Theorem (id := "gravity.shadow", body := (fn! [] do

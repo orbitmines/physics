@@ -1135,7 +1135,7 @@ fn mscale(avg: f32) -> f32 {
   var e: array<f32, 2>;
   e[0] = avg;
   e[1] = xc(0u);
-  return ((0.02721371823050147) * powi((e[1] + (1.0)), -1));
+  return ((0.04786451314966057) * powi((e[1] + (1.0)), -1));
 }
 
 fn mcell(x: i32, y: i32) -> i32 { if (x < 0 || y < 0 || x >= i32(P.N) || y >= i32(P.N)) { return -1; } return y * i32(P.N) + x; }

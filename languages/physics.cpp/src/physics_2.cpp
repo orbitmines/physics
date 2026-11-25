@@ -2262,6 +2262,46 @@ static void C_ExprReader(Cls& c) {
 }
 static const bool R_ExprReader = define_class("ExprReader", "Node", &C_ExprReader);
 
+static void C_Fact(Cls& c) {
+  c.field("kind", nullptr);
+  c.field("of", nullptr);
+  c.field("to", [](const Value& self) -> Value { return null; });
+  c.getter("key", [](Value self, const Args& a1) -> Value {
+    return "" + str(get(self, S<"kind">())) + "(" + str(get(self, S<"of">())) + ")";
+    return null;
+  });
+  c.getter("says", [](Value self, const Args& a1) -> Value {
+    if (truthy(eq(get(self, S<"kind">()), "is"))) {
+      return "" + str(get(self, S<"of">())) + " = " + str(call(K(S<"Expr">()), S<"show">(), { get(self, S<"to">()) })) + "";
+    }
+    if (truthy(eq(get(self, S<"kind">()), "conserved"))) {
+      return "" + str(get(self, S<"of">())) + " is conserved on its way out";
+    }
+    if (truthy(eq(get(self, S<"kind">()), "isotropic"))) {
+      return "" + str(get(self, S<"of">())) + " goes every way alike";
+    }
+    if (truthy(eq(get(self, S<"kind">()), "grows"))) {
+      return "" + str(get(self, S<"of">())) + " grows as " + str(call(K(S<"Expr">()), S<"show">(), { get(self, S<"to">()) })) + "";
+    }
+    if (truthy(eq(get(self, S<"kind">()), "restored"))) {
+      return "" + str(get(self, S<"of">())) + " is pushed back at " + str(call(K(S<"Expr">()), S<"show">(), { get(self, S<"to">()) })) + "";
+    }
+    return "" + str(get(self, S<"of">())) + " > 0";
+    return null;
+  });
+  c.statik("stands", [](Value self, const Args& a1) -> Value {
+    auto of_0 = cell(arg(a1, 0)); auto to_0 = cell(arg(a1, 1));
+    return make(S<"Fact">(), { kw(S<"kind">(), "is"), kw(S<"of">(), of_0->v), kw(S<"to">(), to_0->v) });
+    return null;
+  });
+  c.statik("key_of", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto of_0 = cell(arg(a1, 1));
+    return "" + str(kind_0->v) + "(" + str(of_0->v) + ")";
+    return null;
+  });
+}
+static const bool R_Fact = define_class("Fact", "Node", &C_Fact);
+
 
 
 void part_2() { }

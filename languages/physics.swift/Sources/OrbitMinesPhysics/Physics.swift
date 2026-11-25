@@ -7739,9 +7739,10 @@ enum C_Prover {
             })))
             var at_1: V = V.null; at_1 = try sel(truthy(V.b(try eq(named_1, V.null))), share_1, try call((try K("Expr")), "field", [try get(try get(named_1, "fact"), "of")]))
             var gate_1: V = V.null; gate_1 = try sel(truthy(V.b(try eq(try get(t_1, "around"), V.null))), try call((try K("Expr")), "num", [1.0]), try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try get(t_1, "around"), V.s(cat("n_{f}")), try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [try get((try K("Prover")), "WAYS"), try get((try K("Prover")), "LATTICE")])])]), V.s(cat("DEG")), try get((try K("Prover")), "WAYS")])]))
-            var got_1: V = V.null; got_1 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [w_1]), try get((try K("Prover")), "WAYS"), gate_1, at_1)])])
+            var over_1: V = V.null; over_1 = try sel(truthy(V.b(try eq(try get(t_1, "around"), V.null))), try get((try K("Prover")), "LATTICE"), try get((try K("Prover")), "WAYS"))
+            var got_1: V = V.null; got_1 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [w_1]), over_1, gate_1, at_1)])])
             try m_push(parts_0, got_1)
-            try m_push(said_0, V.s(cat("", try str(try m_upper(try get(try get(try get(t_1, "term"), "rule"), "name"))), ": ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [w_1])])), " a fold on each of l's ways, ", try str(try call((try K("Expr")), "show", [gate_1])), " of them, at ", try str(try call((try K("Expr")), "show", [at_1])), " - ", try str(try call((try K("Expr")), "show", [got_1])), "")))
+            try m_push(said_0, V.s(cat("", try str(try m_upper(try get(try get(try get(t_1, "term"), "rule"), "name"))), ": ", try str(try call((try K("Expr")), "show", [try call((try K("Expr")), "num", [w_1])])), " a fold on each of ", try str(try call((try K("Expr")), "show", [over_1])), " of l's ways, ", try str(try call((try K("Expr")), "show", [gate_1])), " of them, at ", try str(try call((try K("Expr")), "show", [at_1])), " - ", try str(try call((try K("Expr")), "show", [got_1])), "")))
           }
         }
       }
@@ -7753,7 +7754,7 @@ enum C_Prover {
         var x_2: V = arg(a3, 0);
         return try get(try get(x_2, "fact"), "key")
         return V.null
-      }))), V.s(cat("l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", try str(try call((try K("Expr")), "show", [folds_of_0])), " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back")), try m_concat(said_0, list(V.s(cat("\\Delta DEG = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
+      }))), V.s(cat("l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", try str(try call((try K("Expr")), "show", [folds_of_0])), " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back")), try m_concat(said_0, list(V.s(cat("\\Delta DEG = ", try str(try call((try K("Expr")), "show", [rhs_0])), ""))))])
       try set(st_0, "derivation", try m_concat(list(line_0, moved_0, ways_0), pieces_0))
       return st_0
       return V.null
@@ -7805,15 +7806,142 @@ enum C_Prover {
       var base_0: V = V.null; base_0 = try call((try K("Expr")), "replace", [try get(try get(settles_0, "fact"), "to"), V.s(cat("\\rho")), vac_0])
       var shell_0: V = V.null; shell_0 = try call((try K("Expr")), "field", [V.s(cat("l.shell\\paren{x.\\bar{R}}"))])
       var R_0: V = V.null; R_0 = try call((try K("Expr")), "field", [V.s(cat("x.\\bar{R}"))])
-      var reach_0: V = V.null; reach_0 = try call(s_0, "fact", [V.s(cat("is")), V.s(cat("l.reach\\paren{\\bar{R}}"))])
-      var walks_0: V = V.null; walks_0 = try sel(truthy((try and_(V.b(!(try eq(reach_0, V.null))), V.b(try eq(try get(try get(reach_0, "to"), "kind"), V.s(cat("pow"))))))), try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "pown", [try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), try get(try get(reach_0, "to"), "base")])]), try neg(1.0)]), V.s(cat("\\rho")), vac_0])]), V.null)
+      var relights_0: V = V.null; relights_0 = try get(this_, "relights")
+      var walks_0: V = V.null; walks_0 = try call(this_, "walk_of", [s_0])
       var dim_0: V = V.null; dim_0 = try call((try K("Expr")), "field", [V.s(cat("D"))])
       var deeper_0: V = V.null; deeper_0 = try sel(truthy(V.b(try eq(walks_0, V.null))), try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [try call((try K("Expr")), "mul", [list(dim_0, R_0)]), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "sub", [dim_0, try call((try K("Expr")), "num", [2.0])]), walks_0)])])]))]))
       var per_0: V = V.null; per_0 = try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("x.\\bar{m}"))]), try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), try call((try K("Prover")), "reach", [V.s(cat("x.\\bar{R}"))])]), try call((try K("Expr")), "pown", [shell_0, try neg(1.0)]), deeper_0)])
       var walked_0: V = V.null; walked_0 = try sel(truthy(V.b(try eq(walks_0, V.null))), V.s(cat("-")), try call((try K("Expr")), "show", [walks_0]))
+      var afresh_0: V = V.null; afresh_0 = try sel(truthy(V.b(try eq(relights_0, V.null))), V.s(cat("-")), try m_upper(try get(try get(try get(relights_0, "term"), "rule"), "name")))
       var rhs_0: V = V.null; rhs_0 = try call((try K("Expr")), "add", [list(base_0, try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "pown", [k_0, try neg(1.0)]), try call((try K("Expr")), "call", [V.s(cat("\\sum_{x = x_{@t}}")), per_0]))]))])
       var lhs_0: V = V.null; lhs_0 = V.s(cat("\\Delta\\paren{DEG·\\rho + ", try str(try call((try K("Expr")), "show", [k_0])), "·n_{f}}"))
-      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("n_{f,l}\\paren{t}")), rhs_0]), V.s(cat("the record every body leaves at a local")), list(try get(try get(rays_c_0, "fact"), "key"), try get(try get(ways_c_0, "fact"), "key"), try get(try get(settles_0, "fact"), "key")), V.s(cat("a meeting turns ", try str(try call((try K("Expr")), "show", [k_0])), " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", try str(try call((try K("Expr")), "show", [k_0])), " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", try str(try call((try K("Expr")), "show", [k_0])), ", on the settled record. Each body is read as it was when its rays left it, at its own distance then")), list(V.s(cat("", try str(lhs_0), " = ", try str(try call((try K("Expr")), "show", [both_0])), "")), V.s(cat("the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", try str(try call((try K("Expr")), "show", [base_0])), "")), V.s(cat("x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then")), V.s(cat("the walk: \\lambda = ", try str(walked_0), ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}")), V.s(cat("n_{f,l}\\paren{t} = ", try str(try call((try K("Expr")), "show", [rhs_0])), "")))])
+      return try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("n_{f,l}\\paren{t}")), rhs_0]), V.s(cat("the record every body leaves at a local")), list(try get(try get(rays_c_0, "fact"), "key"), try get(try get(ways_c_0, "fact"), "key"), try get(try get(settles_0, "fact"), "key")), V.s(cat("a meeting turns ", try str(try call((try K("Expr")), "show", [k_0])), " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", try str(try call((try K("Expr")), "show", [k_0])), " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", try str(try call((try K("Expr")), "show", [k_0])), ", on the settled record. Each body is read as it was when its rays left it, at its own distance then")), list(V.s(cat("", try str(lhs_0), " = ", try str(try call((try K("Expr")), "show", [both_0])), "")), V.s(cat("the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", try str(try call((try K("Expr")), "show", [base_0])), "")), V.s(cat("x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then")), V.s(cat("the walk: ", try str(afresh_0), " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = ", try str(walked_0), ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}")), V.s(cat("n_{f,l}\\paren{t} = ", try str(try call((try K("Expr")), "show", [rhs_0])), "")))])
+      return V.null
+    })
+    c.getter("relights", { (this_: V, a1: [V]) throws -> V in
+      return try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(try and_(V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null))), V.b(try eq(try get(t_2, "degree"), 0.0))), V.b(try eq(try call((try K("Expr")), "show", [try call((try K("Expr")), "simplify", [try get(t_2, "ray_count")])]), V.s(cat("DEG")))))
+        return V.null
+      })))
+      return V.null
+    })
+    c.method("walk_of", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0);
+      var reach_0: V = V.null; reach_0 = try call(s_0, "fact", [V.s(cat("is")), V.s(cat("l.reach\\paren{\\bar{R}}"))])
+      if truthy(try or_(V.b(try eq(try get(this_, "relights"), V.null)), V.b(try eq(reach_0, V.null)))) {
+        return V.null
+      }
+      if truthy(V.b(!(try eq(try get(try get(reach_0, "to"), "kind"), V.s(cat("pow")))))) {
+        return V.null
+      }
+      return try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "pown", [try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), try get(try get(reach_0, "to"), "base")])]), try neg(1.0)]), V.s(cat("\\rho")), try call((try K("Expr")), "field", [V.s(cat("\\rho_{\\infty}"))])])])
+      return V.null
+    })
+    c.method("relativity_of", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var left_0: V = arg(a1, 1); var mass_0: V = arg(a1, 2);
+      var walks_0: V = V.null; walks_0 = try call(this_, "walk_of", [s_0])
+      if truthy(V.b(try eq(walks_0, V.null))) {
+        return list()
+      }
+      var dim_0: V = V.null; dim_0 = try call((try K("Expr")), "field", [V.s(cat("D"))])
+      var R_0: V = V.null; R_0 = try call((try K("Expr")), "field", [V.s(cat("x.\\bar{R}"))])
+      var m_0: V = V.null; m_0 = try call((try K("Expr")), "field", [V.s(cat("x.\\bar{m}"))])
+      var k_0: V = V.null; k_0 = try get(this_, "fold_weight")
+      var far_0: V = V.null; far_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "pown", [k_0, try neg(1.0)]), m_0, dim_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "sub", [dim_0, try call((try K("Expr")), "num", [2.0])]), walks_0)]), try neg(1.0)]), try call((try K("Expr")), "to_power", [R_0, try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [2.0]), dim_0])]))])])
+      var strength_0: V = V.null; strength_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [dim_0, try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [2.0]), walks_0)])])])
+      var pull_0: V = V.null; pull_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(strength_0, m_0, try call((try K("Expr")), "to_power", [R_0, try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), dim_0])]))])])
+      var g__0: V = V.null; g__0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("g \\aside{far}")), pull_0]), V.s(cat("the pull far from a body")), list(try get(try get(left_0, "fact"), "key")), V.s(cat("what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = ", try str(try call((try K("Expr")), "show", [k_0])), "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path")), list(V.s(cat("n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to ", try str(try call((try K("Expr")), "show", [far_0])), ", past the free path")), V.s(cat("g = \\frac{", try str(try call((try K("Expr")), "show", [k_0])), "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = ", try str(try call((try K("Expr")), "show", [pull_0])), "")), V.s(cat("G = \\frac{D}{2\\lambda} = ", try str(try call((try K("Expr")), "show", [strength_0])), "")))])
+      var pot_0: V = V.null; pot_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(strength_0, m_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "sub", [dim_0, try call((try K("Expr")), "num", [2.0])]), try neg(1.0)]), try call((try K("Expr")), "to_power", [R_0, try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [2.0]), dim_0])]))])])
+      var phi_0: V = V.null; phi_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\Phi \\aside{far}")), pot_0]), V.s(cat("the potential is the record")), list(try get(try get(g__0, "fact"), "key")), V.s(cat("the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record")), list(V.s(cat("\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = ", try str(try call((try K("Expr")), "show", [pot_0])), "")), V.s(cat("= \\frac{", try str(try call((try K("Expr")), "show", [k_0])), "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out")))])
+      var beta_0: V = V.null; beta_0 = try call((try K("Expr")), "field", [V.s(cat("\\beta"))])
+      var beat_0: V = V.null; beat_0 = try call((try K("Expr")), "pown", [try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "pown", [beta_0, 2.0])]), 0.5])
+      var mover_0: V = V.null; mover_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null))), try get(t_2, "carries"))
+        return V.null
+      })))
+      var moved_0: V = V.null; moved_0 = try sel(truthy(V.b(try eq(mover_0, V.null))), V.s(cat("MOVEMENT")), try m_upper(try get(try get(try get(mover_0, "term"), "rule"), "name")))
+      var tick_0: V = V.null; tick_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\frac{d\\tau}{dt}")), beat_0]), V.s(cat("a body moves or it emits")), list(try get(try get(mass_0, "fact"), "key")), V.s(cat("", try str(moved_0), " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}")), list(V.s(cat("", try str(moved_0), ": every ray a cell a tick, so a body's step is c-bar whatever it does")), V.s(cat("a source moves or it emits: what it spends going, it does not spend shining")), V.s(cat("\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1")), V.s(cat("fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = ", try str(try call((try K("Expr")), "show", [beat_0])), "")))])
+      var fall_0: V = V.null; fall_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [2.0]), try call((try K("Expr")), "field", [V.s(cat("\\Phi"))]))])])
+      var falls_0: V = V.null; falls_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\beta^{2} \\aside{falling}")), fall_0]), V.s(cat("a body falling in from far")), list(try get(try get(phi_0, "fact"), "key")), V.s(cat("a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it")), list(V.s(cat("\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}")), V.s(cat("from rest far off: \\beta^{2} = 2\\Phi")))])
+      var rs_0: V = V.null; rs_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [2.0]), strength_0, m_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "sub", [dim_0, try call((try K("Expr")), "num", [2.0])]), try neg(1.0)]))])])
+      var r_0: V = V.null; r_0 = try call((try K("Expr")), "sym", [V.s(cat("r"))])
+      var A_0: V = V.null; A_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("r_{s}"))]), try call((try K("Expr")), "to_power", [r_0, try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [2.0]), dim_0])]))])])])
+      var held_0: V = V.null; held_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("A \\aside{held}")), A_0]), V.s(cat("a clock held where a body falls")), list(try get(try get(tick_0, "fact"), "key"), try get(try get(falls_0, "fact"), "key")), V.s(cat("a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat")), list(V.s(cat("\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi")), V.s(cat("r_{s} = ", try str(try call((try K("Expr")), "show", [rs_0])), "")), V.s(cat("A = ", try str(try call((try K("Expr")), "show", [A_0])), "")))])
+      var B_0: V = V.null; B_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "pown", [A_0, try neg(1.0)])])
+      var ruler_0: V = V.null; ruler_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("B \\aside{held}")), B_0]), V.s(cat("a ruler held where a body falls")), list(try get(try get(held_0, "fact"), "key")), V.s(cat("and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it")), list(V.s(cat("B = \\frac{1}{A} = ", try str(try call((try K("Expr")), "show", [B_0])), "")), V.s(cat("A·B = 1")))])
+      var b_0: V = V.null; b_0 = try call((try K("Expr")), "sym", [V.s(cat("b"))])
+      var bend_0: V = V.null; bend_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [2.0]), try call((try K("Expr")), "field", [V.s(cat("r_{s}"))]), try call((try K("Expr")), "pown", [b_0, try neg(1.0)]))])])
+      var defl_0: V = V.null; defl_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\alpha \\aside{held}")), bend_0]), V.s(cat("light crossing a held field")), list(try get(try get(held_0, "fact"), "key"), try get(try get(ruler_0, "fact"), "key")), V.s(cat("light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured")), list(V.s(cat("the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots")), V.s(cat("\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3")), V.s(cat("a stone at c-bar reads A alone: r_{s}/b, half of it")))])
+      try set(g__0, "derivation", list(left_0))
+      try set(phi_0, "derivation", list(g__0))
+      try set(tick_0, "derivation", list(mass_0))
+      try set(falls_0, "derivation", list(phi_0))
+      try set(held_0, "derivation", list(tick_0, falls_0))
+      try set(ruler_0, "derivation", list(held_0))
+      try set(defl_0, "derivation", list(held_0, ruler_0))
+      return list(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0)
+      return V.null
+    })
+    c.method("expansion_of", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var settles_0: V = arg(a1, 1);
+      var grown_0: V = V.null; grown_0 = try call(this_, "growth_filled", [s_0])
+      var inside_0: V = V.null; inside_0 = try call((try K("Prover")), "neat", [try get(try get(grown_0, "fact"), "to")])
+      var frontier_0: V = V.null; frontier_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(try and_(V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null))), try get(t_2, "carries")), V.b(!(try eq(try get(t_2, "grows"), V.s(cat("0"))))))
+        return V.null
+      })))
+      if truthy(V.b(try eq(frontier_0, V.null))) {
+        return list()
+      }
+      var named_0: V = V.null; named_0 = try m_upper(try get(try get(try get(frontier_0, "term"), "rule"), "name"))
+      var gate_0: V = V.null; gate_0 = try sel(truthy(V.b(try eq(try get(frontier_0, "share"), V.null))), V.s(cat("-")), try call((try K("Expr")), "show", [try get(frontier_0, "share")]))
+      var st_0: V = V.null; st_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\partial_{t}V \\aside{inside}")), inside_0]), V.s(cat("what the settled vacuum grows")), list(try get(try get(grown_0, "fact"), "key")), V.s(cat("the growth ledger read where the vacuum has settled: every ray there has room ahead, so ", try str(named_0), " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing")), list(V.s(cat("", try str(try get(try get(grown_0, "fact"), "of")), " = ", try str(try call((try K("Expr")), "show", [try get(try get(grown_0, "fact"), "to")])), "")), V.s(cat("", try str(named_0), " grows at ", try str(gate_0), ": nought where every ray has room ahead")))])
+      var t_0: V = V.null; t_0 = try call((try K("Expr")), "sym", [V.s(cat("t"))])
+      var rate_0: V = V.null; rate_0 = try call((try K("Expr")), "pown", [t_0, try neg(1.0)])
+      var hub_0: V = V.null; hub_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("H \\aside{frontier}")), rate_0]), V.s(cat("the world grows at its frontier")), list(try get(try get(st_0, "fact"), "key")), V.s(cat("so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age")), list(V.s(cat("inside: ", try str(try call((try K("Expr")), "show", [inside_0])), "")), V.s(cat("at the frontier: ", try str(named_0), " at ", try str(gate_0), ", one cell a tick")), V.s(cat("R = \\bar{c}t, so H = \\dot{R}/R = ", try str(try call((try K("Expr")), "show", [rate_0])), "")))])
+      try set(st_0, "derivation", list(grown_0))
+      try set(hub_0, "derivation", list(st_0))
+      return try m_concat(list(st_0, hub_0), try call(this_, "scale_of", [hub_0, settles_0]))
+      return V.null
+    })
+    c.method("scale_of", { (this_: V, a1: [V]) throws -> V in
+      var hub_0: V = arg(a1, 0); var settles_0: V = arg(a1, 1);
+      var vac_0: V = V.null; vac_0 = try call((try K("Expr")), "field", [V.s(cat("\\rho_{\\infty}"))])
+      var nf_0: V = V.null; nf_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try get(try get(settles_0, "fact"), "to"), V.s(cat("\\rho")), vac_0]), V.s(cat("DEG_{0}")), try call((try K("Expr")), "field", [V.s(cat("DEG"))])])])
+      var v_0: V = V.null; v_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), nf_0)]), try neg(1.0)])])
+      var mover_0: V = V.null; mover_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try and_(V.b(!(try eq(try get(try get(t_2, "term"), "rule"), V.null))), try get(t_2, "carries"))
+        return V.null
+      })))
+      var moved_0: V = V.null; moved_0 = try sel(truthy(V.b(try eq(mover_0, V.null))), V.s(cat("MOVEMENT")), try m_upper(try get(try get(try get(mover_0, "term"), "rule"), "name")))
+      var straight_0: V = V.null; straight_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("v \\aside{straight}")), v_0]), V.s(cat("what a heading keeps straight")), list(try get(try get(settles_0, "fact"), "key")), V.s(cat("", try str(moved_0), " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at")), list(V.s(cat("the draw: 1 straight on against n_{f} folded")), V.s(cat("n_{f} at \\rho_{\\infty} = ", try str(try call((try K("Expr")), "show", [nf_0])), "")), V.s(cat("v = \\frac{1}{1 + n_{f}} = ", try str(try call((try K("Expr")), "show", [v_0])), "")))])
+      try set(straight_0, "derivation", list(settles_0))
+      var lights_0: V = V.null; lights_0 = try get(this_, "relights")
+      var lit_0: V = V.null; lit_0 = try sel(truthy(V.b(try eq(lights_0, V.null))), V.s(cat("CREATION")), try m_upper(try get(try get(try get(lights_0, "term"), "rule"), "name")))
+      var sends_0: V = V.null; sends_0 = try m_first(try filt(try get(this_, "infos"), V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0);
+        return try get(t_2, "outside")
+        return V.null
+      })))
+      var sent_0: V = V.null; sent_0 = try sel(truthy(V.b(try eq(sends_0, V.null))), V.s(cat("EMISSION")), try m_upper(try get(try get(try get(sends_0, "term"), "rule"), "name")))
+      var a0_0: V = V.null; a0_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(v_0, try get(try get(hub_0, "fact"), "to"))])])
+      var scale_0: V = V.null; scale_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("a_{0} \\aside{age}")), a0_0]), V.s(cat("the scale is the vacuum's own growth")), list(try get(try get(straight_0, "fact"), "key"), try get(try get(hub_0, "fact"), "key")), V.s(cat("", try str(lit_0), " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. ", try str(sent_0), " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against")), list(V.s(cat("", try str(lit_0), ": fires at a free point, lights every way - the vacuum pulses, every other tick")), V.s(cat("", try str(sent_0), ": a source moves or emits, so each move flips the parity, fore against aft")), V.s(cat("steady: the flips cancel; accelerating: they pile up, since the beginning")), V.s(cat("the age is one over the vacuum's growth, ", try str(try call((try K("Expr")), "show", [try get(try get(hub_0, "fact"), "to")])), "")), V.s(cat("a_{0} = vH = ", try str(try call((try K("Expr")), "show", [a0_0])), "")))])
+      try set(scale_0, "derivation", list(straight_0, hub_0))
+      var g_0: V = V.null; g_0 = try call((try K("Expr")), "field", [V.s(cat("g_{N}"))])
+      var a_0: V = V.null; a_0 = try call((try K("Expr")), "field", [V.s(cat("a_{0}"))])
+      var half_0: V = V.null; half_0 = try call((try K("Expr")), "mul", [list(g_0, try call((try K("Expr")), "num", [0.5]))])
+      var got_0: V = V.null; got_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "add", [list(half_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "mul", [list(half_0, half_0)]), try call((try K("Expr")), "mul", [list(g_0, a_0)]))]), 0.5]))])])
+      var closing_0: V = V.null; closing_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("F_{g} \\aside{closing}")), got_0]), V.s(cat("what is felt, with the mismatch closed")), list(try get(try get(scale_0, "fact"), "key")), V.s(cat("what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling")), list(V.s(cat("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}")), V.s(cat("g^{2} - g_{N}g - g_{N}a_{0} = 0")), V.s(cat("strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3")), V.s(cat("F_{g} = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
+      try set(closing_0, "derivation", list(scale_0))
+      var ratio_0: V = V.null; ratio_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [a0_0, try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("\\bar{c}"))]), try get(try get(hub_0, "fact"), "to"))])])])
+      ratio_0 = try call((try K("Expr")), "replace", [ratio_0, V.s(cat("\\bar{c}")), try call((try K("Expr")), "num", [1.0])])
+      var against_0: V = V.null; against_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\frac{a_{0}}{cH}")), try call((try K("Prover")), "neat", [ratio_0])]), V.s(cat("the scale against the vacuum's growth")), list(try get(try get(scale_0, "fact"), "key"), try get(try get(hub_0, "fact"), "key")), V.s(cat("a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183")), list(V.s(cat("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}")), V.s(cat("\\frac{a_{0}}{cH_{vac}} = ", try str(try call((try K("Expr")), "show", [try call((try K("Prover")), "neat", [ratio_0])])), "")), V.s(cat("against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")))])
+      try set(against_0, "derivation", list(scale_0))
+      return list(straight_0, scale_0, closing_0, against_0)
       return V.null
     })
     c.method("leftover", { (this_: V, a1: [V]) throws -> V in
@@ -7884,7 +8012,7 @@ enum C_Prover {
       if truthy(V.b(try eq(mass_0, V.null))) {
         return list()
       }
-      return try m_concat(try m_concat(list(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), list(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0))
+      return try m_concat(try m_concat(try m_concat(try m_concat(try m_concat(list(rays_l_0, space_l_0, ways_0, moved_0), pieces_0), list(moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0)), try call(this_, "relativity_of", [s_0, left_0, mass_0])), try call(this_, "expansion_of", [s_0, settles_0])), list(mass_0))
       return V.null
     })
     c.method("lean", { (this_: V, a1: [V]) throws -> V in
@@ -8451,6 +8579,10 @@ enum C_Prover {
           }
           i1 += 1
         }
+      }
+      for e1 in try items(model_0) {
+        var x_1: V = e1
+        try call(out_0, "set", [V.s(cat("of:", try str(try get(try get(x_1, "fact"), "of")), "")), x_1])
       }
       return out_0
       return V.null
@@ -19130,12 +19262,17 @@ extension Physics { public static var Model: V { get throws { return try K("Mode
 enum C_Model {
   static func define(_ c: Cls) throws {
     c.field("theory", nil)
-    c.staticField("NAMES", { (this_: V) throws -> V in return list(V.s(cat("\\langle\\rho\\rangle")), V.s(cat("D")), V.s(cat("DEG")), V.s(cat("l.DEG")), V.s(cat("\\nu")), V.s(cat("\\sigma")), V.s(cat("F")), V.s(cat("\\bar{c}")), V.s(cat("m'")), V.s(cat("A'")), V.s(cat("\\bar{R}'")), V.s(cat("m_{\\Sigma}")), V.s(cat("m_{\\Sigma}'")), V.s(cat("\\mathcal{D}")), V.s(cat("\\mathcal{D}'")), V.s(cat("\\beta'")), V.s(cat("\\beta\\cdot\\hat{d}")), V.s(cat("\\beta'\\cdot\\hat{d}")), V.s(cat("\\rho")), V.s(cat("\\omega")), V.s(cat("R")), V.s(cat("r")), V.s(cat("\\bar{r}")), V.s(cat("\\bar{m}_{x}")), V.s(cat("A")), V.s(cat("\\bar{R}")), V.s(cat("\\beta")), V.s(cat("n_{f}")), V.s(cat("\\sigma_{tr}")), V.s(cat("L")), V.s(cat("m")), V.s(cat("\\delta")), V.s(cat("g_{N}")), V.s(cat("a_{0}")), V.s(cat("\\Phi"))) })
+    c.staticField("NAMES", { (this_: V) throws -> V in return list(V.s(cat("\\langle\\rho\\rangle")), V.s(cat("D")), V.s(cat("DEG")), V.s(cat("l.DEG")), V.s(cat("\\nu")), V.s(cat("\\sigma")), V.s(cat("F")), V.s(cat("\\bar{c}")), V.s(cat("m'")), V.s(cat("A'")), V.s(cat("\\bar{R}'")), V.s(cat("m_{\\Sigma}")), V.s(cat("m_{\\Sigma}'")), V.s(cat("\\mathcal{D}")), V.s(cat("\\mathcal{D}'")), V.s(cat("\\beta'")), V.s(cat("\\beta\\cdot\\hat{d}")), V.s(cat("\\beta'\\cdot\\hat{d}")), V.s(cat("\\rho")), V.s(cat("\\rho_{\\infty}")), V.s(cat("DEG_{0}")), V.s(cat("\\omega")), V.s(cat("R")), V.s(cat("r")), V.s(cat("\\bar{r}")), V.s(cat("\\bar{m}_{x}")), V.s(cat("A")), V.s(cat("\\bar{R}")), V.s(cat("\\beta")), V.s(cat("n_{f}")), V.s(cat("\\sigma_{tr}")), V.s(cat("L")), V.s(cat("m")), V.s(cat("\\delta")), V.s(cat("g_{N}")), V.s(cat("a_{0}")), V.s(cat("\\Phi"))) })
     c.staticField("RD", { (this_: V) throws -> V in return 30.0 })
     c.field("store", { (this_: V) throws -> V in return try get(try makeNamed("Prover", [kw("theory", try get(this_, "theory"))]), "closure") })
     c.field("cache", { (this_: V) throws -> V in return makeNode() })
     c.method("fact", { (this_: V, a1: [V]) throws -> V in
       var of__0: V = arg(a1, 0);
+      var law_0: V = V.null; law_0 = try call((try K("Aggregate")), "of", [try get(this_, "theory")])
+      var st_0: V = V.null; st_0 = try call(try get(law_0, "chain"), "get", [V.s(cat("of:", try str(of__0), ""))])
+      if truthy(V.b(!(try eq(st_0, V.null)))) {
+        return try get(st_0, "fact")
+      }
       var found_0: V = V.null; found_0 = V.null
       for e1 in try items(try call(try get(this_, "store"), "all", [V.s(cat("is"))])) {
         var f_1: V = e1
@@ -19288,10 +19425,10 @@ enum C_Model {
       try set(base_0, Name(try str(V.s(cat("\\beta'")))), 0.0)
       try set(base_0, Name(try str(V.s(cat("\\beta\\cdot\\hat{d}")))), 0.0)
       try set(base_0, Name(try str(V.s(cat("\\beta'\\cdot\\hat{d}")))), 0.0)
-      var rho_0: V = V.null; rho_0 = try call(this_, "fact", [V.s(cat("\\rho_{\\infty}"))])
-      if truthy(V.b(!(try eq(rho_0, V.null)))) {
-        try set(base_0, Name(try str(V.s(cat("\\rho")))), try call(this_, "at", [try get(rho_0, "to"), base_0]))
-      }
+      var law_0: V = V.null; law_0 = try call((try K("Aggregate")), "of", [try get(this_, "theory"), deg_0, try get(try get(try get(this_, "theory"), "lattice"), "D")])
+      try set(base_0, Name(try str(V.s(cat("\\rho")))), try get(law_0, "rho_inf"))
+      try set(base_0, Name(try str(V.s(cat("\\rho_{\\infty}")))), try get(law_0, "rho_inf"))
+      try set(base_0, Name(try str(V.s(cat("DEG_{0}")))), deg_0)
       var om_0: V = V.null; om_0 = try call(this_, "fact", [V.s(cat("\\omega"))])
       if truthy(V.b(!(try eq(om_0, V.null)))) {
         try set(base_0, Name(try str(V.s(cat("\\omega")))), try call(this_, "at", [try get(om_0, "to"), base_0]))
@@ -19311,6 +19448,7 @@ enum C_Model {
           try setAt(far_0, n_1, try call(this_, "at", [try get(f_1, "to"), far_0]))
         }
       }
+      try set(far_0, Name(try str(V.s(cat("n_{f}")))), try get(law_0, "nf_inf"))
       return far_0
       return V.null
     })
@@ -21953,7 +22091,7 @@ enum C_G {
       return V.null
     }))]) })
     c.staticField("theorem vacuum.ways", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.ways")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("a fold is a way. How many ways does a local have, and what moves them?"))), kw("about", V.s(cat("\\Delta DEG"))), kw("also", V.s(cat("DEG"))), kw("leads", V.s(cat("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."))), kw("then", V.s(cat("AND WHAT THEY ARE: the lattice's own ways and one for every fold.")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a fold is a way. How many ways does a local have, and what moves them?"))), kw("about", V.s(cat("\\Delta DEG"))), kw("also", V.s(cat("DEG"))), kw("leads", V.s(cat("THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own."))), kw("then", V.s(cat("AND WHAT THEY ARE: the lattice's own ways and one for every fold.")))])
       return V.null
     }))]) })
     c.staticField("theorem vacuum.at", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.at")), kw("body", V.fn({ (a1: [V]) throws -> V in
@@ -22121,7 +22259,7 @@ enum C_G {
       return V.null
     }))]) })
     c.staticField("theorem gravity.schwarzschild", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.schwarzschild")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?"))), kw("about", V.s(cat("A in r as GR writes it"))), kw("also", V.s(cat("A in r"))), kw("leads", V.s(cat("AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it."))), kw("then", V.s(cat("AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?"))), kw("about", V.s(cat("A \\aside{held}"))), kw("also", V.s(cat("B \\aside{held}"))), kw("leads", V.s(cat("THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes."))), kw("then", V.s(cat("AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it.")))])
       return V.null
     }))]) })
     c.staticField("theorem gravity.gauss", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.gauss")), kw("body", V.fn({ (a1: [V]) throws -> V in
@@ -22149,15 +22287,35 @@ enum C_G {
       return V.null
     }))]) })
     c.staticField("theorem gravity.einstein", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.einstein")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("and the metric in terms of that potential - does it come out as general relativity writes it?"))), kw("about", V.s(cat("A, off the record a ray crosses")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?"))), kw("about", V.s(cat("\\beta^{2} \\aside{falling}")))])
       return V.null
     }))]) })
     c.staticField("theorem gravity.deflection", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.deflection")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?"))), kw("about", V.s(cat("the deflection this model gives"))), kw("also", V.s(cat("the deflection, as general relativity gives it"))), kw("leads", V.s(cat("WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value."))), kw("then", V.s(cat("AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?"))), kw("about", V.s(cat("\\alpha \\aside{held}"))), kw("leads", V.s(cat("TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since.")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem gravity.beat", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.beat")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?"))), kw("about", V.s(cat("\\frac{d\\tau}{dt}")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem gravity.far", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.far")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?"))), kw("about", V.s(cat("g \\aside{far}"))), kw("also", V.s(cat("\\Phi \\aside{far}")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem vacuum.age", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("vacuum.age")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?"))), kw("about", V.s(cat("H \\aside{frontier}"))), kw("also", V.s(cat("\\partial_{t}V \\aside{inside}")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem gravity.scale", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.scale")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"))), kw("about", V.s(cat("a_{0} \\aside{age}"))), kw("also", V.s(cat("v \\aside{straight}")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem gravity.closing", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.closing")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"))), kw("about", V.s(cat("F_{g} \\aside{closing}")))])
       return V.null
     }))]) })
     c.staticField("theorem gravity.metric", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.metric")), kw("body", V.fn({ (a1: [V]) throws -> V in
-      return try makeNamed("Asked", [kw("asks", V.s(cat("light goes at one over the index. What metric is the medium, then?"))), kw("about", V.s(cat("A in r")))])
+      return try makeNamed("Asked", [kw("asks", V.s(cat("a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"))), kw("about", V.s(cat("B \\aside{held}"))), kw("also", V.s(cat("A \\aside{held}")))])
       return V.null
     }))]) })
     c.staticField("theorem gravity.shadow", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.shadow")), kw("body", V.fn({ (a1: [V]) throws -> V in

@@ -9,31 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_Budget(Cls& c) {
-  c.field("memory", [](const Value& self) -> Value { return 0.0; });
-  c.field("binding", [](const Value& self) -> Value { return 0.0; });
-  c.field("aim_ms", [](const Value& self) -> Value { return 15.0; });
-  c.field("longest_ms", [](const Value& self) -> Value { return 250.0; });
-  c.field("duty", [](const Value& self) -> Value { return 0.5; });
-  c.field("in_flight", [](const Value& self) -> Value { return 2.0; });
-  c.field("host", [](const Value& self) -> Value { return 0.0; });
-  c.field("compact", [](const Value& self) -> Value { return false; });
-}
-static const bool R_Budget = define_class("Budget", "Node", &C_Budget);
-
-static void C_Batching(Cls& c) {
-  c.field("tiles", [](const Value& self) -> Value { return 1.0; });
-  c.field("ticks", [](const Value& self) -> Value { return 1.0; });
-}
-static const bool R_Batching = define_class("Batching", "Node", &C_Batching);
-
-static void C_Output(Cls& c) {
-  c.field("every", [](const Value& self) -> Value { return 0.0; });
-  c.field("grid", [](const Value& self) -> Value { return 128.0; });
-  c.field("sources", [](const Value& self) -> Value { return false; });
-}
-static const bool R_Output = define_class("Output", "Node", &C_Output);
-
 static void C_Plan(Cls& c) {
   c.field("sources", nullptr);
   c.field("side", nullptr);

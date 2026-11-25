@@ -22,22 +22,22 @@ namespace OrbitMines.Physics.Proofs.G.«vacuum.ways»
 /-- What the prover takes from the rules: the premises, read off the program BY DESIGN - a rule's own body, the
 continuous model the rules were read into, the lattice, a count. None is believed or measured; each is already in the
 theory's .ray. -/
-structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}» : ℝ) : Prop where
+structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}» : ℝ) : Prop where
   /-- step 1 (the reading): the continuous model = DEG·\nu·\paren{1 - \rho} + l.\bar{m}·\omega - 2·\sigma·F·n^{2} - the rules read as a line (Reading.ray): the root every derivation passes through -/
   «the reading: the continuous model» : «the continuous model» = (((-1 : ℝ) * (2 : ℝ) * «\sigma» * «F» * («n» ^ 2)) + («DEG» * «\nu» * ((1 : ℝ) + ((-1 : ℝ) * «\rho»))) + ((1 : ℝ) * «l.\bar{m}» * «\omega»))
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
-structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}» : ℝ) : Prop where
-  /-- step 2 (the ways at a local, a tick on): \Delta DEG = \frac{DEG·S^{-}}{2} - \paren{DEG - DEG_{0}}·S^{+} - NOT CHECKED: the inference 'the ways at a local, a tick on' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
-  unchecked_vacuum_ways_2 : «\Delta DEG» = ((((5 : ℝ) / 10) * «DEG» * «S^{-}») + ((-1 : ℝ) * («DEG» + ((-1 : ℝ) * «DEG_{0}»)) * «S^{+}»))
+structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}» : ℝ) : Prop where
+  /-- step 2 (the ways at a local, a tick on): \Delta DEG = \frac{DEG_{0}·S^{-}}{2} - \paren{DEG - DEG_{0}}·S^{+} - NOT CHECKED: the inference 'the ways at a local, a tick on' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_vacuum_ways_2 : «\Delta DEG» = ((((5 : ℝ) / 10) * «DEG_{0}» * «S^{-}») + ((-1 : ℝ) * («DEG» + ((-1 : ℝ) * «DEG_{0}»)) * «S^{+}»))
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/
-structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}» : ℝ) : Prop
+structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}» : ℝ) : Prop
 
-/-- the answer (the answer): \Delta DEG = \frac{DEG·S^{-}}{2} - \paren{DEG - DEG_{0}}·S^{+} - CHECKED: it names \Delta DEG again (claim 2), and its value is the earlier one's by algebra -/
-theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}» : ℝ)
-    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «S^{-}» «DEG_{0}» «S^{+}») :
-    «\Delta DEG» = ((((5 : ℝ) / 10) * «DEG» * «S^{-}») + ((-1 : ℝ) * («DEG» + ((-1 : ℝ) * «DEG_{0}»)) * «S^{+}»)) := by
+/-- the answer (the answer): \Delta DEG = \frac{DEG_{0}·S^{-}}{2} - \paren{DEG - DEG_{0}}·S^{+} - CHECKED: it names \Delta DEG again (claim 2), and its value is the earlier one's by algebra -/
+theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}» : ℝ)
+    (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\Delta DEG» «DEG_{0}» «S^{-}» «S^{+}») :
+    «\Delta DEG» = ((((5 : ℝ) / 10) * «DEG_{0}» * «S^{-}») + ((-1 : ℝ) * («DEG» + ((-1 : ℝ) * «DEG_{0}»)) * «S^{+}»)) := by
   have h2 := u.unchecked_vacuum_ways_2
   check_algebra
 

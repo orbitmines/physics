@@ -304,12 +304,17 @@ static const bool R_Formed = define_class("Formed", "Node", &C_Formed);
 
 static void C_Model(Cls& c) {
   c.field("theory", nullptr);
-  c.staticField("NAMES", [](const Value& self) -> Value { return list({ "\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi" }); });
+  c.staticField("NAMES", [](const Value& self) -> Value { return list({ "\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\rho_{\\infty}", "DEG_{0}", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi" }); });
   c.staticField("RD", [](const Value& self) -> Value { return 30.0; });
   c.field("store", [](const Value& self) -> Value { return get(make(S<"Prover">(), { kw(S<"theory">(), get(self, S<"theory">())) }), S<"closure">()); });
   c.field("cache", [](const Value& self) -> Value { return make(S<"Node">(), { }); });
   c.method("fact", [](Value self, const Args& a1) -> Value {
     auto of__0 = cell(arg(a1, 0));
+    auto law_0 = cell(); law_0->v = call(K(S<"Aggregate">()), S<"of">(), { get(self, S<"theory">()) });
+    auto st_0 = cell(); st_0->v = call(get(law_0->v, S<"chain">()), S<"get">(), { "of:" + str(of__0->v) + "" });
+    if (truthy((!eq(st_0->v, null)))) {
+      return get(st_0->v, S<"fact">());
+    }
     auto found_0 = cell(); found_0->v = null;
     for (const Value& e1 : Each(call(get(self, S<"store">()), S<"all">(), { "is" }))) {
       auto f_1 = cell(e1);
@@ -462,10 +467,10 @@ static void C_Model(Cls& c) {
     set(base_0->v, Sym(str("\\beta'")), 0.0);
     set(base_0->v, Sym(str("\\beta\\cdot\\hat{d}")), 0.0);
     set(base_0->v, Sym(str("\\beta'\\cdot\\hat{d}")), 0.0);
-    auto rho_0 = cell(); rho_0->v = call(self, S<"fact">(), { "\\rho_{\\infty}" });
-    if (truthy((!eq(rho_0->v, null)))) {
-      set(base_0->v, Sym(str("\\rho")), call(self, S<"at">(), { get(rho_0->v, S<"to">()), base_0->v }));
-    }
+    auto law_0 = cell(); law_0->v = call(K(S<"Aggregate">()), S<"of">(), { get(self, S<"theory">()), deg_0->v, get(get(get(self, S<"theory">()), S<"lattice">()), S<"D">()) });
+    set(base_0->v, Sym(str("\\rho")), get(law_0->v, S<"rho_inf">()));
+    set(base_0->v, Sym(str("\\rho_{\\infty}")), get(law_0->v, S<"rho_inf">()));
+    set(base_0->v, Sym(str("DEG_{0}")), deg_0->v);
     auto om_0 = cell(); om_0->v = call(self, S<"fact">(), { "\\omega" });
     if (truthy((!eq(om_0->v, null)))) {
       set(base_0->v, Sym(str("\\omega")), call(self, S<"at">(), { get(om_0->v, S<"to">()), base_0->v }));
@@ -485,6 +490,7 @@ static void C_Model(Cls& c) {
         setAt(far_0->v, n_1->v, call(self, S<"at">(), { get(f_1->v, S<"to">()), far_0->v }));
       }
     };
+    set(far_0->v, Sym(str("n_{f}")), get(law_0->v, S<"nf_inf">()));
     return far_0->v;
     return null;
   });
@@ -2909,7 +2915,7 @@ static void C_G(Cls& c) {
     return null;
   })) }); });
   c.staticField("theorem vacuum.ways", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.ways"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "a fold is a way. How many ways does a local have, and what moves them?"), kw(S<"about">(), "\\Delta DEG"), kw(S<"also">(), "DEG"), kw(S<"leads">(), "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."), kw(S<"then">(), "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "a fold is a way. How many ways does a local have, and what moves them?"), kw(S<"about">(), "\\Delta DEG"), kw(S<"also">(), "DEG"), kw(S<"leads">(), "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own."), kw(S<"then">(), "AND WHAT THEY ARE: the lattice's own ways and one for every fold.") });
     return null;
   })) }); });
   c.staticField("theorem vacuum.at", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.at"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
@@ -3077,7 +3083,7 @@ static void C_G(Cls& c) {
     return null;
   })) }); });
   c.staticField("theorem gravity.schwarzschild", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.schwarzschild"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?"), kw(S<"about">(), "A in r as GR writes it"), kw(S<"also">(), "A in r"), kw(S<"leads">(), "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it."), kw(S<"then">(), "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of.") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?"), kw(S<"about">(), "A \\aside{held}"), kw(S<"also">(), "B \\aside{held}"), kw(S<"leads">(), "THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes."), kw(S<"then">(), "AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it.") });
     return null;
   })) }); });
   c.staticField("theorem gravity.gauss", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.gauss"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
@@ -3105,15 +3111,35 @@ static void C_G(Cls& c) {
     return null;
   })) }); });
   c.staticField("theorem gravity.einstein", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.einstein"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "and the metric in terms of that potential - does it come out as general relativity writes it?"), kw(S<"about">(), "A, off the record a ray crosses") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?"), kw(S<"about">(), "\\beta^{2} \\aside{falling}") });
     return null;
   })) }); });
   c.staticField("theorem gravity.deflection", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.deflection"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?"), kw(S<"about">(), "the deflection this model gives"), kw(S<"also">(), "the deflection, as general relativity gives it"), kw(S<"leads">(), "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value."), kw(S<"then">(), "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means.") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?"), kw(S<"about">(), "\\alpha \\aside{held}"), kw(S<"leads">(), "TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since.") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.beat", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.beat"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?"), kw(S<"about">(), "\\frac{d\\tau}{dt}") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.far", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.far"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?"), kw(S<"about">(), "g \\aside{far}"), kw(S<"also">(), "\\Phi \\aside{far}") });
+    return null;
+  })) }); });
+  c.staticField("theorem vacuum.age", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "vacuum.age"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?"), kw(S<"about">(), "H \\aside{frontier}"), kw(S<"also">(), "\\partial_{t}V \\aside{inside}") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.scale", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.scale"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"), kw(S<"about">(), "a_{0} \\aside{age}"), kw(S<"also">(), "v \\aside{straight}") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.closing", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.closing"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), kw(S<"about">(), "F_{g} \\aside{closing}") });
     return null;
   })) }); });
   c.staticField("theorem gravity.metric", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.metric"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
-    return make(S<"Asked">(), { kw(S<"asks">(), "light goes at one over the index. What metric is the medium, then?"), kw(S<"about">(), "A in r") });
+    return make(S<"Asked">(), { kw(S<"asks">(), "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"), kw(S<"about">(), "B \\aside{held}"), kw(S<"also">(), "A \\aside{held}") });
     return null;
   })) }); });
   c.staticField("theorem gravity.shadow", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.shadow"), kw(S<"body">(), fn([=](const Args& a1) -> Value {

@@ -6814,9 +6814,10 @@ Prover <- ray_class("Prover", Node, function(cl) {
           }))
           at <- (if (truthy(eq(named, NULL))) share else Expr$field(named$fact$of))
           gate <- (if (truthy(eq(t$around, NULL))) Expr$num(1) else Prover$neat(Expr$replace(Expr$replace(t$around, "n_{f}", Prover$neat(Expr$sub(Prover$WAYS, Prover$LATTICE))), "DEG", Prover$WAYS)))
-          got <- Prover$neat(Expr$mul(lst(Expr$num(w), Prover$WAYS, gate, at)))
+          over <- (if (truthy(eq(t$around, NULL))) Prover$LATTICE else Prover$WAYS)
+          got <- Prover$neat(Expr$mul(lst(Expr$num(w), over, gate, at)))
           m_push(parts, got)
-          m_push(said, "" %+% text_of(m_upper(t$term$rule$name)) %+% ": " %+% text_of(Expr$show(Expr$num(w))) %+% " a fold on each of l's ways, " %+% text_of(Expr$show(gate)) %+% " of them, at " %+% text_of(Expr$show(at)) %+% " - " %+% text_of(Expr$show(got)) %+% "")
+          m_push(said, "" %+% text_of(m_upper(t$term$rule$name)) %+% ": " %+% text_of(Expr$show(Expr$num(w))) %+% " a fold on each of " %+% text_of(Expr$show(over)) %+% " of l's ways, " %+% text_of(Expr$show(gate)) %+% " of them, at " %+% text_of(Expr$show(at)) %+% " - " %+% text_of(Expr$show(got)) %+% "")
         }
       }
       CONTINUE
@@ -6829,7 +6830,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     st <- Step$of(Fact$stands("\\Delta DEG", rhs), Prover$WAYS_LINE, m_concat(lst(line$fact$key, moved$fact$key, ways$fact$key), m_map(pieces, function(x = NULL, ...) {
       return(x$fact$key)
       NULL
-    })), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " %+% text_of(Expr$show(folds_of)) %+% " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said, lst("\\Delta DEG = " %+% text_of(Expr$show(rhs)) %+% "")))
+    })), "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " %+% text_of(Expr$show(folds_of)) %+% " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", m_concat(said, lst("\\Delta DEG = " %+% text_of(Expr$show(rhs)) %+% "")))
     .set(st, "derivation", m_concat(lst(line, moved, ways), pieces))
     return(st)
     NULL
@@ -6877,15 +6878,133 @@ Prover <- ray_class("Prover", Node, function(cl) {
     base <- Expr$replace(settles$fact$to, "\\rho", vac)
     shell <- Expr$field("l.shell\\paren{x.\\bar{R}}")
     R <- Expr$field("x.\\bar{R}")
-    reach <- s$fact("is", "l.reach\\paren{\\bar{R}}")
-    walks <- (if (truthy(((if (truthy(.x <- (!eq(reach, NULL)))) eq(reach$to$kind, "pow") else .x)))) Prover$neat(Expr$replace(Expr$pown(Prover$neat(Expr$sub(Expr$num(1), reach$to$base)), neg(1)), "\\rho", vac)) else NULL)
+    relights <- self$relights
+    walks <- self$walk_of(s)
     dim <- Expr$field("D")
     deeper <- (if (truthy(eq(walks, NULL))) Expr$num(1) else Expr$add(lst(Expr$num(1), Prover$neat(Expr$div(Expr$mul(lst(dim, R)), Expr$mul(lst(Expr$sub(dim, Expr$num(2)), walks)))))))
     per <- Expr$mul(lst(Expr$field("x.\\bar{m}"), Expr$sub(Expr$num(1), Prover$reach("x.\\bar{R}")), Expr$pown(shell, neg(1)), deeper))
     walked <- (if (truthy(eq(walks, NULL))) "-" else Expr$show(walks))
+    afresh <- (if (truthy(eq(relights, NULL))) "-" else m_upper(relights$term$rule$name))
     rhs <- Expr$add(lst(base, Expr$mul(lst(Expr$pown(k, neg(1)), Expr$call("\\sum_{x = x_{@t}}", per)))))
     lhs <- "\\Delta\\paren{DEG·\\rho + " %+% text_of(Expr$show(k)) %+% "·n_{f}}"
-    return(Step$of(Fact$stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", lst(rays_c$fact$key, ways_c$fact$key, settles$fact$key), "a meeting turns " %+% text_of(Expr$show(k)) %+% " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " %+% text_of(Expr$show(k)) %+% " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " %+% text_of(Expr$show(k)) %+% ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(both)) %+% "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " %+% text_of(Expr$show(base)) %+% "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " %+% text_of(walked) %+% ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " %+% text_of(Expr$show(rhs)) %+% "")))
+    return(Step$of(Fact$stands("n_{f,l}\\paren{t}", rhs), "the record every body leaves at a local", lst(rays_c$fact$key, ways_c$fact$key, settles$fact$key), "a meeting turns " %+% text_of(Expr$show(k)) %+% " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " %+% text_of(Expr$show(k)) %+% " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " %+% text_of(Expr$show(k)) %+% ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", lst("" %+% text_of(lhs) %+% " = " %+% text_of(Expr$show(both)) %+% "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " %+% text_of(Expr$show(base)) %+% "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: " %+% text_of(afresh) %+% " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = " %+% text_of(walked) %+% ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " %+% text_of(Expr$show(rhs)) %+% "")))
+    NULL
+  })
+  getter(cl, "relights", function() {
+    return(m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (!eq(t$term$rule, NULL)))) eq(t$degree, 0) else .x))) eq(Expr$show(Expr$simplify(t$ray_count)), "DEG") else .x))
+      NULL
+    })))
+    NULL
+  })
+  method(cl, "walk_of", function(s = NULL, ...) {
+    reach <- s$fact("is", "l.reach\\paren{\\bar{R}}")
+    if (truthy((if (truthy(.x <- eq(self$relights, NULL))) .x else eq(reach, NULL)))) {
+      return(NULL)
+    }
+    if (truthy((!eq(reach$to$kind, "pow")))) {
+      return(NULL)
+    }
+    return(Prover$neat(Expr$replace(Expr$pown(Prover$neat(Expr$sub(Expr$num(1), reach$to$base)), neg(1)), "\\rho", Expr$field("\\rho_{\\infty}"))))
+    NULL
+  })
+  method(cl, "relativity_of", function(s = NULL, left = NULL, mass = NULL, ...) {
+    walks <- self$walk_of(s)
+    if (truthy(eq(walks, NULL))) {
+      return(lst())
+    }
+    dim <- Expr$field("D")
+    R <- Expr$field("x.\\bar{R}")
+    m <- Expr$field("x.\\bar{m}")
+    k <- self$fold_weight
+    far <- Prover$neat(Expr$mul(lst(Expr$pown(k, neg(1)), m, dim, Expr$pown(Expr$mul(lst(Expr$sub(dim, Expr$num(2)), walks)), neg(1)), Expr$to_power(R, Expr$sub(Expr$num(2), dim)))))
+    strength <- Prover$neat(Expr$div(dim, Expr$mul(lst(Expr$num(2), walks))))
+    pull <- Prover$neat(Expr$mul(lst(strength, m, Expr$to_power(R, Expr$sub(Expr$num(1), dim)))))
+    g_ <- Step$of(Fact$stands("g \\aside{far}", pull), "the pull far from a body", lst(left$fact$key), "what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = " %+% text_of(Expr$show(k)) %+% "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path", lst("n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to " %+% text_of(Expr$show(far)) %+% ", past the free path", "g = \\frac{" %+% text_of(Expr$show(k)) %+% "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = " %+% text_of(Expr$show(pull)) %+% "", "G = \\frac{D}{2\\lambda} = " %+% text_of(Expr$show(strength)) %+% ""))
+    pot <- Prover$neat(Expr$mul(lst(strength, m, Expr$pown(Expr$sub(dim, Expr$num(2)), neg(1)), Expr$to_power(R, Expr$sub(Expr$num(2), dim)))))
+    phi <- Step$of(Fact$stands("\\Phi \\aside{far}", pot), "the potential is the record", lst(g_$fact$key), "the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record", lst("\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = " %+% text_of(Expr$show(pot)) %+% "", "= \\frac{" %+% text_of(Expr$show(k)) %+% "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out"))
+    beta <- Expr$field("\\beta")
+    beat <- Expr$pown(Expr$sub(Expr$num(1), Expr$pown(beta, 2)), 0.5)
+    mover <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (!eq(t$term$rule, NULL)))) t$carries else .x))
+      NULL
+    }))
+    moved <- (if (truthy(eq(mover, NULL))) "MOVEMENT" else m_upper(mover$term$rule$name))
+    tick <- Step$of(Fact$stands("\\frac{d\\tau}{dt}", beat), "a body moves or it emits", lst(mass$fact$key), "" %+% text_of(moved) %+% " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}", lst("" %+% text_of(moved) %+% ": every ray a cell a tick, so a body's step is c-bar whatever it does", "a source moves or it emits: what it spends going, it does not spend shining", "\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1", "fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = " %+% text_of(Expr$show(beat)) %+% ""))
+    fall <- Prover$neat(Expr$mul(lst(Expr$num(2), Expr$field("\\Phi"))))
+    falls <- Step$of(Fact$stands("\\beta^{2} \\aside{falling}", fall), "a body falling in from far", lst(phi$fact$key), "a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it", lst("\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}", "from rest far off: \\beta^{2} = 2\\Phi"))
+    rs <- Prover$neat(Expr$mul(lst(Expr$num(2), strength, m, Expr$pown(Expr$sub(dim, Expr$num(2)), neg(1)))))
+    r <- Expr$sym("r")
+    A <- Prover$neat(Expr$sub(Expr$num(1), Expr$mul(lst(Expr$field("r_{s}"), Expr$to_power(r, Expr$sub(Expr$num(2), dim))))))
+    held <- Step$of(Fact$stands("A \\aside{held}", A), "a clock held where a body falls", lst(tick$fact$key, falls$fact$key), "a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat", lst("\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi", "r_{s} = " %+% text_of(Expr$show(rs)) %+% "", "A = " %+% text_of(Expr$show(A)) %+% ""))
+    B <- Prover$neat(Expr$pown(A, neg(1)))
+    ruler <- Step$of(Fact$stands("B \\aside{held}", B), "a ruler held where a body falls", lst(held$fact$key), "and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it", lst("B = \\frac{1}{A} = " %+% text_of(Expr$show(B)) %+% "", "A·B = 1"))
+    b <- Expr$sym("b")
+    bend <- Prover$neat(Expr$mul(lst(Expr$num(2), Expr$field("r_{s}"), Expr$pown(b, neg(1)))))
+    defl <- Step$of(Fact$stands("\\alpha \\aside{held}", bend), "light crossing a held field", lst(held$fact$key, ruler$fact$key), "light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured", lst("the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots", "\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3", "a stone at c-bar reads A alone: r_{s}/b, half of it"))
+    .set(g_, "derivation", lst(left))
+    .set(phi, "derivation", lst(g_))
+    .set(tick, "derivation", lst(mass))
+    .set(falls, "derivation", lst(phi))
+    .set(held, "derivation", lst(tick, falls))
+    .set(ruler, "derivation", lst(held))
+    .set(defl, "derivation", lst(held, ruler))
+    return(lst(g_, phi, tick, falls, held, ruler, defl))
+    NULL
+  })
+  method(cl, "expansion_of", function(s = NULL, settles = NULL, ...) {
+    grown <- self$growth_filled(s)
+    inside <- Prover$neat(grown$fact$to)
+    frontier <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- (!eq(t$term$rule, NULL)))) t$carries else .x))) (!eq(t$grows, "0")) else .x))
+      NULL
+    }))
+    if (truthy(eq(frontier, NULL))) {
+      return(lst())
+    }
+    named <- m_upper(frontier$term$rule$name)
+    gate <- (if (truthy(eq(frontier$share, NULL))) "-" else Expr$show(frontier$share))
+    st <- Step$of(Fact$stands("\\partial_{t}V \\aside{inside}", inside), "what the settled vacuum grows", lst(grown$fact$key), "the growth ledger read where the vacuum has settled: every ray there has room ahead, so " %+% text_of(named) %+% " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing", lst("" %+% text_of(grown$fact$of) %+% " = " %+% text_of(Expr$show(grown$fact$to)) %+% "", "" %+% text_of(named) %+% " grows at " %+% text_of(gate) %+% ": nought where every ray has room ahead"))
+    t <- Expr$sym("t")
+    rate <- Expr$pown(t, neg(1))
+    hub <- Step$of(Fact$stands("H \\aside{frontier}", rate), "the world grows at its frontier", lst(st$fact$key), "so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age", lst("inside: " %+% text_of(Expr$show(inside)) %+% "", "at the frontier: " %+% text_of(named) %+% " at " %+% text_of(gate) %+% ", one cell a tick", "R = \\bar{c}t, so H = \\dot{R}/R = " %+% text_of(Expr$show(rate)) %+% ""))
+    .set(st, "derivation", lst(grown))
+    .set(hub, "derivation", lst(st))
+    return(m_concat(lst(st, hub), self$scale_of(hub, settles)))
+    NULL
+  })
+  method(cl, "scale_of", function(hub = NULL, settles = NULL, ...) {
+    vac <- Expr$field("\\rho_{\\infty}")
+    nf <- Prover$neat(Expr$replace(Expr$replace(settles$fact$to, "\\rho", vac), "DEG_{0}", Expr$field("DEG")))
+    v <- Prover$neat(Expr$pown(Expr$add(lst(Expr$num(1), nf)), neg(1)))
+    mover <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- (!eq(t$term$rule, NULL)))) t$carries else .x))
+      NULL
+    }))
+    moved <- (if (truthy(eq(mover, NULL))) "MOVEMENT" else m_upper(mover$term$rule$name))
+    straight <- Step$of(Fact$stands("v \\aside{straight}", v), "what a heading keeps straight", lst(settles$fact$key), "" %+% text_of(moved) %+% " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", lst("the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " %+% text_of(Expr$show(nf)) %+% "", "v = \\frac{1}{1 + n_{f}} = " %+% text_of(Expr$show(v)) %+% ""))
+    .set(straight, "derivation", lst(settles))
+    lights <- self$relights
+    lit <- (if (truthy(eq(lights, NULL))) "CREATION" else m_upper(lights$term$rule$name))
+    sends <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return(t$outside)
+      NULL
+    }))
+    sent <- (if (truthy(eq(sends, NULL))) "EMISSION" else m_upper(sends$term$rule$name))
+    a0 <- Prover$neat(Expr$mul(lst(v, hub$fact$to)))
+    scale <- Step$of(Fact$stands("a_{0} \\aside{age}", a0), "the scale is the vacuum's own growth", lst(straight$fact$key, hub$fact$key), "" %+% text_of(lit) %+% " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " %+% text_of(sent) %+% " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against", lst("" %+% text_of(lit) %+% ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" %+% text_of(sent) %+% ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, " %+% text_of(Expr$show(hub$fact$to)) %+% "", "a_{0} = vH = " %+% text_of(Expr$show(a0)) %+% ""))
+    .set(scale, "derivation", lst(straight, hub))
+    g <- Expr$field("g_{N}")
+    a <- Expr$field("a_{0}")
+    half <- Expr$mul(lst(g, Expr$num(0.5)))
+    got <- Prover$neat(Expr$add(lst(half, Expr$pown(Expr$add(lst(Expr$mul(lst(half, half)), Expr$mul(lst(g, a)))), 0.5))))
+    closing <- Step$of(Fact$stands("F_{g} \\aside{closing}", got), "what is felt, with the mismatch closed", lst(scale$fact$key), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", lst("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " %+% text_of(Expr$show(got)) %+% ""))
+    .set(closing, "derivation", lst(scale))
+    ratio <- Prover$neat(Expr$div(a0, Expr$mul(lst(Expr$field("\\bar{c}"), hub$fact$to))))
+    .w("ratio", Expr$replace(ratio, "\\bar{c}", Expr$num(1)))
+    against <- Step$of(Fact$stands("\\frac{a_{0}}{cH}", Prover$neat(ratio)), "the scale against the vacuum's growth", lst(scale$fact$key, hub$fact$key), "a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", lst("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " %+% text_of(Expr$show(Prover$neat(ratio))) %+% "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"))
+    .set(against, "derivation", lst(scale))
+    return(lst(straight, scale, closing, against))
     NULL
   })
   method(cl, "leftover", function(rays_c = NULL, ...) {
@@ -6948,7 +7067,7 @@ Prover <- ray_class("Prover", Node, function(cl) {
     if (truthy(eq(mass, NULL))) {
       return(lst())
     }
-    return(m_concat(m_concat(lst(rays_l, space_l, ways, moved), pieces), lst(moving_, rays_c, ways_c, moves, settles, left, mass)))
+    return(m_concat(m_concat(m_concat(m_concat(m_concat(lst(rays_l, space_l, ways, moved), pieces), lst(moving_, rays_c, ways_c, moves, settles, left)), self$relativity_of(s, left, mass)), self$expansion_of(s, settles)), lst(mass)))
     NULL
   })
   method(cl, "lean", function(rec = NULL, ...) {
@@ -7472,6 +7591,11 @@ Prover <- ray_class("Prover", Node, function(cl) {
       if (truthy((!eq(elem(steps, i), NULL)))) {
         out$set(elem(roles, i), elem(steps, i))
       }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    .r <- for_each(model, function(x) {
+      out$set("of:" %+% text_of(x$fact$of) %+% "", x)
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -16745,11 +16869,16 @@ Formed <- ray_class("Formed", Node, function(cl) {
 
 Model <- ray_class("Model", Node, function(cl) {
   field(cl, "theory", NULL)
-  static_field(cl, "NAMES", function() lst("\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi"))
+  static_field(cl, "NAMES", function() lst("\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\rho_{\\infty}", "DEG_{0}", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi"))
   static_field(cl, "RD", function() 30)
   field(cl, "store", function() Prover$new(theory = self$theory)$closure)
   field(cl, "cache", function() Node$new())
   method(cl, "fact", function(of_ = NULL, ...) {
+    law <- Aggregate$of(self$theory)
+    st <- law$chain$get("of:" %+% text_of(of_) %+% "")
+    if (truthy((!eq(st, NULL)))) {
+      return(st$fact)
+    }
     found <- NULL
     .r <- for_each(self$store$all("is"), function(f) {
       if (truthy((if (truthy(.x <- eq(found, NULL))) eq(f$of, of_) else .x))) {
@@ -16894,10 +17023,10 @@ Model <- ray_class("Model", Node, function(cl) {
     .set(base, key_("\\beta'"), 0)
     .set(base, key_("\\beta\\cdot\\hat{d}"), 0)
     .set(base, key_("\\beta'\\cdot\\hat{d}"), 0)
-    rho <- self$fact("\\rho_{\\infty}")
-    if (truthy((!eq(rho, NULL)))) {
-      .set(base, key_("\\rho"), self$at(rho$to, base))
-    }
+    law <- Aggregate$of(self$theory, deg, self$theory$lattice$D)
+    .set(base, key_("\\rho"), law$rho_inf)
+    .set(base, key_("\\rho_{\\infty}"), law$rho_inf)
+    .set(base, key_("DEG_{0}"), deg)
     om <- self$fact("\\omega")
     if (truthy((!eq(om, NULL)))) {
       .set(base, key_("\\omega"), self$at(om$to, base))
@@ -16918,6 +17047,7 @@ Model <- ray_class("Model", Node, function(cl) {
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
+    .set(far, key_("n_{f}"), law$nf_inf)
     return(far)
     NULL
   })
@@ -19228,7 +19358,7 @@ GTheory <- ray_class("G", Theory, function(cl) {
     NULL
   }))
   static_field(cl, "theorem vacuum.ways", function() Theorem$new(`id` = "vacuum.ways", `body` = function(...) {
-    return(Asked$new(asks = "a fold is a way. How many ways does a local have, and what moves them?", about = "\\Delta DEG", also = "DEG", leads = "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own.", then = "AND WHAT THEY ARE: the lattice's own ways and one for every fold."))
+    return(Asked$new(asks = "a fold is a way. How many ways does a local have, and what moves them?", about = "\\Delta DEG", also = "DEG", leads = "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own.", then = "AND WHAT THEY ARE: the lattice's own ways and one for every fold."))
     NULL
   }))
   static_field(cl, "theorem vacuum.at", function() Theorem$new(`id` = "vacuum.at", `body` = function(...) {
@@ -19396,7 +19526,7 @@ GTheory <- ray_class("G", Theory, function(cl) {
     NULL
   }))
   static_field(cl, "theorem gravity.schwarzschild", function() Theorem$new(`id` = "gravity.schwarzschild", `body` = function(...) {
-    return(Asked$new(asks = "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?", about = "A in r as GR writes it", also = "A in r", leads = "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it.", then = "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of."))
+    return(Asked$new(asks = "a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?", about = "A \\aside{held}", also = "B \\aside{held}", leads = "THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes.", then = "AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it."))
     NULL
   }))
   static_field(cl, "theorem gravity.gauss", function() Theorem$new(`id` = "gravity.gauss", `body` = function(...) {
@@ -19424,15 +19554,35 @@ GTheory <- ray_class("G", Theory, function(cl) {
     NULL
   }))
   static_field(cl, "theorem gravity.einstein", function() Theorem$new(`id` = "gravity.einstein", `body` = function(...) {
-    return(Asked$new(asks = "and the metric in terms of that potential - does it come out as general relativity writes it?", about = "A, off the record a ray crosses"))
+    return(Asked$new(asks = "the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?", about = "\\beta^{2} \\aside{falling}"))
     NULL
   }))
   static_field(cl, "theorem gravity.deflection", function() Theorem$new(`id` = "gravity.deflection", `body` = function(...) {
-    return(Asked$new(asks = "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?", about = "the deflection this model gives", also = "the deflection, as general relativity gives it", leads = "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.", then = "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means."))
+    return(Asked$new(asks = "light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?", about = "\\alpha \\aside{held}", leads = "TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since."))
+    NULL
+  }))
+  static_field(cl, "theorem gravity.beat", function() Theorem$new(`id` = "gravity.beat", `body` = function(...) {
+    return(Asked$new(asks = "every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?", about = "\\frac{d\\tau}{dt}"))
+    NULL
+  }))
+  static_field(cl, "theorem gravity.far", function() Theorem$new(`id` = "gravity.far", `body` = function(...) {
+    return(Asked$new(asks = "past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?", about = "g \\aside{far}", also = "\\Phi \\aside{far}"))
+    NULL
+  }))
+  static_field(cl, "theorem vacuum.age", function() Theorem$new(`id` = "vacuum.age", `body` = function(...) {
+    return(Asked$new(asks = "the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?", about = "H \\aside{frontier}", also = "\\partial_{t}V \\aside{inside}"))
+    NULL
+  }))
+  static_field(cl, "theorem gravity.scale", function() Theorem$new(`id` = "gravity.scale", `body` = function(...) {
+    return(Asked$new(asks = "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?", about = "a_{0} \\aside{age}", also = "v \\aside{straight}"))
+    NULL
+  }))
+  static_field(cl, "theorem gravity.closing", function() Theorem$new(`id` = "gravity.closing", `body` = function(...) {
+    return(Asked$new(asks = "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?", about = "F_{g} \\aside{closing}"))
     NULL
   }))
   static_field(cl, "theorem gravity.metric", function() Theorem$new(`id` = "gravity.metric", `body` = function(...) {
-    return(Asked$new(asks = "light goes at one over the index. What metric is the medium, then?", about = "A in r"))
+    return(Asked$new(asks = "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?", about = "B \\aside{held}", also = "A \\aside{held}"))
     NULL
   }))
   static_field(cl, "theorem gravity.shadow", function() Theorem$new(`id` = "gravity.shadow", `body` = function(...) {

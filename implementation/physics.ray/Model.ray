@@ -14,12 +14,16 @@ Model := class < theory: Theory {
   cache: {} = { }
   /* any derived law by name */
   fact (of_: String): Fact? => {
+    /* the continuous model's own step by that name first, and the older closure only where the model has none */
+    law := Aggregate.of(this.theory)
+    st := law.chain.get("of:{of_}")
+    return st.fact if st != None
     found := None
     this.store.all("is").for(f => { found = f if found == None & f.of == of_ })
     found
   }
   /* every name an environment may carry, so one can be copied without knowing which it has */
-  static NAMES = ["\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{{c}}", "m'", "A'", "\\bar{{R}}'", "m_{{\\Sigma}}", "m_{{\\Sigma}}'", "\\mathcal{{D}}", "\\mathcal{{D}}'", "\\beta'", "\\beta\\cdot\\hat{{d}}", "\\beta'\\cdot\\hat{{d}}", "\\rho", "\\omega", "R", "r", "\\bar{{r}}", "\\bar{{m}}_{{x}}", "A", "\\bar{{R}}", "\\beta", "n_{{f}}", "\\sigma_{{tr}}", "L", "m", "\\delta", "g_{{N}}", "a_{{0}}", "\\Phi"]
+  static NAMES = ["\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{{c}}", "m'", "A'", "\\bar{{R}}'", "m_{{\\Sigma}}", "m_{{\\Sigma}}'", "\\mathcal{{D}}", "\\mathcal{{D}}'", "\\beta'", "\\beta\\cdot\\hat{{d}}", "\\beta'\\cdot\\hat{{d}}", "\\rho", "\\rho_{{\\infty}}", "DEG_{{0}}", "\\omega", "R", "r", "\\bar{{r}}", "\\bar{{m}}_{{x}}", "A", "\\bar{{R}}", "\\beta", "n_{{f}}", "\\sigma_{{tr}}", "L", "m", "\\delta", "g_{{N}}", "a_{{0}}", "\\Phi"]
   static copy (env: {}): {} => {
     out := { }
     Model.NAMES.for(k => { out[k] = env[k] if env[k] != None })
@@ -117,8 +121,11 @@ Model := class < theory: Theory {
     base["\\beta'"] = 0
     base["\\beta\\cdot\\hat{{d}}"] = 0
     base["\\beta'\\cdot\\hat{{d}}"] = 0
-    rho := this.fact("\\rho_{{\\infty}}")
-    base["\\rho"] = this.at(rho.to, base) if rho != None
+    /* the settled vacuum is the continuous model's (Aggregate, off `vacuum.equation`): its density, and below its record - not the older closure's */
+    law := Aggregate.of(this.theory, deg, this.theory.lattice.D)
+    base["\\rho"] = law.rho_inf
+    base["\\rho_{{\\infty}}"] = law.rho_inf
+    base["DEG_{{0}}"] = deg
     om := this.fact("\\omega")
     base["\\omega"] = this.at(om.to, base) if om != None
     /* nothing near it means no body, which has to be said: a body of no size adds nothing, exactly */
@@ -134,6 +141,7 @@ Model := class < theory: Theory {
       f := this.fact(n)
       far[n] = this.at(f.to, far) if f != None
     })
+    far["n_{{f}}"] = law.nf_inf
     far
   }
   /* the rate space is made, as the rules give it - a_0 in the units the lattice counts in */

@@ -5769,9 +5769,10 @@ end
           end)))
           at_1 = (truthy((named_1 == nothing)) ? (share_1) : (field(Expr, of(fact(named_1)))))
           gate_1 = (truthy((around(t_1) == nothing)) ? (num(Expr, 1.0)) : (neat(Prover, replace(Expr, replace(Expr, around(t_1), Base.string(j"n_{f}"), neat(Prover, sub(Expr, WAYS(Prover), LATTICE(Prover)))), Base.string(j"DEG"), WAYS(Prover)))))
-          got_1 = neat(Prover, mul(Expr, Any[num(Expr, w_1), WAYS(Prover), gate_1, at_1]))
+          over_1 = (truthy((around(t_1) == nothing)) ? (LATTICE(Prover)) : (WAYS(Prover)))
+          got_1 = neat(Prover, mul(Expr, Any[num(Expr, w_1), over_1, gate_1, at_1]))
           push(parts_0, got_1)
-          push(said_0, Base.string(j"", str(upper(name(rule(term(t_1))))), j": ", str(show(Expr, num(Expr, w_1))), j" a fold on each of l's ways, ", str(show(Expr, gate_1)), j" of them, at ", str(show(Expr, at_1)), j" - ", str(show(Expr, got_1)), j""))
+          push(said_0, Base.string(j"", str(upper(name(rule(term(t_1))))), j": ", str(show(Expr, num(Expr, w_1))), j" a fold on each of ", str(show(Expr, over_1)), j" of l's ways, ", str(show(Expr, gate_1)), j" of them, at ", str(show(Expr, at_1)), j" - ", str(show(Expr, got_1)), j""))
         end
       end
     end
@@ -5781,7 +5782,7 @@ end
     rhs_0 = add(Expr, parts_0)
     st_0 = of(Step, stands(Fact, Base.string(j"\\Delta DEG"), rhs_0), WAYS_LINE(Prover), concat(Any[key(fact(line_0)), key(fact(moved_0)), key(fact(ways_0))], map(pieces_0, (function (x_2 = nothing, _...)
       return key(fact(x_2))
-    end))), Base.string(j"l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", str(show(Expr, folds_of_0)), j" of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back"), concat(said_0, Any[Base.string(j"\\Delta DEG = ", str(show(Expr, rhs_0)), j"")]))
+    end))), Base.string(j"l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - ", str(show(Expr, folds_of_0)), j" of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back"), concat(said_0, Any[Base.string(j"\\Delta DEG = ", str(show(Expr, rhs_0)), j"")]))
     st_0.derivation = concat(Any[line_0, moved_0, ways_0], pieces_0)
     return st_0
   end
@@ -5822,15 +5823,123 @@ end
     base_0 = replace(Expr, to(fact(settles_0)), Base.string(j"\\rho"), vac_0)
     shell_0 = field(Expr, Base.string(j"l.shell\\paren{x.\\bar{R}}"))
     R_0 = field(Expr, Base.string(j"x.\\bar{R}"))
-    reach_0 = fact(s_0, Base.string(j"is"), Base.string(j"l.reach\\paren{\\bar{R}}"))
-    walks_0 = (truthy(((truthy((reach_0 != nothing)) && truthy((kind(to(reach_0)) == Base.string(j"pow")))))) ? (neat(Prover, replace(Expr, pown(Expr, neat(Prover, sub(Expr, num(Expr, 1.0), base(to(reach_0)))), (-1.0)), Base.string(j"\\rho"), vac_0))) : (nothing))
+    relights_0 = relights(self)
+    walks_0 = walk_of(self, s_0)
     dim_0 = field(Expr, Base.string(j"D"))
     deeper_0 = (truthy((walks_0 == nothing)) ? (num(Expr, 1.0)) : (add(Expr, Any[num(Expr, 1.0), neat(Prover, div(Expr, mul(Expr, Any[dim_0, R_0]), mul(Expr, Any[sub(Expr, dim_0, num(Expr, 2.0)), walks_0])))])))
     per_0 = mul(Expr, Any[field(Expr, Base.string(j"x.\\bar{m}")), sub(Expr, num(Expr, 1.0), reach(Prover, Base.string(j"x.\\bar{R}"))), pown(Expr, shell_0, (-1.0)), deeper_0])
     walked_0 = (truthy((walks_0 == nothing)) ? (Base.string(j"-")) : (show(Expr, walks_0)))
+    afresh_0 = (truthy((relights_0 == nothing)) ? (Base.string(j"-")) : (upper(name(rule(term(relights_0))))))
     rhs_0 = add(Expr, Any[base_0, mul(Expr, Any[pown(Expr, k_0, (-1.0)), call(Expr, Base.string(j"\\sum_{x = x_{@t}}"), per_0)])])
     lhs_0 = Base.string(j"\\Delta\\paren{DEG·\\rho + ", str(show(Expr, k_0)), j"·n_{f}}")
-    return of(Step, stands(Fact, Base.string(j"n_{f,l}\\paren{t}"), rhs_0), Base.string(j"the record every body leaves at a local"), Any[key(fact(rays_c_0)), key(fact(ways_c_0)), key(fact(settles_0))], Base.string(j"a meeting turns ", str(show(Expr, k_0)), j" of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", str(show(Expr, k_0)), j" times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", str(show(Expr, k_0)), j", on the settled record. Each body is read as it was when its rays left it, at its own distance then"), Any[Base.string(j"", str(lhs_0), j" = ", str(show(Expr, both_0)), j""), Base.string(j"the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", str(show(Expr, base_0)), j""), Base.string(j"x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"), Base.string(j"the walk: \\lambda = ", str(walked_0), j", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}"), Base.string(j"n_{f,l}\\paren{t} = ", str(show(Expr, rhs_0)), j"")])
+    return of(Step, stands(Fact, Base.string(j"n_{f,l}\\paren{t}"), rhs_0), Base.string(j"the record every body leaves at a local"), Any[key(fact(rays_c_0)), key(fact(ways_c_0)), key(fact(settles_0))], Base.string(j"a meeting turns ", str(show(Expr, k_0)), j" of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and ", str(show(Expr, k_0)), j" times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over ", str(show(Expr, k_0)), j", on the settled record. Each body is read as it was when its rays left it, at its own distance then"), Any[Base.string(j"", str(lhs_0), j" = ", str(show(Expr, both_0)), j""), Base.string(j"the settled vacuum underneath: n_{f} at \\rho_{\\infty}, ", str(show(Expr, base_0)), j""), Base.string(j"x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then"), Base.string(j"the walk: ", str(afresh_0), j" lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = ", str(walked_0), j", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}"), Base.string(j"n_{f,l}\\paren{t} = ", str(show(Expr, rhs_0)), j"")])
+  end
+  function relights(self::__class__)
+    return first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((truthy((rule(term(t_2)) != nothing)) && truthy((degree(t_2) == 0.0)))) && truthy((show(Expr, simplify(Expr, ray_count(t_2))) == Base.string(j"DEG"))))
+    end)))
+  end
+  function walk_of(self::__class__, s_0 = nothing, _...)
+    reach_0 = fact(s_0, Base.string(j"is"), Base.string(j"l.reach\\paren{\\bar{R}}"))
+    if truthy((truthy((relights(self) == nothing)) || truthy((reach_0 == nothing))))
+      return nothing
+    end
+    if truthy((kind(to(reach_0)) != Base.string(j"pow")))
+      return nothing
+    end
+    return neat(Prover, replace(Expr, pown(Expr, neat(Prover, sub(Expr, num(Expr, 1.0), base(to(reach_0)))), (-1.0)), Base.string(j"\\rho"), field(Expr, Base.string(j"\\rho_{\\infty}"))))
+  end
+  function relativity_of(self::__class__, s_0 = nothing, left_0 = nothing, mass_0 = nothing, _...)
+    walks_0 = walk_of(self, s_0)
+    if truthy((walks_0 == nothing))
+      return Any[]
+    end
+    dim_0 = field(Expr, Base.string(j"D"))
+    R_0 = field(Expr, Base.string(j"x.\\bar{R}"))
+    m_0 = field(Expr, Base.string(j"x.\\bar{m}"))
+    k_0 = fold_weight(self)
+    far_0 = neat(Prover, mul(Expr, Any[pown(Expr, k_0, (-1.0)), m_0, dim_0, pown(Expr, mul(Expr, Any[sub(Expr, dim_0, num(Expr, 2.0)), walks_0]), (-1.0)), to_power(Expr, R_0, sub(Expr, num(Expr, 2.0), dim_0))]))
+    strength_0 = neat(Prover, div(Expr, dim_0, mul(Expr, Any[num(Expr, 2.0), walks_0])))
+    pull_0 = neat(Prover, mul(Expr, Any[strength_0, m_0, to_power(Expr, R_0, sub(Expr, num(Expr, 1.0), dim_0))]))
+    g__0 = of(Step, stands(Fact, Base.string(j"g \\aside{far}"), pull_0), Base.string(j"the pull far from a body"), Any[key(fact(left_0))], Base.string(j"what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = ", str(show(Expr, k_0)), j"n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path"), Any[Base.string(j"n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to ", str(show(Expr, far_0)), j", past the free path"), Base.string(j"g = \\frac{", str(show(Expr, k_0)), j"}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = ", str(show(Expr, pull_0)), j""), Base.string(j"G = \\frac{D}{2\\lambda} = ", str(show(Expr, strength_0)), j"")])
+    pot_0 = neat(Prover, mul(Expr, Any[strength_0, m_0, pown(Expr, sub(Expr, dim_0, num(Expr, 2.0)), (-1.0)), to_power(Expr, R_0, sub(Expr, num(Expr, 2.0), dim_0))]))
+    phi_0 = of(Step, stands(Fact, Base.string(j"\\Phi \\aside{far}"), pot_0), Base.string(j"the potential is the record"), Any[key(fact(g__0))], Base.string(j"the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record"), Any[Base.string(j"\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = ", str(show(Expr, pot_0)), j""), Base.string(j"= \\frac{", str(show(Expr, k_0)), j"}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out")])
+    beta_0 = field(Expr, Base.string(j"\\beta"))
+    beat_0 = pown(Expr, sub(Expr, num(Expr, 1.0), pown(Expr, beta_0, 2.0)), 0.5)
+    mover_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((rule(term(t_2)) != nothing)) && truthy(carries(t_2)))
+    end)))
+    moved_0 = (truthy((mover_0 == nothing)) ? (Base.string(j"MOVEMENT")) : (upper(name(rule(term(mover_0))))))
+    tick_0 = of(Step, stands(Fact, Base.string(j"\\frac{d\\tau}{dt}"), beat_0), Base.string(j"a body moves or it emits"), Any[key(fact(mass_0))], Base.string(j"", str(moved_0), j" steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}"), Any[Base.string(j"", str(moved_0), j": every ray a cell a tick, so a body's step is c-bar whatever it does"), Base.string(j"a source moves or it emits: what it spends going, it does not spend shining"), Base.string(j"\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1"), Base.string(j"fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = ", str(show(Expr, beat_0)), j"")])
+    fall_0 = neat(Prover, mul(Expr, Any[num(Expr, 2.0), field(Expr, Base.string(j"\\Phi"))]))
+    falls_0 = of(Step, stands(Fact, Base.string(j"\\beta^{2} \\aside{falling}"), fall_0), Base.string(j"a body falling in from far"), Any[key(fact(phi_0))], Base.string(j"a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it"), Any[Base.string(j"\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}"), Base.string(j"from rest far off: \\beta^{2} = 2\\Phi")])
+    rs_0 = neat(Prover, mul(Expr, Any[num(Expr, 2.0), strength_0, m_0, pown(Expr, sub(Expr, dim_0, num(Expr, 2.0)), (-1.0))]))
+    r_0 = sym(Expr, Base.string(j"r"))
+    A_0 = neat(Prover, sub(Expr, num(Expr, 1.0), mul(Expr, Any[field(Expr, Base.string(j"r_{s}")), to_power(Expr, r_0, sub(Expr, num(Expr, 2.0), dim_0))])))
+    held_0 = of(Step, stands(Fact, Base.string(j"A \\aside{held}"), A_0), Base.string(j"a clock held where a body falls"), Any[key(fact(tick_0)), key(fact(falls_0))], Base.string(j"a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat"), Any[Base.string(j"\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi"), Base.string(j"r_{s} = ", str(show(Expr, rs_0)), j""), Base.string(j"A = ", str(show(Expr, A_0)), j"")])
+    B_0 = neat(Prover, pown(Expr, A_0, (-1.0)))
+    ruler_0 = of(Step, stands(Fact, Base.string(j"B \\aside{held}"), B_0), Base.string(j"a ruler held where a body falls"), Any[key(fact(held_0))], Base.string(j"and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it"), Any[Base.string(j"B = \\frac{1}{A} = ", str(show(Expr, B_0)), j""), Base.string(j"A·B = 1")])
+    b_0 = sym(Expr, Base.string(j"b"))
+    bend_0 = neat(Prover, mul(Expr, Any[num(Expr, 2.0), field(Expr, Base.string(j"r_{s}")), pown(Expr, b_0, (-1.0))]))
+    defl_0 = of(Step, stands(Fact, Base.string(j"\\alpha \\aside{held}"), bend_0), Base.string(j"light crossing a held field"), Any[key(fact(held_0)), key(fact(ruler_0))], Base.string(j"light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured"), Any[Base.string(j"the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots"), Base.string(j"\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3"), Base.string(j"a stone at c-bar reads A alone: r_{s}/b, half of it")])
+    g__0.derivation = Any[left_0]
+    phi_0.derivation = Any[g__0]
+    tick_0.derivation = Any[mass_0]
+    falls_0.derivation = Any[phi_0]
+    held_0.derivation = Any[tick_0, falls_0]
+    ruler_0.derivation = Any[held_0]
+    defl_0.derivation = Any[held_0, ruler_0]
+    return Any[g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0]
+  end
+  function expansion_of(self::__class__, s_0 = nothing, settles_0 = nothing, _...)
+    grown_0 = growth_filled(self, s_0)
+    inside_0 = neat(Prover, to(fact(grown_0)))
+    frontier_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((truthy((rule(term(t_2)) != nothing)) && truthy(carries(t_2)))) && truthy((grows(t_2) != Base.string(j"0"))))
+    end)))
+    if truthy((frontier_0 == nothing))
+      return Any[]
+    end
+    named_0 = upper(name(rule(term(frontier_0))))
+    gate_0 = (truthy((share(frontier_0) == nothing)) ? (Base.string(j"-")) : (show(Expr, share(frontier_0))))
+    st_0 = of(Step, stands(Fact, Base.string(j"\\partial_{t}V \\aside{inside}"), inside_0), Base.string(j"what the settled vacuum grows"), Any[key(fact(grown_0))], Base.string(j"the growth ledger read where the vacuum has settled: every ray there has room ahead, so ", str(named_0), j" grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing"), Any[Base.string(j"", str(of(fact(grown_0))), j" = ", str(show(Expr, to(fact(grown_0)))), j""), Base.string(j"", str(named_0), j" grows at ", str(gate_0), j": nought where every ray has room ahead")])
+    t_0 = sym(Expr, Base.string(j"t"))
+    rate_0 = pown(Expr, t_0, (-1.0))
+    hub_0 = of(Step, stands(Fact, Base.string(j"H \\aside{frontier}"), rate_0), Base.string(j"the world grows at its frontier"), Any[key(fact(st_0))], Base.string(j"so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age"), Any[Base.string(j"inside: ", str(show(Expr, inside_0)), j""), Base.string(j"at the frontier: ", str(named_0), j" at ", str(gate_0), j", one cell a tick"), Base.string(j"R = \\bar{c}t, so H = \\dot{R}/R = ", str(show(Expr, rate_0)), j"")])
+    st_0.derivation = Any[grown_0]
+    hub_0.derivation = Any[st_0]
+    return concat(Any[st_0, hub_0], scale_of(self, hub_0, settles_0))
+  end
+  function scale_of(self::__class__, hub_0 = nothing, settles_0 = nothing, _...)
+    vac_0 = field(Expr, Base.string(j"\\rho_{\\infty}"))
+    nf_0 = neat(Prover, replace(Expr, replace(Expr, to(fact(settles_0)), Base.string(j"\\rho"), vac_0), Base.string(j"DEG_{0}"), field(Expr, Base.string(j"DEG"))))
+    v_0 = neat(Prover, pown(Expr, add(Expr, Any[num(Expr, 1.0), nf_0]), (-1.0)))
+    mover_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy((rule(term(t_2)) != nothing)) && truthy(carries(t_2)))
+    end)))
+    moved_0 = (truthy((mover_0 == nothing)) ? (Base.string(j"MOVEMENT")) : (upper(name(rule(term(mover_0))))))
+    straight_0 = of(Step, stands(Fact, Base.string(j"v \\aside{straight}"), v_0), Base.string(j"what a heading keeps straight"), Any[key(fact(settles_0))], Base.string(j"", str(moved_0), j" draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at"), Any[Base.string(j"the draw: 1 straight on against n_{f} folded"), Base.string(j"n_{f} at \\rho_{\\infty} = ", str(show(Expr, nf_0)), j""), Base.string(j"v = \\frac{1}{1 + n_{f}} = ", str(show(Expr, v_0)), j"")])
+    straight_0.derivation = Any[settles_0]
+    lights_0 = relights(self)
+    lit_0 = (truthy((lights_0 == nothing)) ? (Base.string(j"CREATION")) : (upper(name(rule(term(lights_0))))))
+    sends_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return outside(t_2)
+    end)))
+    sent_0 = (truthy((sends_0 == nothing)) ? (Base.string(j"EMISSION")) : (upper(name(rule(term(sends_0))))))
+    a0_0 = neat(Prover, mul(Expr, Any[v_0, to(fact(hub_0))]))
+    scale_0 = of(Step, stands(Fact, Base.string(j"a_{0} \\aside{age}"), a0_0), Base.string(j"the scale is the vacuum's own growth"), Any[key(fact(straight_0)), key(fact(hub_0))], Base.string(j"", str(lit_0), j" fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. ", str(sent_0), j" sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against"), Any[Base.string(j"", str(lit_0), j": fires at a free point, lights every way - the vacuum pulses, every other tick"), Base.string(j"", str(sent_0), j": a source moves or emits, so each move flips the parity, fore against aft"), Base.string(j"steady: the flips cancel; accelerating: they pile up, since the beginning"), Base.string(j"the age is one over the vacuum's growth, ", str(show(Expr, to(fact(hub_0)))), j""), Base.string(j"a_{0} = vH = ", str(show(Expr, a0_0)), j"")])
+    scale_0.derivation = Any[straight_0, hub_0]
+    g_0 = field(Expr, Base.string(j"g_{N}"))
+    a_0 = field(Expr, Base.string(j"a_{0}"))
+    half_0 = mul(Expr, Any[g_0, num(Expr, 0.5)])
+    got_0 = neat(Prover, add(Expr, Any[half_0, pown(Expr, add(Expr, Any[mul(Expr, Any[half_0, half_0]), mul(Expr, Any[g_0, a_0])]), 0.5)]))
+    closing_0 = of(Step, stands(Fact, Base.string(j"F_{g} \\aside{closing}"), got_0), Base.string(j"what is felt, with the mismatch closed"), Any[key(fact(scale_0))], Base.string(j"what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling"), Any[Base.string(j"g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"), Base.string(j"g^{2} - g_{N}g - g_{N}a_{0} = 0"), Base.string(j"strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3"), Base.string(j"F_{g} = ", str(show(Expr, got_0)), j"")])
+    closing_0.derivation = Any[scale_0]
+    ratio_0 = neat(Prover, div(Expr, a0_0, mul(Expr, Any[field(Expr, Base.string(j"\\bar{c}")), to(fact(hub_0))])))
+    ratio_0 = replace(Expr, ratio_0, Base.string(j"\\bar{c}"), num(Expr, 1.0))
+    against_0 = of(Step, stands(Fact, Base.string(j"\\frac{a_{0}}{cH}"), neat(Prover, ratio_0)), Base.string(j"the scale against the vacuum's growth"), Any[key(fact(scale_0)), key(fact(hub_0))], Base.string(j"a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183"), Any[Base.string(j"a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}"), Base.string(j"\\frac{a_{0}}{cH_{vac}} = ", str(show(Expr, neat(Prover, ratio_0))), j""), Base.string(j"against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")])
+    against_0.derivation = Any[scale_0]
+    return Any[straight_0, scale_0, closing_0, against_0]
   end
   function leftover(self::__class__, rays_c_0 = nothing, _...)
     m_0 = label(MASS(Prover))
@@ -5885,7 +5994,7 @@ end
     if truthy((mass_0 == nothing))
       return Any[]
     end
-    return concat(concat(Any[rays_l_0, space_l_0, ways_0, moved_0], pieces_0), Any[moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0, mass_0])
+    return concat(concat(concat(concat(concat(Any[rays_l_0, space_l_0, ways_0, moved_0], pieces_0), Any[moving__0, rays_c_0, ways_c_0, moves_0, settles_0, left_0]), relativity_of(self, s_0, left_0, mass_0)), expansion_of(self, s_0, settles_0)), Any[mass_0])
   end
   function lean(self::__class__, rec_0 = nothing, _...)
     return of(Step, stands(Fact, Base.string(j"a"), field(Expr, Base.string(j"\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}"))), Base.string(j"the lean"), Any[key(fact(rec_0))], Base.string(j"the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend"), Any[Base.string(j"a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned"), Base.string(j"streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading"), Base.string(j"bending: \\Delta_{a}S_{l} - the record along the lean")])
@@ -6330,6 +6439,9 @@ end
       if truthy((getat(steps_0, i_1) != nothing))
         set(out_0, getat(roles_0, i_1), getat(steps_0, i_1))
       end
+    end
+    for x_1 in items(model_0)
+      set(out_0, Base.string(j"of:", str(of(fact(x_1))), j""), x_1)
     end
     return out_0
   end
@@ -14360,11 +14472,16 @@ end
 
 @class Model <: Node begin
   @field theory::Theory
-  @static_field NAMES = Any[Base.string(j"\\langle\\rho\\rangle"), Base.string(j"D"), Base.string(j"DEG"), Base.string(j"l.DEG"), Base.string(j"\\nu"), Base.string(j"\\sigma"), Base.string(j"F"), Base.string(j"\\bar{c}"), Base.string(j"m'"), Base.string(j"A'"), Base.string(j"\\bar{R}'"), Base.string(j"m_{\\Sigma}"), Base.string(j"m_{\\Sigma}'"), Base.string(j"\\mathcal{D}"), Base.string(j"\\mathcal{D}'"), Base.string(j"\\beta'"), Base.string(j"\\beta\\cdot\\hat{d}"), Base.string(j"\\beta'\\cdot\\hat{d}"), Base.string(j"\\rho"), Base.string(j"\\omega"), Base.string(j"R"), Base.string(j"r"), Base.string(j"\\bar{r}"), Base.string(j"\\bar{m}_{x}"), Base.string(j"A"), Base.string(j"\\bar{R}"), Base.string(j"\\beta"), Base.string(j"n_{f}"), Base.string(j"\\sigma_{tr}"), Base.string(j"L"), Base.string(j"m"), Base.string(j"\\delta"), Base.string(j"g_{N}"), Base.string(j"a_{0}"), Base.string(j"\\Phi")]
+  @static_field NAMES = Any[Base.string(j"\\langle\\rho\\rangle"), Base.string(j"D"), Base.string(j"DEG"), Base.string(j"l.DEG"), Base.string(j"\\nu"), Base.string(j"\\sigma"), Base.string(j"F"), Base.string(j"\\bar{c}"), Base.string(j"m'"), Base.string(j"A'"), Base.string(j"\\bar{R}'"), Base.string(j"m_{\\Sigma}"), Base.string(j"m_{\\Sigma}'"), Base.string(j"\\mathcal{D}"), Base.string(j"\\mathcal{D}'"), Base.string(j"\\beta'"), Base.string(j"\\beta\\cdot\\hat{d}"), Base.string(j"\\beta'\\cdot\\hat{d}"), Base.string(j"\\rho"), Base.string(j"\\rho_{\\infty}"), Base.string(j"DEG_{0}"), Base.string(j"\\omega"), Base.string(j"R"), Base.string(j"r"), Base.string(j"\\bar{r}"), Base.string(j"\\bar{m}_{x}"), Base.string(j"A"), Base.string(j"\\bar{R}"), Base.string(j"\\beta"), Base.string(j"n_{f}"), Base.string(j"\\sigma_{tr}"), Base.string(j"L"), Base.string(j"m"), Base.string(j"\\delta"), Base.string(j"g_{N}"), Base.string(j"a_{0}"), Base.string(j"\\Phi")]
   @static_field RD = 30.0
   @field store::Store = closure(Prover(theory = theory(self)))
   @field cache::object = Node()
   function fact(self::__class__, of__0 = nothing, _...)
+    law_0 = of(Aggregate, theory(self))
+    st_0 = get(chain(law_0), Base.string(j"of:", str(of__0), j""))
+    if truthy((st_0 != nothing))
+      return fact(st_0)
+    end
     found_0 = nothing
     for f_1 in items(all(store(self), Base.string(j"is")))
       if truthy((truthy((found_0 == nothing)) && truthy((of(f_1) == of__0))))
@@ -14486,10 +14603,10 @@ end
     setat!(base_0, Base.string(j"\\beta'"), 0.0)
     setat!(base_0, Base.string(j"\\beta\\cdot\\hat{d}"), 0.0)
     setat!(base_0, Base.string(j"\\beta'\\cdot\\hat{d}"), 0.0)
-    rho_0 = fact(self, Base.string(j"\\rho_{\\infty}"))
-    if truthy((rho_0 != nothing))
-      setat!(base_0, Base.string(j"\\rho"), at(self, to(rho_0), base_0))
-    end
+    law_0 = of(Aggregate, theory(self), deg_0, D(lattice(theory(self))))
+    setat!(base_0, Base.string(j"\\rho"), rho_inf(law_0))
+    setat!(base_0, Base.string(j"\\rho_{\\infty}"), rho_inf(law_0))
+    setat!(base_0, Base.string(j"DEG_{0}"), deg_0)
     om_0 = fact(self, Base.string(j"\\omega"))
     if truthy((om_0 != nothing))
       setat!(base_0, Base.string(j"\\omega"), at(self, to(om_0), base_0))
@@ -14508,6 +14625,7 @@ end
         setat!(far_0, n_1, at(self, to(f_1), far_0))
       end
     end
+    setat!(far_0, Base.string(j"n_{f}"), nf_inf(law_0))
     return far_0
   end
   function a0_lattice(self::__class__)
@@ -16535,7 +16653,7 @@ end
     return Asked(asks = Base.string(j"the rays move. Followed a step and a tick, what does a ray's way on depend on?"), about = Base.string(j"\\Delta\\rho"), leads = Base.string(j"MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds."))
   end))
   @theorem Theorem(id = j"vacuum.ways", body = (function (_...)
-    return Asked(asks = Base.string(j"a fold is a way. How many ways does a local have, and what moves them?"), about = Base.string(j"\\Delta DEG"), also = Base.string(j"DEG"), leads = Base.string(j"THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own."), then = Base.string(j"AND WHAT THEY ARE: the lattice's own ways and one for every fold."))
+    return Asked(asks = Base.string(j"a fold is a way. How many ways does a local have, and what moves them?"), about = Base.string(j"\\Delta DEG"), also = Base.string(j"DEG"), leads = Base.string(j"THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own."), then = Base.string(j"AND WHAT THEY ARE: the lattice's own ways and one for every fold."))
   end))
   @theorem Theorem(id = j"vacuum.at", body = (function (_...)
     return Asked(asks = Base.string(j"a source is a thing with a history. What does it mean to read one at a particular time?"), about = Base.string(j"l'_{@t}"))
@@ -16661,7 +16779,7 @@ end
     return Asked(asks = Base.string(j"and the other route, which needs both bodies to be shining rather than one to be open - what does that carry, once the same two things are divided out?"), about = Base.string(j"T_{met} at D = 3"))
   end))
   @theorem Theorem(id = j"gravity.schwarzschild", body = (function (_...)
-    return Asked(asks = Base.string(j"the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?"), about = Base.string(j"A in r as GR writes it"), also = Base.string(j"A in r"), leads = Base.string(j"AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it."), then = Base.string(j"AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of."))
+    return Asked(asks = Base.string(j"a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?"), about = Base.string(j"A \\aside{held}"), also = Base.string(j"B \\aside{held}"), leads = Base.string(j"THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes."), then = Base.string(j"AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it."))
   end))
   @theorem Theorem(id = j"gravity.gauss", body = (function (_...)
     return Asked(asks = Base.string(j"general relativity has a flux law behind it. Do these rules give one, and is it the same one?"), about = Base.string(j"the flux through any shell"))
@@ -16682,13 +16800,28 @@ end
     return Asked(asks = Base.string(j"Einstein's field equation has one number in front of the source. What does this model put there instead?"), about = Base.string(j"\\kappa"))
   end))
   @theorem Theorem(id = j"gravity.einstein", body = (function (_...)
-    return Asked(asks = Base.string(j"and the metric in terms of that potential - does it come out as general relativity writes it?"), about = Base.string(j"A, off the record a ray crosses"))
+    return Asked(asks = Base.string(j"the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?"), about = Base.string(j"\\beta^{2} \\aside{falling}"))
   end))
   @theorem Theorem(id = j"gravity.deflection", body = (function (_...)
-    return Asked(asks = Base.string(j"the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?"), about = Base.string(j"the deflection this model gives"), also = Base.string(j"the deflection, as general relativity gives it"), leads = Base.string(j"WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value."), then = Base.string(j"AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means."))
+    return Asked(asks = Base.string(j"light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?"), about = Base.string(j"\\alpha \\aside{held}"), leads = Base.string(j"TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since."))
+  end))
+  @theorem Theorem(id = j"gravity.beat", body = (function (_...)
+    return Asked(asks = Base.string(j"every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?"), about = Base.string(j"\\frac{d\\tau}{dt}"))
+  end))
+  @theorem Theorem(id = j"gravity.far", body = (function (_...)
+    return Asked(asks = Base.string(j"past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?"), about = Base.string(j"g \\aside{far}"), also = Base.string(j"\\Phi \\aside{far}"))
+  end))
+  @theorem Theorem(id = j"vacuum.age", body = (function (_...)
+    return Asked(asks = Base.string(j"the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?"), about = Base.string(j"H \\aside{frontier}"), also = Base.string(j"\\partial_{t}V \\aside{inside}"))
+  end))
+  @theorem Theorem(id = j"gravity.scale", body = (function (_...)
+    return Asked(asks = Base.string(j"a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?"), about = Base.string(j"a_{0} \\aside{age}"), also = Base.string(j"v \\aside{straight}"))
+  end))
+  @theorem Theorem(id = j"gravity.closing", body = (function (_...)
+    return Asked(asks = Base.string(j"what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), about = Base.string(j"F_{g} \\aside{closing}"))
   end))
   @theorem Theorem(id = j"gravity.metric", body = (function (_...)
-    return Asked(asks = Base.string(j"light goes at one over the index. What metric is the medium, then?"), about = Base.string(j"A in r"))
+    return Asked(asks = Base.string(j"a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"), about = Base.string(j"B \\aside{held}"), also = Base.string(j"A \\aside{held}"))
   end))
   @theorem Theorem(id = j"gravity.shadow", body = (function (_...)
     return Asked(asks = Base.string(j"the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?"), about = Base.string(j"b_{c}"))

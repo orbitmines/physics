@@ -4727,15 +4727,16 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
             Throw[andV[eq[env3["x"]["via"], mUpper[env1["t"]["term"]["rule"]["name"]]], eq[Expr["show", Prover["neat", Expr["div", env3["x"]["fact"]["to"], env1["share"]]]], "1"]], ret]]]];
           env1["at"] = If[truthy[eq[env1["named"], Null]], env1["share"], Expr["field", env1["named"]["fact"]["of"]]];
           env1["gate"] = If[truthy[eq[env1["t"]["around"], Null]], Expr["num", 1.], Prover["neat", Expr["replace", Expr["replace", env1["t"]["around"], "n_{f}", Prover["neat", Expr["sub", Prover["WAYS"], Prover["LATTICE"]]]], "DEG", Prover["WAYS"]]]];
-          env1["got"] = Prover["neat", Expr["mul", list[Expr["num", env1["w"]], Prover["WAYS"], env1["gate"], env1["at"]]]];
+          env1["over"] = If[truthy[eq[env1["t"]["around"], Null]], Prover["LATTICE"], Prover["WAYS"]];
+          env1["got"] = Prover["neat", Expr["mul", list[Expr["num", env1["w"]], env1["over"], env1["gate"], env1["at"]]]];
           mPush[env0["parts"], env1["got"]];
-          mPush[env0["said"], "" <> str[mUpper[env1["t"]["term"]["rule"]["name"]]] <> ": " <> str[Expr["show", Expr["num", env1["w"]]]] <> " a fold on each of l's ways, " <> str[Expr["show", env1["gate"]]] <> " of them, at " <> str[Expr["show", env1["at"]]] <> " - " <> str[Expr["show", env1["got"]]] <> ""]]]], {iter1, items[filt[self["infos"], lfn[4, { env3["t"] = arg[args4, 0] };
+          mPush[env0["said"], "" <> str[mUpper[env1["t"]["term"]["rule"]["name"]]] <> ": " <> str[Expr["show", Expr["num", env1["w"]]]] <> " a fold on each of " <> str[Expr["show", env1["over"]]] <> " of l's ways, " <> str[Expr["show", env1["gate"]]] <> " of them, at " <> str[Expr["show", env1["at"]]] <> " - " <> str[Expr["show", env1["got"]]] <> ""]]]], {iter1, items[filt[self["infos"], lfn[4, { env3["t"] = arg[args4, 0] };
       Throw[andV[andV[andV[(!eq[env3["t"]["term"]["rule"], Null]), not[env3["t"]["transport"]]], not[env3["t"]["settles"]]], (!eq[env3["t"]["folds"], "0"])], ret]]]]}];
     If[truthy[mEmpty[env0["parts"]]],
       Throw[Null, ret]];
     env0["rhs"] = Expr["add", env0["parts"]];
     env0["st"] = Step["of", Fact["stands", "\\Delta DEG", env0["rhs"]], Prover["WAYS_LINE"], mConcat[list[env0["line"]["fact"]["key"], env0["moved"]["fact"]["key"], env0["ways"]["fact"]["key"]], mMap[env0["pieces"], lfn[3, { env2["x"] = arg[args3, 0] };
-      Throw[env2["x"]["fact"]["key"], ret]]]], "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " <> str[Expr["show", env0["folds_of"]]] <> " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", mConcat[env0["said"], list["\\Delta DEG = " <> str[Expr["show", env0["rhs"]]] <> ""]]];
+      Throw[env2["x"]["fact"]["key"], ret]]]], "l's ways move one for one with its record, and the record is moved by the same rules, by the same shares: a meeting writes one fold on an edge of l's lattice, half of it seen from each of its ends, and a creation takes a fold off every one of l's ways that holds one - " <> str[Expr["show", env0["folds_of"]]] <> " of them. So the ways' line is written in the rules' own names, and it settles: the more ways l has, the more a creation takes back", mConcat[env0["said"], list["\\Delta DEG = " <> str[Expr["show", env0["rhs"]]] <> ""]]];
     env0["st"]["derivation" -> mConcat[list[env0["line"], env0["moved"], env0["ways"]], env0["pieces"]]];
     Throw[env0["st"], ret]]];
   method[klass, "in_record", mfn[1, { env0["ways_c"] = arg[args1, 0], env0["ways"] = arg[args1, 1], env0["pieces"] = arg[args1, 2] };
@@ -4768,15 +4769,109 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     env0["base"] = Expr["replace", env0["settles"]["fact"]["to"], "\\rho", env0["vac"]];
     env0["shell"] = Expr["field", "l.shell\\paren{x.\\bar{R}}"];
     env0["R"] = Expr["field", "x.\\bar{R}"];
-    env0["reach"] = env0["s"]["fact", "is", "l.reach\\paren{\\bar{R}}"];
-    env0["walks"] = If[truthy[(andV[(!eq[env0["reach"], Null]), eq[env0["reach"]["to"]["kind"], "pow"]])], Prover["neat", Expr["replace", Expr["pown", Prover["neat", Expr["sub", Expr["num", 1.], env0["reach"]["to"]["base"]]], neg[1.]], "\\rho", env0["vac"]]], Null];
+    env0["relights"] = self["relights"];
+    env0["walks"] = self["walk_of", env0["s"]];
     env0["dim"] = Expr["field", "D"];
     env0["deeper"] = If[truthy[eq[env0["walks"], Null]], Expr["num", 1.], Expr["add", list[Expr["num", 1.], Prover["neat", Expr["div", Expr["mul", list[env0["dim"], env0["R"]]], Expr["mul", list[Expr["sub", env0["dim"], Expr["num", 2.]], env0["walks"]]]]]]]];
     env0["per"] = Expr["mul", list[Expr["field", "x.\\bar{m}"], Expr["sub", Expr["num", 1.], Prover["reach", "x.\\bar{R}"]], Expr["pown", env0["shell"], neg[1.]], env0["deeper"]]];
     env0["walked"] = If[truthy[eq[env0["walks"], Null]], "-", Expr["show", env0["walks"]]];
+    env0["afresh"] = If[truthy[eq[env0["relights"], Null]], "-", mUpper[env0["relights"]["term"]["rule"]["name"]]];
     env0["rhs"] = Expr["add", list[env0["base"], Expr["mul", list[Expr["pown", env0["k"], neg[1.]], Expr["call", "\\sum_{x = x_{@t}}", env0["per"]]]]]];
     env0["lhs"] = "\\Delta\\paren{DEG·\\rho + " <> str[Expr["show", env0["k"]]] <> "·n_{f}}";
-    Throw[Step["of", Fact["stands", "n_{f,l}\\paren{t}", env0["rhs"]], "the record every body leaves at a local", list[env0["rays_c"]["fact"]["key"], env0["ways_c"]["fact"]["key"], env0["settles"]["fact"]["key"]], "a meeting turns " <> str[Expr["show", env0["k"]]] <> " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " <> str[Expr["show", env0["k"]]] <> " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " <> str[Expr["show", env0["k"]]] <> ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", list["" <> str[env0["lhs"]] <> " = " <> str[Expr["show", env0["both"]]] <> "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " <> str[Expr["show", env0["base"]]] <> "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: \\lambda = " <> str[env0["walked"]] <> ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " <> str[Expr["show", env0["rhs"]]] <> ""]], ret]]];
+    Throw[Step["of", Fact["stands", "n_{f,l}\\paren{t}", env0["rhs"]], "the record every body leaves at a local", list[env0["rays_c"]["fact"]["key"], env0["ways_c"]["fact"]["key"], env0["settles"]["fact"]["key"]], "a meeting turns " <> str[Expr["show", env0["k"]]] <> " of l's rays into a fold and a creation reads it back out, so l's rays, DEG of them a way, and " <> str[Expr["show", env0["k"]]] <> " times its record move together: the meetings cancel out of their sum, and what is left is what the bodies put in and creation's share against the record l holds over its own ways - nought where the ways have settled, at \\rho_{\\infty}. So what a body puts in is never lost to the vacuum, only spread: what crosses the shell at a distance in a tick is what the body put out then, and the rays alone are the near field, what still arrives as rays, spread over the same shell - the record is the one less the other, so it is what the meetings took on the way, never less than nought. And what they took walks rather than streams - a creation reads it back out on every way at once - so it crosses each shell at c-bar (D - 2) lambda / (D R), lambda the free path, and beyond the free path stands 1/R^{D-2} deep: in three dimensions it falls as one over the distance, and its slope, the pull, as one over its square, over " <> str[Expr["show", env0["k"]]] <> ", on the settled record. Each body is read as it was when its rays left it, at its own distance then", list["" <> str[env0["lhs"]] <> " = " <> str[Expr["show", env0["both"]]] <> "", "the settled vacuum underneath: n_{f} at \\rho_{\\infty}, " <> str[Expr["show", env0["base"]]] <> "", "x = x_{@t}: every body at its own time, bound once in the sum; x.\\bar{R} = l.distance\\paren{x.l}, from the local now to the body then", "the walk: " <> str[env0["afresh"]] <> " lights all DEG of a point's ways, so a heading is drawn afresh; \\lambda = " <> str[env0["walked"]] <> ", outward at \\bar{c}·\\paren{D - 2}\\lambda / \\paren{D·x.\\bar{R}}", "n_{f,l}\\paren{t} = " <> str[Expr["show", env0["rhs"]]] <> ""]], ret]]];
+  getter[klass, "relights", mfn[1,
+    Throw[mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[andV[(!eq[env2["t"]["term"]["rule"], Null]), eq[env2["t"]["degree"], 0.]], eq[Expr["show", Expr["simplify", env2["t"]["ray_count"]]], "DEG"]], ret]]]], ret]]];
+  method[klass, "walk_of", mfn[1, { env0["s"] = arg[args1, 0] };
+    env0["reach"] = env0["s"]["fact", "is", "l.reach\\paren{\\bar{R}}"];
+    If[truthy[orV[eq[self["relights"], Null], eq[env0["reach"], Null]]],
+      Throw[Null, ret]];
+    If[truthy[(!eq[env0["reach"]["to"]["kind"], "pow"])],
+      Throw[Null, ret]];
+    Throw[Prover["neat", Expr["replace", Expr["pown", Prover["neat", Expr["sub", Expr["num", 1.], env0["reach"]["to"]["base"]]], neg[1.]], "\\rho", Expr["field", "\\rho_{\\infty}"]]], ret]]];
+  method[klass, "relativity_of", mfn[1, { env0["s"] = arg[args1, 0], env0["left"] = arg[args1, 1], env0["mass"] = arg[args1, 2] };
+    env0["walks"] = self["walk_of", env0["s"]];
+    If[truthy[eq[env0["walks"], Null]],
+      Throw[list[], ret]];
+    env0["dim"] = Expr["field", "D"];
+    env0["R"] = Expr["field", "x.\\bar{R}"];
+    env0["m"] = Expr["field", "x.\\bar{m}"];
+    env0["k"] = self["fold_weight"];
+    env0["far"] = Prover["neat", Expr["mul", list[Expr["pown", env0["k"], neg[1.]], env0["m"], env0["dim"], Expr["pown", Expr["mul", list[Expr["sub", env0["dim"], Expr["num", 2.]], env0["walks"]]], neg[1.]], Expr["to_power", env0["R"], Expr["sub", Expr["num", 2.], env0["dim"]]]]]];
+    env0["strength"] = Prover["neat", Expr["div", env0["dim"], Expr["mul", list[Expr["num", 2.], env0["walks"]]]]];
+    env0["pull"] = Prover["neat", Expr["mul", list[env0["strength"], env0["m"], Expr["to_power", env0["R"], Expr["sub", Expr["num", 1.], env0["dim"]]]]]];
+    env0["g_"] = Step["of", Fact["stands", "g \\aside{far}", env0["pull"]], "the pull far from a body", list[env0["left"]["fact"]["key"]], "what a body feels is the record's slope in rays' worth, g = \\frac{1}{2}\\nabla S_{l}, and S_{l} = " <> str[Expr["show", env0["k"]]] <> "n_{f,l}. Far from a body - past its free path, where the reach has died - the record it leaves is what the walk carries, one power of the distance weaker than the shell, so its slope falls as the shell does: the inverse square at three dimensions, at a strength that is the lattice's own and nothing chosen. G is the dimension over twice the free path", list["n_{f,l} - n_{f}\\paren{\\rho_{\\infty}} \\to " <> str[Expr["show", env0["far"]]] <> ", past the free path", "g = \\frac{" <> str[Expr["show", env0["k"]]] <> "}{2}·\\frac{-\\partial n_{f,l}}{\\partial x.\\bar{R}} = " <> str[Expr["show", env0["pull"]]] <> "", "G = \\frac{D}{2\\lambda} = " <> str[Expr["show", env0["strength"]]] <> ""]];
+    env0["pot"] = Prover["neat", Expr["mul", list[env0["strength"], env0["m"], Expr["pown", Expr["sub", env0["dim"], Expr["num", 2.]], neg[1.]], Expr["to_power", env0["R"], Expr["sub", Expr["num", 2.], env0["dim"]]]]]];
+    env0["phi"] = Step["of", Fact["stands", "\\Phi \\aside{far}", env0["pot"]], "the potential is the record", list[env0["g_"]["fact"]["key"]], "the pull integrated in from far off, where it is nought: one power of the distance weaker than the pull. It is the record the body left, in rays' worth and halved - so the potential is not a second field beside the record, it IS the record", list["\\Phi = \\int_{x.\\bar{R}}^{\\infty} g = " <> str[Expr["show", env0["pot"]]] <> "", "= \\frac{" <> str[Expr["show", env0["k"]]] <> "}{2}\\paren{n_{f,l} - n_{f}\\paren{\\rho_{\\infty}}}, far out"]];
+    env0["beta"] = Expr["field", "\\beta"];
+    env0["beat"] = Expr["pown", Expr["sub", Expr["num", 1.], Expr["pown", env0["beta"], 2.]], 0.5];
+    env0["mover"] = mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[(!eq[env2["t"]["term"]["rule"], Null]), env2["t"]["carries"]], ret]]]];
+    env0["moved"] = If[truthy[eq[env0["mover"], Null]], "MOVEMENT", mUpper[env0["mover"]["term"]["rule"]["name"]]];
+    env0["tick"] = Step["of", Fact["stands", "\\frac{d\\tau}{dt}", env0["beat"]], "a body moves or it emits", list[env0["mass"]["fact"]["key"]], "" <> str[env0["moved"]] <> " steps every ray a cell every tick and never holds one back, and a body is rays turning - so a body's step is always the whole of c-bar, and what it spends going somewhere it does not spend standing where it is. What it sends it sends standing: a source moves or it emits, and on a tick it moves it does not shine the way it went. So its going and its standing share one step, at right angles - the going along its heading, the standing across it, where its rays turn - and the standing is its beat: \\beta^{2} + \\paren{d\\tau/dt}^{2} = 1. Fore and aft it comes to the same: what it sends ahead is thinned by 1 - \\beta and what it leaves behind by 1 + \\beta, and the beat is the mean of the two, \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}}", list["" <> str[env0["moved"]] <> ": every ray a cell a tick, so a body's step is c-bar whatever it does", "a source moves or it emits: what it spends going, it does not spend shining", "\\beta^{2} + \\paren{d\\tau/dt}^{2} = 1", "fore 1 - \\beta, aft 1 + \\beta: \\sqrt{\\paren{1 - \\beta}\\paren{1 + \\beta}} = " <> str[Expr["show", env0["beat"]]] <> ""]];
+    env0["fall"] = Prover["neat", Expr["mul", list[Expr["num", 2.], Expr["field", "\\Phi"]]]];
+    env0["falls"] = Step["of", Fact["stands", "\\beta^{2} \\aside{falling}", env0["fall"]], "a body falling in from far", list[env0["phi"]["fact"]["key"]], "a body let go at rest far off gains speed as the pull does work on it: \\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta, and the pull is the potential's slope - so at R its speed squared is twice the potential there. Every body falls so, whatever it is made of: the pull is the record's slope, and the record does not ask what crosses it", list["\\frac{d}{dt}\\frac{\\beta^{2}}{2} = g·\\beta = -\\frac{d\\Phi}{dt}", "from rest far off: \\beta^{2} = 2\\Phi"]];
+    env0["rs"] = Prover["neat", Expr["mul", list[Expr["num", 2.], env0["strength"], env0["m"], Expr["pown", Expr["sub", env0["dim"], Expr["num", 2.]], neg[1.]]]]];
+    env0["r"] = Expr["sym", "r"];
+    env0["A"] = Prover["neat", Expr["sub", Expr["num", 1.], Expr["mul", list[Expr["field", "r_{s}"], Expr["to_power", env0["r"], Expr["sub", Expr["num", 2.], env0["dim"]]]]]]];
+    env0["held"] = Step["of", Fact["stands", "A \\aside{held}", env0["A"]], "a clock held where a body falls", list[env0["tick"]["fact"]["key"], env0["falls"]["fact"]["key"]], "a clock held at r is passed by a body falling in from far at \\beta^{2} = 2\\Phi, and nothing tells the two apart but that speed: the falling one is what every body does there, the held one is moving against it. So the held clock beats at the falling body's beat, and the time part of the metric is that beat squared - 1 - \\beta^{2} = 1 - 2\\Phi. In the mass the pull fixes this is 1 - r_{s}/r, with r_{s} twice G m over D - 2: Schwarzschild's, the two not put in but the square of a beat", list["\\paren{d\\tau/dt}^{2} = 1 - \\beta^{2} = 1 - 2\\Phi", "r_{s} = " <> str[Expr["show", env0["rs"]]] <> "", "A = " <> str[Expr["show", env0["A"]]] <> ""]];
+    env0["B"] = Prover["neat", Expr["pown", env0["A"], neg[1.]]];
+    env0["ruler"] = Step["of", Fact["stands", "B \\aside{held}", env0["B"]], "a ruler held where a body falls", list[env0["held"]["fact"]["key"]], "and the ruler: laid along the fall it is moving against the falling body at the same speed, so a step it spans holds one over the beat as much as it would far off - a body's rays cover a cell a tick, and the held ruler's cells pass at the beat. So the space part is one over the time part, A·B = 1, as Schwarzschild has it", list["B = \\frac{1}{A} = " <> str[Expr["show", env0["B"]]] <> "", "A·B = 1"]];
+    env0["b"] = Expr["sym", "b"];
+    env0["bend"] = Prover["neat", Expr["mul", list[Expr["num", 2.], Expr["field", "r_{s}"], Expr["pown", env0["b"], neg[1.]]]]];
+    env0["defl"] = Step["of", Fact["stands", "\\alpha \\aside{held}", env0["bend"]], "light crossing a held field", list[env0["held"]["fact"]["key"], env0["ruler"]["fact"]["key"]], "light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \\sqrt{B/A} = 1 + 2\\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured", list["the index: \\sqrt{B/A} = 1 + r_{s}/r + \\ldots", "\\alpha = \\int \\partial_{b}\\paren{r_{s}/\\sqrt{b^{2} + z^{2}}}\\,dz = 2r_{s}/b at D = 3", "a stone at c-bar reads A alone: r_{s}/b, half of it"]];
+    env0["g_"]["derivation" -> list[env0["left"]]];
+    env0["phi"]["derivation" -> list[env0["g_"]]];
+    env0["tick"]["derivation" -> list[env0["mass"]]];
+    env0["falls"]["derivation" -> list[env0["phi"]]];
+    env0["held"]["derivation" -> list[env0["tick"], env0["falls"]]];
+    env0["ruler"]["derivation" -> list[env0["held"]]];
+    env0["defl"]["derivation" -> list[env0["held"], env0["ruler"]]];
+    Throw[list[env0["g_"], env0["phi"], env0["tick"], env0["falls"], env0["held"], env0["ruler"], env0["defl"]], ret]]];
+  method[klass, "expansion_of", mfn[1, { env0["s"] = arg[args1, 0], env0["settles"] = arg[args1, 1] };
+    env0["grown"] = self["growth_filled", env0["s"]];
+    env0["inside"] = Prover["neat", env0["grown"]["fact"]["to"]];
+    env0["frontier"] = mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[andV[(!eq[env2["t"]["term"]["rule"], Null]), env2["t"]["carries"]], (!eq[env2["t"]["grows"], "0"])], ret]]]];
+    If[truthy[eq[env0["frontier"], Null]],
+      Throw[list[], ret]];
+    env0["named"] = mUpper[env0["frontier"]["term"]["rule"]["name"]];
+    env0["gate"] = If[truthy[eq[env0["frontier"]["share"], Null]], "-", Expr["show", env0["frontier"]["share"]]];
+    env0["st"] = Step["of", Fact["stands", "\\partial_{t}V \\aside{inside}", env0["inside"]], "what the settled vacuum grows", list[env0["grown"]["fact"]["key"]], "the growth ledger read where the vacuum has settled: every ray there has room ahead, so " <> str[env0["named"]] <> " grows nothing and no meeting leaves a point behind a vacuum ray. The empty vacuum grows no space of its own - there is no constant in these rules that thins nothing", list["" <> str[env0["grown"]["fact"]["of"]] <> " = " <> str[Expr["show", env0["grown"]["fact"]["to"]]] <> "", "" <> str[env0["named"]] <> " grows at " <> str[env0["gate"]] <> ": nought where every ray has room ahead"]];
+    env0["t"] = Expr["sym", "t"];
+    env0["rate"] = Expr["pown", env0["t"], neg[1.]];
+    env0["hub"] = Step["of", Fact["stands", "H \\aside{frontier}", env0["rate"]], "the world grows at its frontier", list[env0["st"]["fact"]["key"]], "so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = \\bar{c}t, and its rate of growth is one over its age: H = \\dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age", list["inside: " <> str[Expr["show", env0["inside"]]] <> "", "at the frontier: " <> str[env0["named"]] <> " at " <> str[env0["gate"]] <> ", one cell a tick", "R = \\bar{c}t, so H = \\dot{R}/R = " <> str[Expr["show", env0["rate"]]] <> ""]];
+    env0["st"]["derivation" -> list[env0["grown"]]];
+    env0["hub"]["derivation" -> list[env0["st"]]];
+    Throw[mConcat[list[env0["st"], env0["hub"]], self["scale_of", env0["hub"], env0["settles"]]], ret]]];
+  method[klass, "scale_of", mfn[1, { env0["hub"] = arg[args1, 0], env0["settles"] = arg[args1, 1] };
+    env0["vac"] = Expr["field", "\\rho_{\\infty}"];
+    env0["nf"] = Prover["neat", Expr["replace", Expr["replace", env0["settles"]["fact"]["to"], "\\rho", env0["vac"]], "DEG_{0}", Expr["field", "DEG"]]];
+    env0["v"] = Prover["neat", Expr["pown", Expr["add", list[Expr["num", 1.], env0["nf"]]], neg[1.]]];
+    env0["mover"] = mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[andV[(!eq[env2["t"]["term"]["rule"], Null]), env2["t"]["carries"]], ret]]]];
+    env0["moved"] = If[truthy[eq[env0["mover"], Null]], "MOVEMENT", mUpper[env0["mover"]["term"]["rule"]["name"]]];
+    env0["straight"] = Step["of", Fact["stands", "v \\aside{straight}", env0["v"]], "what a heading keeps straight", list[env0["settles"]["fact"]["key"]], "" <> str[env0["moved"]] <> " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list["the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " <> str[Expr["show", env0["nf"]]] <> "", "v = \\frac{1}{1 + n_{f}} = " <> str[Expr["show", env0["v"]]] <> ""]];
+    env0["straight"]["derivation" -> list[env0["settles"]]];
+    env0["lights"] = self["relights"];
+    env0["lit"] = If[truthy[eq[env0["lights"], Null]], "CREATION", mUpper[env0["lights"]["term"]["rule"]["name"]]];
+    env0["sends"] = mFirst[filt[self["infos"], lfn[3, { env2["t"] = arg[args3, 0] };
+      Throw[env2["t"]["outside"], ret]]]];
+    env0["sent"] = If[truthy[eq[env0["sends"], Null]], "EMISSION", mUpper[env0["sends"]["term"]["rule"]["name"]]];
+    env0["a0"] = Prover["neat", Expr["mul", list[env0["v"], env0["hub"]["fact"]["to"]]]];
+    env0["scale"] = Step["of", Fact["stands", "a_{0} \\aside{age}", env0["a0"]], "the scale is the vacuum's own growth", list[env0["straight"]["fact"]["key"], env0["hub"]["fact"]["key"]], "" <> str[env0["lit"]] <> " fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. " <> str[env0["sent"]] <> " sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and nothing has cut them off since the world began: they have piled up over the age, one over the rate the vacuum grows at. Carried at what a heading keeps straight, that is a rate of its own - the scale an acceleration is measured against", list["" <> str[env0["lit"]] <> ": fires at a free point, lights every way - the vacuum pulses, every other tick", "" <> str[env0["sent"]] <> ": a source moves or emits, so each move flips the parity, fore against aft", "steady: the flips cancel; accelerating: they pile up, since the beginning", "the age is one over the vacuum's growth, " <> str[Expr["show", env0["hub"]["fact"]["to"]]] <> "", "a_{0} = vH = " <> str[Expr["show", env0["a0"]]] <> ""]];
+    env0["scale"]["derivation" -> list[env0["straight"], env0["hub"]]];
+    env0["g"] = Expr["field", "g_{N}"];
+    env0["a"] = Expr["field", "a_{0}"];
+    env0["half"] = Expr["mul", list[env0["g"], Expr["num", 0.5]]];
+    env0["got"] = Prover["neat", Expr["add", list[env0["half"], Expr["pown", Expr["add", list[Expr["mul", list[env0["half"], env0["half"]]], Expr["mul", list[env0["g"], env0["a"]]]]], 0.5]]]];
+    env0["closing"] = Step["of", Fact["stands", "F_{g} \\aside{closing}", env0["got"]], "what is felt, with the mismatch closed", list[env0["scale"]["fact"]["key"]], "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", list["g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " <> str[Expr["show", env0["got"]]] <> ""]];
+    env0["closing"]["derivation" -> list[env0["scale"]]];
+    env0["ratio"] = Prover["neat", Expr["div", env0["a0"], Expr["mul", list[Expr["field", "\\bar{c}"], env0["hub"]["fact"]["to"]]]]];
+    env0["ratio"] = Expr["replace", env0["ratio"], "\\bar{c}", Expr["num", 1.]];
+    env0["against"] = Step["of", Fact["stands", "\\frac{a_{0}}{cH}", Prover["neat", env0["ratio"]]], "the scale against the vacuum's growth", list[env0["scale"]["fact"]["key"], env0["hub"]["fact"]["key"]], "a_{0} is v times the vacuum's own growth, so against c-bar times that growth it is v alone - a count of the tiling, the same at every epoch, with the age cancelled. What is measured is against H_{0}, the rate the world grows at with its matter in it, and the matter grows it too: the vacuum's own share of that growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", list["a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " <> str[Expr["show", Prover["neat", env0["ratio"]]]] <> "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"]];
+    env0["against"]["derivation" -> list[env0["scale"]]];
+    Throw[list[env0["straight"], env0["scale"], env0["closing"], env0["against"]], ret]]];
   method[klass, "leftover", mfn[1, { env0["rays_c"] = arg[args1, 0] };
     env0["m"] = Prover["MASS"]["label"];
     env0["parts"] = mSplit[Expr, Expr["sub", env0["rays_c"]["fact"]["to"], Expr["field", env0["rays_c"]["fact"]["of"]]], env0["m"]];
@@ -4816,7 +4911,7 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     env0["mass"] = self["leftover", env0["rays_c"]];
     If[truthy[eq[env0["mass"], Null]],
       Throw[list[], ret]];
-    Throw[mConcat[mConcat[list[env0["rays_l"], env0["space_l"], env0["ways"], env0["moved"]], env0["pieces"]], list[env0["moving_"], env0["rays_c"], env0["ways_c"], env0["moves"], env0["settles"], env0["left"], env0["mass"]]], ret]]];
+    Throw[mConcat[mConcat[mConcat[mConcat[mConcat[list[env0["rays_l"], env0["space_l"], env0["ways"], env0["moved"]], env0["pieces"]], list[env0["moving_"], env0["rays_c"], env0["ways_c"], env0["moves"], env0["settles"], env0["left"]]], self["relativity_of", env0["s"], env0["left"], env0["mass"]]], self["expansion_of", env0["s"], env0["settles"]]], list[env0["mass"]]], ret]]];
   method[klass, "lean", mfn[1, { env0["rec"] = arg[args1, 0] };
     Throw[Step["of", Fact["stands", "a", Expr["field", "\\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}"]], "the lean", list[env0["rec"]["fact"]["key"]], "the rate a heading is being turned at the local: half the density's difference across the headings, since the turn draws a folded way against straight on and a fold turns a heading by the weight it was folded, two rays to one. It is a velocity in heading space, and it is the velocity the record is followed along - so the line has two: the heading, which the density streams along, and the lean, which the record is bent along. In the Boltzmann equation these are the streaming term and the force term; here the force is the record's slope, so the second is the bend", list["a = \\frac{1}{2}\\partial_{\\hat{d}}\\rho_{l}: how the heading is being turned", "streaming: \\Delta_{\\hat{d}}\\rho_{l} - the density along its heading", "bending: \\Delta_{a}S_{l} - the record along the lean"]], ret]]];
   method[klass, "at_time", mfn[1, { env0["rec"] = arg[args1, 0] };
@@ -5157,6 +5252,8 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     Do[loopScope[1, env1["i"] = iter1;
       If[truthy[(!eq[elem[env0["steps"], env1["i"]], Null])],
         env0["out"]["set", elem[env0["roles"], env1["i"]], elem[env0["steps"], env1["i"]]]]], {iter1, 0., num[len[env0["roles"]]] - 1.}];
+    Do[loopScope[1, env1["x"] = iter1;
+      env0["out"]["set", "of:" <> str[env1["x"]["fact"]["of"]] <> "", env1["x"]]], {iter1, items[env0["model"]]}];
     Throw[env0["out"], ret]]];
   statik[klass, "names_kept", mfn[1, { env0["s"] = arg[args1, 0], env0["at"] = arg[args1, 1] };
     env0["k"] = "" <> str[env0["s"]["version"]] <> "|" <> str[env0["at"]] <> "";
@@ -11176,11 +11273,15 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
 
 DefineClass[Model, "Model", Node, Function[{klass},
   field[klass, "theory"];
-  staticField[klass, "NAMES", dfn[list["\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi"]]];
+  staticField[klass, "NAMES", dfn[list["\\langle\\rho\\rangle", "D", "DEG", "l.DEG", "\\nu", "\\sigma", "F", "\\bar{c}", "m'", "A'", "\\bar{R}'", "m_{\\Sigma}", "m_{\\Sigma}'", "\\mathcal{D}", "\\mathcal{D}'", "\\beta'", "\\beta\\cdot\\hat{d}", "\\beta'\\cdot\\hat{d}", "\\rho", "\\rho_{\\infty}", "DEG_{0}", "\\omega", "R", "r", "\\bar{r}", "\\bar{m}_{x}", "A", "\\bar{R}", "\\beta", "n_{f}", "\\sigma_{tr}", "L", "m", "\\delta", "g_{N}", "a_{0}", "\\Phi"]]];
   staticField[klass, "RD", dfn[30.]];
   field[klass, "store", dfn[Prover[{ "theory" -> self["theory"] }]["closure"]]];
   field[klass, "cache", dfn[Node[{}]]];
   method[klass, "fact", mfn[1, { env0["of_"] = arg[args1, 0] };
+    env0["law"] = Aggregate["of", self["theory"]];
+    env0["st"] = env0["law"]["chain"]["get", "of:" <> str[env0["of_"]] <> ""];
+    If[truthy[(!eq[env0["st"], Null])],
+      Throw[env0["st"]["fact"], ret]];
     env0["found"] = Null;
     Do[loopScope[1, env1["f"] = iter1;
       If[truthy[andV[eq[env0["found"], Null], eq[env1["f"]["of"], env0["of_"]]]],
@@ -11276,9 +11377,10 @@ DefineClass[Model, "Model", Node, Function[{klass},
     env0["base"][str["\\beta'"] -> 0.];
     env0["base"][str["\\beta\\cdot\\hat{d}"] -> 0.];
     env0["base"][str["\\beta'\\cdot\\hat{d}"] -> 0.];
-    env0["rho"] = self["fact", "\\rho_{\\infty}"];
-    If[truthy[(!eq[env0["rho"], Null])],
-      env0["base"][str["\\rho"] -> self["at", env0["rho"]["to"], env0["base"]]]];
+    env0["law"] = Aggregate["of", self["theory"], env0["deg"], self["theory"]["lattice"]["D"]];
+    env0["base"][str["\\rho"] -> env0["law"]["rho_inf"]];
+    env0["base"][str["\\rho_{\\infty}"] -> env0["law"]["rho_inf"]];
+    env0["base"][str["DEG_{0}"] -> env0["deg"]];
     env0["om"] = self["fact", "\\omega"];
     If[truthy[(!eq[env0["om"], Null])],
       env0["base"][str["\\omega"] -> self["at", env0["om"]["to"], env0["base"]]]];
@@ -11294,6 +11396,7 @@ DefineClass[Model, "Model", Node, Function[{klass},
       env1["f"] = self["fact", env1["n"]];
       If[truthy[(!eq[env1["f"], Null])],
         setAt[env0["far"], env1["n"], self["at", env1["f"]["to"], env0["far"]]]]], {iter1, items[list["n_{f}", "\\sigma_{tr}", "L"]]}];
+    env0["far"][str["n_{f}"] -> env0["law"]["nf_inf"]];
     Throw[env0["far"], ret]]];
   getter[klass, "a0_lattice", mfn[1,
     If[truthy[(!eq[self["cache"][str["a0"]], Null])],
@@ -12902,7 +13005,7 @@ DefineClass[G, "G", Theory, Function[{klass},
   staticField[klass, "theorem vacuum.movement", dfn[Theorem[{ "id" -> "vacuum.movement", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "the rays move. Followed a step and a tick, what does a ray's way on depend on?", "about" -> "\\Delta\\rho", "leads" -> "MOVEMENT (G/c), place by place: each place a ray passes turns it by its own ways, keeping one straight against all its folds." }], ret]] }]]];
   staticField[klass, "theorem vacuum.ways", dfn[Theorem[{ "id" -> "vacuum.ways", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "a fold is a way. How many ways does a local have, and what moves them?", "about" -> "\\Delta DEG", "also" -> "DEG", "leads" -> "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's ways, and a creation takes a way off every one of them that holds a fold - so they settle, at twice the lattice's own.", "then" -> "AND WHAT THEY ARE: the lattice's own ways and one for every fold." }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "a fold is a way. How many ways does a local have, and what moves them?", "about" -> "\\Delta DEG", "also" -> "DEG", "leads" -> "THE WAYS AT A LOCAL, a tick on: half a way for every meeting seen from each of l's lattice's edges, and a creation takes a way off every one of them that holds a fold - so they settle, at half as many again as the lattice's own.", "then" -> "AND WHAT THEY ARE: the lattice's own ways and one for every fold." }], ret]] }]]];
   staticField[klass, "theorem vacuum.at", dfn[Theorem[{ "id" -> "vacuum.at", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "a source is a thing with a history. What does it mean to read one at a particular time?", "about" -> "l'_{@t}" }], ret]] }]]];
   staticField[klass, "theorem vacuum.following", dfn[Theorem[{ "id" -> "vacuum.following", "body" -> lfn[1,
@@ -12986,7 +13089,7 @@ DefineClass[G, "G", Theory, Function[{klass},
   staticField[klass, "theorem transport.exchange", dfn[Theorem[{ "id" -> "transport.exchange", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "and the other route, which needs both bodies to be shining rather than one to be open - what does that carry, once the same two things are divided out?", "about" -> "T_{met} at D = 3" }], ret]] }]]];
   staticField[klass, "theorem gravity.schwarzschild", dfn[Theorem[{ "id" -> "gravity.schwarzschild", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "the metric this model derives has Schwarzschild's shape. Written in Schwarzschild's own names, what is it - and where do the two theories actually part?", "about" -> "A in r as GR writes it", "also" -> "A in r", "leads" -> "AS GENERAL RELATIVITY WRITES IT — and it is the whole function rather than an expansion of one, so light bends by twice the Newtonian amount, a clock runs slow by what a ruler is stretched by, and the perihelion advances by 3πr_s/a. Every classical test reads the metric, and every one of them comes out as Einstein gives it.", "then" -> "AND THE SAME THING AS THIS MODEL DERIVES IT — the record a body adds to what a ray crosses. Reading the two against each other says the blocking mass IS the Schwarzschild radius, in cells. THE DEVIATION IS NOT HERE: it is that general relativity has the metric and the force as ONE object, and this has them as two derivations sourced by two different masses - and that the force carries a recursion the metric knows nothing of." }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "a clock held near a body is passed by everything falling there. Written in Schwarzschild's own names, what does it run at?", "about" -> "A \\aside{held}", "also" -> "B \\aside{held}", "leads" -> "THE TIME PART - a held clock beats at the beat of a body falling past it, and that beat squared is one less twice the potential: Schwarzschild's 1 - r_s/r, in the mass the pull fixes.", "then" -> "AND THE SPACE PART - a ruler held there is short by the same beat, so A·B = 1, as Schwarzschild has it." }], ret]] }]]];
   staticField[klass, "theorem gravity.gauss", dfn[Theorem[{ "id" -> "gravity.gauss", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "general relativity has a flux law behind it. Do these rules give one, and is it the same one?", "about" -> "the flux through any shell" }], ret]] }]]];
   staticField[klass, "theorem gravity.potential", dfn[Theorem[{ "id" -> "gravity.potential", "body" -> lfn[1,
@@ -13000,11 +13103,21 @@ DefineClass[G, "G", Theory, Function[{klass},
   staticField[klass, "theorem gravity.coupling", dfn[Theorem[{ "id" -> "gravity.coupling", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "Einstein's field equation has one number in front of the source. What does this model put there instead?", "about" -> "\\kappa" }], ret]] }]]];
   staticField[klass, "theorem gravity.einstein", dfn[Theorem[{ "id" -> "gravity.einstein", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "and the metric in terms of that potential - does it come out as general relativity writes it?", "about" -> "A, off the record a ray crosses" }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "the pull does work on what falls. How fast is a body falling in from far going at a place - and is that what puts the two into the metric?", "about" -> "\\beta^{2} \\aside{falling}" }], ret]] }]]];
   staticField[klass, "theorem gravity.deflection", dfn[Theorem[{ "id" -> "gravity.deflection", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "the metric bends light. Written in the mass the force law fixes, by how much - and does it agree with what was measured?", "about" -> "the deflection this model gives", "also" -> "the deflection, as general relativity gives it", "leads" -> "WHAT THIS MODEL GIVES — light follows the index and the index is the metric, so a metric short by two bends light by half as much. This is Newton's value.", "then" -> "AND WHAT GENERAL RELATIVITY GIVES, which is what was measured in 1919 and since. This is the one place the difference is observable rather than absorbed into what a unit of mass means." }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "light has no beat, so it reads both the slow clock and the long ruler. By how much does a body bend it, in the mass the pull fixes - and does it agree with what was measured?", "about" -> "\\alpha \\aside{held}", "leads" -> "TWICE NEWTON'S - a stone at c-bar reads the clock alone and turns by r_s/b; light reads the clock and the ruler, once each, and turns by 2r_s/b. That is general relativity's, and what was measured in 1919 and since." }], ret]] }]]];
+  staticField[klass, "theorem gravity.beat", dfn[Theorem[{ "id" -> "gravity.beat", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "every ray steps a cell a tick, and a body is rays turning: what it spends going somewhere it does not spend standing and sending. What does a moving body's clock run at?", "about" -> "\\frac{d\\tau}{dt}" }], ret]] }]]];
+  staticField[klass, "theorem gravity.far", dfn[Theorem[{ "id" -> "gravity.far", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "past a body's free path the record it leaves is what the walk carries. What pull does that give - how strong, and how does it fall?", "about" -> "g \\aside{far}", "also" -> "\\Phi \\aside{far}" }], ret]] }]]];
+  staticField[klass, "theorem vacuum.age", dfn[Theorem[{ "id" -> "vacuum.age", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?", "about" -> "H \\aside{frontier}", "also" -> "\\partial_{t}V \\aside{inside}" }], ret]] }]]];
+  staticField[klass, "theorem gravity.scale", dfn[Theorem[{ "id" -> "gravity.scale", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "a source moves or it emits, and the vacuum it emits into pulses every other tick. What rate does the mismatch between the two pile up at - the scale an acceleration is measured against?", "about" -> "a_{0} \\aside{age}", "also" -> "v \\aside{straight}" }], ret]] }]]];
+  staticField[klass, "theorem gravity.closing", dfn[Theorem[{ "id" -> "gravity.closing", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?", "about" -> "F_{g} \\aside{closing}" }], ret]] }]]];
   staticField[klass, "theorem gravity.metric", dfn[Theorem[{ "id" -> "gravity.metric", "body" -> lfn[1,
-    Throw[Asked[{ "asks" -> "light goes at one over the index. What metric is the medium, then?", "about" -> "A in r" }], ret]] }]]];
+    Throw[Asked[{ "asks" -> "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?", "about" -> "B \\aside{held}", "also" -> "A \\aside{held}" }], ret]] }]]];
   staticField[klass, "theorem gravity.shadow", dfn[Theorem[{ "id" -> "gravity.shadow", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?", "about" -> "b_{c}" }], ret]] }]]];
   theoryRule[klass, "S.2", "Attenuation", Null, "World", true, "\"rule /S.2 \\\"Attenuation\\\" () => {\\n\\n}\"", Null, lfn[1,
