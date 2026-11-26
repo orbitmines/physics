@@ -69,18 +69,26 @@ test("tests/coincidence.ray:17 on coincidence", (t) => {
   assert.ok(got, "gt(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(8)), it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(18)))");
 });
 
-want("coincidence", () => new Model({ theory: G }), { label: "tests/coincidence.ray:19 on coincidence", holds: (it) => eq(it.theory.name, `G`), until: 8, requirement: (it) => gt(mul(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(8)), Math.sqrt((sub(1, 0.315)))), 0.155) });
-test("tests/coincidence.ray:19 on coincidence", (t) => {
-  const got = outcome("coincidence", "tests/coincidence.ray:19 on coincidence");
+want("coincidence", () => new Model({ theory: G }), { label: "tests/coincidence.ray:23 on coincidence", holds: (it) => eq(it.theory.name, `G`), until: 8, requirement: (it) => lt(Math.abs((sub(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(8)), div(1, 9)))), 0.000001) });
+test("tests/coincidence.ray:23 on coincidence", (t) => {
+  const got = outcome("coincidence", "tests/coincidence.ray:23 on coincidence");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "gt(mul(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(8)), Math.sqrt((sub(1, 0.315)))), 0.155)");
+  assert.ok(got, "lt(Math.abs((sub(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(8)), div(1, 9)))), 0.000001)");
 });
 
-want("coincidence", () => new Model({ theory: G }), { label: "tests/coincidence.ray:20 on coincidence", holds: (it) => eq(it.theory.name, `G`), until: 8, requirement: (it) => lt(mul(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(8)), Math.sqrt((sub(1, 0.315)))), 0.183) });
-test("tests/coincidence.ray:20 on coincidence", (t) => {
-  const got = outcome("coincidence", "tests/coincidence.ray:20 on coincidence");
+want("coincidence", () => new Model({ theory: G }), { label: "tests/coincidence.ray:24 on coincidence", holds: (it) => eq(it.theory.name, `G`), until: 8, requirement: (it) => gt(mul(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(4)), Math.sqrt((sub(1, 0.315)))), 0.155) });
+test("tests/coincidence.ray:24 on coincidence", (t) => {
+  const got = outcome("coincidence", "tests/coincidence.ray:24 on coincidence");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "lt(mul(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(8)), Math.sqrt((sub(1, 0.315)))), 0.183)");
+  assert.ok(got, "gt(mul(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(4)), Math.sqrt((sub(1, 0.315)))), 0.155)");
+});
+
+want("coincidence", () => new Model({ theory: G }), { label: "tests/coincidence.ray:25 on coincidence", holds: (it) => eq(it.theory.name, `G`), until: 8, requirement: (it) => lt(mul(it.value_of(`\\frac{a_{0}}{cH}`, it.settled(4)), Math.sqrt((sub(1, 0.315)))), 0.183) });
+test("tests/coincidence.ray:25 on coincidence", (t) => {
+  const got = outcome("coincidence", "tests/coincidence.ray:25 on coincidence");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "lt(mul(it.value_of(`\\\\frac{a_{0}}{cH}`, it.settled(4)), Math.sqrt((sub(1, 0.315)))), 0.183)");
 });

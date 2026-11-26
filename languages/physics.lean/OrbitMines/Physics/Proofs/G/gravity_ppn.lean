@@ -13,7 +13,7 @@ the post-Newtonian parameters say how much space one unit of the potential curve
 
 Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names \gamma \aside{PPN} again (claim 2), and its value is the earlier one's by algebra).
 
-- step 2 (the held metric, read for the classical tests), NOT checked: the inference 'the held metric, read for the classical tests' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 2 (the rules' clock, ruler and index, read for the classical tests), NOT checked: the inference 'the rules' clock, ruler and index, read for the classical tests' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - answer (the answer), checked: it names \gamma \aside{PPN} again (claim 2), and its value is the earlier one's by algebra
 -/
 
@@ -28,7 +28,7 @@ structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\n
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
 structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\gamma \aside{PPN}» : ℝ) : Prop where
-  /-- step 2 (the held metric, read for the classical tests): \gamma \aside{PPN} = 1 - NOT CHECKED: the inference 'the held metric, read for the classical tests' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  /-- step 2 (the rules' clock, ruler and index, read for the classical tests): \gamma \aside{PPN} = 1 - NOT CHECKED: the inference 'the rules' clock, ruler and index, read for the classical tests' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
   unchecked_gravity_ppn_2 : «\gamma \aside{PPN}» = (1 : ℝ)
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/

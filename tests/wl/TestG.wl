@@ -43,18 +43,25 @@ t["tests/coincidence.ray:17 on coincidence", Module[{it, guard = 0},
     If[truthy[gt[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], it["value_of", "\\frac{a_{0}}{cH}", it["settled", 18.]]]], "pass", "failed: " <> "gt[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 18.]]]"],
     skip]]];
 
-t["tests/coincidence.ray:19 on coincidence", Module[{it, guard = 0},
+t["tests/coincidence.ray:23 on coincidence", Module[{it, guard = 0},
   it = Model[{ "theory" -> G }];
   Catch[
     While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[gt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], mSqrt[(sub[1., 0.315])]], 0.155]], "pass", "failed: " <> "gt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], mSqrt[(sub[1., 0.315])]], 0.155]"],
+    If[truthy[lt[mAbs[(sub[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], div[1., 9.]])], 0.000001]], "pass", "failed: " <> "lt[mAbs[(sub[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], div[1., 9.]])], 0.000001]"],
     skip]]];
 
-t["tests/coincidence.ray:20 on coincidence", Module[{it, guard = 0},
+t["tests/coincidence.ray:24 on coincidence", Module[{it, guard = 0},
   it = Model[{ "theory" -> G }];
   Catch[
     While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[lt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]], "pass", "failed: " <> "lt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 8.]], mSqrt[(sub[1., 0.315])]], 0.183]"],
+    If[truthy[gt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 4.]], mSqrt[(sub[1., 0.315])]], 0.155]], "pass", "failed: " <> "gt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 4.]], mSqrt[(sub[1., 0.315])]], 0.155]"],
+    skip]]];
+
+t["tests/coincidence.ray:25 on coincidence", Module[{it, guard = 0},
+  it = Model[{ "theory" -> G }];
+  Catch[
+    While[!truthy[eq[it["theory"]["name"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[lt[mul[it["value_of", "\\frac{a_{0}}{cH}", it["settled", 4.]], mSqrt[(sub[1., 0.315])]], 0.183]], "pass", "failed: " <> "lt[mul[it[\"value_of\", \"\\\\frac{a_{0}}{cH}\", it[\"settled\", 4.]], mSqrt[(sub[1., 0.315])]], 0.183]"],
     skip]]];
 
 t["tests/felt.ray:10 on felt", Module[{it, guard = 0},

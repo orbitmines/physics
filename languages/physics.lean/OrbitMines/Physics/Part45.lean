@@ -106,11 +106,13 @@ ray_impl_getter "grows" : String := do
 ray_impl_getter "kernel" : Bool := do
   if true then return (!ωisNull (← ωget (← ωget self "term") "leans"))
   return ωnull
+ray_impl_field "worth" : Expr := do
+  return (← call! (← cls% Expr) "num" ((1 : Float)))
 ray_impl_getter "keeps" : Expr := do
-  if true then return (← call! (← cls% Expr) "pown" ((← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← call! (← cls% Expr) "field" (("n_{f}" : String)))]))), (← ωneg (1 : Float))))
+  if true then return (← call! (← cls% Expr) "pown" ((← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← ωget self "worth"), (← call! (← cls% Expr) "field" (("n_{f}" : String)))])))))]))), (← ωneg (1 : Float))))
   return ωnull
 ray_impl_getter "drifts" : Expr := do
-  if true then return (← call! (← cls% Expr) "grad" ((← call! (← cls% Expr) "field" (("n_{f}" : String)))))
+  if true then return (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "mul" ((← ωlst #[(← ωget self "worth"), (← call! (← cls% Expr) "grad" ((← call! (← cls% Expr) "field" (("n_{f}" : String)))))])))))
   return ωnull
 ray_impl_static "COUNTS" : object := do
   let s_0 ← IO.mkRef (← RMap.new)

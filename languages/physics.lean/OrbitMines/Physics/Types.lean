@@ -187,6 +187,7 @@ ray_getter "ANNIHILATE" : Value
 end Edge
 
 namespace Vertex
+ray_sfield "WORTH" : Value
 ray_field "world" : World
 ray_field "at" : Vector
 ray_field "ordinal" : Float
@@ -196,6 +197,8 @@ ray_field "source" : Source
 ray_field "density" : Float
 ray_field "destroyed" : Float
 ray_field "folds" : (RList Float)
+ray_getter "potential" : Float
+ray_getter "worth" : (RList Float)
 ray_field "held" : (RList Vertex)
 ray_field "folded_into" : Vertex
 ray_getter "alive" : Bool
@@ -336,6 +339,9 @@ ray_field "stepped" : Bool
 ray_field "moved_along" : Float
 ray_getter "spare" : Bool
 ray_getter "mass" : Float
+ray_method "clock_at" (u_0 : Float) : Float
+ray_method "standing" (u_0 : Float) : Float
+ray_method "velocity" (u_0 : Float) : Vector
 ray_field "absorbs" : Bool
 ray_method "choose emit?" (exit : Float) : Bool
 ray_method "choose mass"  : Float
@@ -368,6 +374,7 @@ ray_getter "vacuum" : Bool
 ray_method "emits" (d_0 : Float) : Bool
 ray_getter "folds" : (RList Float)
 ray_method "drift" (d_0 : Float) : Vector
+ray_getter "potential" : Float
 ray_getter "sinks" : Vector
 ray_method "outward" (d_0 : Float) : Cell
 end Cell
@@ -939,6 +946,7 @@ ray_getter "held_count" : Expr
 ray_getter "held" : String
 ray_getter "grows" : String
 ray_getter "kernel" : Bool
+ray_field "worth" : Expr
 ray_getter "keeps" : Expr
 ray_getter "drifts" : Expr
 ray_static "COUNTS" : object
@@ -1099,6 +1107,7 @@ ray_static "relativity" : Inference
 ray_static "held_shadow" (s_0 : Store) (A_0 : Fact) (B_0 : Fact) : Step
 ray_static "in_m" (e_0 : Expr) (u_0 : String) : Expr
 ray_static "at_nought" (e_0 : Expr) (u_0 : String) (times_0 : Float) : Float
+ray_static "partial" (e_0 : Expr) (by__0 : (RList String)) (names_0 : (RList String)) : Float
 ray_static "held_tests" (s_0 : Store) (A_0 : Fact) (B_0 : Fact) : (RList Step)
 ray_static "metric_of" : Inference
 ray_static "accumulating" : Inference

@@ -599,7 +599,7 @@ extern "C" __global__ void TOTAL(f32* st, f32* cel, const float4* dir, const Par
   }
   nf = nf * (P.DEG / f32_of_u(P.A));
   cel[1u * P.cells + c] = nf;
-  cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
+  cel[4u * P.cells + c] = 1.0 / (1.0 + 2.0 * nf);
 }
 
 //! kernel LOCATE over cells
@@ -650,7 +650,7 @@ extern "C" __global__ void CARRY(f32* st, f32* cel, const float4* dir, const Par
       f32 fa = st[gA(st, cel, dir, P, a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw2 * moving(st, cel, dir, P, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(st, cel, dir, P, b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -707,7 +707,7 @@ extern "C" __global__ void TAGCARRY(f32* st, f32* cel, const float4* dir, const 
       f32 fa = st[gA(st, cel, dir, P, a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw2 * moving_of(st, cel, dir, P, P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(st, cel, dir, P, P.z, b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }

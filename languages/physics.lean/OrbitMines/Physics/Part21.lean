@@ -239,7 +239,7 @@ ray_impl_getter "tally" : Value := do
     Value.null |> ωsink
     (← ωwr nf_1 (← ωmul (← nf_1.get) (← ωget self "edge"))) |> ωsink
     (ωatSetter (← ωget self "folds") (← c_1.get)) (← nf_1.get)
-    (ωatSetter (← ωget self "keep") (← c_1.get)) (← ωdiv (1 : Float) ((← ωadd (1 : Float) (← nf_1.get))))
+    (ωatSetter (← ωget self "keep") (← c_1.get)) (← ωdiv (1 : Float) ((← ωadd (1 : Float) (← ωmul (← ωget (← cls% Vertex) "WORTH") (← nf_1.get)))))
     pure ()
   Value.null |> ωsink
   return ωnull
@@ -464,7 +464,7 @@ ray_impl_method "carried" (pop_0 : Value) : (RList Float) := do
           if ωtruthy (← ωgt (← fa_3.get) (0 : Float)) then
             for i4 in [0:ωrangeN (← ωget self "A")] do
               let b_4 ← IO.mkRef (ωnatF i4)
-              (← ωwr got_2 (← ωadd (← got_2.get) (← ωmul (← ωmul (← ωmul (← ωmul (← ωelem (← tp_3.get) (1 : Float)) (← app! (← pop_0.get) ((← b_4.get), (← src_3.get)))) (← fa_3.get)) (← ωelem (← ωget self "keep") (← src_3.get))) (← ωget self "edge")))) |> ωsink
+              (← ωwr got_2 (← ωadd (← got_2.get) (← ωmul (← ωmul (← ωmul (← ωmul (← ωmul (← ωelem (← tp_3.get) (1 : Float)) (← app! (← pop_0.get) ((← b_4.get), (← src_3.get)))) (← ωget (← cls% Vertex) "WORTH")) (← fa_3.get)) (← ωelem (← ωget self "keep") (← src_3.get))) (← ωget self "edge")))) |> ωsink
               pure ()
             Value.null |> ωsink
             pure ()
@@ -479,7 +479,7 @@ ray_impl_method "carried" (pop_0 : Value) : (RList Float) := do
             let sd_4 ← IO.mkRef (← ωelem (← tp_4.get) (0 : Float))
             let fd_4 ← IO.mkRef (← ωelem (← ωget self "fold_was") (← ωadd (← ωmul (← d_3.get) (← ωget self "cells")) (← sd_4.get)))
             if ωtruthy (← ωgt (← fd_4.get) (0 : Float)) then
-              (← ωwr got_2 (← ωadd (← got_2.get) (← ωmul (← ωmul (← ωmul (← ωmul (← ωelem (← tp_4.get) (1 : Float)) (← app! (← pop_0.get) ((← a_1.get), (← sd_4.get)))) (← fd_4.get)) (← ωelem (← ωget self "keep") (← sd_4.get))) (← ωget self "edge")))) |> ωsink
+              (← ωwr got_2 (← ωadd (← got_2.get) (← ωmul (← ωmul (← ωmul (← ωmul (← ωmul (← ωelem (← tp_4.get) (1 : Float)) (← app! (← pop_0.get) ((← a_1.get), (← sd_4.get)))) (← ωget (← cls% Vertex) "WORTH")) (← fd_4.get)) (← ωelem (← ωget self "keep") (← sd_4.get))) (← ωget self "edge")))) |> ωsink
               pure ()
             pure ()
           Value.null |> ωsink

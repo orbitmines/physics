@@ -79,7 +79,7 @@ Ray <- ray_class("Ray", Iterable, function(cl) {
     NULL
   })
   getter(cl, "turns", function() {
-    return(self$vertex$world$draw(lst(1, self$vertex$folds), lst(self$steps, function(d = NULL, ...) {
+    return(self$vertex$world$draw(lst(1, self$vertex$worth), lst(self$steps, function(d = NULL, ...) {
       return(elem((if (is.null(.y <- self$vertex$outward(d))) NULL else .y$rays), d))
       NULL
     })))
@@ -233,6 +233,7 @@ Edge <- ray_class("Edge", Ray, function(cl) {
 })
 
 Vertex <- ray_class("Vertex", Ray, function(cl) {
+  static_field(cl, "WORTH", function() 2)
   field(cl, "world", NULL)
   field(cl, "at", NULL)
   field(cl, "ordinal", function() 0)
@@ -251,6 +252,17 @@ Vertex <- ray_class("Vertex", Ray, function(cl) {
     return(0)
     NULL
   }))
+  getter(cl, "potential", function() {
+    return(0)
+    NULL
+  })
+  getter(cl, "worth", function() {
+    return(m_map(self$folds, function(f = NULL, ...) {
+      return(r_mul(Vertex$WORTH, f))
+      NULL
+    }))
+    NULL
+  })
   field(cl, "held", function() lst())
   field(cl, "folded_into", function() NULL)
   getter(cl, "alive", function() {
@@ -994,6 +1006,18 @@ Source <- ray_class("Source", Node, function(cl) {
     return((choose_(self, "mass"))())
     NULL
   })
+  method(cl, "clock_at", function(u = NULL, ...) {
+    return(r_sub(1, r_mul(r_mul(2, u), (r_sub(1, u)))))
+    NULL
+  })
+  method(cl, "standing", function(u = NULL, ...) {
+    return(r_div(r_mul(self$mass, m_sqrt(self$clock_at(u))), m_sqrt((r_add(r_mul(self$mass, self$mass), r_mul(self$momentum$norm, self$momentum$norm))))))
+    NULL
+  })
+  method(cl, "velocity", function(u = NULL, ...) {
+    return(r_mul(self$momentum, (r_div(m_sqrt(self$clock_at(u)), m_sqrt((r_add(r_mul(self$mass, self$mass), r_mul(self$momentum$norm, self$momentum$norm))))))))
+    NULL
+  })
   field(cl, "absorbs", function() TRUE)
   method(cl, "choose emit?", function(...) stop("the choice emit? is not defined by anyone"))
   method(cl, "choose mass", function(...) stop("the choice mass is not defined by anyone"))
@@ -1048,6 +1072,10 @@ Cell <- ray_class("Cell", Node, function(cl) {
   })
   method(cl, "drift", function(d = NULL, ...) {
     return(self$of$drift_from(self$index, d))
+    NULL
+  })
+  getter(cl, "potential", function() {
+    return(0)
     NULL
   })
   getter(cl, "sinks", function() {
@@ -1457,7 +1485,7 @@ Field <- ray_class("Field", Node, function(cl) {
       if (!is.null(.r)) return(.r[[1]])
       .w("nf", r_mul(nf, self$edge))
       set_at(self$folds, c, nf)
-      set_at(self$keep, c, r_div(1, (r_add(1, nf))))
+      set_at(self$keep, c, r_div(1, (r_add(1, r_mul(Vertex$WORTH, nf)))))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -1692,7 +1720,7 @@ Field <- ray_class("Field", Node, function(cl) {
             fa <- elem(self$fold_was, r_add(r_mul(a, self$cells), src))
             if (truthy(gt(fa, 0))) {
               .r <- for_range(self$A, function(b) {
-                .w("got", r_add(got, r_mul(r_mul(r_mul(r_mul(elem(tp, 1), (pop)(b, src)), fa), elem(self$keep, src)), self$edge)))
+                .w("got", r_add(got, r_mul(r_mul(r_mul(r_mul(r_mul(elem(tp, 1), (pop)(b, src)), Vertex$WORTH), fa), elem(self$keep, src)), self$edge)))
                 CONTINUE
               })
               if (!is.null(.r)) return(.r[[1]])
@@ -1707,7 +1735,7 @@ Field <- ray_class("Field", Node, function(cl) {
               sd <- elem(tp, 0)
               fd <- elem(self$fold_was, r_add(r_mul(d, self$cells), sd))
               if (truthy(gt(fd, 0))) {
-                .w("got", r_add(got, r_mul(r_mul(r_mul(r_mul(elem(tp, 1), (pop)(a, sd)), fd), elem(self$keep, sd)), self$edge)))
+                .w("got", r_add(got, r_mul(r_mul(r_mul(r_mul(r_mul(elem(tp, 1), (pop)(a, sd)), Vertex$WORTH), fd), elem(self$keep, sd)), self$edge)))
               }
               CONTINUE
             })
@@ -5593,12 +5621,13 @@ TermInfo <- ray_class("TermInfo", Node, function(cl) {
     return((!eq(self$term$leans, NULL)))
     NULL
   })
+  field(cl, "worth", function() Expr$num(1))
   getter(cl, "keeps", function() {
-    return(Expr$pown(Expr$add(lst(Expr$num(1), Expr$field("n_{f}"))), neg(1)))
+    return(Expr$pown(Expr$add(lst(Expr$num(1), Prover$neat(Expr$mul(lst(self$worth, Expr$field("n_{f}")))))), neg(1)))
     NULL
   })
   getter(cl, "drifts", function() {
-    return(Expr$grad(Expr$field("n_{f}")))
+    return(Prover$neat(Expr$mul(lst(self$worth, Expr$grad(Expr$field("n_{f}"))))))
     NULL
   })
   static_getter(cl, "COUNTS", function() {
@@ -5689,10 +5718,23 @@ Prover <- ray_class("Prover", Node, function(cl) {
     NULL
   })
   getter(cl, "infos", function() {
-    return(m_map(self$theory$terms_read, function(t = NULL, ...) {
+    all <- m_map(self$theory$terms_read, function(t = NULL, ...) {
       return(TermInfo$new(term = t))
       NULL
+    })
+    meet <- m_first(filt(all, function(t = NULL, ...) {
+      return((if (truthy(.x <- (if (truthy(.x <- eq(t$degree, 2))) (!truthy(m_empty(t$rules))) else .x))) (!eq(t$folds, "0")) else .x))
+      NULL
     }))
+    held <- (if (truthy(eq(meet, NULL))) Expr$num(1) else Expr$simplify(Expr$neg(Expr$div(meet$ray_count, meet$fold_count))))
+    .r <- for_each(all, function(t) {
+      if (truthy(eq(t$term$leans, "S_f"))) {
+        .set(t, "worth", held)
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(all)
     NULL
   })
   getter(cl, "acting", function() {
@@ -6699,11 +6741,11 @@ Prover <- ray_class("Prover", Node, function(cl) {
   method(cl, "ways_at", function(one = NULL, behind = NULL, ...) {
     draws <- Prover$source_of("Ray.turns")
     folding <- Prover$source_of("Vertex.fold")
-    if (truthy((if (truthy(.x <- (!truthy(m_contains(draws, "folds"))))) .x else (!truthy(m_contains(folding, "folds[d] + 1")))))) {
+    if (truthy((if (truthy(.x <- (!truthy(((if (truthy(.x <- m_contains(draws, "folds"))) .x else m_contains(draws, "worth"))))))) .x else (!truthy(m_contains(folding, "folds[d] + 1")))))) {
       return(NULL)
     }
     own <- Expr$add(lst(Prover$LATTICE, Expr$field("n_{f,l}")))
-    st <- Step$of(Fact$stands("DEG", own), "the ways at a local", lst(one$fact$key), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", lst("Ray.turns = " %+% text_of(draws) %+% ": straight on at one, each folded way at its folds", "Vertex.fold = " %+% text_of(folding) %+% ": a fold written on a way", "DEG = " %+% text_of(Expr$show(own)) %+% ""))
+    st <- Step$of(Fact$stands("DEG", own), "the ways at a local", lst(one$fact$key), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", lst("Ray.turns = " %+% text_of(draws) %+% ": straight on at one, each folded way at what its folds hold", "Vertex.fold = " %+% text_of(folding) %+% ": a fold written on a way", "DEG = " %+% text_of(Expr$show(own)) %+% ""))
     .set(st, "derivation", behind)
     return(st)
     NULL
@@ -6991,13 +7033,17 @@ Prover <- ray_class("Prover", Node, function(cl) {
   method(cl, "scale_of", function(hub = NULL, settles = NULL, ...) {
     vac <- Expr$field("\\rho_{\\infty}")
     nf <- Prover$neat(Expr$replace(Expr$replace(settles$fact$to, "\\rho", vac), "DEG_{0}", Expr$field("DEG")))
-    v <- Prover$neat(Expr$pown(Expr$add(lst(Expr$num(1), nf)), neg(1)))
+    drawn <- m_first(filt(self$infos, function(t = NULL, ...) {
+      return((if (truthy(.x <- t$transport)) t$kernel else .x))
+      NULL
+    }))
+    v <- Prover$neat((if (truthy(eq(drawn, NULL))) Expr$pown(Expr$add(lst(Expr$num(1), nf)), neg(1)) else Expr$replace(drawn$keeps, "n_{f}", nf)))
     mover <- m_first(filt(self$infos, function(t = NULL, ...) {
       return((if (truthy(.x <- (!eq(t$term$rule, NULL)))) t$carries else .x))
       NULL
     }))
     moved <- (if (truthy(eq(mover, NULL))) "MOVEMENT" else m_upper(mover$term$rule$name))
-    straight <- Step$of(Fact$stands("v \\aside{straight}", v), "what a heading keeps straight", lst(settles$fact$key), "" %+% text_of(moved) %+% " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", lst("the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " %+% text_of(Expr$show(nf)) %+% "", "v = \\frac{1}{1 + n_{f}} = " %+% text_of(Expr$show(v)) %+% ""))
+    straight <- Step$of(Fact$stands("v \\aside{straight}", v), "what a heading keeps straight", lst(settles$fact$key), "" %+% text_of(moved) %+% " draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", lst("the draw: 1 straight on against the folded ways, each at what it holds", "n_{f} at \\rho_{\\infty} = " %+% text_of(Expr$show(nf)) %+% "", "v = " %+% text_of(Expr$show(v)) %+% ""))
     .set(straight, "derivation", lst(settles))
     lights <- self$relights
     lit <- (if (truthy(eq(lights, NULL))) "CREATION" else m_upper(lights$term$rule$name))
@@ -7936,47 +7982,78 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     return(Expr$numeric(d, env))
     NULL
   })
+  statik(cl, "partial", function(e = NULL, by = NULL, names = NULL, ...) {
+    env <- Node$new()
+    .r <- for_each(names, function(n) {
+      set_at(env, n, 0)
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    d <- e
+    .r <- for_each(by, function(n) {
+      .w("d", Expr$simplify(Expr$d(d, n)))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(Expr$numeric(d, env))
+    NULL
+  })
   statik(cl, "held_tests", function(s = NULL, A = NULL, B = NULL, ...) {
     u <- "u"
     Au <- Inferences$in_m(A$to, u)
     Bu <- Inferences$in_m(B$to, u)
-    newton <- r_sub(0, r_div(Inferences$at_nought(Au, u, 1), 2))
     gamma <- r_div(Inferences$at_nought(Bu, u, 1), 2)
     beta <- r_add(gamma, r_div(Inferences$at_nought(Au, u, 2), 4))
     iA <- s$fact("is", "A in r")
     iB <- s$fact("is", "B in r")
+    N <- s$fact("is", "N")
     dn <- "\\delta n_{f}"
     ibeta <- (if (truthy(eq(iA, NULL))) NaN else r_div(Inferences$at_nought(iA$to, dn, 2), 4))
     igamma <- (if (truthy(eq(iB, NULL))) NaN else r_div(Inferences$at_nought(iB$to, dn, 1), 2))
-    via <- "the held metric, read for the classical tests"
-    ppn <- Inferences$step("\\gamma \\aside{PPN}", Expr$num(gamma), via, lst(A$key, B$key), "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", lst("A in u = \\bar{m}/r: " %+% text_of(Expr$show(Au)) %+% ", B: " %+% text_of(Expr$show(Bu)) %+% "", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = " %+% text_of(Fmt$fixed(newton, 6)) %+% "", "\\gamma = B'/2 = " %+% text_of(Fmt$fixed(gamma, 6)) %+% "", "\\beta = \\gamma + A''/4 = " %+% text_of(Fmt$fixed(beta, 6)) %+% "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", (if (truthy(Fmt$finite(ibeta))) "the medium's index read as an isotropic metric: \\gamma = " %+% text_of(Fmt$fixed(igamma, 4)) %+% ", \\beta = " %+% text_of(Fmt$fixed(ibeta, 4)) %+% " - a held clock does not read it" else "the medium's index gives no metric of its own here")))
+    newton <- (if (truthy(eq(iA, NULL))) NaN else r_sub(0, r_div(Inferences$at_nought(iA$to, dn, 1), 2)))
+    slope <- (if (truthy(eq(N, NULL))) NaN else Inferences$at_nought(N$to, dn, 1))
+    via <- "the rules' clock, ruler and index, read for the classical tests"
+    ppn <- Inferences$step("\\gamma \\aside{PPN}", Expr$num(igamma), via, lst(A$key, B$key), "THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same", lst("A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius", "Newton: -A'/2 = " %+% text_of(Fmt$fixed(newton, 6)) %+% "", "\\gamma = B'/2 = " %+% text_of(Fmt$fixed(igamma, 6)) %+% "", "\\beta = A''/4 = " %+% text_of(Fmt$fixed(ibeta, 6)) %+% "", "the held metric in the area radius: \\gamma = " %+% text_of(Fmt$fixed(gamma, 6)) %+% ", \\beta = " %+% text_of(Fmt$fixed(beta, 6)) %+% "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}"))
+    w <- "w"
+    clockU <- (if (truthy(eq(iA, NULL))) Expr$sub(Expr$num(1), Expr$mul(lst(Expr$num(2), Expr$field(dn)))) else iA$to)
+    stands <- Expr$neg(Expr$pown(Expr$sub(clockU, Expr$field(w)), 0.5))
+    names <- lst(dn, w)
+    n1 <- Inferences$partial(stands, lst(dn), names)
+    a1 <- r_mul(4, Inferences$partial(stands, lst(w, w), names))
+    a2 <- Inferences$partial(stands, lst(dn, w), names)
+    a3 <- r_div(Inferences$partial(stands, lst(dn, dn), names), 2)
+    clock <- r_add(r_add(r_mul(2, a3), a1), r_mul(4, a2))
+    lean <- r_sub(r_mul(2, 1), r_mul(2, (r_sub(0, 1))))
+    k <- r_add(clock, lean)
+    .w("k", r_div(m_round((r_mul(k, r_pow(10, 9)))), r_pow(10, 9)))
     L <- Expr$field("L")
     q <- Expr$mul(lst(Au, Expr$add(lst(Expr$pown(L, neg(2)), Expr$pown(Expr$field(u), 2)))))
     orbit <- Expr$simplify(Expr$add(lst(Expr$mul(lst(Expr$num(neg(0.5)), Expr$d(q, u))), Expr$field(u))))
-    mu <- Inferences$at_nought(orbit, u, 0)
-    lin <- Inferences$at_nought(orbit, u, 1)
-    eps <- r_div(Inferences$at_nought(orbit, u, 2), 2)
-    k <- r_mul(r_mul(2, eps), mu)
-    .w("k", r_div(m_round((r_mul(k, r_pow(10, 9)))), r_pow(10, 9)))
+    geo <- r_mul(r_div(r_mul(2, Inferences$at_nought(orbit, u, 2)), 2), Inferences$at_nought(orbit, u, 0))
     m_sun <- 1476.625
     a_m <- 57909050000
     e_m <- 0.205630
     lap <- r_div(r_mul(r_mul(k, pi), m_sun), (r_mul(a_m, (r_sub(1, r_mul(e_m, e_m))))))
     century <- r_mul(r_div(r_mul(lap, 36525), 87.9691), 206264.806)
-    ipp <- (if (truthy(Fmt$finite(ibeta))) r_div((r_sub(r_add(2, r_mul(2, igamma)), ibeta)), 3) else NaN)
-    peri <- Inferences$step("\\Delta\\varphi", Expr$mul(lst(Expr$num(k), Expr$field("\\pi"), Expr$field("\\bar{m}"), Expr$pown(Expr$field("a\\paren{1 - e^{2}}"), neg(1)))), "a bound orbit in the held metric", lst(A$key, B$key), "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", lst("u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = " %+% text_of(Expr$show(orbit)) %+% "", "\\mu = " %+% text_of(Fmt$fixed(mu, 6)) %+% "/L^{2}, linear " %+% text_of(Fmt$fixed(lin, 6)) %+% ", \\epsilon = " %+% text_of(Fmt$fixed(eps, 6)) %+% "\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = " %+% text_of(Fmt$fixed(k, 6)) %+% "\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " %+% text_of(Fmt$fixed(century, 2)) %+% "'' a century; measured 42.98 \\pm 0.04", (if (truthy(Fmt$finite(ipp))) "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = " %+% text_of(Fmt$fixed(ipp, 4)) %+% " of it" else "the medium's index gives no metric of its own here")))
-    delay <- Inferences$step("\\Delta t \\aside{Shapiro}", Expr$mul(lst(Expr$num(r_add(1, gamma)), Expr$field("\\bar{m}"), Expr$log(Expr$field("\\frac{4r_{1}r_{2}}{b^{2}}")))), "light passing a body, timed", lst(B$key, A$key), "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", lst("\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = " %+% text_of(Fmt$fixed(gamma, 6)) %+% "", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " %+% text_of(Fmt$fixed(r_mul(r_mul(r_mul(2, (r_add(1, gamma))), 4.925491), m_ln((r_div(r_mul(r_mul(4, 149597870700.0), 1433530000000.0), (r_mul(695700000.0, 695700000.0)))))), 1)) %+% " \\mu s"))
+    peri <- Inferences$step("\\Delta\\varphi", Expr$mul(lst(Expr$num(k), Expr$field("\\pi"), Expr$field("\\bar{m}"), Expr$pown(Expr$field("a\\paren{1 - e^{2}}"), neg(1)))), "a bound orbit, moved by S.v", lst(A$key, B$key), "THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century", lst("the standing share, A = " %+% text_of(Expr$show(clockU)) %+% " in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + " %+% text_of(Fmt$fixed(n1, 3)) %+% "U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}", "a_{1} = " %+% text_of(Fmt$fixed(a1, 6)) %+% ", a_{2} = " %+% text_of(Fmt$fixed(a2, 6)) %+% ", a_{3} = " %+% text_of(Fmt$fixed(a3, 6)) %+% ": moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = " %+% text_of(Fmt$fixed(clock, 6)) %+% "", "the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = " %+% text_of(Fmt$fixed(lean, 6)) %+% "", "a lap: " %+% text_of(Fmt$fixed(k, 6)) %+% "\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives " %+% text_of(Fmt$fixed(geo, 6)) %+% "\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " %+% text_of(Fmt$fixed(century, 2)) %+% "'' a century; measured 42.98 \\pm 0.04"))
+    delay <- Inferences$step("\\Delta t \\aside{Shapiro}", Expr$mul(lst(Expr$num(slope), Expr$field("\\bar{m}"), Expr$log(Expr$field("\\frac{4r_{1}r_{2}}{b^{2}}")))), "light passing a body, timed", lst(A$key, B$key), "THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1", lst("the index: N = 1 + " %+% text_of(Fmt$fixed(slope, 4)) %+% "\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r", "\\int " %+% text_of(Fmt$fixed(slope, 4)) %+% "\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = " %+% text_of(Fmt$fixed(slope, 4)) %+% "\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " %+% text_of(Fmt$fixed(r_mul(r_mul(r_mul(2, slope), 4.925491), m_ln((r_div(r_mul(r_mul(4, 149597870700.0), 1433530000000.0), (r_mul(695700000.0, 695700000.0)))))), 1)) %+% " \\mu s; Cassini measured general relativity's to 10^{-5}"))
     return(lst(ppn, peri, delay))
     NULL
   })
   static_getter(cl, "metric_of", function() {
-    return(Inference$new(name = "an index is a metric", because = "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots", fire = function(s = NULL, ...) {
+    return(Inference$new(name = "the held clock and ruler, in the lattice's own radius", because = "a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order", fire = function(s = NULL, ...) {
       n <- or_else(s$fact("is", "N in r"), s$fact("is", "N"))
-      if (truthy((if (truthy(.x <- eq(n, NULL))) .x else s$has("is", "A in r")))) {
+      dn <- s$fact("is", "\\delta n_{f}")
+      if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(n, NULL))) .x else eq(dn, NULL)))) .x else s$has("is", "A in r")))) {
         return(lst())
       }
-      via <- "an index is a metric"
-      return(lst(Inferences$step("A in r", Expr$simplify(Expr$pown(n$to, neg(2))), via, lst(n$key), "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise", lst("MOVEMENT: one tick per point the place stands for", "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N", "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = " %+% text_of(Expr$show(Expr$simplify(Expr$pown(n$to, neg(2))))) %+% "")), Inferences$step("B in r", Expr$simplify(Expr$pown(n$to, 2)), via, lst(n$key), "and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads `d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does", lst("the same place HAS N points in it, so d\\ell/dr = N", "B = \\paren{d\\ell/dr}^{2} = N^{2} = " %+% text_of(Expr$show(Expr$simplify(Expr$pown(n$to, 2)))) %+% "", "and A\\cdot B = 1 still, as Schwarzschild has it"))))
+      via <- "the held clock and ruler, in the lattice's own radius"
+      u <- Expr$field("\\delta n_{f}")
+      points <- Expr$pown(Expr$sub(Expr$num(1), u), neg(1))
+      B <- Expr$simplify(Expr$pown(points, 2))
+      phi <- Expr$simplify(Expr$mul(lst(u, Expr$sub(Expr$num(1), u))))
+      A <- Expr$simplify(Expr$sub(Expr$num(1), Expr$mul(lst(Expr$num(2), phi))))
+      return(lst(Inferences$step("B in r", B, via, lst(n$key, dn$key), "THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square", lst("a fold: two points into one, so a place stands for one more", "chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})", "B = " %+% text_of(Expr$show(B)) %+% "")), Inferences$step("A in r", A, via, lst(n$key, dn$key), "THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one", lst("a held clock: A = 1 - 2\\Phi", "\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points", "\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}", "A = " %+% text_of(Expr$show(A)) %+% "", "light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index " %+% text_of(Expr$show(n$to)) %+% " to the first order"))))
       NULL
     }))
     NULL
@@ -8191,11 +8268,15 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
   static_getter(cl, "bending", function() {
     return(Inference$new(name = "the integral of the index across the path", because = "`turns` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up", fire = function(s = NULL, ...) {
       rec <- s$fact("is", "\\delta n_{f}")
-      if (truthy((if (truthy(.x <- eq(rec, NULL))) .x else s$has("is", "\\alpha")))) {
+      n <- s$fact("is", "N")
+      if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(rec, NULL))) .x else eq(n, NULL)))) .x else s$has("is", "\\alpha")))) {
         return(lst())
       }
-      alpha <- Expr$simplify(Expr$mul(lst(Expr$num(2), Expr$replace(rec$to, "r", Expr$sym("b")))))
-      return(lst(Inferences$step("\\alpha", alpha, "the integral of the index across the path", lst(rec$key), "the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer", lst("turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: " %+% text_of(Expr$show(rec$to)) %+% "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " %+% text_of(Expr$show(alpha)) %+% ""))))
+      env <- Node$new()
+      .set(env, key_("\\delta n_{f}"), 0)
+      slope <- Expr$numeric(Expr$simplify(Expr$d(n$to, "\\delta n_{f}")), env)
+      alpha <- Expr$simplify(Expr$mul(lst(Expr$num(r_mul(2, slope)), Expr$replace(rec$to, "r", Expr$sym("b")))))
+      return(lst(Inferences$step("\\alpha", alpha, "the integral of the index across the path", lst(rec$key), "the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured", lst("turns: 1 way straight on against what folds[d] holds along d", "the index's slope in the record: " %+% text_of(Fmt$fixed(slope, 4)) %+% "", "the fold record along the path: " %+% text_of(Expr$show(rec$to)) %+% "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " %+% text_of(Expr$show(alpha)) %+% ""))))
       NULL
     }))
     NULL
@@ -9729,7 +9810,7 @@ Medium <- ray_class("Medium", Node, function(cl) {
     NULL
   }))
   method(cl, "beta", function(h = NULL, ...) {
-    v <- r_div(h$momentum$norm, h$mass)
+    v <- h$velocity(0)$norm
     return((if (truthy(lt(v, 0))) 0 else ((if (truthy(gt(v, 1))) 1 else v))))
     NULL
   })
@@ -10311,7 +10392,7 @@ Medium <- ray_class("Medium", Node, function(cl) {
   method(cl, "emitted", function(h = NULL, ...) {
     near <- self$face_of(h)
     q <- r_mul(self$per_way(h), (r_pow(near, r_sub(self$D, 1))))
-    return(lst(q, r_mul(q, h$x), r_mul(q, h$y), r_mul(r_div(r_mul(q, elem(h$momentum$components, 0)), h$mass), self$K), r_mul(r_div(r_mul(q, elem(h$momentum$components, 1)), h$mass), self$K), r_mul(q, near), m_index_of(self$holes, h), 0))
+    return(lst(q, r_mul(q, h$x), r_mul(q, h$y), r_mul(r_mul(q, elem(h$velocity(0)$components, 0)), self$K), r_mul(r_mul(q, elem(h$velocity(0)$components, 1)), self$K), r_mul(q, near), m_index_of(self$holes, h), 0))
     NULL
   })
   method(cl, "left_for", function(e = NULL, d = NULL, ...) {
@@ -11120,7 +11201,7 @@ Medium <- ray_class("Medium", Node, function(cl) {
     NULL
   })
   method(cl, "lean_under", function(h = NULL, ...) {
-    return(self$pull_at(h$x, h$y, self$plane_of(h), r_div(elem(h$momentum$components, 0), h$mass), r_div(elem(h$momentum$components, 1), h$mass)))
+    return(self$pull_at(h$x, h$y, self$plane_of(h), elem(h$velocity(0)$components, 0), elem(h$velocity(0)$components, 1)))
     NULL
   })
   field(cl, "pulled", function() lst())
@@ -11133,12 +11214,10 @@ Medium <- ray_class("Medium", Node, function(cl) {
       h <- elem(self$holes, i)
       if (truthy(h$moves)) {
         g <- elem(self$pulled, i)
-        .set(h, "momentum", r_add(h$momentum, Vector$new(components = lst(r_mul(elem(g, 0), h$mass), r_mul(elem(g, 1), h$mass)))))
-        if (truthy(gt(h$momentum$norm, h$mass))) {
-          .set(h, "momentum", r_mul(h$momentum$unit, h$mass))
-        }
-        .set(h, "x", r_add(h$x, r_mul(r_div(elem(h$momentum$components, 0), h$mass), self$K)))
-        .set(h, "y", r_add(h$y, r_mul(r_div(elem(h$momentum$components, 1), h$mass), self$K)))
+        .set(h, "momentum", r_add(h$momentum, r_mul(Vector$new(components = lst(r_mul(elem(g, 0), h$mass), r_mul(elem(g, 1), h$mass))), (r_div(1, h$standing(0))))))
+        v <- h$velocity(0)
+        .set(h, "x", r_add(h$x, r_mul(elem(v$components, 0), self$K)))
+        .set(h, "y", r_add(h$y, r_mul(elem(v$components, 1), self$K)))
         .set(h, "moved", r_add(h$moved, 1))
       }
       CONTINUE
@@ -20839,12 +20918,10 @@ GTheory <- ray_class("G", Theory, function(cl) {
   static_field(cl, "rule S.v", function() Rule$new(`id` = "/S.v", `name` = "Transport", `rate` = NULL, `over` = "Source", `single` = true, `where` = function(it = NULL, ...) {
     return(it$moves)
     NULL
-  }, `source` = "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\"", `body` = function(x = NULL, ...) {
-    .set(x, "momentum", r_add(x$momentum, r_mul(m_first(x$cells)$sinks, x$mass)))
-    if (truthy(gt(x$momentum$norm, x$mass))) {
-      .set(x, "momentum", r_mul(x$momentum$unit, x$mass))
-    }
-    .set(x, "advance", r_add(x$advance, r_mul(x$momentum, (r_div(1, x$mass)))))
+  }, `source` = "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  u := x.cells.first.potential\\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\\n  x.advance = x.advance + x.velocity(u)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\"", `body` = function(x = NULL, ...) {
+    u <- m_first(x$cells)$potential
+    .set(x, "momentum", r_add(x$momentum, r_mul(m_first(x$cells)$sinks, (r_div(r_mul(x$mass, (r_sub(1, r_mul(2, u)))), x$standing(u))))))
+    .set(x, "advance", r_add(x$advance, x$velocity(u)))
     g <- x$world$geometry
     d <- elem(m_most(rng(g$DEG), function(e = NULL, ...) {
       return(x$advance$along(g$V(e)))
@@ -20884,18 +20961,18 @@ GTheory <- ray_class("G", Theory, function(cl) {
 G <- theory(GTheory)
 
 .set(G, "equation", Node$new(latex = "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega", terms = lst(
-    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("2", function(s) 2), draws = NULL, needs = 2, outside = false, settles = false, share = at("s.F", function(s) s$F), asked = at("s.F", function(s) s$F), around = at("1", function(s) 1), rays = at("-2", function(s) neg(2)), space = at("-1", function(s) neg(1)), folds = at("1", function(s) 1))),
-    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 2, outside = false, settles = false, share = at("0", function(s) 0), asked = at("s.F", function(s) s$F), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 2, outside = false, settles = false, share = at("0", function(s) 0), asked = at("s.F", function(s) s$F), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = true, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = false, share = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("1", function(s) 1), rays = at("s.DEG", function(s) s$DEG), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("1 - s.ω", function(s) r_sub(1, s$ω)), draws = NULL, needs = 0, outside = false, settles = false, share = at("s.n_f / s.DEG * (1 - s.ρ)", function(s) r_mul(r_div(s$n_f, s$DEG), (r_sub(1, s$ρ)))), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("s.n_f / s.DEG", function(s) r_div(s$n_f, s$DEG)), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("-s.DEG", function(s) neg(s$DEG)))),
-    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = false, share = at("s.n_f * (1 - s.ρ)", function(s) r_mul(s$n_f, (r_sub(1, s$ρ)))), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("s.n_f", function(s) s$n_f), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("1 - s.ω", function(s) r_sub(1, s$ω)), asked = at("1", function(s) 1), around = at("1 - s.ω", function(s) r_sub(1, s$ω)), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = true, leans = "n_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("0", function(s) 0), asked = at("1", function(s) 1), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = true, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("s.ω", function(s) s$ω), asked = at("1", function(s) 1), around = at("s.ω", function(s) s$ω), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = true, leans = "n_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("s.ω", function(s) s$ω), asked = at("1", function(s) 1), around = at("s.ω", function(s) s$ω), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/4", rate = NULL, name = "Arrival", over = "Ray", where = NULL, source = "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate = NULL, degree = 0, outside = false, settles = true, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = true, share = at("1", function(s) 1), asked = at("1", function(s) 1), around = at("1", function(s) 1), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
-    Node$new(rule = Node$new(id = "/S.1", rate = NULL, name = "Emission", over = "Boundary", where = Node$new(source = "emits & vertex.source.spare"), source = "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate = NULL, degree = 0, outside = true, settles = false, transport = false, leans = "n_f", turned = "way", doing = Node$new(carries = false, sets = true, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = true, settles = false, share = at("s.ω * (1 - s.β)", function(s) r_mul(s$ω, (r_sub(1, s$β)))), asked = at("1 - s.β", function(s) r_sub(1, s$β)), around = at("s.ω", function(s) s$ω), rays = at("1", function(s) 1), space = at("0", function(s) 0), folds = at("0", function(s) 0)))
+    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("2", function(s) 2), draws = NULL, needs = 2, outside = false, settles = false, share = at("s.F", function(s) s$F), asked = at("s.F", function(s) s$F), around = at("1", function(s) 1), rays = at("-2", function(s) neg(2)), space = at("-1", function(s) neg(1)), folds = at("1", function(s) 1))),
+    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 2, outside = false, settles = false, share = at("0", function(s) 0), asked = at("s.F", function(s) s$F), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/1", rate = "σ", name = "Annihilation", over = "Edge", where = Node$new(source = "active"), source = "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = "σ", degree = 2, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 2, outside = false, settles = false, share = at("0", function(s) 0), asked = at("s.F", function(s) s$F), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = true, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = false, share = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("1", function(s) 1), rays = at("s.DEG", function(s) s$DEG), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("1 - s.ω", function(s) r_sub(1, s$ω)), draws = NULL, needs = 0, outside = false, settles = false, share = at("s.n_f / s.DEG * (1 - s.ρ)", function(s) r_mul(r_div(s$n_f, s$DEG), (r_sub(1, s$ρ)))), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("s.n_f / s.DEG", function(s) r_div(s$n_f, s$DEG)), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("-s.DEG", function(s) neg(s$DEG)))),
+    Node$new(rule = Node$new(id = "/2", rate = "ν", name = "Creation", over = "Vertex", where = Node$new(source = "neutral"), source = "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = "ν", degree = 0, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = false, share = at("s.n_f * (1 - s.ρ)", function(s) r_mul(s$n_f, (r_sub(1, s$ρ)))), asked = at("1 - s.ρ", function(s) r_sub(1, s$ρ)), around = at("s.n_f", function(s) s$n_f), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = true, trades = false, grew = at("1", function(s) 1), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("1 - s.ω", function(s) r_sub(1, s$ω)), asked = at("1", function(s) 1), around = at("1 - s.ω", function(s) r_sub(1, s$ω)), rays = at("0", function(s) 0), space = at("1", function(s) 1), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = true, leans = "S_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("0", function(s) 0), asked = at("1", function(s) 1), around = at("0", function(s) 0), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = true, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("s.ω", function(s) s$ω), asked = at("1", function(s) 1), around = at("s.ω", function(s) s$ω), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/c", rate = "σ", name = "Movement", over = "Ray", where = Node$new(source = "active"), source = "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = "σ", degree = 1, outside = false, settles = false, transport = true, leans = "S_f", turned = "way", doing = Node$new(carries = true, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 1, outside = false, settles = false, share = at("s.ω", function(s) s$ω), asked = at("1", function(s) 1), around = at("s.ω", function(s) s$ω), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/4", rate = NULL, name = "Arrival", over = "Ray", where = NULL, source = "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate = NULL, degree = 0, outside = false, settles = true, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = false, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = false, settles = true, share = at("1", function(s) 1), asked = at("1", function(s) 1), around = at("1", function(s) 1), rays = at("0", function(s) 0), space = at("0", function(s) 0), folds = at("0", function(s) 0))),
+    Node$new(rule = Node$new(id = "/S.1", rate = NULL, name = "Emission", over = "Boundary", where = Node$new(source = "emits & vertex.source.spare"), source = "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate = NULL, degree = 0, outside = true, settles = false, transport = false, leans = "S_f", turned = "way", doing = Node$new(carries = false, sets = true, grown = false, trades = false, grew = at("0", function(s) 0), grew_apart = at("0", function(s) 0), draws = NULL, needs = 0, outside = true, settles = false, share = at("s.ω * (1 - s.β)", function(s) r_mul(s$ω, (r_sub(1, s$β)))), asked = at("1 - s.β", function(s) r_sub(1, s$β)), around = at("s.ω", function(s) s$ω), rays = at("1", function(s) 1), space = at("0", function(s) 0), folds = at("0", function(s) 0)))
 )))
 
 g_LINE2 <- lazy_constant(function() Geometry$shells(1, lst(1)))
@@ -20910,7 +20987,7 @@ g_sep2 <- lazy_constant(function() ", ")
 g_plus <- lazy_constant(function() " + ")
 g_ind2 <- lazy_constant(function() "  ")
 g_nl0 <- lazy_constant(function() "\n")
-g_METHOD_SOURCES <- lazy_constant(function() "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at")
+g_METHOD_SOURCES <- lazy_constant(function() "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at")
 
 })
 .onLoad <- function(libname, pkgname) eval(.physics, asNamespace(pkgname))

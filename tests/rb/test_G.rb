@@ -52,7 +52,7 @@ class TestG < Minitest::Test
     assert(Ops.gt(it.value_of("\\frac{a_{0}}{cH}", it.settled(8)), it.value_of("\\frac{a_{0}}{cH}", it.settled(18))), "Ops.gt(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(8)), it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(18)))")
   end
 
-  def test_tests_coincidence_ray_19_on_coincidence
+  def test_tests_coincidence_ray_23_on_coincidence
     it = Model.new(theory: G)
     guard = 0
     until Ops.eq(it.theory.name, "G")
@@ -60,10 +60,10 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.gt(Ops.mul(it.value_of("\\frac{a_{0}}{cH}", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.155), "Ops.gt(Ops.mul(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.155)")
+    assert(Ops.lt(Ops.m_abs((Ops.sub(it.value_of("\\frac{a_{0}}{cH}", it.settled(8)), Ops.div(1, 9)))), 0.000001), "Ops.lt(Ops.m_abs((Ops.sub(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(8)), Ops.div(1, 9)))), 0.000001)")
   end
 
-  def test_tests_coincidence_ray_20_on_coincidence
+  def test_tests_coincidence_ray_24_on_coincidence
     it = Model.new(theory: G)
     guard = 0
     until Ops.eq(it.theory.name, "G")
@@ -71,7 +71,18 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.lt(Ops.mul(it.value_of("\\frac{a_{0}}{cH}", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183), "Ops.lt(Ops.mul(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(8)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183)")
+    assert(Ops.gt(Ops.mul(it.value_of("\\frac{a_{0}}{cH}", it.settled(4)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.155), "Ops.gt(Ops.mul(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(4)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.155)")
+  end
+
+  def test_tests_coincidence_ray_25_on_coincidence
+    it = Model.new(theory: G)
+    guard = 0
+    until Ops.eq(it.theory.name, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(Ops.lt(Ops.mul(it.value_of("\\frac{a_{0}}{cH}", it.settled(4)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183), "Ops.lt(Ops.mul(it.value_of(\"\\\\frac{a_{0}}{cH}\", it.settled(4)), Ops.m_sqrt((Ops.sub(1, 0.315)))), 0.183)")
   end
 
   def test_tests_felt_ray_10_on_felt

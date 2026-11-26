@@ -28,6 +28,9 @@ ray_impl_getter "folds" : (RList Float) := do
 ray_impl_method "drift" (d_0 : Float) : Vector := do
   if true then return (← call! (← ωget self "of") "drift_from" ((← ωget self "index"), (← d_0.get)))
   return ωnull
+ray_impl_getter "potential" : Float := do
+  if true then return (0 : Float)
+  return ωnull
 ray_impl_getter "sinks" : Vector := do
   if true then return (← call! (← ωget self "of") "sinks_at" ((← ωget self "index")))
   return ωnull

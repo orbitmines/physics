@@ -89,21 +89,29 @@ class TestG(unittest.TestCase):
         if isinstance(got, BaseException): raise got
         self.assertTrue(got, "gt(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(8)), it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(18)))")
 
-    _want("coincidence", lambda: Model(theory=G), "tests/coincidence.ray:19 on coincidence", lambda it: eq(it.theory.name, f"G"), 8, lambda it: gt(mul(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(8)), math.sqrt((sub(1, 0.315)))), 0.155))
+    _want("coincidence", lambda: Model(theory=G), "tests/coincidence.ray:23 on coincidence", lambda it: eq(it.theory.name, f"G"), 8, lambda it: lt(abs((sub(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(8)), div(1, 9)))), 0.000001))
 
-    def test_tests_coincidence_ray_19_on_coincidence(self):
-        got = _outcome("coincidence", "tests/coincidence.ray:19 on coincidence")
+    def test_tests_coincidence_ray_23_on_coincidence(self):
+        got = _outcome("coincidence", "tests/coincidence.ray:23 on coincidence")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "gt(mul(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(8)), math.sqrt((sub(1, 0.315)))), 0.155)")
+        self.assertTrue(got, "lt(abs((sub(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(8)), div(1, 9)))), 0.000001)")
 
-    _want("coincidence", lambda: Model(theory=G), "tests/coincidence.ray:20 on coincidence", lambda it: eq(it.theory.name, f"G"), 8, lambda it: lt(mul(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(8)), math.sqrt((sub(1, 0.315)))), 0.183))
+    _want("coincidence", lambda: Model(theory=G), "tests/coincidence.ray:24 on coincidence", lambda it: eq(it.theory.name, f"G"), 8, lambda it: gt(mul(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(4)), math.sqrt((sub(1, 0.315)))), 0.155))
 
-    def test_tests_coincidence_ray_20_on_coincidence(self):
-        got = _outcome("coincidence", "tests/coincidence.ray:20 on coincidence")
+    def test_tests_coincidence_ray_24_on_coincidence(self):
+        got = _outcome("coincidence", "tests/coincidence.ray:24 on coincidence")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "lt(mul(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(8)), math.sqrt((sub(1, 0.315)))), 0.183)")
+        self.assertTrue(got, "gt(mul(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(4)), math.sqrt((sub(1, 0.315)))), 0.155)")
+
+    _want("coincidence", lambda: Model(theory=G), "tests/coincidence.ray:25 on coincidence", lambda it: eq(it.theory.name, f"G"), 8, lambda it: lt(mul(it.value_of(f"\\frac{{a_{{0}}}}{{cH}}", it.settled(4)), math.sqrt((sub(1, 0.315)))), 0.183))
+
+    def test_tests_coincidence_ray_25_on_coincidence(self):
+        got = _outcome("coincidence", "tests/coincidence.ray:25 on coincidence")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "lt(mul(it.value_of(f\"\\\\frac{{a_{{0}}}}{{cH}}\", it.settled(4)), math.sqrt((sub(1, 0.315)))), 0.183)")
 
 
 if __name__ == "__main__":

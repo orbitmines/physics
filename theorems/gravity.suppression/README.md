@@ -34,7 +34,7 @@ the rule adds the ray's own exit to the body's momentum, once per ray taken - so
 <sub>theorem · the reading</sub>  
 
 ```
-(\partial_t + \hat{d}·\nabla_l + \paren{\nabla n_f}·\nabla_{\hat{d}})n = -2·\sigma Fn\tilde{n} + DEG·\nu \paren{1 - \rho} + \omega l.m̄
+(\partial_t + \hat{d}·\nabla_l + \paren{2·\nabla n_f}·\nabla_{\hat{d}})n = -2·\sigma Fn\tilde{n} + DEG·\nu \paren{1 - \rho} + \omega l.m̄
 \partial_ts = -\sigma Fn\tilde{n} + \sigma 0n\tilde{n} + \sigma 0n\tilde{n} + \nu n_f·\paren{1 - \rho} + \sigma \paren{1 - \omega}n
 ```
 

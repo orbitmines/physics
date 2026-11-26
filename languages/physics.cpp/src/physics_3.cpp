@@ -315,12 +315,13 @@ static void C_TermInfo(Cls& c) {
     return (!eq(get(get(self, S<"term">()), S<"leans">()), null));
     return null;
   });
+  c.field("worth", [](const Value& self) -> Value { return call(K(S<"Expr">()), S<"num">(), { 1.0 }); });
   c.getter("keeps", [](Value self, const Args& a1) -> Value {
-    return call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Expr">()), S<"field">(), { "n_{f}" }) }) }), neg(1.0) });
+    return call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ get(self, S<"worth">()), call(K(S<"Expr">()), S<"field">(), { "n_{f}" }) }) }) }) }) }), neg(1.0) });
     return null;
   });
   c.getter("drifts", [](Value self, const Args& a1) -> Value {
-    return call(K(S<"Expr">()), S<"grad">(), { call(K(S<"Expr">()), S<"field">(), { "n_{f}" }) });
+    return call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"mul">(), { list({ get(self, S<"worth">()), call(K(S<"Expr">()), S<"grad">(), { call(K(S<"Expr">()), S<"field">(), { "n_{f}" }) }) }) }) });
     return null;
   });
   c.statik("COUNTS", [](Value self, const Args& a1) -> Value {

@@ -217,7 +217,7 @@ ray_impl_field "trading" : (RList Value) := do
   if true then return (← ωget (← ωget (← t_1.get) "doing") "trades")
   return ωnull)))
 ray_impl_method "beta" (h_0 : Hole) : Float := do
-  let v_0 ← IO.mkRef (← ωdiv (← ωget (← ωget (← h_0.get) "momentum") "norm") (← ωget (← h_0.get) "mass"))
+  let v_0 ← IO.mkRef (← ωget (← call! (← h_0.get) "velocity" ((0 : Float))) "norm")
   if true then return (← ωtern (ωtruthy (← ωlt (← v_0.get) (0 : Float))) (do pure (0 : Float)) (do pure ((← ωtern (ωtruthy (← ωgt (← v_0.get) (1 : Float))) (do pure (1 : Float)) (do pure (← v_0.get))))))
   return ωnull
 ray_impl_field "own" : Float := do
@@ -759,7 +759,7 @@ ray_impl_method "held_on" (c_0 : Float) (b_0 : Float) : (RList (RList Float)) :=
 ray_impl_method "emitted" (h_0 : Hole) : (RList Float) := do
   let near_0 ← IO.mkRef (← call! self "face_of" ((← h_0.get)))
   let q_0 ← IO.mkRef (← ωmul (← call! self "per_way" ((← h_0.get))) ((← ωpow (← near_0.get) (← ωsub (← ωget self "D") (1 : Float)))))
-  if true then return (← ωlst #[(← q_0.get), (← ωmul (← q_0.get) (← ωget (← h_0.get) "x")), (← ωmul (← q_0.get) (← ωget (← h_0.get) "y")), (← ωmul (← ωdiv (← ωmul (← q_0.get) (← ωelem (← ωget (← ωget (← h_0.get) "momentum") "components") (0 : Float))) (← ωget (← h_0.get) "mass")) (← ωget self "K")), (← ωmul (← ωdiv (← ωmul (← q_0.get) (← ωelem (← ωget (← ωget (← h_0.get) "momentum") "components") (1 : Float))) (← ωget (← h_0.get) "mass")) (← ωget self "K")), (← ωmul (← q_0.get) (← near_0.get)), (← dot! (← ωget self "holes") rindex_of ((← h_0.get))), (0 : Float)])
+  if true then return (← ωlst #[(← q_0.get), (← ωmul (← q_0.get) (← ωget (← h_0.get) "x")), (← ωmul (← q_0.get) (← ωget (← h_0.get) "y")), (← ωmul (← ωmul (← q_0.get) (← ωelem (← ωget (← call! (← h_0.get) "velocity" ((0 : Float))) "components") (0 : Float))) (← ωget self "K")), (← ωmul (← ωmul (← q_0.get) (← ωelem (← ωget (← call! (← h_0.get) "velocity" ((0 : Float))) "components") (1 : Float))) (← ωget self "K")), (← ωmul (← q_0.get) (← near_0.get)), (← dot! (← ωget self "holes") rindex_of ((← h_0.get))), (0 : Float)])
   return ωnull
 ray_impl_method "left_for" (e_0 : (RList Float)) (d_0 : Float) : (RList Float) := do
   let back_0 ← IO.mkRef (← ωdiv (← d_0.get) (← ωget self "K"))
@@ -1537,7 +1537,7 @@ ray_impl_getter "tick" : Value := do
   (ωsetter self "ticks") (← ωadd (← ωget self "ticks") (1 : Float))
   return ωnull
 ray_impl_method "lean_under" (h_0 : Hole) : (RList Float) := do
-  if true then return (← call! self "pull_at" ((← ωget (← h_0.get) "x"), (← ωget (← h_0.get) "y"), (← call! self "plane_of" ((← h_0.get))), (← ωdiv (← ωelem (← ωget (← ωget (← h_0.get) "momentum") "components") (0 : Float)) (← ωget (← h_0.get) "mass")), (← ωdiv (← ωelem (← ωget (← ωget (← h_0.get) "momentum") "components") (1 : Float)) (← ωget (← h_0.get) "mass"))))
+  if true then return (← call! self "pull_at" ((← ωget (← h_0.get) "x"), (← ωget (← h_0.get) "y"), (← call! self "plane_of" ((← h_0.get))), (← ωelem (← ωget (← call! (← h_0.get) "velocity" ((0 : Float))) "components") (0 : Float)), (← ωelem (← ωget (← call! (← h_0.get) "velocity" ((0 : Float))) "components") (1 : Float))))
   return ωnull
 ray_impl_field "pulled" : (RList (RList Float)) := do
   return (← ωlst #[])
@@ -1550,12 +1550,10 @@ ray_impl_getter "move" : Value := do
     let h_1 ← IO.mkRef (← ωelem (← ωget self "holes") (← i_1.get))
     if ωtruthy (← ωget (← h_1.get) "moves") then
       let g_1 ← IO.mkRef (← ωelem (← ωget self "pulled") (← i_1.get))
-      (ωsetter (← h_1.get) "momentum") (← ωadd (← ωget (← h_1.get) "momentum") (← new! Vector («components» := (← ωlst #[(← ωmul (← ωelem (← g_1.get) (0 : Float)) (← ωget (← h_1.get) "mass")), (← ωmul (← ωelem (← g_1.get) (1 : Float)) (← ωget (← h_1.get) "mass"))]))))
-      if ωtruthy (← ωgt (← ωget (← ωget (← h_1.get) "momentum") "norm") (← ωget (← h_1.get) "mass")) then
-        (ωsetter (← h_1.get) "momentum") (← ωmul (← ωget (← ωget (← h_1.get) "momentum") "unit") (← ωget (← h_1.get) "mass"))
-        pure ()
-      (ωsetter (← h_1.get) "x") (← ωadd (← ωget (← h_1.get) "x") (← ωmul (← ωdiv (← ωelem (← ωget (← ωget (← h_1.get) "momentum") "components") (0 : Float)) (← ωget (← h_1.get) "mass")) (← ωget self "K")))
-      (ωsetter (← h_1.get) "y") (← ωadd (← ωget (← h_1.get) "y") (← ωmul (← ωdiv (← ωelem (← ωget (← ωget (← h_1.get) "momentum") "components") (1 : Float)) (← ωget (← h_1.get) "mass")) (← ωget self "K")))
+      (ωsetter (← h_1.get) "momentum") (← ωadd (← ωget (← h_1.get) "momentum") (← ωmul (← new! Vector («components» := (← ωlst #[(← ωmul (← ωelem (← g_1.get) (0 : Float)) (← ωget (← h_1.get) "mass")), (← ωmul (← ωelem (← g_1.get) (1 : Float)) (← ωget (← h_1.get) "mass"))]))) ((← ωdiv (1 : Float) (← call! (← h_1.get) "standing" ((0 : Float)))))))
+      let v_1 ← IO.mkRef (← call! (← h_1.get) "velocity" ((0 : Float)))
+      (ωsetter (← h_1.get) "x") (← ωadd (← ωget (← h_1.get) "x") (← ωmul (← ωelem (← ωget (← v_1.get) "components") (0 : Float)) (← ωget self "K")))
+      (ωsetter (← h_1.get) "y") (← ωadd (← ωget (← h_1.get) "y") (← ωmul (← ωelem (← ωget (← v_1.get) "components") (1 : Float)) (← ωget self "K")))
       (ωsetter (← h_1.get) "moved") (← ωadd (← ωget (← h_1.get) "moved") (1 : Float))
       pure ()
     pure ()

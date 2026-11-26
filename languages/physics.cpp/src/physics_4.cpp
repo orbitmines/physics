@@ -27,11 +27,24 @@ static void C_Prover(Cls& c) {
     return null;
   });
   c.getter("infos", [](Value self, const Args& a1) -> Value {
-    return m_map(get(get(self, S<"theory">()), S<"terms_read">()), fn([=](const Args& a3) -> Value {
+    auto all_0 = cell(); all_0->v = m_map(get(get(self, S<"theory">()), S<"terms_read">()), fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
       return make(S<"TermInfo">(), { kw(S<"term">(), t_2->v) });
       return null;
     }));
+    auto meet_0 = cell(); meet_0->v = m_first(filt(all_0->v, fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy((truthy(eq(get(t_2->v, S<"degree">()), 2.0)) && truthy((!truthy(m_empty(get(t_2->v, S<"rules">()))))))) && truthy((!eq(get(t_2->v, S<"folds">()), "0"))));
+      return null;
+    })));
+    auto held_0 = cell(); held_0->v = (truthy(eq(meet_0->v, null)) ? Value(call(K(S<"Expr">()), S<"num">(), { 1.0 })) : Value(call(K(S<"Expr">()), S<"simplify">(), { call(K(S<"Expr">()), S<"neg">(), { call(K(S<"Expr">()), S<"div">(), { get(meet_0->v, S<"ray_count">()), get(meet_0->v, S<"fold_count">()) }) }) })));
+    for (const Value& e1 : Each(all_0->v)) {
+      auto t_1 = cell(e1);
+      if (truthy(eq(get(get(t_1->v, S<"term">()), S<"leans">()), "S_f"))) {
+        set(t_1->v, S<"worth">(), held_0->v);
+      }
+    };
+    return all_0->v;
     return null;
   });
   c.getter("acting", [](Value self, const Args& a1) -> Value {
@@ -1139,11 +1152,11 @@ static void C_Prover(Cls& c) {
     auto one_0 = cell(arg(a1, 0)); auto behind_0 = cell(arg(a1, 1));
     auto draws_0 = cell(); draws_0->v = call(K(S<"Prover">()), S<"source_of">(), { "Ray.turns" });
     auto folding_0 = cell(); folding_0->v = call(K(S<"Prover">()), S<"source_of">(), { "Vertex.fold" });
-    if (truthy((truthy((!truthy(m_contains(draws_0->v, "folds")))) || truthy((!truthy(m_contains(folding_0->v, "folds[d] + 1"))))))) {
+    if (truthy((truthy((!truthy(((truthy(m_contains(draws_0->v, "folds")) || truthy(m_contains(draws_0->v, "worth"))))))) || truthy((!truthy(m_contains(folding_0->v, "folds[d] + 1"))))))) {
       return null;
     }
     auto own_0 = cell(); own_0->v = call(K(S<"Expr">()), S<"add">(), { list({ get(K(S<"Prover">()), S<"LATTICE">()), call(K(S<"Expr">()), S<"field">(), { "n_{f,l}" }) }) });
-    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "DEG", own_0->v }), "the ways at a local", list({ get(get(one_0->v, S<"fact">()), S<"key">()) }), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", list({ "Ray.turns = " + str(draws_0->v) + ": straight on at one, each folded way at its folds", "Vertex.fold = " + str(folding_0->v) + ": a fold written on a way", "DEG = " + str(call(K(S<"Expr">()), S<"show">(), { own_0->v })) + "" }) });
+    auto st_0 = cell(); st_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "DEG", own_0->v }), "the ways at a local", list({ get(get(one_0->v, S<"fact">()), S<"key">()) }), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", list({ "Ray.turns = " + str(draws_0->v) + ": straight on at one, each folded way at what its folds hold", "Vertex.fold = " + str(folding_0->v) + ": a fold written on a way", "DEG = " + str(call(K(S<"Expr">()), S<"show">(), { own_0->v })) + "" }) });
     set(st_0->v, S<"derivation">(), behind_0->v);
     return st_0->v;
     return null;
@@ -1451,14 +1464,19 @@ static void C_Prover(Cls& c) {
     auto hub_0 = cell(arg(a1, 0)); auto settles_0 = cell(arg(a1, 1));
     auto vac_0 = cell(); vac_0->v = call(K(S<"Expr">()), S<"field">(), { "\\rho_{\\infty}" });
     auto nf_0 = cell(); nf_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"replace">(), { call(K(S<"Expr">()), S<"replace">(), { get(get(settles_0->v, S<"fact">()), S<"to">()), "\\rho", vac_0->v }), "DEG_{0}", call(K(S<"Expr">()), S<"field">(), { "DEG" }) }) });
-    auto v_0 = cell(); v_0->v = call(K(S<"Prover">()), S<"neat">(), { call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), nf_0->v }) }), neg(1.0) }) });
+    auto drawn_0 = cell(); drawn_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0));
+      return (truthy(get(t_2->v, S<"transport">())) && truthy(get(t_2->v, S<"kernel">())));
+      return null;
+    })));
+    auto v_0 = cell(); v_0->v = call(K(S<"Prover">()), S<"neat">(), { (truthy(eq(drawn_0->v, null)) ? Value(call(K(S<"Expr">()), S<"pown">(), { call(K(S<"Expr">()), S<"add">(), { list({ call(K(S<"Expr">()), S<"num">(), { 1.0 }), nf_0->v }) }), neg(1.0) })) : Value(call(K(S<"Expr">()), S<"replace">(), { get(drawn_0->v, S<"keeps">()), "n_{f}", nf_0->v }))) });
     auto mover_0 = cell(); mover_0->v = m_first(filt(get(self, S<"infos">()), fn([=](const Args& a3) -> Value {
       auto t_2 = cell(arg(a3, 0));
       return (truthy((!eq(get(get(t_2->v, S<"term">()), S<"rule">()), null))) && truthy(get(t_2->v, S<"carries">())));
       return null;
     })));
     auto moved_0 = cell(); moved_0->v = (truthy(eq(mover_0->v, null)) ? Value("MOVEMENT") : Value(m_upper(get(get(get(mover_0->v, S<"term">()), S<"rule">()), S<"name">()))));
-    auto straight_0 = cell(); straight_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "v \\aside{straight}", v_0->v }), "what a heading keeps straight", list({ get(get(settles_0->v, S<"fact">()), S<"key">()) }), "" + str(moved_0->v) + " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list({ "the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " + str(call(K(S<"Expr">()), S<"show">(), { nf_0->v })) + "", "v = \\frac{1}{1 + n_{f}} = " + str(call(K(S<"Expr">()), S<"show">(), { v_0->v })) + "" }) });
+    auto straight_0 = cell(); straight_0->v = call(K(S<"Step">()), S<"of">(), { call(K(S<"Fact">()), S<"stands">(), { "v \\aside{straight}", v_0->v }), "what a heading keeps straight", list({ get(get(settles_0->v, S<"fact">()), S<"key">()) }), "" + str(moved_0->v) + " draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list({ "the draw: 1 straight on against the folded ways, each at what it holds", "n_{f} at \\rho_{\\infty} = " + str(call(K(S<"Expr">()), S<"show">(), { nf_0->v })) + "", "v = " + str(call(K(S<"Expr">()), S<"show">(), { v_0->v })) + "" }) });
     set(straight_0->v, S<"derivation">(), list({ settles_0->v }));
     auto lights_0 = cell(); lights_0->v = get(self, S<"relights">());
     auto lit_0 = cell(); lit_0->v = (truthy(eq(lights_0->v, null)) ? Value("CREATION") : Value(m_upper(get(get(get(lights_0->v, S<"term">()), S<"rule">()), S<"name">()))));

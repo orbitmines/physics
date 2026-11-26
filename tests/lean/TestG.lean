@@ -46,23 +46,32 @@ initialize addTest "tests/coincidence.ray:17 on coincidence" (do
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← ωgt (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((18 : Float)))))) then "pass" else "failed: " ++ "(← ωgt (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((18 : Float))))))"))
 
-initialize addTest "tests/coincidence.ray:19 on coincidence" (do
+initialize addTest "tests/coincidence.ray:23 on coincidence" (do
   let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
   while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωgt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155) then "pass" else "failed: " ++ "(← ωgt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155)"))
+  return (if truthy (← ωlt (← dot! ((← ωsub (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← ωdiv (1 : Float) (9 : Float)))) rabs ()) 0.000001) then "pass" else "failed: " ++ "(← ωlt (← dot! ((← ωsub (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← ωdiv (1 : Float) (9 : Float)))) rabs ()) 0.000001)"))
 
-initialize addTest "tests/coincidence.ray:20 on coincidence" (do
+initialize addTest "tests/coincidence.ray:24 on coincidence" (do
   let it := (← new! Model («theory» := (← cls% G)))
   let mut guard := 0
   while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωlt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183) then "pass" else "failed: " ++ "(← ωlt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((8 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183)"))
+  return (if truthy (← ωgt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((4 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155) then "pass" else "failed: " ++ "(← ωgt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((4 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.155)"))
+
+initialize addTest "tests/coincidence.ray:25 on coincidence" (do
+  let it := (← new! Model («theory» := (← cls% G)))
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget (← ωget it "theory") "name") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← ωlt (← ωmul (← call! it "value_of" (("\\frac{a_{0}}{cH}" : String), (← call! it "settled" ((4 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183) then "pass" else "failed: " ++ "(← ωlt (← ωmul (← call! it \"value_of\" ((\"\\\\frac{a_{0}}{cH}\" : String), (← call! it \"settled\" ((4 : Float))))) (← dot! ((← ωsub (1 : Float) 0.315)) rsqrt ())) 0.183)"))
 
 initialize addTest "tests/felt.ray:10 on felt" (do
   let it := (← new! Felt ())

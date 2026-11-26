@@ -81,7 +81,7 @@ run_case(j"tests/coincidence.ray:17 on coincidence", @dynamic_names(() -> begin
 end))
 
 
-run_case(j"tests/coincidence.ray:19 on coincidence", @dynamic_names(() -> begin
+run_case(j"tests/coincidence.ray:23 on coincidence", @dynamic_names(() -> begin
   it = Model(theory = G)
   guard = 0
   while !truthy((name(theory(it)) == Base.string(j"G")))
@@ -89,11 +89,11 @@ run_case(j"tests/coincidence.ray:19 on coincidence", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(((value_of(it, Base.string(j"\\frac{a_{0}}{cH}"), settled(it, 8.0)) * sqrt(((1.0 - 0.315)))) > 0.155)) ? TEST_PASS : Base.:*("failed: ", j"((value_of(it, Base.string(j\"\\\\frac{a_{0}}{cH}\"), settled(it, 8.0)) * sqrt(((1.0 - 0.315)))) > 0.155)")
+  truthy((abs(((value_of(it, Base.string(j"\\frac{a_{0}}{cH}"), settled(it, 8.0)) - (1.0 / 9.0)))) < 0.000001)) ? TEST_PASS : Base.:*("failed: ", j"(abs(((value_of(it, Base.string(j\"\\\\frac{a_{0}}{cH}\"), settled(it, 8.0)) - (1.0 / 9.0)))) < 0.000001)")
 end))
 
 
-run_case(j"tests/coincidence.ray:20 on coincidence", @dynamic_names(() -> begin
+run_case(j"tests/coincidence.ray:24 on coincidence", @dynamic_names(() -> begin
   it = Model(theory = G)
   guard = 0
   while !truthy((name(theory(it)) == Base.string(j"G")))
@@ -101,7 +101,19 @@ run_case(j"tests/coincidence.ray:20 on coincidence", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(((value_of(it, Base.string(j"\\frac{a_{0}}{cH}"), settled(it, 8.0)) * sqrt(((1.0 - 0.315)))) < 0.183)) ? TEST_PASS : Base.:*("failed: ", j"((value_of(it, Base.string(j\"\\\\frac{a_{0}}{cH}\"), settled(it, 8.0)) * sqrt(((1.0 - 0.315)))) < 0.183)")
+  truthy(((value_of(it, Base.string(j"\\frac{a_{0}}{cH}"), settled(it, 4.0)) * sqrt(((1.0 - 0.315)))) > 0.155)) ? TEST_PASS : Base.:*("failed: ", j"((value_of(it, Base.string(j\"\\\\frac{a_{0}}{cH}\"), settled(it, 4.0)) * sqrt(((1.0 - 0.315)))) > 0.155)")
+end))
+
+
+run_case(j"tests/coincidence.ray:25 on coincidence", @dynamic_names(() -> begin
+  it = Model(theory = G)
+  guard = 0
+  while !truthy((name(theory(it)) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(((value_of(it, Base.string(j"\\frac{a_{0}}{cH}"), settled(it, 4.0)) * sqrt(((1.0 - 0.315)))) < 0.183)) ? TEST_PASS : Base.:*("failed: ", j"((value_of(it, Base.string(j\"\\\\frac{a_{0}}{cH}\"), settled(it, 4.0)) * sqrt(((1.0 - 0.315)))) < 0.183)")
 end))
 
 

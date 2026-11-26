@@ -194,8 +194,10 @@ TermInfo := class < term: EquationTerm {
   grows (): String => Expr.show(Expr.simplify(this.grew_count))
   /* the turn: what a heading keeps of itself, and which way what is left of it leans */
   kernel (): boolean => this.term.leans != None
-  keeps (): Expr => Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{{f}}")]), -1)
-  drifts (): Expr => Expr.grad(Expr.field("n_{{f}}"))
+  /* what a folded way is offered at, per fold: one where the draw weighs folds, what a meeting folds into one where it weighs what they hold (Vertex.worth) */
+  worth: Expr = Expr.num(1)
+  keeps (): Expr => Expr.pown(Expr.add([Expr.num(1), Prover.neat(Expr.mul([this.worth, Expr.field("n_{{f}}")]))]), -1)
+  drifts (): Expr => Prover.neat(Expr.mul([this.worth, Expr.grad(Expr.field("n_{{f}}"))]))
   static COUNTS (): {} => { s := { }; s["DEG"] = 8; s }
   /* the term as an expression over the line's names: rate, share and the power of the density - or, from outside, the mass at the local and what is around it */
   expr (): Expr => {
@@ -248,7 +250,14 @@ Prover := class < theory: Theory {
   store: Store = Store()
   equation (): Equation => this.theory.equation
   /* the theory's own equation, spelled so the read-once optimization (Optimizations.ray) finds it: the rules are read once per theory, not once per step */
-  infos (): TermInfo[] => this.theory.equation.terms.map(t => TermInfo(term: t))
+  infos (): TermInfo[] => {
+    all := this.theory.equation.terms.map(t => TermInfo(term: t))
+    /* a draw that weighs a folded way by what it holds offers it at what a meeting folds into one: its rays against its folds */
+    meet := all.filter(t => t.degree == 2 & !t.rules.empty & t.folds != "0").first
+    held := meet == None ? Expr.num(1) : Expr.simplify(Expr.neg(Expr.div(meet.ray_count, meet.fold_count)))
+    all.for(t => { t.worth = held if t.term.leans == "S_f" })
+    all
+  }
   /* the terms a premise is read off: a rule's, on the right, with a rate */
   acting (): TermInfo[] => this.infos.filter(t => t.side != "left" & !t.rules.empty & t.rate != None)
 
@@ -1084,11 +1093,12 @@ Prover := class < theory: Theory {
   ways_at (one: Step, behind: Step[]): Step? => {
     draws := Prover.source_of("Ray.turns")
     folding := Prover.source_of("Vertex.fold")
-    return None if !draws.contains("folds") | !folding.contains("folds[d] + 1")
+    /* the draw offers the folded ways - at their folds, or at what those folds hold (Vertex.worth); either way a fold is one way of l */
+    return None if !(draws.contains("folds") | draws.contains("worth")) | !folding.contains("folds[d] + 1")
     own := Expr.add([Prover.LATTICE, Expr.field("n_{{f,l}}")])
     st := Step.of(Fact.stands("DEG", own), "the ways at a local", [one.fact.key],
       "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it",
-      ["Ray.turns = {draws}: straight on at one, each folded way at its folds", "Vertex.fold = {folding}: a fold written on a way", "DEG = {Expr.show(own)}"])
+      ["Ray.turns = {draws}: straight on at one, each folded way at what its folds hold", "Vertex.fold = {folding}: a fold written on a way", "DEG = {Expr.show(own)}"])
     st.derivation = behind
     st
   }
@@ -1388,12 +1398,14 @@ Prover := class < theory: Theory {
     vac := Expr.field("\\rho_{{\\infty}}")
     /* far from every body a place's ways are its lattice's */
     nf := Prover.neat(Expr.replace(Expr.replace(settles.fact.to, "\\rho", vac), "DEG_{{0}}", Expr.field("DEG")))
-    v := Prover.neat(Expr.pown(Expr.add([Expr.num(1), nf]), -1))
+    /* what the draw keeps straight on against the folds there - each offered at what it holds (TermInfo.keeps) */
+    drawn := this.infos.filter(t => t.transport & t.kernel).first
+    v := Prover.neat(drawn == None ? Expr.pown(Expr.add([Expr.num(1), nf]), -1) : Expr.replace(drawn.keeps, "n_{{f}}", nf))
     mover := this.infos.filter(t => t.term.rule != None & t.carries).first
     moved := mover == None ? "MOVEMENT" : mover.term.rule.name.upper
     straight := Step.of(Fact.stands("v \\aside{{straight}}", v), "what a heading keeps straight", [settles.fact.key],
-      "{moved} draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at",
-      ["the draw: 1 straight on against n_{{f}} folded", "n_{{f}} at \\rho_{{\\infty}} = {Expr.show(nf)}", "v = \\frac{{1}}{{1 + n_{{f}}}} = {Expr.show(v)}"])
+      "{moved} draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at",
+      ["the draw: 1 straight on against the folded ways, each at what it holds", "n_{{f}} at \\rho_{{\\infty}} = {Expr.show(nf)}", "v = {Expr.show(v)}"])
     straight.derivation = [settles]
     lights := this.relights
     lit := lights == None ? "CREATION" : lights.term.rule.name.upper

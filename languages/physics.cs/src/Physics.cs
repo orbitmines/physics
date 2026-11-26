@@ -87,7 +87,7 @@ public static class C_Ray {
       return null;
     });
     c.getter("turns", (self, a1) => {
-      return call(get(get(self, "vertex"), "world"), "draw", new object[] { list(1.0, get(get(self, "vertex"), "folds")), list(get(self, "steps"), new Fn((a2) => {
+      return call(get(get(self, "vertex"), "world"), "draw", new object[] { list(1.0, get(get(self, "vertex"), "worth")), list(get(self, "steps"), new Fn((a2) => {
         object d_1 = arg(a2, 0);
         return elem(getOpt(call(get(self, "vertex"), "outward", new object[] { d_1 }), "rays"), d_1);
         return null;
@@ -256,6 +256,7 @@ public static class C_Edge {
 public static readonly Cls Vertex = cls("Vertex", Ray, C_Vertex.define);
 public static class C_Vertex {
   public static void define(Cls c) {
+    c.staticField("WORTH", self => 2.0);
     c.field("world", null);
     c.field("at", null);
     c.field("ordinal", self => 0.0);
@@ -276,6 +277,18 @@ public static class C_Vertex {
       return 0.0;
       return null;
     })));
+    c.getter("potential", (self, a1) => {
+      return 0.0;
+      return null;
+    });
+    c.getter("worth", (self, a1) => {
+      return m_map(get(self, "folds"), new Fn((a3) => {
+        object f_2 = arg(a3, 0);
+        return mul(get(K("Vertex"), "WORTH"), f_2);
+        return null;
+      }));
+      return null;
+    });
     c.field("held", self => list());
     c.field("folded_into", self => null);
     c.getter("alive", (self, a1) => {
@@ -1109,6 +1122,21 @@ public static class C_Source {
       return invoke(choose(self, "mass"), new object[] {  });
       return null;
     });
+    c.method("clock_at", (self, a1) => {
+      object u_0 = arg(a1, 0);
+      return sub(1.0, mul(mul(2.0, u_0), (sub(1.0, u_0))));
+      return null;
+    });
+    c.method("standing", (self, a1) => {
+      object u_0 = arg(a1, 0);
+      return div(mul(get(self, "mass"), m_sqrt(call(self, "clock_at", new object[] { u_0 }))), m_sqrt((add(mul(get(self, "mass"), get(self, "mass")), mul(get(get(self, "momentum"), "norm"), get(get(self, "momentum"), "norm"))))));
+      return null;
+    });
+    c.method("velocity", (self, a1) => {
+      object u_0 = arg(a1, 0);
+      return mul(get(self, "momentum"), (div(m_sqrt(call(self, "clock_at", new object[] { u_0 })), m_sqrt((add(mul(get(self, "mass"), get(self, "mass")), mul(get(get(self, "momentum"), "norm"), get(get(self, "momentum"), "norm"))))))));
+      return null;
+    });
     c.field("absorbs", self => true);
     c.method("choose emit?", (self, a0) => { throw new System.NotSupportedException("the choice emit? is not defined by anyone"); });
     c.method("choose mass", (self, a0) => { throw new System.NotSupportedException("the choice mass is not defined by anyone"); });
@@ -1180,6 +1208,10 @@ public static class C_Cell {
     c.method("drift", (self, a1) => {
       object d_0 = arg(a1, 0);
       return call(get(self, "of"), "drift_from", new object[] { get(self, "index"), d_0 });
+      return null;
+    });
+    c.getter("potential", (self, a1) => {
+      return 0.0;
       return null;
     });
     c.getter("sinks", (self, a1) => {
@@ -1626,7 +1658,7 @@ public static class C_Field {
         };
         nf_1 = mul(nf_1, get(self, "edge"));
         setAt(get(self, "folds"), c__1, nf_1);
-        setAt(get(self, "keep"), c__1, div(1.0, (add(1.0, nf_1))));
+        setAt(get(self, "keep"), c__1, div(1.0, (add(1.0, mul(get(K("Vertex"), "WORTH"), nf_1)))));
       };
       return null;
     });
@@ -1858,7 +1890,7 @@ public static class C_Field {
               if (truthy(gt(fa_4, 0.0))) {
                 for (double i6 = 0; i6 < num(get(self, "A")); i6++) {
                   object b_6 = i6;
-                  got_2 = add(got_2, mul(mul(mul(mul(elem(tp_3, 1.0), invoke(pop_0, new object[] { b_6, src_3 })), fa_4), elem(get(self, "keep"), src_3)), get(self, "edge")));
+                  got_2 = add(got_2, mul(mul(mul(mul(mul(elem(tp_3, 1.0), invoke(pop_0, new object[] { b_6, src_3 })), get(K("Vertex"), "WORTH")), fa_4), elem(get(self, "keep"), src_3)), get(self, "edge")));
                 };
               };
             };
@@ -1871,7 +1903,7 @@ public static class C_Field {
                 object sd_4 = null; sd_4 = elem(tp_4, 0.0);
                 object fd_4 = null; fd_4 = elem(get(self, "fold_was"), add(mul(d_3, get(self, "cells")), sd_4));
                 if (truthy(gt(fd_4, 0.0))) {
-                  got_2 = add(got_2, mul(mul(mul(mul(elem(tp_4, 1.0), invoke(pop_0, new object[] { a_1, sd_4 })), fd_4), elem(get(self, "keep"), sd_4)), get(self, "edge")));
+                  got_2 = add(got_2, mul(mul(mul(mul(mul(elem(tp_4, 1.0), invoke(pop_0, new object[] { a_1, sd_4 })), get(K("Vertex"), "WORTH")), fd_4), elem(get(self, "keep"), sd_4)), get(self, "edge")));
                 }
               };
             };
@@ -6116,12 +6148,13 @@ public static class C_TermInfo {
       return !eq(get(get(self, "term"), "leans"), null);
       return null;
     });
+    c.field("worth", self => call(K("Expr"), "num", new object[] { 1.0 }));
     c.getter("keeps", (self, a1) => {
-      return call(K("Expr"), "pown", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "num", new object[] { 1.0 }), call(K("Expr"), "field", new object[] { "n_{f}" })) }), neg(1.0) });
+      return call(K("Expr"), "pown", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "num", new object[] { 1.0 }), call(K("Prover"), "neat", new object[] { call(K("Expr"), "mul", new object[] { list(get(self, "worth"), call(K("Expr"), "field", new object[] { "n_{f}" })) }) })) }), neg(1.0) });
       return null;
     });
     c.getter("drifts", (self, a1) => {
-      return call(K("Expr"), "grad", new object[] { call(K("Expr"), "field", new object[] { "n_{f}" }) });
+      return call(K("Prover"), "neat", new object[] { call(K("Expr"), "mul", new object[] { list(get(self, "worth"), call(K("Expr"), "grad", new object[] { call(K("Expr"), "field", new object[] { "n_{f}" }) })) }) });
       return null;
     });
     c.statik("COUNTS", (self, a1) => {
@@ -6216,11 +6249,24 @@ public static class C_Prover {
       return null;
     });
     c.getter("infos", (self, a1) => {
-      return m_map(get(get(self, "theory"), "terms_read"), new Fn((a3) => {
+      object all_0 = null; all_0 = m_map(get(get(self, "theory"), "terms_read"), new Fn((a3) => {
         object t_2 = arg(a3, 0);
         return make("TermInfo", new object[] { kw("term", t_2) });
         return null;
       }));
+      object meet_0 = null; meet_0 = m_first(filt(all_0, new Fn((a3) => {
+        object t_2 = arg(a3, 0);
+        return (truthy((truthy(eq(get(t_2, "degree"), 2.0)) && truthy(not(m_empty(get(t_2, "rules")))))) && truthy(!eq(get(t_2, "folds"), "0")));
+        return null;
+      })));
+      object held_0 = null; held_0 = (truthy(eq(meet_0, null)) ? (object) call(K("Expr"), "num", new object[] { 1.0 }) : (object) call(K("Expr"), "simplify", new object[] { call(K("Expr"), "neg", new object[] { call(K("Expr"), "div", new object[] { get(meet_0, "ray_count"), get(meet_0, "fold_count") }) }) }));
+      foreach (object e1 in each_of(all_0)) {
+        object t_1 = e1;
+        if (truthy(eq(get(get(t_1, "term"), "leans"), "S_f"))) {
+          set(t_1, "worth", held_0);
+        }
+      };
+      return all_0;
       return null;
     });
     c.getter("acting", (self, a1) => {
@@ -7328,11 +7374,11 @@ public static class C_Prover {
       object one_0 = arg(a1, 0); object behind_0 = arg(a1, 1);
       object draws_0 = null; draws_0 = call(K("Prover"), "source_of", new object[] { "Ray.turns" });
       object folding_0 = null; folding_0 = call(K("Prover"), "source_of", new object[] { "Vertex.fold" });
-      if (truthy((truthy(not(m_contains(draws_0, "folds"))) || truthy(not(m_contains(folding_0, "folds[d] + 1")))))) {
+      if (truthy((truthy(not(((truthy(m_contains(draws_0, "folds")) || truthy(m_contains(draws_0, "worth")))))) || truthy(not(m_contains(folding_0, "folds[d] + 1")))))) {
         return null;
       }
       object own_0 = null; own_0 = call(K("Expr"), "add", new object[] { list(get(K("Prover"), "LATTICE"), call(K("Expr"), "field", new object[] { "n_{f,l}" })) });
-      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "DEG", own_0 }), "the ways at a local", list(get(get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", list("Ray.turns = " + str(draws_0) + ": straight on at one, each folded way at its folds", "Vertex.fold = " + str(folding_0) + ": a fold written on a way", "DEG = " + str(call(K("Expr"), "show", new object[] { own_0 })) + "") });
+      object st_0 = null; st_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "DEG", own_0 }), "the ways at a local", list(get(get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", list("Ray.turns = " + str(draws_0) + ": straight on at one, each folded way at what its folds hold", "Vertex.fold = " + str(folding_0) + ": a fold written on a way", "DEG = " + str(call(K("Expr"), "show", new object[] { own_0 })) + "") });
       set(st_0, "derivation", behind_0);
       return st_0;
       return null;
@@ -7640,14 +7686,19 @@ public static class C_Prover {
       object hub_0 = arg(a1, 0); object settles_0 = arg(a1, 1);
       object vac_0 = null; vac_0 = call(K("Expr"), "field", new object[] { "\\rho_{\\infty}" });
       object nf_0 = null; nf_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "replace", new object[] { call(K("Expr"), "replace", new object[] { get(get(settles_0, "fact"), "to"), "\\rho", vac_0 }), "DEG_{0}", call(K("Expr"), "field", new object[] { "DEG" }) }) });
-      object v_0 = null; v_0 = call(K("Prover"), "neat", new object[] { call(K("Expr"), "pown", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "num", new object[] { 1.0 }), nf_0) }), neg(1.0) }) });
+      object drawn_0 = null; drawn_0 = m_first(filt(get(self, "infos"), new Fn((a3) => {
+        object t_2 = arg(a3, 0);
+        return (truthy(get(t_2, "transport")) && truthy(get(t_2, "kernel")));
+        return null;
+      })));
+      object v_0 = null; v_0 = call(K("Prover"), "neat", new object[] { (truthy(eq(drawn_0, null)) ? (object) call(K("Expr"), "pown", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "num", new object[] { 1.0 }), nf_0) }), neg(1.0) }) : (object) call(K("Expr"), "replace", new object[] { get(drawn_0, "keeps"), "n_{f}", nf_0 })) });
       object mover_0 = null; mover_0 = m_first(filt(get(self, "infos"), new Fn((a3) => {
         object t_2 = arg(a3, 0);
         return (truthy(!eq(get(get(t_2, "term"), "rule"), null)) && truthy(get(t_2, "carries")));
         return null;
       })));
       object moved_0 = null; moved_0 = (truthy(eq(mover_0, null)) ? (object) "MOVEMENT" : (object) m_upper(get(get(get(mover_0, "term"), "rule"), "name")));
-      object straight_0 = null; straight_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "v \\aside{straight}", v_0 }), "what a heading keeps straight", list(get(get(settles_0, "fact"), "key")), "" + str(moved_0) + " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list("the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " + str(call(K("Expr"), "show", new object[] { nf_0 })) + "", "v = \\frac{1}{1 + n_{f}} = " + str(call(K("Expr"), "show", new object[] { v_0 })) + "") });
+      object straight_0 = null; straight_0 = call(K("Step"), "of", new object[] { call(K("Fact"), "stands", new object[] { "v \\aside{straight}", v_0 }), "what a heading keeps straight", list(get(get(settles_0, "fact"), "key")), "" + str(moved_0) + " draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", list("the draw: 1 straight on against the folded ways, each at what it holds", "n_{f} at \\rho_{\\infty} = " + str(call(K("Expr"), "show", new object[] { nf_0 })) + "", "v = " + str(call(K("Expr"), "show", new object[] { v_0 })) + "") });
       set(straight_0, "derivation", list(settles_0));
       object lights_0 = null; lights_0 = get(self, "relights");
       object lit_0 = null; lit_0 = (truthy(eq(lights_0, null)) ? (object) "CREATION" : (object) m_upper(get(get(get(lights_0, "term"), "rule"), "name")));
@@ -8654,49 +8705,79 @@ public static class C_Inferences {
       return call(K("Expr"), "numeric", new object[] { d_0, env_0 });
       return null;
     });
+    c.statik("partial", (self, a1) => {
+      object e_0 = arg(a1, 0); object by_0 = arg(a1, 1); object names_0 = arg(a1, 2);
+      object env_0 = null; env_0 = make(NODE);
+      foreach (object e1 in each_of(names_0)) {
+        object n_1 = e1;
+        setAt(env_0, n_1, 0.0);
+      };
+      object d_0 = null; d_0 = e_0;
+      foreach (object e1 in each_of(by_0)) {
+        object n_1 = e1;
+        d_0 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "d", new object[] { d_0, n_1 }) });
+      };
+      return call(K("Expr"), "numeric", new object[] { d_0, env_0 });
+      return null;
+    });
     c.statik("held_tests", (self, a1) => {
       object s_0 = arg(a1, 0); object A_0 = arg(a1, 1); object B_0 = arg(a1, 2);
       object u_0 = null; u_0 = "u";
       object Au_0 = null; Au_0 = call(K("Inferences"), "in_m", new object[] { get(A_0, "to"), u_0 });
       object Bu_0 = null; Bu_0 = call(K("Inferences"), "in_m", new object[] { get(B_0, "to"), u_0 });
-      object newton_0 = null; newton_0 = sub(0.0, div(call(K("Inferences"), "at_nought", new object[] { Au_0, u_0, 1.0 }), 2.0));
       object gamma_0 = null; gamma_0 = div(call(K("Inferences"), "at_nought", new object[] { Bu_0, u_0, 1.0 }), 2.0);
       object beta_0 = null; beta_0 = add(gamma_0, div(call(K("Inferences"), "at_nought", new object[] { Au_0, u_0, 2.0 }), 4.0));
       object iA_0 = null; iA_0 = call(s_0, "fact", new object[] { "is", "A in r" });
       object iB_0 = null; iB_0 = call(s_0, "fact", new object[] { "is", "B in r" });
+      object N_0 = null; N_0 = call(s_0, "fact", new object[] { "is", "N" });
       object dn_0 = null; dn_0 = "\\delta n_{f}";
       object ibeta_0 = null; ibeta_0 = (truthy(eq(iA_0, null)) ? (object) double.NaN : (object) div(call(K("Inferences"), "at_nought", new object[] { get(iA_0, "to"), dn_0, 2.0 }), 4.0));
       object igamma_0 = null; igamma_0 = (truthy(eq(iB_0, null)) ? (object) double.NaN : (object) div(call(K("Inferences"), "at_nought", new object[] { get(iB_0, "to"), dn_0, 1.0 }), 2.0));
-      object via_0 = null; via_0 = "the held metric, read for the classical tests";
-      object ppn_0 = null; ppn_0 = call(K("Inferences"), "step", new object[] { "\\gamma \\aside{PPN}", call(K("Expr"), "num", new object[] { gamma_0 }), via_0, list(get(A_0, "key"), get(B_0, "key")), "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", list("A in u = \\bar{m}/r: " + str(call(K("Expr"), "show", new object[] { Au_0 })) + ", B: " + str(call(K("Expr"), "show", new object[] { Bu_0 })) + "", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = " + str(call(K("Fmt"), "fixed", new object[] { newton_0, 6.0 })) + "", "\\gamma = B'/2 = " + str(call(K("Fmt"), "fixed", new object[] { gamma_0, 6.0 })) + "", "\\beta = \\gamma + A''/4 = " + str(call(K("Fmt"), "fixed", new object[] { beta_0, 6.0 })) + "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", (truthy(call(K("Fmt"), "finite", new object[] { ibeta_0 })) ? (object) "the medium's index read as an isotropic metric: \\gamma = " + str(call(K("Fmt"), "fixed", new object[] { igamma_0, 4.0 })) + ", \\beta = " + str(call(K("Fmt"), "fixed", new object[] { ibeta_0, 4.0 })) + " - a held clock does not read it" : (object) "the medium's index gives no metric of its own here")) });
+      object newton_0 = null; newton_0 = (truthy(eq(iA_0, null)) ? (object) double.NaN : (object) sub(0.0, div(call(K("Inferences"), "at_nought", new object[] { get(iA_0, "to"), dn_0, 1.0 }), 2.0)));
+      object slope_0 = null; slope_0 = (truthy(eq(N_0, null)) ? (object) double.NaN : (object) call(K("Inferences"), "at_nought", new object[] { get(N_0, "to"), dn_0, 1.0 }));
+      object via_0 = null; via_0 = "the rules' clock, ruler and index, read for the classical tests";
+      object ppn_0 = null; ppn_0 = call(K("Inferences"), "step", new object[] { "\\gamma \\aside{PPN}", call(K("Expr"), "num", new object[] { igamma_0 }), via_0, list(get(A_0, "key"), get(B_0, "key")), "THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same", list("A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius", "Newton: -A'/2 = " + str(call(K("Fmt"), "fixed", new object[] { newton_0, 6.0 })) + "", "\\gamma = B'/2 = " + str(call(K("Fmt"), "fixed", new object[] { igamma_0, 6.0 })) + "", "\\beta = A''/4 = " + str(call(K("Fmt"), "fixed", new object[] { ibeta_0, 6.0 })) + "", "the held metric in the area radius: \\gamma = " + str(call(K("Fmt"), "fixed", new object[] { gamma_0, 6.0 })) + ", \\beta = " + str(call(K("Fmt"), "fixed", new object[] { beta_0, 6.0 })) + "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}") });
+      object w_0 = null; w_0 = "w";
+      object clockU_0 = null; clockU_0 = (truthy(eq(iA_0, null)) ? (object) call(K("Expr"), "sub", new object[] { call(K("Expr"), "num", new object[] { 1.0 }), call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { 2.0 }), call(K("Expr"), "field", new object[] { dn_0 })) }) }) : (object) get(iA_0, "to"));
+      object stands_0 = null; stands_0 = call(K("Expr"), "neg", new object[] { call(K("Expr"), "pown", new object[] { call(K("Expr"), "sub", new object[] { clockU_0, call(K("Expr"), "field", new object[] { w_0 }) }), 0.5 }) });
+      object names_0 = null; names_0 = list(dn_0, w_0);
+      object n1_0 = null; n1_0 = call(K("Inferences"), "partial", new object[] { stands_0, list(dn_0), names_0 });
+      object a1_0 = null; a1_0 = mul(4.0, call(K("Inferences"), "partial", new object[] { stands_0, list(w_0, w_0), names_0 }));
+      object a2_0 = null; a2_0 = call(K("Inferences"), "partial", new object[] { stands_0, list(dn_0, w_0), names_0 });
+      object a3_0 = null; a3_0 = div(call(K("Inferences"), "partial", new object[] { stands_0, list(dn_0, dn_0), names_0 }), 2.0);
+      object clock_0 = null; clock_0 = add(add(mul(2.0, a3_0), a1_0), mul(4.0, a2_0));
+      object lean_0 = null; lean_0 = sub(mul(2.0, 1.0), mul(2.0, (sub(0.0, 1.0))));
+      object k_0 = null; k_0 = add(clock_0, lean_0);
+      k_0 = div(m_round((mul(k_0, power(10.0, 9.0)))), power(10.0, 9.0));
       object L_0 = null; L_0 = call(K("Expr"), "field", new object[] { "L" });
       object q_0 = null; q_0 = call(K("Expr"), "mul", new object[] { list(Au_0, call(K("Expr"), "add", new object[] { list(call(K("Expr"), "pown", new object[] { L_0, neg(2.0) }), call(K("Expr"), "pown", new object[] { call(K("Expr"), "field", new object[] { u_0 }), 2.0 })) })) });
       object orbit_0 = null; orbit_0 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "add", new object[] { list(call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { neg(0.5) }), call(K("Expr"), "d", new object[] { q_0, u_0 })) }), call(K("Expr"), "field", new object[] { u_0 })) }) });
-      object mu_0 = null; mu_0 = call(K("Inferences"), "at_nought", new object[] { orbit_0, u_0, 0.0 });
-      object lin_0 = null; lin_0 = call(K("Inferences"), "at_nought", new object[] { orbit_0, u_0, 1.0 });
-      object eps_0 = null; eps_0 = div(call(K("Inferences"), "at_nought", new object[] { orbit_0, u_0, 2.0 }), 2.0);
-      object k_0 = null; k_0 = mul(mul(2.0, eps_0), mu_0);
-      k_0 = div(m_round((mul(k_0, power(10.0, 9.0)))), power(10.0, 9.0));
+      object geo_0 = null; geo_0 = mul(div(mul(2.0, call(K("Inferences"), "at_nought", new object[] { orbit_0, u_0, 2.0 })), 2.0), call(K("Inferences"), "at_nought", new object[] { orbit_0, u_0, 0.0 }));
       object m_sun_0 = null; m_sun_0 = 1476.625;
       object a_m_0 = null; a_m_0 = 57909050000.0;
       object e_m_0 = null; e_m_0 = 0.205630;
       object lap_0 = null; lap_0 = div(mul(mul(k_0, System.Math.PI), m_sun_0), (mul(a_m_0, (sub(1.0, mul(e_m_0, e_m_0))))));
       object century_0 = null; century_0 = mul(div(mul(lap_0, 36525.0), 87.9691), 206264.806);
-      object ipp_0 = null; ipp_0 = (truthy(call(K("Fmt"), "finite", new object[] { ibeta_0 })) ? (object) div((sub(add(2.0, mul(2.0, igamma_0)), ibeta_0)), 3.0) : (object) double.NaN);
-      object peri_0 = null; peri_0 = call(K("Inferences"), "step", new object[] { "\\Delta\\varphi", call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { k_0 }), call(K("Expr"), "field", new object[] { "\\pi" }), call(K("Expr"), "field", new object[] { "\\bar{m}" }), call(K("Expr"), "pown", new object[] { call(K("Expr"), "field", new object[] { "a\\paren{1 - e^{2}}" }), neg(1.0) })) }), "a bound orbit in the held metric", list(get(A_0, "key"), get(B_0, "key")), "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", list("u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = " + str(call(K("Expr"), "show", new object[] { orbit_0 })) + "", "\\mu = " + str(call(K("Fmt"), "fixed", new object[] { mu_0, 6.0 })) + "/L^{2}, linear " + str(call(K("Fmt"), "fixed", new object[] { lin_0, 6.0 })) + ", \\epsilon = " + str(call(K("Fmt"), "fixed", new object[] { eps_0, 6.0 })) + "\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = " + str(call(K("Fmt"), "fixed", new object[] { k_0, 6.0 })) + "\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " + str(call(K("Fmt"), "fixed", new object[] { century_0, 2.0 })) + "'' a century; measured 42.98 \\pm 0.04", (truthy(call(K("Fmt"), "finite", new object[] { ipp_0 })) ? (object) "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = " + str(call(K("Fmt"), "fixed", new object[] { ipp_0, 4.0 })) + " of it" : (object) "the medium's index gives no metric of its own here")) });
-      object delay_0 = null; delay_0 = call(K("Inferences"), "step", new object[] { "\\Delta t \\aside{Shapiro}", call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { add(1.0, gamma_0) }), call(K("Expr"), "field", new object[] { "\\bar{m}" }), call(K("Expr"), "log", new object[] { call(K("Expr"), "field", new object[] { "\\frac{4r_{1}r_{2}}{b^{2}}" }) })) }), "light passing a body, timed", list(get(B_0, "key"), get(A_0, "key")), "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", list("\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = " + str(call(K("Fmt"), "fixed", new object[] { gamma_0, 6.0 })) + "", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " + str(call(K("Fmt"), "fixed", new object[] { mul(mul(mul(2.0, (add(1.0, gamma_0))), 4.925491), m_ln((div(mul(mul(4.0, 149597870700.0), 1433530000000.0), (mul(695700000.0, 695700000.0)))))), 1.0 })) + " \\mu s") });
+      object peri_0 = null; peri_0 = call(K("Inferences"), "step", new object[] { "\\Delta\\varphi", call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { k_0 }), call(K("Expr"), "field", new object[] { "\\pi" }), call(K("Expr"), "field", new object[] { "\\bar{m}" }), call(K("Expr"), "pown", new object[] { call(K("Expr"), "field", new object[] { "a\\paren{1 - e^{2}}" }), neg(1.0) })) }), "a bound orbit, moved by S.v", list(get(A_0, "key"), get(B_0, "key")), "THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century", list("the standing share, A = " + str(call(K("Expr"), "show", new object[] { clockU_0 })) + " in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + " + str(call(K("Fmt"), "fixed", new object[] { n1_0, 3.0 })) + "U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}", "a_{1} = " + str(call(K("Fmt"), "fixed", new object[] { a1_0, 6.0 })) + ", a_{2} = " + str(call(K("Fmt"), "fixed", new object[] { a2_0, 6.0 })) + ", a_{3} = " + str(call(K("Fmt"), "fixed", new object[] { a3_0, 6.0 })) + ": moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = " + str(call(K("Fmt"), "fixed", new object[] { clock_0, 6.0 })) + "", "the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = " + str(call(K("Fmt"), "fixed", new object[] { lean_0, 6.0 })) + "", "a lap: " + str(call(K("Fmt"), "fixed", new object[] { k_0, 6.0 })) + "\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives " + str(call(K("Fmt"), "fixed", new object[] { geo_0, 6.0 })) + "\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " + str(call(K("Fmt"), "fixed", new object[] { century_0, 2.0 })) + "'' a century; measured 42.98 \\pm 0.04") });
+      object delay_0 = null; delay_0 = call(K("Inferences"), "step", new object[] { "\\Delta t \\aside{Shapiro}", call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { slope_0 }), call(K("Expr"), "field", new object[] { "\\bar{m}" }), call(K("Expr"), "log", new object[] { call(K("Expr"), "field", new object[] { "\\frac{4r_{1}r_{2}}{b^{2}}" }) })) }), "light passing a body, timed", list(get(A_0, "key"), get(B_0, "key")), "THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1", list("the index: N = 1 + " + str(call(K("Fmt"), "fixed", new object[] { slope_0, 4.0 })) + "\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r", "\\int " + str(call(K("Fmt"), "fixed", new object[] { slope_0, 4.0 })) + "\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = " + str(call(K("Fmt"), "fixed", new object[] { slope_0, 4.0 })) + "\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " + str(call(K("Fmt"), "fixed", new object[] { mul(mul(mul(2.0, slope_0), 4.925491), m_ln((div(mul(mul(4.0, 149597870700.0), 1433530000000.0), (mul(695700000.0, 695700000.0)))))), 1.0 })) + " \\mu s; Cassini measured general relativity's to 10^{-5}") });
       return list(ppn_0, peri_0, delay_0);
       return null;
     });
     c.statik("metric_of", (self, a1) => {
-      return make("Inference", new object[] { kw("name", "an index is a metric"), kw("because", "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots"), kw("fire", new Fn((a3) => {
+      return make("Inference", new object[] { kw("name", "the held clock and ruler, in the lattice's own radius"), kw("because", "a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order"), kw("fire", new Fn((a3) => {
         object s_2 = arg(a3, 0);
         object n_2 = null; n_2 = orElse(call(s_2, "fact", new object[] { "is", "N in r" }), () => call(s_2, "fact", new object[] { "is", "N" }));
-        if (truthy((truthy(eq(n_2, null)) || truthy(call(s_2, "has", new object[] { "is", "A in r" }))))) {
+        object dn_2 = null; dn_2 = call(s_2, "fact", new object[] { "is", "\\delta n_{f}" });
+        if (truthy((truthy((truthy(eq(n_2, null)) || truthy(eq(dn_2, null)))) || truthy(call(s_2, "has", new object[] { "is", "A in r" }))))) {
           return list();
         }
-        object via_2 = null; via_2 = "an index is a metric";
-        return list(call(K("Inferences"), "step", new object[] { "A in r", call(K("Expr"), "simplify", new object[] { call(K("Expr"), "pown", new object[] { get(n_2, "to"), neg(2.0) }) }), via_2, list(get(n_2, "key")), "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise", list("MOVEMENT: one tick per point the place stands for", "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N", "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = " + str(call(K("Expr"), "show", new object[] { call(K("Expr"), "simplify", new object[] { call(K("Expr"), "pown", new object[] { get(n_2, "to"), neg(2.0) }) }) })) + "") }), call(K("Inferences"), "step", new object[] { "B in r", call(K("Expr"), "simplify", new object[] { call(K("Expr"), "pown", new object[] { get(n_2, "to"), 2.0 }) }), via_2, list(get(n_2, "key")), "and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads `d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does", list("the same place HAS N points in it, so d\\ell/dr = N", "B = \\paren{d\\ell/dr}^{2} = N^{2} = " + str(call(K("Expr"), "show", new object[] { call(K("Expr"), "simplify", new object[] { call(K("Expr"), "pown", new object[] { get(n_2, "to"), 2.0 }) }) })) + "", "and A\\cdot B = 1 still, as Schwarzschild has it") }));
+        object via_2 = null; via_2 = "the held clock and ruler, in the lattice's own radius";
+        object u_2 = null; u_2 = call(K("Expr"), "field", new object[] { "\\delta n_{f}" });
+        object points_2 = null; points_2 = call(K("Expr"), "pown", new object[] { call(K("Expr"), "sub", new object[] { call(K("Expr"), "num", new object[] { 1.0 }), u_2 }), neg(1.0) });
+        object B_2 = null; B_2 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "pown", new object[] { points_2, 2.0 }) });
+        object phi_2 = null; phi_2 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { list(u_2, call(K("Expr"), "sub", new object[] { call(K("Expr"), "num", new object[] { 1.0 }), u_2 })) }) });
+        object A_2 = null; A_2 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "sub", new object[] { call(K("Expr"), "num", new object[] { 1.0 }), call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { 2.0 }), phi_2) }) }) });
+        return list(call(K("Inferences"), "step", new object[] { "B in r", B_2, via_2, list(get(n_2, "key"), get(dn_2, "key")), "THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square", list("a fold: two points into one, so a place stands for one more", "chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})", "B = " + str(call(K("Expr"), "show", new object[] { B_2 })) + "") }), call(K("Inferences"), "step", new object[] { "A in r", A_2, via_2, list(get(n_2, "key"), get(dn_2, "key")), "THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one", list("a held clock: A = 1 - 2\\Phi", "\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points", "\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}", "A = " + str(call(K("Expr"), "show", new object[] { A_2 })) + "", "light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index " + str(call(K("Expr"), "show", new object[] { get(n_2, "to") })) + " to the first order") }));
         return null;
       })) });
       return null;
@@ -8921,11 +9002,15 @@ public static class C_Inferences {
       return make("Inference", new object[] { kw("name", "the integral of the index across the path"), kw("because", "`turns` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up"), kw("fire", new Fn((a3) => {
         object s_2 = arg(a3, 0);
         object rec_2 = null; rec_2 = call(s_2, "fact", new object[] { "is", "\\delta n_{f}" });
-        if (truthy((truthy(eq(rec_2, null)) || truthy(call(s_2, "has", new object[] { "is", "\\alpha" }))))) {
+        object n_2 = null; n_2 = call(s_2, "fact", new object[] { "is", "N" });
+        if (truthy((truthy((truthy(eq(rec_2, null)) || truthy(eq(n_2, null)))) || truthy(call(s_2, "has", new object[] { "is", "\\alpha" }))))) {
           return list();
         }
-        object alpha_2 = null; alpha_2 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { 2.0 }), call(K("Expr"), "replace", new object[] { get(rec_2, "to"), "r", call(K("Expr"), "sym", new object[] { "b" }) })) }) });
-        return list(call(K("Inferences"), "step", new object[] { "\\alpha", alpha_2, "the integral of the index across the path", list(get(rec_2, "key")), "the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer", list("turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: " + str(call(K("Expr"), "show", new object[] { get(rec_2, "to") })) + "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " + str(call(K("Expr"), "show", new object[] { alpha_2 })) + "") }));
+        object env_2 = null; env_2 = make(NODE);
+        set(env_2, str("\\delta n_{f}"), 0.0);
+        object slope_2 = null; slope_2 = call(K("Expr"), "numeric", new object[] { call(K("Expr"), "simplify", new object[] { call(K("Expr"), "d", new object[] { get(n_2, "to"), "\\delta n_{f}" }) }), env_2 });
+        object alpha_2 = null; alpha_2 = call(K("Expr"), "simplify", new object[] { call(K("Expr"), "mul", new object[] { list(call(K("Expr"), "num", new object[] { mul(2.0, slope_2) }), call(K("Expr"), "replace", new object[] { get(rec_2, "to"), "r", call(K("Expr"), "sym", new object[] { "b" }) })) }) });
+        return list(call(K("Inferences"), "step", new object[] { "\\alpha", alpha_2, "the integral of the index across the path", list(get(rec_2, "key")), "the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured", list("turns: 1 way straight on against what folds[d] holds along d", "the index's slope in the record: " + str(call(K("Fmt"), "fixed", new object[] { slope_2, 4.0 })) + "", "the fold record along the path: " + str(call(K("Expr"), "show", new object[] { get(rec_2, "to") })) + "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " + str(call(K("Expr"), "show", new object[] { alpha_2 })) + "") }));
         return null;
       })) });
       return null;
@@ -10562,7 +10647,7 @@ public static class C_Medium {
     })));
     c.method("beta", (self, a1) => {
       object h_0 = arg(a1, 0);
-      object v_0 = null; v_0 = div(get(get(h_0, "momentum"), "norm"), get(h_0, "mass"));
+      object v_0 = null; v_0 = get(call(h_0, "velocity", new object[] { 0.0 }), "norm");
       return (truthy(lt(v_0, 0.0)) ? (object) 0.0 : (object) ((truthy(gt(v_0, 1.0)) ? (object) 1.0 : (object) v_0)));
       return null;
     });
@@ -11180,7 +11265,7 @@ public static class C_Medium {
       object h_0 = arg(a1, 0);
       object near_0 = null; near_0 = call(self, "face_of", new object[] { h_0 });
       object q_0 = null; q_0 = mul(call(self, "per_way", new object[] { h_0 }), (power(near_0, sub(get(self, "D"), 1.0))));
-      return list(q_0, mul(q_0, get(h_0, "x")), mul(q_0, get(h_0, "y")), mul(div(mul(q_0, elem(get(get(h_0, "momentum"), "components"), 0.0)), get(h_0, "mass")), get(self, "K")), mul(div(mul(q_0, elem(get(get(h_0, "momentum"), "components"), 1.0)), get(h_0, "mass")), get(self, "K")), mul(q_0, near_0), m_index_of(get(self, "holes"), h_0), 0.0);
+      return list(q_0, mul(q_0, get(h_0, "x")), mul(q_0, get(h_0, "y")), mul(mul(q_0, elem(get(call(h_0, "velocity", new object[] { 0.0 }), "components"), 0.0)), get(self, "K")), mul(mul(q_0, elem(get(call(h_0, "velocity", new object[] { 0.0 }), "components"), 1.0)), get(self, "K")), mul(q_0, near_0), m_index_of(get(self, "holes"), h_0), 0.0);
       return null;
     });
     c.method("left_for", (self, a1) => {
@@ -11957,7 +12042,7 @@ public static class C_Medium {
     });
     c.method("lean_under", (self, a1) => {
       object h_0 = arg(a1, 0);
-      return call(self, "pull_at", new object[] { get(h_0, "x"), get(h_0, "y"), call(self, "plane_of", new object[] { h_0 }), div(elem(get(get(h_0, "momentum"), "components"), 0.0), get(h_0, "mass")), div(elem(get(get(h_0, "momentum"), "components"), 1.0), get(h_0, "mass")) });
+      return call(self, "pull_at", new object[] { get(h_0, "x"), get(h_0, "y"), call(self, "plane_of", new object[] { h_0 }), elem(get(call(h_0, "velocity", new object[] { 0.0 }), "components"), 0.0), elem(get(call(h_0, "velocity", new object[] { 0.0 }), "components"), 1.0) });
       return null;
     });
     c.field("pulled", self => list());
@@ -11972,12 +12057,10 @@ public static class C_Medium {
         object h_1 = null; h_1 = elem(get(self, "holes"), i_1);
         if (truthy(get(h_1, "moves"))) {
           object g_2 = null; g_2 = elem(get(self, "pulled"), i_1);
-          set(h_1, "momentum", add(get(h_1, "momentum"), make("Vector", new object[] { kw("components", list(mul(elem(g_2, 0.0), get(h_1, "mass")), mul(elem(g_2, 1.0), get(h_1, "mass")))) })));
-          if (truthy(gt(get(get(h_1, "momentum"), "norm"), get(h_1, "mass")))) {
-            set(h_1, "momentum", mul(get(get(h_1, "momentum"), "unit"), get(h_1, "mass")));
-          }
-          set(h_1, "x", add(get(h_1, "x"), mul(div(elem(get(get(h_1, "momentum"), "components"), 0.0), get(h_1, "mass")), get(self, "K"))));
-          set(h_1, "y", add(get(h_1, "y"), mul(div(elem(get(get(h_1, "momentum"), "components"), 1.0), get(h_1, "mass")), get(self, "K"))));
+          set(h_1, "momentum", add(get(h_1, "momentum"), mul(make("Vector", new object[] { kw("components", list(mul(elem(g_2, 0.0), get(h_1, "mass")), mul(elem(g_2, 1.0), get(h_1, "mass")))) }), (div(1.0, call(h_1, "standing", new object[] { 0.0 }))))));
+          object v_2 = null; v_2 = call(h_1, "velocity", new object[] { 0.0 });
+          set(h_1, "x", add(get(h_1, "x"), mul(elem(get(v_2, "components"), 0.0), get(self, "K"))));
+          set(h_1, "y", add(get(h_1, "y"), mul(elem(get(v_2, "components"), 1.0), get(self, "K"))));
           set(h_1, "moved", add(get(h_1, "moved"), 1.0));
         };
       };
@@ -22141,13 +22224,11 @@ public static class C_G {
       object it_1 = arg(a2, 0);
       return get(it_1, "moves");
       return null;
-    })), kw("source", "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  x.advance.along(g.V(d)) >= g.steps(d).cs_branch((_) => { ... })\\n}\""), kw("body", new Fn((a1) => {
+    })), kw("source", "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  u := x.cells.first.potential\\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\\n  x.advance = x.advance + x.velocity(u)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  x.advance.along(g.V(d)) >= g.steps(d).cs_branch((_) => { ... })\\n}\""), kw("body", new Fn((a1) => {
       object x_0 = arg(a1, 0);
-      set(x_0, "momentum", add(get(x_0, "momentum"), mul(get(m_first(get(x_0, "cells")), "sinks"), get(x_0, "mass"))));
-      if (truthy(gt(get(get(x_0, "momentum"), "norm"), get(x_0, "mass")))) {
-        set(x_0, "momentum", mul(get(get(x_0, "momentum"), "unit"), get(x_0, "mass")));
-      }
-      set(x_0, "advance", add(get(x_0, "advance"), mul(get(x_0, "momentum"), (div(1.0, get(x_0, "mass"))))));
+      object u_0 = null; u_0 = get(m_first(get(x_0, "cells")), "potential");
+      set(x_0, "momentum", add(get(x_0, "momentum"), mul(get(m_first(get(x_0, "cells")), "sinks"), (div(mul(get(x_0, "mass"), (sub(1.0, mul(2.0, u_0)))), call(x_0, "standing", new object[] { u_0 }))))));
+      set(x_0, "advance", add(get(x_0, "advance"), call(x_0, "velocity", new object[] { u_0 })));
       object g_0 = null; g_0 = get(get(x_0, "world"), "geometry");
       object d_0 = null; d_0 = elem(m_most(rng(get(g_0, "DEG")), new Fn((a3) => {
         object e_2 = arg(a3, 0);
@@ -22189,18 +22270,18 @@ public static class C_G {
 public static readonly Obj G = theory(GTheory);
 
 private static readonly object G_equation = set(G, "equation", make(Node, kw("latex", "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"), kw("terms", list(
-    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("2", s => 2.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("s.F", s => get(s, "F"))), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("1", s => 1.0)), kw("rays", at("-2", s => neg(2.0))), kw("space", at("-1", s => neg(1.0))), kw("folds", at("1", s => 1.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", true), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("1", s => 1.0)), kw("rays", at("s.DEG", s => get(s, "DEG"))), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("s.n_f / s.DEG * (1 - s.ρ)", s => mul(div(get(s, "n_f"), get(s, "DEG")), (sub(1.0, get(s, "ρ")))))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("s.n_f / s.DEG", s => div(get(s, "n_f"), get(s, "DEG")))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("-s.DEG", s => neg(get(s, "DEG"))))))),
-    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("s.n_f * (1 - s.ρ)", s => mul(get(s, "n_f"), (sub(1.0, get(s, "ρ")))))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("s.n_f", s => get(s, "n_f"))), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("asked", at("1", s => 1.0)), kw("around", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", true), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("1", s => 1.0)), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", true), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("s.ω", s => get(s, "ω"))), kw("asked", at("1", s => 1.0)), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", true), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("s.ω", s => get(s, "ω"))), kw("asked", at("1", s => 1.0)), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/4"), kw("rate", null), kw("name", "Arrival"), kw("over", "Ray"), kw("where", null), kw("source", "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"))), kw("rate", null), kw("degree", 0.0), kw("outside", false), kw("settles", true), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", true), kw("share", at("1", s => 1.0)), kw("asked", at("1", s => 1.0)), kw("around", at("1", s => 1.0)), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
-    make(Node, kw("rule", make(Node, kw("id", "/S.1"), kw("rate", null), kw("name", "Emission"), kw("over", "Boundary"), kw("where", make(Node, kw("source", "emits & vertex.source.spare"))), kw("source", "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"))), kw("rate", null), kw("degree", 0.0), kw("outside", true), kw("settles", false), kw("transport", false), kw("leans", "n_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", true), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", true), kw("settles", false), kw("share", at("s.ω * (1 - s.β)", s => mul(get(s, "ω"), (sub(1.0, get(s, "β")))))), kw("asked", at("1 - s.β", s => sub(1.0, get(s, "β")))), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("1", s => 1.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0)))))
+    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("2", s => 2.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("s.F", s => get(s, "F"))), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("1", s => 1.0)), kw("rays", at("-2", s => neg(2.0))), kw("space", at("-1", s => neg(1.0))), kw("folds", at("1", s => 1.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/1"), kw("rate", "σ"), kw("name", "Annihilation"), kw("over", "Edge"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), kw("rate", "σ"), kw("degree", 2.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 2.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("s.F", s => get(s, "F"))), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", true), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("1", s => 1.0)), kw("rays", at("s.DEG", s => get(s, "DEG"))), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("s.n_f / s.DEG * (1 - s.ρ)", s => mul(div(get(s, "n_f"), get(s, "DEG")), (sub(1.0, get(s, "ρ")))))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("s.n_f / s.DEG", s => div(get(s, "n_f"), get(s, "DEG")))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("-s.DEG", s => neg(get(s, "DEG"))))))),
+    make(Node, kw("rule", make(Node, kw("id", "/2"), kw("rate", "ν"), kw("name", "Creation"), kw("over", "Vertex"), kw("where", make(Node, kw("source", "neutral"))), kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), kw("rate", "ν"), kw("degree", 0.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", false), kw("share", at("s.n_f * (1 - s.ρ)", s => mul(get(s, "n_f"), (sub(1.0, get(s, "ρ")))))), kw("asked", at("1 - s.ρ", s => sub(1.0, get(s, "ρ")))), kw("around", at("s.n_f", s => get(s, "n_f"))), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", true), kw("trades", false), kw("grew", at("1", s => 1.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("asked", at("1", s => 1.0)), kw("around", at("1 - s.ω", s => sub(1.0, get(s, "ω")))), kw("rays", at("0", s => 0.0)), kw("space", at("1", s => 1.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", true), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("0", s => 0.0)), kw("asked", at("1", s => 1.0)), kw("around", at("0", s => 0.0)), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", true), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("s.ω", s => get(s, "ω"))), kw("asked", at("1", s => 1.0)), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/c"), kw("rate", "σ"), kw("name", "Movement"), kw("over", "Ray"), kw("where", make(Node, kw("source", "active"))), kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), kw("rate", "σ"), kw("degree", 1.0), kw("outside", false), kw("settles", false), kw("transport", true), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", true), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 1.0), kw("outside", false), kw("settles", false), kw("share", at("s.ω", s => get(s, "ω"))), kw("asked", at("1", s => 1.0)), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/4"), kw("rate", null), kw("name", "Arrival"), kw("over", "Ray"), kw("where", null), kw("source", "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"))), kw("rate", null), kw("degree", 0.0), kw("outside", false), kw("settles", true), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", false), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", false), kw("settles", true), kw("share", at("1", s => 1.0)), kw("asked", at("1", s => 1.0)), kw("around", at("1", s => 1.0)), kw("rays", at("0", s => 0.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0))))),
+    make(Node, kw("rule", make(Node, kw("id", "/S.1"), kw("rate", null), kw("name", "Emission"), kw("over", "Boundary"), kw("where", make(Node, kw("source", "emits & vertex.source.spare"))), kw("source", "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"))), kw("rate", null), kw("degree", 0.0), kw("outside", true), kw("settles", false), kw("transport", false), kw("leans", "S_f"), kw("turned", "way"), kw("doing", make(Node, kw("carries", false), kw("sets", true), kw("grown", false), kw("trades", false), kw("grew", at("0", s => 0.0)), kw("grew_apart", at("0", s => 0.0)), kw("draws", null), kw("needs", 0.0), kw("outside", true), kw("settles", false), kw("share", at("s.ω * (1 - s.β)", s => mul(get(s, "ω"), (sub(1.0, get(s, "β")))))), kw("asked", at("1 - s.β", s => sub(1.0, get(s, "β")))), kw("around", at("s.ω", s => get(s, "ω"))), kw("rays", at("1", s => 1.0)), kw("space", at("0", s => 0.0)), kw("folds", at("0", s => 0.0)))))
 ))));
 
 private static object LINE2_value;
@@ -22278,7 +22359,7 @@ public static object nl0() {
 private static object METHOD_SOURCES_value;
 private static bool METHOD_SOURCES_made;
 public static object METHOD_SOURCES() {
-  if (!METHOD_SOURCES_made) { METHOD_SOURCES_made = true; METHOD_SOURCES_value = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"; }
+  if (!METHOD_SOURCES_made) { METHOD_SOURCES_made = true; METHOD_SOURCES_value = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"; }
   return METHOD_SOURCES_value;
 }
 

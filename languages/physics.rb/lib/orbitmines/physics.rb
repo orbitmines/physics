@@ -318,7 +318,7 @@ class Ray < Iterable
     return Ops.elem(self.ahead&.rays, self.exit)
   end
   def turns
-    return self.vertex.world.draw([1, self.vertex.folds], [self.steps, ->(d) {
+    return self.vertex.world.draw([1, self.vertex.worth], [self.steps, ->(d) {
       return Ops.elem(self.vertex.outward(d)&.rays, d)
     }])
   end
@@ -492,6 +492,13 @@ class Edge < Ray
 end
 
 class Vertex < Ray
+  def self.WORTH
+    @WORTH = (2) unless instance_variable_defined?(:@WORTH)
+    @WORTH
+  end
+  def self.WORTH=(v)
+    @WORTH = v
+  end
   def world(*args_)
     args_.empty? ? @world : @world.(*args_)
   end
@@ -537,6 +544,14 @@ class Vertex < Ray
     args_.empty? ? @folds : @folds.(*args_)
   end
   attr_writer :folds
+  def potential
+    return 0
+  end
+  def worth
+    return Ops.m_map(self.folds, ->(f) {
+      return Ops.mul(Vertex.WORTH, f)
+    })
+  end
   def held(*args_)
     @held = ([]) unless instance_variable_defined?(:@held)
     args_.empty? ? @held : @held.(*args_)
@@ -1297,6 +1312,15 @@ class Source < Node
   def mass
     return self.choose("mass").()
   end
+  def clock_at(u)
+    return Ops.sub(1, Ops.mul(Ops.mul(2, u), (Ops.sub(1, u))))
+  end
+  def standing(u)
+    return Ops.div(Ops.mul(self.mass, Ops.m_sqrt(self.clock_at(u))), Ops.m_sqrt((Ops.add(Ops.mul(self.mass, self.mass), Ops.mul(self.momentum.norm, self.momentum.norm)))))
+  end
+  def velocity(u)
+    return Ops.mul(self.momentum, (Ops.div(Ops.m_sqrt(self.clock_at(u)), Ops.m_sqrt((Ops.add(Ops.mul(self.mass, self.mass), Ops.mul(self.momentum.norm, self.momentum.norm)))))))
+  end
   def absorbs(*args_)
     @absorbs = (true) unless instance_variable_defined?(:@absorbs)
     args_.empty? ? @absorbs : @absorbs.(*args_)
@@ -1388,6 +1412,9 @@ class Cell < Node
   end
   def drift(d)
     return self.of.drift_from(self.index, d)
+  end
+  def potential
+    return 0
   end
   def sinks
     return self.of.sinks_at(self.index)
@@ -1905,7 +1932,7 @@ class Field < Node
       end
       nf = Ops.mul(nf, self.edge)
       Ops.set_at(self.folds, c, nf)
-      Ops.set_at(self.keep, c, Ops.div(1, (Ops.add(1, nf))))
+      Ops.set_at(self.keep, c, Ops.div(1, (Ops.add(1, Ops.mul(Vertex.WORTH, nf)))))
     end
   end
   def locate
@@ -2093,7 +2120,7 @@ class Field < Node
             fa = Ops.elem(self.fold_was, Ops.add(Ops.mul(a, self.cells), src))
             if Ops.gt(fa, 0)
               self.A.times do |b|
-                got = Ops.add(got, Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.elem(tp, 1), pop.(b, src)), fa), Ops.elem(self.keep, src)), self.edge))
+                got = Ops.add(got, Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.elem(tp, 1), pop.(b, src)), Vertex.WORTH), fa), Ops.elem(self.keep, src)), self.edge))
               end
             end
           end
@@ -2104,7 +2131,7 @@ class Field < Node
               sd = Ops.elem(tp, 0)
               fd = Ops.elem(self.fold_was, Ops.add(Ops.mul(d, self.cells), sd))
               if Ops.gt(fd, 0)
-                got = Ops.add(got, Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.elem(tp, 1), pop.(a, sd)), fd), Ops.elem(self.keep, sd)), self.edge))
+                got = Ops.add(got, Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.mul(Ops.elem(tp, 1), pop.(a, sd)), Vertex.WORTH), fd), Ops.elem(self.keep, sd)), self.edge))
               end
             end
           end
@@ -6043,11 +6070,16 @@ class TermInfo < Node
   def kernel
     return !Ops.eq(self.term.leans, nil)
   end
+  def worth(*args_)
+    @worth = (Expr.num(1)) unless instance_variable_defined?(:@worth)
+    args_.empty? ? @worth : @worth.(*args_)
+  end
+  attr_writer :worth
   def keeps
-    return Expr.pown(Expr.add([Expr.num(1), Expr.field("n_{f}")]), (-1))
+    return Expr.pown(Expr.add([Expr.num(1), Prover.neat(Expr.mul([self.worth, Expr.field("n_{f}")]))]), (-1))
   end
   def drifts
-    return Expr.grad(Expr.field("n_{f}"))
+    return Prover.neat(Expr.mul([self.worth, Expr.grad(Expr.field("n_{f}"))]))
   end
   def self.COUNTS
     s = Node.new
@@ -6194,9 +6226,19 @@ class Prover < Node
     return self.theory.equation
   end
   def infos
-    return Ops.m_map(self.theory.terms_read, ->(t) {
+    all = Ops.m_map(self.theory.terms_read, ->(t) {
       return TermInfo.new(term: t)
     })
+    meet = Ops.m_first(Ops.filt(all, ->(t) {
+      return ((Ops.eq(t.degree, 2) && !(Ops.m_empty(t.rules))) && !Ops.eq(t.folds, "0"))
+    }))
+    held = (Ops.eq(meet, nil) ? Expr.num(1) : Expr.simplify(Expr.neg(Expr.div(meet.ray_count, meet.fold_count))))
+    Ops.list(all).each do |t|
+      if Ops.eq(t.term.leans, "S_f")
+        t.worth = held
+      end
+    end
+    return all
   end
   def acting
     return Ops.filt(self.infos, ->(t) {
@@ -7036,11 +7078,11 @@ class Prover < Node
   def ways_at(one, behind)
     draws = Prover.source_of("Ray.turns")
     folding = Prover.source_of("Vertex.fold")
-    if (!(Ops.m_contains(draws, "folds")) || !(Ops.m_contains(folding, "folds[d] + 1")))
+    if (!(((Ops.m_contains(draws, "folds") || Ops.m_contains(draws, "worth")))) || !(Ops.m_contains(folding, "folds[d] + 1")))
       return nil
     end
     own = Expr.add([Prover.LATTICE, Expr.field("n_{f,l}")])
-    st = Step.of(Fact.stands("DEG", own), "the ways at a local", [one.fact.key], "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", ["Ray.turns = #{draws}: straight on at one, each folded way at its folds", "Vertex.fold = #{folding}: a fold written on a way", "DEG = #{Expr.show(own)}"])
+    st = Step.of(Fact.stands("DEG", own), "the ways at a local", [one.fact.key], "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", ["Ray.turns = #{draws}: straight on at one, each folded way at what its folds hold", "Vertex.fold = #{folding}: a fold written on a way", "DEG = #{Expr.show(own)}"])
     st.derivation = behind
     return st
   end
@@ -7293,12 +7335,15 @@ class Prover < Node
   def scale_of(hub, settles)
     vac = Expr.field("\\rho_{\\infty}")
     nf = Prover.neat(Expr.replace(Expr.replace(settles.fact.to, "\\rho", vac), "DEG_{0}", Expr.field("DEG")))
-    v = Prover.neat(Expr.pown(Expr.add([Expr.num(1), nf]), (-1)))
+    drawn = Ops.m_first(Ops.filt(self.infos, ->(t) {
+      return (t.transport && t.kernel)
+    }))
+    v = Prover.neat((Ops.eq(drawn, nil) ? Expr.pown(Expr.add([Expr.num(1), nf]), (-1)) : Expr.replace(drawn.keeps, "n_{f}", nf)))
     mover = Ops.m_first(Ops.filt(self.infos, ->(t) {
       return (!Ops.eq(t.term.rule, nil) && t.carries)
     }))
     moved = (Ops.eq(mover, nil) ? "MOVEMENT" : Ops.m_upper(mover.term.rule.name))
-    straight = Step.of(Fact.stands("v \\aside{straight}", v), "what a heading keeps straight", [settles.fact.key], "#{moved} draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", ["the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = #{Expr.show(nf)}", "v = \\frac{1}{1 + n_{f}} = #{Expr.show(v)}"])
+    straight = Step.of(Fact.stands("v \\aside{straight}", v), "what a heading keeps straight", [settles.fact.key], "#{moved} draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", ["the draw: 1 straight on against the folded ways, each at what it holds", "n_{f} at \\rho_{\\infty} = #{Expr.show(nf)}", "v = #{Expr.show(v)}"])
     straight.derivation = [settles]
     lights = self.relights
     lit = (Ops.eq(lights, nil) ? "CREATION" : Ops.m_upper(lights.term.rule.name))
@@ -8098,46 +8143,72 @@ class Inferences < Node
     end
     return Expr.numeric(d, env)
   end
+  def self.partial(e, by, names)
+    env = Node.new
+    Ops.list(names).each do |n|
+      Ops.set_at(env, n, 0)
+    end
+    d = e
+    Ops.list(by).each do |n|
+      d = Expr.simplify(Expr.d(d, n))
+    end
+    return Expr.numeric(d, env)
+  end
   def self.held_tests(s, _A, _B)
     u = "u"
     _Au = Inferences.in_m(_A.to, u)
     _Bu = Inferences.in_m(_B.to, u)
-    newton = Ops.sub(0, Ops.div(Inferences.at_nought(_Au, u, 1), 2))
     gamma = Ops.div(Inferences.at_nought(_Bu, u, 1), 2)
     beta = Ops.add(gamma, Ops.div(Inferences.at_nought(_Au, u, 2), 4))
     iA = s.fact("is", "A in r")
     iB = s.fact("is", "B in r")
+    _N = s.fact("is", "N")
     dn = "\\delta n_{f}"
     ibeta = (Ops.eq(iA, nil) ? Float::NAN : Ops.div(Inferences.at_nought(iA.to, dn, 2), 4))
     igamma = (Ops.eq(iB, nil) ? Float::NAN : Ops.div(Inferences.at_nought(iB.to, dn, 1), 2))
-    via = "the held metric, read for the classical tests"
-    ppn = Inferences.step("\\gamma \\aside{PPN}", Expr.num(gamma), via, [_A.key, _B.key], "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", ["A in u = \\bar{m}/r: #{Expr.show(_Au)}, B: #{Expr.show(_Bu)}", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = #{Fmt.fixed(newton, 6)}", "\\gamma = B'/2 = #{Fmt.fixed(gamma, 6)}", "\\beta = \\gamma + A''/4 = #{Fmt.fixed(beta, 6)}", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", (Fmt.finite(ibeta) ? "the medium's index read as an isotropic metric: \\gamma = #{Fmt.fixed(igamma, 4)}, \\beta = #{Fmt.fixed(ibeta, 4)} - a held clock does not read it" : "the medium's index gives no metric of its own here")])
+    newton = (Ops.eq(iA, nil) ? Float::NAN : Ops.sub(0, Ops.div(Inferences.at_nought(iA.to, dn, 1), 2)))
+    slope = (Ops.eq(_N, nil) ? Float::NAN : Inferences.at_nought(_N.to, dn, 1))
+    via = "the rules' clock, ruler and index, read for the classical tests"
+    ppn = Inferences.step("\\gamma \\aside{PPN}", Expr.num(igamma), via, [_A.key, _B.key], "THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same", ["A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius", "Newton: -A'/2 = #{Fmt.fixed(newton, 6)}", "\\gamma = B'/2 = #{Fmt.fixed(igamma, 6)}", "\\beta = A''/4 = #{Fmt.fixed(ibeta, 6)}", "the held metric in the area radius: \\gamma = #{Fmt.fixed(gamma, 6)}, \\beta = #{Fmt.fixed(beta, 6)}", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}"])
+    w = "w"
+    clockU = (Ops.eq(iA, nil) ? Expr.sub(Expr.num(1), Expr.mul([Expr.num(2), Expr.field(dn)])) : iA.to)
+    stands = Expr.neg(Expr.pown(Expr.sub(clockU, Expr.field(w)), 0.5))
+    names = [dn, w]
+    n1 = Inferences.partial(stands, [dn], names)
+    a1 = Ops.mul(4, Inferences.partial(stands, [w, w], names))
+    a2 = Inferences.partial(stands, [dn, w], names)
+    a3 = Ops.div(Inferences.partial(stands, [dn, dn], names), 2)
+    clock = Ops.add(Ops.add(Ops.mul(2, a3), a1), Ops.mul(4, a2))
+    lean = Ops.sub(Ops.mul(2, 1), Ops.mul(2, (Ops.sub(0, 1))))
+    k = Ops.add(clock, lean)
+    k = Ops.div(Ops.m_round((Ops.mul(k, Ops.power(10, 9)))), Ops.power(10, 9))
     _L = Expr.field("L")
     q = Expr.mul([_Au, Expr.add([Expr.pown(_L, (-2)), Expr.pown(Expr.field(u), 2)])])
     orbit = Expr.simplify(Expr.add([Expr.mul([Expr.num((-0.5)), Expr.d(q, u)]), Expr.field(u)]))
-    mu = Inferences.at_nought(orbit, u, 0)
-    lin = Inferences.at_nought(orbit, u, 1)
-    eps = Ops.div(Inferences.at_nought(orbit, u, 2), 2)
-    k = Ops.mul(Ops.mul(2, eps), mu)
-    k = Ops.div(Ops.m_round((Ops.mul(k, Ops.power(10, 9)))), Ops.power(10, 9))
+    geo = Ops.mul(Ops.div(Ops.mul(2, Inferences.at_nought(orbit, u, 2)), 2), Inferences.at_nought(orbit, u, 0))
     m_sun = 1476.625
     a_m = 57909050000
     e_m = 0.205630
     lap = Ops.div(Ops.mul(Ops.mul(k, Math::PI), m_sun), (Ops.mul(a_m, (Ops.sub(1, Ops.mul(e_m, e_m))))))
     century = Ops.mul(Ops.div(Ops.mul(lap, 36525), 87.9691), 206264.806)
-    ipp = (Fmt.finite(ibeta) ? Ops.div((Ops.sub(Ops.add(2, Ops.mul(2, igamma)), ibeta)), 3) : Float::NAN)
-    peri = Inferences.step("\\Delta\\varphi", Expr.mul([Expr.num(k), Expr.field("\\pi"), Expr.field("\\bar{m}"), Expr.pown(Expr.field("a\\paren{1 - e^{2}}"), (-1))]), "a bound orbit in the held metric", [_A.key, _B.key], "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", ["u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = #{Expr.show(orbit)}", "\\mu = #{Fmt.fixed(mu, 6)}/L^{2}, linear #{Fmt.fixed(lin, 6)}, \\epsilon = #{Fmt.fixed(eps, 6)}\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = #{Fmt.fixed(k, 6)}\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): #{Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04", (Fmt.finite(ipp) ? "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = #{Fmt.fixed(ipp, 4)} of it" : "the medium's index gives no metric of its own here")])
-    delay = Inferences.step("\\Delta t \\aside{Shapiro}", Expr.mul([Expr.num(Ops.add(1, gamma)), Expr.field("\\bar{m}"), Expr.log(Expr.field("\\frac{4r_{1}r_{2}}{b^{2}}"))]), "light passing a body, timed", [_B.key, _A.key], "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", ["\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = #{Fmt.fixed(gamma, 6)}", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: #{Fmt.fixed(Ops.mul(Ops.mul(Ops.mul(2, (Ops.add(1, gamma))), 4.925491), Ops.m_ln((Ops.div(Ops.mul(Ops.mul(4, 149597870700.0), 1433530000000.0), (Ops.mul(695700000.0, 695700000.0)))))), 1)} \\mu s"])
+    peri = Inferences.step("\\Delta\\varphi", Expr.mul([Expr.num(k), Expr.field("\\pi"), Expr.field("\\bar{m}"), Expr.pown(Expr.field("a\\paren{1 - e^{2}}"), (-1))]), "a bound orbit, moved by S.v", [_A.key, _B.key], "THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century", ["the standing share, A = #{Expr.show(clockU)} in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + #{Fmt.fixed(n1, 3)}U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}", "a_{1} = #{Fmt.fixed(a1, 6)}, a_{2} = #{Fmt.fixed(a2, 6)}, a_{3} = #{Fmt.fixed(a3, 6)}: moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = #{Fmt.fixed(clock, 6)}", "the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = #{Fmt.fixed(lean, 6)}", "a lap: #{Fmt.fixed(k, 6)}\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives #{Fmt.fixed(geo, 6)}\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): #{Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04"])
+    delay = Inferences.step("\\Delta t \\aside{Shapiro}", Expr.mul([Expr.num(slope), Expr.field("\\bar{m}"), Expr.log(Expr.field("\\frac{4r_{1}r_{2}}{b^{2}}"))]), "light passing a body, timed", [_A.key, _B.key], "THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1", ["the index: N = 1 + #{Fmt.fixed(slope, 4)}\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r", "\\int #{Fmt.fixed(slope, 4)}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = #{Fmt.fixed(slope, 4)}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: #{Fmt.fixed(Ops.mul(Ops.mul(Ops.mul(2, slope), 4.925491), Ops.m_ln((Ops.div(Ops.mul(Ops.mul(4, 149597870700.0), 1433530000000.0), (Ops.mul(695700000.0, 695700000.0)))))), 1)} \\mu s; Cassini measured general relativity's to 10^{-5}"])
     return [ppn, peri, delay]
   end
   def self.metric_of
-    return Inference.new(name: "an index is a metric", because: "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots", fire: ->(s) {
+    return Inference.new(name: "the held clock and ruler, in the lattice's own radius", because: "a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order", fire: ->(s) {
       n = Ops.or_else(s.fact("is", "N in r")) { s.fact("is", "N") }
-      if (Ops.eq(n, nil) || s.has("is", "A in r"))
+      dn = s.fact("is", "\\delta n_{f}")
+      if ((Ops.eq(n, nil) || Ops.eq(dn, nil)) || s.has("is", "A in r"))
         return []
       end
-      via = "an index is a metric"
-      return [Inferences.step("A in r", Expr.simplify(Expr.pown(n.to, (-2))), via, [n.key], "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise", ["MOVEMENT: one tick per point the place stands for", "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N", "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = #{Expr.show(Expr.simplify(Expr.pown(n.to, (-2))))}"]), Inferences.step("B in r", Expr.simplify(Expr.pown(n.to, 2)), via, [n.key], "and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads `d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does", ["the same place HAS N points in it, so d\\ell/dr = N", "B = \\paren{d\\ell/dr}^{2} = N^{2} = #{Expr.show(Expr.simplify(Expr.pown(n.to, 2)))}", "and A\\cdot B = 1 still, as Schwarzschild has it"])]
+      via = "the held clock and ruler, in the lattice's own radius"
+      u = Expr.field("\\delta n_{f}")
+      points = Expr.pown(Expr.sub(Expr.num(1), u), (-1))
+      _B = Expr.simplify(Expr.pown(points, 2))
+      phi = Expr.simplify(Expr.mul([u, Expr.sub(Expr.num(1), u)]))
+      _A = Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.num(2), phi])))
+      return [Inferences.step("B in r", _B, via, [n.key, dn.key], "THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square", ["a fold: two points into one, so a place stands for one more", "chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})", "B = #{Expr.show(_B)}"]), Inferences.step("A in r", _A, via, [n.key, dn.key], "THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one", ["a held clock: A = 1 - 2\\Phi", "\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points", "\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}", "A = #{Expr.show(_A)}", "light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index #{Expr.show(n.to)} to the first order"])]
     })
   end
   def self.accumulating
@@ -8321,11 +8392,15 @@ class Inferences < Node
   def self.bending
     return Inference.new(name: "the integral of the index across the path", because: "`turns` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up", fire: ->(s) {
       rec = s.fact("is", "\\delta n_{f}")
-      if (Ops.eq(rec, nil) || s.has("is", "\\alpha"))
+      n = s.fact("is", "N")
+      if ((Ops.eq(rec, nil) || Ops.eq(n, nil)) || s.has("is", "\\alpha"))
         return []
       end
-      alpha = Expr.simplify(Expr.mul([Expr.num(2), Expr.replace(rec.to, "r", Expr.sym("b"))]))
-      return [Inferences.step("\\alpha", alpha, "the integral of the index across the path", [rec.key], "the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer", ["turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: #{Expr.show(rec.to)}", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = #{Expr.show(alpha)}"])]
+      env = Node.new
+      Ops.setattr(env, "\\delta n_{f}", 0)
+      slope = Expr.numeric(Expr.simplify(Expr.d(n.to, "\\delta n_{f}")), env)
+      alpha = Expr.simplify(Expr.mul([Expr.num(Ops.mul(2, slope)), Expr.replace(rec.to, "r", Expr.sym("b"))]))
+      return [Inferences.step("\\alpha", alpha, "the integral of the index across the path", [rec.key], "the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured", ["turns: 1 way straight on against what folds[d] holds along d", "the index's slope in the record: #{Fmt.fixed(slope, 4)}", "the fold record along the path: #{Expr.show(rec.to)}", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = #{Expr.show(alpha)}"])]
     })
   end
   def self.shadowing
@@ -9846,7 +9921,7 @@ class Medium < Node
   end
   attr_writer :trading
   def beta(h)
-    v = Ops.div(h.momentum.norm, h.mass)
+    v = h.velocity(0).norm
     return (Ops.lt(v, 0) ? 0 : ((Ops.gt(v, 1) ? 1 : v)))
   end
   def own(*args_)
@@ -10430,7 +10505,7 @@ class Medium < Node
   def emitted(h)
     near = self.face_of(h)
     q = Ops.mul(self.per_way(h), (Ops.power(near, Ops.sub(self.D, 1))))
-    return [q, Ops.mul(q, h.x), Ops.mul(q, h.y), Ops.mul(Ops.div(Ops.mul(q, Ops.elem(h.momentum.components, 0)), h.mass), self.K), Ops.mul(Ops.div(Ops.mul(q, Ops.elem(h.momentum.components, 1)), h.mass), self.K), Ops.mul(q, near), Ops.m_index_of(self.holes, h), 0]
+    return [q, Ops.mul(q, h.x), Ops.mul(q, h.y), Ops.mul(Ops.mul(q, Ops.elem(h.velocity(0).components, 0)), self.K), Ops.mul(Ops.mul(q, Ops.elem(h.velocity(0).components, 1)), self.K), Ops.mul(q, near), Ops.m_index_of(self.holes, h), 0]
   end
   def left_for(e, d)
     back = Ops.div(d, self.K)
@@ -11105,7 +11180,7 @@ class Medium < Node
     self.ticks = Ops.add(self.ticks, 1)
   end
   def lean_under(h)
-    return self.pull_at(h.x, h.y, self.plane_of(h), Ops.div(Ops.elem(h.momentum.components, 0), h.mass), Ops.div(Ops.elem(h.momentum.components, 1), h.mass))
+    return self.pull_at(h.x, h.y, self.plane_of(h), Ops.elem(h.velocity(0).components, 0), Ops.elem(h.velocity(0).components, 1))
   end
   def pulled(*args_)
     @pulled = ([]) unless instance_variable_defined?(:@pulled)
@@ -11120,12 +11195,10 @@ class Medium < Node
       h = Ops.elem(self.holes, i)
       if h.moves
         g = Ops.elem(self.pulled, i)
-        h.momentum = Ops.add(h.momentum, Vector.new(components: [Ops.mul(Ops.elem(g, 0), h.mass), Ops.mul(Ops.elem(g, 1), h.mass)]))
-        if Ops.gt(h.momentum.norm, h.mass)
-          h.momentum = Ops.mul(h.momentum.unit, h.mass)
-        end
-        h.x = Ops.add(h.x, Ops.mul(Ops.div(Ops.elem(h.momentum.components, 0), h.mass), self.K))
-        h.y = Ops.add(h.y, Ops.mul(Ops.div(Ops.elem(h.momentum.components, 1), h.mass), self.K))
+        h.momentum = Ops.add(h.momentum, Ops.mul(Vector.new(components: [Ops.mul(Ops.elem(g, 0), h.mass), Ops.mul(Ops.elem(g, 1), h.mass)]), (Ops.div(1, h.standing(0)))))
+        v = h.velocity(0)
+        h.x = Ops.add(h.x, Ops.mul(Ops.elem(v.components, 0), self.K))
+        h.y = Ops.add(h.y, Ops.mul(Ops.elem(v.components, 1), self.K))
         h.moved = Ops.add(h.moved, 1)
       end
     end
@@ -21563,12 +21636,10 @@ class GTheory < Theory
   })
   RULE_S_v = Rule.new(id: "/S.v", name: "Transport", rate: nil, over: "Source", single: true, where: ->(it) {
     return it.moves
-  }, source: "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\"", body: ->(x) {
-    x.momentum = Ops.add(x.momentum, Ops.mul(Ops.m_first(x.cells).sinks, x.mass))
-    if Ops.gt(x.momentum.norm, x.mass)
-      x.momentum = Ops.mul(x.momentum.unit, x.mass)
-    end
-    x.advance = Ops.add(x.advance, Ops.mul(x.momentum, (Ops.div(1, x.mass))))
+  }, source: "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  u := x.cells.first.potential\\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\\n  x.advance = x.advance + x.velocity(u)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\"", body: ->(x) {
+    u = Ops.m_first(x.cells).potential
+    x.momentum = Ops.add(x.momentum, Ops.mul(Ops.m_first(x.cells).sinks, (Ops.div(Ops.mul(x.mass, (Ops.sub(1, Ops.mul(2, u)))), x.standing(u)))))
+    x.advance = Ops.add(x.advance, x.velocity(u))
     g = x.world.geometry
     d = Ops.elem(Ops.m_most(Ops.rng(g.DEG), ->(e) {
       return x.advance.along(g.V(e))
@@ -21607,18 +21678,18 @@ G = GTheory.new
 def self.G = G
 
 G.define_singleton_method(:equation, &(eq_ = Node.new(latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega", terms: [
-  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "2", at: ->(s) { 2 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "s.F", at: ->(s) { s.F }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "-2", at: ->(s) { (-2) }), space: Node.new(source: "-1", at: ->(s) { (-1) }), folds: Node.new(source: "1", at: ->(s) { 1 }))),
-  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: true, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "s.DEG", at: ->(s) { s.DEG }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "s.n_f / s.DEG * (1 - s.ρ)", at: ->(s) { Ops.mul(Ops.div(s.n_f, s.DEG), (Ops.sub(1, s.ρ))) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "s.n_f / s.DEG", at: ->(s) { Ops.div(s.n_f, s.DEG) }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "-s.DEG", at: ->(s) { (-s.DEG) }))),
-  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "s.n_f * (1 - s.ρ)", at: ->(s) { Ops.mul(s.n_f, (Ops.sub(1, s.ρ))) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "s.n_f", at: ->(s) { s.n_f }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: true, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "s.ω", at: ->(s) { s.ω }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "s.ω", at: ->(s) { s.ω }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/4", rate: nil, name: "Arrival", over: "Ray", where: nil, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate: nil, degree: 0, outside: false, settles: true, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: true, share: Node.new(source: "1", at: ->(s) { 1 }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
-  Node.new(rule: Node.new(id: "/S.1", rate: nil, name: "Emission", over: "Boundary", where: Node.new(source: "emits & vertex.source.spare"), source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate: nil, degree: 0, outside: true, settles: false, transport: false, leans: "n_f", turned: "way", doing: Node.new(carries: false, sets: true, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: true, settles: false, share: Node.new(source: "s.ω * (1 - s.β)", at: ->(s) { Ops.mul(s.ω, (Ops.sub(1, s.β))) }), asked: Node.new(source: "1 - s.β", at: ->(s) { Ops.sub(1, s.β) }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "1", at: ->(s) { 1 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 })))
+  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "2", at: ->(s) { 2 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "s.F", at: ->(s) { s.F }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "-2", at: ->(s) { (-2) }), space: Node.new(source: "-1", at: ->(s) { (-1) }), folds: Node.new(source: "1", at: ->(s) { 1 }))),
+  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: Node.new(source: "active"), source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 2, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "s.F", at: ->(s) { s.F }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: true, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "s.DEG", at: ->(s) { s.DEG }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "s.n_f / s.DEG * (1 - s.ρ)", at: ->(s) { Ops.mul(Ops.div(s.n_f, s.DEG), (Ops.sub(1, s.ρ))) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "s.n_f / s.DEG", at: ->(s) { Ops.div(s.n_f, s.DEG) }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "-s.DEG", at: ->(s) { (-s.DEG) }))),
+  Node.new(rule: Node.new(id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: Node.new(source: "neutral"), source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: false, share: Node.new(source: "s.n_f * (1 - s.ρ)", at: ->(s) { Ops.mul(s.n_f, (Ops.sub(1, s.ρ))) }), asked: Node.new(source: "1 - s.ρ", at: ->(s) { Ops.sub(1, s.ρ) }), around: Node.new(source: "s.n_f", at: ->(s) { s.n_f }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: true, trades: false, grew: Node.new(source: "1", at: ->(s) { 1 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "1 - s.ω", at: ->(s) { Ops.sub(1, s.ω) }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "1", at: ->(s) { 1 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "S_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "0", at: ->(s) { 0 }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "0", at: ->(s) { 0 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: true, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "s.ω", at: ->(s) { s.ω }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/c", rate: "σ", name: "Movement", over: "Ray", where: Node.new(source: "active"), source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "S_f", turned: "way", doing: Node.new(carries: true, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 1, outside: false, settles: false, share: Node.new(source: "s.ω", at: ->(s) { s.ω }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/4", rate: nil, name: "Arrival", over: "Ray", where: nil, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate: nil, degree: 0, outside: false, settles: true, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: false, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: false, settles: true, share: Node.new(source: "1", at: ->(s) { 1 }), asked: Node.new(source: "1", at: ->(s) { 1 }), around: Node.new(source: "1", at: ->(s) { 1 }), rays: Node.new(source: "0", at: ->(s) { 0 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 }))),
+  Node.new(rule: Node.new(id: "/S.1", rate: nil, name: "Emission", over: "Boundary", where: Node.new(source: "emits & vertex.source.spare"), source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate: nil, degree: 0, outside: true, settles: false, transport: false, leans: "S_f", turned: "way", doing: Node.new(carries: false, sets: true, grown: false, trades: false, grew: Node.new(source: "0", at: ->(s) { 0 }), grew_apart: Node.new(source: "0", at: ->(s) { 0 }), draws: nil, needs: 0, outside: true, settles: false, share: Node.new(source: "s.ω * (1 - s.β)", at: ->(s) { Ops.mul(s.ω, (Ops.sub(1, s.β))) }), asked: Node.new(source: "1 - s.β", at: ->(s) { Ops.sub(1, s.β) }), around: Node.new(source: "s.ω", at: ->(s) { s.ω }), rays: Node.new(source: "1", at: ->(s) { 1 }), space: Node.new(source: "0", at: ->(s) { 0 }), folds: Node.new(source: "0", at: ->(s) { 0 })))
 ]); -> { eq_ }))
 
 def self.LINE2
@@ -21670,7 +21741,7 @@ def self.nl0
   @nl0
 end
 def self.METHOD_SOURCES
-  @METHOD_SOURCES = ("\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at") unless instance_variable_defined?(:@METHOD_SOURCES)
+  @METHOD_SOURCES = ("\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at") unless instance_variable_defined?(:@METHOD_SOURCES)
   @METHOD_SOURCES
 end
 

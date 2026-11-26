@@ -69,24 +69,34 @@ int main(int argc, char** argv) {
     return truthy(gt(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 8.0 }) }), call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 18.0 }) }))) ? std::string(PASS) : std::string("failed: ") + "gt(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 8.0 }) }), call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 18.0 }) }))";
   });
 
-  t("tests/coincidence.ray:19 on coincidence", [&]() -> std::string {
+  t("tests/coincidence.ray:23 on coincidence", [&]() -> std::string {
     Value it = make(S<"Model">(), { kw(S<"theory">(), K(S<"G">())) });
     int guard = 0;
     while (!truthy(eq(get(get(it, S<"theory">()), S<"name">()), "G"))) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(gt(mul(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)) ? std::string(PASS) : std::string("failed: ") + "gt(mul(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)";
+    return truthy(lt(m_abs((sub(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 8.0 }) }), div(1.0, 9.0)))), 0.000001)) ? std::string(PASS) : std::string("failed: ") + "lt(m_abs((sub(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 8.0 }) }), div(1.0, 9.0)))), 0.000001)";
   });
 
-  t("tests/coincidence.ray:20 on coincidence", [&]() -> std::string {
+  t("tests/coincidence.ray:24 on coincidence", [&]() -> std::string {
     Value it = make(S<"Model">(), { kw(S<"theory">(), K(S<"G">())) });
     int guard = 0;
     while (!truthy(eq(get(get(it, S<"theory">()), S<"name">()), "G"))) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(lt(mul(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? std::string(PASS) : std::string("failed: ") + "lt(mul(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
+    return truthy(gt(mul(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)) ? std::string(PASS) : std::string("failed: ") + "gt(mul(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)";
+  });
+
+  t("tests/coincidence.ray:25 on coincidence", [&]() -> std::string {
+    Value it = make(S<"Model">(), { kw(S<"theory">(), K(S<"G">())) });
+    int guard = 0;
+    while (!truthy(eq(get(get(it, S<"theory">()), S<"name">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(lt(mul(call(it, S<"value_of">(), { "\\frac{a_{0}}{cH}", call(it, S<"settled">(), { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? std::string(PASS) : std::string("failed: ") + "lt(mul(call(it, S<\"value_of\">(), { \"\\\\frac{a_{0}}{cH}\", call(it, S<\"settled\">(), { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
   });
 
   t("tests/felt.ray:10 on felt", [&]() -> std::string {

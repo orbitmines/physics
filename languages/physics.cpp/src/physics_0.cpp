@@ -77,7 +77,7 @@ static void C_Ray(Cls& c) {
     return null;
   });
   c.getter("turns", [](Value self, const Args& a1) -> Value {
-    return call(get(get(self, S<"vertex">()), S<"world">()), S<"draw">(), { list({ 1.0, get(get(self, S<"vertex">()), S<"folds">()) }), list({ get(self, S<"steps">()), fn([=](const Args& a2) -> Value {
+    return call(get(get(self, S<"vertex">()), S<"world">()), S<"draw">(), { list({ 1.0, get(get(self, S<"vertex">()), S<"worth">()) }), list({ get(self, S<"steps">()), fn([=](const Args& a2) -> Value {
       auto d_1 = cell(arg(a2, 0));
       return elem(getOpt(call(get(self, S<"vertex">()), S<"outward">(), { d_1->v }), S<"rays">()), d_1->v);
       return null;
@@ -236,6 +236,7 @@ static void C_Edge(Cls& c) {
 static const bool R_Edge = define_class("Edge", "Ray", &C_Edge);
 
 static void C_Vertex(Cls& c) {
+  c.staticField("WORTH", [](const Value& self) -> Value { return 2.0; });
   c.field("world", nullptr);
   c.field("at", nullptr);
   c.field("ordinal", [](const Value& self) -> Value { return 0.0; });
@@ -256,6 +257,18 @@ static void C_Vertex(Cls& c) {
     return 0.0;
     return null;
   })); });
+  c.getter("potential", [](Value self, const Args& a1) -> Value {
+    return 0.0;
+    return null;
+  });
+  c.getter("worth", [](Value self, const Args& a1) -> Value {
+    return m_map(get(self, S<"folds">()), fn([=](const Args& a3) -> Value {
+      auto f_2 = cell(arg(a3, 0));
+      return mul(get(K(S<"Vertex">()), S<"WORTH">()), f_2->v);
+      return null;
+    }));
+    return null;
+  });
   c.field("held", [](const Value& self) -> Value { return list({  }); });
   c.field("folded_into", [](const Value& self) -> Value { return null; });
   c.getter("alive", [](Value self, const Args& a1) -> Value {
@@ -1075,6 +1088,21 @@ static void C_Source(Cls& c) {
     return invoke(choose(self, "mass"), {  });
     return null;
   });
+  c.method("clock_at", [](Value self, const Args& a1) -> Value {
+    auto u_0 = cell(arg(a1, 0));
+    return sub(1.0, mul(mul(2.0, u_0->v), (sub(1.0, u_0->v))));
+    return null;
+  });
+  c.method("standing", [](Value self, const Args& a1) -> Value {
+    auto u_0 = cell(arg(a1, 0));
+    return div(mul(get(self, S<"mass">()), m_sqrt(call(self, S<"clock_at">(), { u_0->v }))), m_sqrt((add(mul(get(self, S<"mass">()), get(self, S<"mass">())), mul(get(get(self, S<"momentum">()), S<"norm">()), get(get(self, S<"momentum">()), S<"norm">()))))));
+    return null;
+  });
+  c.method("velocity", [](Value self, const Args& a1) -> Value {
+    auto u_0 = cell(arg(a1, 0));
+    return mul(get(self, S<"momentum">()), (div(m_sqrt(call(self, S<"clock_at">(), { u_0->v })), m_sqrt((add(mul(get(self, S<"mass">()), get(self, S<"mass">())), mul(get(get(self, S<"momentum">()), S<"norm">()), get(get(self, S<"momentum">()), S<"norm">()))))))));
+    return null;
+  });
   c.field("absorbs", [](const Value& self) -> Value { return true; });
   c.method("choose emit?", [](Value, const Args&) -> Value { throw std::runtime_error("the choice emit? is not defined by anyone"); });
   c.method("choose mass", [](Value, const Args&) -> Value { throw std::runtime_error("the choice mass is not defined by anyone"); });
@@ -1138,6 +1166,10 @@ static void C_Cell(Cls& c) {
   c.method("drift", [](Value self, const Args& a1) -> Value {
     auto d_0 = cell(arg(a1, 0));
     return call(get(self, S<"of">()), S<"drift_from">(), { get(self, S<"index">()), d_0->v });
+    return null;
+  });
+  c.getter("potential", [](Value self, const Args& a1) -> Value {
+    return 0.0;
     return null;
   });
   c.getter("sinks", [](Value self, const Args& a1) -> Value {
@@ -1574,7 +1606,7 @@ static void C_Field(Cls& c) {
       };
       nf_1->v = mul(nf_1->v, get(self, S<"edge">()));
       setAt(get(self, S<"folds">()), c__1->v, nf_1->v);
-      setAt(get(self, S<"keep">()), c__1->v, div(1.0, (add(1.0, nf_1->v))));
+      setAt(get(self, S<"keep">()), c__1->v, div(1.0, (add(1.0, mul(get(K(S<"Vertex">()), S<"WORTH">()), nf_1->v)))));
     };
     return null;
   });
@@ -1806,7 +1838,7 @@ static void C_Field(Cls& c) {
             if (truthy(gt(fa_3->v, 0.0))) {
               for (double i4 = 0, n4 = num(get(self, S<"A">())); i4 < n4; i4++) {
                 auto b_4 = cell(i4);
-                got_2->v = add(got_2->v, mul(mul(mul(mul(elem(tp_3->v, 1.0), invoke(pop_0->v, { b_4->v, src_3->v })), fa_3->v), elem(get(self, S<"keep">()), src_3->v)), get(self, S<"edge">())));
+                got_2->v = add(got_2->v, mul(mul(mul(mul(mul(elem(tp_3->v, 1.0), invoke(pop_0->v, { b_4->v, src_3->v })), get(K(S<"Vertex">()), S<"WORTH">())), fa_3->v), elem(get(self, S<"keep">()), src_3->v)), get(self, S<"edge">())));
               };
             }
           }
@@ -1819,7 +1851,7 @@ static void C_Field(Cls& c) {
               auto sd_4 = cell(); sd_4->v = elem(tp_4->v, 0.0);
               auto fd_4 = cell(); fd_4->v = elem(get(self, S<"fold_was">()), add(mul(d_3->v, get(self, S<"cells">())), sd_4->v));
               if (truthy(gt(fd_4->v, 0.0))) {
-                got_2->v = add(got_2->v, mul(mul(mul(mul(elem(tp_4->v, 1.0), invoke(pop_0->v, { a_1->v, sd_4->v })), fd_4->v), elem(get(self, S<"keep">()), sd_4->v)), get(self, S<"edge">())));
+                got_2->v = add(got_2->v, mul(mul(mul(mul(mul(elem(tp_4->v, 1.0), invoke(pop_0->v, { a_1->v, sd_4->v })), get(K(S<"Vertex">()), S<"WORTH">())), fd_4->v), elem(get(self, S<"keep">()), sd_4->v)), get(self, S<"edge">())));
               }
             };
           };

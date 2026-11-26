@@ -121,7 +121,7 @@ func main() {
     return "failed: " + "Gt(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 8.0 }) }), Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 18.0 }) }))"
   })
 
-  t("tests/coincidence.ray:19 on coincidence", func() any {
+  t("tests/coincidence.ray:23 on coincidence", func() any {
     var it any = Make("Model", []any{ Kw("theory", K("G")) }...)
     _ = it
     guard := 0.0
@@ -132,13 +132,13 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Gt(Mul(Call(it, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(it, "settled", []any{ 8.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.155)) {
+    if Truthy(Lt(M_abs((Sub(Call(it, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(it, "settled", []any{ 8.0 }) }), Div(1.0, 9.0)))), 0.000001)) {
       return pass_
     }
-    return "failed: " + "Gt(Mul(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 8.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.155)"
+    return "failed: " + "Lt(M_abs((Sub(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 8.0 }) }), Div(1.0, 9.0)))), 0.000001)"
   })
 
-  t("tests/coincidence.ray:20 on coincidence", func() any {
+  t("tests/coincidence.ray:24 on coincidence", func() any {
     var it any = Make("Model", []any{ Kw("theory", K("G")) }...)
     _ = it
     guard := 0.0
@@ -149,10 +149,27 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Lt(Mul(Call(it, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(it, "settled", []any{ 8.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.183)) {
+    if Truthy(Gt(Mul(Call(it, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(it, "settled", []any{ 4.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.155)) {
       return pass_
     }
-    return "failed: " + "Lt(Mul(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 8.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.183)"
+    return "failed: " + "Gt(Mul(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 4.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.155)"
+  })
+
+  t("tests/coincidence.ray:25 on coincidence", func() any {
+    var it any = Make("Model", []any{ Kw("theory", K("G")) }...)
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(Get(it, "theory"), "name"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Lt(Mul(Call(it, "value_of", []any{ "\\frac{a_{0}}{cH}", Call(it, "settled", []any{ 4.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.183)) {
+      return pass_
+    }
+    return "failed: " + "Lt(Mul(Call(it, \"value_of\", []any{ \"\\\\frac{a_{0}}{cH}\", Call(it, \"settled\", []any{ 4.0 }) }), M_sqrt((Sub(1.0, 0.315)))), 0.183)"
   })
 
   t("tests/felt.ray:10 on felt", func() any {

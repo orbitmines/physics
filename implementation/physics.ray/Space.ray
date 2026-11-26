@@ -61,7 +61,7 @@ Ray += {
    * heading survives it is how far the field reaches, which way it leans is how much a path bends.
    * A ray that takes a folded way goes on ALONG that way - it refracts - rather than keeping its heading.
    */
-  turns (): Ray? => draw([1, this.vertex.folds], [this.steps, d => this.vertex.outward(d)?.rays[d]])
+  turns (): Ray? => draw([1, this.vertex.worth], [this.steps, d => this.vertex.outward(d)?.rays[d]])
 
   /* this ray steps onto `to`, arriving there; what it carries goes with it */
   hand (to: Ray) => {
@@ -95,6 +95,18 @@ Vertex += {
   destroyed: Real = 0
   /* which way each fold went - one count per exit, written by `fold`: the fold record, n_f */
   n_f | folds: N[] = this.rays.map(_ => 0)
+  /*
+   * what a way's folds hold, in rays: a meeting folds TWO rays into one (ANNIHILATE), so a fold holds two rays' worth
+   * of what was behind it - and a ray passing is offered a folded way at what that way holds, not at how many folds it is
+   */
+  static WORTH = 2
+  /*
+   * the potential a held clock reads here, against the vacuum far off, from what OTHER bodies laid - a body's own
+   * record is its mass, not a place it stands in. A box of the line is two-dimensional, and a potential there grows
+   * as the log of the distance and vanishes nowhere, so a box reads the vacuum's own clock: nought
+   */
+  potential (): Real => 0
+  S_f | worth (): N[] => this.folds.map(f => Vertex.WORTH * f)
   /* points folded into this one, most recent last */
   held: Vertex[] = []
   /* the point this one was folded into, if it was */

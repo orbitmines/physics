@@ -68,7 +68,7 @@ t_case("tests/coincidence.ray:17 on coincidence", function() {
   if (truthy(gt(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), it$value_of("\\frac{a_{0}}{cH}", it$settled(18))))) "pass" else paste0("failed: ", "gt(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(18)))")
 })
 
-t_case("tests/coincidence.ray:19 on coincidence", function() {
+t_case("tests/coincidence.ray:23 on coincidence", function() {
   it <- Model$new(theory = G)
   guard <- 0
   while (!truthy(eq(it$theory$name, "G"))) {
@@ -76,10 +76,10 @@ t_case("tests/coincidence.ray:19 on coincidence", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(gt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.155))) "pass" else paste0("failed: ", "gt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.155)")
+  if (truthy(lt(m_abs((r_sub(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), r_div(1, 9)))), 0.000001))) "pass" else paste0("failed: ", "lt(m_abs((r_sub(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), r_div(1, 9)))), 0.000001)")
 })
 
-t_case("tests/coincidence.ray:20 on coincidence", function() {
+t_case("tests/coincidence.ray:24 on coincidence", function() {
   it <- Model$new(theory = G)
   guard <- 0
   while (!truthy(eq(it$theory$name, "G"))) {
@@ -87,7 +87,18 @@ t_case("tests/coincidence.ray:20 on coincidence", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(lt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183))) "pass" else paste0("failed: ", "lt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(8)), m_sqrt((r_sub(1, 0.315)))), 0.183)")
+  if (truthy(gt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(4)), m_sqrt((r_sub(1, 0.315)))), 0.155))) "pass" else paste0("failed: ", "gt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(4)), m_sqrt((r_sub(1, 0.315)))), 0.155)")
+})
+
+t_case("tests/coincidence.ray:25 on coincidence", function() {
+  it <- Model$new(theory = G)
+  guard <- 0
+  while (!truthy(eq(it$theory$name, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(lt(r_mul(it$value_of("\\frac{a_{0}}{cH}", it$settled(4)), m_sqrt((r_sub(1, 0.315)))), 0.183))) "pass" else paste0("failed: ", "lt(r_mul(it$value_of(\"\\\\frac{a_{0}}{cH}\", it$settled(4)), m_sqrt((r_sub(1, 0.315)))), 0.183)")
 })
 
 t_case("tests/felt.ray:10 on felt", function() {

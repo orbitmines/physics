@@ -73,9 +73,9 @@ Ray += {
 G: Theory = class {
   name = "G"
   /*
-   * three dimensions on the cube's corners, eight ways (BCC8): with a_0 the empty vacuum's own growth, v H_Lambda, the
-   * measured a_0/cH_0 is v sqrt(Omega_Lambda), and v = 2/(DEG+2) puts it in the measured band at eight ways and nowhere
-   * else a lattice of Z^3 offers (gravity.coincidence). It was the faces and edges, eighteen, while a_0 was read as vH
+   * three dimensions on the cube's corners, eight ways (BCC8). The ways set only the SCALE, never a shape: with a fold
+   * offered at the two rays it holds, a_0/cH_Lambda = v = 1/(1 + DEG), a ninth here - half what is measured, which four
+   * ways (D + 1) would meet. Kept at eight for now; DEG is dynamic, the settled vacuum holding half as many again
    */
   lattice (): Geometry => BCC8
 
@@ -702,9 +702,15 @@ G: Theory = class {
      * it was carried (`turns`), so is a body: the carry is kept, as motion. That is the acceleration - what the
      * folding of its own point hands it a tick - and it can never pass c-bar, since a step is one decision a tick
      */
-    x.momentum = x.momentum + x.cells.first.sinks * x.mass
-    x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass
-    x.advance = x.advance + x.momentum * (Real.ONE / x.mass)
+    /*
+     * AND IT MOVES OR IT STANDS: what it carries is its momentum per tick it stands (Source.standing), and the folding
+     * of its point is felt on the ticks it stands - the slope of the held clock there, which is the pull times one
+     * less twice the potential the clock reads (`potential`). So the more it goes the less of a tick is left to
+     * stand in, and it never passes c-bar: no cap is needed, the tradeoff is the cap
+     */
+    u := x.cells.first.potential
+    x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))
+    x.advance = x.advance + x.velocity(u)
 
     g := x.world.geometry
     d := Array.range(g.DEG).most(e => x.advance.along(g.V(e)))[1]

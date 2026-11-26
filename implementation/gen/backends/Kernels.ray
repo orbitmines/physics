@@ -772,7 +772,7 @@ Kernels := class {
     folds := Kernels.slot(Kernels.SLOT_FOLDS, "c")
     keep := Kernels.slot(Kernels.SLOT_KEEP, "c")
     /* a heading stands for DEG/A edges: a point's folds are DEG times the headings' mean */
-    "{c_}\n{guard}\n{nf0}\n{sum}\nnf = nf * (P.DEG / f32_of_u(P.A));\n{folds} = nf;\n{keep} = 1.0 / (1.0 + nf);"
+    "{c_}\n{guard}\n{nf0}\n{sum}\nnf = nf * (P.DEG / f32_of_u(P.A));\n{folds} = nf;\n{keep} = 1.0 / (1.0 + {Vertex.WORTH}.0 * nf);"
   }
 
   /*
@@ -877,7 +877,7 @@ Kernels := class {
     if turned == "way" {
       fa := d.fix("fa", "f32", "st[gA({ca}a, u32_of_i(src2))]")
       from_b := pop.replace("SRC", "u32_of_i(src2)").replace("HEAD", "b")
-      every := d.loop("b", "P.A", "got = got + sw2 * {from_b} * fa * {keep_src2} * (P.DEG / f32_of_u(P.A));")
+      every := d.loop("b", "P.A", "got = got + sw2 * {from_b} * {Vertex.WORTH}.0 * fa * {keep_src2} * (P.DEG / f32_of_u(P.A));")
       through := d.loop("q", "4u", "{src2}\nif (src2 >= 0) {{\n  {sw2}\n  got = got + sw2 * {from_src2} * {keep_src2} * owns({ca}u32_of_i(src2), a);\n  {fa}\n  if (fa > 0.0) {{\n{every.indent(Kernels.IND)}\n  }}\n}}")
       return "{straight}\n{through}"
     }
@@ -887,7 +887,7 @@ Kernels := class {
     fd := d.fix("fd", "f32", "st[gA({ca}w, u32_of_i(sd))]")
     keep_sd := Kernels.slot(Kernels.SLOT_KEEP, "u32_of_i(sd)")
     from_sd := pop.replace("SRC", "u32_of_i(sd)").replace("HEAD", "a")
-    across := d.loop("q", "4u", "{sd}\nif (sd >= 0) {{\n  {fd}\n  if (fd > 0.0) {{\n    {dw}\n    got = got + dw * {from_sd} * fd * {keep_sd} * (P.DEG / f32_of_u(P.A));\n  }}\n}}")
+    across := d.loop("q", "4u", "{sd}\nif (sd >= 0) {{\n  {fd}\n  if (fd > 0.0) {{\n    {dw}\n    got = got + dw * {from_sd} * {Vertex.WORTH}.0 * fd * {keep_sd} * (P.DEG / f32_of_u(P.A));\n  }}\n}}")
     turned_ := d.loop("w", "P.A", across)
     "{straight}\n{through}\n{turned_}"
   }

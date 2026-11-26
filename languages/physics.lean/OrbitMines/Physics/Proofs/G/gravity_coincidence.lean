@@ -28,20 +28,20 @@ structure Premises («the continuous model» «\sigma» «F» «n» «DEG» «\n
 
 /-- The steps Lean does not check, each with the reason. They are hypotheses of every theorem below - stated, never proven. -/
 structure Unchecked («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}» : ℝ) : Prop where
-  /-- step 2 (the scale against the vacuum's growth): \frac{a_{0}}{cH} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1} - NOT CHECKED: the inference 'the scale against the vacuum's growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
-  unchecked_gravity_coincidence_2 : «\frac{a_{0}}{cH}» = (((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹
+  /-- step 2 (the scale against the vacuum's growth): \frac{a_{0}}{cH} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{2·\paren{1 - \rho_{\infty}}} + 1} - NOT CHECKED: the inference 'the scale against the vacuum's growth' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it -/
+  unchecked_gravity_coincidence_2 : «\frac{a_{0}}{cH}» = (((((5 : ℝ) / 10) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹
 
 /-- Where the lines are defined: what the prover divides by. Its algebra cancels across these, so they are taken to be nonzero. -/
 structure Defined («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}» : ℝ) : Prop where
-  /-- \frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1 is not nought -/
-  ne_0 : ((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)) ≠ 0
+  /-- \frac{DEG·\rho_{\infty}^{2}}{2·\paren{1 - \rho_{\infty}}} + 1 is not nought -/
+  ne_0 : ((((5 : ℝ) / 10) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)) ≠ 0
   /-- 1 - \rho_{\infty} is not nought -/
   ne_1 : (((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)) ≠ 0
 
-/-- the answer (the answer): \frac{a_{0}}{cH} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1} - CHECKED: it names \frac{a_{0}}{cH} again (claim 2), and its value is the earlier one's by algebra -/
+/-- the answer (the answer): \frac{a_{0}}{cH} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{2·\paren{1 - \rho_{\infty}}} + 1} - CHECKED: it names \frac{a_{0}}{cH} again (claim 2), and its value is the earlier one's by algebra -/
 theorem answer («the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}» : ℝ)
     (p : Premises «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}») (u : Unchecked «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}») (w : Defined «the continuous model» «\sigma» «F» «n» «DEG» «\nu» «\rho» «l.\bar{m}» «\omega» «\frac{a_{0}}{cH}» «\rho_{\infty}») :
-    «\frac{a_{0}}{cH}» = (((((25 : ℝ) / 100) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ := by
+    «\frac{a_{0}}{cH}» = (((((5 : ℝ) / 10) * «DEG» * («\rho_{\infty}» ^ 2) * ((((-1 : ℝ) * «\rho_{\infty}») + (1 : ℝ)))⁻¹) + (1 : ℝ)))⁻¹ := by
   have h2 := u.unchecked_gravity_coincidence_2
   have w0 := w.ne_0
   have w1 := w.ne_1

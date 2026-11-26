@@ -487,14 +487,15 @@ method body after loading.
   `Solve.root(s, "ρ", (s) => e)`: bisection in [0, 1] when run, `\text{the } \rho \text{ where } e = 0`
   when set). A `Symbols` class declares the prover's own symbols (`δ λ r L S v c Rb Φ sigma_tr rho_inf
   infty`) so that a member name in a pattern (`{s.δ}`) is literal rather than a hole.
-- **GR off the held metric** (`Prover.relativity_of`, chain steps, not saturation inferences): the
-  metric is the one move-or-emit gives (A held = 1 − r_s r^(2−D), B = 1/A). Off it, in the chain:
-  `Inferences.held_shadow` (b_c = 3√3 m̄), `the field equation` = 2Φ and `κ` = 1, and
-  `Inferences.held_tests(s, A, B)` → `γ \aside{{PPN}}`, `Δφ` (perihelion, off the orbit equation
-  `u'' + u = −½ d/du[A(u)(L⁻² + u²)] + u`), `Δt \aside{{Shapiro}}`. Helpers `Inferences.in_m(e, u)`
-  (r_s → 2, D → 3, r → 1/u) and `Inferences.at_nought(e, u, n)` (n-th derivative at u = 0, L = 1).
-  The medium's index (`metric_of`: A = 1/N², B = N²) is kept only as a comparison: it agrees at first
-  order and gives β = 1/2 at the second, so it is not a metric any theorem reads.
+- **GR off the rules** (`Prover.relativity_of`, chain steps): a fold is offered to a passing ray at the two
+  rays it holds (`Vertex.WORTH = 2`, `Vertex.worth`; `Ray.turns` draws against it; `Field.tally`/`carried`
+  and `Kernels.total`/the carry follow). The prover reads the weight off ANNIHILATION's rays per fold
+  (`TermInfo.worth`, set in `Prover.infos` when the draw's weight alias is `S_f`), so `keeps` = 1/(1 + 2n_f),
+  the index N = 1/(1 − 2δn_f) and v = a₀/cH_Λ = 1/(1 + DEG). `metric_of` gives the rules' clock and ruler in the
+  lattice radius (B = 1/(1−δn_f)², A = 1 − 2δn_f(1−δn_f)). S.v moves or stands (`Source.standing(u)`,
+  `Source.velocity(u)`, `potential` on Vertex/Cell, nought in a 2-D box). `Inferences.held_tests` →
+  `γ \aside{{PPN}}`, `Δφ` (off S.v: the standing share's a₁ a₂ a₃ plus the lean), `Δt \aside{{Shapiro}}`
+  (off N); `held_shadow` and the geodesic stay as checks. Helpers `in_m`, `at_nought`, `partial`.
 - **Prove.ray**: `Fact(kind, of, to)` (`is | grows | restored | conserved | isotropic | positive`),
   `Step(fact, via, rule?, from, because, working, derivation)`, `Store` (first arrival keeps the slot),
   `Inference(name, because, fire: (s: Store) => Step[])`, `Prover(theory)`: `premises` read off the

@@ -117,7 +117,7 @@ func init() {
     })
     c.Getter("turns", func(self any, a1 []any) any {
       if true {
-        return Call(Get(Get(self, "vertex"), "world"), "draw", []any{ Lst(1.0, Get(Get(self, "vertex"), "folds")), Lst(Get(self, "steps"), Fn(func(a2 []any) any {
+        return Call(Get(Get(self, "vertex"), "world"), "draw", []any{ Lst(1.0, Get(Get(self, "vertex"), "worth")), Lst(Get(self, "steps"), Fn(func(a2 []any) any {
         var d_1 any = Arg(a2, 0); _ = d_1;
         if true {
           return Elem(GetOpt(Call(Get(self, "vertex"), "outward", []any{ d_1 }), "rays"), d_1)
@@ -349,6 +349,7 @@ var Vertex *Cls
 
 func init() {
   Vertex = cls("Vertex", Ray, func(c *Cls) {
+    c.StaticField("WORTH", func(self any) any { return 2.0 })
     c.Field("world", nil)
     c.Field("at", nil)
     c.Field("ordinal", func(self any) any { return 0.0 })
@@ -375,6 +376,24 @@ func init() {
       }
       return nil
     })) })
+    c.Getter("potential", func(self any, a1 []any) any {
+      if true {
+        return 0.0
+      }
+      return nil
+    })
+    c.Getter("worth", func(self any, a1 []any) any {
+      if true {
+        return M_map(Get(self, "folds"), Fn(func(a3 []any) any {
+        var f_2 any = Arg(a3, 0); _ = f_2;
+        if true {
+          return Mul(Get(K("Vertex"), "WORTH"), f_2)
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
     c.Field("held", func(self any) any { return Lst() })
     c.Field("folded_into", func(self any) any { return nil })
     c.Getter("alive", func(self any, a1 []any) any {
@@ -1537,6 +1556,27 @@ func init() {
       }
       return nil
     })
+    c.Method("clock_at", func(self any, a1 []any) any {
+      var u_0 any = Arg(a1, 0); _ = u_0;
+      if true {
+        return Sub(1.0, Mul(Mul(2.0, u_0), (Sub(1.0, u_0))))
+      }
+      return nil
+    })
+    c.Method("standing", func(self any, a1 []any) any {
+      var u_0 any = Arg(a1, 0); _ = u_0;
+      if true {
+        return Div(Mul(Get(self, "mass"), M_sqrt(Call(self, "clock_at", []any{ u_0 }))), M_sqrt((Add(Mul(Get(self, "mass"), Get(self, "mass")), Mul(Get(Get(self, "momentum"), "norm"), Get(Get(self, "momentum"), "norm"))))))
+      }
+      return nil
+    })
+    c.Method("velocity", func(self any, a1 []any) any {
+      var u_0 any = Arg(a1, 0); _ = u_0;
+      if true {
+        return Mul(Get(self, "momentum"), (Div(M_sqrt(Call(self, "clock_at", []any{ u_0 })), M_sqrt((Add(Mul(Get(self, "mass"), Get(self, "mass")), Mul(Get(Get(self, "momentum"), "norm"), Get(Get(self, "momentum"), "norm"))))))))
+      }
+      return nil
+    })
     c.Field("absorbs", func(self any) any { return true })
     c.Method("choose emit?", func(self any, a0 []any) any { panic("the choice emit? is not defined by anyone") })
     c.Method("choose mass", func(self any, a0 []any) any { panic("the choice mass is not defined by anyone") })
@@ -1627,6 +1667,12 @@ func init() {
       var d_0 any = Arg(a1, 0); _ = d_0;
       if true {
         return Call(Get(self, "of"), "drift_from", []any{ Get(self, "index"), d_0 })
+      }
+      return nil
+    })
+    c.Getter("potential", func(self any, a1 []any) any {
+      if true {
+        return 0.0
       }
       return nil
     })
@@ -2254,7 +2300,7 @@ func init() {
         }
         nf_1 = Mul(nf_1, Get(self, "edge"))
         SetAt(Get(self, "folds"), c__1, nf_1)
-        SetAt(Get(self, "keep"), c__1, Div(1.0, (Add(1.0, nf_1))))
+        SetAt(Get(self, "keep"), c__1, Div(1.0, (Add(1.0, Mul(Get(K("Vertex"), "WORTH"), nf_1)))))
       }
       return nil
     })
@@ -2650,7 +2696,7 @@ func init() {
                 for i4 := 0.0; i4 < Num(Get(self, "A")); i4++ {
                   var b_4 any = Box(i4)
                   _ = b_4
-                  got_2 = Add(got_2, Mul(Mul(Mul(Mul(Elem(tp_3, 1.0), Invoke(pop_0, []any{ b_4, src_3 })), fa_3), Elem(Get(self, "keep"), src_3)), Get(self, "edge")))
+                  got_2 = Add(got_2, Mul(Mul(Mul(Mul(Mul(Elem(tp_3, 1.0), Invoke(pop_0, []any{ b_4, src_3 })), Get(K("Vertex"), "WORTH")), fa_3), Elem(Get(self, "keep"), src_3)), Get(self, "edge")))
                 }
               }
             }
@@ -2669,7 +2715,7 @@ func init() {
                 fd_4 = Elem(Get(self, "fold_was"), Add(Mul(d_3, Get(self, "cells")), sd_4))
                 _ = fd_4
                 if Truthy(Gt(fd_4, 0.0)) {
-                  got_2 = Add(got_2, Mul(Mul(Mul(Mul(Elem(tp_4, 1.0), Invoke(pop_0, []any{ a_1, sd_4 })), fd_4), Elem(Get(self, "keep"), sd_4)), Get(self, "edge")))
+                  got_2 = Add(got_2, Mul(Mul(Mul(Mul(Mul(Elem(tp_4, 1.0), Invoke(pop_0, []any{ a_1, sd_4 })), Get(K("Vertex"), "WORTH")), fd_4), Elem(Get(self, "keep"), sd_4)), Get(self, "edge")))
                 }
               }
             }
@@ -9251,15 +9297,16 @@ func init() {
       }
       return nil
     })
+    c.Field("worth", func(self any) any { return Call(K("Expr"), "num", []any{ 1.0 }) })
     c.Getter("keeps", func(self any, a1 []any) any {
       if true {
-        return Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "field", []any{ "n_{f}" })) }), Neg(1.0) })
+        return Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Get(self, "worth"), Call(K("Expr"), "field", []any{ "n_{f}" })) }) })) }), Neg(1.0) })
       }
       return nil
     })
     c.Getter("drifts", func(self any, a1 []any) any {
       if true {
-        return Call(K("Expr"), "grad", []any{ Call(K("Expr"), "field", []any{ "n_{f}" }) })
+        return Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Get(self, "worth"), Call(K("Expr"), "grad", []any{ Call(K("Expr"), "field", []any{ "n_{f}" }) })) }) })
       }
       return nil
     })
@@ -9400,14 +9447,36 @@ func init() {
       return nil
     })
     c.Getter("infos", func(self any, a1 []any) any {
-      if true {
-        return M_map(Get(Get(self, "theory"), "terms_read"), Fn(func(a3 []any) any {
+      var all_0 any
+      all_0 = M_map(Get(Get(self, "theory"), "terms_read"), Fn(func(a3 []any) any {
         var t_2 any = Arg(a3, 0); _ = t_2;
         if true {
           return Make("TermInfo", []any{ Kw("term", t_2) }...)
         }
         return nil
       }))
+      _ = all_0
+      var meet_0 any
+      meet_0 = M_first(Filt(all_0, Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy((Truthy(Eq(Get(t_2, "degree"), 2.0)) && Truthy(Not(M_empty(Get(t_2, "rules")))))) && Truthy(!Eq(Get(t_2, "folds"), "0")))
+        }
+        return nil
+      })))
+      _ = meet_0
+      var held_0 any
+      held_0 = Tern(Truthy(Eq(meet_0, nil)), func() any { return Call(K("Expr"), "num", []any{ 1.0 }) }, func() any { return Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "neg", []any{ Call(K("Expr"), "div", []any{ Get(meet_0, "ray_count"), Get(meet_0, "fold_count") }) }) }) })
+      _ = held_0
+      for _, e1 := range Items(all_0) {
+        var t_1 any = e1
+        _ = t_1
+        if Truthy(Eq(Get(Get(t_1, "term"), "leans"), "S_f")) {
+          Set(t_1, "worth", held_0)
+        }
+      }
+      if true {
+        return all_0
       }
       return nil
     })
@@ -11320,7 +11389,7 @@ func init() {
       var folding_0 any
       folding_0 = Call(K("Prover"), "source_of", []any{ "Vertex.fold" })
       _ = folding_0
-      if Truthy((Truthy(Not(M_contains(draws_0, "folds"))) || Truthy(Not(M_contains(folding_0, "folds[d] + 1"))))) {
+      if Truthy((Truthy(Not(((Truthy(M_contains(draws_0, "folds")) || Truthy(M_contains(draws_0, "worth")))))) || Truthy(Not(M_contains(folding_0, "folds[d] + 1"))))) {
         if true {
           return nil
         }
@@ -11329,7 +11398,7 @@ func init() {
       own_0 = Call(K("Expr"), "add", []any{ Lst(Get(K("Prover"), "LATTICE"), Call(K("Expr"), "field", []any{ "n_{f,l}" })) })
       _ = own_0
       var st_0 any
-      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "DEG", own_0 }), "the ways at a local", Lst(Get(Get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", Lst("Ray.turns = " + Str(draws_0) + ": straight on at one, each folded way at its folds", "Vertex.fold = " + Str(folding_0) + ": a fold written on a way", "DEG = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "") })
+      st_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "DEG", own_0 }), "the ways at a local", Lst(Get(Get(one_0, "fact"), "key")), "a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it", Lst("Ray.turns = " + Str(draws_0) + ": straight on at one, each folded way at what its folds hold", "Vertex.fold = " + Str(folding_0) + ": a fold written on a way", "DEG = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "") })
       _ = st_0
       Set(st_0, "derivation", behind_0)
       if true {
@@ -11920,8 +11989,17 @@ func init() {
       var nf_0 any
       nf_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Get(Get(settles_0, "fact"), "to"), "\\rho", vac_0 }), "DEG_{0}", Call(K("Expr"), "field", []any{ "DEG" }) }) })
       _ = nf_0
+      var drawn_0 any
+      drawn_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2;
+        if true {
+          return (Truthy(Get(t_2, "transport")) && Truthy(Get(t_2, "kernel")))
+        }
+        return nil
+      })))
+      _ = drawn_0
       var v_0 any
-      v_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), nf_0) }), Neg(1.0) }) })
+      v_0 = Call(K("Prover"), "neat", []any{ Tern(Truthy(Eq(drawn_0, nil)), func() any { return Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), nf_0) }), Neg(1.0) }) }, func() any { return Call(K("Expr"), "replace", []any{ Get(drawn_0, "keeps"), "n_{f}", nf_0 }) }) })
       _ = v_0
       var mover_0 any
       mover_0 = M_first(Filt(Get(self, "infos"), Fn(func(a3 []any) any {
@@ -11936,7 +12014,7 @@ func init() {
       moved_0 = Tern(Truthy(Eq(mover_0, nil)), func() any { return "MOVEMENT" }, func() any { return M_upper(Get(Get(Get(mover_0, "term"), "rule"), "name")) })
       _ = moved_0
       var straight_0 any
-      straight_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "v \\aside{straight}", v_0 }), "what a heading keeps straight", Lst(Get(Get(settles_0, "fact"), "key")), "" + Str(moved_0) + " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", Lst("the draw: 1 straight on against n_{f} folded", "n_{f} at \\rho_{\\infty} = " + Str(Call(K("Expr"), "show", []any{ nf_0 })) + "", "v = \\frac{1}{1 + n_{f}} = " + Str(Call(K("Expr"), "show", []any{ v_0 })) + "") })
+      straight_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "v \\aside{straight}", v_0 }), "what a heading keeps straight", Lst(Get(Get(settles_0, "fact"), "key")), "" + Str(moved_0) + " draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at", Lst("the draw: 1 straight on against the folded ways, each at what it holds", "n_{f} at \\rho_{\\infty} = " + Str(Call(K("Expr"), "show", []any{ nf_0 })) + "", "v = " + Str(Call(K("Expr"), "show", []any{ v_0 })) + "") })
       _ = straight_0
       Set(straight_0, "derivation", Lst(settles_0))
       var lights_0 any
@@ -13715,6 +13793,29 @@ func init() {
       }
       return nil
     })
+    c.Static("partial", func(self any, a1 []any) any {
+      var e_0 any = Arg(a1, 0); _ = e_0; var by_0 any = Arg(a1, 1); _ = by_0; var names_0 any = Arg(a1, 2); _ = names_0;
+      var env_0 any
+      env_0 = Make(Node)
+      _ = env_0
+      for _, e1 := range Items(names_0) {
+        var n_1 any = e1
+        _ = n_1
+        SetAt(env_0, n_1, 0.0)
+      }
+      var d_0 any
+      d_0 = e_0
+      _ = d_0
+      for _, e1 := range Items(by_0) {
+        var n_1 any = e1
+        _ = n_1
+        d_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ d_0, n_1 }) })
+      }
+      if true {
+        return Call(K("Expr"), "numeric", []any{ d_0, env_0 })
+      }
+      return nil
+    })
     c.Static("held_tests", func(self any, a1 []any) any {
       var s_0 any = Arg(a1, 0); _ = s_0; var A_0 any = Arg(a1, 1); _ = A_0; var B_0 any = Arg(a1, 2); _ = B_0;
       var u_0 any
@@ -13726,9 +13827,6 @@ func init() {
       var Bu_0 any
       Bu_0 = Call(K("Inferences"), "in_m", []any{ Get(B_0, "to"), u_0 })
       _ = Bu_0
-      var newton_0 any
-      newton_0 = Sub(0.0, Div(Call(K("Inferences"), "at_nought", []any{ Au_0, u_0, 1.0 }), 2.0))
-      _ = newton_0
       var gamma_0 any
       gamma_0 = Div(Call(K("Inferences"), "at_nought", []any{ Bu_0, u_0, 1.0 }), 2.0)
       _ = gamma_0
@@ -13741,6 +13839,9 @@ func init() {
       var iB_0 any
       iB_0 = Call(s_0, "fact", []any{ "is", "B in r" })
       _ = iB_0
+      var N_0 any
+      N_0 = Call(s_0, "fact", []any{ "is", "N" })
+      _ = N_0
       var dn_0 any
       dn_0 = "\\delta n_{f}"
       _ = dn_0
@@ -13750,12 +13851,52 @@ func init() {
       var igamma_0 any
       igamma_0 = Tern(Truthy(Eq(iB_0, nil)), func() any { return math.NaN() }, func() any { return Div(Call(K("Inferences"), "at_nought", []any{ Get(iB_0, "to"), dn_0, 1.0 }), 2.0) })
       _ = igamma_0
+      var newton_0 any
+      newton_0 = Tern(Truthy(Eq(iA_0, nil)), func() any { return math.NaN() }, func() any { return Sub(0.0, Div(Call(K("Inferences"), "at_nought", []any{ Get(iA_0, "to"), dn_0, 1.0 }), 2.0)) })
+      _ = newton_0
+      var slope_0 any
+      slope_0 = Tern(Truthy(Eq(N_0, nil)), func() any { return math.NaN() }, func() any { return Call(K("Inferences"), "at_nought", []any{ Get(N_0, "to"), dn_0, 1.0 }) })
+      _ = slope_0
       var via_0 any
-      via_0 = "the held metric, read for the classical tests"
+      via_0 = "the rules' clock, ruler and index, read for the classical tests"
       _ = via_0
       var ppn_0 any
-      ppn_0 = Call(K("Inferences"), "step", []any{ "\\gamma \\aside{PPN}", Call(K("Expr"), "num", []any{ gamma_0 }), via_0, Lst(Get(A_0, "key"), Get(B_0, "key")), "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", Lst("A in u = \\bar{m}/r: " + Str(Call(K("Expr"), "show", []any{ Au_0 })) + ", B: " + Str(Call(K("Expr"), "show", []any{ Bu_0 })) + "", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ newton_0, 6.0 })) + "", "\\gamma = B'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ gamma_0, 6.0 })) + "", "\\beta = \\gamma + A''/4 = " + Str(Call(K("Fmt"), "fixed", []any{ beta_0, 6.0 })) + "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", Tern(Truthy(Call(K("Fmt"), "finite", []any{ ibeta_0 })), func() any { return "the medium's index read as an isotropic metric: \\gamma = " + Str(Call(K("Fmt"), "fixed", []any{ igamma_0, 4.0 })) + ", \\beta = " + Str(Call(K("Fmt"), "fixed", []any{ ibeta_0, 4.0 })) + " - a held clock does not read it" }, func() any { return "the medium's index gives no metric of its own here" })) })
+      ppn_0 = Call(K("Inferences"), "step", []any{ "\\gamma \\aside{PPN}", Call(K("Expr"), "num", []any{ igamma_0 }), via_0, Lst(Get(A_0, "key"), Get(B_0, "key")), "THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same", Lst("A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius", "Newton: -A'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ newton_0, 6.0 })) + "", "\\gamma = B'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ igamma_0, 6.0 })) + "", "\\beta = A''/4 = " + Str(Call(K("Fmt"), "fixed", []any{ ibeta_0, 6.0 })) + "", "the held metric in the area radius: \\gamma = " + Str(Call(K("Fmt"), "fixed", []any{ gamma_0, 6.0 })) + ", \\beta = " + Str(Call(K("Fmt"), "fixed", []any{ beta_0, 6.0 })) + "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}") })
       _ = ppn_0
+      var w_0 any
+      w_0 = "w"
+      _ = w_0
+      var clockU_0 any
+      clockU_0 = Tern(Truthy(Eq(iA_0, nil)), func() any { return Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ dn_0 })) }) }) }, func() any { return Get(iA_0, "to") })
+      _ = clockU_0
+      var stands_0 any
+      stands_0 = Call(K("Expr"), "neg", []any{ Call(K("Expr"), "pown", []any{ Call(K("Expr"), "sub", []any{ clockU_0, Call(K("Expr"), "field", []any{ w_0 }) }), 0.5 }) })
+      _ = stands_0
+      var names_0 any
+      names_0 = Lst(dn_0, w_0)
+      _ = names_0
+      var n1_0 any
+      n1_0 = Call(K("Inferences"), "partial", []any{ stands_0, Lst(dn_0), names_0 })
+      _ = n1_0
+      var a1_0 any
+      a1_0 = Mul(4.0, Call(K("Inferences"), "partial", []any{ stands_0, Lst(w_0, w_0), names_0 }))
+      _ = a1_0
+      var a2_0 any
+      a2_0 = Call(K("Inferences"), "partial", []any{ stands_0, Lst(dn_0, w_0), names_0 })
+      _ = a2_0
+      var a3_0 any
+      a3_0 = Div(Call(K("Inferences"), "partial", []any{ stands_0, Lst(dn_0, dn_0), names_0 }), 2.0)
+      _ = a3_0
+      var clock_0 any
+      clock_0 = Add(Add(Mul(2.0, a3_0), a1_0), Mul(4.0, a2_0))
+      _ = clock_0
+      var lean_0 any
+      lean_0 = Sub(Mul(2.0, 1.0), Mul(2.0, (Sub(0.0, 1.0))))
+      _ = lean_0
+      var k_0 any
+      k_0 = Add(clock_0, lean_0)
+      _ = k_0
+      k_0 = Div(M_round((Mul(k_0, Power(10.0, 9.0)))), Power(10.0, 9.0))
       var L_0 any
       L_0 = Call(K("Expr"), "field", []any{ "L" })
       _ = L_0
@@ -13765,19 +13906,9 @@ func init() {
       var orbit_0 any
       orbit_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Neg(0.5) }), Call(K("Expr"), "d", []any{ q_0, u_0 })) }), Call(K("Expr"), "field", []any{ u_0 })) }) })
       _ = orbit_0
-      var mu_0 any
-      mu_0 = Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 0.0 })
-      _ = mu_0
-      var lin_0 any
-      lin_0 = Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 1.0 })
-      _ = lin_0
-      var eps_0 any
-      eps_0 = Div(Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 2.0 }), 2.0)
-      _ = eps_0
-      var k_0 any
-      k_0 = Mul(Mul(2.0, eps_0), mu_0)
-      _ = k_0
-      k_0 = Div(M_round((Mul(k_0, Power(10.0, 9.0)))), Power(10.0, 9.0))
+      var geo_0 any
+      geo_0 = Mul(Div(Mul(2.0, Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 2.0 })), 2.0), Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 0.0 }))
+      _ = geo_0
       var m_sun_0 any
       m_sun_0 = 1476.625
       _ = m_sun_0
@@ -13793,14 +13924,11 @@ func init() {
       var century_0 any
       century_0 = Mul(Div(Mul(lap_0, 36525.0), 87.9691), 206264.806)
       _ = century_0
-      var ipp_0 any
-      ipp_0 = Tern(Truthy(Call(K("Fmt"), "finite", []any{ ibeta_0 })), func() any { return Div((Sub(Add(2.0, Mul(2.0, igamma_0)), ibeta_0)), 3.0) }, func() any { return math.NaN() })
-      _ = ipp_0
       var peri_0 any
-      peri_0 = Call(K("Inferences"), "step", []any{ "\\Delta\\varphi", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ k_0 }), Call(K("Expr"), "field", []any{ "\\pi" }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "a\\paren{1 - e^{2}}" }), Neg(1.0) })) }), "a bound orbit in the held metric", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", Lst("u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = " + Str(Call(K("Expr"), "show", []any{ orbit_0 })) + "", "\\mu = " + Str(Call(K("Fmt"), "fixed", []any{ mu_0, 6.0 })) + "/L^{2}, linear " + Str(Call(K("Fmt"), "fixed", []any{ lin_0, 6.0 })) + ", \\epsilon = " + Str(Call(K("Fmt"), "fixed", []any{ eps_0, 6.0 })) + "\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = " + Str(Call(K("Fmt"), "fixed", []any{ k_0, 6.0 })) + "\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " + Str(Call(K("Fmt"), "fixed", []any{ century_0, 2.0 })) + "'' a century; measured 42.98 \\pm 0.04", Tern(Truthy(Call(K("Fmt"), "finite", []any{ ipp_0 })), func() any { return "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = " + Str(Call(K("Fmt"), "fixed", []any{ ipp_0, 4.0 })) + " of it" }, func() any { return "the medium's index gives no metric of its own here" })) })
+      peri_0 = Call(K("Inferences"), "step", []any{ "\\Delta\\varphi", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ k_0 }), Call(K("Expr"), "field", []any{ "\\pi" }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "a\\paren{1 - e^{2}}" }), Neg(1.0) })) }), "a bound orbit, moved by S.v", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century", Lst("the standing share, A = " + Str(Call(K("Expr"), "show", []any{ clockU_0 })) + " in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + " + Str(Call(K("Fmt"), "fixed", []any{ n1_0, 3.0 })) + "U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}", "a_{1} = " + Str(Call(K("Fmt"), "fixed", []any{ a1_0, 6.0 })) + ", a_{2} = " + Str(Call(K("Fmt"), "fixed", []any{ a2_0, 6.0 })) + ", a_{3} = " + Str(Call(K("Fmt"), "fixed", []any{ a3_0, 6.0 })) + ": moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = " + Str(Call(K("Fmt"), "fixed", []any{ clock_0, 6.0 })) + "", "the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = " + Str(Call(K("Fmt"), "fixed", []any{ lean_0, 6.0 })) + "", "a lap: " + Str(Call(K("Fmt"), "fixed", []any{ k_0, 6.0 })) + "\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives " + Str(Call(K("Fmt"), "fixed", []any{ geo_0, 6.0 })) + "\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " + Str(Call(K("Fmt"), "fixed", []any{ century_0, 2.0 })) + "'' a century; measured 42.98 \\pm 0.04") })
       _ = peri_0
       var delay_0 any
-      delay_0 = Call(K("Inferences"), "step", []any{ "\\Delta t \\aside{Shapiro}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Add(1.0, gamma_0) }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "log", []any{ Call(K("Expr"), "field", []any{ "\\frac{4r_{1}r_{2}}{b^{2}}" }) })) }), "light passing a body, timed", Lst(Get(B_0, "key"), Get(A_0, "key")), "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", Lst("\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = " + Str(Call(K("Fmt"), "fixed", []any{ gamma_0, 6.0 })) + "", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " + Str(Call(K("Fmt"), "fixed", []any{ Mul(Mul(Mul(2.0, (Add(1.0, gamma_0))), 4.925491), M_ln((Div(Mul(Mul(4.0, 149597870700.0), 1433530000000.0), (Mul(695700000.0, 695700000.0)))))), 1.0 })) + " \\mu s") })
+      delay_0 = Call(K("Inferences"), "step", []any{ "\\Delta t \\aside{Shapiro}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ slope_0 }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "log", []any{ Call(K("Expr"), "field", []any{ "\\frac{4r_{1}r_{2}}{b^{2}}" }) })) }), "light passing a body, timed", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1", Lst("the index: N = 1 + " + Str(Call(K("Fmt"), "fixed", []any{ slope_0, 4.0 })) + "\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r", "\\int " + Str(Call(K("Fmt"), "fixed", []any{ slope_0, 4.0 })) + "\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = " + Str(Call(K("Fmt"), "fixed", []any{ slope_0, 4.0 })) + "\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " + Str(Call(K("Fmt"), "fixed", []any{ Mul(Mul(Mul(2.0, slope_0), 4.925491), M_ln((Div(Mul(Mul(4.0, 149597870700.0), 1433530000000.0), (Mul(695700000.0, 695700000.0)))))), 1.0 })) + " \\mu s; Cassini measured general relativity's to 10^{-5}") })
       _ = delay_0
       if true {
         return Lst(ppn_0, peri_0, delay_0)
@@ -13809,21 +13937,39 @@ func init() {
     })
     c.Static("metric_of", func(self any, a1 []any) any {
       if true {
-        return Make("Inference", []any{ Kw("name", "an index is a metric"), Kw("because", "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots"), Kw("fire", Fn(func(a3 []any) any {
+        return Make("Inference", []any{ Kw("name", "the held clock and ruler, in the lattice's own radius"), Kw("because", "a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order"), Kw("fire", Fn(func(a3 []any) any {
         var s_2 any = Arg(a3, 0); _ = s_2;
         var n_2 any
         n_2 = OrElse(Call(s_2, "fact", []any{ "is", "N in r" }), func() any { return Call(s_2, "fact", []any{ "is", "N" }) })
         _ = n_2
-        if Truthy((Truthy(Eq(n_2, nil)) || Truthy(Call(s_2, "has", []any{ "is", "A in r" })))) {
+        var dn_2 any
+        dn_2 = Call(s_2, "fact", []any{ "is", "\\delta n_{f}" })
+        _ = dn_2
+        if Truthy((Truthy((Truthy(Eq(n_2, nil)) || Truthy(Eq(dn_2, nil)))) || Truthy(Call(s_2, "has", []any{ "is", "A in r" })))) {
           if true {
             return Lst()
           }
         }
         var via_2 any
-        via_2 = "an index is a metric"
+        via_2 = "the held clock and ruler, in the lattice's own radius"
         _ = via_2
+        var u_2 any
+        u_2 = Call(K("Expr"), "field", []any{ "\\delta n_{f}" })
+        _ = u_2
+        var points_2 any
+        points_2 = Call(K("Expr"), "pown", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), u_2 }), Neg(1.0) })
+        _ = points_2
+        var B_2 any
+        B_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "pown", []any{ points_2, 2.0 }) })
+        _ = B_2
+        var phi_2 any
+        phi_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(u_2, Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), u_2 })) }) })
+        _ = phi_2
+        var A_2 any
+        A_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), phi_2) }) }) })
+        _ = A_2
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "A in r", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "pown", []any{ Get(n_2, "to"), Neg(2.0) }) }), via_2, Lst(Get(n_2, "key")), "MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise", Lst("MOVEMENT: one tick per point the place stands for", "a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N", "A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "pown", []any{ Get(n_2, "to"), Neg(2.0) }) }) })) + "") }), Call(K("Inferences"), "step", []any{ "B in r", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "pown", []any{ Get(n_2, "to"), 2.0 }) }), via_2, Lst(Get(n_2, "key")), "and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads `d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does", Lst("the same place HAS N points in it, so d\\ell/dr = N", "B = \\paren{d\\ell/dr}^{2} = N^{2} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "pown", []any{ Get(n_2, "to"), 2.0 }) }) })) + "", "and A\\cdot B = 1 still, as Schwarzschild has it") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "B in r", B_2, via_2, Lst(Get(n_2, "key"), Get(dn_2, "key")), "THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square", Lst("a fold: two points into one, so a place stands for one more", "chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})", "B = " + Str(Call(K("Expr"), "show", []any{ B_2 })) + "") }), Call(K("Inferences"), "step", []any{ "A in r", A_2, via_2, Lst(Get(n_2, "key"), Get(dn_2, "key")), "THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one", Lst("a held clock: A = 1 - 2\\Phi", "\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points", "\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}", "A = " + Str(Call(K("Expr"), "show", []any{ A_2 })) + "", "light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index " + Str(Call(K("Expr"), "show", []any{ Get(n_2, "to") })) + " to the first order") }))
         }
         return nil
       })) }...)
@@ -14258,16 +14404,26 @@ func init() {
         var rec_2 any
         rec_2 = Call(s_2, "fact", []any{ "is", "\\delta n_{f}" })
         _ = rec_2
-        if Truthy((Truthy(Eq(rec_2, nil)) || Truthy(Call(s_2, "has", []any{ "is", "\\alpha" })))) {
+        var n_2 any
+        n_2 = Call(s_2, "fact", []any{ "is", "N" })
+        _ = n_2
+        if Truthy((Truthy((Truthy(Eq(rec_2, nil)) || Truthy(Eq(n_2, nil)))) || Truthy(Call(s_2, "has", []any{ "is", "\\alpha" })))) {
           if true {
             return Lst()
           }
         }
+        var env_2 any
+        env_2 = Make(Node)
+        _ = env_2
+        Set(env_2, Str("\\delta n_{f}"), 0.0)
+        var slope_2 any
+        slope_2 = Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ Get(n_2, "to"), "\\delta n_{f}" }) }), env_2 })
+        _ = slope_2
         var alpha_2 any
-        alpha_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "replace", []any{ Get(rec_2, "to"), "r", Call(K("Expr"), "sym", []any{ "b" }) })) }) })
+        alpha_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Mul(2.0, slope_2) }), Call(K("Expr"), "replace", []any{ Get(rec_2, "to"), "r", Call(K("Expr"), "sym", []any{ "b" }) })) }) })
         _ = alpha_2
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "\\alpha", alpha_2, "the integral of the index across the path", Lst(Get(rec_2, "key")), "the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer", Lst("turns: 1 way straight on against folds[d] ways out along d", "the fold record along the path: " + Str(Call(K("Expr"), "show", []any{ Get(rec_2, "to") })) + "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " + Str(Call(K("Expr"), "show", []any{ alpha_2 })) + "") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "\\alpha", alpha_2, "the integral of the index across the path", Lst(Get(rec_2, "key")), "the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured", Lst("turns: 1 way straight on against what folds[d] holds along d", "the index's slope in the record: " + Str(Call(K("Fmt"), "fixed", []any{ slope_2, 4.0 })) + "", "the fold record along the path: " + Str(Call(K("Expr"), "show", []any{ Get(rec_2, "to") })) + "", "the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}", "and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has", "\\alpha = " + Str(Call(K("Expr"), "show", []any{ alpha_2 })) + "") }))
         }
         return nil
       })) }...)
@@ -17127,7 +17283,7 @@ func init() {
     c.Method("beta", func(self any, a1 []any) any {
       var h_0 any = Arg(a1, 0); _ = h_0;
       var v_0 any
-      v_0 = Div(Get(Get(h_0, "momentum"), "norm"), Get(h_0, "mass"))
+      v_0 = Get(Call(h_0, "velocity", []any{ 0.0 }), "norm")
       _ = v_0
       if true {
         return Tern(Truthy(Lt(v_0, 0.0)), func() any { return 0.0 }, func() any { return (Tern(Truthy(Gt(v_0, 1.0)), func() any { return 1.0 }, func() any { return v_0 })) })
@@ -18120,7 +18276,7 @@ func init() {
       q_0 = Mul(Call(self, "per_way", []any{ h_0 }), (Power(near_0, Sub(Get(self, "D"), 1.0))))
       _ = q_0
       if true {
-        return Lst(q_0, Mul(q_0, Get(h_0, "x")), Mul(q_0, Get(h_0, "y")), Mul(Div(Mul(q_0, Elem(Get(Get(h_0, "momentum"), "components"), 0.0)), Get(h_0, "mass")), Get(self, "K")), Mul(Div(Mul(q_0, Elem(Get(Get(h_0, "momentum"), "components"), 1.0)), Get(h_0, "mass")), Get(self, "K")), Mul(q_0, near_0), M_index_of(Get(self, "holes"), h_0), 0.0)
+        return Lst(q_0, Mul(q_0, Get(h_0, "x")), Mul(q_0, Get(h_0, "y")), Mul(Mul(q_0, Elem(Get(Call(h_0, "velocity", []any{ 0.0 }), "components"), 0.0)), Get(self, "K")), Mul(Mul(q_0, Elem(Get(Call(h_0, "velocity", []any{ 0.0 }), "components"), 1.0)), Get(self, "K")), Mul(q_0, near_0), M_index_of(Get(self, "holes"), h_0), 0.0)
       }
       return nil
     })
@@ -19454,7 +19610,7 @@ func init() {
     c.Method("lean_under", func(self any, a1 []any) any {
       var h_0 any = Arg(a1, 0); _ = h_0;
       if true {
-        return Call(self, "pull_at", []any{ Get(h_0, "x"), Get(h_0, "y"), Call(self, "plane_of", []any{ h_0 }), Div(Elem(Get(Get(h_0, "momentum"), "components"), 0.0), Get(h_0, "mass")), Div(Elem(Get(Get(h_0, "momentum"), "components"), 1.0), Get(h_0, "mass")) })
+        return Call(self, "pull_at", []any{ Get(h_0, "x"), Get(h_0, "y"), Call(self, "plane_of", []any{ h_0 }), Elem(Get(Call(h_0, "velocity", []any{ 0.0 }), "components"), 0.0), Elem(Get(Call(h_0, "velocity", []any{ 0.0 }), "components"), 1.0) })
       }
       return nil
     })
@@ -19477,12 +19633,12 @@ func init() {
           var g_1 any
           g_1 = Elem(Get(self, "pulled"), i_1)
           _ = g_1
-          Set(h_1, "momentum", Add(Get(h_1, "momentum"), Make("Vector", []any{ Kw("components", Lst(Mul(Elem(g_1, 0.0), Get(h_1, "mass")), Mul(Elem(g_1, 1.0), Get(h_1, "mass")))) }...)))
-          if Truthy(Gt(Get(Get(h_1, "momentum"), "norm"), Get(h_1, "mass"))) {
-            Set(h_1, "momentum", Mul(Get(Get(h_1, "momentum"), "unit"), Get(h_1, "mass")))
-          }
-          Set(h_1, "x", Add(Get(h_1, "x"), Mul(Div(Elem(Get(Get(h_1, "momentum"), "components"), 0.0), Get(h_1, "mass")), Get(self, "K"))))
-          Set(h_1, "y", Add(Get(h_1, "y"), Mul(Div(Elem(Get(Get(h_1, "momentum"), "components"), 1.0), Get(h_1, "mass")), Get(self, "K"))))
+          Set(h_1, "momentum", Add(Get(h_1, "momentum"), Mul(Make("Vector", []any{ Kw("components", Lst(Mul(Elem(g_1, 0.0), Get(h_1, "mass")), Mul(Elem(g_1, 1.0), Get(h_1, "mass")))) }...), (Div(1.0, Call(h_1, "standing", []any{ 0.0 }))))))
+          var v_1 any
+          v_1 = Call(h_1, "velocity", []any{ 0.0 })
+          _ = v_1
+          Set(h_1, "x", Add(Get(h_1, "x"), Mul(Elem(Get(v_1, "components"), 0.0), Get(self, "K"))))
+          Set(h_1, "y", Add(Get(h_1, "y"), Mul(Elem(Get(v_1, "components"), 1.0), Get(self, "K"))))
           Set(h_1, "moved", Add(Get(h_1, "moved"), 1.0))
         }
       }
@@ -36177,13 +36333,13 @@ func init() {
         return Get(it_1, "moves")
       }
       return nil
-    })), Kw("source", "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\""), Kw("body", Fn(func(a1 []any) any {
+    })), Kw("source", "\"rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  u := x.cells.first.potential\\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\\n  x.advance = x.advance + x.velocity(u)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}\""), Kw("body", Fn(func(a1 []any) any {
         var x_0 any = Arg(a1, 0); _ = x_0;
-        Set(x_0, "momentum", Add(Get(x_0, "momentum"), Mul(Get(M_first(Get(x_0, "cells")), "sinks"), Get(x_0, "mass"))))
-        if Truthy(Gt(Get(Get(x_0, "momentum"), "norm"), Get(x_0, "mass"))) {
-          Set(x_0, "momentum", Mul(Get(Get(x_0, "momentum"), "unit"), Get(x_0, "mass")))
-        }
-        Set(x_0, "advance", Add(Get(x_0, "advance"), Mul(Get(x_0, "momentum"), (Div(1.0, Get(x_0, "mass"))))))
+        var u_0 any
+        u_0 = Get(M_first(Get(x_0, "cells")), "potential")
+        _ = u_0
+        Set(x_0, "momentum", Add(Get(x_0, "momentum"), Mul(Get(M_first(Get(x_0, "cells")), "sinks"), (Div(Mul(Get(x_0, "mass"), (Sub(1.0, Mul(2.0, u_0)))), Call(x_0, "standing", []any{ u_0 }))))))
+        Set(x_0, "advance", Add(Get(x_0, "advance"), Call(x_0, "velocity", []any{ u_0 })))
         var g_0 any
         g_0 = Get(Get(x_0, "world"), "geometry")
         _ = g_0
@@ -36243,18 +36399,18 @@ func init() {
 
 func init() {
   Set(G, "equation", Make(Node, Kw("latex", "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega"), Kw("terms", Lst(
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("2", func(s any) any { return 2.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.F", func(s any) any { return Get(s, "F") })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("-2", func(s any) any { return Neg(2.0) })), Kw("space", At("-1", func(s any) any { return Neg(1.0) })), Kw("folds", At("1", func(s any) any { return 1.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", true), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("s.DEG", func(s any) any { return Get(s, "DEG") })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.n_f / s.DEG * (1 - s.ρ)", func(s any) any { return Mul(Div(Get(s, "n_f"), Get(s, "DEG")), (Sub(1.0, Get(s, "ρ")))) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("s.n_f / s.DEG", func(s any) any { return Div(Get(s, "n_f"), Get(s, "DEG")) })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("-s.DEG", func(s any) any { return Neg(Get(s, "DEG")) }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.n_f * (1 - s.ρ)", func(s any) any { return Mul(Get(s, "n_f"), (Sub(1.0, Get(s, "ρ")))) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("s.n_f", func(s any) any { return Get(s, "n_f") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", true), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", true), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", true), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/4"), Kw("rate", nil), Kw("name", "Arrival"), Kw("over", "Ray"), Kw("where", nil), Kw("source", "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"))), Kw("rate", nil), Kw("degree", 0.0), Kw("outside", false), Kw("settles", true), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", true), Kw("share", At("1", func(s any) any { return 1.0 })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
-    Make(Node, Kw("rule", Make(Node, Kw("id", "/S.1"), Kw("rate", nil), Kw("name", "Emission"), Kw("over", "Boundary"), Kw("where", Make(Node, Kw("source", "emits & vertex.source.spare"))), Kw("source", "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"))), Kw("rate", nil), Kw("degree", 0.0), Kw("outside", true), Kw("settles", false), Kw("transport", false), Kw("leans", "n_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", true), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", true), Kw("settles", false), Kw("share", At("s.ω * (1 - s.β)", func(s any) any { return Mul(Get(s, "ω"), (Sub(1.0, Get(s, "β")))) })), Kw("asked", At("1 - s.β", func(s any) any { return Sub(1.0, Get(s, "β")) })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("1", func(s any) any { return 1.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("2", func(s any) any { return 2.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.F", func(s any) any { return Get(s, "F") })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("-2", func(s any) any { return Neg(2.0) })), Kw("space", At("-1", func(s any) any { return Neg(1.0) })), Kw("folds", At("1", func(s any) any { return 1.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/1"), Kw("rate", "σ"), Kw("name", "Annihilation"), Kw("over", "Edge"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"))), Kw("rate", "σ"), Kw("degree", 2.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 2.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("s.F", func(s any) any { return Get(s, "F") })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", true), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("s.DEG", func(s any) any { return Get(s, "DEG") })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.n_f / s.DEG * (1 - s.ρ)", func(s any) any { return Mul(Div(Get(s, "n_f"), Get(s, "DEG")), (Sub(1.0, Get(s, "ρ")))) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("s.n_f / s.DEG", func(s any) any { return Div(Get(s, "n_f"), Get(s, "DEG")) })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("-s.DEG", func(s any) any { return Neg(Get(s, "DEG")) }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/2"), Kw("rate", "ν"), Kw("name", "Creation"), Kw("over", "Vertex"), Kw("where", Make(Node, Kw("source", "neutral"))), Kw("source", "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"))), Kw("rate", "ν"), Kw("degree", 0.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.n_f * (1 - s.ρ)", func(s any) any { return Mul(Get(s, "n_f"), (Sub(1.0, Get(s, "ρ")))) })), Kw("asked", At("1 - s.ρ", func(s any) any { return Sub(1.0, Get(s, "ρ")) })), Kw("around", At("s.n_f", func(s any) any { return Get(s, "n_f") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", true), Kw("trades", false), Kw("grew", At("1", func(s any) any { return 1.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("1 - s.ω", func(s any) any { return Sub(1.0, Get(s, "ω")) })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("1", func(s any) any { return 1.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", true), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("0", func(s any) any { return 0.0 })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("0", func(s any) any { return 0.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", true), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/c"), Kw("rate", "σ"), Kw("name", "Movement"), Kw("over", "Ray"), Kw("where", Make(Node, Kw("source", "active"))), Kw("source", "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"))), Kw("rate", "σ"), Kw("degree", 1.0), Kw("outside", false), Kw("settles", false), Kw("transport", true), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", true), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 1.0), Kw("outside", false), Kw("settles", false), Kw("share", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/4"), Kw("rate", nil), Kw("name", "Arrival"), Kw("over", "Ray"), Kw("where", nil), Kw("source", "rule /4 \"Arrival\" (x: Ray) => x.SETTLE"))), Kw("rate", nil), Kw("degree", 0.0), Kw("outside", false), Kw("settles", true), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", false), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", false), Kw("settles", true), Kw("share", At("1", func(s any) any { return 1.0 })), Kw("asked", At("1", func(s any) any { return 1.0 })), Kw("around", At("1", func(s any) any { return 1.0 })), Kw("rays", At("0", func(s any) any { return 0.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
+    Make(Node, Kw("rule", Make(Node, Kw("id", "/S.1"), Kw("rate", nil), Kw("name", "Emission"), Kw("over", "Boundary"), Kw("where", Make(Node, Kw("source", "emits & vertex.source.spare"))), Kw("source", "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"))), Kw("rate", nil), Kw("degree", 0.0), Kw("outside", true), Kw("settles", false), Kw("transport", false), Kw("leans", "S_f"), Kw("turned", "way"), Kw("doing", Make(Node, Kw("carries", false), Kw("sets", true), Kw("grown", false), Kw("trades", false), Kw("grew", At("0", func(s any) any { return 0.0 })), Kw("grew_apart", At("0", func(s any) any { return 0.0 })), Kw("draws", nil), Kw("needs", 0.0), Kw("outside", true), Kw("settles", false), Kw("share", At("s.ω * (1 - s.β)", func(s any) any { return Mul(Get(s, "ω"), (Sub(1.0, Get(s, "β")))) })), Kw("asked", At("1 - s.β", func(s any) any { return Sub(1.0, Get(s, "β")) })), Kw("around", At("s.ω", func(s any) any { return Get(s, "ω") })), Kw("rays", At("1", func(s any) any { return 1.0 })), Kw("space", At("0", func(s any) any { return 0.0 })), Kw("folds", At("0", func(s any) any { return 0.0 }))))),
   ))))
 }
 
@@ -36397,7 +36553,7 @@ var def_METHOD_SOURCES_made bool
 func Def_METHOD_SOURCES() any {
   if !def_METHOD_SOURCES_made {
     def_METHOD_SOURCES_made = true
-    def_METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
+    def_METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
   }
   return def_METHOD_SOURCES
 }

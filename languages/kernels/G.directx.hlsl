@@ -604,7 +604,7 @@ f32 point4_gate(f32 rho, f32 nf) {
   }
   nf = nf * (P.DEG / f32_of_u(P.A));
   cel[1u * P.cells + c] = nf;
-  cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
+  cel[4u * P.cells + c] = 1.0 / (1.0 + 2.0 * nf);
 }
 
 //! kernel LOCATE over cells
@@ -655,7 +655,7 @@ f32 point4_gate(f32 rho, f32 nf) {
       f32 fa = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw2 * moving(b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -712,7 +712,7 @@ f32 point4_gate(f32 rho, f32 nf) {
       f32 fa = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (u32 b = 0u; b < P.A; b++) {
-        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }

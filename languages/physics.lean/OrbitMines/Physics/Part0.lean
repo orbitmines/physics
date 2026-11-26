@@ -65,7 +65,7 @@ ray_impl_getter "steps" : Ray := do
   if true then return (← ωelem (← ωgetOpt (← ωget self "ahead") "rays") (← ωget self "exit"))
   return ωnull
 ray_impl_getter "turns" : Ray := do
-  if true then return (← call! (← ωget (← ωget self "vertex") "world") "draw" ((← ωlst #[(1 : Float), (← ωget (← ωget self "vertex") "folds")]), (← ωlst #[(← ωget self "steps"), (fn! [d_1] do
+  if true then return (← call! (← ωget (← ωget self "vertex") "world") "draw" ((← ωlst #[(1 : Float), (← ωget (← ωget self "vertex") "worth")]), (← ωlst #[(← ωget self "steps"), (fn! [d_1] do
     if true then return (← ωelem (← ωgetOpt (← call! (← ωget self "vertex") "outward" ((← d_1.get))) "rays") (← d_1.get))
     return ωnull)])))
   return ωnull

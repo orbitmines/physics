@@ -181,7 +181,7 @@ export class Ray extends Iterable {
     return elem(this.ahead?.rays, this.exit);
   }
   get turns(): (Ray | null) {
-    return this.vertex.world.draw([1, this.vertex.folds], [this.steps, ((d: any) => {
+    return this.vertex.world.draw([1, this.vertex.worth], [this.steps, ((d: any) => {
       return elem(this.vertex.outward(d)?.rays, d);
     })]);
   }
@@ -324,6 +324,7 @@ export class Edge extends Ray {
 }
 
 export class Vertex extends Ray {
+  static WORTH = 2;
   get world(): World { return this.read("world"); }
   set world(v: World) { this.write("world", v); }
   get at(): Vector { return this.read("at"); }
@@ -347,6 +348,14 @@ export class Vertex extends Ray {
     return 0;
   }))); }
   set folds(v: number[]) { this.write("folds", v); }
+  get potential(): number {
+    return 0;
+  }
+  get worth(): number[] {
+    return this.folds.map(((f: any) => {
+      return mul(Vertex.WORTH, f);
+    }));
+  }
   get held(): Vertex[] { return this.read("held", () => []); }
   set held(v: Vertex[]) { this.write("held", v); }
   get folded_into(): (Vertex | null) { return this.read("folded_into", () => null); }
@@ -959,6 +968,15 @@ export class Source extends Node {
   get mass(): number {
     return this["choose mass"].bind(this)();
   }
+  clock_at(u: number): number {
+    return sub(1, mul(mul(2, u), (sub(1, u))));
+  }
+  standing(u: number): number {
+    return div(mul(this.mass, Math.sqrt(this.clock_at(u))), Math.sqrt((add(mul(this.mass, this.mass), mul(this.momentum.norm, this.momentum.norm)))));
+  }
+  velocity(u: number): Vector {
+    return mul(this.momentum, (div(Math.sqrt(this.clock_at(u)), Math.sqrt((add(mul(this.mass, this.mass), mul(this.momentum.norm, this.momentum.norm)))))));
+  }
   get absorbs(): boolean { return this.read("absorbs", () => true); }
   set absorbs(v: boolean) { this.write("absorbs", v); }
   "choose emit?"(exit: number): boolean { throw new Error("the choice emit? is not defined by anyone"); }
@@ -1017,6 +1035,9 @@ export class Cell extends Node {
   }
   drift(d: number): Vector {
     return this.of.drift_from(this.index, d);
+  }
+  get potential(): number {
+    return 0;
   }
   get sinks(): Vector {
     return this.of.sinks_at(this.index);
@@ -1392,7 +1413,7 @@ export class Field extends Node {
       };
       nf = mul(nf, this.edge);
       this.folds[c] = nf;
-      this.keep[c] = div(1, (add(1, nf)));
+      this.keep[c] = div(1, (add(1, mul(Vertex.WORTH, nf))));
     };
   }
   get locate() {
@@ -1580,7 +1601,7 @@ export class Field extends Node {
             let fa = elem(this.fold_was, add(mul(a, this.cells), src));
             if (gt(fa, 0)) {
               for (let b = 0; b < this.A; b++) {
-                got = add(got, mul(mul(mul(mul(elem(tp, 1), pop(b, src)), fa), elem(this.keep, src)), this.edge));
+                got = add(got, mul(mul(mul(mul(mul(elem(tp, 1), pop(b, src)), Vertex.WORTH), fa), elem(this.keep, src)), this.edge));
               };
             }
           }
@@ -1591,7 +1612,7 @@ export class Field extends Node {
               let sd = elem(tp, 0);
               let fd = elem(this.fold_was, add(mul(d, this.cells), sd));
               if (gt(fd, 0)) {
-                got = add(got, mul(mul(mul(mul(elem(tp, 1), pop(a, sd)), fd), elem(this.keep, sd)), this.edge));
+                got = add(got, mul(mul(mul(mul(mul(elem(tp, 1), pop(a, sd)), Vertex.WORTH), fd), elem(this.keep, sd)), this.edge));
               }
             };
           };
@@ -5032,11 +5053,13 @@ export class TermInfo extends Node {
   get kernel(): boolean {
     return !eq(this.term.leans, null);
   }
+  get worth(): Expr { return this.read("worth", () => Expr.num(1)); }
+  set worth(v: Expr) { this.write("worth", v); }
   get keeps(): Expr {
-    return Expr.pown(Expr.add([Expr.num(1), Expr.field(`n_{f}`)]), (-1));
+    return Expr.pown(Expr.add([Expr.num(1), Prover.neat(Expr.mul([this.worth, Expr.field(`n_{f}`)]))]), (-1));
   }
   get drifts(): Expr {
-    return Expr.grad(Expr.field(`n_{f}`));
+    return Prover.neat(Expr.mul([this.worth, Expr.grad(Expr.field(`n_{f}`))]));
   }
   static get COUNTS(): object {
     let s = ({});
@@ -5123,9 +5146,19 @@ export class Prover extends Node {
     return this.theory.equation;
   }
   get infos(): TermInfo[] {
-    return this.theory.terms_read.map(((t: any) => {
+    let all = this.theory.terms_read.map(((t: any) => {
       return new TermInfo({ term: t });
     }));
+    let meet = first(all.filter(((t: any) => {
+      return ((eq(t.degree, 2) && !((t.rules.length === 0))) && !eq(t.folds, `0`));
+    })));
+    let held = (eq(meet, null) ? Expr.num(1) : Expr.simplify(Expr.neg(Expr.div(meet.ray_count, meet.fold_count))));
+    for (const t of [...all]) {
+      if (eq(t.term.leans, `S_f`)) {
+        t.worth = held;
+      }
+    };
+    return all;
   }
   get acting(): TermInfo[] {
     return this.infos.filter(((t: any) => {
@@ -5965,11 +5998,11 @@ export class Prover extends Node {
   ways_at(one: Step, behind: Step[]): (Step | null) {
     let draws = Prover.source_of(`Ray.turns`);
     let folding = Prover.source_of(`Vertex.fold`);
-    if ((!(contains(draws, `folds`)) || !(contains(folding, `folds[d] + 1`)))) {
+    if ((!(((contains(draws, `folds`) || contains(draws, `worth`)))) || !(contains(folding, `folds[d] + 1`)))) {
       return null;
     }
     let own = Expr.add([Prover.LATTICE, Expr.field(`n_{f,l}`)]);
-    let st = Step.of(Fact.stands(`DEG`, own), `the ways at a local`, [one.fact.key], `a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it`, [`Ray.turns = ${draws}: straight on at one, each folded way at its folds`, `Vertex.fold = ${folding}: a fold written on a way`, `DEG = ${Expr.show(own)}`]);
+    let st = Step.of(Fact.stands(`DEG`, own), `the ways at a local`, [one.fact.key], `a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it`, [`Ray.turns = ${draws}: straight on at one, each folded way at what its folds hold`, `Vertex.fold = ${folding}: a fold written on a way`, `DEG = ${Expr.show(own)}`]);
     st.derivation = behind;
     return st;
   }
@@ -6222,12 +6255,15 @@ export class Prover extends Node {
   scale_of(hub: Step, settles: Step): Step[] {
     let vac = Expr.field(`\\rho_{\\infty}`);
     let nf = Prover.neat(Expr.replace(Expr.replace(settles.fact.to, `\\rho`, vac), `DEG_{0}`, Expr.field(`DEG`)));
-    let v = Prover.neat(Expr.pown(Expr.add([Expr.num(1), nf]), (-1)));
+    let drawn = first(this.infos.filter(((t: any) => {
+      return (t.transport && t.kernel);
+    })));
+    let v = Prover.neat((eq(drawn, null) ? Expr.pown(Expr.add([Expr.num(1), nf]), (-1)) : Expr.replace(drawn.keeps, `n_{f}`, nf)));
     let mover = first(this.infos.filter(((t: any) => {
       return (!eq(t.term.rule, null) && t.carries);
     })));
     let moved = (eq(mover, null) ? `MOVEMENT` : mover.term.rule.name.toUpperCase());
-    let straight = Step.of(Fact.stands(`v \\aside{straight}`, v), `what a heading keeps straight`, [settles.fact.key], `${moved} draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at`, [`the draw: 1 straight on against n_{f} folded`, `n_{f} at \\rho_{\\infty} = ${Expr.show(nf)}`, `v = \\frac{1}{1 + n_{f}} = ${Expr.show(v)}`]);
+    let straight = Step.of(Fact.stands(`v \\aside{straight}`, v), `what a heading keeps straight`, [settles.fact.key], `${moved} draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at`, [`the draw: 1 straight on against the folded ways, each at what it holds`, `n_{f} at \\rho_{\\infty} = ${Expr.show(nf)}`, `v = ${Expr.show(v)}`]);
     straight.derivation = [settles];
     let lights = this.relights;
     let lit = (eq(lights, null) ? `CREATION` : lights.term.rule.name.toUpperCase());
@@ -7020,46 +7056,72 @@ export class Inferences extends Node {
     };
     return Expr.numeric(d, env);
   }
+  static partial(e: Expr, by: string[], names: string[]): number {
+    let env = ({});
+    for (const n of [...names]) {
+      env[n] = 0;
+    };
+    let d = e;
+    for (const n of [...by]) {
+      d = Expr.simplify(Expr.d(d, n));
+    };
+    return Expr.numeric(d, env);
+  }
   static held_tests(s: Store, A: Fact, B: Fact): Step[] {
     let u = `u`;
     let Au = Inferences.in_m(A.to, u);
     let Bu = Inferences.in_m(B.to, u);
-    let newton = sub(0, div(Inferences.at_nought(Au, u, 1), 2));
     let gamma = div(Inferences.at_nought(Bu, u, 1), 2);
     let beta = add(gamma, div(Inferences.at_nought(Au, u, 2), 4));
     let iA = s.fact(`is`, `A in r`);
     let iB = s.fact(`is`, `B in r`);
+    let N = s.fact(`is`, `N`);
     let dn = `\\delta n_{f}`;
     let ibeta = (eq(iA, null) ? NaN : div(Inferences.at_nought(iA.to, dn, 2), 4));
     let igamma = (eq(iB, null) ? NaN : div(Inferences.at_nought(iB.to, dn, 1), 2));
-    let via = `the held metric, read for the classical tests`;
-    let ppn = Inferences.step(`\\gamma \\aside{PPN}`, Expr.num(gamma), via, [A.key, B.key], `THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls`, [`A in u = \\bar{m}/r: ${Expr.show(Au)}, B: ${Expr.show(Bu)}`, `A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius`, `Newton: -A'/2 = ${Fmt.fixed(newton, 6)}`, `\\gamma = B'/2 = ${Fmt.fixed(gamma, 6)}`, `\\beta = \\gamma + A''/4 = ${Fmt.fixed(beta, 6)}`, `Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}`, (Fmt.finite(ibeta) ? `the medium's index read as an isotropic metric: \\gamma = ${Fmt.fixed(igamma, 4)}, \\beta = ${Fmt.fixed(ibeta, 4)} - a held clock does not read it` : `the medium's index gives no metric of its own here`)]);
+    let newton = (eq(iA, null) ? NaN : sub(0, div(Inferences.at_nought(iA.to, dn, 1), 2)));
+    let slope = (eq(N, null) ? NaN : Inferences.at_nought(N.to, dn, 1));
+    let via = `the rules' clock, ruler and index, read for the classical tests`;
+    let ppn = Inferences.step(`\\gamma \\aside{PPN}`, Expr.num(igamma), via, [A.key, B.key], `THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (\`A in r\`, \`B in r\`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same`, [`A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius`, `Newton: -A'/2 = ${Fmt.fixed(newton, 6)}`, `\\gamma = B'/2 = ${Fmt.fixed(igamma, 6)}`, `\\beta = A''/4 = ${Fmt.fixed(ibeta, 6)}`, `the held metric in the area radius: \\gamma = ${Fmt.fixed(gamma, 6)}, \\beta = ${Fmt.fixed(beta, 6)}`, `Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}`]);
+    let w = `w`;
+    let clockU = (eq(iA, null) ? Expr.sub(Expr.num(1), Expr.mul([Expr.num(2), Expr.field(dn)])) : iA.to);
+    let stands = Expr.neg(Expr.pown(Expr.sub(clockU, Expr.field(w)), 0.5));
+    let names = [dn, w];
+    let n1 = Inferences.partial(stands, [dn], names);
+    let a1 = mul(4, Inferences.partial(stands, [w, w], names));
+    let a2 = Inferences.partial(stands, [dn, w], names);
+    let a3 = div(Inferences.partial(stands, [dn, dn], names), 2);
+    let clock = add(add(mul(2, a3), a1), mul(4, a2));
+    let lean = sub(mul(2, 1), mul(2, (sub(0, 1))));
+    let k = add(clock, lean);
+    k = div(Math.round((mul(k, Math.pow(10, 9)))), Math.pow(10, 9));
     let L = Expr.field(`L`);
     let q = Expr.mul([Au, Expr.add([Expr.pown(L, (-2)), Expr.pown(Expr.field(u), 2)])]);
     let orbit = Expr.simplify(Expr.add([Expr.mul([Expr.num((-0.5)), Expr.d(q, u)]), Expr.field(u)]));
-    let mu = Inferences.at_nought(orbit, u, 0);
-    let lin = Inferences.at_nought(orbit, u, 1);
-    let eps = div(Inferences.at_nought(orbit, u, 2), 2);
-    let k = mul(mul(2, eps), mu);
-    k = div(Math.round((mul(k, Math.pow(10, 9)))), Math.pow(10, 9));
+    let geo = mul(div(mul(2, Inferences.at_nought(orbit, u, 2)), 2), Inferences.at_nought(orbit, u, 0));
     let m_sun = 1476.625;
     let a_m = 57909050000;
     let e_m = 0.205630;
     let lap = div(mul(mul(k, Math.PI), m_sun), (mul(a_m, (sub(1, mul(e_m, e_m))))));
     let century = mul(div(mul(lap, 36525), 87.9691), 206264.806);
-    let ipp = (Fmt.finite(ibeta) ? div((sub(add(2, mul(2, igamma)), ibeta)), 3) : NaN);
-    let peri = Inferences.step(`\\Delta\\varphi`, Expr.mul([Expr.num(k), Expr.field(`\\pi`), Expr.field(`\\bar{m}`), Expr.pown(Expr.field(`a\\paren{1 - e^{2}}`), (-1))]), `a bound orbit in the held metric`, [A.key, B.key], `THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys \`(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})\` - and differentiated, \`u'' + u = \\mu + \\epsilon u^{2}\`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: \`2\\pi\\epsilon\\mu\`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century`, [`u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = ${Expr.show(orbit)}`, `\\mu = ${Fmt.fixed(mu, 6)}/L^{2}, linear ${Fmt.fixed(lin, 6)}, \\epsilon = ${Fmt.fixed(eps, 6)}\\bar{m}`, `a lap: 2\\pi\\epsilon\\mu = ${Fmt.fixed(k, 6)}\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi`, `Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): ${Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04`, (Fmt.finite(ipp) ? `the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = ${Fmt.fixed(ipp, 4)} of it` : `the medium's index gives no metric of its own here`)]);
-    let delay = Inferences.step(`\\Delta t \\aside{Shapiro}`, Expr.mul([Expr.num(add(1, gamma)), Expr.field(`\\bar{m}`), Expr.log(Expr.field(`\\frac{4r_{1}r_{2}}{b^{2}}`))]), `light passing a body, timed`, [B.key, A.key], `THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1`, [`\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = ${Fmt.fixed(gamma, 6)}`, `\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}`, `Earth to Saturn grazing the sun, there and back: ${Fmt.fixed(mul(mul(mul(2, (add(1, gamma))), 4.925491), Math.log((div(mul(mul(4, 149597870700.0), 1433530000000.0), (mul(695700000.0, 695700000.0)))))), 1)} \\mu s`]);
+    let peri = Inferences.step(`\\Delta\\varphi`, Expr.mul([Expr.num(k), Expr.field(`\\pi`), Expr.field(`\\bar{m}`), Expr.pown(Expr.field(`a\\paren{1 - e^{2}}`), (-1))]), `a bound orbit, moved by S.v`, [A.key, B.key], `THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century`, [`the standing share, A = ${Expr.show(clockU)} in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + ${Fmt.fixed(n1, 3)}U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}`, `a_{1} = ${Fmt.fixed(a1, 6)}, a_{2} = ${Fmt.fixed(a2, 6)}, a_{3} = ${Fmt.fixed(a3, 6)}: moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = ${Fmt.fixed(clock, 6)}`, `the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = ${Fmt.fixed(lean, 6)}`, `a lap: ${Fmt.fixed(k, 6)}\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives ${Fmt.fixed(geo, 6)}\\pi`, `Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): ${Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04`]);
+    let delay = Inferences.step(`\\Delta t \\aside{Shapiro}`, Expr.mul([Expr.num(slope), Expr.field(`\\bar{m}`), Expr.log(Expr.field(`\\frac{4r_{1}r_{2}}{b^{2}}`))]), `light passing a body, timed`, [A.key, B.key], `THE DELAY, off the index the rules give light (\`N\`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1`, [`the index: N = 1 + ${Fmt.fixed(slope, 4)}\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r`, `\\int ${Fmt.fixed(slope, 4)}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = ${Fmt.fixed(slope, 4)}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}`, `Earth to Saturn grazing the sun, there and back: ${Fmt.fixed(mul(mul(mul(2, slope), 4.925491), Math.log((div(mul(mul(4, 149597870700.0), 1433530000000.0), (mul(695700000.0, 695700000.0)))))), 1)} \\mu s; Cassini measured general relativity's to 10^{-5}`]);
     return [ppn, peri, delay];
   }
   static get metric_of(): Inference {
-    return new Inference({ name: `an index is a metric`, because: `MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies \`dt^{2}\` and \`dr^{2}\` and what MOVEMENT counts is \`d\\tau/dt\` and \`d\\ell/dr\` - the roots`, fire: ((s: Store) => {
+    return new Inference({ name: `the held clock and ruler, in the lattice's own radius`, because: `a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order`, fire: ((s: Store) => {
       let n = (s.fact(`is`, `N in r`) ?? s.fact(`is`, `N`));
-      if ((eq(n, null) || s.has(`is`, `A in r`))) {
+      let dn = s.fact(`is`, `\\delta n_{f}`);
+      if (((eq(n, null) || eq(dn, null)) || s.has(`is`, `A in r`))) {
         return [];
       }
-      let via = `an index is a metric`;
-      return [Inferences.step(`A in r`, Expr.simplify(Expr.pown(n.to, (-2))), via, [n.key], `MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. \`A\` multiplies \`dt^{2}\` in the line element, so a clock ticking at \`d\\tau/dt\` sits at \`A = \\paren{d\\tau/dt}^{2}\`. What MOVEMENT counts is the RATE, \`1/N\`, so the coefficient is \`1/N^{2}\` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives \`A = 1 - 2\\delta n_{f}\`, which is general relativity's \`1 - 2\\Phi\`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise`, [`MOVEMENT: one tick per point the place stands for`, `a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N`, `A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = ${Expr.show(Expr.simplify(Expr.pown(n.to, (-2))))}`]), Inferences.step(`B in r`, Expr.simplify(Expr.pown(n.to, 2)), via, [n.key], `and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads \`d\\ell/dr = \\sqrt{B}\`, so \`B = N^{2}\`. The two squares keep \`A\\cdot B = 1\`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does`, [`the same place HAS N points in it, so d\\ell/dr = N`, `B = \\paren{d\\ell/dr}^{2} = N^{2} = ${Expr.show(Expr.simplify(Expr.pown(n.to, 2)))}`, `and A\\cdot B = 1 still, as Schwarzschild has it`])];
+      let via = `the held clock and ruler, in the lattice's own radius`;
+      let u = Expr.field(`\\delta n_{f}`);
+      let points = Expr.pown(Expr.sub(Expr.num(1), u), (-1));
+      let B = Expr.simplify(Expr.pown(points, 2));
+      let phi = Expr.simplify(Expr.mul([u, Expr.sub(Expr.num(1), u)]));
+      let A = Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.num(2), phi])));
+      return [Inferences.step(`B in r`, B, via, [n.key, dn.key], `THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square`, [`a fold: two points into one, so a place stands for one more`, `chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})`, `B = ${Expr.show(B)}`]), Inferences.step(`A in r`, A, via, [n.key, dn.key], `THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one`, [`a held clock: A = 1 - 2\\Phi`, `\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points`, `\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}`, `A = ${Expr.show(A)}`, `light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index ${Expr.show(n.to)} to the first order`])];
     }) });
   }
   static get accumulating(): Inference {
@@ -7243,11 +7305,15 @@ export class Inferences extends Node {
   static get bending(): Inference {
     return new Inference({ name: `the integral of the index across the path`, because: `\`turns\` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up`, fire: ((s: Store) => {
       let rec = s.fact(`is`, `\\delta n_{f}`);
-      if ((eq(rec, null) || s.has(`is`, `\\alpha`))) {
+      let n = s.fact(`is`, `N`);
+      if (((eq(rec, null) || eq(n, null)) || s.has(`is`, `\\alpha`))) {
         return [];
       }
-      let alpha = Expr.simplify(Expr.mul([Expr.num(2), Expr.replace(rec.to, `r`, Expr.sym(`b`))]));
-      return [Inferences.step(`\\alpha`, alpha, `the integral of the index across the path`, [rec.key], `the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer`, [`turns: 1 way straight on against folds[d] ways out along d`, `the fold record along the path: ${Expr.show(rec.to)}`, `the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}`, `and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has`, `\\alpha = ${Expr.show(alpha)}`])];
+      let env = ({});
+      env[`\\delta n_{f}`] = 0;
+      let slope = Expr.numeric(Expr.simplify(Expr.d(n.to, `\\delta n_{f}`)), env);
+      let alpha = Expr.simplify(Expr.mul([Expr.num(mul(2, slope)), Expr.replace(rec.to, `r`, Expr.sym(`b`))]));
+      return [Inferences.step(`\\alpha`, alpha, `the integral of the index across the path`, [rec.key], `the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured`, [`turns: 1 way straight on against what folds[d] holds along d`, `the index's slope in the record: ${Fmt.fixed(slope, 4)}`, `the fold record along the path: ${Expr.show(rec.to)}`, `the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}`, `and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has`, `\\alpha = ${Expr.show(alpha)}`])];
     }) });
   }
   static get shadowing(): Inference {
@@ -8594,7 +8660,7 @@ export class Medium extends Node {
   }))); }
   set trading(v: any[]) { this.write("trading", v); }
   beta(h: Hole): number {
-    let v = div(h.momentum.norm, h.mass);
+    let v = h.velocity(0).norm;
     return (lt(v, 0) ? 0 : ((gt(v, 1) ? 1 : v)));
   }
   get own(): number { return this.read("own", () => 0); }
@@ -9097,7 +9163,7 @@ export class Medium extends Node {
   emitted(h: Hole): number[] {
     let near = this.face_of(h);
     let q = mul(this.per_way(h), (Math.pow(near, sub(this.D, 1))));
-    return [q, mul(q, h.x), mul(q, h.y), mul(div(mul(q, elem(h.momentum.components, 0)), h.mass), this.K), mul(div(mul(q, elem(h.momentum.components, 1)), h.mass), this.K), mul(q, near), index_of(this.holes, h), 0];
+    return [q, mul(q, h.x), mul(q, h.y), mul(mul(q, elem(h.velocity(0).components, 0)), this.K), mul(mul(q, elem(h.velocity(0).components, 1)), this.K), mul(q, near), index_of(this.holes, h), 0];
   }
   left_for(e: number[], d: number): number[] {
     let back = div(d, this.K);
@@ -9757,7 +9823,7 @@ export class Medium extends Node {
     this.ticks = add(this.ticks, 1);
   }
   lean_under(h: Hole): number[] {
-    return this.pull_at(h.x, h.y, this.plane_of(h), div(elem(h.momentum.components, 0), h.mass), div(elem(h.momentum.components, 1), h.mass));
+    return this.pull_at(h.x, h.y, this.plane_of(h), elem(h.velocity(0).components, 0), elem(h.velocity(0).components, 1));
   }
   get pulled(): number[][] { return this.read("pulled", () => []); }
   set pulled(v: number[][]) { this.write("pulled", v); }
@@ -9769,12 +9835,10 @@ export class Medium extends Node {
       let h = elem(this.holes, i);
       if (h.moves) {
         let g = elem(this.pulled, i);
-        h.momentum = add(h.momentum, new Vector({ components: [mul(elem(g, 0), h.mass), mul(elem(g, 1), h.mass)] }));
-        if (gt(h.momentum.norm, h.mass)) {
-          h.momentum = mul(h.momentum.unit, h.mass);
-        }
-        h.x = add(h.x, mul(div(elem(h.momentum.components, 0), h.mass), this.K));
-        h.y = add(h.y, mul(div(elem(h.momentum.components, 1), h.mass), this.K));
+        h.momentum = add(h.momentum, mul(new Vector({ components: [mul(elem(g, 0), h.mass), mul(elem(g, 1), h.mass)] }), (div(1, h.standing(0)))));
+        let v = h.velocity(0);
+        h.x = add(h.x, mul(elem(v.components, 0), this.K));
+        h.y = add(h.y, mul(elem(v.components, 1), this.K));
         h.moved = add(h.moved, 1);
       }
     };
@@ -18214,12 +18278,10 @@ export const G = new (class G extends Theory {
   }) });
   static "rule S.v" = new Rule({ id: "/S.v", name: "Transport", rate: null, over: "Source", single: true, where: ((it: any) => {
     return it.moves;
-  }), source: "`rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}`", body: ((x: Source) => {
-    x.momentum = add(x.momentum, mul(first(x.cells).sinks, x.mass));
-    if (gt(x.momentum.norm, x.mass)) {
-      x.momentum = mul(x.momentum.unit, x.mass);
-    }
-    x.advance = add(x.advance, mul(x.momentum, (div(1, x.mass))));
+  }), source: "`rule /S.v \\\"Transport\\\" (x: Source{moves}) => {\\n  u := x.cells.first.potential\\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\\n  x.advance = x.advance + x.velocity(u)\\n  g := x.world.geometry\\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\\n}`", body: ((x: Source) => {
+    let u = first(x.cells).potential;
+    x.momentum = add(x.momentum, mul(first(x.cells).sinks, (div(mul(x.mass, (sub(1, mul(2, u)))), x.standing(u)))));
+    x.advance = add(x.advance, x.velocity(u));
     let g = x.world.geometry;
     let d = elem(most(range(g.DEG), ((e: any) => {
       return x.advance.along(g.V(e));
@@ -18251,18 +18313,18 @@ export const G = new (class G extends Theory {
 })()
 
 Object.defineProperty(G, "equation", { value: { latex: "\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega", terms: [
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "2", at: (s: any) => 2 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "s.F", at: (s: any) => s.F }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f / s.DEG * (1 - s.ρ)", at: (s: any) => mul(div(s.n_f, s.DEG), (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f / s.DEG", at: (s: any) => div(s.n_f, s.DEG) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
-  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f * (1 - s.ρ)", at: (s: any) => mul(s.n_f, (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f", at: (s: any) => s.n_f }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: true, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "n_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/4", rate: null, name: "Arrival", over: "Ray", where: null, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE" }, rate: null, degree: 0, outside: false, settles: true, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: true, share: { source: "1", at: (s: any) => 1 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
-  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 0, outside: true, settles: false, transport: false, leans: "n_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: true, settles: false, share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, asked: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "2", at: (s: any) => 2 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "s.F", at: (s: any) => s.F }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "-2", at: (s: any) => (-2) }, space: { source: "-1", at: (s: any) => (-1) }, folds: { source: "1", at: (s: any) => 1 } } },
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/1", rate: "σ", name: "Annihilation", over: "Edge", where: { source: "active" }, source: "rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE" }, rate: "σ", degree: 2, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 2, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "s.F", at: (s: any) => s.F }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "s.DEG", at: (s: any) => s.DEG }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f / s.DEG * (1 - s.ρ)", at: (s: any) => mul(div(s.n_f, s.DEG), (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f / s.DEG", at: (s: any) => div(s.n_f, s.DEG) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "-s.DEG", at: (s: any) => (-s.DEG) } } },
+  { rule: { id: "/2", rate: "ν", name: "Creation", over: "Vertex", where: { source: "neutral" }, source: "rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE" }, rate: "ν", degree: 0, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: false, share: { source: "s.n_f * (1 - s.ρ)", at: (s: any) => mul(s.n_f, (sub(1, s.ρ))) }, asked: { source: "1 - s.ρ", at: (s: any) => sub(1, s.ρ) }, around: { source: "s.n_f", at: (s: any) => s.n_f }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: true, sets: false, grown: true, trades: false, grew: { source: "1", at: (s: any) => 1 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1 - s.ω", at: (s: any) => sub(1, s.ω) }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "1", at: (s: any) => 1 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "S_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "0", at: (s: any) => 0 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "0", at: (s: any) => 0 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: true, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/c", rate: "σ", name: "Movement", over: "Ray", where: { source: "active" }, source: "rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE" }, rate: "σ", degree: 1, outside: false, settles: false, transport: true, leans: "S_f", turned: "way", doing: { carries: true, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 1, outside: false, settles: false, share: { source: "s.ω", at: (s: any) => s.ω }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/4", rate: null, name: "Arrival", over: "Ray", where: null, source: "rule /4 \"Arrival\" (x: Ray) => x.SETTLE" }, rate: null, degree: 0, outside: false, settles: true, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: false, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: false, settles: true, share: { source: "1", at: (s: any) => 1 }, asked: { source: "1", at: (s: any) => 1 }, around: { source: "1", at: (s: any) => 1 }, rays: { source: "0", at: (s: any) => 0 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } },
+  { rule: { id: "/S.1", rate: null, name: "Emission", over: "Boundary", where: { source: "emits & vertex.source.spare" }, source: "rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}" }, rate: null, degree: 0, outside: true, settles: false, transport: false, leans: "S_f", turned: "way", doing: { carries: false, sets: true, grown: false, trades: false, grew: { source: "0", at: (s: any) => 0 }, grew_apart: { source: "0", at: (s: any) => 0 }, draws: null, needs: 0, outside: true, settles: false, share: { source: "s.ω * (1 - s.β)", at: (s: any) => mul(s.ω, (sub(1, s.β))) }, asked: { source: "1 - s.β", at: (s: any) => sub(1, s.β) }, around: { source: "s.ω", at: (s: any) => s.ω }, rays: { source: "1", at: (s: any) => 1 }, space: { source: "0", at: (s: any) => 0 }, folds: { source: "0", at: (s: any) => 0 } } }
 ] } });
 
 export const LINE2 = Geometry.shells(1, [1]);
@@ -18277,4 +18339,4 @@ export const sep2 = `, `;
 export const plus = ` + `;
 export const ind2 = `  `;
 export const nl0 = `\n`;
-export const METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at";
+export const METHOD_SOURCES = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at";

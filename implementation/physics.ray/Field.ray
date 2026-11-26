@@ -81,6 +81,8 @@ Cell := class < of: *, index: N {
   folds (): Real[] => this.of.folds_at(this.index)
   /* where a landing here along d has gone, in c-bar: through, for the share its sender swallowed; into the hub, for the rest (Vertex.drift) */
   drift (d: N): Vector => this.of.drift_from(this.index, d)
+  /* the potential a held clock reads here (Vertex.potential): a box is two-dimensional and has none that vanishes far off */
+  potential (): Real => 0
   /* where this cell itself is going this tick, in c-bar: the mean of its swallowed shares' hubs (Vertex.sinks) */
   sinks (): Vector => this.of.sinks_at(this.index)
   /* the cell across exit d, if there is one: one cell across for a fine cell, one c-bar for a coarse one */
@@ -319,14 +321,14 @@ Field := class < theory: Theory, N: N, A: N, K: N {
     Array.range(this.cells).for(c => { this.rho[c] = this.rho[c] / Real.of(this.A) })
   }
 
-  /* the folds at every cell as the tick opened: the sum over its ways, and what the draw keeps straight on there - one against one and the folds */
+  /* the folds at every cell as the tick opened: the sum over its ways, and what the draw keeps straight on there - one against one and what the folds hold, two rays apiece (Vertex.worth) */
   tally () => {
     Array.range(this.cells).for(c => {
       nf := 0
       Array.range(this.A).for(b => { nf = nf + this.fold_was[b * this.cells + c] })
       nf = nf * this.edge
       this.folds[c] = nf
-      this.keep[c] = 1 / (1 + nf)
+      this.keep[c] = 1 / (1 + Vertex.WORTH * nf)
     })
   }
   /* run after the meetings of the tick and before anything moves: where each point is, as of this tick's folding */
@@ -557,7 +559,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
           if onto_way {
             fa := this.fold_was[a * this.cells + src]
             if fa > 0 {
-              Array.range(this.A).for(b => { got = got + tp[1] * pop(b, src) * fa * this.keep[src] * this.edge })
+              Array.range(this.A).for(b => { got = got + tp[1] * pop(b, src) * Vertex.WORTH * fa * this.keep[src] * this.edge })
             }
           }
         })
@@ -566,7 +568,7 @@ Field := class < theory: Theory, N: N, A: N, K: N {
             this.back2(c, d).for(tp => {
               sd := tp[0]
               fd := this.fold_was[d * this.cells + sd]
-              got = got + tp[1] * pop(a, sd) * fd * this.keep[sd] * this.edge if fd > 0
+              got = got + tp[1] * pop(a, sd) * Vertex.WORTH * fd * this.keep[sd] * this.edge if fd > 0
             })
           })
         }

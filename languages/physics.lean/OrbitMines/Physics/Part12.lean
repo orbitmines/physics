@@ -34,6 +34,15 @@ ray_impl_getter "spare" : Bool := do
 ray_impl_getter "mass" : Float := do
   if true then return (← app! (← ωget self "choose mass") ())
   return ωnull
+ray_impl_method "clock_at" (u_0 : Float) : Float := do
+  if true then return (← ωsub (1 : Float) (← ωmul (← ωmul (2 : Float) (← u_0.get)) ((← ωsub (1 : Float) (← u_0.get)))))
+  return ωnull
+ray_impl_method "standing" (u_0 : Float) : Float := do
+  if true then return (← ωdiv (← ωmul (← ωget self "mass") (← dot! (← call! self "clock_at" ((← u_0.get))) rsqrt ())) (← dot! ((← ωadd (← ωmul (← ωget self "mass") (← ωget self "mass")) (← ωmul (← ωget (← ωget self "momentum") "norm") (← ωget (← ωget self "momentum") "norm")))) rsqrt ()))
+  return ωnull
+ray_impl_method "velocity" (u_0 : Float) : Vector := do
+  if true then return (← ωmul (← ωget self "momentum") ((← ωdiv (← dot! (← call! self "clock_at" ((← u_0.get))) rsqrt ()) (← dot! ((← ωadd (← ωmul (← ωget self "mass") (← ωget self "mass")) (← ωmul (← ωget (← ωget self "momentum") "norm") (← ωget (← ωget self "momentum") "norm")))) rsqrt ()))))
+  return ωnull
 ray_impl_field "absorbs" : Bool := do
   return true
 ray_impl_method "emits" (exit_0 : Float) : Bool := do

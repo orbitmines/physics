@@ -36,9 +36,21 @@ ray_impl_getter "equation" : Equation := do
   if true then return (← ωget (← ωget self "theory") "equation")
   return ωnull
 ray_impl_getter "infos" : (RList TermInfo) := do
-  if true then return (← dot! (← ωget (← ωget self "theory") "terms_read") rmap ((fn! [t_2] do
+  let all_0 ← IO.mkRef (← dot! (← ωget (← ωget self "theory") "terms_read") rmap ((fn! [t_2] do
     if true then return (← new! TermInfo («term» := (← t_2.get)))
     return ωnull)))
+  let meet_0 ← IO.mkRef (← dot! (← dot! (← all_0.get) rfilter ((fn! [t_2] do
+    if true then return (← ωandV (← ωandV (← ωeqv (← ωget (← t_2.get) "degree") (2 : Float)) (do pure (ωnotV (← dot! (← ωget (← t_2.get) "rules") rempty ())))) (do pure (← ωnev (← ωget (← t_2.get) "folds") ("0" : String))))
+    return ωnull))) rfirst ())
+  let held_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← meet_0.get))) (do pure (← call! (← cls% Expr) "num" ((1 : Float)))) (do pure (← call! (← cls% Expr) "simplify" ((← call! (← cls% Expr) "neg" ((← call! (← cls% Expr) "div" ((← ωget (← meet_0.get) "ray_count"), (← ωget (← meet_0.get) "fold_count")))))))))
+  for e1 in (← ωitems (← all_0.get)) do
+    let t_1 ← IO.mkRef e1
+    if ωtruthy (← ωeqv (← ωget (← ωget (← t_1.get) "term") "leans") ("S_f" : String)) then
+      (ωsetter (← t_1.get) "worth") (← held_0.get)
+      pure ()
+    pure ()
+  Value.null |> ωsink
+  if true then return (← all_0.get)
   return ωnull
 ray_impl_getter "acting" : (RList TermInfo) := do
   if true then return (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
@@ -915,11 +927,11 @@ ray_impl_static "members_at" (t_0 : TermInfo) (rays_0 : Bool) : Expr := do
 ray_impl_method "ways_at" (one_0 : Step) (behind_0 : (RList Step)) : Step := do
   let draws_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Ray.turns" : String)))
   let folding_0 ← IO.mkRef (← call! (← cls% Prover) "source_of" (("Vertex.fold" : String)))
-  if ωtruthy (← ωorV (ωnotV (← dot! (← draws_0.get) rcontains (("folds" : String)))) (do pure (ωnotV (← dot! (← folding_0.get) rcontains (("folds[d] + 1" : String)))))) then
+  if ωtruthy (← ωorV (ωnotV ((← ωorV (← dot! (← draws_0.get) rcontains (("folds" : String))) (do pure (← dot! (← draws_0.get) rcontains (("worth" : String))))))) (do pure (ωnotV (← dot! (← folding_0.get) rcontains (("folds[d] + 1" : String)))))) then
     if true then return ωnull
     pure ()
   let own_0 ← IO.mkRef (← call! (← cls% Expr) "add" ((← ωlst #[(← ωget (← cls% Prover) "LATTICE"), (← call! (← cls% Expr) "field" (("n_{f,l}" : String)))])))
-  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("DEG" : String), (← own_0.get))), ("the ways at a local" : String), (← ωlst #[(← ωget (← ωget (← one_0.get) "fact") "key")]), ("a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it" : String), (← ωlst #[("Ray.turns = " ++ (← ωtoStr (← draws_0.get)) ++ ": straight on at one, each folded way at its folds" : String), ("Vertex.fold = " ++ (← ωtoStr (← folding_0.get)) ++ ": a fold written on a way" : String), ("DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← own_0.get)))) ++ "" : String)])))
+  let st_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("DEG" : String), (← own_0.get))), ("the ways at a local" : String), (← ωlst #[(← ωget (← ωget (← one_0.get) "fact") "key")]), ("a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it" : String), (← ωlst #[("Ray.turns = " ++ (← ωtoStr (← draws_0.get)) ++ ": straight on at one, each folded way at what its folds hold" : String), ("Vertex.fold = " ++ (← ωtoStr (← folding_0.get)) ++ ": a fold written on a way" : String), ("DEG = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← own_0.get)))) ++ "" : String)])))
   (ωsetter (← st_0.get) "derivation") (← behind_0.get)
   if true then return (← st_0.get)
   return ωnull
@@ -1181,12 +1193,15 @@ ray_impl_method "expansion_of" (s_0 : Store) (settles_0 : Step) : (RList Step) :
 ray_impl_method "scale_of" (hub_0 : Step) (settles_0 : Step) : (RList Step) := do
   let vac_0 ← IO.mkRef (← call! (← cls% Expr) "field" (("\\rho_{\\infty}" : String)))
   let nf_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "replace" ((← call! (← cls% Expr) "replace" ((← ωget (← ωget (← settles_0.get) "fact") "to"), ("\\rho" : String), (← vac_0.get))), ("DEG_{0}" : String), (← call! (← cls% Expr) "field" (("DEG" : String)))))))
-  let v_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← call! (← cls% Expr) "pown" ((← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← nf_0.get)]))), (← ωneg (1 : Float))))))
+  let drawn_0 ← IO.mkRef (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
+    if true then return (← ωandV (← ωget (← t_2.get) "transport") (do pure (← ωget (← t_2.get) "kernel")))
+    return ωnull))) rfirst ())
+  let v_0 ← IO.mkRef (← call! (← cls% Prover) "neat" ((← ωtern (ωtruthy (ωisNull (← drawn_0.get))) (do pure (← call! (← cls% Expr) "pown" ((← call! (← cls% Expr) "add" ((← ωlst #[(← call! (← cls% Expr) "num" ((1 : Float))), (← nf_0.get)]))), (← ωneg (1 : Float))))) (do pure (← call! (← cls% Expr) "replace" ((← ωget (← drawn_0.get) "keeps"), ("n_{f}" : String), (← nf_0.get)))))))
   let mover_0 ← IO.mkRef (← dot! (← dot! (← ωget self "infos") rfilter ((fn! [t_2] do
     if true then return (← ωandV (!ωisNull (← ωget (← ωget (← t_2.get) "term") "rule")) (do pure (← ωget (← t_2.get) "carries")))
     return ωnull))) rfirst ())
   let moved_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← mover_0.get))) (do pure ("MOVEMENT" : String)) (do pure (← dot! (← ωget (← ωget (← ωget (← mover_0.get) "term") "rule") "name") rupper ())))
-  let straight_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("v \\aside{straight}" : String), (← v_0.get))), ("what a heading keeps straight" : String), (← ωlst #[(← ωget (← ωget (← settles_0.get) "fact") "key")]), ("" ++ (← ωtoStr (← moved_0.get)) ++ " draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at" : String), (← ωlst #[("the draw: 1 straight on against n_{f} folded" : String), ("n_{f} at \\rho_{\\infty} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← nf_0.get)))) ++ "" : String), ("v = \\frac{1}{1 + n_{f}} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← v_0.get)))) ++ "" : String)])))
+  let straight_0 ← IO.mkRef (← call! (← cls% Step) "of" ((← call! (← cls% Fact) "stands" (("v \\aside{straight}" : String), (← v_0.get))), ("what a heading keeps straight" : String), (← ωlst #[(← ωget (← ωget (← settles_0.get) "fact") "key")]), ("" ++ (← ωtoStr (← moved_0.get)) ++ " draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at" : String), (← ωlst #[("the draw: 1 straight on against the folded ways, each at what it holds" : String), ("n_{f} at \\rho_{\\infty} = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← nf_0.get)))) ++ "" : String), ("v = " ++ (← ωtoStr (← call! (← cls% Expr) "show" ((← v_0.get)))) ++ "" : String)])))
   (ωsetter (← straight_0.get) "derivation") (← ωlst #[(← settles_0.get)])
   let lights_0 ← IO.mkRef (← ωget self "relights")
   let lit_0 ← IO.mkRef (← ωtern (ωtruthy (ωisNull (← lights_0.get))) (do pure ("CREATION" : String)) (do pure (← dot! (← ωget (← ωget (← ωget (← lights_0.get) "term") "rule") "name") rupper ())))

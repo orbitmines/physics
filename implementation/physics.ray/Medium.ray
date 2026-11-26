@@ -202,7 +202,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
    */
   /* a body's own share of the ticks it spends stepping rather than lighting - beta, as the source term reads it: a step is one decision a tick, so it is what it moves at, in c-bar a tick */
   beta (h: Hole): Real => {
-    v := h.momentum.norm / h.mass
+    v := h.velocity(0).norm
     v < 0 ? 0 : (v > 1 ? 1 : v)
   }
   /* what a source puts on every edge beside it a tick: its ways over the lattice's, on the source term's own share (Emission) */
@@ -732,7 +732,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
   emitted (h: Hole): Real[] => {
     near := this.face_of(h)
     q := this.per_way(h) * (near ^ Real.of(this.D - 1))
-    [q, q * h.x, q * h.y, q * h.momentum.components[0] / h.mass * Real.of(this.K), q * h.momentum.components[1] / h.mass * Real.of(this.K), q * near, Real.of(this.holes.index_of(h)), 0]
+    [q, q * h.x, q * h.y, q * h.velocity(0).components[0] * Real.of(this.K), q * h.velocity(0).components[1] * Real.of(this.K), q * near, Real.of(this.holes.index_of(h)), 0]
   }
   /*
    * what a body lays at a place d cells off, as it stands now: rays that far out left d/K ticks ago, from where it was
@@ -1523,7 +1523,7 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
     this.ticks = this.ticks + 1
   }
 
-  lean_under (h: Hole): Real[] => this.pull_at(h.x, h.y, this.plane_of(h), h.momentum.components[0] / h.mass, h.momentum.components[1] / h.mass)
+  lean_under (h: Hole): Real[] => this.pull_at(h.x, h.y, this.plane_of(h), h.velocity(0).components[0], h.velocity(0).components[1])
 
   /*
    * MOVE, locally (Transport): a body is turned by the lean at the c-bar it stands on, keeps it as momentum, and goes
@@ -1538,10 +1538,11 @@ Medium := class < theory: Theory, N: N, A: N, K: N {
       h := this.holes[i]
       if h.moves {
         g := this.pulled[i]
-        h.momentum = h.momentum + Vector(components: [g[0] * h.mass, g[1] * h.mass])
-        h.momentum = h.momentum.unit * h.mass if h.momentum.norm > h.mass
-        h.x = h.x + h.momentum.components[0] / h.mass * Real.of(this.K)
-        h.y = h.y + h.momentum.components[1] / h.mass * Real.of(this.K)
+        /* moves or stands (Source.standing): felt on the ticks it stands, and it goes at what it carries per tick it stands - a box's clock is the vacuum's (Field.potential) */
+        h.momentum = h.momentum + Vector(components: [g[0] * h.mass, g[1] * h.mass]) * (1 / h.standing(0))
+        v := h.velocity(0)
+        h.x = h.x + v.components[0] * Real.of(this.K)
+        h.y = h.y + v.components[1] * Real.of(this.K)
         h.moved = h.moved + 1
       }
     })

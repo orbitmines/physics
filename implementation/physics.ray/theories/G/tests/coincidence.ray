@@ -15,7 +15,12 @@ Model{theory.name == "G"} += {
   /* it falls with the lattice's ways */
   dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(6)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8))
   dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) > value_of("\\frac{{a_{{0}}}}{{cH}}", settled(18))
-  /* and on the theory's eight ways, with today's matter share, it is inside what is measured */
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) * (1 - 0.315).sqrt > 0.155
-  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) * (1 - 0.315).sqrt < 0.183
+  /*
+   * a fold is offered at the two rays it holds, so what a heading keeps is 1/(1 + 2 n_f), and the settled record is
+   * half the lattice's ways: a_0/cH_Lambda = 1/(1 + DEG) - the shape of nothing, only the scale. On the theory's eight
+   * ways it is a ninth, about half what is measured; at four, D + 1, it is inside. Pinned, so a move is seen
+   */
+  dynamically assert (value_of("\\frac{{a_{{0}}}}{{cH}}", settled(8)) - 1 / 9).abs < 0.000001
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(4)) * (1 - 0.315).sqrt > 0.155
+  dynamically assert value_of("\\frac{{a_{{0}}}}{{cH}}", settled(4)) * (1 - 0.315).sqrt < 0.183
 }

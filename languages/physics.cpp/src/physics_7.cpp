@@ -226,7 +226,7 @@ static void C_Medium(Cls& c) {
   })); });
   c.method("beta", [](Value self, const Args& a1) -> Value {
     auto h_0 = cell(arg(a1, 0));
-    auto v_0 = cell(); v_0->v = div(get(get(h_0->v, S<"momentum">()), S<"norm">()), get(h_0->v, S<"mass">()));
+    auto v_0 = cell(); v_0->v = get(call(h_0->v, S<"velocity">(), { 0.0 }), S<"norm">());
     return (truthy(lt(v_0->v, 0.0)) ? Value(0.0) : Value(((truthy(gt(v_0->v, 1.0)) ? Value(1.0) : Value(v_0->v)))));
     return null;
   });
@@ -844,7 +844,7 @@ static void C_Medium(Cls& c) {
     auto h_0 = cell(arg(a1, 0));
     auto near_0 = cell(); near_0->v = call(self, S<"face_of">(), { h_0->v });
     auto q_0 = cell(); q_0->v = mul(call(self, S<"per_way">(), { h_0->v }), (power(near_0->v, sub(get(self, S<"D">()), 1.0))));
-    return list({ q_0->v, mul(q_0->v, get(h_0->v, S<"x">())), mul(q_0->v, get(h_0->v, S<"y">())), mul(div(mul(q_0->v, elem(get(get(h_0->v, S<"momentum">()), S<"components">()), 0.0)), get(h_0->v, S<"mass">())), get(self, S<"K">())), mul(div(mul(q_0->v, elem(get(get(h_0->v, S<"momentum">()), S<"components">()), 1.0)), get(h_0->v, S<"mass">())), get(self, S<"K">())), mul(q_0->v, near_0->v), m_index_of(get(self, S<"holes">()), h_0->v), 0.0 });
+    return list({ q_0->v, mul(q_0->v, get(h_0->v, S<"x">())), mul(q_0->v, get(h_0->v, S<"y">())), mul(mul(q_0->v, elem(get(call(h_0->v, S<"velocity">(), { 0.0 }), S<"components">()), 0.0)), get(self, S<"K">())), mul(mul(q_0->v, elem(get(call(h_0->v, S<"velocity">(), { 0.0 }), S<"components">()), 1.0)), get(self, S<"K">())), mul(q_0->v, near_0->v), m_index_of(get(self, S<"holes">()), h_0->v), 0.0 });
     return null;
   });
   c.method("left_for", [](Value self, const Args& a1) -> Value {
@@ -1621,7 +1621,7 @@ static void C_Medium(Cls& c) {
   });
   c.method("lean_under", [](Value self, const Args& a1) -> Value {
     auto h_0 = cell(arg(a1, 0));
-    return call(self, S<"pull_at">(), { get(h_0->v, S<"x">()), get(h_0->v, S<"y">()), call(self, S<"plane_of">(), { h_0->v }), div(elem(get(get(h_0->v, S<"momentum">()), S<"components">()), 0.0), get(h_0->v, S<"mass">())), div(elem(get(get(h_0->v, S<"momentum">()), S<"components">()), 1.0), get(h_0->v, S<"mass">())) });
+    return call(self, S<"pull_at">(), { get(h_0->v, S<"x">()), get(h_0->v, S<"y">()), call(self, S<"plane_of">(), { h_0->v }), elem(get(call(h_0->v, S<"velocity">(), { 0.0 }), S<"components">()), 0.0), elem(get(call(h_0->v, S<"velocity">(), { 0.0 }), S<"components">()), 1.0) });
     return null;
   });
   c.field("pulled", [](const Value& self) -> Value { return list({  }); });
@@ -1636,12 +1636,10 @@ static void C_Medium(Cls& c) {
       auto h_1 = cell(); h_1->v = elem(get(self, S<"holes">()), i_1->v);
       if (truthy(get(h_1->v, S<"moves">()))) {
         auto g_1 = cell(); g_1->v = elem(get(self, S<"pulled">()), i_1->v);
-        set(h_1->v, S<"momentum">(), add(get(h_1->v, S<"momentum">()), make(S<"Vector">(), { kw(S<"components">(), list({ mul(elem(g_1->v, 0.0), get(h_1->v, S<"mass">())), mul(elem(g_1->v, 1.0), get(h_1->v, S<"mass">())) })) })));
-        if (truthy(gt(get(get(h_1->v, S<"momentum">()), S<"norm">()), get(h_1->v, S<"mass">())))) {
-          set(h_1->v, S<"momentum">(), mul(get(get(h_1->v, S<"momentum">()), S<"unit">()), get(h_1->v, S<"mass">())));
-        }
-        set(h_1->v, S<"x">(), add(get(h_1->v, S<"x">()), mul(div(elem(get(get(h_1->v, S<"momentum">()), S<"components">()), 0.0), get(h_1->v, S<"mass">())), get(self, S<"K">()))));
-        set(h_1->v, S<"y">(), add(get(h_1->v, S<"y">()), mul(div(elem(get(get(h_1->v, S<"momentum">()), S<"components">()), 1.0), get(h_1->v, S<"mass">())), get(self, S<"K">()))));
+        set(h_1->v, S<"momentum">(), add(get(h_1->v, S<"momentum">()), mul(make(S<"Vector">(), { kw(S<"components">(), list({ mul(elem(g_1->v, 0.0), get(h_1->v, S<"mass">())), mul(elem(g_1->v, 1.0), get(h_1->v, S<"mass">())) })) }), (div(1.0, call(h_1->v, S<"standing">(), { 0.0 }))))));
+        auto v_1 = cell(); v_1->v = call(h_1->v, S<"velocity">(), { 0.0 });
+        set(h_1->v, S<"x">(), add(get(h_1->v, S<"x">()), mul(elem(get(v_1->v, S<"components">()), 0.0), get(self, S<"K">()))));
+        set(h_1->v, S<"y">(), add(get(h_1->v, S<"y">()), mul(elem(get(v_1->v, S<"components">()), 1.0), get(self, S<"K">()))));
         set(h_1->v, S<"moved">(), add(get(h_1->v, S<"moved">()), 1.0));
       }
     };

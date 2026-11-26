@@ -69,7 +69,7 @@ t("tests/coincidence.ray:17 on coincidence") {
   return ok ? PASS : "failed: " + "try gt(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [8.0])]), try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [18.0])]))"
 }
 
-t("tests/coincidence.ray:19 on coincidence") {
+t("tests/coincidence.ray:23 on coincidence") {
   let it: V = try makeNamed("Model", [kw("theory", (try K("G")))])
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(try get(it, "theory"), "name"), V.s(cat("G"))))) {
@@ -77,11 +77,11 @@ t("tests/coincidence.ray:19 on coincidence") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try gt(try mul(try call(it, "value_of", [V.s(cat("\\frac{a_{0}}{cH}")), try call(it, "settled", [8.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.155))
-  return ok ? PASS : "failed: " + "try gt(try mul(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [8.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.155)"
+  let ok: Bool = truthy(try lt(try m_abs((try sub(try call(it, "value_of", [V.s(cat("\\frac{a_{0}}{cH}")), try call(it, "settled", [8.0])]), try div(1.0, 9.0)))), 0.000001))
+  return ok ? PASS : "failed: " + "try lt(try m_abs((try sub(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [8.0])]), try div(1.0, 9.0)))), 0.000001)"
 }
 
-t("tests/coincidence.ray:20 on coincidence") {
+t("tests/coincidence.ray:24 on coincidence") {
   let it: V = try makeNamed("Model", [kw("theory", (try K("G")))])
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(try get(it, "theory"), "name"), V.s(cat("G"))))) {
@@ -89,8 +89,20 @@ t("tests/coincidence.ray:20 on coincidence") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(try lt(try mul(try call(it, "value_of", [V.s(cat("\\frac{a_{0}}{cH}")), try call(it, "settled", [8.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.183))
-  return ok ? PASS : "failed: " + "try lt(try mul(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [8.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.183)"
+  let ok: Bool = truthy(try gt(try mul(try call(it, "value_of", [V.s(cat("\\frac{a_{0}}{cH}")), try call(it, "settled", [4.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.155))
+  return ok ? PASS : "failed: " + "try gt(try mul(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [4.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.155)"
+}
+
+t("tests/coincidence.ray:25 on coincidence") {
+  let it: V = try makeNamed("Model", [kw("theory", (try K("G")))])
+  var guard_: Int = 0
+  while !truthy(V.b(try eq(try get(try get(it, "theory"), "name"), V.s(cat("G"))))) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try lt(try mul(try call(it, "value_of", [V.s(cat("\\frac{a_{0}}{cH}")), try call(it, "settled", [4.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.183))
+  return ok ? PASS : "failed: " + "try lt(try mul(try call(it, \"value_of\", [V.s(cat(\"\\\\frac{a_{0}}{cH}\")), try call(it, \"settled\", [4.0])]), try m_sqrt((try sub(1.0, 0.315)))), 0.183)"
 }
 
 t("tests/felt.ray:10 on felt") {

@@ -1662,7 +1662,7 @@ fn munder(h: u32, k: u32) -> i32 {
   }
   nf = nf * (P.DEG / f32_of_u(P.A));
   cel[1u * P.cells + c] = nf;
-  cel[4u * P.cells + c] = 1.0 / (1.0 + nf);
+  cel[4u * P.cells + c] = 1.0 / (1.0 + 2.0 * nf);
 }
 
 //! kernel LOCATE over cells
@@ -1715,7 +1715,7 @@ fn munder(h: u32, k: u32) -> i32 {
       let fa: f32 = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (var b: u32 = 0u; b < P.A; b = b + 1u) {
-        got = got + sw2 * moving(b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving(b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }
@@ -1774,7 +1774,7 @@ fn munder(h: u32, k: u32) -> i32 {
       let fa: f32 = st[gA(a, u32_of_i(src2))];
       if (fa > 0.0) {
       for (var b: u32 = 0u; b < P.A; b = b + 1u) {
-        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
+        got = got + sw2 * moving_of(P.z, b, u32_of_i(src2)) * 2.0 * fa * cel[4u * P.cells + u32_of_i(src2)] * (P.DEG / f32_of_u(P.A));
       }
       }
     }

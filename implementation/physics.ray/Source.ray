@@ -23,6 +23,16 @@ Source := class {
   /* how much this body weighs in the reading: the rays it can put down per tick */
   mass (): Real => this.choose("mass")()
 
+  /*
+   * MOVE OR STAND (gravity.beat, gravity.orbit). A body's tick is shared between going and standing, and held at a
+   * place the share it can stand is the clock there: (standing)^2 + beta^2 = A. What it carries is its momentum per
+   * tick it stands, p = m beta / sqrt(A - beta^2) - so it goes at beta = p sqrt(A) / sqrt(m^2 + p^2) and stands
+   * m sqrt(A) / sqrt(m^2 + p^2) of a tick: as it carries more it stands less, and it never reaches c-bar
+   */
+  clock_at (u: Real): Real => 1 - 2 * u * (1 - u)
+  standing (u: Real): Real => this.mass * this.clock_at(u).sqrt / (this.mass * this.mass + this.momentum.norm * this.momentum.norm).sqrt
+  velocity (u: Real): Vector => this.momentum * (this.clock_at(u).sqrt / (this.mass * this.mass + this.momentum.norm * this.momentum.norm).sqrt)
+
   /* a source absorbs what arrived at it */
   absorbs: boolean = true
 

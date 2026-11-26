@@ -47,7 +47,7 @@ the same narrowings, counted in the points that stand at l. A meeting folds one 
 <sub>theorem · the ways at a local</sub>  
 
 ```
-Ray.turns = draw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]]): straight on at one, each folded way at its folds
+Ray.turns = draw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]]): straight on at one, each folded way at what its folds hold
 Vertex.fold = return if b == this
 d := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)
 this.folds[d] = this.folds[d] + 1 if d != None
@@ -96,13 +96,13 @@ Creation at l, per way: its pattern narrows l to Vertex\{neutral\}, which holds 
 <sub>rule · MOVEMENT</sub>  
 
 ```
-Ray.turns = draw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])
+Ray.turns = draw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])
 at a place x: n_f = x.DEG - DEG_0, its ways over the lattice's own
-kept straight at x: \frac{1}{1 + n_f} = \frac{1}{x.DEG + 1 - DEG_0}
+kept straight at x: \frac{1}{1 + 2·n_f} = \frac{1}{2·x.DEG + 1 - 2·DEG_0}
 \Delta\rho = \rho_+v\paren{t + 1} - \rho\paren{t}
 ```
 
-the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps \frac{1}{x.DEG + 1 - DEG_0} of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place
+the lit share at l, followed a step and a tick: what it is one step on, along v, a tick later, less what it is here now. v is drawn at every place the ray passes, by that place's own ways - straight on at one against each folded way at its folds - so a place x keeps \frac{1}{2·x.DEG + 1 - 2·DEG_0} of a heading straight and turns the rest across its folds. That is where the ways enter the line: not as a count at l, but in how the rays go on at each place
 
 **\Delta\rho = S^(+) + m̄ - S^(-)**  
 <sub>theorem · the rays at a local, per way</sub>  
@@ -243,7 +243,7 @@ a ray turns where r/\sqrt{A} = b, and at three dimensions \delta n_f = m̄/r, r_
 m̄/b at the turning point = \delta n_f·\sqrt{\frac{-2}{\frac{1}{\delta n_f}} + 1}
 largest where its slope is nought: \delta n_f = 0.333333, the photon sphere at r = 3.0000 m̄
 b_c = 5.1962 m̄; general relativity's is 3\sqrt{3} = 5.1962
-the medium's index read as an isotropic metric instead gives 6.7500 m̄: the same to first order, not to the second - it is not the metric a held clock and ruler read
+the medium's index read as an isotropic metric instead gives 5.6569 m̄: the same to first order, not to the second - it is not the metric a held clock and ruler read
 ```
 
 THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^(2) = B dr^(2) + r^(2)d\Omega^(2)`, and a null ray turns where `r/\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_s/r this is Schwarzschild's metric exactly, so the shadow is general relativity's
@@ -270,43 +270,42 @@ EINSTEIN'S FIELD EQUATION, in the static field where it is a statement about one
 what Einstein's coupling has to be multiplied by to give this model's: 1 - A over 2\Phi. The held metric gives one, at every distance - the metric is sourced by the same potential the pull is, once through the falling body's speed and once through the square of its beat
 
 **\gamma \aside{PPN} = 1**  
-<sub>theorem · the held metric, read for the classical tests</sub>  
+<sub>theorem · the rules' clock, ruler and index, read for the classical tests</sub>  
 
 ```
-A in u = m̄/r: \frac{-2}{\frac{1}{u}} + 1, B: \frac{1}{\frac{-2}{\frac{1}{u}} + 1}
-A = 1 - 2U + 2\paren{\beta - \gamma}U^(2), B = 1 + 2\gamma U, in the area radius
+A = 1 - 2U + 2\beta U^(2), B = 1 + 2\gamma U, in the lattice's radius
 Newton: -A'/2 = 1.000000
 \gamma = B'/2 = 1.000000
-\beta = \gamma + A''/4 = 1.000000
+\beta = A''/4 = 1.000000
+the held metric in the area radius: \gamma = 1.000000, \beta = 1.000000
 Cassini: \gamma - 1 = \paren{2.1 \pm 2.3}·10^(-5); the perihelia: \beta - 1 below 10^(-4)
-the medium's index read as an isotropic metric: \gamma = 1.0000, \beta = 0.5000 - a held clock does not read it
 ```
 
-THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \gamma; and what A has at the second order beyond what the area radius puts there is \beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls
+THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\gamma), and A's second order is \beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same
 
 **\Delta\varphi = \frac{6·\pi·m̄}{a\paren{1 - e^(2)}}**  
-<sub>theorem · a bound orbit in the held metric</sub>  
+<sub>theorem · a bound orbit, moved by S.v</sub>  
 
 ```
-u'' + u = -\frac{1}{2}\frac{d}{du}\left[A(u)\paren{L^(-2) + u^(2)}\right] + u = L^(-2) + u^(2) + u - u·\paren{\frac{-2}{\frac{1}{u}} + 1}
-\mu = 1.000000/L^(2), linear 0.000000, \epsilon = 3.000000m̄
-a lap: 2\pi\epsilon\mu = 6.000000\pim̄/a\paren{1 - e^(2)}; general relativity's 6\pi
+the standing share, A = 1 - 2·\delta n_f·\paren{1 - \delta n_f} in the lattice's radius: L = -\sqrt{A - v^(2)} = \frac{1}{2}v^(2) + 1.000U + a_1\frac{v^(4)}{8} + a_2Uv^(2) + a_3U^(2)
+a_1 = 1.000000, a_2 = 0.500000, a_3 = -0.500000: moving or standing turns it by 2a_3 + a_1 + 4a_2 = 2.000000
+the lean, \beta^(2)g_\perp every step: B = 1, C = -1, so 2B - 2C = 4.000000
+a lap: 6.000000\pim̄/a\paren{1 - e^(2)}; a geodesic of the held metric gives 6.000000\pi
 Mercury (GM/c^(2) = 1476.6 m, a = 5.79·10^(10) m, e = 0.2056): 42.98'' a century; measured 42.98 \pm 0.04
-the medium's index as an isotropic metric would give \paren{2 + 2\gamma - \beta}/3 = 1.1667 of it
 ```
 
-THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\varphi)^(2) = E^(2)/L^(2) - A(u)(1/L^(2) + u^(2))` - and differentiated, `u'' + u = \mu + \epsilon u^(2)`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^(2) puts there, turns the ellipse a little every lap: `2\pi\epsilon\mu`. That is general relativity's 6\pi GM/a(1 - e^(2)), and Mercury's 43 seconds of arc a century
+THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \sqrt{A - \beta^(2)} at its most. Read past Newton that share gives the momentum's growth with speed (a_1), the clock felt in motion (a_2) and the clock's own second order (a_3); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\pi GM/a(1 - e^(2)): general relativity's, and Mercury's 43 seconds of arc a century
 
 **\Delta t \aside{Shapiro} = 2·m̄·\ln\paren{\frac{4r_1r_2}{b^(2)}}**  
 <sub>theorem · light passing a body, timed</sub>  
 
 ```
-\sqrt{B/A} = 1 + \paren{1 + \gamma}U + \ldots, \gamma = 1.000000
-\int \paren{1 + \gamma}m̄/\sqrt{b^(2) + z^(2)}\,dz from -r_1 to r_2 = \paren{1 + \gamma}m̄\ln\paren{4r_1r_2/b^(2)}
-Earth to Saturn grazing the sun, there and back: 283.5 \mu s
+the index: N = 1 + 2.0000\delta n_f + ..., \delta n_f = m̄/r
+\int 2.0000m̄/\sqrt{b^(2) + z^(2)}\,dz from -r_1 to r_2 = 2.0000m̄\ln\paren{4r_1r_2/b^(2)}
+Earth to Saturn grazing the sun, there and back: 283.5 \mu s; Cassini measured general relativity's to 10^(-5)
 ```
 
-THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \sqrt{B/A} ticks a cell, and past a body that is one more than flat by \paren{1 + \gamma}U - the clock's share and the ruler's. Summed along a straight path from r_1 to r_2 that grazes at b, the excess is \paren{1 + \gamma}m̄\ln\paren{4r_1r_2/b^(2)}: Shapiro's, with \gamma = 1
+THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_1 to r_2 that grazes at b it is Shapiro's \paren{1 + \gamma}m̄\ln\paren{4r_1r_2/b^(2)}, \gamma = 1
 
 **\partial_tV \aside{inside} = 0**  
 <sub>theorem · what the settled vacuum grows</sub>  
@@ -329,16 +328,16 @@ R = c̄t, so H = \dot{R}/R = \frac{1}{t}
 
 so what grows the world is the frontier alone: a ray with nowhere to step makes the room and steps into it, the same tick - a ray never waits. The frontier advances a cell a tick, so a world grown from a point is as wide as it is old, R = c̄t, and its rate of growth is one over its age: H = \dot{R}/R = 1/t. It is not a constant: it thins as the world ages, a coasting expansion, and today it is one over the age
 
-**v \aside{straight} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}**  
+**v \aside{straight} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}**  
 <sub>theorem · what a heading keeps straight</sub>  
 
 ```
-the draw: 1 straight on against n_f folded
+the draw: 1 straight on against the folded ways, each at what it holds
 n_f at \rho_\infty = \frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}}
-v = \frac{1}{1 + n_f} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}
+v = \frac{1}{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}
 ```
 
-MOVEMENT draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at
+MOVEMENT draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at
 
 **\varepsilon = 2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}**  
 <sub>theorem · what the vacuum would grow, had no mass been there</sub>  
@@ -361,7 +360,7 @@ H_\Lambda = \varepsilon/D = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho
 
 room made at every point grows what is inside a radius at that times how many points there are, R^(D), so as a rate of the radius it is a D-th of it: the rate the vacuum would expand at had no mass been there. It does not thin as the world ages - it is the vacuum's own, at every epoch - and the world's actual growth, the frontier's one over its age, is a different rate
 
-**a_0 = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·D}**  
+**a_0 = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·D}**  
 <sub>theorem · the scale is the vacuum's own growth</sub>  
 
 ```
@@ -369,7 +368,7 @@ CREATION: fires at a free point, lights every way - the vacuum pulses, every oth
 EMISSION: a source moves or emits, so each move flips the parity, fore against aft
 steady: the flips cancel; accelerating: they pile up until the room the vacuum makes cuts them off
 H_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D}
-a_0 = vH_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}·D}
+a_0 = vH_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·D}
 ```
 
 CREATION fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. EMISSION sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and what cuts them off is the vacuum making room where they are: the rate it would grow at, carried at what a heading keeps straight. That is the scale an acceleration is measured against, the same at every place and every epoch
@@ -409,12 +408,12 @@ a disc: \nabla\psi \neq -w - solved over the field (Felt)
 
 what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve
 
-**\frac{a_0}{cH} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}**  
+**\frac{a_0}{cH} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}**  
 <sub>theorem · the scale against the vacuum's growth</sub>  
 
 ```
 a_0 = vH_vac, cH_vac = c̄H_vac
-\frac{a_0}{cH_vac} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}
+\frac{a_0}{cH_vac} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}
 against what is measured: a_0/cH_0 = v\sqrt{\Omega_\Lambda}, \Omega_\Lambda = \paren{H_vac/H_0}^(2)
 ```
 

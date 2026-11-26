@@ -8,6 +8,8 @@ namespace OrbitMines.Physics
 
 
 namespace Vertex
+ray_impl_sfield "WORTH" : Value := do
+  return (2 : Float)
 ray_impl_field "world" : World := do
   return ωnull
 ray_impl_field "at" : Vector := do
@@ -31,6 +33,14 @@ ray_impl_field "folds" : (RList Float) := do
   return (← dot! (← ωget self "rays") rmap ((fn! [__1] do
   if true then return (0 : Float)
   return ωnull)))
+ray_impl_getter "potential" : Float := do
+  if true then return (0 : Float)
+  return ωnull
+ray_impl_getter "worth" : (RList Float) := do
+  if true then return (← dot! (← ωget self "folds") rmap ((fn! [f_2] do
+    if true then return (← ωmul (← ωget (← cls% Vertex) "WORTH") (← f_2.get))
+    return ωnull)))
+  return ωnull
 ray_impl_field "held" : (RList Vertex) := do
   return (← ωlst #[])
 ray_impl_field "folded_into" : Vertex := do

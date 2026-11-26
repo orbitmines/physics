@@ -80,7 +80,7 @@ end
     return getat((let q_ = ahead(self); q_ === nothing ? nothing : rays(q_) end), exit(self))
   end
   function turns(self::__class__)
-    return draw(world(vertex(self)), Any[1.0, folds(vertex(self))], Any[steps(self), (function (d_1 = nothing, _...)
+    return draw(world(vertex(self)), Any[1.0, worth(vertex(self))], Any[steps(self), (function (d_1 = nothing, _...)
       return getat((let q_ = outward(vertex(self), d_1); q_ === nothing ? nothing : rays(q_) end), d_1)
     end)])
   end
@@ -211,6 +211,7 @@ const Boundary_Terminal = Terminal
 end
 
 @class Vertex <: Ray begin
+  @static_field WORTH = 2.0
   @field world::World
   @field at::Vector
   @field ordinal::Float64 = 0.0
@@ -226,6 +227,14 @@ end
   @field folds::List = map(rays(self), (function (__1 = nothing, _...)
     return 0.0
   end))
+  function potential(self::__class__)
+    return 0.0
+  end
+  function worth(self::__class__)
+    return map(folds(self), (function (f_2 = nothing, _...)
+      return (WORTH(Vertex) * f_2)
+    end))
+  end
   @field held::List = Any[]
   @field folded_into::Vertex = nothing
   function alive(self::__class__)
@@ -798,6 +807,15 @@ end
   function mass(self::__class__)
     return ((a_...) -> choose_mass(self, a_...))()
   end
+  function clock_at(self::__class__, u_0 = nothing, _...)
+    return (1.0 - ((2.0 * u_0) * ((1.0 - u_0))))
+  end
+  function standing(self::__class__, u_0 = nothing, _...)
+    return ((mass(self) * sqrt(clock_at(self, u_0))) / sqrt((((mass(self) * mass(self)) + (norm(momentum(self)) * norm(momentum(self)))))))
+  end
+  function velocity(self::__class__, u_0 = nothing, _...)
+    return (momentum(self) * ((sqrt(clock_at(self, u_0)) / sqrt((((mass(self) * mass(self)) + (norm(momentum(self)) * norm(momentum(self)))))))))
+  end
   @field absorbs::Bool = true
   function choose_emit_(self::__class__, _...)
     fail(j"the choice emit? is not defined by anyone")
@@ -849,6 +867,9 @@ end
   end
   function drift(self::__class__, d_0 = nothing, _...)
     return drift_from(of(self), index(self), d_0)
+  end
+  function potential(self::__class__)
+    return 0.0
   end
   function sinks(self::__class__)
     return sinks_at(of(self), index(self))
@@ -1181,7 +1202,7 @@ end
       end
       nf_1 = (nf_1 * edge(self))
       setat!(folds(self), c_1, nf_1)
-      setat!(keep(self), c_1, (1.0 / ((1.0 + nf_1))))
+      setat!(keep(self), c_1, (1.0 / ((1.0 + (WORTH(Vertex) * nf_1)))))
     end
   end
   function locate(self::__class__)
@@ -1384,7 +1405,7 @@ end
             if truthy((fa_3 > 0.0))
               for i4 in 0:(ceil(Int, Rt.num(A(self))) - 1)
                 b_4 = Float64(i4)
-                got_2 = (got_2 + ((((getat(tp_3, 1.0) * pop_0(b_4, src_3)) * fa_3) * getat(keep(self), src_3)) * edge(self)))
+                got_2 = (got_2 + (((((getat(tp_3, 1.0) * pop_0(b_4, src_3)) * WORTH(Vertex)) * fa_3) * getat(keep(self), src_3)) * edge(self)))
               end
             end
           end
@@ -1396,7 +1417,7 @@ end
               sd_4 = getat(tp_4, 0.0)
               fd_4 = getat(fold_was(self), ((d_3 * cells(self)) + sd_4))
               if truthy((fd_4 > 0.0))
-                got_2 = (got_2 + ((((getat(tp_4, 1.0) * pop_0(a_1, sd_4)) * fd_4) * getat(keep(self), sd_4)) * edge(self)))
+                got_2 = (got_2 + (((((getat(tp_4, 1.0) * pop_0(a_1, sd_4)) * WORTH(Vertex)) * fd_4) * getat(keep(self), sd_4)) * edge(self)))
               end
             end
           end
@@ -4738,11 +4759,12 @@ end
   function kernel(self::__class__)
     return (leans(term(self)) != nothing)
   end
+  @field worth::Expr = num(Expr, 1.0)
   function keeps(self::__class__)
-    return pown(Expr, add(Expr, Any[num(Expr, 1.0), field(Expr, Base.string(j"n_{f}"))]), (-1.0))
+    return pown(Expr, add(Expr, Any[num(Expr, 1.0), neat(Prover, mul(Expr, Any[worth(self), field(Expr, Base.string(j"n_{f}"))]))]), (-1.0))
   end
   function drifts(self::__class__)
-    return grad(Expr, field(Expr, Base.string(j"n_{f}")))
+    return neat(Prover, mul(Expr, Any[worth(self), grad(Expr, field(Expr, Base.string(j"n_{f}")))]))
   end
   function COUNTS(self::Type{<:__class__})
     s_0 = Node()
@@ -4825,9 +4847,19 @@ end
     return equation(theory(self))
   end
   function infos(self::__class__)
-    return map(terms_read(theory(self)), (function (t_2 = nothing, _...)
+    all_0 = map(terms_read(theory(self)), (function (t_2 = nothing, _...)
       return TermInfo(term = t_2)
     end))
+    meet_0 = first(filter(all_0, (function (t_2 = nothing, _...)
+      return (truthy((truthy((degree(t_2) == 2.0)) && truthy(!(empty(rules(t_2)))))) && truthy((folds(t_2) != Base.string(j"0"))))
+    end)))
+    held_0 = (truthy((meet_0 == nothing)) ? (num(Expr, 1.0)) : (simplify(Expr, neg(Expr, div(Expr, ray_count(meet_0), fold_count(meet_0))))))
+    for t_1 in items(all_0)
+      if truthy((leans(term(t_1)) == Base.string(j"S_f")))
+        t_1.worth = held_0
+      end
+    end
+    return all_0
   end
   function acting(self::__class__)
     return filter(infos(self), (function (t_2 = nothing, _...)
@@ -5669,11 +5701,11 @@ end
   function ways_at(self::__class__, one_0 = nothing, behind_0 = nothing, _...)
     draws_0 = source_of(Prover, Base.string(j"Ray.turns"))
     folding_0 = source_of(Prover, Base.string(j"Vertex.fold"))
-    if truthy((truthy(!(contains(draws_0, Base.string(j"folds")))) || truthy(!(contains(folding_0, Base.string(j"folds[d] + 1"))))))
+    if truthy((truthy(!(((truthy(contains(draws_0, Base.string(j"folds"))) || truthy(contains(draws_0, Base.string(j"worth"))))))) || truthy(!(contains(folding_0, Base.string(j"folds[d] + 1"))))))
       return nothing
     end
     own_0 = add(Expr, Any[LATTICE(Prover), field(Expr, Base.string(j"n_{f,l}"))])
-    st_0 = of(Step, stands(Fact, Base.string(j"DEG"), own_0), Base.string(j"the ways at a local"), Any[key(fact(one_0))], Base.string(j"a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it"), Any[Base.string(j"Ray.turns = ", str(draws_0), j": straight on at one, each folded way at its folds"), Base.string(j"Vertex.fold = ", str(folding_0), j": a fold written on a way"), Base.string(j"DEG = ", str(show(Expr, own_0)), j"")])
+    st_0 = of(Step, stands(Fact, Base.string(j"DEG"), own_0), Base.string(j"the ways at a local"), Any[key(fact(one_0))], Base.string(j"a ray at l goes on by l's own way, at weight one, or across a folded way, at the folds written on it - so a fold is a way of l, and l has its own DEG and one more for every fold it holds. DEG is not the lattice's: it is l's, and only what folds and unfolds at l moves it"), Any[Base.string(j"Ray.turns = ", str(draws_0), j": straight on at one, each folded way at what its folds hold"), Base.string(j"Vertex.fold = ", str(folding_0), j": a fold written on a way"), Base.string(j"DEG = ", str(show(Expr, own_0)), j"")])
     st_0.derivation = behind_0
     return st_0
   end
@@ -5926,12 +5958,15 @@ end
   function scale_of(self::__class__, hub_0 = nothing, settles_0 = nothing, _...)
     vac_0 = field(Expr, Base.string(j"\\rho_{\\infty}"))
     nf_0 = neat(Prover, replace(Expr, replace(Expr, to(fact(settles_0)), Base.string(j"\\rho"), vac_0), Base.string(j"DEG_{0}"), field(Expr, Base.string(j"DEG"))))
-    v_0 = neat(Prover, pown(Expr, add(Expr, Any[num(Expr, 1.0), nf_0]), (-1.0)))
+    drawn_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
+      return (truthy(transport(t_2)) && truthy(kernel(t_2)))
+    end)))
+    v_0 = neat(Prover, (truthy((drawn_0 == nothing)) ? (pown(Expr, add(Expr, Any[num(Expr, 1.0), nf_0]), (-1.0))) : (replace(Expr, keeps(drawn_0), Base.string(j"n_{f}"), nf_0))))
     mover_0 = first(filter(infos(self), (function (t_2 = nothing, _...)
       return (truthy((rule(term(t_2)) != nothing)) && truthy(carries(t_2)))
     end)))
     moved_0 = (truthy((mover_0 == nothing)) ? (Base.string(j"MOVEMENT")) : (upper(name(rule(term(mover_0))))))
-    straight_0 = of(Step, stands(Fact, Base.string(j"v \\aside{straight}"), v_0), Base.string(j"what a heading keeps straight"), Any[key(fact(settles_0))], Base.string(j"", str(moved_0), j" draws a ray straight on at one against every fold its place holds, so what a heading keeps of itself a step is one over one more than the record - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at"), Any[Base.string(j"the draw: 1 straight on against n_{f} folded"), Base.string(j"n_{f} at \\rho_{\\infty} = ", str(show(Expr, nf_0)), j""), Base.string(j"v = \\frac{1}{1 + n_{f}} = ", str(show(Expr, v_0)), j"")])
+    straight_0 = of(Step, stands(Fact, Base.string(j"v \\aside{straight}"), v_0), Base.string(j"what a heading keeps straight"), Any[key(fact(settles_0))], Base.string(j"", str(moved_0), j" draws a ray straight on at one against every folded way its place holds, each at what it holds, so what a heading keeps of itself a step is one over one more than the record in what it holds - and far from every body the record is the settled one, half the lattice's ways. It is the share of a step that goes where it was going: the speed a carrier's heading is carried at"), Any[Base.string(j"the draw: 1 straight on against the folded ways, each at what it holds"), Base.string(j"n_{f} at \\rho_{\\infty} = ", str(show(Expr, nf_0)), j""), Base.string(j"v = ", str(show(Expr, v_0)), j"")])
     straight_0.derivation = Any[settles_0]
     lights_0 = relights(self)
     lit_0 = (truthy((lights_0 == nothing)) ? (Base.string(j"CREATION")) : (upper(name(rule(term(lights_0))))))
@@ -6729,46 +6764,72 @@ end
     end
     return numeric(Expr, d_0, env_0)
   end
+  function partial(self::Type{<:__class__}, e_0 = nothing, by_0 = nothing, names_0 = nothing, _...)
+    env_0 = Node()
+    for n_1 in items(names_0)
+      setat!(env_0, n_1, 0.0)
+    end
+    d_0 = e_0
+    for n_1 in items(by_0)
+      d_0 = simplify(Expr, d(Expr, d_0, n_1))
+    end
+    return numeric(Expr, d_0, env_0)
+  end
   function held_tests(self::Type{<:__class__}, s_0 = nothing, A_0 = nothing, B_0 = nothing, _...)
     u_0 = Base.string(j"u")
     Au_0 = in_m(Inferences, to(A_0), u_0)
     Bu_0 = in_m(Inferences, to(B_0), u_0)
-    newton_0 = (0.0 - (at_nought(Inferences, Au_0, u_0, 1.0) / 2.0))
     gamma_0 = (at_nought(Inferences, Bu_0, u_0, 1.0) / 2.0)
     beta_0 = (gamma_0 + (at_nought(Inferences, Au_0, u_0, 2.0) / 4.0))
     iA_0 = fact(s_0, Base.string(j"is"), Base.string(j"A in r"))
     iB_0 = fact(s_0, Base.string(j"is"), Base.string(j"B in r"))
+    N_0 = fact(s_0, Base.string(j"is"), Base.string(j"N"))
     dn_0 = Base.string(j"\\delta n_{f}")
     ibeta_0 = (truthy((iA_0 == nothing)) ? (NaN) : ((at_nought(Inferences, to(iA_0), dn_0, 2.0) / 4.0)))
     igamma_0 = (truthy((iB_0 == nothing)) ? (NaN) : ((at_nought(Inferences, to(iB_0), dn_0, 1.0) / 2.0)))
-    via_0 = Base.string(j"the held metric, read for the classical tests")
-    ppn_0 = step(Inferences, Base.string(j"\\gamma \\aside{PPN}"), num(Expr, gamma_0), via_0, Any[key(A_0), key(B_0)], Base.string(j"THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls"), Any[Base.string(j"A in u = \\bar{m}/r: ", str(show(Expr, Au_0)), j", B: ", str(show(Expr, Bu_0)), j""), Base.string(j"A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius"), Base.string(j"Newton: -A'/2 = ", str(fixed(Fmt, newton_0, 6.0)), j""), Base.string(j"\\gamma = B'/2 = ", str(fixed(Fmt, gamma_0, 6.0)), j""), Base.string(j"\\beta = \\gamma + A''/4 = ", str(fixed(Fmt, beta_0, 6.0)), j""), Base.string(j"Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}"), (truthy(finite(Fmt, ibeta_0)) ? (Base.string(j"the medium's index read as an isotropic metric: \\gamma = ", str(fixed(Fmt, igamma_0, 4.0)), j", \\beta = ", str(fixed(Fmt, ibeta_0, 4.0)), j" - a held clock does not read it")) : (Base.string(j"the medium's index gives no metric of its own here")))])
+    newton_0 = (truthy((iA_0 == nothing)) ? (NaN) : ((0.0 - (at_nought(Inferences, to(iA_0), dn_0, 1.0) / 2.0))))
+    slope_0 = (truthy((N_0 == nothing)) ? (NaN) : (at_nought(Inferences, to(N_0), dn_0, 1.0)))
+    via_0 = Base.string(j"the rules' clock, ruler and index, read for the classical tests")
+    ppn_0 = step(Inferences, Base.string(j"\\gamma \\aside{PPN}"), num(Expr, igamma_0), via_0, Any[key(A_0), key(B_0)], Base.string(j"THE POST-NEWTONIAN PARAMETERS, off the rules' own clock and ruler in the lattice's radius (`A in r`, `B in r`): A's first slope is Newton's, B's is how much space one unit of the potential curves (\\gamma), and A's second order is \\beta. The ruler is a fold merging two points into one; the clock is the held one, at the radius a shell's points count out. Both come to general relativity's ONE - and the held metric, read in the area radius, says the same"), Any[Base.string(j"A = 1 - 2U + 2\\beta U^{2}, B = 1 + 2\\gamma U, in the lattice's radius"), Base.string(j"Newton: -A'/2 = ", str(fixed(Fmt, newton_0, 6.0)), j""), Base.string(j"\\gamma = B'/2 = ", str(fixed(Fmt, igamma_0, 6.0)), j""), Base.string(j"\\beta = A''/4 = ", str(fixed(Fmt, ibeta_0, 6.0)), j""), Base.string(j"the held metric in the area radius: \\gamma = ", str(fixed(Fmt, gamma_0, 6.0)), j", \\beta = ", str(fixed(Fmt, beta_0, 6.0)), j""), Base.string(j"Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}")])
+    w_0 = Base.string(j"w")
+    clockU_0 = (truthy((iA_0 == nothing)) ? (sub(Expr, num(Expr, 1.0), mul(Expr, Any[num(Expr, 2.0), field(Expr, dn_0)]))) : (to(iA_0)))
+    stands_0 = neg(Expr, pown(Expr, sub(Expr, clockU_0, field(Expr, w_0)), 0.5))
+    names_0 = Any[dn_0, w_0]
+    n1_0 = partial(Inferences, stands_0, Any[dn_0], names_0)
+    a1_0 = (4.0 * partial(Inferences, stands_0, Any[w_0, w_0], names_0))
+    a2_0 = partial(Inferences, stands_0, Any[dn_0, w_0], names_0)
+    a3_0 = (partial(Inferences, stands_0, Any[dn_0, dn_0], names_0) / 2.0)
+    clock_0 = (((2.0 * a3_0) + a1_0) + (4.0 * a2_0))
+    lean_0 = ((2.0 * 1.0) - (2.0 * ((0.0 - 1.0))))
+    k_0 = (clock_0 + lean_0)
+    k_0 = (round(((k_0 * (10.0 ^ 9.0)))) / (10.0 ^ 9.0))
     L_0 = field(Expr, Base.string(j"L"))
     q_0 = mul(Expr, Any[Au_0, add(Expr, Any[pown(Expr, L_0, (-2.0)), pown(Expr, field(Expr, u_0), 2.0)])])
     orbit_0 = simplify(Expr, add(Expr, Any[mul(Expr, Any[num(Expr, (-0.5)), d(Expr, q_0, u_0)]), field(Expr, u_0)]))
-    mu_0 = at_nought(Inferences, orbit_0, u_0, 0.0)
-    lin_0 = at_nought(Inferences, orbit_0, u_0, 1.0)
-    eps_0 = (at_nought(Inferences, orbit_0, u_0, 2.0) / 2.0)
-    k_0 = ((2.0 * eps_0) * mu_0)
-    k_0 = (round(((k_0 * (10.0 ^ 9.0)))) / (10.0 ^ 9.0))
+    geo_0 = (((2.0 * at_nought(Inferences, orbit_0, u_0, 2.0)) / 2.0) * at_nought(Inferences, orbit_0, u_0, 0.0))
     m_sun_0 = 1476.625
     a_m_0 = 57909050000.0
     e_m_0 = 0.205630
     lap_0 = (((k_0 * 3.141592653589793) * m_sun_0) / ((a_m_0 * ((1.0 - (e_m_0 * e_m_0))))))
     century_0 = (((lap_0 * 36525.0) / 87.9691) * 206264.806)
-    ipp_0 = (truthy(finite(Fmt, ibeta_0)) ? (((((2.0 + (2.0 * igamma_0)) - ibeta_0)) / 3.0)) : (NaN))
-    peri_0 = step(Inferences, Base.string(j"\\Delta\\varphi"), mul(Expr, Any[num(Expr, k_0), field(Expr, Base.string(j"\\pi")), field(Expr, Base.string(j"\\bar{m}")), pown(Expr, field(Expr, Base.string(j"a\\paren{1 - e^{2}}")), (-1.0))]), Base.string(j"a bound orbit in the held metric"), Any[key(A_0), key(B_0)], Base.string(j"THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century"), Any[Base.string(j"u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = ", str(show(Expr, orbit_0)), j""), Base.string(j"\\mu = ", str(fixed(Fmt, mu_0, 6.0)), j"/L^{2}, linear ", str(fixed(Fmt, lin_0, 6.0)), j", \\epsilon = ", str(fixed(Fmt, eps_0, 6.0)), j"\\bar{m}"), Base.string(j"a lap: 2\\pi\\epsilon\\mu = ", str(fixed(Fmt, k_0, 6.0)), j"\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi"), Base.string(j"Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): ", str(fixed(Fmt, century_0, 2.0)), j"'' a century; measured 42.98 \\pm 0.04"), (truthy(finite(Fmt, ipp_0)) ? (Base.string(j"the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = ", str(fixed(Fmt, ipp_0, 4.0)), j" of it")) : (Base.string(j"the medium's index gives no metric of its own here")))])
-    delay_0 = step(Inferences, Base.string(j"\\Delta t \\aside{Shapiro}"), mul(Expr, Any[num(Expr, (1.0 + gamma_0)), field(Expr, Base.string(j"\\bar{m}")), log(Expr, field(Expr, Base.string(j"\\frac{4r_{1}r_{2}}{b^{2}}")))]), Base.string(j"light passing a body, timed"), Any[key(B_0), key(A_0)], Base.string(j"THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1"), Any[Base.string(j"\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = ", str(fixed(Fmt, gamma_0, 6.0)), j""), Base.string(j"\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}"), Base.string(j"Earth to Saturn grazing the sun, there and back: ", str(fixed(Fmt, (((2.0 * ((1.0 + gamma_0))) * 4.925491) * ln(((((4.0 * 149597870700.0) * 1433530000000.0) / ((695700000.0 * 695700000.0)))))), 1.0)), j" \\mu s")])
+    peri_0 = step(Inferences, Base.string(j"\\Delta\\varphi"), mul(Expr, Any[num(Expr, k_0), field(Expr, Base.string(j"\\pi")), field(Expr, Base.string(j"\\bar{m}")), pown(Expr, field(Expr, Base.string(j"a\\paren{1 - e^{2}}")), (-1.0))]), Base.string(j"a bound orbit, moved by S.v"), Any[key(A_0), key(B_0)], Base.string(j"THE PERIHELION, OFF THE RULE THAT MOVES A BODY (G/S.v), not off a geodesic. A body moves or it stands: it carries its momentum per tick it stands, and the folding of its point is felt on the ticks it stands, as the slope of the clock there - which is exactly a body keeping its standing share \\sqrt{A - \\beta^{2}} at its most. Read past Newton that share gives the momentum's growth with speed (a_{1}), the clock felt in motion (a_{2}) and the clock's own second order (a_{3}); and every step the rule turns the heading toward where the folded space leads, by the pull across it - the lean. Added over a lap the ellipse turns by 6\\pi GM/a(1 - e^{2}): general relativity's, and Mercury's 43 seconds of arc a century"), Any[Base.string(j"the standing share, A = ", str(show(Expr, clockU_0)), j" in the lattice's radius: L = -\\sqrt{A - v^{2}} = \\frac{1}{2}v^{2} + ", str(fixed(Fmt, n1_0, 3.0)), j"U + a_{1}\\frac{v^{4}}{8} + a_{2}Uv^{2} + a_{3}U^{2}"), Base.string(j"a_{1} = ", str(fixed(Fmt, a1_0, 6.0)), j", a_{2} = ", str(fixed(Fmt, a2_0, 6.0)), j", a_{3} = ", str(fixed(Fmt, a3_0, 6.0)), j": moving or standing turns it by 2a_{3} + a_{1} + 4a_{2} = ", str(fixed(Fmt, clock_0, 6.0)), j""), Base.string(j"the lean, \\beta^{2}g_{\\perp} every step: B = 1, C = -1, so 2B - 2C = ", str(fixed(Fmt, lean_0, 6.0)), j""), Base.string(j"a lap: ", str(fixed(Fmt, k_0, 6.0)), j"\\pi\\bar{m}/a\\paren{1 - e^{2}}; a geodesic of the held metric gives ", str(fixed(Fmt, geo_0, 6.0)), j"\\pi"), Base.string(j"Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): ", str(fixed(Fmt, century_0, 2.0)), j"'' a century; measured 42.98 \\pm 0.04")])
+    delay_0 = step(Inferences, Base.string(j"\\Delta t \\aside{Shapiro}"), mul(Expr, Any[num(Expr, slope_0), field(Expr, Base.string(j"\\bar{m}")), log(Expr, field(Expr, Base.string(j"\\frac{4r_{1}r_{2}}{b^{2}}")))]), Base.string(j"light passing a body, timed"), Any[key(A_0), key(B_0)], Base.string(j"THE DELAY, off the index the rules give light (`N`): light always goes at c-bar, a cell a tick, but a place that has swallowed folds offers it what those folds hold - two rays a fold - so a cell there takes the index's worth of ticks. One more than flat by the index's slope times the record, and the record is the potential: summed along a straight path from r_{1} to r_{2} that grazes at b it is Shapiro's \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}, \\gamma = 1"), Any[Base.string(j"the index: N = 1 + ", str(fixed(Fmt, slope_0, 4.0)), j"\\delta n_{f} + ..., \\delta n_{f} = \\bar{m}/r"), Base.string(j"\\int ", str(fixed(Fmt, slope_0, 4.0)), j"\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = ", str(fixed(Fmt, slope_0, 4.0)), j"\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}"), Base.string(j"Earth to Saturn grazing the sun, there and back: ", str(fixed(Fmt, (((2.0 * slope_0) * 4.925491) * ln(((((4.0 * 149597870700.0) * 1433530000000.0) / ((695700000.0 * 695700000.0)))))), 1.0)), j" \\mu s; Cassini measured general relativity's to 10^{-5}")])
     return Any[ppn_0, peri_0, delay_0]
   end
   function metric_of(self::Type{<:__class__})
-    return Inference(name = Base.string(j"an index is a metric"), because = Base.string(j"MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots"), fire = (function (s_2 = nothing, _...)
+    return Inference(name = Base.string(j"the held clock and ruler, in the lattice's own radius"), because = Base.string(j"a fold merges two points into one, so a place that has swallowed folds stands for more points than one - that is the ruler, read along a lattice step. And the clock is the held one: a body falling past beats at what the pull integrated to, at the radius a shell's points count out. Light reads both, and the two together are the index the draw gives it, to the first order"), fire = (function (s_2 = nothing, _...)
       n_2 = (let q_ = fact(s_2, Base.string(j"is"), Base.string(j"N in r")); q_ === nothing ? (fact(s_2, Base.string(j"is"), Base.string(j"N"))) : q_ end)
-      if truthy((truthy((n_2 == nothing)) || truthy(has(s_2, Base.string(j"is"), Base.string(j"A in r")))))
+      dn_2 = fact(s_2, Base.string(j"is"), Base.string(j"\\delta n_{f}"))
+      if truthy((truthy((truthy((n_2 == nothing)) || truthy((dn_2 == nothing)))) || truthy(has(s_2, Base.string(j"is"), Base.string(j"A in r")))))
         return Any[]
       end
-      via_2 = Base.string(j"an index is a metric")
-      return Any[step(Inferences, Base.string(j"A in r"), simplify(Expr, pown(Expr, to(n_2), (-2.0))), via_2, Any[key(n_2)], Base.string(j"MOVEMENT says a ray crosses where it stands before it goes anywhere - ONE TICK PER POINT THE PLACE STANDS FOR. So anything happening at a place that stands for N points gets through 1/N as much of itself per tick of the world, which is what a slow clock IS here. THIS FIXES THE TIME PART ON ITS OWN: it is not read off a ratio to the space part, and there is no freedom left over once it is said. AND THE RATE IS THE ROOT OF THE COEFFICIENT, NOT THE COEFFICIENT. `A` multiplies `dt^{2}` in the line element, so a clock ticking at `d\\tau/dt` sits at `A = \\paren{d\\tau/dt}^{2}`. What MOVEMENT counts is the RATE, `1/N`, so the coefficient is `1/N^{2}` - and THAT IS WHERE THE FACTOR OF TWO LIVED. Squaring gives `A = 1 - 2\\delta n_{f}`, which is general relativity's `1 - 2\\Phi`, and it is not put there: it is one count entering a square. Light going at the root of A over B is then a consequence rather than the premise"), Any[Base.string(j"MOVEMENT: one tick per point the place stands for"), Base.string(j"a place standing for N points gets through 1/N per tick, so d\\tau/dt = 1/N"), Base.string(j"A = \\paren{d\\tau/dt}^{2} = 1/N^{2} = ", str(show(Expr, simplify(Expr, pown(Expr, to(n_2), (-2.0))))), j"")]), step(Inferences, Base.string(j"B in r"), simplify(Expr, pown(Expr, to(n_2), 2.0)), via_2, Any[key(n_2)], Base.string(j"and the space part is the same count read the other way: a place that stands for N points HAS N points in it, so a ruler laid across it spans N where it would have spanned one. One count, two readings, and the rule gives both - which is why neither part had to be chosen and the pairing is not an assumption. AND IT IS SQUARED FOR THE SAME REASON THE TIME PART IS: a ruler reads `d\\ell/dr = \\sqrt{B}`, so `B = N^{2}`. The two squares keep `A\\cdot B = 1`, which is Schwarzschild's own relation and was true of the roots as well - so nothing about the shape changes, only the size of what the mass does"), Any[Base.string(j"the same place HAS N points in it, so d\\ell/dr = N"), Base.string(j"B = \\paren{d\\ell/dr}^{2} = N^{2} = ", str(show(Expr, simplify(Expr, pown(Expr, to(n_2), 2.0)))), j""), Base.string(j"and A\\cdot B = 1 still, as Schwarzschild has it")])]
+      via_2 = Base.string(j"the held clock and ruler, in the lattice's own radius")
+      u_2 = field(Expr, Base.string(j"\\delta n_{f}"))
+      points_2 = pown(Expr, sub(Expr, num(Expr, 1.0), u_2), (-1.0))
+      B_2 = simplify(Expr, pown(Expr, points_2, 2.0))
+      phi_2 = simplify(Expr, mul(Expr, Any[u_2, sub(Expr, num(Expr, 1.0), u_2)]))
+      A_2 = simplify(Expr, sub(Expr, num(Expr, 1.0), mul(Expr, Any[num(Expr, 2.0), phi_2])))
+      return Any[step(Inferences, Base.string(j"B in r"), B_2, via_2, Any[key(n_2), key(dn_2)], Base.string(j"THE RULER. A fold merges two points into one, so a place holding folds stands for one point more for each - and a place that swallowed one inherits what THAT one stood for, so they chain: 1/(1 - \\delta n_{f}) points to a lattice step. A ruler laid along a step spans that many, and a metric coefficient multiplies the square of a length, so B is its square"), Any[Base.string(j"a fold: two points into one, so a place stands for one more"), Base.string(j"chained: 1 + \\delta n_{f} + \\delta n_{f}^{2} + ... = 1/(1 - \\delta n_{f})"), Base.string(j"B = ", str(show(Expr, B_2)), j"")]), step(Inferences, Base.string(j"A in r"), A_2, via_2, Any[key(n_2), key(dn_2)], Base.string(j"THE CLOCK, the held one (gravity.metric): a clock held at a place beats at the beat of a body falling past it, 1 - 2\\Phi, with \\Phi what the pull integrates to at that body's radius. The pull is shared over a shell's POINTS, so that radius is the lattice's times the points a place stands for - and the potential there is the record times one less it. So in the lattice's own radius the held clock carries a second order: 1 - 2\\delta n_{f} + 2\\delta n_{f}^{2}, the post-Newtonian \\beta of one"), Any[Base.string(j"a held clock: A = 1 - 2\\Phi"), Base.string(j"\\Phi = \\bar{m}/r, r = \\rho/(1 - \\delta n_{f}) the radius in points"), Base.string(j"\\Phi = \\delta n_{f}\\paren{1 - \\delta n_{f}}"), Base.string(j"A = ", str(show(Expr, A_2)), j""), Base.string(j"light reads \\sqrt{B/A} = 1 + 2\\delta n_{f} + ..., the draw's index ", str(show(Expr, to(n_2))), j" to the first order")])]
     end))
   end
   function accumulating(self::Type{<:__class__})
@@ -6952,11 +7013,15 @@ end
   function bending(self::Type{<:__class__})
     return Inference(name = Base.string(j"the integral of the index across the path"), because = Base.string(j"`turns` draws 1 way straight on against the ways each direction was folded, so a ray leans by that ratio at every place it crosses - and the bend is those leans added up"), fire = (function (s_2 = nothing, _...)
       rec_2 = fact(s_2, Base.string(j"is"), Base.string(j"\\delta n_{f}"))
-      if truthy((truthy((rec_2 == nothing)) || truthy(has(s_2, Base.string(j"is"), Base.string(j"\\alpha")))))
+      n_2 = fact(s_2, Base.string(j"is"), Base.string(j"N"))
+      if truthy((truthy((truthy((rec_2 == nothing)) || truthy((n_2 == nothing)))) || truthy(has(s_2, Base.string(j"is"), Base.string(j"\\alpha")))))
         return Any[]
       end
-      alpha_2 = simplify(Expr, mul(Expr, Any[num(Expr, 2.0), replace(Expr, to(rec_2), Base.string(j"r"), sym(Expr, Base.string(j"b")))]))
-      return Any[step(Inferences, Base.string(j"\\alpha"), alpha_2, Base.string(j"the integral of the index across the path"), Any[key(rec_2)], Base.string(j"the index is what the fold record integrates to, and a ray passing at b feels its gradient across the whole path. Integrated, that comes to TWICE the record at closest approach - and that factor of two is the space part of the metric rather than an adjustment to the time part, which is what separates this from the Newtonian answer"), Any[Base.string(j"turns: 1 way straight on against folds[d] ways out along d"), Base.string(j"the fold record along the path: ", str(show(Expr, to(rec_2))), j""), Base.string(j"the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}"), Base.string(j"and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has"), Base.string(j"\\alpha = ", str(show(Expr, alpha_2)), j"")])]
+      env_2 = Node()
+      setat!(env_2, Base.string(j"\\delta n_{f}"), 0.0)
+      slope_2 = numeric(Expr, simplify(Expr, d(Expr, to(n_2), Base.string(j"\\delta n_{f}"))), env_2)
+      alpha_2 = simplify(Expr, mul(Expr, Any[num(Expr, (2.0 * slope_2)), replace(Expr, to(rec_2), Base.string(j"r"), sym(Expr, Base.string(j"b")))]))
+      return Any[step(Inferences, Base.string(j"\\alpha"), alpha_2, Base.string(j"the integral of the index across the path"), Any[key(rec_2)], Base.string(j"the index is what the draw makes of the fold record, and a ray passing at b feels its gradient across the whole path - light always goes at c-bar, so the bend is refraction and nothing else. A fold is offered at what it holds, two rays (a meeting folds two into one), so the index rises twice as fast as the record: once for the points a place stands for, once for its held clock. Integrated across the pass that is four times the record at closest approach - the record being the potential, 4GM/b, general relativity's and what was measured"), Any[Base.string(j"turns: 1 way straight on against what folds[d] holds along d"), Base.string(j"the index's slope in the record: ", str(fixed(Fmt, slope_2, 4.0)), j""), Base.string(j"the fold record along the path: ", str(show(Expr, to(rec_2))), j""), Base.string(j"the leans added up over the pass, r = \\sqrt{b^{2}+s^{2}}"), Base.string(j"and \\int \\partial_{b}(r^{-k})\\,dl = 2·b^{-k} for the inverse power a potential has"), Base.string(j"\\alpha = ", str(show(Expr, alpha_2)), j"")])]
     end))
   end
   function shadowing(self::Type{<:__class__})
@@ -8269,7 +8334,7 @@ end
     return trades(doing(t_1))
   end))
   function beta(self::__class__, h_0 = nothing, _...)
-    v_0 = (norm(momentum(h_0)) / mass(h_0))
+    v_0 = norm(velocity(h_0, 0.0))
     return (truthy((v_0 < 0.0)) ? (0.0) : (((truthy((v_0 > 1.0)) ? (1.0) : (v_0)))))
   end
   @field own::Float64 = 0.0
@@ -8760,7 +8825,7 @@ end
   function emitted(self::__class__, h_0 = nothing, _...)
     near_0 = face_of(self, h_0)
     q_0 = (per_way(self, h_0) * ((near_0 ^ (D(self) - 1.0))))
-    return Any[q_0, (q_0 * x(h_0)), (q_0 * y(h_0)), (((q_0 * getat(components(momentum(h_0)), 0.0)) / mass(h_0)) * K(self)), (((q_0 * getat(components(momentum(h_0)), 1.0)) / mass(h_0)) * K(self)), (q_0 * near_0), index_of(holes(self), h_0), 0.0]
+    return Any[q_0, (q_0 * x(h_0)), (q_0 * y(h_0)), ((q_0 * getat(components(velocity(h_0, 0.0)), 0.0)) * K(self)), ((q_0 * getat(components(velocity(h_0, 0.0)), 1.0)) * K(self)), (q_0 * near_0), index_of(holes(self), h_0), 0.0]
   end
   function left_for(self::__class__, e_0 = nothing, d_0 = nothing, _...)
     back_0 = (d_0 / K(self))
@@ -9458,7 +9523,7 @@ end
     self.ticks = (ticks(self) + 1.0)
   end
   function lean_under(self::__class__, h_0 = nothing, _...)
-    return pull_at(self, x(h_0), y(h_0), plane_of(self, h_0), (getat(components(momentum(h_0)), 0.0) / mass(h_0)), (getat(components(momentum(h_0)), 1.0) / mass(h_0)))
+    return pull_at(self, x(h_0), y(h_0), plane_of(self, h_0), getat(components(velocity(h_0, 0.0)), 0.0), getat(components(velocity(h_0, 0.0)), 1.0))
   end
   @field pulled::List = Any[]
   function move(self::__class__)
@@ -9470,12 +9535,10 @@ end
       h_1 = getat(holes(self), i_1)
       if truthy(moves(h_1))
         g_1 = getat(pulled(self), i_1)
-        h_1.momentum = (momentum(h_1) + Vector(components = Any[(getat(g_1, 0.0) * mass(h_1)), (getat(g_1, 1.0) * mass(h_1))]))
-        if truthy((norm(momentum(h_1)) > mass(h_1)))
-          h_1.momentum = (unit(momentum(h_1)) * mass(h_1))
-        end
-        h_1.x = (x(h_1) + ((getat(components(momentum(h_1)), 0.0) / mass(h_1)) * K(self)))
-        h_1.y = (y(h_1) + ((getat(components(momentum(h_1)), 1.0) / mass(h_1)) * K(self)))
+        h_1.momentum = (momentum(h_1) + (Vector(components = Any[(getat(g_1, 0.0) * mass(h_1)), (getat(g_1, 1.0) * mass(h_1))]) * ((1.0 / standing(h_1, 0.0)))))
+        v_1 = velocity(h_1, 0.0)
+        h_1.x = (x(h_1) + (getat(components(v_1), 0.0) * K(self)))
+        h_1.y = (y(h_1) + (getat(components(v_1), 1.0) * K(self)))
         h_1.moved = (moved(h_1) + 1.0)
       end
     end
@@ -17887,12 +17950,10 @@ end
   end))
   @rule Source true Rule(id = "/S.v", name = j"Transport", rate = nothing, over = j"Source", single = true, where_ = (function (it_1 = nothing, _...)
     return moves(it_1)
-  end), source = Base.string(j"rule /S.v \"Transport\" (x: Source{moves}) => {\n  x.momentum = x.momentum + x.cells.first.sinks * x.mass\n  x.momentum = x.momentum.unit * x.mass if x.momentum.norm > x.mass\n  x.advance = x.advance + x.momentum * (Real.ONE / x.mass)\n  g := x.world.geometry\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\n}"), body = (function (x_0 = nothing, _...)
-    x_0.momentum = (momentum(x_0) + (sinks(first(cells(x_0))) * mass(x_0)))
-    if truthy((norm(momentum(x_0)) > mass(x_0)))
-      x_0.momentum = (unit(momentum(x_0)) * mass(x_0))
-    end
-    x_0.advance = (advance(x_0) + (momentum(x_0) * ((1.0 / mass(x_0)))))
+  end), source = Base.string(j"rule /S.v \"Transport\" (x: Source{moves}) => {\n  u := x.cells.first.potential\n  x.momentum = x.momentum + x.cells.first.sinks * (x.mass * (1 - 2 * u) / x.standing(u))\n  x.advance = x.advance + x.velocity(u)\n  g := x.world.geometry\n  d := Array.range(g.DEG).most((e) => x.advance.along(g.V(e)))[1]\n  if x.advance.along(g.V(d)) >= g.steps(d) { ... }\n}"), body = (function (x_0 = nothing, _...)
+    u_0 = potential(first(cells(x_0)))
+    x_0.momentum = (momentum(x_0) + (sinks(first(cells(x_0))) * (((mass(x_0) * ((1.0 - (2.0 * u_0)))) / standing(x_0, u_0)))))
+    x_0.advance = (advance(x_0) + velocity(x_0, u_0))
     g_0 = geometry(world(x_0))
     d_0 = getat(most(rng(DEG(g_0)), (function (e_2 = nothing, _...)
       return along(advance(x_0), V(g_0, e_2))
@@ -17923,18 +17984,18 @@ end
 end
 
 @dynamic_names const G_EQUATION = Node(latex = j"\\partial_{t} n + \\hat{d} \\cdot \\nabla_{l} n + \\paren{\\nabla n_{f}} \\cdot \\nabla_{\\hat{d}} n = - 2 \\sigma F n^{2} + \\bar{DEG} \\nu \\paren{1 - \\rho} + l.\\bar{m} \\omega", terms = Any[
-    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"2", at = s -> 2.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"s.F", at = s -> F(s)), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"-2", at = s -> (-2.0)), space = Node(source = j"-1", at = s -> (-1.0)), folds = Node(source = j"1", at = s -> 1.0))),
-    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = true, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"s.DEG", at = s -> DEG(s)), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"s.n_f / s.DEG * (1 - s.ρ)", at = s -> ((n_f(s) / DEG(s)) * ((1.0 - ρ(s))))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"s.n_f / s.DEG", at = s -> (n_f(s) / DEG(s))), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"-s.DEG", at = s -> (-DEG(s))))),
-    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"s.n_f * (1 - s.ρ)", at = s -> (n_f(s) * ((1.0 - ρ(s))))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"s.n_f", at = s -> n_f(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = true, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = true, leans = j"n_f", turned = j"way", doing = Node(carries = true, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = true, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"s.ω", at = s -> ω(s)), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = true, leans = j"n_f", turned = j"way", doing = Node(carries = true, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"s.ω", at = s -> ω(s)), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/4", rate = nothing, name = j"Arrival", over = j"Ray", where_ = nothing, source = j"rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate = nothing, degree = 0.0, outside = false, settles = true, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = true, share = Node(source = j"1", at = s -> 1.0), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
-    Node(rule = Node(id = j"/S.1", rate = nothing, name = j"Emission", over = j"Boundary", where_ = Node(source = j"emits & vertex.source.spare"), source = j"rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate = nothing, degree = 0.0, outside = true, settles = false, transport = false, leans = j"n_f", turned = j"way", doing = Node(carries = false, sets = true, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = true, settles = false, share = Node(source = j"s.ω * (1 - s.β)", at = s -> (ω(s) * ((1.0 - β(s))))), asked = Node(source = j"1 - s.β", at = s -> (1.0 - β(s))), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"1", at = s -> 1.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0)))
+    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"2", at = s -> 2.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"s.F", at = s -> F(s)), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"-2", at = s -> (-2.0)), space = Node(source = j"-1", at = s -> (-1.0)), folds = Node(source = j"1", at = s -> 1.0))),
+    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/1", rate = j"σ", name = j"Annihilation", over = j"Edge", where_ = Node(source = j"active"), source = j"rule /1 \"Annihilation\" | σ (x: 1 Edge{active}) => x.ANNIHILATE"), rate = j"σ", degree = 2.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 2.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"s.F", at = s -> F(s)), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = true, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"s.DEG", at = s -> DEG(s)), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"s.n_f / s.DEG * (1 - s.ρ)", at = s -> ((n_f(s) / DEG(s)) * ((1.0 - ρ(s))))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"s.n_f / s.DEG", at = s -> (n_f(s) / DEG(s))), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"-s.DEG", at = s -> (-DEG(s))))),
+    Node(rule = Node(id = j"/2", rate = j"ν", name = j"Creation", over = j"Vertex", where_ = Node(source = j"neutral"), source = j"rule /2 \"Creation\" | ν (x: Vertex{neutral}) => x.CREATE"), rate = j"ν", degree = 0.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = false, share = Node(source = j"s.n_f * (1 - s.ρ)", at = s -> (n_f(s) * ((1.0 - ρ(s))))), asked = Node(source = j"1 - s.ρ", at = s -> (1.0 - ρ(s))), around = Node(source = j"s.n_f", at = s -> n_f(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = true, sets = false, grown = true, trades = false, grew = Node(source = j"1", at = s -> 1.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"1 - s.ω", at = s -> (1.0 - ω(s))), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"1", at = s -> 1.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = true, leans = j"S_f", turned = j"way", doing = Node(carries = true, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"0", at = s -> 0.0), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"0", at = s -> 0.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = true, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"s.ω", at = s -> ω(s)), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/c", rate = j"σ", name = j"Movement", over = j"Ray", where_ = Node(source = j"active"), source = j"rule /c \"Movement\" | σ (x: Ray{active}) => x.MOVE"), rate = j"σ", degree = 1.0, outside = false, settles = false, transport = true, leans = j"S_f", turned = j"way", doing = Node(carries = true, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 1.0, outside = false, settles = false, share = Node(source = j"s.ω", at = s -> ω(s)), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/4", rate = nothing, name = j"Arrival", over = j"Ray", where_ = nothing, source = j"rule /4 \"Arrival\" (x: Ray) => x.SETTLE"), rate = nothing, degree = 0.0, outside = false, settles = true, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = false, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = false, settles = true, share = Node(source = j"1", at = s -> 1.0), asked = Node(source = j"1", at = s -> 1.0), around = Node(source = j"1", at = s -> 1.0), rays = Node(source = j"0", at = s -> 0.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0))),
+    Node(rule = Node(id = j"/S.1", rate = nothing, name = j"Emission", over = j"Boundary", where_ = Node(source = j"emits & vertex.source.spare"), source = j"rule /S.1 \"Emission\" (x: 1 Boundary{emits & vertex.source.spare}) => {\n  s := x.vertex.source\n  out := x.ray.steps\n  if out != None { ... }\n}"), rate = nothing, degree = 0.0, outside = true, settles = false, transport = false, leans = j"S_f", turned = j"way", doing = Node(carries = false, sets = true, grown = false, trades = false, grew = Node(source = j"0", at = s -> 0.0), grew_apart = Node(source = j"0", at = s -> 0.0), draws = nothing, needs = 0.0, outside = true, settles = false, share = Node(source = j"s.ω * (1 - s.β)", at = s -> (ω(s) * ((1.0 - β(s))))), asked = Node(source = j"1 - s.β", at = s -> (1.0 - β(s))), around = Node(source = j"s.ω", at = s -> ω(s)), rays = Node(source = j"1", at = s -> 1.0), space = Node(source = j"0", at = s -> 0.0), folds = Node(source = j"0", at = s -> 0.0)))
 ])
 equation(self::typeof(G)) = G_EQUATION
 
@@ -18051,7 +18112,7 @@ const _METHOD_SOURCES_made = Ref(false)
 function g_METHOD_SOURCES()
   if !_METHOD_SOURCES_made[]
     _METHOD_SOURCES_made[] = true
-    _METHOD_SOURCES_cell[] = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.folds], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
+    _METHOD_SOURCES_cell[] = "\n@@ Edge.active\nthis.initial != None & this.terminal != None & this.initial.active & this.terminal.active\n@@ Ray.facing\nthis.terminal.across.ray\n@@ Ray.turns\ndraw([1, this.vertex.worth], [this.steps, (d) => this.vertex.outward(d).rays[d]])\n@@ Vertex.fold\nreturn if b == this\nd := this.rays.index_of(this.rays.filter((r) => this.outward(r.exit) == b).first)\nthis.folds[d] = this.folds[d] + 1 if d != None\nthis.hold(b)\nthis.world.folded = this.world.folded + 1\n@@ Vertex.alive\nthis.folded_into == None\n@@ Vertex.sinks\nthis.folded_into == None ? Vector.zero(this.at.components.length) : this.folded_into.at - this.at"
   end
   _METHOD_SOURCES_cell[]
 end

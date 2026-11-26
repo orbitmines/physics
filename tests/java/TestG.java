@@ -60,24 +60,34 @@ public final class TestG {
       return truthy(gt(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 8.0 }) }), call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 18.0 }) }))) ? PASS : "failed: " + "gt(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 8.0 }) }), call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 18.0 }) }))";
     });
 
-    t("tests/coincidence.ray:19 on coincidence", () -> {
+    t("tests/coincidence.ray:23 on coincidence", () -> {
       Object it = make("Model", new Object[] { kw("theory", K("G")) });
       int guard = 0;
       while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(gt(mul(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)) ? PASS : "failed: " + "gt(mul(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)";
+      return truthy(lt(m_abs((sub(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 8.0 }) }), div(1.0, 9.0)))), 0.000001)) ? PASS : "failed: " + "lt(m_abs((sub(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 8.0 }) }), div(1.0, 9.0)))), 0.000001)";
     });
 
-    t("tests/coincidence.ray:20 on coincidence", () -> {
+    t("tests/coincidence.ray:24 on coincidence", () -> {
       Object it = make("Model", new Object[] { kw("theory", K("G")) });
       int guard = 0;
       while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(lt(mul(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? PASS : "failed: " + "lt(mul(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 8.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
+      return truthy(gt(mul(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)) ? PASS : "failed: " + "gt(mul(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.155)";
+    });
+
+    t("tests/coincidence.ray:25 on coincidence", () -> {
+      Object it = make("Model", new Object[] { kw("theory", K("G")) });
+      int guard = 0;
+      while (!truthy(eq(get(get(it, "theory"), "name"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(lt(mul(call(it, "value_of", new Object[] { "\\frac{a_{0}}{cH}", call(it, "settled", new Object[] { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)) ? PASS : "failed: " + "lt(mul(call(it, \"value_of\", new Object[] { \"\\\\frac{a_{0}}{cH}\", call(it, \"settled\", new Object[] { 4.0 }) }), m_sqrt((sub(1.0, 0.315)))), 0.183)";
     });
 
     t("tests/felt.ray:10 on felt", () -> {

@@ -69,7 +69,7 @@ fn run(only: Option<String>) -> bool {
       if truthy(&gt(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![8.0])]), &call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![18.0])]))) { PASS.to_string() } else { format!("failed: {}", "gt(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![8.0])]), &call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![18.0])]))") }
     });
 
-    t(s, "tests/coincidence.ray:19 on coincidence", || {
+    t(s, "tests/coincidence.ray:23 on coincidence", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Model"), args![kw("theory", &k!("G"))]))));
       let mut guard = 0;
@@ -78,10 +78,10 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&gt(&mul(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.155)) { PASS.to_string() } else { format!("failed: {}", "gt(&mul(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.155)") }
+      if truthy(&lt(&m_abs(&(sub(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![8.0])]), &div(&1.0, &9.0)))), &0.000001)) { PASS.to_string() } else { format!("failed: {}", "lt(&m_abs(&(sub(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![8.0])]), &div(&1.0, &9.0)))), &0.000001)") }
     });
 
-    t(s, "tests/coincidence.ray:20 on coincidence", || {
+    t(s, "tests/coincidence.ray:24 on coincidence", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Model"), args![kw("theory", &k!("G"))]))));
       let mut guard = 0;
@@ -90,7 +90,19 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&lt(&mul(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)) { PASS.to_string() } else { format!("failed: {}", "lt(&mul(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![8.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)") }
+      if truthy(&gt(&mul(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![4.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.155)) { PASS.to_string() } else { format!("failed: {}", "gt(&mul(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![4.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.155)") }
+    });
+
+    t(s, "tests/coincidence.ray:25 on coincidence", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&make_k(&k!("Model"), args![kw("theory", &k!("G"))]))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&get(&it, "theory"), "name"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&lt(&mul(&call(&it, "value_of", args![sv!["\\frac{a_{0}}{cH}"], call(&it, "settled", args![4.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)) { PASS.to_string() } else { format!("failed: {}", "lt(&mul(&call(&it, \"value_of\", args![sv![\"\\\\frac{a_{0}}{cH}\"], call(&it, \"settled\", args![4.0])]), &m_sqrt(&(sub(&1.0, &0.315)))), &0.183)") }
     });
 
     t(s, "tests/felt.ray:10 on felt", || {
