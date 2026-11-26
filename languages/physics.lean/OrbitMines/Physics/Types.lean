@@ -1097,7 +1097,7 @@ ray_static "screening" : Inference
 ray_static "refracting" : Inference
 ray_static "relativity" : Inference
 ray_static "schwarzschild" : Inference
-ray_static "shadow" : Inference
+ray_static "held_shadow" (s_0 : Store) (A_0 : Fact) (B_0 : Fact) : Step
 ray_static "metric_of" : Inference
 ray_static "accumulating" : Inference
 ray_static "substituting" : Inference
@@ -2014,6 +2014,12 @@ ray_sfield "STEP_I" : Value
 ray_sfield "THREAD" : Value
 ray_sfield "ENTRY" : Value
 ray_sfield "ID" : Value
+ray_sfield "NY" : Value
+ray_sfield "NB" : Value
+ray_sfield "RUNG_Y" : Value
+ray_sfield "RUNG_B" : Value
+ray_sfield "RINGS_IN" : Value
+ray_sfield "FAR_OFF" : Value
 ray_sfield "OMEGA_M" : Value
 ray_sfield "FILM_STARS" : Value
 ray_sfield "FILM_TURNS" : Value
@@ -2067,6 +2073,22 @@ ray_field "w_gases" : (RList Value)
 ray_method "solve" (pulls_0 : (RList Float)) : Value
 ray_field "seen_rows" : (RList Value)
 ray_method "arrive" (spulls_0 : (RList Float)) : Value
+ray_field "on" : Felt
+ray_method "unit_of" (j_0 : Float) : Float
+ray_method "grid_of" (j_0 : Float) : (RList (RList Float))
+ray_method "made_of" (grid_0 : (RList (RList Float))) (yd_0 : Float) (yb_0 : Float) : (RList Float)
+ray_method "felt_at" (j_0 : Float) (made_0 : (RList Float)) (r_0 : Float) (gN_0 : Float) : Float
+ray_field "grids" : (RList Value)
+ray_field "ladder" : (RList Float)
+ray_field "ladder_at" : (RList Float)
+ray_method "rungs" (j_0 : Float) : Float
+ray_getter "solve_fields" : Value
+ray_method "rung_y" (iy_0 : Float) : Float
+ray_method "rung_b" (ib_0 : Float) : Float
+ray_method "laddered" (j_0 : Float) (k_0 : Float) (ly_0 : Float) (lb_0 : Float) : Float
+ray_method "solved_points" (yd_0 : (RList Float)) (yb_0 : (RList Float)) : (RList Float)
+ray_getter "own_y" : (RList Float)
+ray_getter "own_b" : (RList Float)
 ray_static "lift_coefficients" (theory_0 : Theory) (deg_0 : Float) : (RList Float)
 ray_static "hubble0" : Float
 ray_static "hubble_at" (z_0 : Float) : Float
@@ -2144,7 +2166,12 @@ ray_sfield "SPAN" : Value
 ray_sfield "RINGS" : Value
 ray_sfield "DISCS" : Value
 ray_sfield "WHAT" : Value
+ray_sfield "REFRESH" : Value
 ray_field "a0" : Float
+ray_field "on" : Felt
+ray_field "made_now" : (RList Float)
+ray_method "made_tables" (state_0 : (RList Float)) : (RList Float)
+ray_method "made_at" (g_0 : Float) (x_0 : Float) (y_0 : Float) : (RList Float)
 ray_field "newton" : Bool
 ray_getter "scale_a0" : Float
 ray_getter "discs_n" : Float
@@ -2211,6 +2238,7 @@ ray_sfield "THICK" : Value
 ray_sfield "MIDDLE" : Value
 ray_sfield "GAS" : Value
 ray_sfield "FREEDOMS" : Value
+ray_sfield "NPHI" : Value
 ray_sfield "LADDER" : Value
 ray_getter "step" : Float
 ray_method "edge" (i_0 : Float) : Float
@@ -2235,8 +2263,23 @@ ray_getter "width" : Float
 ray_method "at_band" (k_0 : Float) (l_0 : Float) : Float
 ray_field "band" : (RList Float)
 ray_getter "factored" : (RList Float)
+ray_method "factored_with" (extra_0 : (RList Float)) : (RList Float)
 ray_method "solve_band" (b_0 : (RList Float)) : (RList Float)
+ray_method "solve_with" (m_0 : (RList Float)) (b_0 : (RList Float)) : (RList Float)
 ray_static "over" (gN_0 : Float) : Float
+ray_method "made_rows" (gr_0 : (RList Float)) (gz_0 : (RList Float)) : (RList Float)
+ray_getter "dphi" : Float
+ray_getter "waves" : Float
+ray_field "around" : (RList Float)
+ray_static "theta" (mu_0 : Float) : Float
+ray_field "wave_bands" : (RList Value)
+ray_field "cosines" : (RList Float)
+ray_field "sines" : (RList Float)
+ray_method "solve_round" (b_0 : (RList Float)) : (RList Float)
+ray_method "layers" (r_0 : Float) (h_0 : Float) : (RList Float)
+ray_method "round_made" (xy_0 : (RList Float)) (s_0 : Float) (h_0 : Float) : (RList Float)
+ray_method "round_at" (table_0 : (RList Float)) (x_0 : Float) (y_0 : Float) : (RList Float)
+ray_method "made_at" (made_0 : (RList Float)) (r_0 : Float) : Float
 ray_method "felt" (shape_0 : (RList (RList Float))) (s_0 : Float) : (RList (RList Float))
 ray_method "ladder" (shape_0 : (RList (RList Float))) : (RList (RList (RList Float)))
 ray_method "read_off" (ladder_0 : (RList (RList (RList Float)))) (dex_0 : Float) (x_0 : Float) : (RList Float)
@@ -2579,6 +2622,7 @@ ray_sfield "theorem gravity.far" : Theorem
 ray_sfield "theorem vacuum.age" : Theorem
 ray_sfield "theorem gravity.scale" : Theorem
 ray_sfield "theorem gravity.closing" : Theorem
+ray_sfield "theorem gravity.made" : Theorem
 ray_sfield "theorem gravity.metric" : Theorem
 ray_sfield "theorem gravity.shadow" : Theorem
 ray_sfield "rule S.2" : Rule

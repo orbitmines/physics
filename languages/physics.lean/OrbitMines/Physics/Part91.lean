@@ -56,6 +56,18 @@ ray_impl_sfield "ENTRY" : Value := do
   return ("@compute @workgroup_size(64) fn" : String)
 ray_impl_sfield "ID" : Value := do
   return ("(@builtin(global_invocation_id) gid: vec3<u32>) {" : String)
+ray_impl_sfield "NY" : Value := do
+  return (21 : Float)
+ray_impl_sfield "NB" : Value := do
+  return (11 : Float)
+ray_impl_sfield "RUNG_Y" : Value := do
+  return 0.05
+ray_impl_sfield "RUNG_B" : Value := do
+  return 0.1
+ray_impl_sfield "RINGS_IN" : Value := do
+  return (8 : Float)
+ray_impl_sfield "FAR_OFF" : Value := do
+  return (30 : Float)
 ray_impl_sfield "OMEGA_M" : Value := do
   return 0.315
 ray_impl_sfield "FILM_STARS" : Value := do
@@ -115,13 +127,20 @@ ray_impl_static "fit_kernel" : String := do
   let lyd_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YD")))))
   let lyb_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YB")))))
   let py_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωget (← cls% Simulation) "PRIOR_Y")))
-  if true then return (← dot! (← ωlst #[("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid" : String), ("@group(0) @binding(0) var<storage, read> P: array<u32>;" : String), ("@group(0) @binding(1) var<storage, read> L: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read> Q: array<f32>;" : String), ("@group(0) @binding(3) var<storage, read> G: array<f32>;" : String), ("@group(0) @binding(4) var<storage, read_write> O: array<f32>;" : String), (← ωget (← cls% Simulation) "law_wgsl"), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " FIT" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  let n: u32 = P[1];" : String), ("  let C: u32 = n * n * n * n;" : String), ("  if (i >= P[0] * C) { return; }" : String), ("  let j: u32 = i / C;" : String), ("  let c: u32 = i % C;" : String), ("  let h: f32 = f32((n - 1u) / 2u);" : String), ("  let b: u32 = 16u * j;" : String), ("  let D: f32 = G[b + 2u];" : String), ("  let eD: f32 = G[b + 3u];" : String), ("  let inc: f32 = G[b + 4u];" : String), ("  let einc: f32 = G[b + 5u];" : String), ("  let a0: f32 = G[b + 6u];" : String), ("  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];" : String), ("  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];" : String), ("  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;" : String), ("  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;" : String), ("  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }" : String), ("  let YD: f32 = exp(ly * " ++ (← ωtoStr (← ln10_0.get)) ++ ");" : String), ("  let YB: f32 = exp(lb * " ++ (← ωtoStr (← ln10_0.get)) ++ ");" : String), ("  let f: f32 = Dp / D;" : String), ("  let s: f32 = sin(inc * " ++ (← ωtoStr (← pi_0.get)) ++ " / 180.0) / sin(ip * " ++ (← ωtoStr (← pi_0.get)) ++ " / 180.0);" : String), ("  var chi: f32 = 0.0;" : String), ("  let start: u32 = u32(G[b]);" : String), ("  let stop: u32 = start + u32(G[b + 1u]);" : String), ("  for (var p: u32 = start; p < stop; p = p + 1u) {" : String), ("    let q: u32 = 8u * p;" : String), ("    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);" : String), ("    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));" : String), ("    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);" : String), ("    chi = chi + d * d;" : String), ("  }" : String), ("  let py: f32 = (ly - " ++ (← ωtoStr (← lyd_0.get)) ++ ") / " ++ (← ωtoStr (← py_0.get)) ++ ";" : String), ("  let pb: f32 = G[b + 7u] * (lb - " ++ (← ωtoStr (← lyb_0.get)) ++ ") / " ++ (← ωtoStr (← py_0.get)) ++ ";" : String), ("  var pd: f32 = 0.0;" : String), ("  if (eD > 0.0) { pd = (Dp - D) / eD; }" : String), ("  var pi_: f32 = 0.0;" : String), ("  if (einc > 0.0) { pi_ = (ip - inc) / einc; }" : String), ("  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);" : String), ("}" : String)]) rjoin (("\n" : String)))
+  let ly0_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωsub (← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YD"))) (← ωdiv (← ωmul (← ωget (← cls% Simulation) "RUNG_Y") (← ωsub (← ωget (← cls% Simulation) "NY") (1 : Float))) (2 : Float)))))
+  let lb0_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωsub (← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YB"))) (← ωdiv (← ωmul (← ωget (← cls% Simulation) "RUNG_B") (← ωsub (← ωget (← cls% Simulation) "NB") (1 : Float))) (2 : Float)))))
+  let sy_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωget (← cls% Simulation) "RUNG_Y")))
+  let sb_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωget (← cls% Simulation) "RUNG_B")))
+  let topy_0 ← IO.mkRef (← call! (← cls% Shaded) "literal" ((← ωsub (← ωsub (← ωget (← cls% Simulation) "NY") (1 : Float)) 0.0001)))
+  let ny_0 ← IO.mkRef (← ωget (← cls% Simulation) "NY")
+  let nbs_0 ← IO.mkRef (← ωget (← cls% Simulation) "NB")
+  if true then return (← dot! (← ωlst #[("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields" : String), ("@group(0) @binding(0) var<storage, read> P: array<u32>;" : String), ("@group(0) @binding(1) var<storage, read> L: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read> Q: array<f32>;" : String), ("@group(0) @binding(3) var<storage, read> G: array<f32>;" : String), ("@group(0) @binding(4) var<storage, read_write> O: array<f32>;" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " FIT" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  let n: u32 = P[1];" : String), ("  let C: u32 = n * n * n * n;" : String), ("  if (i >= P[0] * C) { return; }" : String), ("  let j: u32 = i / C;" : String), ("  let c: u32 = i % C;" : String), ("  let h: f32 = f32((n - 1u) / 2u);" : String), ("  let b: u32 = 16u * j;" : String), ("  let D: f32 = G[b + 2u];" : String), ("  let eD: f32 = G[b + 3u];" : String), ("  let inc: f32 = G[b + 4u];" : String), ("  let einc: f32 = G[b + 5u];" : String), ("  let a0: f32 = G[b + 6u];" : String), ("  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];" : String), ("  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];" : String), ("  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;" : String), ("  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;" : String), ("  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }" : String), ("  let uy: f32 = clamp((ly - " ++ (← ωtoStr (← ly0_0.get)) ++ ") / " ++ (← ωtoStr (← sy_0.get)) ++ ", 0.0, " ++ (← ωtoStr (← topy_0.get)) ++ ");" : String), ("  let ky: u32 = u32(floor(uy));" : String), ("  let fy: f32 = uy - floor(uy);" : String), ("  var nb: u32 = 1u;" : String), ("  if (G[b + 7u] > 0.0) { nb = " ++ (← ωtoStr (← nbs_0.get)) ++ "u; }" : String), ("  var ub: f32 = 0.0;" : String), ("  if (nb > 1u) { ub = clamp((lb - " ++ (← ωtoStr (← lb0_0.get)) ++ ") / " ++ (← ωtoStr (← sb_0.get)) ++ ", 0.0, f32(nb - 1u) - 0.0001); }" : String), ("  let kb: u32 = u32(floor(ub));" : String), ("  let fb: f32 = ub - floor(ub);" : String), ("  let kb1: u32 = min(kb + 1u, nb - 1u);" : String), ("  let base: u32 = u32(G[b + 15u]);" : String), ("  let f: f32 = Dp / D;" : String), ("  let s: f32 = sin(inc * " ++ (← ωtoStr (← pi_0.get)) ++ " / 180.0) / sin(ip * " ++ (← ωtoStr (← pi_0.get)) ++ " / 180.0);" : String), ("  var chi: f32 = 0.0;" : String), ("  let start: u32 = u32(G[b]);" : String), ("  let stop: u32 = start + u32(G[b + 1u]);" : String), ("  for (var p: u32 = start; p < stop; p = p + 1u) {" : String), ("    let q: u32 = 8u * p;" : String), ("    let o: u32 = p - start;" : String), ("    let cnt: u32 = u32(G[b + 1u]);" : String), ("    let lo: f32 = (1.0 - fy) * L[base + (kb * " ++ (← ωtoStr (← ny_0.get)) ++ "u + ky) * cnt + o] + fy * L[base + (kb * " ++ (← ωtoStr (← ny_0.get)) ++ "u + ky + 1u) * cnt + o];" : String), ("    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " ++ (← ωtoStr (← ny_0.get)) ++ "u + ky) * cnt + o] + fy * L[base + (kb1 * " ++ (← ωtoStr (← ny_0.get)) ++ "u + ky + 1u) * cnt + o];" : String), ("    let g: f32 = (1.0 - fb) * lo + fb * hi;" : String), ("    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));" : String), ("    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);" : String), ("    chi = chi + d * d;" : String), ("  }" : String), ("  let py: f32 = (ly - " ++ (← ωtoStr (← lyd_0.get)) ++ ") / " ++ (← ωtoStr (← py_0.get)) ++ ";" : String), ("  let pb: f32 = G[b + 7u] * (lb - " ++ (← ωtoStr (← lyb_0.get)) ++ ") / " ++ (← ωtoStr (← py_0.get)) ++ ";" : String), ("  var pd: f32 = 0.0;" : String), ("  if (eD > 0.0) { pd = (Dp - D) / eD; }" : String), ("  var pi_: f32 = 0.0;" : String), ("  if (einc > 0.0) { pi_ = (ip - inc) / einc; }" : String), ("  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);" : String), ("}" : String)]) rjoin (("\n" : String)))
   return ωnull
 ray_impl_static "best_kernel" : String := do
   if true then return (← dot! (← ωlst #[("// GENERATED from Simulation.ray: BEST - each galaxy's best point of its grid" : String), ("@group(0) @binding(0) var<storage, read> P: array<u32>;" : String), ("@group(0) @binding(1) var<storage, read> V: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read_write> O: array<f32>;" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " BEST" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  if (i >= P[0]) { return; }" : String), ("  var best: f32 = -3e38;" : String), ("  var pos: u32 = 0u;" : String), ("  for (var c: u32 = 0u; c < P[1]; c = c + 1u) {" : String), ("    let v: f32 = V[i * P[1] + c];" : String), ("    if (v > best) { best = v; pos = c; }" : String), ("  }" : String), ("  O[2u * i] = f32(pos);" : String), ("  O[2u * i + 1u] = best;" : String), ("}" : String)]) rjoin (("\n" : String)))
   return ωnull
 ray_impl_static "stars_kernel" : String := do
-  if true then return (← dot! (← ωlst #[("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field" : String), ("@group(0) @binding(0) var<storage, read> P: array<u32>;" : String), ("@group(0) @binding(1) var<storage, read> L: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read> GT: array<f32>;" : String), ("@group(0) @binding(3) var<storage, read> GI: array<f32>;" : String), ("@group(0) @binding(4) var<storage, read_write> S: array<f32>;" : String), ("@group(0) @binding(5) var<storage, read_write> F: array<f32>;" : String), (← ωget (← cls% Simulation) "law_wgsl"), ("fn g_at(j: u32, r: f32) -> f32 {" : String), ("  let rmax: f32 = GI[12u * j];" : String), ("  let T: u32 = P[2];" : String), ("  let base: u32 = j * T;" : String), ("  let u: f32 = r / rmax * f32(T);" : String), ("  if (u <= 1.0) { return GT[base] * u; }" : String), ("  if (u >= f32(T)) {" : String), ("    let q: f32 = rmax / r;" : String), ("    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);" : String), ("  }" : String), ("  let t0: u32 = u32(floor(u)) - 1u;" : String), ("  let fr: f32 = u - floor(u);" : String), ("  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;" : String), ("}" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " START" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  if (i >= P[0]) { return; }" : String), ("  let j: u32 = i / P[1];" : String), ("  let k: u32 = 10u * i;" : String), ("  let r0: f32 = S[k];" : String), ("  let phi: f32 = S[k + 1u];" : String), ("  let sig: f32 = GI[12u * j + 9u];" : String), ("  let g: f32 = g_at(j, r0);" : String), ("  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];" : String), ("  let vr: f32 = sig * S[k + 3u];" : String), ("  let c: f32 = cos(phi);" : String), ("  let s: f32 = sin(phi);" : String), ("  S[k] = r0 * c;" : String), ("  S[k + 1u] = r0 * s;" : String), ("  S[k + 2u] = vr * c - vp * s;" : String), ("  S[k + 3u] = vr * s + vp * c;" : String), ("  S[k + 4u] = 0.0 - g * c;" : String), ("  S[k + 5u] = 0.0 - g * s;" : String), ("  S[k + 6u] = 0.0;" : String), ("  S[k + 7u] = 0.0;" : String), ("  S[k + 8u] = 0.0;" : String), ("}" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " STEP" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  if (i >= P[0]) { return; }" : String), ("  let j: u32 = i / P[1];" : String), ("  let b: u32 = 12u * j;" : String), ("  let dt: f32 = GI[b + 1u];" : String), ("  let n: u32 = u32(GI[b + 2u]);" : String), ("  let avg_from: u32 = u32(GI[b + 3u]);" : String), ("  let film: f32 = GI[b + 4u];" : String), ("  let every: u32 = max(u32(GI[b + 7u]), 1u);" : String), ("  let ffrom: u32 = u32(GI[b + 8u]);" : String), ("  let k: u32 = 10u * i;" : String), ("  var x: f32 = S[k];" : String), ("  var y: f32 = S[k + 1u];" : String), ("  var vx: f32 = S[k + 2u];" : String), ("  var vy: f32 = S[k + 3u];" : String), ("  var ax: f32 = S[k + 4u];" : String), ("  var ay: f32 = S[k + 5u];" : String), ("  var sr: f32 = S[k + 6u];" : String), ("  var sv: f32 = S[k + 7u];" : String), ("  var sn: f32 = S[k + 8u];" : String), ("  let stop: u32 = min(P[4], n);" : String), ("  for (var t: u32 = P[3]; t < stop; t = t + 1u) {" : String), ("    vx = vx + 0.5 * ax * dt;" : String), ("    vy = vy + 0.5 * ay * dt;" : String), ("    x = x + vx * dt;" : String), ("    y = y + vy * dt;" : String), ("    let r: f32 = max(sqrt(x * x + y * y), 1e-6);" : String), ("    let g: f32 = g_at(j, r);" : String), ("    ax = 0.0 - g * x / r;" : String), ("    ay = 0.0 - g * y / r;" : String), ("    vx = vx + 0.5 * ax * dt;" : String), ("    vy = vy + 0.5 * ay * dt;" : String), ("    if (t >= avg_from) {" : String), ("      sr = sr + r;" : String), ("      sv = sv + (x * vy - y * vx) / r;" : String), ("      sn = sn + 1.0;" : String), ("    }" : String), ("    let kk: u32 = t + 1u;" : String), ("    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {" : String), ("      let fr: u32 = (kk - ffrom) / every - 1u;" : String), ("      if (fr < P[5]) {" : String), ("        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;" : String), ("        F[o] = x;" : String), ("        F[o + 1u] = y;" : String), ("      }" : String), ("    }" : String), ("  }" : String), ("  S[k] = x;" : String), ("  S[k + 1u] = y;" : String), ("  S[k + 2u] = vx;" : String), ("  S[k + 3u] = vy;" : String), ("  S[k + 4u] = ax;" : String), ("  S[k + 5u] = ay;" : String), ("  S[k + 6u] = sr;" : String), ("  S[k + 7u] = sv;" : String), ("  S[k + 8u] = sn;" : String), ("}" : String)]) rjoin (("\n" : String)))
+  if true then return (← dot! (← ωlst #[("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field" : String), ("@group(0) @binding(0) var<storage, read> P: array<u32>;" : String), ("@group(0) @binding(1) var<storage, read> L: array<f32>;" : String), ("@group(0) @binding(2) var<storage, read> GT: array<f32>;" : String), ("@group(0) @binding(3) var<storage, read> GI: array<f32>;" : String), ("@group(0) @binding(4) var<storage, read_write> S: array<f32>;" : String), ("@group(0) @binding(5) var<storage, read_write> F: array<f32>;" : String), ("fn g_at(j: u32, r: f32) -> f32 {" : String), ("  let rmax: f32 = GI[12u * j];" : String), ("  let T: u32 = P[2];" : String), ("  let base: u32 = j * T;" : String), ("  let u: f32 = r / rmax * f32(T);" : String), ("  if (u <= 1.0) { return GT[base] * u; }" : String), ("  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }" : String), ("  let t0: u32 = u32(floor(u)) - 1u;" : String), ("  let fr: f32 = u - floor(u);" : String), ("  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;" : String), ("}" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " START" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  if (i >= P[0]) { return; }" : String), ("  let j: u32 = i / P[1];" : String), ("  let k: u32 = 10u * i;" : String), ("  let r0: f32 = S[k];" : String), ("  let phi: f32 = S[k + 1u];" : String), ("  let sig: f32 = GI[12u * j + 9u];" : String), ("  let g: f32 = g_at(j, r0);" : String), ("  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];" : String), ("  let vr: f32 = sig * S[k + 3u];" : String), ("  let c: f32 = cos(phi);" : String), ("  let s: f32 = sin(phi);" : String), ("  S[k] = r0 * c;" : String), ("  S[k + 1u] = r0 * s;" : String), ("  S[k + 2u] = vr * c - vp * s;" : String), ("  S[k + 3u] = vr * s + vp * c;" : String), ("  S[k + 4u] = 0.0 - g * c;" : String), ("  S[k + 5u] = 0.0 - g * s;" : String), ("  S[k + 6u] = 0.0;" : String), ("  S[k + 7u] = 0.0;" : String), ("  S[k + 8u] = 0.0;" : String), ("}" : String), ("" ++ (← ωtoStr (← ωget (← cls% Simulation) "ENTRY")) ++ " STEP" ++ (← ωtoStr (← ωget (← cls% Simulation) "ID")) ++ "" : String), (← ωget (← cls% Simulation) "THREAD"), ("  if (i >= P[0]) { return; }" : String), ("  let j: u32 = i / P[1];" : String), ("  let b: u32 = 12u * j;" : String), ("  let dt: f32 = GI[b + 1u];" : String), ("  let n: u32 = u32(GI[b + 2u]);" : String), ("  let avg_from: u32 = u32(GI[b + 3u]);" : String), ("  let film: f32 = GI[b + 4u];" : String), ("  let every: u32 = max(u32(GI[b + 7u]), 1u);" : String), ("  let ffrom: u32 = u32(GI[b + 8u]);" : String), ("  let k: u32 = 10u * i;" : String), ("  var x: f32 = S[k];" : String), ("  var y: f32 = S[k + 1u];" : String), ("  var vx: f32 = S[k + 2u];" : String), ("  var vy: f32 = S[k + 3u];" : String), ("  var ax: f32 = S[k + 4u];" : String), ("  var ay: f32 = S[k + 5u];" : String), ("  var sr: f32 = S[k + 6u];" : String), ("  var sv: f32 = S[k + 7u];" : String), ("  var sn: f32 = S[k + 8u];" : String), ("  let stop: u32 = min(P[4], n);" : String), ("  for (var t: u32 = P[3]; t < stop; t = t + 1u) {" : String), ("    vx = vx + 0.5 * ax * dt;" : String), ("    vy = vy + 0.5 * ay * dt;" : String), ("    x = x + vx * dt;" : String), ("    y = y + vy * dt;" : String), ("    let r: f32 = max(sqrt(x * x + y * y), 1e-6);" : String), ("    let g: f32 = g_at(j, r);" : String), ("    ax = 0.0 - g * x / r;" : String), ("    ay = 0.0 - g * y / r;" : String), ("    vx = vx + 0.5 * ax * dt;" : String), ("    vy = vy + 0.5 * ay * dt;" : String), ("    if (t >= avg_from) {" : String), ("      sr = sr + r;" : String), ("      sv = sv + (x * vy - y * vx) / r;" : String), ("      sn = sn + 1.0;" : String), ("    }" : String), ("    let kk: u32 = t + 1u;" : String), ("    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {" : String), ("      let fr: u32 = (kk - ffrom) / every - 1u;" : String), ("      if (fr < P[5]) {" : String), ("        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;" : String), ("        F[o] = x;" : String), ("        F[o + 1u] = y;" : String), ("      }" : String), ("    }" : String), ("  }" : String), ("  S[k] = x;" : String), ("  S[k + 1u] = y;" : String), ("  S[k + 2u] = vx;" : String), ("  S[k + 3u] = vy;" : String), ("  S[k + 4u] = ax;" : String), ("  S[k + 5u] = ay;" : String), ("  S[k + 6u] = sr;" : String), ("  S[k + 7u] = sv;" : String), ("  S[k + 8u] = sn;" : String), ("}" : String)]) rjoin (("\n" : String)))
   return ωnull
 ray_impl_static "runnable" : (RList Float) := do
   let C_0 ← IO.mkRef (← ωget (← ωget (← cls% Sparc) "curves") "columns")
@@ -559,6 +578,187 @@ ray_impl_method "arrive" (spulls_0 : (RList Float)) : Value := do
     pure ()
   Value.null |> ωsink
   return ωnull
+ray_impl_field "on" : Felt := do
+  return (← new! Felt ())
+ray_impl_method "unit_of" (j_0 : Float) : Float := do
+  if true then return (← ωdiv (← ωelem (← ωelem (← ωelem (← ωget self "rows") (← j_0.get)) (← ωsub (← dot! (← ωelem (← ωget self "rows") (← j_0.get)) rlength ()) (1 : Float))) (0 : Float)) (10 : Float))
+  return ωnull
+ray_impl_method "grid_of" (j_0 : Float) : (RList (RList Float)) := do
+  let F_0 ← IO.mkRef (← ωget self "on")
+  let L_0 ← IO.mkRef (← call! self "unit_of" ((← j_0.get)))
+  let es_0 ← IO.mkRef (← ωelem (← ωget self "edges") (← j_0.get))
+  let n_0 ← IO.mkRef (← ωsub (← dot! (← es_0.get) rlength ()) (1 : Float))
+  let wd_0 ← IO.mkRef (← ωelem (← ωget self "w_discs") (← j_0.get))
+  let wg_0 ← IO.mkRef (← ωelem (← ωget self "w_gases") (← j_0.get))
+  let rs_0 ← IO.mkRef (← ωelem (← ωget self "rows") (← j_0.get))
+  let t_0 ← IO.mkRef (← ωelem (← ωget self "thick") (← j_0.get))
+  let rings_0 ← IO.mkRef (← ωlst #[])
+  for i1 in [0:ωrangeN (← n_0.get)] do
+    let a_1 ← IO.mkRef (ωnatF i1)
+    let area_1 ← IO.mkRef (← ωsub (← ωmul (← ωelem (← es_0.get) (← ωadd (← a_1.get) (1 : Float))) (← ωelem (← es_0.get) (← ωadd (← a_1.get) (1 : Float)))) (← ωmul (← ωelem (← es_0.get) (← a_1.get)) (← ωelem (← es_0.get) (← a_1.get))))
+    for i2 in [0:ωrangeN (← ωget (← cls% Simulation) "RINGS_IN")] do
+      let k_2 ← IO.mkRef (ωnatF i2)
+      let r0_2 ← IO.mkRef (← ωadd (← ωelem (← es_0.get) (← a_1.get)) (← ωdiv (← ωmul ((← ωsub (← ωelem (← es_0.get) (← ωadd (← a_1.get) (1 : Float))) (← ωelem (← es_0.get) (← a_1.get)))) (← k_2.get)) (← ωget (← cls% Simulation) "RINGS_IN")))
+      let r1_2 ← IO.mkRef (← ωadd (← ωelem (← es_0.get) (← a_1.get)) (← ωdiv (← ωmul ((← ωsub (← ωelem (← es_0.get) (← ωadd (← a_1.get) (1 : Float))) (← ωelem (← es_0.get) (← a_1.get)))) (← ωadd (← k_2.get) (1 : Float))) (← ωget (← cls% Simulation) "RINGS_IN")))
+      let soft_2 ← IO.mkRef (← ωdiv ((← ωsub (← r1_2.get) (← r0_2.get))) (2 : Float))
+      (← dot! (← rings_0.get) rpush ((← ωlst #[(← ωdiv ((← ωadd (← r0_2.get) (← r1_2.get))) (2 : Float)), (← ωtern (ωtruthy (← ωgt (← area_1.get) (0 : Float))) (do pure (← ωdiv ((← ωsub (← ωmul (← r1_2.get) (← r1_2.get)) (← ωmul (← r0_2.get) (← r0_2.get)))) (← area_1.get))) (do pure (0 : Float))), (← a_1.get), (← ωadd (← ωmul (← t_0.get) (← t_0.get)) (← ωmul (← soft_2.get) (← soft_2.get)))]))) |> ωsink
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  let md_0 ← IO.mkRef (← dot! (← wd_0.get) rreduce ((0 : Float), (fn! [m_2 v_2] do
+    if true then return (← ωadd (← m_2.get) (← v_2.get))
+    return ωnull)))
+  let mg_0 ← IO.mkRef (← dot! (← wg_0.get) rreduce ((0 : Float), (fn! [m_2 v_2] do
+    if true then return (← ωadd (← m_2.get) (← v_2.get))
+    return ωnull)))
+  let out_0 ← IO.mkRef (← dot! (← ωrrange (6 : Float)) rmap ((fn! [k_2] do
+    if true then return (← ωrfilled (← ωget (← F_0.get) "cells") (0 : Float))
+    return ωnull)))
+  for i1 in [0:ωrangeN (← ωget (← F_0.get) "cells")] do
+    let c_1 ← IO.mkRef (ωnatF i1)
+    let i_1 ← IO.mkRef (← dot! ((← ωdiv (← c_1.get) (← ωget (← cls% Felt) "NMU"))) rfloor ())
+    let mu_1 ← IO.mkRef (← ωelem (← ωget (← F_0.get) "mc") (← ωmodv (← c_1.get) (← ωget (← cls% Felt) "NMU")))
+    let r_1 ← IO.mkRef (← ωmul (← ωelem (← ωget (← F_0.get) "rc") (← i_1.get)) (← L_0.get))
+    let R_1 ← IO.mkRef (← ωmul (← r_1.get) (← dot! ((← ωsub (1 : Float) (← ωmul (← mu_1.get) (← mu_1.get)))) rsqrt ()))
+    let z_1 ← IO.mkRef (← ωmul (← r_1.get) (← mu_1.get))
+    if ωtruthy (← ωgt (← r_1.get) (← ωmul (← ωget (← cls% Simulation) "FAR_OFF") (← ωelem (← es_0.get) (← n_0.get)))) then
+      (ωatSetter (← ωelem (← out_0.get) (0 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← md_0.get) (← R_1.get)) ((← ωmul (← ωmul (← r_1.get) (← r_1.get)) (← r_1.get)))))
+      (ωatSetter (← ωelem (← out_0.get) (1 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← md_0.get) (← z_1.get)) ((← ωmul (← ωmul (← r_1.get) (← r_1.get)) (← r_1.get)))))
+      (ωatSetter (← ωelem (← out_0.get) (2 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← mg_0.get) (← R_1.get)) ((← ωmul (← ωmul (← r_1.get) (← r_1.get)) (← r_1.get)))))
+      (ωatSetter (← ωelem (← out_0.get) (3 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← mg_0.get) (← z_1.get)) ((← ωmul (← ωmul (← r_1.get) (← r_1.get)) (← r_1.get)))))
+      pure ()
+    else
+      for e2 in (← ωitems (← rings_0.get)) do
+        let b_2 ← IO.mkRef e2
+        let g_2 ← IO.mkRef (← call! (← cls% Felt) "ring" ((← R_1.get), (← z_1.get), (← ωelem (← b_2.get) (0 : Float)), (0 : Float), (← ωelem (← b_2.get) (3 : Float))))
+        (ωatSetter (← ωelem (← out_0.get) (0 : Float)) (← c_1.get)) (← ωadd (← ωelem (← ωelem (← out_0.get) (0 : Float)) (← c_1.get)) (← ωmul (← ωmul (← ωelem (← wd_0.get) (← ωelem (← b_2.get) (2 : Float))) (← ωelem (← b_2.get) (1 : Float))) (← ωelem (← g_2.get) (0 : Float))))
+        (ωatSetter (← ωelem (← out_0.get) (1 : Float)) (← c_1.get)) (← ωadd (← ωelem (← ωelem (← out_0.get) (1 : Float)) (← c_1.get)) (← ωmul (← ωmul (← ωelem (← wd_0.get) (← ωelem (← b_2.get) (2 : Float))) (← ωelem (← b_2.get) (1 : Float))) (← ωelem (← g_2.get) (1 : Float))))
+        (ωatSetter (← ωelem (← out_0.get) (2 : Float)) (← c_1.get)) (← ωadd (← ωelem (← ωelem (← out_0.get) (2 : Float)) (← c_1.get)) (← ωmul (← ωmul (← ωelem (← wg_0.get) (← ωelem (← b_2.get) (2 : Float))) (← ωelem (← b_2.get) (1 : Float))) (← ωelem (← g_2.get) (0 : Float))))
+        (ωatSetter (← ωelem (← out_0.get) (3 : Float)) (← c_1.get)) (← ωadd (← ωelem (← ωelem (← out_0.get) (3 : Float)) (← c_1.get)) (← ωmul (← ωmul (← ωelem (← wg_0.get) (← ωelem (← b_2.get) (2 : Float))) (← ωelem (← b_2.get) (1 : Float))) (← ωelem (← g_2.get) (1 : Float))))
+        pure ()
+      Value.null |> ωsink
+      pure ()
+    let gb_1 ← IO.mkRef (← call! (← cls% Simulation) "bulge_at" ((← rs_0.get), (← r_1.get)))
+    (ωatSetter (← ωelem (← out_0.get) (4 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← gb_1.get) (← R_1.get)) (← r_1.get)))
+    (ωatSetter (← ωelem (← out_0.get) (5 : Float)) (← c_1.get)) (← ωsub (0 : Float) (← ωdiv (← ωmul (← gb_1.get) (← z_1.get)) (← r_1.get)))
+    pure ()
+  Value.null |> ωsink
+  if true then return (← out_0.get)
+  return ωnull
+ray_impl_method "made_of" (grid_0 : (RList (RList Float))) (yd_0 : Float) (yb_0 : Float) : (RList Float) := do
+  let a_0 ← IO.mkRef (← ωget self "a0")
+  let gr_0 ← IO.mkRef (← dot! (← ωrrange (← ωget (← ωget self "on") "cells")) rmap ((fn! [c_2] do
+    if true then return (← ωdiv ((← ωadd (← ωadd (← ωmul (← yd_0.get) (← ωelem (← ωelem (← grid_0.get) (0 : Float)) (← c_2.get))) (← ωelem (← ωelem (← grid_0.get) (2 : Float)) (← c_2.get))) (← ωmul (← yb_0.get) (← ωelem (← ωelem (← grid_0.get) (4 : Float)) (← c_2.get))))) (← a_0.get))
+    return ωnull)))
+  let gz_0 ← IO.mkRef (← dot! (← ωrrange (← ωget (← ωget self "on") "cells")) rmap ((fn! [c_2] do
+    if true then return (← ωdiv ((← ωadd (← ωadd (← ωmul (← yd_0.get) (← ωelem (← ωelem (← grid_0.get) (1 : Float)) (← c_2.get))) (← ωelem (← ωelem (← grid_0.get) (3 : Float)) (← c_2.get))) (← ωmul (← yb_0.get) (← ωelem (← ωelem (← grid_0.get) (5 : Float)) (← c_2.get))))) (← a_0.get))
+    return ωnull)))
+  if true then return (← dot! (← call! (← ωget self "on") "made_rows" ((← gr_0.get), (← gz_0.get))) rmap ((fn! [v_2] do
+    if true then return (← ωmul (← v_2.get) (← a_0.get))
+    return ωnull)))
+  return ωnull
+ray_impl_method "felt_at" (j_0 : Float) (made_0 : (RList Float)) (r_0 : Float) (gN_0 : Float) : Float := do
+  if true then return (← ωsub (← gN_0.get) (← call! (← ωget self "on") "made_at" ((← made_0.get), (← ωdiv (← r_0.get) (← call! self "unit_of" ((← j_0.get)))))))
+  return ωnull
+ray_impl_field "grids" : (RList Value) := do
+  return (← ωlst #[])
+ray_impl_field "ladder" : (RList Float) := do
+  return (← ωlst #[])
+ray_impl_field "ladder_at" : (RList Float) := do
+  return (← ωlst #[])
+ray_impl_method "rungs" (j_0 : Float) : Float := do
+  if true then return (← ωtern (ωtruthy (← call! self "has_bulge" ((← j_0.get)))) (do pure (← ωget (← cls% Simulation) "NB")) (do pure (1 : Float)))
+  return ωnull
+ray_impl_getter "solve_fields" : Value := do
+  (ωsetter self "grids") (← ωlst #[])
+  (ωsetter self "ladder") (← ωlst #[])
+  (ωsetter self "ladder_at") (← ωlst #[])
+  for i1 in [0:ωrangeN (← dot! (← ωget self "ids") rlength ())] do
+    let j_1 ← IO.mkRef (ωnatF i1)
+    let grid_1 ← IO.mkRef (← call! self "grid_of" ((← j_1.get)))
+    (← dot! (← ωget self "grids") rpush ((← grid_1.get))) |> ωsink
+    (← dot! (← ωget self "ladder_at") rpush ((← dot! (← ωget self "ladder") rlength ()))) |> ωsink
+    let kept_1 ← IO.mkRef (← dot! (← ωrrange (← dot! (← ωelem (← ωget self "rows") (← j_1.get)) rlength ())) rfilter ((fn! [i_3] do
+      if true then return (← ωgt (← ωelem (← ωelem (← ωelem (← ωget self "rows") (← j_1.get)) (← i_3.get)) (6 : Float)) (0 : Float))
+      return ωnull)))
+    for i2 in [0:ωrangeN (← call! self "rungs" ((← j_1.get)))] do
+      let ib_2 ← IO.mkRef (ωnatF i2)
+      let yb_2 ← IO.mkRef (← ωpow (10 : Float) ((← call! self "rung_b" ((← ib_2.get)))))
+      for i3 in [0:ωrangeN (← ωget (← cls% Simulation) "NY")] do
+        let iy_3 ← IO.mkRef (ωnatF i3)
+        let yd_3 ← IO.mkRef (← ωpow (10 : Float) ((← call! self "rung_y" ((← iy_3.get)))))
+        let made_3 ← IO.mkRef (← call! self "made_of" ((← grid_1.get), (← yd_3.get), (← yb_2.get)))
+        for e4 in (← ωitems (← kept_1.get)) do
+          let i_4 ← IO.mkRef e4
+          let p_4 ← IO.mkRef (← ωelem (← ωelem (← ωget self "at_rows") (← j_1.get)) (← i_4.get))
+          (← dot! (← ωget self "ladder") rpush ((← call! self "felt_at" ((← j_1.get), (← made_3.get), (← ωelem (← ωelem (← ωelem (← ωget self "rows") (← j_1.get)) (← i_4.get)) (0 : Float)), (← ωadd (← ωadd (← ωmul (← yd_3.get) (← ωelem (← p_4.get) (0 : Float))) (← ωmul (← yb_2.get) (← ωelem (← p_4.get) (2 : Float)))) (← ωelem (← p_4.get) (1 : Float))))))) |> ωsink
+          pure ()
+        Value.null |> ωsink
+        pure ()
+      Value.null |> ωsink
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  return ωnull
+ray_impl_method "rung_y" (iy_0 : Float) : Float := do
+  if true then return (← ωadd (← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YD"))) (← ωmul (← ωget (← cls% Simulation) "RUNG_Y") ((← ωsub (← iy_0.get) (← ωdiv (← ωsub (← ωget (← cls% Simulation) "NY") (1 : Float)) (2 : Float))))))
+  return ωnull
+ray_impl_method "rung_b" (ib_0 : Float) : Float := do
+  if true then return (← ωadd (← call! (← cls% Fmt) "log10" ((← ωget (← cls% Sparc) "YB"))) (← ωmul (← ωget (← cls% Simulation) "RUNG_B") ((← ωsub (← ib_0.get) (← ωdiv (← ωsub (← ωget (← cls% Simulation) "NB") (1 : Float)) (2 : Float))))))
+  return ωnull
+ray_impl_method "laddered" (j_0 : Float) (k_0 : Float) (ly_0 : Float) (lb_0 : Float) : Float := do
+  let count_0 ← IO.mkRef (← dot! (← dot! (← ωelem (← ωget self "rows") (← j_0.get)) rfilter ((fn! [row_2] do
+    if true then return (← ωgt (← ωelem (← row_2.get) (6 : Float)) (0 : Float))
+    return ωnull))) rlength ())
+  let uy_0 ← IO.mkRef (← call! (← cls% Fmt) "min" ((← call! (← cls% Fmt) "max" ((← ωdiv ((← ωsub (← ly_0.get) (← call! self "rung_y" ((0 : Float))))) (← ωget (← cls% Simulation) "RUNG_Y")), (0 : Float))), (← ωsub (← ωsub (← ωget (← cls% Simulation) "NY") (1 : Float)) 0.0001)))
+  let ky_0 ← IO.mkRef (← dot! (← uy_0.get) rfloor ())
+  let fy_0 ← IO.mkRef (← ωsub (← uy_0.get) (← ky_0.get))
+  let nb_0 ← IO.mkRef (← call! self "rungs" ((← j_0.get)))
+  let ub_0 ← IO.mkRef (← ωtern (ωtruthy (← ωgt (← nb_0.get) (1 : Float))) (do pure (← call! (← cls% Fmt) "min" ((← call! (← cls% Fmt) "max" ((← ωdiv ((← ωsub (← lb_0.get) (← call! self "rung_b" ((0 : Float))))) (← ωget (← cls% Simulation) "RUNG_B")), (0 : Float))), (← ωsub (← ωsub (← nb_0.get) (1 : Float)) 0.0001)))) (do pure (0 : Float)))
+  let kb_0 ← IO.mkRef (← dot! (← ub_0.get) rfloor ())
+  let fb_0 ← IO.mkRef (← ωsub (← ub_0.get) (← kb_0.get))
+  let kb1_0 ← IO.mkRef (← call! (← cls% Fmt) "min" ((← ωadd (← kb_0.get) (1 : Float)), (← ωsub (← nb_0.get) (1 : Float))))
+  let at__0 ← IO.mkRef ωnull
+  at__0.set (fn! [(b : Float) (y : Float)] do
+      if true then return (← ωelem (← ωget self "ladder") (← ωadd (← ωadd (← ωelem (← ωget self "ladder_at") (← j_0.get)) (← ωmul ((← ωadd (← ωmul b (← ωget (← cls% Simulation) "NY")) y)) (← count_0.get))) (← k_0.get)))
+      return ωnull)
+  let lo_0 ← IO.mkRef (← ωadd (← ωmul ((← ωsub (1 : Float) (← fy_0.get))) (← app! (← at__0.get) ((← kb_0.get), (← ky_0.get)))) (← ωmul (← fy_0.get) (← app! (← at__0.get) ((← kb_0.get), (← ωadd (← ky_0.get) (1 : Float))))))
+  let hi_0 ← IO.mkRef (← ωadd (← ωmul ((← ωsub (1 : Float) (← fy_0.get))) (← app! (← at__0.get) ((← kb1_0.get), (← ky_0.get)))) (← ωmul (← fy_0.get) (← app! (← at__0.get) ((← kb1_0.get), (← ωadd (← ky_0.get) (1 : Float))))))
+  if true then return (← ωadd (← ωmul ((← ωsub (1 : Float) (← fb_0.get))) (← lo_0.get)) (← ωmul (← fb_0.get) (← hi_0.get)))
+  return ωnull
+ray_impl_method "solved_points" (yd_0 : (RList Float)) (yb_0 : (RList Float)) : (RList Float) := do
+  let measured_0 ← IO.mkRef (← ωlst #[])
+  let tabled_0 ← IO.mkRef (← ωlst #[])
+  for i1 in [0:ωrangeN (← dot! (← ωget self "ids") rlength ())] do
+    let j_1 ← IO.mkRef (ωnatF i1)
+    let made_1 ← IO.mkRef (← call! self "made_of" ((← ωelem (← ωget self "grids") (← j_1.get)), (← ωelem (← yd_0.get) (← j_1.get)), (← ωelem (← yb_0.get) (← j_1.get))))
+    for i2 in [0:ωrangeN (← dot! (← ωelem (← ωget self "rows") (← j_1.get)) rlength ())] do
+      let i_2 ← IO.mkRef (ωnatF i2)
+      let p_2 ← IO.mkRef (← ωelem (← ωelem (← ωget self "at_rows") (← j_1.get)) (← i_2.get))
+      (← dot! (← measured_0.get) rpush ((← call! self "felt_at" ((← j_1.get), (← made_1.get), (← ωelem (← ωelem (← ωelem (← ωget self "rows") (← j_1.get)) (← i_2.get)) (0 : Float)), (← ωadd (← ωadd (← ωmul (← ωelem (← yd_0.get) (← j_1.get)) (← ωelem (← p_2.get) (0 : Float))) (← ωmul (← ωelem (← yb_0.get) (← j_1.get)) (← ωelem (← p_2.get) (2 : Float)))) (← ωelem (← p_2.get) (1 : Float))))))) |> ωsink
+      pure ()
+    Value.null |> ωsink
+    for e2 in (← ωitems (← ωelem (← ωget self "tables") (← j_1.get))) do
+      let t_2 ← IO.mkRef e2
+      (← dot! (← tabled_0.get) rpush ((← call! self "felt_at" ((← j_1.get), (← made_1.get), (← ωelem (← t_2.get) (0 : Float)), (← ωadd (← ωadd (← ωmul (← ωelem (← yd_0.get) (← j_1.get)) (← ωelem (← t_2.get) (1 : Float))) (← ωmul (← ωelem (← yb_0.get) (← j_1.get)) (← ωelem (← t_2.get) (3 : Float)))) (← ωelem (← t_2.get) (2 : Float))))))) |> ωsink
+      pure ()
+    Value.null |> ωsink
+    pure ()
+  Value.null |> ωsink
+  if true then return (← dot! (← measured_0.get) rconcat ((← tabled_0.get)))
+  return ωnull
+ray_impl_getter "own_y" : (RList Float) := do
+  if true then return (← dot! (← ωget self "ids") rmap ((fn! [g_2] do
+    if true then return (← ωget (← cls% Sparc) "YD")
+    return ωnull)))
+  return ωnull
+ray_impl_getter "own_b" : (RList Float) := do
+  if true then return (← dot! (← ωget self "ids") rmap ((fn! [g_2] do
+    if true then return (← ωget (← cls% Sparc) "YB")
+    return ωnull)))
+  return ωnull
 ray_impl_static "lift_coefficients" (theory_0 : Theory) (deg_0 : Float) : (RList Float) := do
   let model_0 ← IO.mkRef (← new! Model («theory» := (← theory_0.get)))
   let e_0 ← IO.mkRef (← call! (← model_0.get) "settled" ((← deg_0.get)))
@@ -742,7 +942,7 @@ ray_impl_getter "searches" : (RList Float) := do
   if true then return (← call! (← cls% Simulation) "laid" ((← dot! (← ωrrange (← dot! (← ωget self "ids") rlength ())) rmap ((fn! [j_2] do
     let g_2 ← IO.mkRef (← ωelem (← ωget self "ids") (← j_2.get))
     let stop_2 ← IO.mkRef (← ωtern (ωtruthy (← ωlt (← ωadd (← j_2.get) (1 : Float)) (← dot! (← ωget self "ids") rlength ()))) (do pure (← ωelem (← ωget self "fit_at") (← ωadd (← j_2.get) (1 : Float)))) (do pure (← dot! ((← ωdiv (← dot! (← pts_0.get) rlength ()) (8 : Float))) rfloor ())))
-    if true then return (← ωlst #[(← ωelem (← ωget self "fit_at") (← j_2.get)), (← ωsub (← stop_2.get) (← ωelem (← ωget self "fit_at") (← j_2.get))), (← ωelem (← ωelem (← S_0.get) ("D" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("e_D" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("Inc" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("e_Inc" : String)) (← g_2.get)), (← ωget self "a0"), (← ωtern (ωtruthy (← call! self "has_bulge" ((← j_2.get)))) (do pure (1 : Float)) (do pure (0 : Float))), (← ωelem (← ωget self "centre_y") (← j_2.get)), (← ωelem (← ωget self "centre_b") (← j_2.get)), (← ωelem (← ωget self "centre_d") (← j_2.get)), (← ωelem (← ωget self "centre_i") (← j_2.get)), (← ωmul (← ωget (← cls% Simulation) "STEP_Y") (← ωget self "spacing")), (← ωmul (← ωget (← cls% Simulation) "STEP_D") (← ωget self "spacing")), (← ωmul (← ωget (← cls% Simulation) "STEP_I") (← ωget self "spacing")), (0 : Float)])
+    if true then return (← ωlst #[(← ωelem (← ωget self "fit_at") (← j_2.get)), (← ωsub (← stop_2.get) (← ωelem (← ωget self "fit_at") (← j_2.get))), (← ωelem (← ωelem (← S_0.get) ("D" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("e_D" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("Inc" : String)) (← g_2.get)), (← ωelem (← ωelem (← S_0.get) ("e_Inc" : String)) (← g_2.get)), (← ωget self "a0"), (← ωtern (ωtruthy (← call! self "has_bulge" ((← j_2.get)))) (do pure (1 : Float)) (do pure (0 : Float))), (← ωelem (← ωget self "centre_y") (← j_2.get)), (← ωelem (← ωget self "centre_b") (← j_2.get)), (← ωelem (← ωget self "centre_d") (← j_2.get)), (← ωelem (← ωget self "centre_i") (← j_2.get)), (← ωmul (← ωget (← cls% Simulation) "STEP_Y") (← ωget self "spacing")), (← ωmul (← ωget (← cls% Simulation) "STEP_D") (← ωget self "spacing")), (← ωmul (← ωget (← cls% Simulation) "STEP_I") (← ωget self "spacing")), (← ωelem (← ωget self "ladder_at") (← j_2.get))])
     return ωnull)))))
   return ωnull
 ray_impl_method "combo" (j_0 : Float) (c_0 : Float) (n_0 : Float) : (RList Float) := do
@@ -765,19 +965,18 @@ ray_impl_method "logpost" (j_0 : Float) (at__0 : (RList Float)) : Float := do
   if ωtruthy (← ωorV (← ωorV (← ωle (← ωelem (← at__0.get) (2 : Float)) (0 : Float)) (do pure (← ωle (← ωelem (← at__0.get) (3 : Float)) 0.5))) (do pure (← ωgt (← ωelem (← at__0.get) (3 : Float)) (90 : Float)))) then
     if true then return (← ωmul (← ωneg (1 : Float)) (← ωpow (10 : Float) (30 : Float)))
     pure ()
-  let YD_0 ← IO.mkRef (← ωpow (10 : Float) (← ωelem (← at__0.get) (0 : Float)))
-  let YB_0 ← IO.mkRef (← ωpow (10 : Float) (← ωelem (← at__0.get) (1 : Float)))
   let f_0 ← IO.mkRef (← ωdiv (← ωelem (← at__0.get) (2 : Float)) (← D_0.get))
   let s_0 ← IO.mkRef (← ωdiv (← dot! ((← ωdiv (← ωmul (← inc_0.get) (3.141592653589793 : Float)) (180 : Float))) rsin ()) (← dot! ((← ωdiv (← ωmul (← ωelem (← at__0.get) (3 : Float)) (3.141592653589793 : Float)) (180 : Float))) rsin ()))
   let chi_0 ← IO.mkRef (0 : Float)
+  let k_0 ← IO.mkRef (0 : Float)
   for i1 in [0:ωrangeN (← dot! (← ωelem (← ωget self "rows") (← j_0.get)) rlength ())] do
     let i_1 ← IO.mkRef (ωnatF i1)
     let row_1 ← IO.mkRef (← ωelem (← ωelem (← ωget self "rows") (← j_0.get)) (← i_1.get))
     if ωtruthy (← ωgt (← ωelem (← row_1.get) (6 : Float)) (0 : Float)) then
-      let p_1 ← IO.mkRef (← ωelem (← ωelem (← ωget self "at_rows") (← j_0.get)) (← i_1.get))
-      let vm_1 ← IO.mkRef (← dot! (← call! (← cls% Fmt) "max" ((← ωmul (← ωmul (← f_0.get) (← ωelem (← row_1.get) (0 : Float))) (← call! self "felt" ((← ωadd (← ωadd (← ωmul (← YD_0.get) (← ωelem (← p_1.get) (0 : Float))) (← ωmul (← YB_0.get) (← ωelem (← p_1.get) (2 : Float)))) (← ωelem (← p_1.get) (1 : Float)))))), (0 : Float))) rsqrt ())
+      let vm_1 ← IO.mkRef (← dot! (← call! (← cls% Fmt) "max" ((← ωmul (← ωmul (← f_0.get) (← ωelem (← row_1.get) (0 : Float))) (← call! self "laddered" ((← j_0.get), (← k_0.get), (← ωelem (← at__0.get) (0 : Float)), (← ωelem (← at__0.get) (1 : Float))))), (0 : Float))) rsqrt ())
       let d_1 ← IO.mkRef (← ωdiv ((← ωsub (← ωmul (← ωelem (← row_1.get) (1 : Float)) (← s_0.get)) (← vm_1.get))) ((← ωmul (← ωelem (← row_1.get) (2 : Float)) (← s_0.get))))
       (← ωwr chi_0 (← ωadd (← chi_0.get) (← ωmul (← d_1.get) (← d_1.get)))) |> ωsink
+      (← ωwr k_0 (← ωadd (← k_0.get) (1 : Float))) |> ωsink
       pure ()
     pure ()
   Value.null |> ωsink
@@ -1213,7 +1412,7 @@ ray_impl_method "save" (felt0_0 : (RList Float)) (felt1_0 : (RList Float)) (star
   (← (ωatSetter (← extra_0.get) ("rms1" : String)) (← rms1_0.get)) |> ωsink
   (← (ωatSetter (← extra_0.get) ("repro" : String)) (← ωget self "repro")) |> ωsink
   (← (ωatSetter (← extra_0.get) ("stir" : String)) (← ωget (← cls% Simulation) "SIGMA")) |> ωsink
-  (← (ωatSetter (← extra_0.get) ("about" : String)) ("every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex" : String)) |> ωsink
+  (← (ωatSetter (← extra_0.get) ("about" : String)) ("every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex" : String)) |> ωsink
   (← call! (← cls% Measure) "save" (("galaxy.simulated" : String), (← names_0.get), (← cols_0.get), (← extra_0.get))) |> ωsink
   let fields_0 ← IO.mkRef (← RMap.new)
   let fnames_0 ← IO.mkRef (← ωlst #[("galaxy" : String), ("r" : String), ("gd" : String), ("gg" : String), ("gb" : String), ("v0" : String), ("v1" : String), ("vN" : String)])
@@ -1247,7 +1446,7 @@ ray_impl_method "save" (felt0_0 : (RList Float)) (felt1_0 : (RList Float)) (star
   let fextra_0 ← IO.mkRef (← RMap.new)
   (← (ωatSetter (← fextra_0.get) ("ids" : String)) (← ωget self "ids")) |> ωsink
   (← (ωatSetter (← fextra_0.get) ("table" : String)) (← T_0.get)) |> ωsink
-  (← (ωatSetter (← fextra_0.get) ("about" : String)) ("the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)" : String)) |> ωsink
+  (← (ωatSetter (← fextra_0.get) ("about" : String)) ("the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)" : String)) |> ωsink
   (← call! (← cls% Measure) "save" (("galaxy.fields" : String), (← fnames_0.get), (← fields_0.get), (← fextra_0.get))) |> ωsink
   if ωtruthy (ωnotV (← dot! (← ωget self "film_ids") rempty ())) then
     let film_0 ← IO.mkRef (← RMap.new)

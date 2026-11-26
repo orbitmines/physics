@@ -7881,7 +7881,9 @@ enum C_Prover {
       try set(held_0, "derivation", list(tick_0, falls_0))
       try set(ruler_0, "derivation", list(held_0))
       try set(defl_0, "derivation", list(held_0, ruler_0))
-      return list(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0)
+      var shadow_0: V = V.null; shadow_0 = try call((try K("Inferences")), "held_shadow", [s_0, try get(held_0, "fact"), try get(ruler_0, "fact")])
+      try set(shadow_0, "derivation", list(held_0, ruler_0))
+      return list(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0, shadow_0)
       return V.null
     })
     c.method("expansion_of", { (this_: V, a1: [V]) throws -> V in
@@ -7955,10 +7957,16 @@ enum C_Prover {
       var got_0: V = V.null; got_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "add", [list(half_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "mul", [list(half_0, half_0)]), try call((try K("Expr")), "mul", [list(g_0, a_0)]))]), 0.5]))])])
       var closing_0: V = V.null; closing_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("F_{g} \\aside{closing}")), got_0]), V.s(cat("what is felt, with the mismatch closed")), list(try get(try get(scale_0, "fact"), "key")), V.s(cat("what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling")), list(V.s(cat("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}")), V.s(cat("g^{2} - g_{N}g - g_{N}a_{0} = 0")), V.s(cat("strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3")), V.s(cat("F_{g} = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
       try set(closing_0, "derivation", list(scale_0))
+      var psi_0: V = V.null; psi_0 = try call((try K("Expr")), "field", [V.s(cat("\\psi"))])
+      var w_0: V = V.null; w_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [got_0, g_0])])
+      var made_0: V = V.null; made_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("-\\nabla^{2}\\psi")), try call((try K("Expr")), "field", [V.s(cat("\\nabla\\cdot\\paren{\\paren{", try str(try call((try K("Expr")), "show", [w_0])), "}\\hat{g}_{N}}"))])]), V.s(cat("the space made, as a source")), list(try get(try get(closing_0, "fact"), "key")), V.s(cat("the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", try str(met_0), "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made")), list(V.s(cat("w = F_{g} - g_{N} = ", try str(try call((try K("Expr")), "show", [w_0])), ", along \\hat{g}_{N}")), V.s(cat("made where w changes: \\nabla\\cdot w")), V.s(cat("a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w")))])
+      try set(made_0, "derivation", list(closing_0, potential_0))
+      var field_0: V = V.null; field_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("g \\aside{field}")), try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [g_0, try call((try K("Expr")), "field", [V.s(cat("\\nabla\\psi"))])])])]), V.s(cat("what is felt, solved over the whole field")), list(try get(try get(made_0, "fact"), "key"), try get(try get(closing_0, "fact"), "key")), V.s(cat("what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve")), list(V.s(cat("g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w")), V.s(cat("no curl: \\nabla\\times g = 0, as a record's slope")), V.s(cat("a sphere: \\nabla\\psi = -w, so g = F_{g}")), V.s(cat("a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)")))])
+      try set(field_0, "derivation", list(made_0))
       var ratio_0: V = V.null; ratio_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [a0_0, own_0])])
       var against_0: V = V.null; against_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\frac{a_{0}}{cH}")), ratio_0]), V.s(cat("the scale against the vacuum's growth")), list(try get(try get(scale_0, "fact"), "key"), try get(try get(lam_0, "fact"), "key")), V.s(cat("a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183")), list(V.s(cat("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}")), V.s(cat("\\frac{a_{0}}{cH_{vac}} = ", try str(try call((try K("Expr")), "show", [try call((try K("Prover")), "neat", [ratio_0])])), "")), V.s(cat("against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")))])
       try set(against_0, "derivation", list(scale_0))
-      return list(straight_0, potential_0, lam_0, scale_0, closing_0, against_0)
+      return list(straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0)
       return V.null
     })
     c.method("leftover", { (this_: V, a1: [V]) throws -> V in
@@ -8771,7 +8779,7 @@ enum C_Inferences {
       return V.null
     })
     c.statik("RULES", { (this_: V, a1: [V]) throws -> V in
-      return try m_concat(try m_concat(list(try get((try K("Inferences")), "room_balance"), try get((try K("Inferences")), "ehrhart"), try get((try K("Inferences")), "counting"), try get((try K("Inferences")), "reaching"), try get((try K("Inferences")), "mass_of"), try get((try K("Inferences")), "saturating"), try get((try K("Inferences")), "spreading"), try get((try K("Inferences")), "screening"), try get((try K("Inferences")), "refracting"), try get((try K("Inferences")), "accumulating"), try get((try K("Inferences")), "substituting"), try get((try K("Inferences")), "metric_of"), try get((try K("Inferences")), "relativity"), try get((try K("Inferences")), "schwarzschild"), try get((try K("Inferences")), "shadow"), try get((try K("Inferences")), "balancing"), try get((try K("Inferences")), "unbiased"), try get((try K("Inferences")), "free_path"), try get((try K("Inferences")), "summing"), try get((try K("Inferences")), "horizon"), try get((try K("Inferences")), "bending"), try get((try K("Inferences")), "crossing"), try get((try K("Inferences")), "near_field"), try get((try K("Inferences")), "shadowing"), try get((try K("Inferences")), "receiving"), try get((try K("Inferences")), "moved"), try get((try K("Inferences")), "receding"), try get((try K("Inferences")), "shortfall"), try get((try K("Inferences")), "keeping"), try get((try K("Inferences")), "transporting"), try get((try K("Inferences")), "assembling"), try get((try K("Inferences")), "channelling"), try get((try K("Inferences")), "closing"), try get((try K("Inferences")), "arrangement"), try get((try K("Inferences")), "scale_crossed"), try get((try K("Inferences")), "orbiting"), try get((try K("Inferences")), "curve_ends"), try get((try K("Inferences")), "curves_of_each"), try get((try K("Inferences")), "crowding_of_arrivals"), try get((try K("Inferences")), "making_rate"), try get((try K("Inferences")), "hubble_rate"), try get((try K("Inferences")), "expansion_scale"), try get((try K("Inferences")), "coincidence"), try get((try K("Inferences")), "crowding"), try get((try K("Inferences")), "at_that_density"), try get((try K("Inferences")), "in_motion")), try m_map(try get((try K("Inferences")), "IN_FULL"), V.fn({ (a3: [V]) throws -> V in
+      return try m_concat(try m_concat(list(try get((try K("Inferences")), "room_balance"), try get((try K("Inferences")), "ehrhart"), try get((try K("Inferences")), "counting"), try get((try K("Inferences")), "reaching"), try get((try K("Inferences")), "mass_of"), try get((try K("Inferences")), "saturating"), try get((try K("Inferences")), "spreading"), try get((try K("Inferences")), "screening"), try get((try K("Inferences")), "refracting"), try get((try K("Inferences")), "accumulating"), try get((try K("Inferences")), "substituting"), try get((try K("Inferences")), "metric_of"), try get((try K("Inferences")), "relativity"), try get((try K("Inferences")), "schwarzschild"), try get((try K("Inferences")), "balancing"), try get((try K("Inferences")), "unbiased"), try get((try K("Inferences")), "free_path"), try get((try K("Inferences")), "summing"), try get((try K("Inferences")), "horizon"), try get((try K("Inferences")), "bending"), try get((try K("Inferences")), "crossing"), try get((try K("Inferences")), "near_field"), try get((try K("Inferences")), "shadowing"), try get((try K("Inferences")), "receiving"), try get((try K("Inferences")), "moved"), try get((try K("Inferences")), "receding"), try get((try K("Inferences")), "shortfall"), try get((try K("Inferences")), "keeping"), try get((try K("Inferences")), "transporting"), try get((try K("Inferences")), "assembling"), try get((try K("Inferences")), "channelling"), try get((try K("Inferences")), "closing"), try get((try K("Inferences")), "arrangement"), try get((try K("Inferences")), "scale_crossed"), try get((try K("Inferences")), "orbiting"), try get((try K("Inferences")), "curve_ends"), try get((try K("Inferences")), "curves_of_each"), try get((try K("Inferences")), "crowding_of_arrivals"), try get((try K("Inferences")), "making_rate"), try get((try K("Inferences")), "hubble_rate"), try get((try K("Inferences")), "expansion_scale"), try get((try K("Inferences")), "coincidence"), try get((try K("Inferences")), "crowding"), try get((try K("Inferences")), "at_that_density"), try get((try K("Inferences")), "in_motion")), try m_map(try get((try K("Inferences")), "IN_FULL"), V.fn({ (a3: [V]) throws -> V in
         var of_2: V = arg(a3, 0);
         return try call((try K("Inferences")), "writing_out", [of_2])
         return V.null
@@ -8916,31 +8924,27 @@ enum C_Inferences {
       }))])
       return V.null
     })
-    c.statik("shadow", { (this_: V, a1: [V]) throws -> V in
-      return try makeNamed("Inference", [kw("name", V.s(cat("where a ray stops coming back"))), kw("because", V.s(cat("a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow"))), kw("fire", V.fn({ (a3: [V]) throws -> V in
-        var s_2: V = arg(a3, 0);
-        var A_2: V = V.null; A_2 = try call(s_2, "fact", [V.s(cat("is")), V.s(cat("A in r"))])
-        var B_2: V = V.null; B_2 = try call(s_2, "fact", [V.s(cat("is")), V.s(cat("B in r"))])
-        if truthy(try or_(try or_(V.b(try eq(A_2, V.null)), V.b(try eq(B_2, V.null))), try call(s_2, "has", [V.s(cat("is")), V.s(cat("b_{c}"))]))) {
-          return list()
-        }
-        var u_2: V = V.null; u_2 = V.s(cat("\\delta n_{f}"))
-        var over_2: V = V.null; over_2 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [u_2]), try call((try K("Expr")), "pown", [try call((try K("Expr")), "mul", [list(try get(A_2, "to"), try call((try K("Expr")), "pown", [try get(B_2, "to"), try neg(1.0)]))]), 0.5]))])])
-        var env_2: V = V.null; env_2 = makeNode()
-        try setAt(env_2, u_2, try call((try K("Expr")), "numeric", [try call((try K("Expr")), "root", [try call((try K("Expr")), "simplify", [try call((try K("Expr")), "d", [over_2, u_2])]), u_2]), env_2]))
-        var sphere_2: V = V.null; sphere_2 = try elem(env_2, u_2)
-        var bc_2: V = V.null; bc_2 = try div(1.0, try call((try K("Expr")), "numeric", [over_2, env_2]))
-        bc_2 = try div(try m_round((try mul(bc_2, try power(10.0, 9.0)))), try power(10.0, 9.0))
-        var half_2: V = V.null; half_2 = try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [0.5]), try call((try K("Expr")), "field", [u_2]))])
-        var gA_2: V = V.null; gA_2 = try call((try K("Expr")), "pown", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "sub", [try call((try K("Expr")), "num", [1.0]), half_2]), try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), half_2)]), try neg(1.0)]))]), 2.0])
-        var gB_2: V = V.null; gB_2 = try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "num", [1.0]), half_2)]), 4.0])
-        var gover_2: V = V.null; gover_2 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [u_2]), try call((try K("Expr")), "pown", [try call((try K("Expr")), "mul", [list(gA_2, try call((try K("Expr")), "pown", [gB_2, try neg(1.0)]))]), 0.5]))])])
-        var genv_2: V = V.null; genv_2 = makeNode()
-        try setAt(genv_2, u_2, try call((try K("Expr")), "numeric", [try call((try K("Expr")), "root", [try call((try K("Expr")), "simplify", [try call((try K("Expr")), "d", [gover_2, u_2])]), u_2]), genv_2]))
-        var gr_2: V = V.null; gr_2 = try div(1.0, try call((try K("Expr")), "numeric", [gover_2, genv_2]))
-        return list(try call((try K("Inferences")), "step", [V.s(cat("b_{c}")), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [bc_2]), try call((try K("Expr")), "field", [V.s(cat("\\bar{m}"))]))]), V.s(cat("where a ray stops coming back")), list(try get(A_2, "key"), try get(B_2, "key")), V.s(cat("THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's")), list(V.s(cat("a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r")), V.s(cat("\\bar{m}/b at the turning point = ", try str(try call((try K("Expr")), "show", [over_2])), "")), V.s(cat("largest where its slope is nought: \\delta n_{f} = ", try str(try call((try K("Fmt")), "fixed", [sphere_2, 6.0])), ", the photon sphere at r = ", try str(try call((try K("Fmt")), "fixed", [try div(1.0, sphere_2), 4.0])), " \\bar{m}")), V.s(cat("b_{c} = ", try str(try call((try K("Fmt")), "fixed", [bc_2, 4.0])), " \\bar{m}")), V.s(cat("general relativity's metric read the same way: b_{c} = ", try str(try call((try K("Fmt")), "fixed", [gr_2, 4.0])), " \\bar{m}, which is 3\\sqrt{3}")), V.s(cat("so at the same \\bar{m} this shadow is ", try str(try call((try K("Fmt")), "fixed", [try mul(100.0, (try sub(try div(bc_2, gr_2), 1.0))), 2.0])), " per cent wider")))]))
-        return V.null
-      }))])
+    c.statik("held_shadow", { (this_: V, a1: [V]) throws -> V in
+      var s_0: V = arg(a1, 0); var A_0: V = arg(a1, 1); var B_0: V = arg(a1, 2);
+      var u_0: V = V.null; u_0 = V.s(cat("\\delta n_{f}"))
+      var Au_0: V = V.null; Au_0 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [try get(A_0, "to"), V.s(cat("r_{s}")), try call((try K("Expr")), "num", [2.0])]), V.s(cat("D")), try call((try K("Expr")), "num", [3.0])]), V.s(cat("r")), try call((try K("Expr")), "pown", [try call((try K("Expr")), "field", [u_0]), try neg(1.0)])])])
+      var over_0: V = V.null; over_0 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [u_0]), try call((try K("Expr")), "pown", [Au_0, 0.5]))])])
+      var env_0: V = V.null; env_0 = makeNode()
+      try setAt(env_0, u_0, try call((try K("Expr")), "numeric", [try call((try K("Expr")), "root", [try call((try K("Expr")), "simplify", [try call((try K("Expr")), "d", [over_0, u_0])]), u_0]), env_0]))
+      var sphere_0: V = V.null; sphere_0 = try elem(env_0, u_0)
+      var bc_0: V = V.null; bc_0 = try div(1.0, try call((try K("Expr")), "numeric", [over_0, env_0]))
+      bc_0 = try div(try m_round((try mul(bc_0, try power(10.0, 9.0)))), try power(10.0, 9.0))
+      var gr_0: V = V.null; gr_0 = try mul(3.0, try m_sqrt(3.0))
+      var iA_0: V = V.null; iA_0 = try call(s_0, "fact", [V.s(cat("is")), V.s(cat("A in r"))])
+      var iB_0: V = V.null; iB_0 = try call(s_0, "fact", [V.s(cat("is")), V.s(cat("B in r"))])
+      var index_0: V = V.null; index_0 = V.num(Double.nan)
+      if truthy(try and_(V.b(!(try eq(iA_0, V.null))), V.b(!(try eq(iB_0, V.null))))) {
+        var iover_0: V = V.null; iover_0 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [u_0]), try call((try K("Expr")), "pown", [try call((try K("Expr")), "mul", [list(try get(iA_0, "to"), try call((try K("Expr")), "pown", [try get(iB_0, "to"), try neg(1.0)]))]), 0.5]))])])
+        var ienv_0: V = V.null; ienv_0 = makeNode()
+        try setAt(ienv_0, u_0, try call((try K("Expr")), "numeric", [try call((try K("Expr")), "root", [try call((try K("Expr")), "simplify", [try call((try K("Expr")), "d", [iover_0, u_0])]), u_0]), ienv_0]))
+        index_0 = try div(1.0, try call((try K("Expr")), "numeric", [iover_0, ienv_0]))
+      }
+      return try call((try K("Inferences")), "step", [V.s(cat("b_{c}")), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "num", [bc_0]), try call((try K("Expr")), "field", [V.s(cat("\\bar{m}"))]))]), V.s(cat("where a ray stops coming back")), list(try get(A_0, "key"), try get(B_0, "key")), V.s(cat("THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's")), list(V.s(cat("a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}")), V.s(cat("\\bar{m}/b at the turning point = ", try str(try call((try K("Expr")), "show", [over_0])), "")), V.s(cat("largest where its slope is nought: \\delta n_{f} = ", try str(try call((try K("Fmt")), "fixed", [sphere_0, 6.0])), ", the photon sphere at r = ", try str(try call((try K("Fmt")), "fixed", [try div(1.0, sphere_0), 4.0])), " \\bar{m}")), V.s(cat("b_{c} = ", try str(try call((try K("Fmt")), "fixed", [bc_0, 4.0])), " \\bar{m}; general relativity's is 3\\sqrt{3} = ", try str(try call((try K("Fmt")), "fixed", [gr_0, 4.0])), "")), try sel(truthy(try call((try K("Fmt")), "finite", [index_0])), V.s(cat("the medium's index read as an isotropic metric instead gives ", try str(try call((try K("Fmt")), "fixed", [index_0, 4.0])), " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read")), V.s(cat("the medium's index gives no metric of its own here"))))])
       return V.null
     })
     c.statik("metric_of", { (this_: V, a1: [V]) throws -> V in
@@ -16297,7 +16301,7 @@ enum C_Galaxies {
       if truthy(V.b(try eq(stars_0, V.null))) {
         try invoke(fail, [V.s(cat("galaxy.stars is not on disk - run the galaxies (`", try str(try get((try K("Galaxies")), "SIMULATED")), "`) and try again"))])
       }
-      return try makeNamed("Picture", [kw("id", V.s(cat("galaxy.simulation"))), kw("what", V.s(cat("galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured"))), kw("width", 960.0), kw("height", 720.0), kw("frames", try get(try get(stars_0, "header"), Name(try str(V.s(cat("frames")))))), kw("paint", V.fn({ (a3: [V]) throws -> V in
+      return try makeNamed("Picture", [kw("id", V.s(cat("galaxy.simulation"))), kw("what", V.s(cat("galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured"))), kw("width", 960.0), kw("height", 720.0), kw("frames", try get(try get(stars_0, "header"), Name(try str(V.s(cat("frames")))))), kw("paint", V.fn({ (a3: [V]) throws -> V in
         var played_2: V = arg(a3, 0);
         return try makeNamed("Orbiting", [kw("stars", stars_0)])
         return V.null
@@ -16387,7 +16391,7 @@ enum C_Galaxies {
       if truthy(V.b(try eq(got_0, V.null))) {
         try invoke(fail, [V.s(cat("galaxy.formed is not on disk - run the galaxies (`", try str(try get((try K("Galaxies")), "SIMULATED")), "`) and try again"))])
       }
-      return try makeNamed("Picture", [kw("id", V.s(cat("galaxy.formed"))), kw("what", V.s(cat("discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms"))), kw("width", 960.0), kw("height", 720.0), kw("frames", try get(try get(got_0, "header"), Name(try str(V.s(cat("frames")))))), kw("paint", V.fn({ (a3: [V]) throws -> V in
+      return try makeNamed("Picture", [kw("id", V.s(cat("galaxy.formed"))), kw("what", V.s(cat("discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms"))), kw("width", 960.0), kw("height", 720.0), kw("frames", try get(try get(got_0, "header"), Name(try str(V.s(cat("frames")))))), kw("paint", V.fn({ (a3: [V]) throws -> V in
         var played_2: V = arg(a3, 0);
         return try makeNamed("Forming", [kw("formed", got_0)])
         return V.null
@@ -16541,7 +16545,7 @@ enum C_Galaxies {
       var stars_n_0: V = V.null; stars_n_0 = try get(H_0, Name(try str(V.s(cat("stars")))))
       var q_text_0: V = V.null; q_text_0 = try call((try K("Fmt")), "fixed", [try get(H_0, Name(try str(V.s(cat("Q"))))), 1.0])
       var a0_text_0: V = V.null; a0_text_0 = try call((try K("Fmt")), "exponential", [try get(H_0, Name(try str(V.s(cat("a0"))))), 3.0])
-      try call(s_0, "fill_text", [V.s(cat("", try str(stars_n_0), " stars each, every one pulled by every other through the law (a₀ ", try str(a0_text_0), " m/s²), no halo; launched smooth at Q ", try str(q_text_0), " — t = ", try str(gyr_0), " Gyr")), 22.0, 44.0])
+      try call(s_0, "fill_text", [V.s(cat("", try str(stars_n_0), " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ ", try str(a0_text_0), " m/s²), no halo; launched smooth at Q ", try str(q_text_0), " — t = ", try str(gyr_0), " Gyr")), 22.0, 44.0])
       var side_0: V = V.null; side_0 = try call((try K("Fmt")), "min", [try div((try sub(try get(s_0, "width"), 66.0)), 2.0), try sub(try get(s_0, "height"), 110.0)])
       do {
         var i1: Double = 0
@@ -17207,6 +17211,12 @@ enum C_Simulation {
     c.staticField("THREAD", { (this_: V) throws -> V in return V.s(cat("  let i: u32 = P[7] + gid.y * 65536u + gid.x;")) })
     c.staticField("ENTRY", { (this_: V) throws -> V in return V.s(cat("@compute @workgroup_size(64) fn")) })
     c.staticField("ID", { (this_: V) throws -> V in return V.s(cat("(@builtin(global_invocation_id) gid: vec3<u32>) {")) })
+    c.staticField("NY", { (this_: V) throws -> V in return 21.0 })
+    c.staticField("NB", { (this_: V) throws -> V in return 11.0 })
+    c.staticField("RUNG_Y", { (this_: V) throws -> V in return 0.05 })
+    c.staticField("RUNG_B", { (this_: V) throws -> V in return 0.1 })
+    c.staticField("RINGS_IN", { (this_: V) throws -> V in return 8.0 })
+    c.staticField("FAR_OFF", { (this_: V) throws -> V in return 30.0 })
     c.staticField("OMEGA_M", { (this_: V) throws -> V in return 0.315 })
     c.staticField("FILM_STARS", { (this_: V) throws -> V in return 4096.0 })
     c.staticField("FILM_TURNS", { (this_: V) throws -> V in return 0.5 })
@@ -17255,7 +17265,14 @@ enum C_Simulation {
       var lyd_0: V = V.null; lyd_0 = try call((try K("Shaded")), "literal", [try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YD")])])
       var lyb_0: V = V.null; lyb_0 = try call((try K("Shaded")), "literal", [try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YB")])])
       var py_0: V = V.null; py_0 = try call((try K("Shaded")), "literal", [try get((try K("Simulation")), "PRIOR_Y")])
-      return try m_join(list(V.s(cat("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> L: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> Q: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read> G: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> O: array<f32>;")), try get((try K("Simulation")), "law_wgsl"), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " FIT", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  let n: u32 = P[1];")), V.s(cat("  let C: u32 = n * n * n * n;")), V.s(cat("  if (i >= P[0] * C) { return; }")), V.s(cat("  let j: u32 = i / C;")), V.s(cat("  let c: u32 = i % C;")), V.s(cat("  let h: f32 = f32((n - 1u) / 2u);")), V.s(cat("  let b: u32 = 16u * j;")), V.s(cat("  let D: f32 = G[b + 2u];")), V.s(cat("  let eD: f32 = G[b + 3u];")), V.s(cat("  let inc: f32 = G[b + 4u];")), V.s(cat("  let einc: f32 = G[b + 5u];")), V.s(cat("  let a0: f32 = G[b + 6u];")), V.s(cat("  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];")), V.s(cat("  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];")), V.s(cat("  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;")), V.s(cat("  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;")), V.s(cat("  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }")), V.s(cat("  let YD: f32 = exp(ly * ", try str(ln10_0), ");")), V.s(cat("  let YB: f32 = exp(lb * ", try str(ln10_0), ");")), V.s(cat("  let f: f32 = Dp / D;")), V.s(cat("  let s: f32 = sin(inc * ", try str(pi_0), " / 180.0) / sin(ip * ", try str(pi_0), " / 180.0);")), V.s(cat("  var chi: f32 = 0.0;")), V.s(cat("  let start: u32 = u32(G[b]);")), V.s(cat("  let stop: u32 = start + u32(G[b + 1u]);")), V.s(cat("  for (var p: u32 = start; p < stop; p = p + 1u) {")), V.s(cat("    let q: u32 = 8u * p;")), V.s(cat("    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);")), V.s(cat("    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));")), V.s(cat("    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);")), V.s(cat("    chi = chi + d * d;")), V.s(cat("  }")), V.s(cat("  let py: f32 = (ly - ", try str(lyd_0), ") / ", try str(py_0), ";")), V.s(cat("  let pb: f32 = G[b + 7u] * (lb - ", try str(lyb_0), ") / ", try str(py_0), ";")), V.s(cat("  var pd: f32 = 0.0;")), V.s(cat("  if (eD > 0.0) { pd = (Dp - D) / eD; }")), V.s(cat("  var pi_: f32 = 0.0;")), V.s(cat("  if (einc > 0.0) { pi_ = (ip - inc) / einc; }")), V.s(cat("  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);")), V.s(cat("}"))), V.s(cat("\n")))
+      var ly0_0: V = V.null; ly0_0 = try call((try K("Shaded")), "literal", [try sub(try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YD")]), try div(try mul(try get((try K("Simulation")), "RUNG_Y"), try sub(try get((try K("Simulation")), "NY"), 1.0)), 2.0))])
+      var lb0_0: V = V.null; lb0_0 = try call((try K("Shaded")), "literal", [try sub(try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YB")]), try div(try mul(try get((try K("Simulation")), "RUNG_B"), try sub(try get((try K("Simulation")), "NB"), 1.0)), 2.0))])
+      var sy_0: V = V.null; sy_0 = try call((try K("Shaded")), "literal", [try get((try K("Simulation")), "RUNG_Y")])
+      var sb_0: V = V.null; sb_0 = try call((try K("Shaded")), "literal", [try get((try K("Simulation")), "RUNG_B")])
+      var topy_0: V = V.null; topy_0 = try call((try K("Shaded")), "literal", [try sub(try sub(try get((try K("Simulation")), "NY"), 1.0), 0.0001)])
+      var ny_0: V = V.null; ny_0 = try get((try K("Simulation")), "NY")
+      var nbs_0: V = V.null; nbs_0 = try get((try K("Simulation")), "NB")
+      return try m_join(list(V.s(cat("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> L: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> Q: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read> G: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> O: array<f32>;")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " FIT", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  let n: u32 = P[1];")), V.s(cat("  let C: u32 = n * n * n * n;")), V.s(cat("  if (i >= P[0] * C) { return; }")), V.s(cat("  let j: u32 = i / C;")), V.s(cat("  let c: u32 = i % C;")), V.s(cat("  let h: f32 = f32((n - 1u) / 2u);")), V.s(cat("  let b: u32 = 16u * j;")), V.s(cat("  let D: f32 = G[b + 2u];")), V.s(cat("  let eD: f32 = G[b + 3u];")), V.s(cat("  let inc: f32 = G[b + 4u];")), V.s(cat("  let einc: f32 = G[b + 5u];")), V.s(cat("  let a0: f32 = G[b + 6u];")), V.s(cat("  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];")), V.s(cat("  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];")), V.s(cat("  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;")), V.s(cat("  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;")), V.s(cat("  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }")), V.s(cat("  let uy: f32 = clamp((ly - ", try str(ly0_0), ") / ", try str(sy_0), ", 0.0, ", try str(topy_0), ");")), V.s(cat("  let ky: u32 = u32(floor(uy));")), V.s(cat("  let fy: f32 = uy - floor(uy);")), V.s(cat("  var nb: u32 = 1u;")), V.s(cat("  if (G[b + 7u] > 0.0) { nb = ", try str(nbs_0), "u; }")), V.s(cat("  var ub: f32 = 0.0;")), V.s(cat("  if (nb > 1u) { ub = clamp((lb - ", try str(lb0_0), ") / ", try str(sb_0), ", 0.0, f32(nb - 1u) - 0.0001); }")), V.s(cat("  let kb: u32 = u32(floor(ub));")), V.s(cat("  let fb: f32 = ub - floor(ub);")), V.s(cat("  let kb1: u32 = min(kb + 1u, nb - 1u);")), V.s(cat("  let base: u32 = u32(G[b + 15u]);")), V.s(cat("  let f: f32 = Dp / D;")), V.s(cat("  let s: f32 = sin(inc * ", try str(pi_0), " / 180.0) / sin(ip * ", try str(pi_0), " / 180.0);")), V.s(cat("  var chi: f32 = 0.0;")), V.s(cat("  let start: u32 = u32(G[b]);")), V.s(cat("  let stop: u32 = start + u32(G[b + 1u]);")), V.s(cat("  for (var p: u32 = start; p < stop; p = p + 1u) {")), V.s(cat("    let q: u32 = 8u * p;")), V.s(cat("    let o: u32 = p - start;")), V.s(cat("    let cnt: u32 = u32(G[b + 1u]);")), V.s(cat("    let lo: f32 = (1.0 - fy) * L[base + (kb * ", try str(ny_0), "u + ky) * cnt + o] + fy * L[base + (kb * ", try str(ny_0), "u + ky + 1u) * cnt + o];")), V.s(cat("    let hi: f32 = (1.0 - fy) * L[base + (kb1 * ", try str(ny_0), "u + ky) * cnt + o] + fy * L[base + (kb1 * ", try str(ny_0), "u + ky + 1u) * cnt + o];")), V.s(cat("    let g: f32 = (1.0 - fb) * lo + fb * hi;")), V.s(cat("    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));")), V.s(cat("    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);")), V.s(cat("    chi = chi + d * d;")), V.s(cat("  }")), V.s(cat("  let py: f32 = (ly - ", try str(lyd_0), ") / ", try str(py_0), ";")), V.s(cat("  let pb: f32 = G[b + 7u] * (lb - ", try str(lyb_0), ") / ", try str(py_0), ";")), V.s(cat("  var pd: f32 = 0.0;")), V.s(cat("  if (eD > 0.0) { pd = (Dp - D) / eD; }")), V.s(cat("  var pi_: f32 = 0.0;")), V.s(cat("  if (einc > 0.0) { pi_ = (ip - inc) / einc; }")), V.s(cat("  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);")), V.s(cat("}"))), V.s(cat("\n")))
       return V.null
     })
     c.statik("best_kernel", { (this_: V, a1: [V]) throws -> V in
@@ -17263,7 +17280,7 @@ enum C_Simulation {
       return V.null
     })
     c.statik("stars_kernel", { (this_: V, a1: [V]) throws -> V in
-      return try m_join(list(V.s(cat("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> L: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> GT: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read> GI: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> S: array<f32>;")), V.s(cat("@group(0) @binding(5) var<storage, read_write> F: array<f32>;")), try get((try K("Simulation")), "law_wgsl"), V.s(cat("fn g_at(j: u32, r: f32) -> f32 {")), V.s(cat("  let rmax: f32 = GI[12u * j];")), V.s(cat("  let T: u32 = P[2];")), V.s(cat("  let base: u32 = j * T;")), V.s(cat("  let u: f32 = r / rmax * f32(T);")), V.s(cat("  if (u <= 1.0) { return GT[base] * u; }")), V.s(cat("  if (u >= f32(T)) {")), V.s(cat("    let q: f32 = rmax / r;")), V.s(cat("    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);")), V.s(cat("  }")), V.s(cat("  let t0: u32 = u32(floor(u)) - 1u;")), V.s(cat("  let fr: f32 = u - floor(u);")), V.s(cat("  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " START", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let j: u32 = i / P[1];")), V.s(cat("  let k: u32 = 10u * i;")), V.s(cat("  let r0: f32 = S[k];")), V.s(cat("  let phi: f32 = S[k + 1u];")), V.s(cat("  let sig: f32 = GI[12u * j + 9u];")), V.s(cat("  let g: f32 = g_at(j, r0);")), V.s(cat("  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];")), V.s(cat("  let vr: f32 = sig * S[k + 3u];")), V.s(cat("  let c: f32 = cos(phi);")), V.s(cat("  let s: f32 = sin(phi);")), V.s(cat("  S[k] = r0 * c;")), V.s(cat("  S[k + 1u] = r0 * s;")), V.s(cat("  S[k + 2u] = vr * c - vp * s;")), V.s(cat("  S[k + 3u] = vr * s + vp * c;")), V.s(cat("  S[k + 4u] = 0.0 - g * c;")), V.s(cat("  S[k + 5u] = 0.0 - g * s;")), V.s(cat("  S[k + 6u] = 0.0;")), V.s(cat("  S[k + 7u] = 0.0;")), V.s(cat("  S[k + 8u] = 0.0;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " STEP", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let j: u32 = i / P[1];")), V.s(cat("  let b: u32 = 12u * j;")), V.s(cat("  let dt: f32 = GI[b + 1u];")), V.s(cat("  let n: u32 = u32(GI[b + 2u]);")), V.s(cat("  let avg_from: u32 = u32(GI[b + 3u]);")), V.s(cat("  let film: f32 = GI[b + 4u];")), V.s(cat("  let every: u32 = max(u32(GI[b + 7u]), 1u);")), V.s(cat("  let ffrom: u32 = u32(GI[b + 8u]);")), V.s(cat("  let k: u32 = 10u * i;")), V.s(cat("  var x: f32 = S[k];")), V.s(cat("  var y: f32 = S[k + 1u];")), V.s(cat("  var vx: f32 = S[k + 2u];")), V.s(cat("  var vy: f32 = S[k + 3u];")), V.s(cat("  var ax: f32 = S[k + 4u];")), V.s(cat("  var ay: f32 = S[k + 5u];")), V.s(cat("  var sr: f32 = S[k + 6u];")), V.s(cat("  var sv: f32 = S[k + 7u];")), V.s(cat("  var sn: f32 = S[k + 8u];")), V.s(cat("  let stop: u32 = min(P[4], n);")), V.s(cat("  for (var t: u32 = P[3]; t < stop; t = t + 1u) {")), V.s(cat("    vx = vx + 0.5 * ax * dt;")), V.s(cat("    vy = vy + 0.5 * ay * dt;")), V.s(cat("    x = x + vx * dt;")), V.s(cat("    y = y + vy * dt;")), V.s(cat("    let r: f32 = max(sqrt(x * x + y * y), 1e-6);")), V.s(cat("    let g: f32 = g_at(j, r);")), V.s(cat("    ax = 0.0 - g * x / r;")), V.s(cat("    ay = 0.0 - g * y / r;")), V.s(cat("    vx = vx + 0.5 * ax * dt;")), V.s(cat("    vy = vy + 0.5 * ay * dt;")), V.s(cat("    if (t >= avg_from) {")), V.s(cat("      sr = sr + r;")), V.s(cat("      sv = sv + (x * vy - y * vx) / r;")), V.s(cat("      sn = sn + 1.0;")), V.s(cat("    }")), V.s(cat("    let kk: u32 = t + 1u;")), V.s(cat("    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {")), V.s(cat("      let fr: u32 = (kk - ffrom) / every - 1u;")), V.s(cat("      if (fr < P[5]) {")), V.s(cat("        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;")), V.s(cat("        F[o] = x;")), V.s(cat("        F[o + 1u] = y;")), V.s(cat("      }")), V.s(cat("    }")), V.s(cat("  }")), V.s(cat("  S[k] = x;")), V.s(cat("  S[k + 1u] = y;")), V.s(cat("  S[k + 2u] = vx;")), V.s(cat("  S[k + 3u] = vy;")), V.s(cat("  S[k + 4u] = ax;")), V.s(cat("  S[k + 5u] = ay;")), V.s(cat("  S[k + 6u] = sr;")), V.s(cat("  S[k + 7u] = sv;")), V.s(cat("  S[k + 8u] = sn;")), V.s(cat("}"))), V.s(cat("\n")))
+      return try m_join(list(V.s(cat("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> L: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> GT: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read> GI: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> S: array<f32>;")), V.s(cat("@group(0) @binding(5) var<storage, read_write> F: array<f32>;")), V.s(cat("fn g_at(j: u32, r: f32) -> f32 {")), V.s(cat("  let rmax: f32 = GI[12u * j];")), V.s(cat("  let T: u32 = P[2];")), V.s(cat("  let base: u32 = j * T;")), V.s(cat("  let u: f32 = r / rmax * f32(T);")), V.s(cat("  if (u <= 1.0) { return GT[base] * u; }")), V.s(cat("  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }")), V.s(cat("  let t0: u32 = u32(floor(u)) - 1u;")), V.s(cat("  let fr: f32 = u - floor(u);")), V.s(cat("  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " START", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let j: u32 = i / P[1];")), V.s(cat("  let k: u32 = 10u * i;")), V.s(cat("  let r0: f32 = S[k];")), V.s(cat("  let phi: f32 = S[k + 1u];")), V.s(cat("  let sig: f32 = GI[12u * j + 9u];")), V.s(cat("  let g: f32 = g_at(j, r0);")), V.s(cat("  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];")), V.s(cat("  let vr: f32 = sig * S[k + 3u];")), V.s(cat("  let c: f32 = cos(phi);")), V.s(cat("  let s: f32 = sin(phi);")), V.s(cat("  S[k] = r0 * c;")), V.s(cat("  S[k + 1u] = r0 * s;")), V.s(cat("  S[k + 2u] = vr * c - vp * s;")), V.s(cat("  S[k + 3u] = vr * s + vp * c;")), V.s(cat("  S[k + 4u] = 0.0 - g * c;")), V.s(cat("  S[k + 5u] = 0.0 - g * s;")), V.s(cat("  S[k + 6u] = 0.0;")), V.s(cat("  S[k + 7u] = 0.0;")), V.s(cat("  S[k + 8u] = 0.0;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " STEP", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let j: u32 = i / P[1];")), V.s(cat("  let b: u32 = 12u * j;")), V.s(cat("  let dt: f32 = GI[b + 1u];")), V.s(cat("  let n: u32 = u32(GI[b + 2u]);")), V.s(cat("  let avg_from: u32 = u32(GI[b + 3u]);")), V.s(cat("  let film: f32 = GI[b + 4u];")), V.s(cat("  let every: u32 = max(u32(GI[b + 7u]), 1u);")), V.s(cat("  let ffrom: u32 = u32(GI[b + 8u]);")), V.s(cat("  let k: u32 = 10u * i;")), V.s(cat("  var x: f32 = S[k];")), V.s(cat("  var y: f32 = S[k + 1u];")), V.s(cat("  var vx: f32 = S[k + 2u];")), V.s(cat("  var vy: f32 = S[k + 3u];")), V.s(cat("  var ax: f32 = S[k + 4u];")), V.s(cat("  var ay: f32 = S[k + 5u];")), V.s(cat("  var sr: f32 = S[k + 6u];")), V.s(cat("  var sv: f32 = S[k + 7u];")), V.s(cat("  var sn: f32 = S[k + 8u];")), V.s(cat("  let stop: u32 = min(P[4], n);")), V.s(cat("  for (var t: u32 = P[3]; t < stop; t = t + 1u) {")), V.s(cat("    vx = vx + 0.5 * ax * dt;")), V.s(cat("    vy = vy + 0.5 * ay * dt;")), V.s(cat("    x = x + vx * dt;")), V.s(cat("    y = y + vy * dt;")), V.s(cat("    let r: f32 = max(sqrt(x * x + y * y), 1e-6);")), V.s(cat("    let g: f32 = g_at(j, r);")), V.s(cat("    ax = 0.0 - g * x / r;")), V.s(cat("    ay = 0.0 - g * y / r;")), V.s(cat("    vx = vx + 0.5 * ax * dt;")), V.s(cat("    vy = vy + 0.5 * ay * dt;")), V.s(cat("    if (t >= avg_from) {")), V.s(cat("      sr = sr + r;")), V.s(cat("      sv = sv + (x * vy - y * vx) / r;")), V.s(cat("      sn = sn + 1.0;")), V.s(cat("    }")), V.s(cat("    let kk: u32 = t + 1u;")), V.s(cat("    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {")), V.s(cat("      let fr: u32 = (kk - ffrom) / every - 1u;")), V.s(cat("      if (fr < P[5]) {")), V.s(cat("        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;")), V.s(cat("        F[o] = x;")), V.s(cat("        F[o + 1u] = y;")), V.s(cat("      }")), V.s(cat("    }")), V.s(cat("  }")), V.s(cat("  S[k] = x;")), V.s(cat("  S[k + 1u] = y;")), V.s(cat("  S[k + 2u] = vx;")), V.s(cat("  S[k + 3u] = vy;")), V.s(cat("  S[k + 4u] = ax;")), V.s(cat("  S[k + 5u] = ay;")), V.s(cat("  S[k + 6u] = sr;")), V.s(cat("  S[k + 7u] = sv;")), V.s(cat("  S[k + 8u] = sn;")), V.s(cat("}"))), V.s(cat("\n")))
       return V.null
     })
     c.statik("runnable", { (this_: V, a1: [V]) throws -> V in
@@ -17842,6 +17859,245 @@ enum C_Simulation {
       }
       return V.null
     })
+    c.field("on", { (this_: V) throws -> V in return try makeNamed("Felt", []) })
+    c.method("unit_of", { (this_: V, a1: [V]) throws -> V in
+      var j_0: V = arg(a1, 0);
+      return try div(try elem(try elem(try elem(try get(this_, "rows"), j_0), try sub(try len(try elem(try get(this_, "rows"), j_0)), 1.0)), 0.0), 10.0)
+      return V.null
+    })
+    c.method("grid_of", { (this_: V, a1: [V]) throws -> V in
+      var j_0: V = arg(a1, 0);
+      var F_0: V = V.null; F_0 = try get(this_, "on")
+      var L_0: V = V.null; L_0 = try call(this_, "unit_of", [j_0])
+      var es_0: V = V.null; es_0 = try elem(try get(this_, "edges"), j_0)
+      var n_0: V = V.null; n_0 = try sub(try len(es_0), 1.0)
+      var wd_0: V = V.null; wd_0 = try elem(try get(this_, "w_discs"), j_0)
+      var wg_0: V = V.null; wg_0 = try elem(try get(this_, "w_gases"), j_0)
+      var rs_0: V = V.null; rs_0 = try elem(try get(this_, "rows"), j_0)
+      var t_0: V = V.null; t_0 = try elem(try get(this_, "thick"), j_0)
+      var rings_0: V = V.null; rings_0 = list()
+      do {
+        var i1: Double = 0
+        while i1 < num(n_0) {
+          var a_1: V = V.num(i1)
+          var area_1: V = V.null; area_1 = try sub(try mul(try elem(es_0, try add(a_1, 1.0)), try elem(es_0, try add(a_1, 1.0))), try mul(try elem(es_0, a_1), try elem(es_0, a_1)))
+          do {
+            var i2: Double = 0
+            while i2 < num(try get((try K("Simulation")), "RINGS_IN")) {
+              var k_2: V = V.num(i2)
+              var r0_2: V = V.null; r0_2 = try add(try elem(es_0, a_1), try div(try mul((try sub(try elem(es_0, try add(a_1, 1.0)), try elem(es_0, a_1))), k_2), try get((try K("Simulation")), "RINGS_IN")))
+              var r1_2: V = V.null; r1_2 = try add(try elem(es_0, a_1), try div(try mul((try sub(try elem(es_0, try add(a_1, 1.0)), try elem(es_0, a_1))), try add(k_2, 1.0)), try get((try K("Simulation")), "RINGS_IN")))
+              var soft_2: V = V.null; soft_2 = try div((try sub(r1_2, r0_2)), 2.0)
+              try m_push(rings_0, list(try div((try add(r0_2, r1_2)), 2.0), try sel(truthy(try gt(area_1, 0.0)), try div((try sub(try mul(r1_2, r1_2), try mul(r0_2, r0_2))), area_1), 0.0), a_1, try add(try mul(t_0, t_0), try mul(soft_2, soft_2))))
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var md_0: V = V.null; md_0 = try m_reduce(wd_0, 0.0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try add(m_2, v_2)
+        return V.null
+      }))
+      var mg_0: V = V.null; mg_0 = try m_reduce(wg_0, 0.0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try add(m_2, v_2)
+        return V.null
+      }))
+      var out_0: V = V.null; out_0 = try m_map(rng(6.0), V.fn({ (a3: [V]) throws -> V in
+        var k_2: V = arg(a3, 0);
+        return filled(try get(F_0, "cells"), 0.0)
+        return V.null
+      }))
+      do {
+        var i1: Double = 0
+        while i1 < num(try get(F_0, "cells")) {
+          var c_1: V = V.num(i1)
+          var i_1: V = V.null; i_1 = try m_floor((try div(c_1, try get((try K("Felt")), "NMU"))))
+          var mu_1: V = V.null; mu_1 = try elem(try get(F_0, "mc"), try mod(c_1, try get((try K("Felt")), "NMU")))
+          var r_1: V = V.null; r_1 = try mul(try elem(try get(F_0, "rc"), i_1), L_0)
+          var R_1: V = V.null; R_1 = try mul(r_1, try m_sqrt((try sub(1.0, try mul(mu_1, mu_1)))))
+          var z_1: V = V.null; z_1 = try mul(r_1, mu_1)
+          if truthy(try gt(r_1, try mul(try get((try K("Simulation")), "FAR_OFF"), try elem(es_0, n_0)))) {
+            try setAt(try elem(out_0, 0.0), c_1, try sub(0.0, try div(try mul(md_0, R_1), (try mul(try mul(r_1, r_1), r_1)))))
+            try setAt(try elem(out_0, 1.0), c_1, try sub(0.0, try div(try mul(md_0, z_1), (try mul(try mul(r_1, r_1), r_1)))))
+            try setAt(try elem(out_0, 2.0), c_1, try sub(0.0, try div(try mul(mg_0, R_1), (try mul(try mul(r_1, r_1), r_1)))))
+            try setAt(try elem(out_0, 3.0), c_1, try sub(0.0, try div(try mul(mg_0, z_1), (try mul(try mul(r_1, r_1), r_1)))))
+          } else {
+            for e2 in try items(rings_0) {
+              var b_2: V = e2
+              var g_2: V = V.null; g_2 = try call((try K("Felt")), "ring", [R_1, z_1, try elem(b_2, 0.0), 0.0, try elem(b_2, 3.0)])
+              try setAt(try elem(out_0, 0.0), c_1, try add(try elem(try elem(out_0, 0.0), c_1), try mul(try mul(try elem(wd_0, try elem(b_2, 2.0)), try elem(b_2, 1.0)), try elem(g_2, 0.0))))
+              try setAt(try elem(out_0, 1.0), c_1, try add(try elem(try elem(out_0, 1.0), c_1), try mul(try mul(try elem(wd_0, try elem(b_2, 2.0)), try elem(b_2, 1.0)), try elem(g_2, 1.0))))
+              try setAt(try elem(out_0, 2.0), c_1, try add(try elem(try elem(out_0, 2.0), c_1), try mul(try mul(try elem(wg_0, try elem(b_2, 2.0)), try elem(b_2, 1.0)), try elem(g_2, 0.0))))
+              try setAt(try elem(out_0, 3.0), c_1, try add(try elem(try elem(out_0, 3.0), c_1), try mul(try mul(try elem(wg_0, try elem(b_2, 2.0)), try elem(b_2, 1.0)), try elem(g_2, 1.0))))
+            }
+          }
+          var gb_1: V = V.null; gb_1 = try call((try K("Simulation")), "bulge_at", [rs_0, r_1])
+          try setAt(try elem(out_0, 4.0), c_1, try sub(0.0, try div(try mul(gb_1, R_1), r_1)))
+          try setAt(try elem(out_0, 5.0), c_1, try sub(0.0, try div(try mul(gb_1, z_1), r_1)))
+          i1 += 1
+        }
+      }
+      return out_0
+      return V.null
+    })
+    c.method("made_of", { (this_: V, a1: [V]) throws -> V in
+      var grid_0: V = arg(a1, 0); var yd_0: V = arg(a1, 1); var yb_0: V = arg(a1, 2);
+      var a_0: V = V.null; a_0 = try get(this_, "a0")
+      var gr_0: V = V.null; gr_0 = try m_map(rng(try get(try get(this_, "on"), "cells")), V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try div((try add(try add(try mul(yd_0, try elem(try elem(grid_0, 0.0), c_2)), try elem(try elem(grid_0, 2.0), c_2)), try mul(yb_0, try elem(try elem(grid_0, 4.0), c_2)))), a_0)
+        return V.null
+      }))
+      var gz_0: V = V.null; gz_0 = try m_map(rng(try get(try get(this_, "on"), "cells")), V.fn({ (a3: [V]) throws -> V in
+        var c_2: V = arg(a3, 0);
+        return try div((try add(try add(try mul(yd_0, try elem(try elem(grid_0, 1.0), c_2)), try elem(try elem(grid_0, 3.0), c_2)), try mul(yb_0, try elem(try elem(grid_0, 5.0), c_2)))), a_0)
+        return V.null
+      }))
+      return try m_map(try call(try get(this_, "on"), "made_rows", [gr_0, gz_0]), V.fn({ (a3: [V]) throws -> V in
+        var v_2: V = arg(a3, 0);
+        return try mul(v_2, a_0)
+        return V.null
+      }))
+      return V.null
+    })
+    c.method("felt_at", { (this_: V, a1: [V]) throws -> V in
+      var j_0: V = arg(a1, 0); var made_0: V = arg(a1, 1); var r_0: V = arg(a1, 2); var gN_0: V = arg(a1, 3);
+      return try sub(gN_0, try call(try get(this_, "on"), "made_at", [made_0, try div(r_0, try call(this_, "unit_of", [j_0]))]))
+      return V.null
+    })
+    c.field("grids", { (this_: V) throws -> V in return list() })
+    c.field("ladder", { (this_: V) throws -> V in return list() })
+    c.field("ladder_at", { (this_: V) throws -> V in return list() })
+    c.method("rungs", { (this_: V, a1: [V]) throws -> V in
+      var j_0: V = arg(a1, 0);
+      return try sel(truthy(try call(this_, "has_bulge", [j_0])), try get((try K("Simulation")), "NB"), 1.0)
+      return V.null
+    })
+    c.getter("solve_fields", { (this_: V, a1: [V]) throws -> V in
+      try set(this_, "grids", list())
+      try set(this_, "ladder", list())
+      try set(this_, "ladder_at", list())
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(try get(this_, "ids"))) {
+          var j_1: V = V.num(i1)
+          var grid_1: V = V.null; grid_1 = try call(this_, "grid_of", [j_1])
+          try m_push(try get(this_, "grids"), grid_1)
+          try m_push(try get(this_, "ladder_at"), try len(try get(this_, "ladder")))
+          var kept_1: V = V.null; kept_1 = try filt(rng(try len(try elem(try get(this_, "rows"), j_1))), V.fn({ (a4: [V]) throws -> V in
+            var i_3: V = arg(a4, 0);
+            return try gt(try elem(try elem(try elem(try get(this_, "rows"), j_1), i_3), 6.0), 0.0)
+            return V.null
+          }))
+          do {
+            var i2: Double = 0
+            while i2 < num(try call(this_, "rungs", [j_1])) {
+              var ib_2: V = V.num(i2)
+              var yb_2: V = V.null; yb_2 = try power(10.0, (try call(this_, "rung_b", [ib_2])))
+              do {
+                var i3: Double = 0
+                while i3 < num(try get((try K("Simulation")), "NY")) {
+                  var iy_3: V = V.num(i3)
+                  var yd_3: V = V.null; yd_3 = try power(10.0, (try call(this_, "rung_y", [iy_3])))
+                  var made_3: V = V.null; made_3 = try call(this_, "made_of", [grid_1, yd_3, yb_2])
+                  for e4 in try items(kept_1) {
+                    var i_4: V = e4
+                    var p_4: V = V.null; p_4 = try elem(try elem(try get(this_, "at_rows"), j_1), i_4)
+                    try m_push(try get(this_, "ladder"), try call(this_, "felt_at", [j_1, made_3, try elem(try elem(try elem(try get(this_, "rows"), j_1), i_4), 0.0), try add(try add(try mul(yd_3, try elem(p_4, 0.0)), try mul(yb_2, try elem(p_4, 2.0))), try elem(p_4, 1.0))]))
+                  }
+                  i3 += 1
+                }
+              }
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      return V.null
+    })
+    c.method("rung_y", { (this_: V, a1: [V]) throws -> V in
+      var iy_0: V = arg(a1, 0);
+      return try add(try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YD")]), try mul(try get((try K("Simulation")), "RUNG_Y"), (try sub(iy_0, try div(try sub(try get((try K("Simulation")), "NY"), 1.0), 2.0)))))
+      return V.null
+    })
+    c.method("rung_b", { (this_: V, a1: [V]) throws -> V in
+      var ib_0: V = arg(a1, 0);
+      return try add(try call((try K("Fmt")), "log10", [try get((try K("Sparc")), "YB")]), try mul(try get((try K("Simulation")), "RUNG_B"), (try sub(ib_0, try div(try sub(try get((try K("Simulation")), "NB"), 1.0), 2.0)))))
+      return V.null
+    })
+    c.method("laddered", { (this_: V, a1: [V]) throws -> V in
+      var j_0: V = arg(a1, 0); var k_0: V = arg(a1, 1); var ly_0: V = arg(a1, 2); var lb_0: V = arg(a1, 3);
+      var count_0: V = V.null; count_0 = try len(try filt(try elem(try get(this_, "rows"), j_0), V.fn({ (a3: [V]) throws -> V in
+        var row_2: V = arg(a3, 0);
+        return try gt(try elem(row_2, 6.0), 0.0)
+        return V.null
+      })))
+      var uy_0: V = V.null; uy_0 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div((try sub(ly_0, try call(this_, "rung_y", [0.0]))), try get((try K("Simulation")), "RUNG_Y")), 0.0]), try sub(try sub(try get((try K("Simulation")), "NY"), 1.0), 0.0001)])
+      var ky_0: V = V.null; ky_0 = try m_floor(uy_0)
+      var fy_0: V = V.null; fy_0 = try sub(uy_0, ky_0)
+      var nb_0: V = V.null; nb_0 = try call(this_, "rungs", [j_0])
+      var ub_0: V = V.null; ub_0 = try sel(truthy(try gt(nb_0, 1.0)), try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div((try sub(lb_0, try call(this_, "rung_b", [0.0]))), try get((try K("Simulation")), "RUNG_B")), 0.0]), try sub(try sub(nb_0, 1.0), 0.0001)]), 0.0)
+      var kb_0: V = V.null; kb_0 = try m_floor(ub_0)
+      var fb_0: V = V.null; fb_0 = try sub(ub_0, kb_0)
+      var kb1_0: V = V.null; kb1_0 = try call((try K("Fmt")), "min", [try add(kb_0, 1.0), try sub(nb_0, 1.0)])
+      var at_0: V = V.null; at_0 = V.fn({ (a2: [V]) throws -> V in
+        var b_1: V = arg(a2, 0); var y_1: V = arg(a2, 1);
+        return try elem(try get(this_, "ladder"), try add(try add(try elem(try get(this_, "ladder_at"), j_0), try mul((try add(try mul(b_1, try get((try K("Simulation")), "NY")), y_1)), count_0)), k_0))
+        return V.null
+      })
+      var lo_0: V = V.null; lo_0 = try add(try mul((try sub(1.0, fy_0)), try invoke(at_0, [kb_0, ky_0])), try mul(fy_0, try invoke(at_0, [kb_0, try add(ky_0, 1.0)])))
+      var hi_0: V = V.null; hi_0 = try add(try mul((try sub(1.0, fy_0)), try invoke(at_0, [kb1_0, ky_0])), try mul(fy_0, try invoke(at_0, [kb1_0, try add(ky_0, 1.0)])))
+      return try add(try mul((try sub(1.0, fb_0)), lo_0), try mul(fb_0, hi_0))
+      return V.null
+    })
+    c.method("solved_points", { (this_: V, a1: [V]) throws -> V in
+      var yd_0: V = arg(a1, 0); var yb_0: V = arg(a1, 1);
+      var measured_0: V = V.null; measured_0 = list()
+      var tabled_0: V = V.null; tabled_0 = list()
+      do {
+        var i1: Double = 0
+        while i1 < num(try len(try get(this_, "ids"))) {
+          var j_1: V = V.num(i1)
+          var made_1: V = V.null; made_1 = try call(this_, "made_of", [try elem(try get(this_, "grids"), j_1), try elem(yd_0, j_1), try elem(yb_0, j_1)])
+          do {
+            var i2: Double = 0
+            while i2 < num(try len(try elem(try get(this_, "rows"), j_1))) {
+              var i_2: V = V.num(i2)
+              var p_2: V = V.null; p_2 = try elem(try elem(try get(this_, "at_rows"), j_1), i_2)
+              try m_push(measured_0, try call(this_, "felt_at", [j_1, made_1, try elem(try elem(try elem(try get(this_, "rows"), j_1), i_2), 0.0), try add(try add(try mul(try elem(yd_0, j_1), try elem(p_2, 0.0)), try mul(try elem(yb_0, j_1), try elem(p_2, 2.0))), try elem(p_2, 1.0))]))
+              i2 += 1
+            }
+          }
+          for e2 in try items(try elem(try get(this_, "tables"), j_1)) {
+            var t_2: V = e2
+            try m_push(tabled_0, try call(this_, "felt_at", [j_1, made_1, try elem(t_2, 0.0), try add(try add(try mul(try elem(yd_0, j_1), try elem(t_2, 1.0)), try mul(try elem(yb_0, j_1), try elem(t_2, 3.0))), try elem(t_2, 2.0))]))
+          }
+          i1 += 1
+        }
+      }
+      return try m_concat(measured_0, tabled_0)
+      return V.null
+    })
+    c.getter("own_y", { (this_: V, a1: [V]) throws -> V in
+      return try m_map(try get(this_, "ids"), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        return try get((try K("Sparc")), "YD")
+        return V.null
+      }))
+      return V.null
+    })
+    c.getter("own_b", { (this_: V, a1: [V]) throws -> V in
+      return try m_map(try get(this_, "ids"), V.fn({ (a3: [V]) throws -> V in
+        var g_2: V = arg(a3, 0);
+        return try get((try K("Sparc")), "YB")
+        return V.null
+      }))
+      return V.null
+    })
     c.statik("lift_coefficients", { (this_: V, a1: [V]) throws -> V in
       var theory_0: V = arg(a1, 0); var deg_0: V = arg(a1, 1);
       var model_0: V = V.null; model_0 = try makeNamed("Model", [kw("theory", theory_0)])
@@ -18081,7 +18337,7 @@ enum C_Simulation {
         var j_2: V = arg(a3, 0);
         var g_2: V = V.null; g_2 = try elem(try get(this_, "ids"), j_2)
         var stop_2: V = V.null; stop_2 = try sel(truthy(try lt(try add(j_2, 1.0), try len(try get(this_, "ids")))), try elem(try get(this_, "fit_at"), try add(j_2, 1.0)), try m_floor((try div(try len(pts_0), 8.0))))
-        return list(try elem(try get(this_, "fit_at"), j_2), try sub(stop_2, try elem(try get(this_, "fit_at"), j_2)), try elem(try get(S_0, Name(try str(V.s(cat("D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("Inc"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_Inc"))))), g_2), try get(this_, "a0"), try sel(truthy(try call(this_, "has_bulge", [j_2])), 1.0, 0.0), try elem(try get(this_, "centre_y"), j_2), try elem(try get(this_, "centre_b"), j_2), try elem(try get(this_, "centre_d"), j_2), try elem(try get(this_, "centre_i"), j_2), try mul(try get((try K("Simulation")), "STEP_Y"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_D"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_I"), try get(this_, "spacing")), 0.0)
+        return list(try elem(try get(this_, "fit_at"), j_2), try sub(stop_2, try elem(try get(this_, "fit_at"), j_2)), try elem(try get(S_0, Name(try str(V.s(cat("D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_D"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("Inc"))))), g_2), try elem(try get(S_0, Name(try str(V.s(cat("e_Inc"))))), g_2), try get(this_, "a0"), try sel(truthy(try call(this_, "has_bulge", [j_2])), 1.0, 0.0), try elem(try get(this_, "centre_y"), j_2), try elem(try get(this_, "centre_b"), j_2), try elem(try get(this_, "centre_d"), j_2), try elem(try get(this_, "centre_i"), j_2), try mul(try get((try K("Simulation")), "STEP_Y"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_D"), try get(this_, "spacing")), try mul(try get((try K("Simulation")), "STEP_I"), try get(this_, "spacing")), try elem(try get(this_, "ladder_at"), j_2))
         return V.null
       }))])
       return V.null
@@ -18109,21 +18365,20 @@ enum C_Simulation {
       if truthy(try or_(try or_(try le(try elem(at_0, 2.0), 0.0), try le(try elem(at_0, 3.0), 0.5)), try gt(try elem(at_0, 3.0), 90.0))) {
         return try mul(try neg(1.0), try power(10.0, 30.0))
       }
-      var YD_0: V = V.null; YD_0 = try power(10.0, try elem(at_0, 0.0))
-      var YB_0: V = V.null; YB_0 = try power(10.0, try elem(at_0, 1.0))
       var f_0: V = V.null; f_0 = try div(try elem(at_0, 2.0), D_0)
       var s_0: V = V.null; s_0 = try div(try m_sin((try div(try mul(inc_0, V.num(Double.pi)), 180.0))), try m_sin((try div(try mul(try elem(at_0, 3.0), V.num(Double.pi)), 180.0))))
       var chi_0: V = V.null; chi_0 = 0.0
+      var k_0: V = V.null; k_0 = 0.0
       do {
         var i1: Double = 0
         while i1 < num(try len(try elem(try get(this_, "rows"), j_0))) {
           var i_1: V = V.num(i1)
           var row_1: V = V.null; row_1 = try elem(try elem(try get(this_, "rows"), j_0), i_1)
           if truthy(try gt(try elem(row_1, 6.0), 0.0)) {
-            var p_1: V = V.null; p_1 = try elem(try elem(try get(this_, "at_rows"), j_0), i_1)
-            var vm_1: V = V.null; vm_1 = try m_sqrt(try call((try K("Fmt")), "max", [try mul(try mul(f_0, try elem(row_1, 0.0)), try call(this_, "felt", [try add(try add(try mul(YD_0, try elem(p_1, 0.0)), try mul(YB_0, try elem(p_1, 2.0))), try elem(p_1, 1.0))])), 0.0]))
+            var vm_1: V = V.null; vm_1 = try m_sqrt(try call((try K("Fmt")), "max", [try mul(try mul(f_0, try elem(row_1, 0.0)), try call(this_, "laddered", [j_0, k_0, try elem(at_0, 0.0), try elem(at_0, 1.0)])), 0.0]))
             var d_1: V = V.null; d_1 = try div((try sub(try mul(try elem(row_1, 1.0), s_0), vm_1)), (try mul(try elem(row_1, 2.0), s_0)))
             chi_0 = try add(chi_0, try mul(d_1, d_1))
+            k_0 = try add(k_0, 1.0)
           }
           i1 += 1
         }
@@ -18657,7 +18912,7 @@ enum C_Simulation {
       try set(extra_0, Name(try str(V.s(cat("rms1")))), rms1_0)
       try set(extra_0, Name(try str(V.s(cat("repro")))), try get(this_, "repro"))
       try set(extra_0, Name(try str(V.s(cat("stir")))), try get((try K("Simulation")), "SIGMA"))
-      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")))
+      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")))
       try call((try K("Measure")), "save", [V.s(cat("galaxy.simulated")), names_0, cols_0, extra_0])
       var fields_0: V = V.null; fields_0 = makeNode()
       var fnames_0: V = V.null; fnames_0 = list(V.s(cat("galaxy")), V.s(cat("r")), V.s(cat("gd")), V.s(cat("gg")), V.s(cat("gb")), V.s(cat("v0")), V.s(cat("v1")), V.s(cat("vN")))
@@ -18699,7 +18954,7 @@ enum C_Simulation {
       var fextra_0: V = V.null; fextra_0 = makeNode()
       try set(fextra_0, Name(try str(V.s(cat("ids")))), try get(this_, "ids"))
       try set(fextra_0, Name(try str(V.s(cat("table")))), T_0)
-      try set(fextra_0, Name(try str(V.s(cat("about")))), V.s(cat("the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")))
+      try set(fextra_0, Name(try str(V.s(cat("about")))), V.s(cat("the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")))
       try call((try K("Measure")), "save", [V.s(cat("galaxy.fields")), fnames_0, fields_0, fextra_0])
       if truthy(not(try m_empty(try get(this_, "film_ids")))) {
         var film_0: V = V.null; film_0 = makeNode()
@@ -19011,7 +19266,73 @@ enum C_Formed {
     c.staticField("RINGS", { (this_: V) throws -> V in return 48.0 })
     c.staticField("DISCS", { (this_: V) throws -> V in return list(list(10.7, 3.0), list(9.3, 2.0)) })
     c.staticField("WHAT", { (this_: V) throws -> V in return list(V.s(cat("a bright disc")), V.s(cat("a dwarf"))) })
+    c.staticField("REFRESH", { (this_: V) throws -> V in return 10.0 })
     c.field("a0", { (this_: V) throws -> V in return try div(try call((try K("Galaxies")), "a0_at", [try get(this_, "deg")]), try get((try K("Simulation")), "UNIT_G")) })
+    c.field("on", { (this_: V) throws -> V in return try makeNamed("Felt", []) })
+    c.field("made_now", { (this_: V) throws -> V in return list() })
+    c.method("made_tables", { (this_: V, a1: [V]) throws -> V in
+      var state_0: V = arg(a1, 0);
+      var head_0: V = V.null; head_0 = list()
+      var tabs_0: V = V.null; tabs_0 = list()
+      do {
+        var i1: Double = 0
+        while i1 < num(try get(this_, "discs_n")) {
+          var g_1: V = V.num(i1)
+          var rd_1: V = V.null; rd_1 = try call(this_, "scale", [g_1])
+          var cx_1: V = V.null; cx_1 = 0.0
+          var cy_1: V = V.null; cy_1 = 0.0
+          do {
+            var i2: Double = 0
+            while i2 < num(try get((try K("Formed")), "N")) {
+              var k_2: V = V.num(i2)
+              cx_1 = try add(cx_1, try div(try elem(state_0, try mul(4.0, (try add(try mul(g_1, try get((try K("Formed")), "N")), k_2)))), try get((try K("Formed")), "N")))
+              cy_1 = try add(cy_1, try div(try elem(state_0, try add(try mul(4.0, (try add(try mul(g_1, try get((try K("Formed")), "N")), k_2))), 1.0)), try get((try K("Formed")), "N")))
+              i2 += 1
+            }
+          }
+          var xy_1: V = V.null; xy_1 = list()
+          do {
+            var i2: Double = 0
+            while i2 < num(try get((try K("Formed")), "N")) {
+              var k_2: V = V.num(i2)
+              try m_push(xy_1, try div((try sub(try elem(state_0, try mul(4.0, (try add(try mul(g_1, try get((try K("Formed")), "N")), k_2)))), cx_1)), rd_1))
+              try m_push(xy_1, try div((try sub(try elem(state_0, try add(try mul(4.0, (try add(try mul(g_1, try get((try K("Formed")), "N")), k_2))), 1.0)), cy_1)), rd_1))
+              i2 += 1
+            }
+          }
+          var table_1: V = V.null; table_1 = try sel(truthy(try get(this_, "newton")), filled(try mul(try mul(try get((try K("Felt")), "NR"), try get((try K("Felt")), "NPHI")), 2.0), 0.0), try call(try get(this_, "on"), "round_made", [xy_1, try div(try div(try call(this_, "GM", [g_1]), try get((try K("Formed")), "N")), (try mul(try mul(try get(this_, "a0"), rd_1), rd_1))), try get((try K("Simulation")), "SHAPE_H")]))
+          for e2 in try items(list(cx_1, cy_1, rd_1, try sel(truthy(try get(this_, "newton")), 0.0, try get(this_, "a0")))) {
+            var v_2: V = e2
+            try m_push(head_0, v_2)
+          }
+          for e2 in try items(table_1) {
+            var v_2: V = e2
+            try m_push(tabs_0, v_2)
+          }
+          i1 += 1
+        }
+      }
+      try set(this_, "made_now", try m_concat(head_0, tabs_0))
+      return try get(this_, "made_now")
+      return V.null
+    })
+    c.method("made_at", { (this_: V, a1: [V]) throws -> V in
+      var g_0: V = arg(a1, 0); var x_0: V = arg(a1, 1); var y_0: V = arg(a1, 2);
+      var M_0: V = V.null; M_0 = try get(this_, "made_now")
+      var n_0: V = V.null; n_0 = try mul(try mul(try get((try K("Felt")), "NR"), try get((try K("Felt")), "NPHI")), 2.0)
+      var a_0: V = V.null; a_0 = try elem(M_0, try add(try mul(4.0, g_0), 3.0))
+      if truthy(try le(a_0, 0.0)) {
+        return list(0.0, 0.0)
+      }
+      var table_0: V = V.null; table_0 = try m_map(rng(n_0), V.fn({ (a3: [V]) throws -> V in
+        var q_2: V = arg(a3, 0);
+        return try elem(M_0, try add(try add(try mul(4.0, try get(this_, "discs_n")), try mul(g_0, n_0)), q_2))
+        return V.null
+      }))
+      var got_0: V = V.null; got_0 = try call(try get(this_, "on"), "round_at", [table_0, try div((try sub(x_0, try elem(M_0, try mul(4.0, g_0)))), try elem(M_0, try add(try mul(4.0, g_0), 2.0))), try div((try sub(y_0, try elem(M_0, try add(try mul(4.0, g_0), 1.0)))), try elem(M_0, try add(try mul(4.0, g_0), 2.0)))])
+      return list(try mul(try elem(got_0, 0.0), a_0), try mul(try elem(got_0, 1.0), a_0))
+      return V.null
+    })
     c.field("newton", { (this_: V) throws -> V in return V.b(false) })
     c.getter("scale_a0", { (this_: V, a1: [V]) throws -> V in
       return try sel(truthy(try get(this_, "newton")), 0.0, try get(this_, "a0"))
@@ -19123,8 +19444,10 @@ enum C_Formed {
       var gx_0: V = V.null; gx_0 = try mul(m_0, sx_0)
       var gy_0: V = V.null; gy_0 = try mul(m_0, sy_0)
       var mag_0: V = V.null; mag_0 = try call((try K("Fmt")), "hypot", [gx_0, gy_0])
-      var f_0: V = V.null; f_0 = try sel(truthy(try gt(mag_0, 0.0)), (try sel(truthy(try get(this_, "newton")), mag_0, try call((try K("Law")), "boost", [mag_0, try get(this_, "a0")]))), 0.0)
-      return try sel(truthy(try gt(mag_0, 0.0)), list(try mul(try div(gx_0, mag_0), f_0), try mul(try div(gy_0, mag_0), f_0), mag_0, f_0), list(0.0, 0.0, 0.0, 0.0))
+      var more_0: V = V.null; more_0 = try call(this_, "made_at", [g_0, px_0, py_0])
+      var ax_0: V = V.null; ax_0 = try add(gx_0, try elem(more_0, 0.0))
+      var ay_0: V = V.null; ay_0 = try add(gy_0, try elem(more_0, 1.0))
+      return list(ax_0, ay_0, mag_0, try call((try K("Fmt")), "hypot", [ax_0, ay_0]))
       return V.null
     })
     c.method("launch", { (this_: V, a1: [V]) throws -> V in
@@ -19335,12 +19658,20 @@ enum C_Formed {
       try set(extra_0, Name(try str(V.s(cat("middles")))), try get(this_, "middles"))
       try set(extra_0, Name(try str(V.s(cat("deg")))), try get(this_, "deg"))
       try set(extra_0, Name(try str(V.s(cat("a0")))), try mul(try get(this_, "a0"), try get((try K("Simulation")), "UNIT_G")))
-      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")))
+      try set(extra_0, Name(try str(V.s(cat("about")))), V.s(cat("discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")))
       return try call((try K("Measure")), "save", [V.s(cat("galaxy.formed")), list(V.s(cat("density"))), cols_0, extra_0])
       return V.null
     })
     c.statik("kernel", { (this_: V, a1: [V]) throws -> V in
-      return try m_join(list(V.s(cat("// GENERATED from Formed.ray: stars that pull each other through the law")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> L: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> C: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read_write> X: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> A: array<f32>;")), V.s(cat("var<workgroup> tile: array<vec2<f32>, ", try str(try get((try K("Formed")), "TILE")), ">;")), try get((try K("Simulation")), "law_wgsl"), V.s(cat("@compute @workgroup_size(", try str(try get((try K("Formed")), "TILE")), ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {")), V.s(cat("  let i: u32 = P[7] + gid.x;")), V.s(cat("  let per: u32 = P[1];")), V.s(cat("  let g: u32 = i / per;")), V.s(cat("  let base: u32 = g * per;")), V.s(cat("  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);")), V.s(cat("  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];")), V.s(cat("  var s: vec2<f32> = vec2<f32>(0.0, 0.0);")), V.s(cat("  for (var t: u32 = 0u; t < per; t = t + ", try str(try get((try K("Formed")), "TILE")), "u) {")), V.s(cat("    let j: u32 = base + t + lid.x;")), V.s(cat("    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);")), V.s(cat("    workgroupBarrier();")), V.s(cat("    for (var k: u32 = 0u; k < ", try str(try get((try K("Formed")), "TILE")), "u; k = k + 1u) {")), V.s(cat("      let d: vec2<f32> = tile[k] - me;")), V.s(cat("      let inv: f32 = inverseSqrt(dot(d, d) + e2);")), V.s(cat("      s = s + d * (inv * inv * inv);")), V.s(cat("    }")), V.s(cat("    workgroupBarrier();")), V.s(cat("  }")), V.s(cat("  let gN: vec2<f32> = C[4u * g] * s;")), V.s(cat("  let mag: f32 = length(gN);")), V.s(cat("  var a: vec2<f32> = vec2<f32>(0.0, 0.0);")), V.s(cat("  var f: f32 = 0.0;")), V.s(cat("  if (mag > 0.0) {")), V.s(cat("    f = mag;")), V.s(cat("    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }")), V.s(cat("    a = gN / mag * f;")), V.s(cat("  }")), V.s(cat("  A[4u * i] = a.x;")), V.s(cat("  A[4u * i + 1u] = a.y;")), V.s(cat("  A[4u * i + 2u] = mag;")), V.s(cat("  A[4u * i + 3u] = f;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " KICKDRIFT", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let dt: f32 = C[4u * (i / P[1]) + 3u];")), V.s(cat("  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;")), V.s(cat("  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;")), V.s(cat("  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;")), V.s(cat("  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " KICK", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let dt: f32 = C[4u * (i / P[1]) + 3u];")), V.s(cat("  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;")), V.s(cat("  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;")), V.s(cat("}"))), V.s(cat("\n")))
+      var F_0: V = V.null; F_0 = try makeNamed("Felt", [])
+      var r0_0: V = V.null; r0_0 = try call((try K("Shaded")), "literal", [try elem(try get(F_0, "rc"), 0.0)])
+      var step_0: V = V.null; step_0 = try call((try K("Shaded")), "literal", [try get(F_0, "step")])
+      var topr_0: V = V.null; topr_0 = try call((try K("Shaded")), "literal", [try sub(try sub(try get((try K("Felt")), "NR"), 1.0), 0.0001)])
+      var tau_0: V = V.null; tau_0 = try call((try K("Shaded")), "literal", [V.num(2.0 * Double.pi)])
+      var dphi_0: V = V.null; dphi_0 = try call((try K("Shaded")), "literal", [try get(F_0, "dphi")])
+      var np_0: V = V.null; np_0 = try get((try K("Felt")), "NPHI")
+      var nr_0: V = V.null; nr_0 = try get((try K("Felt")), "NR")
+      return try m_join(list(V.s(cat("// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)")), V.s(cat("@group(0) @binding(0) var<storage, read> P: array<u32>;")), V.s(cat("@group(0) @binding(1) var<storage, read> M: array<f32>;")), V.s(cat("@group(0) @binding(2) var<storage, read> C: array<f32>;")), V.s(cat("@group(0) @binding(3) var<storage, read_write> X: array<f32>;")), V.s(cat("@group(0) @binding(4) var<storage, read_write> A: array<f32>;")), V.s(cat("var<workgroup> tile: array<vec2<f32>, ", try str(try get((try K("Formed")), "TILE")), ">;")), V.s(cat("fn made(g: u32, at: vec2<f32>) -> vec2<f32> {")), V.s(cat("  let a: f32 = M[4u * g + 3u];")), V.s(cat("  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }")), V.s(cat("  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];")), V.s(cat("  let r: f32 = length(d);")), V.s(cat("  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }")), V.s(cat("  let u: f32 = clamp(log(r / ", try str(r0_0), ") / ", try str(step_0), ", 0.0, ", try str(topr_0), ");")), V.s(cat("  let i0: u32 = u32(floor(u));")), V.s(cat("  let fu: f32 = u - floor(u);")), V.s(cat("  var ph: f32 = atan2(d.y, d.x);")), V.s(cat("  if (ph < 0.0) { ph = ph + ", try str(tau_0), "; }")), V.s(cat("  var v: f32 = ph / ", try str(dphi_0), " - 0.5;")), V.s(cat("  if (v < 0.0) { v = v + ", try str(np_0), ".0; }")), V.s(cat("  let k0: u32 = u32(floor(v)) % ", try str(np_0), "u;")), V.s(cat("  let fv: f32 = v - floor(v);")), V.s(cat("  let k1: u32 = (k0 + 1u) % ", try str(np_0), "u;")), V.s(cat("  let t: u32 = 4u * P[2] + g * ", try str(nr_0), "u * ", try str(np_0), "u * 2u;")), V.s(cat("  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ", try str(np_0), "u + k0)], M[t + 2u * (i0 * ", try str(np_0), "u + k0) + 1u]);")), V.s(cat("  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ", try str(np_0), "u + k1)], M[t + 2u * (i0 * ", try str(np_0), "u + k1) + 1u]);")), V.s(cat("  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ", try str(np_0), "u + k0)], M[t + 2u * ((i0 + 1u) * ", try str(np_0), "u + k0) + 1u]);")), V.s(cat("  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ", try str(np_0), "u + k1)], M[t + 2u * ((i0 + 1u) * ", try str(np_0), "u + k1) + 1u]);")), V.s(cat("  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);")), V.s(cat("  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;")), V.s(cat("}")), V.s(cat("@compute @workgroup_size(", try str(try get((try K("Formed")), "TILE")), ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {")), V.s(cat("  let i: u32 = P[7] + gid.x;")), V.s(cat("  let per: u32 = P[1];")), V.s(cat("  let g: u32 = i / per;")), V.s(cat("  let base: u32 = g * per;")), V.s(cat("  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);")), V.s(cat("  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];")), V.s(cat("  var s: vec2<f32> = vec2<f32>(0.0, 0.0);")), V.s(cat("  for (var t: u32 = 0u; t < per; t = t + ", try str(try get((try K("Formed")), "TILE")), "u) {")), V.s(cat("    let j: u32 = base + t + lid.x;")), V.s(cat("    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);")), V.s(cat("    workgroupBarrier();")), V.s(cat("    for (var k: u32 = 0u; k < ", try str(try get((try K("Formed")), "TILE")), "u; k = k + 1u) {")), V.s(cat("      let d: vec2<f32> = tile[k] - me;")), V.s(cat("      let inv: f32 = inverseSqrt(dot(d, d) + e2);")), V.s(cat("      s = s + d * (inv * inv * inv);")), V.s(cat("    }")), V.s(cat("    workgroupBarrier();")), V.s(cat("  }")), V.s(cat("  let gN: vec2<f32> = C[4u * g] * s;")), V.s(cat("  let mag: f32 = length(gN);")), V.s(cat("  let a: vec2<f32> = gN + made(g, me);")), V.s(cat("  let f: f32 = length(a);")), V.s(cat("  A[4u * i] = a.x;")), V.s(cat("  A[4u * i + 1u] = a.y;")), V.s(cat("  A[4u * i + 2u] = mag;")), V.s(cat("  A[4u * i + 3u] = f;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " KICKDRIFT", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let dt: f32 = C[4u * (i / P[1]) + 3u];")), V.s(cat("  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;")), V.s(cat("  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;")), V.s(cat("  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;")), V.s(cat("  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;")), V.s(cat("}")), V.s(cat("", try str(try get((try K("Simulation")), "ENTRY")), " KICK", try str(try get((try K("Simulation")), "ID")), "")), try get((try K("Simulation")), "THREAD"), V.s(cat("  if (i >= P[0]) { return; }")), V.s(cat("  let dt: f32 = C[4u * (i / P[1]) + 3u];")), V.s(cat("  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;")), V.s(cat("  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;")), V.s(cat("}"))), V.s(cat("\n")))
       return V.null
     })
   }
@@ -19714,6 +20045,7 @@ enum C_Felt {
     c.staticField("MIDDLE", { (this_: V) throws -> V in return list(0.0, 0.2, 0.5) })
     c.staticField("GAS", { (this_: V) throws -> V in return list(list(0.0, 1.0), list(0.5, 2.0), list(0.5, 3.0), list(0.9, 2.0), list(0.9, 3.0)) })
     c.staticField("FREEDOMS", { (this_: V) throws -> V in return list(V.s(cat("mass")), V.s(cat("thickness")), V.s(cat("middle")), V.s(cat("gas"))) })
+    c.staticField("NPHI", { (this_: V) throws -> V in return 16.0 })
     c.staticField("LADDER", { (this_: V) throws -> V in return list(try neg(6.5), 5.5, 193.0) })
     c.getter("step", { (this_: V, a1: [V]) throws -> V in
       return try div(try m_ln((try div(try get((try K("Felt")), "R1"), try get((try K("Felt")), "R0")))), try get((try K("Felt")), "NR"))
@@ -19949,6 +20281,11 @@ enum C_Felt {
     })
     c.field("band", { (this_: V) throws -> V in return try get(this_, "factored") })
     c.getter("factored", { (this_: V, a1: [V]) throws -> V in
+      return try call(this_, "factored_with", [filled(try get(this_, "cells"), 0.0)])
+      return V.null
+    })
+    c.method("factored_with", { (this_: V, a1: [V]) throws -> V in
+      var extra_0: V = arg(a1, 0);
       var n_0: V = V.null; n_0 = try get(this_, "cells")
       var B_0: V = V.null; B_0 = try get((try K("Felt")), "NMU")
       var W_0: V = V.null; W_0 = try get(this_, "width")
@@ -19960,7 +20297,7 @@ enum C_Felt {
           var i_1: V = V.null; i_1 = try m_floor((try div(k_1, B_0)))
           var j_1: V = V.null; j_1 = try mod(k_1, B_0)
           var f_1: V = V.null; f_1 = try elem(try get(this_, "faces"), k_1)
-          try setAt(m_0, try add(try mul(k_1, W_0), B_0), try add(try add(try add(try elem(f_1, 0.0), try elem(f_1, 1.0)), try elem(f_1, 2.0)), try elem(f_1, 3.0)))
+          try setAt(m_0, try add(try mul(k_1, W_0), B_0), try add(try add(try add(try add(try elem(f_1, 0.0), try elem(f_1, 1.0)), try elem(f_1, 2.0)), try elem(f_1, 3.0)), try elem(extra_0, k_1)))
           if truthy(try lt(try add(i_1, 1.0), try get((try K("Felt")), "NR"))) {
             try setAt(m_0, try add(try add(try mul(k_1, W_0), B_0), B_0), try sub(0.0, try elem(f_1, 0.0)))
           }
@@ -20003,10 +20340,14 @@ enum C_Felt {
     })
     c.method("solve_band", { (this_: V, a1: [V]) throws -> V in
       var b_0: V = arg(a1, 0);
+      return try call(this_, "solve_with", [try get(this_, "band"), b_0])
+      return V.null
+    })
+    c.method("solve_with", { (this_: V, a1: [V]) throws -> V in
+      var m_0: V = arg(a1, 0); var b_0: V = arg(a1, 1);
       var n_0: V = V.null; n_0 = try get(this_, "cells")
       var B_0: V = V.null; B_0 = try get((try K("Felt")), "NMU")
       var W_0: V = V.null; W_0 = try get(this_, "width")
-      var m_0: V = V.null; m_0 = try get(this_, "band")
       var x_0: V = V.null; x_0 = try m_map(b_0, V.fn({ (a3: [V]) throws -> V in
         var v_2: V = arg(a3, 0);
         return v_2
@@ -20045,8 +20386,8 @@ enum C_Felt {
       return try sel(truthy(try gt(gN_0, 0.0)), try add(0.5, try m_sqrt((try add(0.25, try div(1.0, gN_0))))), 1.0)
       return V.null
     })
-    c.method("felt", { (this_: V, a1: [V]) throws -> V in
-      var shape_0: V = arg(a1, 0); var s_0: V = arg(a1, 1);
+    c.method("made_rows", { (this_: V, a1: [V]) throws -> V in
+      var gr_0: V = arg(a1, 0); var gz_0: V = arg(a1, 1);
       var n_0: V = V.null; n_0 = try get(this_, "cells")
       var B_0: V = V.null; B_0 = try get((try K("Felt")), "NMU")
       var wr_0: V = V.null; wr_0 = filled(n_0, 0.0)
@@ -20056,13 +20397,11 @@ enum C_Felt {
         while i1 < num(n_0) {
           var c_1: V = V.num(i1)
           var j_1: V = V.null; j_1 = try mod(c_1, B_0)
-          var gr_1: V = V.null; gr_1 = try mul(s_0, try elem(try elem(shape_0, 0.0), c_1))
-          var gz_1: V = V.null; gz_1 = try mul(s_0, try elem(try elem(shape_0, 1.0), c_1))
-          var f_1: V = V.null; f_1 = try sub(try call((try K("Felt")), "over", [try call((try K("Fmt")), "hypot", [gr_1, gz_1])]), 1.0)
+          var f_1: V = V.null; f_1 = try sub(try call((try K("Felt")), "over", [try call((try K("Fmt")), "hypot", [try elem(gr_0, c_1), try elem(gz_0, c_1)])]), 1.0)
           var mu_1: V = V.null; mu_1 = try elem(try get(this_, "mc"), j_1)
           var st_1: V = V.null; st_1 = try m_sqrt((try sub(1.0, try mul(mu_1, mu_1))))
-          try setAt(wr_0, c_1, try mul(f_1, (try add(try mul(gr_1, st_1), try mul(gz_1, mu_1)))))
-          try setAt(wm_0, c_1, try mul(f_1, (try sub(try mul(gz_1, st_1), try mul(gr_1, mu_1)))))
+          try setAt(wr_0, c_1, try mul(f_1, (try add(try mul(try elem(gr_0, c_1), st_1), try mul(try elem(gz_0, c_1), mu_1)))))
+          try setAt(wm_0, c_1, try mul(f_1, (try sub(try mul(try elem(gz_0, c_1), st_1), try mul(try elem(gr_0, c_1), mu_1)))))
           i1 += 1
         }
       }
@@ -20085,6 +20424,316 @@ enum C_Felt {
         }
       }
       var psi_0: V = V.null; psi_0 = try call(this_, "solve_band", [rhs_0])
+      return try m_map(rng(try get((try K("Felt")), "NR")), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try sel(truthy(try and_(try gt(i_2, 0.0), try lt(try add(i_2, 1.0), try get((try K("Felt")), "NR")))), try sub(0.0, try div((try sub(try elem(psi_0, try mul((try add(i_2, 1.0)), B_0)), try elem(psi_0, try mul((try sub(i_2, 1.0)), B_0)))), (try sub(try elem(try get(this_, "rc"), try add(i_2, 1.0)), try elem(try get(this_, "rc"), try sub(i_2, 1.0)))))), 0.0)
+        return V.null
+      }))
+      return V.null
+    })
+    c.getter("dphi", { (this_: V, a1: [V]) throws -> V in
+      return try div(V.num(2.0 * Double.pi), try get((try K("Felt")), "NPHI"))
+      return V.null
+    })
+    c.getter("waves", { (this_: V, a1: [V]) throws -> V in
+      return try add(try m_floor((try div(try get((try K("Felt")), "NPHI"), 2.0))), 1.0)
+      return V.null
+    })
+    c.field("around", { (this_: V) throws -> V in return try m_map(rng(try get(this_, "cells")), V.fn({ (a2: [V]) throws -> V in
+      var c_1: V = arg(a2, 0);
+      var i_1: V = V.null; i_1 = try m_floor((try div(c_1, try get((try K("Felt")), "NMU"))))
+      var j_1: V = V.null; j_1 = try mod(c_1, try get((try K("Felt")), "NMU"))
+      var st_1: V = V.null; st_1 = try m_sqrt((try sub(1.0, try mul(try elem(try get(this_, "mc"), j_1), try elem(try get(this_, "mc"), j_1)))))
+      var dth_1: V = V.null; dth_1 = try sub(try call((try K("Felt")), "theta", [try elem(try get(this_, "me"), j_1)]), try call((try K("Felt")), "theta", [try elem(try get(this_, "me"), try add(j_1, 1.0))]))
+      return try div(try mul(try mul(try mul(2.0, V.num(Double.pi)), (try sub(try elem(try get(this_, "re"), try add(i_1, 1.0)), try elem(try get(this_, "re"), i_1)))), dth_1), (try mul(try mul(st_1, try get(this_, "dphi")), try get(this_, "dphi"))))
+      return V.null
+    })) })
+    c.statik("theta", { (this_: V, a1: [V]) throws -> V in
+      var mu_0: V = arg(a1, 0);
+      return try m_atan2(try m_sqrt((try sub(1.0, try mul(mu_0, mu_0)))), mu_0)
+      return V.null
+    })
+    c.field("wave_bands", { (this_: V) throws -> V in return try m_map(rng(try get(this_, "waves")), V.fn({ (a2: [V]) throws -> V in
+      var m_1: V = arg(a2, 0);
+      return try sel(truthy(V.b(try eq(m_1, 0.0))), try get(this_, "band"), try call(this_, "factored_with", [try m_map(try get(this_, "around"), V.fn({ (a4: [V]) throws -> V in
+        var a_3: V = arg(a4, 0);
+        return try mul(a_3, (try sub(2.0, try mul(2.0, try m_cos((try mul(m_1, try get(this_, "dphi"))))))))
+        return V.null
+      }))]))
+      return V.null
+    })) })
+    c.field("cosines", { (this_: V) throws -> V in return try m_map(rng(try mul(try get((try K("Felt")), "NPHI"), try get((try K("Felt")), "NPHI"))), V.fn({ (a2: [V]) throws -> V in
+      var q_1: V = arg(a2, 0);
+      return try m_cos((try mul(try mul(try get(this_, "dphi"), try m_floor((try div(q_1, try get((try K("Felt")), "NPHI"))))), try mod(q_1, try get((try K("Felt")), "NPHI")))))
+      return V.null
+    })) })
+    c.field("sines", { (this_: V) throws -> V in return try m_map(rng(try mul(try get((try K("Felt")), "NPHI"), try get((try K("Felt")), "NPHI"))), V.fn({ (a2: [V]) throws -> V in
+      var q_1: V = arg(a2, 0);
+      return try m_sin((try mul(try mul(try get(this_, "dphi"), try m_floor((try div(q_1, try get((try K("Felt")), "NPHI"))))), try mod(q_1, try get((try K("Felt")), "NPHI")))))
+      return V.null
+    })) })
+    c.method("solve_round", { (this_: V, a1: [V]) throws -> V in
+      var b_0: V = arg(a1, 0);
+      var n_0: V = V.null; n_0 = try get(this_, "cells")
+      var P_0: V = V.null; P_0 = try get((try K("Felt")), "NPHI")
+      var x_0: V = V.null; x_0 = filled(try mul(n_0, P_0), 0.0)
+      do {
+        var i1: Double = 0
+        while i1 < num(try get(this_, "waves")) {
+          var m_1: V = V.num(i1)
+          var a_1: V = V.null; a_1 = try m_map(rng(n_0), V.fn({ (a4: [V]) throws -> V in
+            var c_3: V = arg(a4, 0);
+            return try m_reduce(rng(P_0), 0.0, V.fn({ (a6: [V]) throws -> V in
+              var t_5: V = arg(a6, 0); var k_5: V = arg(a6, 1);
+              return try add(t_5, try mul(try elem(b_0, try add(try mul(c_3, P_0), k_5)), try elem(try get(this_, "cosines"), try add(try mul(m_1, P_0), k_5))))
+              return V.null
+            }))
+            return V.null
+          }))
+          var s_1: V = V.null; s_1 = try m_map(rng(n_0), V.fn({ (a4: [V]) throws -> V in
+            var c_3: V = arg(a4, 0);
+            return try m_reduce(rng(P_0), 0.0, V.fn({ (a6: [V]) throws -> V in
+              var t_5: V = arg(a6, 0); var k_5: V = arg(a6, 1);
+              return try add(t_5, try mul(try elem(b_0, try add(try mul(c_3, P_0), k_5)), try elem(try get(this_, "sines"), try add(try mul(m_1, P_0), k_5))))
+              return V.null
+            }))
+            return V.null
+          }))
+          var ya_1: V = V.null; ya_1 = try call(this_, "solve_with", [try elem(try get(this_, "wave_bands"), m_1), a_1])
+          var ys_1: V = V.null; ys_1 = try call(this_, "solve_with", [try elem(try get(this_, "wave_bands"), m_1), s_1])
+          var weight_1: V = V.null; weight_1 = try div((try sel(truthy(try or_(V.b(try eq(m_1, 0.0)), V.b(try eq(try mul(2.0, m_1), P_0)))), 1.0, 2.0)), P_0)
+          do {
+            var i2: Double = 0
+            while i2 < num(n_0) {
+              var c_2: V = V.num(i2)
+              do {
+                var i3: Double = 0
+                while i3 < num(P_0) {
+                  var k_3: V = V.num(i3)
+                  try setAt(x_0, try add(try mul(c_2, P_0), k_3), try add(try elem(x_0, try add(try mul(c_2, P_0), k_3)), try mul(weight_1, (try add(try mul(try elem(ya_1, c_2), try elem(try get(this_, "cosines"), try add(try mul(m_1, P_0), k_3))), try mul(try elem(ys_1, c_2), try elem(try get(this_, "sines"), try add(try mul(m_1, P_0), k_3))))))))
+                  i3 += 1
+                }
+              }
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      return x_0
+      return V.null
+    })
+    c.method("layers", { (this_: V, a1: [V]) throws -> V in
+      var r_0: V = arg(a1, 0); var h_0: V = arg(a1, 1);
+      var raw_0: V = V.null; raw_0 = try m_map(rng(try get((try K("Felt")), "NMU")), V.fn({ (a3: [V]) throws -> V in
+        var j_2: V = arg(a3, 0);
+        return try sub(try m_exp((try sub(0.0, try div(try mul(r_0, try elem(try get(this_, "me"), j_2)), h_0)))), try m_exp((try sub(0.0, try div(try mul(r_0, try elem(try get(this_, "me"), try add(j_2, 1.0))), h_0)))))
+        return V.null
+      }))
+      var held_0: V = V.null; held_0 = try m_reduce(raw_0, 0.0, V.fn({ (a3: [V]) throws -> V in
+        var t_2: V = arg(a3, 0); var v_2: V = arg(a3, 1);
+        return try add(t_2, v_2)
+        return V.null
+      }))
+      return try m_map(raw_0, V.fn({ (a3: [V]) throws -> V in
+        var v_2: V = arg(a3, 0);
+        return try sel(truthy(try gt(held_0, 0.0)), try div(v_2, held_0), 0.0)
+        return V.null
+      }))
+      return V.null
+    })
+    c.method("round_made", { (this_: V, a1: [V]) throws -> V in
+      var xy_0: V = arg(a1, 0); var s_0: V = arg(a1, 1); var h_0: V = arg(a1, 2);
+      var n_0: V = V.null; n_0 = try get(this_, "cells")
+      var P_0: V = V.null; P_0 = try get((try K("Felt")), "NPHI")
+      var B_0: V = V.null; B_0 = try get((try K("Felt")), "NMU")
+      var dp_0: V = V.null; dp_0 = try get(this_, "dphi")
+      var rho_0: V = V.null; rho_0 = filled(try mul(n_0, P_0), 0.0)
+      var lay_0: V = V.null; lay_0 = try m_map(rng(try get((try K("Felt")), "NR")), V.fn({ (a3: [V]) throws -> V in
+        var i_2: V = arg(a3, 0);
+        return try call(this_, "layers", [try elem(try get(this_, "rc"), i_2), h_0])
+        return V.null
+      }))
+      do {
+        var i1: Double = 0
+        while i1 < num(try m_floor((try div(try len(xy_0), 2.0)))) {
+          var q_1: V = V.num(i1)
+          var x_1: V = V.null; x_1 = try elem(xy_0, try mul(2.0, q_1))
+          var y_1: V = V.null; y_1 = try elem(xy_0, try add(try mul(2.0, q_1), 1.0))
+          var r_1: V = V.null; r_1 = try call((try K("Fmt")), "hypot", [x_1, y_1])
+          var u_1: V = V.null; u_1 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div(try m_ln((try div(r_1, try elem(try get(this_, "rc"), 0.0)))), try get(this_, "step")), 0.0]), try sub(try sub(try get((try K("Felt")), "NR"), 1.0), 0.000001)])
+          var i0_1: V = V.null; i0_1 = try m_floor(u_1)
+          var fu_1: V = V.null; fu_1 = try sub(u_1, i0_1)
+          var ph_1: V = V.null; ph_1 = try m_atan2(y_1, x_1)
+          var v_1: V = V.null; v_1 = try sub(try div((try sel(truthy(try lt(ph_1, 0.0)), try add(ph_1, V.num(2.0 * Double.pi)), ph_1)), dp_0), 0.5)
+          if truthy(try lt(v_1, 0.0)) {
+            v_1 = try add(v_1, P_0)
+          }
+          var k0_1: V = V.null; k0_1 = try mod(try m_floor(v_1), P_0)
+          var fv_1: V = V.null; fv_1 = try sub(v_1, try m_floor(v_1))
+          var k1_1: V = V.null; k1_1 = try mod((try add(k0_1, 1.0)), P_0)
+          for e2 in try items(list(list(i0_1, try sub(1.0, fu_1)), list(try add(i0_1, 1.0), fu_1))) {
+            var rw_2: V = e2
+            if truthy(try gt(try elem(rw_2, 1.0), 0.0)) {
+              do {
+                var i3: Double = 0
+                while i3 < num(B_0) {
+                  var j_3: V = V.num(i3)
+                  var m_3: V = V.null; m_3 = try mul(try mul(try div(s_0, 2.0), try elem(rw_2, 1.0)), try elem(try elem(lay_0, try elem(rw_2, 0.0)), j_3))
+                  var c_3: V = V.null; c_3 = try add(try mul(try elem(rw_2, 0.0), B_0), j_3)
+                  try setAt(rho_0, try add(try mul(c_3, P_0), k0_1), try add(try elem(rho_0, try add(try mul(c_3, P_0), k0_1)), try mul(m_3, (try sub(1.0, fv_1)))))
+                  try setAt(rho_0, try add(try mul(c_3, P_0), k1_1), try add(try elem(rho_0, try add(try mul(c_3, P_0), k1_1)), try mul(m_3, fv_1)))
+                  i3 += 1
+                }
+              }
+            }
+          }
+          i1 += 1
+        }
+      }
+      var phi_0: V = V.null; phi_0 = try call(this_, "solve_round", [try m_map(rho_0, V.fn({ (a3: [V]) throws -> V in
+        var m_2: V = arg(a3, 0);
+        return try sub(0.0, try div(try mul(try mul(try mul(4.0, V.num(Double.pi)), m_2), V.num(2.0 * Double.pi)), dp_0))
+        return V.null
+      }))])
+      var at_0: V = V.null; at_0 = V.fn({ (a2: [V]) throws -> V in
+        var i_1: V = arg(a2, 0); var j_1: V = arg(a2, 1); var k_1: V = arg(a2, 2);
+        return try elem(phi_0, try add(try mul((try add(try mul(i_1, B_0), j_1)), P_0), try mod((try add(k_1, P_0)), P_0)))
+        return V.null
+      })
+      var wr_0: V = V.null; wr_0 = filled(try mul(n_0, P_0), 0.0)
+      var wm_0: V = V.null; wm_0 = filled(try mul(n_0, P_0), 0.0)
+      var wp_0: V = V.null; wp_0 = filled(try mul(n_0, P_0), 0.0)
+      do {
+        var i1: Double = 0
+        while i1 < num(n_0) {
+          var c_1: V = V.num(i1)
+          var i_1: V = V.null; i_1 = try m_floor((try div(c_1, B_0)))
+          var j_1: V = V.null; j_1 = try mod(c_1, B_0)
+          var r_1: V = V.null; r_1 = try elem(try get(this_, "rc"), i_1)
+          var st_1: V = V.null; st_1 = try m_sqrt((try sub(1.0, try mul(try elem(try get(this_, "mc"), j_1), try elem(try get(this_, "mc"), j_1)))))
+          do {
+            var i2: Double = 0
+            while i2 < num(P_0) {
+              var k_2: V = V.num(i2)
+              var lo_2: V = V.null; lo_2 = try call((try K("Fmt")), "max", [try sub(i_1, 1.0), 0.0])
+              var hi_2: V = V.null; hi_2 = try call((try K("Fmt")), "min", [try add(i_1, 1.0), try sub(try get((try K("Felt")), "NR"), 1.0)])
+              var gr_2: V = V.null; gr_2 = try sub(0.0, try div((try sub(try invoke(at_0, [hi_2, j_1, k_2]), try invoke(at_0, [lo_2, j_1, k_2]))), (try sub(try elem(try get(this_, "rc"), hi_2), try elem(try get(this_, "rc"), lo_2)))))
+              var below_2: V = V.null; below_2 = try sel(truthy(try gt(j_1, 0.0)), try invoke(at_0, [i_1, try sub(j_1, 1.0), k_2]), try invoke(at_0, [i_1, 0.0, k_2]))
+              var mb_2: V = V.null; mb_2 = try sel(truthy(try gt(j_1, 0.0)), try elem(try get(this_, "mc"), try sub(j_1, 1.0)), try sub(0.0, try elem(try get(this_, "mc"), 0.0)))
+              var top_2: V = V.null; top_2 = try call((try K("Fmt")), "min", [try add(j_1, 1.0), try sub(B_0, 1.0)])
+              var gm_2: V = V.null; gm_2 = try sub(0.0, try div(try mul(try div(st_1, r_1), (try sub(try invoke(at_0, [i_1, top_2, k_2]), below_2))), (try sub(try elem(try get(this_, "mc"), top_2), mb_2))))
+              var gp_2: V = V.null; gp_2 = try sub(0.0, try div((try sub(try invoke(at_0, [i_1, j_1, try add(k_2, 1.0)]), try invoke(at_0, [i_1, j_1, try sub(k_2, 1.0)]))), (try mul(try mul(try mul(2.0, dp_0), r_1), st_1))))
+              var f_2: V = V.null; f_2 = try sub(try call((try K("Felt")), "over", [try call((try K("Fmt")), "hypot", [try call((try K("Fmt")), "hypot", [gr_2, gm_2]), gp_2])]), 1.0)
+              try setAt(wr_0, try add(try mul(c_1, P_0), k_2), try mul(f_2, gr_2))
+              try setAt(wm_0, try add(try mul(c_1, P_0), k_2), try mul(f_2, gm_2))
+              try setAt(wp_0, try add(try mul(c_1, P_0), k_2), try mul(f_2, gp_2))
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var made_0: V = V.null; made_0 = filled(try mul(n_0, P_0), 0.0)
+      do {
+        var i1: Double = 0
+        while i1 < num(n_0) {
+          var c_1: V = V.num(i1)
+          var i_1: V = V.null; i_1 = try m_floor((try div(c_1, B_0)))
+          var j_1: V = V.null; j_1 = try mod(c_1, B_0)
+          var dmu_1: V = V.null; dmu_1 = try sub(try elem(try get(this_, "me"), try add(j_1, 1.0)), try elem(try get(this_, "me"), j_1))
+          var dr_1: V = V.null; dr_1 = try sub(try elem(try get(this_, "re"), try add(i_1, 1.0)), try elem(try get(this_, "re"), i_1))
+          var dth_1: V = V.null; dth_1 = try sub(try call((try K("Felt")), "theta", [try elem(try get(this_, "me"), j_1)]), try call((try K("Felt")), "theta", [try elem(try get(this_, "me"), try add(j_1, 1.0))]))
+          do {
+            var i2: Double = 0
+            while i2 < num(P_0) {
+              var k_2: V = V.num(i2)
+              var e_2: V = V.null; e_2 = try add(try mul(c_1, P_0), k_2)
+              var fo_2: V = V.null; fo_2 = try sel(truthy(try lt(try add(i_1, 1.0), try get((try K("Felt")), "NR"))), try div((try add(try elem(wr_0, e_2), try elem(wr_0, try add(e_2, try mul(B_0, P_0))))), 2.0), try elem(wr_0, e_2))
+              var fi_2: V = V.null; fi_2 = try sel(truthy(try gt(i_1, 0.0)), try div((try add(try elem(wr_0, try sub(e_2, try mul(B_0, P_0))), try elem(wr_0, e_2))), 2.0), try elem(wr_0, e_2))
+              var up_2: V = V.null; up_2 = try sel(truthy(try lt(try add(j_1, 1.0), B_0)), try div((try add(try elem(wm_0, e_2), try elem(wm_0, try add(e_2, P_0)))), 2.0), 0.0)
+              var down_2: V = V.null; down_2 = try sel(truthy(try gt(j_1, 0.0)), try div((try add(try elem(wm_0, try sub(e_2, P_0)), try elem(wm_0, e_2))), 2.0), 0.0)
+              var ahead_2: V = V.null; ahead_2 = try div((try add(try elem(wp_0, e_2), try elem(wp_0, try add(try mul(c_1, P_0), try mod((try add(k_2, 1.0)), P_0))))), 2.0)
+              var behind_2: V = V.null; behind_2 = try div((try add(try elem(wp_0, try add(try mul(c_1, P_0), try mod((try sub(try add(k_2, P_0), 1.0)), P_0))), try elem(wp_0, e_2))), 2.0)
+              var out__2: V = V.null; out__2 = try add(try sub(try add(try mul(try mul(try mul(try mul(try mul(fo_2, 2.0), V.num(Double.pi)), try elem(try get(this_, "re"), try add(i_1, 1.0))), try elem(try get(this_, "re"), try add(i_1, 1.0))), dmu_1), try mul(try mul(try mul(try mul(up_2, 2.0), V.num(Double.pi)), (try sub(1.0, try mul(try elem(try get(this_, "me"), try add(j_1, 1.0)), try elem(try get(this_, "me"), try add(j_1, 1.0)))))), dr_1)), try mul(try mul(try mul(try mul(down_2, 2.0), V.num(Double.pi)), (try sub(1.0, try mul(try elem(try get(this_, "me"), j_1), try elem(try get(this_, "me"), j_1))))), dr_1)), try div(try mul(try mul(try mul(try mul((try sub(ahead_2, behind_2)), V.num(2.0 * Double.pi)), try elem(try get(this_, "rc"), i_1)), dr_1), dth_1), dp_0))
+              try setAt(made_0, e_2, try sel(truthy(try gt(i_1, 0.0)), try sub(out__2, try mul(try mul(try mul(try mul(try mul(fi_2, 2.0), V.num(Double.pi)), try elem(try get(this_, "re"), i_1)), try elem(try get(this_, "re"), i_1)), dmu_1)), out__2))
+              i2 += 1
+            }
+          }
+          i1 += 1
+        }
+      }
+      var psi_0: V = V.null; psi_0 = try call(this_, "solve_round", [made_0])
+      var out_0: V = V.null; out_0 = filled(try mul(try mul(try get((try K("Felt")), "NR"), P_0), 2.0), 0.0)
+      var st0_0: V = V.null; st0_0 = try m_sqrt((try sub(1.0, try mul(try elem(try get(this_, "mc"), 0.0), try elem(try get(this_, "mc"), 0.0)))))
+      do {
+        var i1: Double = 0
+        while i1 < num(try get((try K("Felt")), "NR")) {
+          var i_1: V = V.num(i1)
+          if truthy(try and_(try gt(i_1, 0.0), try lt(try add(i_1, 1.0), try get((try K("Felt")), "NR")))) {
+            do {
+              var i2: Double = 0
+              while i2 < num(P_0) {
+                var k_2: V = V.num(i2)
+                try setAt(out_0, try mul(2.0, (try add(try mul(i_1, P_0), k_2))), try sub(0.0, try div((try sub(try elem(psi_0, try add(try mul(try mul((try add(i_1, 1.0)), B_0), P_0), k_2)), try elem(psi_0, try add(try mul(try mul((try sub(i_1, 1.0)), B_0), P_0), k_2)))), (try sub(try elem(try get(this_, "rc"), try add(i_1, 1.0)), try elem(try get(this_, "rc"), try sub(i_1, 1.0)))))))
+                try setAt(out_0, try add(try mul(2.0, (try add(try mul(i_1, P_0), k_2))), 1.0), try sub(0.0, try div((try sub(try elem(psi_0, try add(try mul(try mul(i_1, B_0), P_0), try mod((try add(k_2, 1.0)), P_0))), try elem(psi_0, try add(try mul(try mul(i_1, B_0), P_0), try mod((try sub(try add(k_2, P_0), 1.0)), P_0))))), (try mul(try mul(try mul(2.0, dp_0), try elem(try get(this_, "rc"), i_1)), st0_0)))))
+                i2 += 1
+              }
+            }
+          }
+          i1 += 1
+        }
+      }
+      return out_0
+      return V.null
+    })
+    c.method("round_at", { (this_: V, a1: [V]) throws -> V in
+      var table_0: V = arg(a1, 0); var x_0: V = arg(a1, 1); var y_0: V = arg(a1, 2);
+      var P_0: V = V.null; P_0 = try get((try K("Felt")), "NPHI")
+      var r_0: V = V.null; r_0 = try call((try K("Fmt")), "hypot", [x_0, y_0])
+      if truthy(try le(r_0, 0.0)) {
+        return list(0.0, 0.0)
+      }
+      var u_0: V = V.null; u_0 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div(try m_ln((try div(r_0, try elem(try get(this_, "rc"), 0.0)))), try get(this_, "step")), 0.0]), try sub(try sub(try get((try K("Felt")), "NR"), 1.0), 0.000001)])
+      var i0_0: V = V.null; i0_0 = try m_floor(u_0)
+      var fu_0: V = V.null; fu_0 = try sub(u_0, i0_0)
+      var ph_0: V = V.null; ph_0 = try m_atan2(y_0, x_0)
+      var v_0: V = V.null; v_0 = try sub(try div((try sel(truthy(try lt(ph_0, 0.0)), try add(ph_0, V.num(2.0 * Double.pi)), ph_0)), try get(this_, "dphi")), 0.5)
+      if truthy(try lt(v_0, 0.0)) {
+        v_0 = try add(v_0, P_0)
+      }
+      var k0_0: V = V.null; k0_0 = try mod(try m_floor(v_0), P_0)
+      var fv_0: V = V.null; fv_0 = try sub(v_0, try m_floor(v_0))
+      var k1_0: V = V.null; k1_0 = try mod((try add(k0_0, 1.0)), P_0)
+      var part_0: V = V.null; part_0 = V.fn({ (a2: [V]) throws -> V in
+        var q_1: V = arg(a2, 0);
+        return try add(try mul((try sub(1.0, fu_0)), (try add(try mul((try sub(1.0, fv_0)), try elem(table_0, try add(try mul(2.0, (try add(try mul(i0_0, P_0), k0_0))), q_1))), try mul(fv_0, try elem(table_0, try add(try mul(2.0, (try add(try mul(i0_0, P_0), k1_0))), q_1)))))), try mul(fu_0, (try add(try mul((try sub(1.0, fv_0)), try elem(table_0, try add(try mul(2.0, (try add(try mul((try add(i0_0, 1.0)), P_0), k0_0))), q_1))), try mul(fv_0, try elem(table_0, try add(try mul(2.0, (try add(try mul((try add(i0_0, 1.0)), P_0), k1_0))), q_1)))))))
+        return V.null
+      })
+      var outward_0: V = V.null; outward_0 = try invoke(part_0, [0.0])
+      var about_0: V = V.null; about_0 = try invoke(part_0, [1.0])
+      return list(try div((try sub(try mul(outward_0, x_0), try mul(about_0, y_0))), r_0), try div((try add(try mul(outward_0, y_0), try mul(about_0, x_0))), r_0))
+      return V.null
+    })
+    c.method("made_at", { (this_: V, a1: [V]) throws -> V in
+      var made_0: V = arg(a1, 0); var r_0: V = arg(a1, 1);
+      var v_0: V = V.null; v_0 = try call((try K("Fmt")), "min", [try call((try K("Fmt")), "max", [try div(try m_ln((try div(r_0, try elem(try get(this_, "rc"), 0.0)))), try get(this_, "step")), 1.0]), try sub(try sub(try get((try K("Felt")), "NR"), 2.0), 0.000001)])
+      var t_0: V = V.null; t_0 = try m_floor(v_0)
+      var e_0: V = V.null; e_0 = try sub(v_0, t_0)
+      return try add(try mul((try sub(1.0, e_0)), try elem(made_0, t_0)), try mul(e_0, try elem(made_0, try add(t_0, 1.0))))
+      return V.null
+    })
+    c.method("felt", { (this_: V, a1: [V]) throws -> V in
+      var shape_0: V = arg(a1, 0); var s_0: V = arg(a1, 1);
+      var made_0: V = V.null; made_0 = try call(this_, "made_rows", [try m_map(try elem(shape_0, 0.0), V.fn({ (a3: [V]) throws -> V in
+        var v_2: V = arg(a3, 0);
+        return try mul(s_0, v_2)
+        return V.null
+      })), try m_map(try elem(shape_0, 1.0), V.fn({ (a3: [V]) throws -> V in
+        var v_2: V = arg(a3, 0);
+        return try mul(s_0, v_2)
+        return V.null
+      }))])
       var out_0: V = V.null; out_0 = list()
       do {
         var i1: Double = 0
@@ -20092,9 +20741,8 @@ enum C_Felt {
           var i_1: V = V.num(i1)
           var r_1: V = V.null; r_1 = try elem(try get(this_, "rc"), i_1)
           if truthy(try and_(try and_(try and_(try gt(i_1, 0.0), try lt(try add(i_1, 1.0), try get((try K("Felt")), "NR"))), try ge(r_1, try get((try K("Felt")), "NEAR"))), try le(r_1, try get((try K("Felt")), "FAR")))) {
-            var made_1: V = V.null; made_1 = try sub(0.0, try div((try sub(try elem(psi_0, try mul((try add(i_1, 1.0)), B_0)), try elem(psi_0, try mul((try sub(i_1, 1.0)), B_0)))), (try sub(try elem(try get(this_, "rc"), try add(i_1, 1.0)), try elem(try get(this_, "rc"), try sub(i_1, 1.0))))))
             var gN_1: V = V.null; gN_1 = try sub(0.0, try mul(s_0, try elem(try elem(shape_0, 2.0), i_1)))
-            try m_push(out_0, list(r_1, gN_1, try sub(gN_1, made_1)))
+            try m_push(out_0, list(r_1, gN_1, try sub(gN_1, try elem(made_0, i_1))))
           }
           i1 += 1
         }
@@ -23063,6 +23711,10 @@ enum C_G {
     }))]) })
     c.staticField("theorem gravity.closing", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.closing")), kw("body", V.fn({ (a1: [V]) throws -> V in
       return try makeNamed("Asked", [kw("asks", V.s(cat("what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"))), kw("about", V.s(cat("F_{g} \\aside{closing}")))])
+      return V.null
+    }))]) })
+    c.staticField("theorem gravity.made", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.made")), kw("body", V.fn({ (a1: [V]) throws -> V in
+      return try makeNamed("Asked", [kw("asks", V.s(cat("the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?"))), kw("about", V.s(cat("g \\aside{field}"))), kw("also", V.s(cat("-\\nabla^{2}\\psi")))])
       return V.null
     }))]) })
     c.staticField("theorem gravity.metric", { (this_: V) throws -> V in return try makeNamed("Theorem", [kw("id", V.s("gravity.metric")), kw("body", V.fn({ (a1: [V]) throws -> V in

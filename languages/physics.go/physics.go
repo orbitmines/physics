@@ -11831,8 +11831,12 @@ func init() {
       Set(held_0, "derivation", Lst(tick_0, falls_0))
       Set(ruler_0, "derivation", Lst(held_0))
       Set(defl_0, "derivation", Lst(held_0, ruler_0))
+      var shadow_0 any
+      shadow_0 = Call(K("Inferences"), "held_shadow", []any{ s_0, Get(held_0, "fact"), Get(ruler_0, "fact") })
+      _ = shadow_0
+      Set(shadow_0, "derivation", Lst(held_0, ruler_0))
       if true {
-        return Lst(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0)
+        return Lst(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0, shadow_0)
       }
       return nil
     })
@@ -11991,6 +11995,20 @@ func init() {
       closing_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "F_{g} \\aside{closing}", got_0 }), "what is felt, with the mismatch closed", Lst(Get(Get(scale_0, "fact"), "key")), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", Lst("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
       _ = closing_0
       Set(closing_0, "derivation", Lst(scale_0))
+      var psi_0 any
+      psi_0 = Call(K("Expr"), "field", []any{ "\\psi" })
+      _ = psi_0
+      var w_0 any
+      w_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ got_0, g_0 }) })
+      _ = w_0
+      var made_0 any
+      made_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "-\\nabla^{2}\\psi", Call(K("Expr"), "field", []any{ "\\nabla\\cdot\\paren{\\paren{" + Str(Call(K("Expr"), "show", []any{ w_0 })) + "}\\hat{g}_{N}}" }) }), "the space made, as a source", Lst(Get(Get(closing_0, "fact"), "key")), "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" + Str(met_0) + "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made", Lst("w = F_{g} - g_{N} = " + Str(Call(K("Expr"), "show", []any{ w_0 })) + ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w") })
+      _ = made_0
+      Set(made_0, "derivation", Lst(closing_0, potential_0))
+      var field_0 any
+      field_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "g \\aside{field}", Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ g_0, Call(K("Expr"), "field", []any{ "\\nabla\\psi" }) }) }) }), "what is felt, solved over the whole field", Lst(Get(Get(made_0, "fact"), "key"), Get(Get(closing_0, "fact"), "key")), "what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve", Lst("g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w", "no curl: \\nabla\\times g = 0, as a record's slope", "a sphere: \\nabla\\psi = -w, so g = F_{g}", "a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)") })
+      _ = field_0
+      Set(field_0, "derivation", Lst(made_0))
       var ratio_0 any
       ratio_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ a0_0, own_0 }) })
       _ = ratio_0
@@ -11999,7 +12017,7 @@ func init() {
       _ = against_0
       Set(against_0, "derivation", Lst(scale_0))
       if true {
-        return Lst(straight_0, potential_0, lam_0, scale_0, closing_0, against_0)
+        return Lst(straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0)
       }
       return nil
     })
@@ -13374,7 +13392,7 @@ func init() {
     })
     c.Static("RULES", func(self any, a1 []any) any {
       if true {
-        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "schwarzschild"), Get(K("Inferences"), "shadow"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "keeping"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
+        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "schwarzschild"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "keeping"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
         var of_2 any = Arg(a3, 0); _ = of_2;
         if true {
           return Call(K("Inferences"), "writing_out", []any{ of_2 })
@@ -13639,62 +13657,52 @@ func init() {
       }
       return nil
     })
-    c.Static("shadow", func(self any, a1 []any) any {
+    c.Static("held_shadow", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var A_0 any = Arg(a1, 1); _ = A_0; var B_0 any = Arg(a1, 2); _ = B_0;
+      var u_0 any
+      u_0 = "\\delta n_{f}"
+      _ = u_0
+      var Au_0 any
+      Au_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Get(A_0, "to"), "r_{s}", Call(K("Expr"), "num", []any{ 2.0 }) }), "D", Call(K("Expr"), "num", []any{ 3.0 }) }), "r", Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ u_0 }), Neg(1.0) }) }) })
+      _ = Au_0
+      var over_0 any
+      over_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ u_0 }), Call(K("Expr"), "pown", []any{ Au_0, 0.5 })) }) })
+      _ = over_0
+      var env_0 any
+      env_0 = Make(Node)
+      _ = env_0
+      SetAt(env_0, u_0, Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "root", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ over_0, u_0 }) }), u_0 }), env_0 }))
+      var sphere_0 any
+      sphere_0 = Elem(env_0, u_0)
+      _ = sphere_0
+      var bc_0 any
+      bc_0 = Div(1.0, Call(K("Expr"), "numeric", []any{ over_0, env_0 }))
+      _ = bc_0
+      bc_0 = Div(M_round((Mul(bc_0, Power(10.0, 9.0)))), Power(10.0, 9.0))
+      var gr_0 any
+      gr_0 = Mul(3.0, M_sqrt(3.0))
+      _ = gr_0
+      var iA_0 any
+      iA_0 = Call(s_0, "fact", []any{ "is", "A in r" })
+      _ = iA_0
+      var iB_0 any
+      iB_0 = Call(s_0, "fact", []any{ "is", "B in r" })
+      _ = iB_0
+      var index_0 any
+      index_0 = math.NaN()
+      _ = index_0
+      if Truthy((Truthy(!Eq(iA_0, nil)) && Truthy(!Eq(iB_0, nil)))) {
+        var iover_0 any
+        iover_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ u_0 }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "mul", []any{ Lst(Get(iA_0, "to"), Call(K("Expr"), "pown", []any{ Get(iB_0, "to"), Neg(1.0) })) }), 0.5 })) }) })
+        _ = iover_0
+        var ienv_0 any
+        ienv_0 = Make(Node)
+        _ = ienv_0
+        SetAt(ienv_0, u_0, Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "root", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ iover_0, u_0 }) }), u_0 }), ienv_0 }))
+        index_0 = Div(1.0, Call(K("Expr"), "numeric", []any{ iover_0, ienv_0 }))
+      }
       if true {
-        return Make("Inference", []any{ Kw("name", "where a ray stops coming back"), Kw("because", "a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow"), Kw("fire", Fn(func(a3 []any) any {
-        var s_2 any = Arg(a3, 0); _ = s_2;
-        var A_2 any
-        A_2 = Call(s_2, "fact", []any{ "is", "A in r" })
-        _ = A_2
-        var B_2 any
-        B_2 = Call(s_2, "fact", []any{ "is", "B in r" })
-        _ = B_2
-        if Truthy((Truthy((Truthy(Eq(A_2, nil)) || Truthy(Eq(B_2, nil)))) || Truthy(Call(s_2, "has", []any{ "is", "b_{c}" })))) {
-          if true {
-            return Lst()
-          }
-        }
-        var u_2 any
-        u_2 = "\\delta n_{f}"
-        _ = u_2
-        var over_2 any
-        over_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ u_2 }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "mul", []any{ Lst(Get(A_2, "to"), Call(K("Expr"), "pown", []any{ Get(B_2, "to"), Neg(1.0) })) }), 0.5 })) }) })
-        _ = over_2
-        var env_2 any
-        env_2 = Make(Node)
-        _ = env_2
-        SetAt(env_2, u_2, Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "root", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ over_2, u_2 }) }), u_2 }), env_2 }))
-        var sphere_2 any
-        sphere_2 = Elem(env_2, u_2)
-        _ = sphere_2
-        var bc_2 any
-        bc_2 = Div(1.0, Call(K("Expr"), "numeric", []any{ over_2, env_2 }))
-        _ = bc_2
-        bc_2 = Div(M_round((Mul(bc_2, Power(10.0, 9.0)))), Power(10.0, 9.0))
-        var half_2 any
-        half_2 = Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 0.5 }), Call(K("Expr"), "field", []any{ u_2 })) })
-        _ = half_2
-        var gA_2 any
-        gA_2 = Call(K("Expr"), "pown", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), half_2 }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), half_2) }), Neg(1.0) })) }), 2.0 })
-        _ = gA_2
-        var gB_2 any
-        gB_2 = Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "num", []any{ 1.0 }), half_2) }), 4.0 })
-        _ = gB_2
-        var gover_2 any
-        gover_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ u_2 }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "mul", []any{ Lst(gA_2, Call(K("Expr"), "pown", []any{ gB_2, Neg(1.0) })) }), 0.5 })) }) })
-        _ = gover_2
-        var genv_2 any
-        genv_2 = Make(Node)
-        _ = genv_2
-        SetAt(genv_2, u_2, Call(K("Expr"), "numeric", []any{ Call(K("Expr"), "root", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ gover_2, u_2 }) }), u_2 }), genv_2 }))
-        var gr_2 any
-        gr_2 = Div(1.0, Call(K("Expr"), "numeric", []any{ gover_2, genv_2 }))
-        _ = gr_2
-        if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "b_{c}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ bc_2 }), Call(K("Expr"), "field", []any{ "\\bar{m}" })) }), "where a ray stops coming back", Lst(Get(A_2, "key"), Get(B_2, "key")), "THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's", Lst("a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r", "\\bar{m}/b at the turning point = " + Str(Call(K("Expr"), "show", []any{ over_2 })) + "", "largest where its slope is nought: \\delta n_{f} = " + Str(Call(K("Fmt"), "fixed", []any{ sphere_2, 6.0 })) + ", the photon sphere at r = " + Str(Call(K("Fmt"), "fixed", []any{ Div(1.0, sphere_2), 4.0 })) + " \\bar{m}", "b_{c} = " + Str(Call(K("Fmt"), "fixed", []any{ bc_2, 4.0 })) + " \\bar{m}", "general relativity's metric read the same way: b_{c} = " + Str(Call(K("Fmt"), "fixed", []any{ gr_2, 4.0 })) + " \\bar{m}, which is 3\\sqrt{3}", "so at the same \\bar{m} this shadow is " + Str(Call(K("Fmt"), "fixed", []any{ Mul(100.0, (Sub(Div(bc_2, gr_2), 1.0))), 2.0 })) + " per cent wider") }))
-        }
-        return nil
-      })) }...)
+        return Call(K("Inferences"), "step", []any{ "b_{c}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ bc_0 }), Call(K("Expr"), "field", []any{ "\\bar{m}" })) }), "where a ray stops coming back", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", Lst("a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = " + Str(Call(K("Expr"), "show", []any{ over_0 })) + "", "largest where its slope is nought: \\delta n_{f} = " + Str(Call(K("Fmt"), "fixed", []any{ sphere_0, 6.0 })) + ", the photon sphere at r = " + Str(Call(K("Fmt"), "fixed", []any{ Div(1.0, sphere_0), 4.0 })) + " \\bar{m}", "b_{c} = " + Str(Call(K("Fmt"), "fixed", []any{ bc_0, 4.0 })) + " \\bar{m}; general relativity's is 3\\sqrt{3} = " + Str(Call(K("Fmt"), "fixed", []any{ gr_0, 4.0 })) + "", Tern(Truthy(Call(K("Fmt"), "finite", []any{ index_0 })), func() any { return "the medium's index read as an isotropic metric instead gives " + Str(Call(K("Fmt"), "fixed", []any{ index_0, 4.0 })) + " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read" }, func() any { return "the medium's index gives no metric of its own here" })) })
       }
       return nil
     })
@@ -24736,7 +24744,7 @@ func init() {
         Invoke(fail, []any{ "galaxy.stars is not on disk - run the galaxies (`" + Str(Get(K("Galaxies"), "SIMULATED")) + "`) and try again" })
       }
       if true {
-        return Make("Picture", []any{ Kw("id", "galaxy.simulation"), Kw("what", "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured"), Kw("width", 960.0), Kw("height", 720.0), Kw("frames", Get(Get(stars_0, "header"), Str("frames"))), Kw("paint", Fn(func(a3 []any) any {
+        return Make("Picture", []any{ Kw("id", "galaxy.simulation"), Kw("what", "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured"), Kw("width", 960.0), Kw("height", 720.0), Kw("frames", Get(Get(stars_0, "header"), Str("frames"))), Kw("paint", Fn(func(a3 []any) any {
         var played_2 any = Arg(a3, 0); _ = played_2;
         if true {
           return Make("Orbiting", []any{ Kw("stars", stars_0) }...)
@@ -24896,7 +24904,7 @@ func init() {
         Invoke(fail, []any{ "galaxy.formed is not on disk - run the galaxies (`" + Str(Get(K("Galaxies"), "SIMULATED")) + "`) and try again" })
       }
       if true {
-        return Make("Picture", []any{ Kw("id", "galaxy.formed"), Kw("what", "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms"), Kw("width", 960.0), Kw("height", 720.0), Kw("frames", Get(Get(got_0, "header"), Str("frames"))), Kw("paint", Fn(func(a3 []any) any {
+        return Make("Picture", []any{ Kw("id", "galaxy.formed"), Kw("what", "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms"), Kw("width", 960.0), Kw("height", 720.0), Kw("frames", Get(Get(got_0, "header"), Str("frames"))), Kw("paint", Fn(func(a3 []any) any {
         var played_2 any = Arg(a3, 0); _ = played_2;
         if true {
           return Make("Forming", []any{ Kw("formed", got_0) }...)
@@ -25138,7 +25146,7 @@ func init() {
       var a0_text_0 any
       a0_text_0 = Call(K("Fmt"), "exponential", []any{ Get(H_0, Str("a0")), 3.0 })
       _ = a0_text_0
-      Call(s_0, "fill_text", []any{ "" + Str(stars_n_0) + " stars each, every one pulled by every other through the law (a₀ " + Str(a0_text_0) + " m/s²), no halo; launched smooth at Q " + Str(q_text_0) + " — t = " + Str(gyr_0) + " Gyr", 22.0, 44.0 })
+      Call(s_0, "fill_text", []any{ "" + Str(stars_n_0) + " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " + Str(a0_text_0) + " m/s²), no halo; launched smooth at Q " + Str(q_text_0) + " — t = " + Str(gyr_0) + " Gyr", 22.0, 44.0 })
       var side_0 any
       side_0 = Call(K("Fmt"), "min", []any{ Div((Sub(Get(s_0, "width"), 66.0)), 2.0), Sub(Get(s_0, "height"), 110.0) })
       _ = side_0
@@ -26073,6 +26081,12 @@ func init() {
     c.StaticField("THREAD", func(self any) any { return "  let i: u32 = P[7] + gid.y * 65536u + gid.x;" })
     c.StaticField("ENTRY", func(self any) any { return "@compute @workgroup_size(64) fn" })
     c.StaticField("ID", func(self any) any { return "(@builtin(global_invocation_id) gid: vec3<u32>) {" })
+    c.StaticField("NY", func(self any) any { return 21.0 })
+    c.StaticField("NB", func(self any) any { return 11.0 })
+    c.StaticField("RUNG_Y", func(self any) any { return 0.05 })
+    c.StaticField("RUNG_B", func(self any) any { return 0.1 })
+    c.StaticField("RINGS_IN", func(self any) any { return 8.0 })
+    c.StaticField("FAR_OFF", func(self any) any { return 30.0 })
     c.StaticField("OMEGA_M", func(self any) any { return 0.315 })
     c.StaticField("FILM_STARS", func(self any) any { return 4096.0 })
     c.StaticField("FILM_TURNS", func(self any) any { return 0.5 })
@@ -26145,8 +26159,29 @@ func init() {
       var py_0 any
       py_0 = Call(K("Shaded"), "literal", []any{ Get(K("Simulation"), "PRIOR_Y") })
       _ = py_0
+      var ly0_0 any
+      ly0_0 = Call(K("Shaded"), "literal", []any{ Sub(Call(K("Fmt"), "log10", []any{ Get(K("Sparc"), "YD") }), Div(Mul(Get(K("Simulation"), "RUNG_Y"), Sub(Get(K("Simulation"), "NY"), 1.0)), 2.0)) })
+      _ = ly0_0
+      var lb0_0 any
+      lb0_0 = Call(K("Shaded"), "literal", []any{ Sub(Call(K("Fmt"), "log10", []any{ Get(K("Sparc"), "YB") }), Div(Mul(Get(K("Simulation"), "RUNG_B"), Sub(Get(K("Simulation"), "NB"), 1.0)), 2.0)) })
+      _ = lb0_0
+      var sy_0 any
+      sy_0 = Call(K("Shaded"), "literal", []any{ Get(K("Simulation"), "RUNG_Y") })
+      _ = sy_0
+      var sb_0 any
+      sb_0 = Call(K("Shaded"), "literal", []any{ Get(K("Simulation"), "RUNG_B") })
+      _ = sb_0
+      var topy_0 any
+      topy_0 = Call(K("Shaded"), "literal", []any{ Sub(Sub(Get(K("Simulation"), "NY"), 1.0), 0.0001) })
+      _ = topy_0
+      var ny_0 any
+      ny_0 = Get(K("Simulation"), "NY")
+      _ = ny_0
+      var nbs_0 any
+      nbs_0 = Get(K("Simulation"), "NB")
+      _ = nbs_0
       if true {
-        return M_join(Lst("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", Get(K("Simulation"), "law_wgsl"), "" + Str(Get(K("Simulation"), "ENTRY")) + " FIT" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let YD: f32 = exp(ly * " + Str(ln10_0) + ");", "  let YB: f32 = exp(lb * " + Str(ln10_0) + ");", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + Str(pi_0) + " / 180.0) / sin(ip * " + Str(pi_0) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + Str(lyd_0) + ") / " + Str(py_0) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + Str(lyb_0) + ") / " + Str(py_0) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n")
+        return M_join(Lst("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", "" + Str(Get(K("Simulation"), "ENTRY")) + " FIT" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let uy: f32 = clamp((ly - " + Str(ly0_0) + ") / " + Str(sy_0) + ", 0.0, " + Str(topy_0) + ");", "  let ky: u32 = u32(floor(uy));", "  let fy: f32 = uy - floor(uy);", "  var nb: u32 = 1u;", "  if (G[b + 7u] > 0.0) { nb = " + Str(nbs_0) + "u; }", "  var ub: f32 = 0.0;", "  if (nb > 1u) { ub = clamp((lb - " + Str(lb0_0) + ") / " + Str(sb_0) + ", 0.0, f32(nb - 1u) - 0.0001); }", "  let kb: u32 = u32(floor(ub));", "  let fb: f32 = ub - floor(ub);", "  let kb1: u32 = min(kb + 1u, nb - 1u);", "  let base: u32 = u32(G[b + 15u]);", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + Str(pi_0) + " / 180.0) / sin(ip * " + Str(pi_0) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let o: u32 = p - start;", "    let cnt: u32 = u32(G[b + 1u]);", "    let lo: f32 = (1.0 - fy) * L[base + (kb * " + Str(ny_0) + "u + ky) * cnt + o] + fy * L[base + (kb * " + Str(ny_0) + "u + ky + 1u) * cnt + o];", "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " + Str(ny_0) + "u + ky) * cnt + o] + fy * L[base + (kb1 * " + Str(ny_0) + "u + ky + 1u) * cnt + o];", "    let g: f32 = (1.0 - fb) * lo + fb * hi;", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + Str(lyd_0) + ") / " + Str(py_0) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + Str(lyb_0) + ") / " + Str(py_0) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n")
       }
       return nil
     })
@@ -26158,7 +26193,7 @@ func init() {
     })
     c.Static("stars_kernel", func(self any, a1 []any) any {
       if true {
-        return M_join(Lst("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", Get(K("Simulation"), "law_wgsl"), "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) {", "    let q: f32 = rmax / r;", "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);", "  }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " START" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " STEP" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n")
+        return M_join(Lst("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " START" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " STEP" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n")
       }
       return nil
     })
@@ -26933,6 +26968,364 @@ func init() {
       }
       return nil
     })
+    c.Field("on", func(self any) any { return Make("Felt", []any{  }...) })
+    c.Method("unit_of", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0;
+      if true {
+        return Div(Elem(Elem(Elem(Get(self, "rows"), j_0), Sub(Len(Elem(Get(self, "rows"), j_0)), 1.0)), 0.0), 10.0)
+      }
+      return nil
+    })
+    c.Method("grid_of", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0;
+      var F_0 any
+      F_0 = Get(self, "on")
+      _ = F_0
+      var L_0 any
+      L_0 = Call(self, "unit_of", []any{ j_0 })
+      _ = L_0
+      var es_0 any
+      es_0 = Elem(Get(self, "edges"), j_0)
+      _ = es_0
+      var n_0 any
+      n_0 = Sub(Len(es_0), 1.0)
+      _ = n_0
+      var wd_0 any
+      wd_0 = Elem(Get(self, "w_discs"), j_0)
+      _ = wd_0
+      var wg_0 any
+      wg_0 = Elem(Get(self, "w_gases"), j_0)
+      _ = wg_0
+      var rs_0 any
+      rs_0 = Elem(Get(self, "rows"), j_0)
+      _ = rs_0
+      var t_0 any
+      t_0 = Elem(Get(self, "thick"), j_0)
+      _ = t_0
+      var rings_0 any
+      rings_0 = Lst()
+      _ = rings_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var a_1 any = Box(i1)
+        _ = a_1
+        var area_1 any
+        area_1 = Sub(Mul(Elem(es_0, Add(a_1, 1.0)), Elem(es_0, Add(a_1, 1.0))), Mul(Elem(es_0, a_1), Elem(es_0, a_1)))
+        _ = area_1
+        for i2 := 0.0; i2 < Num(Get(K("Simulation"), "RINGS_IN")); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          var r0_2 any
+          r0_2 = Add(Elem(es_0, a_1), Div(Mul((Sub(Elem(es_0, Add(a_1, 1.0)), Elem(es_0, a_1))), k_2), Get(K("Simulation"), "RINGS_IN")))
+          _ = r0_2
+          var r1_2 any
+          r1_2 = Add(Elem(es_0, a_1), Div(Mul((Sub(Elem(es_0, Add(a_1, 1.0)), Elem(es_0, a_1))), Add(k_2, 1.0)), Get(K("Simulation"), "RINGS_IN")))
+          _ = r1_2
+          var soft_2 any
+          soft_2 = Div((Sub(r1_2, r0_2)), 2.0)
+          _ = soft_2
+          M_push(rings_0, Lst(Div((Add(r0_2, r1_2)), 2.0), Tern(Truthy(Gt(area_1, 0.0)), func() any { return Div((Sub(Mul(r1_2, r1_2), Mul(r0_2, r0_2))), area_1) }, func() any { return 0.0 }), a_1, Add(Mul(t_0, t_0), Mul(soft_2, soft_2))))
+        }
+      }
+      var md_0 any
+      md_0 = M_reduce(wd_0, 0.0, Fn(func(a3 []any) any {
+        var m_2 any = Arg(a3, 0); _ = m_2; var v_2 any = Arg(a3, 1); _ = v_2;
+        if true {
+          return Add(m_2, v_2)
+        }
+        return nil
+      }))
+      _ = md_0
+      var mg_0 any
+      mg_0 = M_reduce(wg_0, 0.0, Fn(func(a3 []any) any {
+        var m_2 any = Arg(a3, 0); _ = m_2; var v_2 any = Arg(a3, 1); _ = v_2;
+        if true {
+          return Add(m_2, v_2)
+        }
+        return nil
+      }))
+      _ = mg_0
+      var out_0 any
+      out_0 = M_map(Rng(6.0), Fn(func(a3 []any) any {
+        var k_2 any = Arg(a3, 0); _ = k_2;
+        if true {
+          return Filled(Get(F_0, "cells"), 0.0)
+        }
+        return nil
+      }))
+      _ = out_0
+      for i1 := 0.0; i1 < Num(Get(F_0, "cells")); i1++ {
+        var c__1 any = Box(i1)
+        _ = c__1
+        var i_1 any
+        i_1 = M_floor((Div(c__1, Get(K("Felt"), "NMU"))))
+        _ = i_1
+        var mu_1 any
+        mu_1 = Elem(Get(F_0, "mc"), Mod(c__1, Get(K("Felt"), "NMU")))
+        _ = mu_1
+        var r_1 any
+        r_1 = Mul(Elem(Get(F_0, "rc"), i_1), L_0)
+        _ = r_1
+        var R_1 any
+        R_1 = Mul(r_1, M_sqrt((Sub(1.0, Mul(mu_1, mu_1)))))
+        _ = R_1
+        var z_1 any
+        z_1 = Mul(r_1, mu_1)
+        _ = z_1
+        if Truthy(Gt(r_1, Mul(Get(K("Simulation"), "FAR_OFF"), Elem(es_0, n_0)))) {
+          SetAt(Elem(out_0, 0.0), c__1, Sub(0.0, Div(Mul(md_0, R_1), (Mul(Mul(r_1, r_1), r_1)))))
+          SetAt(Elem(out_0, 1.0), c__1, Sub(0.0, Div(Mul(md_0, z_1), (Mul(Mul(r_1, r_1), r_1)))))
+          SetAt(Elem(out_0, 2.0), c__1, Sub(0.0, Div(Mul(mg_0, R_1), (Mul(Mul(r_1, r_1), r_1)))))
+          SetAt(Elem(out_0, 3.0), c__1, Sub(0.0, Div(Mul(mg_0, z_1), (Mul(Mul(r_1, r_1), r_1)))))
+        } else {
+          for _, e2 := range Items(rings_0) {
+            var b_2 any = e2
+            _ = b_2
+            var g_2 any
+            g_2 = Call(K("Felt"), "ring", []any{ R_1, z_1, Elem(b_2, 0.0), 0.0, Elem(b_2, 3.0) })
+            _ = g_2
+            SetAt(Elem(out_0, 0.0), c__1, Add(Elem(Elem(out_0, 0.0), c__1), Mul(Mul(Elem(wd_0, Elem(b_2, 2.0)), Elem(b_2, 1.0)), Elem(g_2, 0.0))))
+            SetAt(Elem(out_0, 1.0), c__1, Add(Elem(Elem(out_0, 1.0), c__1), Mul(Mul(Elem(wd_0, Elem(b_2, 2.0)), Elem(b_2, 1.0)), Elem(g_2, 1.0))))
+            SetAt(Elem(out_0, 2.0), c__1, Add(Elem(Elem(out_0, 2.0), c__1), Mul(Mul(Elem(wg_0, Elem(b_2, 2.0)), Elem(b_2, 1.0)), Elem(g_2, 0.0))))
+            SetAt(Elem(out_0, 3.0), c__1, Add(Elem(Elem(out_0, 3.0), c__1), Mul(Mul(Elem(wg_0, Elem(b_2, 2.0)), Elem(b_2, 1.0)), Elem(g_2, 1.0))))
+          }
+        }
+        var gb_1 any
+        gb_1 = Call(K("Simulation"), "bulge_at", []any{ rs_0, r_1 })
+        _ = gb_1
+        SetAt(Elem(out_0, 4.0), c__1, Sub(0.0, Div(Mul(gb_1, R_1), r_1)))
+        SetAt(Elem(out_0, 5.0), c__1, Sub(0.0, Div(Mul(gb_1, z_1), r_1)))
+      }
+      if true {
+        return out_0
+      }
+      return nil
+    })
+    c.Method("made_of", func(self any, a1 []any) any {
+      var grid_0 any = Arg(a1, 0); _ = grid_0; var yd_0 any = Arg(a1, 1); _ = yd_0; var yb_0 any = Arg(a1, 2); _ = yb_0;
+      var a_0 any
+      a_0 = Get(self, "a0")
+      _ = a_0
+      var gr_0 any
+      gr_0 = M_map(Rng(Get(Get(self, "on"), "cells")), Fn(func(a3 []any) any {
+        var c__2 any = Arg(a3, 0); _ = c__2;
+        if true {
+          return Div((Add(Add(Mul(yd_0, Elem(Elem(grid_0, 0.0), c__2)), Elem(Elem(grid_0, 2.0), c__2)), Mul(yb_0, Elem(Elem(grid_0, 4.0), c__2)))), a_0)
+        }
+        return nil
+      }))
+      _ = gr_0
+      var gz_0 any
+      gz_0 = M_map(Rng(Get(Get(self, "on"), "cells")), Fn(func(a3 []any) any {
+        var c__2 any = Arg(a3, 0); _ = c__2;
+        if true {
+          return Div((Add(Add(Mul(yd_0, Elem(Elem(grid_0, 1.0), c__2)), Elem(Elem(grid_0, 3.0), c__2)), Mul(yb_0, Elem(Elem(grid_0, 5.0), c__2)))), a_0)
+        }
+        return nil
+      }))
+      _ = gz_0
+      if true {
+        return M_map(Call(Get(self, "on"), "made_rows", []any{ gr_0, gz_0 }), Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return Mul(v_2, a_0)
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Method("felt_at", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0; var made_0 any = Arg(a1, 1); _ = made_0; var r_0 any = Arg(a1, 2); _ = r_0; var gN_0 any = Arg(a1, 3); _ = gN_0;
+      if true {
+        return Sub(gN_0, Call(Get(self, "on"), "made_at", []any{ made_0, Div(r_0, Call(self, "unit_of", []any{ j_0 })) }))
+      }
+      return nil
+    })
+    c.Field("grids", func(self any) any { return Lst() })
+    c.Field("ladder", func(self any) any { return Lst() })
+    c.Field("ladder_at", func(self any) any { return Lst() })
+    c.Method("rungs", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0;
+      if true {
+        return Tern(Truthy(Call(self, "has_bulge", []any{ j_0 })), func() any { return Get(K("Simulation"), "NB") }, func() any { return 1.0 })
+      }
+      return nil
+    })
+    c.Getter("solve_fields", func(self any, a1 []any) any {
+      Set(self, "grids", Lst())
+      Set(self, "ladder", Lst())
+      Set(self, "ladder_at", Lst())
+      for i1 := 0.0; i1 < Num(Len(Get(self, "ids"))); i1++ {
+        var j_1 any = Box(i1)
+        _ = j_1
+        var grid_1 any
+        grid_1 = Call(self, "grid_of", []any{ j_1 })
+        _ = grid_1
+        M_push(Get(self, "grids"), grid_1)
+        M_push(Get(self, "ladder_at"), Len(Get(self, "ladder")))
+        var kept_1 any
+        kept_1 = Filt(Rng(Len(Elem(Get(self, "rows"), j_1))), Fn(func(a4 []any) any {
+          var i_3 any = Arg(a4, 0); _ = i_3;
+          if true {
+            return Gt(Elem(Elem(Elem(Get(self, "rows"), j_1), i_3), 6.0), 0.0)
+          }
+          return nil
+        }))
+        _ = kept_1
+        for i2 := 0.0; i2 < Num(Call(self, "rungs", []any{ j_1 })); i2++ {
+          var ib_2 any = Box(i2)
+          _ = ib_2
+          var yb_2 any
+          yb_2 = Power(10.0, (Call(self, "rung_b", []any{ ib_2 })))
+          _ = yb_2
+          for i3 := 0.0; i3 < Num(Get(K("Simulation"), "NY")); i3++ {
+            var iy_3 any = Box(i3)
+            _ = iy_3
+            var yd_3 any
+            yd_3 = Power(10.0, (Call(self, "rung_y", []any{ iy_3 })))
+            _ = yd_3
+            var made_3 any
+            made_3 = Call(self, "made_of", []any{ grid_1, yd_3, yb_2 })
+            _ = made_3
+            for _, e4 := range Items(kept_1) {
+              var i_4 any = e4
+              _ = i_4
+              var p_4 any
+              p_4 = Elem(Elem(Get(self, "at_rows"), j_1), i_4)
+              _ = p_4
+              M_push(Get(self, "ladder"), Call(self, "felt_at", []any{ j_1, made_3, Elem(Elem(Elem(Get(self, "rows"), j_1), i_4), 0.0), Add(Add(Mul(yd_3, Elem(p_4, 0.0)), Mul(yb_2, Elem(p_4, 2.0))), Elem(p_4, 1.0)) }))
+            }
+          }
+        }
+      }
+      return nil
+    })
+    c.Method("rung_y", func(self any, a1 []any) any {
+      var iy_0 any = Arg(a1, 0); _ = iy_0;
+      if true {
+        return Add(Call(K("Fmt"), "log10", []any{ Get(K("Sparc"), "YD") }), Mul(Get(K("Simulation"), "RUNG_Y"), (Sub(iy_0, Div(Sub(Get(K("Simulation"), "NY"), 1.0), 2.0)))))
+      }
+      return nil
+    })
+    c.Method("rung_b", func(self any, a1 []any) any {
+      var ib_0 any = Arg(a1, 0); _ = ib_0;
+      if true {
+        return Add(Call(K("Fmt"), "log10", []any{ Get(K("Sparc"), "YB") }), Mul(Get(K("Simulation"), "RUNG_B"), (Sub(ib_0, Div(Sub(Get(K("Simulation"), "NB"), 1.0), 2.0)))))
+      }
+      return nil
+    })
+    c.Method("laddered", func(self any, a1 []any) any {
+      var j_0 any = Arg(a1, 0); _ = j_0; var k_0 any = Arg(a1, 1); _ = k_0; var ly_0 any = Arg(a1, 2); _ = ly_0; var lb_0 any = Arg(a1, 3); _ = lb_0;
+      var count_0 any
+      count_0 = Len(Filt(Elem(Get(self, "rows"), j_0), Fn(func(a3 []any) any {
+        var row_2 any = Arg(a3, 0); _ = row_2;
+        if true {
+          return Gt(Elem(row_2, 6.0), 0.0)
+        }
+        return nil
+      })))
+      _ = count_0
+      var uy_0 any
+      uy_0 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div((Sub(ly_0, Call(self, "rung_y", []any{ 0.0 }))), Get(K("Simulation"), "RUNG_Y")), 0.0 }), Sub(Sub(Get(K("Simulation"), "NY"), 1.0), 0.0001) })
+      _ = uy_0
+      var ky_0 any
+      ky_0 = M_floor(uy_0)
+      _ = ky_0
+      var fy_0 any
+      fy_0 = Sub(uy_0, ky_0)
+      _ = fy_0
+      var nb_0 any
+      nb_0 = Call(self, "rungs", []any{ j_0 })
+      _ = nb_0
+      var ub_0 any
+      ub_0 = Tern(Truthy(Gt(nb_0, 1.0)), func() any { return Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div((Sub(lb_0, Call(self, "rung_b", []any{ 0.0 }))), Get(K("Simulation"), "RUNG_B")), 0.0 }), Sub(Sub(nb_0, 1.0), 0.0001) }) }, func() any { return 0.0 })
+      _ = ub_0
+      var kb_0 any
+      kb_0 = M_floor(ub_0)
+      _ = kb_0
+      var fb_0 any
+      fb_0 = Sub(ub_0, kb_0)
+      _ = fb_0
+      var kb1_0 any
+      kb1_0 = Call(K("Fmt"), "min", []any{ Add(kb_0, 1.0), Sub(nb_0, 1.0) })
+      _ = kb1_0
+      var at_0 any
+      at_0 = Fn(func(a2 []any) any {
+        var b_1 any = Arg(a2, 0); _ = b_1; var y_1 any = Arg(a2, 1); _ = y_1;
+        if true {
+          return Elem(Get(self, "ladder"), Add(Add(Elem(Get(self, "ladder_at"), j_0), Mul((Add(Mul(b_1, Get(K("Simulation"), "NY")), y_1)), count_0)), k_0))
+        }
+        return nil
+      })
+      _ = at_0
+      var lo_0 any
+      lo_0 = Add(Mul((Sub(1.0, fy_0)), Invoke(at_0, []any{ kb_0, ky_0 })), Mul(fy_0, Invoke(at_0, []any{ kb_0, Add(ky_0, 1.0) })))
+      _ = lo_0
+      var hi_0 any
+      hi_0 = Add(Mul((Sub(1.0, fy_0)), Invoke(at_0, []any{ kb1_0, ky_0 })), Mul(fy_0, Invoke(at_0, []any{ kb1_0, Add(ky_0, 1.0) })))
+      _ = hi_0
+      if true {
+        return Add(Mul((Sub(1.0, fb_0)), lo_0), Mul(fb_0, hi_0))
+      }
+      return nil
+    })
+    c.Method("solved_points", func(self any, a1 []any) any {
+      var yd_0 any = Arg(a1, 0); _ = yd_0; var yb_0 any = Arg(a1, 1); _ = yb_0;
+      var measured_0 any
+      measured_0 = Lst()
+      _ = measured_0
+      var tabled_0 any
+      tabled_0 = Lst()
+      _ = tabled_0
+      for i1 := 0.0; i1 < Num(Len(Get(self, "ids"))); i1++ {
+        var j_1 any = Box(i1)
+        _ = j_1
+        var made_1 any
+        made_1 = Call(self, "made_of", []any{ Elem(Get(self, "grids"), j_1), Elem(yd_0, j_1), Elem(yb_0, j_1) })
+        _ = made_1
+        for i2 := 0.0; i2 < Num(Len(Elem(Get(self, "rows"), j_1))); i2++ {
+          var i_2 any = Box(i2)
+          _ = i_2
+          var p_2 any
+          p_2 = Elem(Elem(Get(self, "at_rows"), j_1), i_2)
+          _ = p_2
+          M_push(measured_0, Call(self, "felt_at", []any{ j_1, made_1, Elem(Elem(Elem(Get(self, "rows"), j_1), i_2), 0.0), Add(Add(Mul(Elem(yd_0, j_1), Elem(p_2, 0.0)), Mul(Elem(yb_0, j_1), Elem(p_2, 2.0))), Elem(p_2, 1.0)) }))
+        }
+        for _, e2 := range Items(Elem(Get(self, "tables"), j_1)) {
+          var t_2 any = e2
+          _ = t_2
+          M_push(tabled_0, Call(self, "felt_at", []any{ j_1, made_1, Elem(t_2, 0.0), Add(Add(Mul(Elem(yd_0, j_1), Elem(t_2, 1.0)), Mul(Elem(yb_0, j_1), Elem(t_2, 3.0))), Elem(t_2, 2.0)) }))
+        }
+      }
+      if true {
+        return M_concat(measured_0, tabled_0)
+      }
+      return nil
+    })
+    c.Getter("own_y", func(self any, a1 []any) any {
+      if true {
+        return M_map(Get(self, "ids"), Fn(func(a3 []any) any {
+        var g_2 any = Arg(a3, 0); _ = g_2;
+        if true {
+          return Get(K("Sparc"), "YD")
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Getter("own_b", func(self any, a1 []any) any {
+      if true {
+        return M_map(Get(self, "ids"), Fn(func(a3 []any) any {
+        var g_2 any = Arg(a3, 0); _ = g_2;
+        if true {
+          return Get(K("Sparc"), "YB")
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
     c.Static("lift_coefficients", func(self any, a1 []any) any {
       var theory_0 any = Arg(a1, 0); _ = theory_0; var deg_0 any = Arg(a1, 1); _ = deg_0;
       var model_0 any
@@ -27304,7 +27697,7 @@ func init() {
         stop_2 = Tern(Truthy(Lt(Add(j_2, 1.0), Len(Get(self, "ids")))), func() any { return Elem(Get(self, "fit_at"), Add(j_2, 1.0)) }, func() any { return M_floor((Div(Len(pts_0), 8.0))) })
         _ = stop_2
         if true {
-          return Lst(Elem(Get(self, "fit_at"), j_2), Sub(stop_2, Elem(Get(self, "fit_at"), j_2)), Elem(Get(S_0, Str("D")), g_2), Elem(Get(S_0, Str("e_D")), g_2), Elem(Get(S_0, Str("Inc")), g_2), Elem(Get(S_0, Str("e_Inc")), g_2), Get(self, "a0"), Tern(Truthy(Call(self, "has_bulge", []any{ j_2 })), func() any { return 1.0 }, func() any { return 0.0 }), Elem(Get(self, "centre_y"), j_2), Elem(Get(self, "centre_b"), j_2), Elem(Get(self, "centre_d"), j_2), Elem(Get(self, "centre_i"), j_2), Mul(Get(K("Simulation"), "STEP_Y"), Get(self, "spacing")), Mul(Get(K("Simulation"), "STEP_D"), Get(self, "spacing")), Mul(Get(K("Simulation"), "STEP_I"), Get(self, "spacing")), 0.0)
+          return Lst(Elem(Get(self, "fit_at"), j_2), Sub(stop_2, Elem(Get(self, "fit_at"), j_2)), Elem(Get(S_0, Str("D")), g_2), Elem(Get(S_0, Str("e_D")), g_2), Elem(Get(S_0, Str("Inc")), g_2), Elem(Get(S_0, Str("e_Inc")), g_2), Get(self, "a0"), Tern(Truthy(Call(self, "has_bulge", []any{ j_2 })), func() any { return 1.0 }, func() any { return 0.0 }), Elem(Get(self, "centre_y"), j_2), Elem(Get(self, "centre_b"), j_2), Elem(Get(self, "centre_d"), j_2), Elem(Get(self, "centre_i"), j_2), Mul(Get(K("Simulation"), "STEP_Y"), Get(self, "spacing")), Mul(Get(K("Simulation"), "STEP_D"), Get(self, "spacing")), Mul(Get(K("Simulation"), "STEP_I"), Get(self, "spacing")), Elem(Get(self, "ladder_at"), j_2))
         }
         return nil
       })) })
@@ -27364,12 +27757,6 @@ func init() {
           return Mul(Neg(1.0), Power(10.0, 30.0))
         }
       }
-      var YD_0 any
-      YD_0 = Power(10.0, Elem(at_0, 0.0))
-      _ = YD_0
-      var YB_0 any
-      YB_0 = Power(10.0, Elem(at_0, 1.0))
-      _ = YB_0
       var f_0 any
       f_0 = Div(Elem(at_0, 2.0), D_0)
       _ = f_0
@@ -27379,6 +27766,9 @@ func init() {
       var chi_0 any
       chi_0 = 0.0
       _ = chi_0
+      var k_0 any
+      k_0 = 0.0
+      _ = k_0
       for i1 := 0.0; i1 < Num(Len(Elem(Get(self, "rows"), j_0))); i1++ {
         var i_1 any = Box(i1)
         _ = i_1
@@ -27386,16 +27776,14 @@ func init() {
         row_1 = Elem(Elem(Get(self, "rows"), j_0), i_1)
         _ = row_1
         if Truthy(Gt(Elem(row_1, 6.0), 0.0)) {
-          var p_1 any
-          p_1 = Elem(Elem(Get(self, "at_rows"), j_0), i_1)
-          _ = p_1
           var vm_1 any
-          vm_1 = M_sqrt(Call(K("Fmt"), "max", []any{ Mul(Mul(f_0, Elem(row_1, 0.0)), Call(self, "felt", []any{ Add(Add(Mul(YD_0, Elem(p_1, 0.0)), Mul(YB_0, Elem(p_1, 2.0))), Elem(p_1, 1.0)) })), 0.0 }))
+          vm_1 = M_sqrt(Call(K("Fmt"), "max", []any{ Mul(Mul(f_0, Elem(row_1, 0.0)), Call(self, "laddered", []any{ j_0, k_0, Elem(at_0, 0.0), Elem(at_0, 1.0) })), 0.0 }))
           _ = vm_1
           var d_1 any
           d_1 = Div((Sub(Mul(Elem(row_1, 1.0), s_0), vm_1)), (Mul(Elem(row_1, 2.0), s_0)))
           _ = d_1
           chi_0 = Add(chi_0, Mul(d_1, d_1))
+          k_0 = Add(k_0, 1.0)
         }
       }
       var py_0 any
@@ -28231,7 +28619,7 @@ func init() {
       Set(extra_0, Str("rms1"), rms1_0)
       Set(extra_0, Str("repro"), Get(self, "repro"))
       Set(extra_0, Str("stir"), Get(K("Simulation"), "SIGMA"))
-      Set(extra_0, Str("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")
+      Set(extra_0, Str("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")
       Call(K("Measure"), "save", []any{ "galaxy.simulated", names_0, cols_0, extra_0 })
       var fields_0 any
       fields_0 = Make(Node)
@@ -28287,7 +28675,7 @@ func init() {
       _ = fextra_0
       Set(fextra_0, Str("ids"), Get(self, "ids"))
       Set(fextra_0, Str("table"), T_0)
-      Set(fextra_0, Str("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")
+      Set(fextra_0, Str("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")
       Call(K("Measure"), "save", []any{ "galaxy.fields", fnames_0, fields_0, fextra_0 })
       if Truthy(Not(M_empty(Get(self, "film_ids")))) {
         var film_0 any
@@ -28715,7 +29103,98 @@ func init() {
     c.StaticField("RINGS", func(self any) any { return 48.0 })
     c.StaticField("DISCS", func(self any) any { return Lst(Lst(10.7, 3.0), Lst(9.3, 2.0)) })
     c.StaticField("WHAT", func(self any) any { return Lst("a bright disc", "a dwarf") })
+    c.StaticField("REFRESH", func(self any) any { return 10.0 })
     c.Field("a0", func(self any) any { return Div(Call(K("Galaxies"), "a0_at", []any{ Get(self, "deg") }), Get(K("Simulation"), "UNIT_G")) })
+    c.Field("on", func(self any) any { return Make("Felt", []any{  }...) })
+    c.Field("made_now", func(self any) any { return Lst() })
+    c.Method("made_tables", func(self any, a1 []any) any {
+      var state_0 any = Arg(a1, 0); _ = state_0;
+      var head_0 any
+      head_0 = Lst()
+      _ = head_0
+      var tabs_0 any
+      tabs_0 = Lst()
+      _ = tabs_0
+      for i1 := 0.0; i1 < Num(Get(self, "discs_n")); i1++ {
+        var g_1 any = Box(i1)
+        _ = g_1
+        var rd_1 any
+        rd_1 = Call(self, "scale", []any{ g_1 })
+        _ = rd_1
+        var cx_1 any
+        cx_1 = 0.0
+        _ = cx_1
+        var cy_1 any
+        cy_1 = 0.0
+        _ = cy_1
+        for i2 := 0.0; i2 < Num(Get(K("Formed"), "N")); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          cx_1 = Add(cx_1, Div(Elem(state_0, Mul(4.0, (Add(Mul(g_1, Get(K("Formed"), "N")), k_2)))), Get(K("Formed"), "N")))
+          cy_1 = Add(cy_1, Div(Elem(state_0, Add(Mul(4.0, (Add(Mul(g_1, Get(K("Formed"), "N")), k_2))), 1.0)), Get(K("Formed"), "N")))
+        }
+        var xy_1 any
+        xy_1 = Lst()
+        _ = xy_1
+        for i2 := 0.0; i2 < Num(Get(K("Formed"), "N")); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          M_push(xy_1, Div((Sub(Elem(state_0, Mul(4.0, (Add(Mul(g_1, Get(K("Formed"), "N")), k_2)))), cx_1)), rd_1))
+          M_push(xy_1, Div((Sub(Elem(state_0, Add(Mul(4.0, (Add(Mul(g_1, Get(K("Formed"), "N")), k_2))), 1.0)), cy_1)), rd_1))
+        }
+        var table_1 any
+        table_1 = Tern(Truthy(Get(self, "newton")), func() any { return Filled(Mul(Mul(Get(K("Felt"), "NR"), Get(K("Felt"), "NPHI")), 2.0), 0.0) }, func() any { return Call(Get(self, "on"), "round_made", []any{ xy_1, Div(Div(Call(self, "GM", []any{ g_1 }), Get(K("Formed"), "N")), (Mul(Mul(Get(self, "a0"), rd_1), rd_1))), Get(K("Simulation"), "SHAPE_H") }) })
+        _ = table_1
+        for _, e2 := range Items(Lst(cx_1, cy_1, rd_1, Tern(Truthy(Get(self, "newton")), func() any { return 0.0 }, func() any { return Get(self, "a0") }))) {
+          var v_2 any = e2
+          _ = v_2
+          M_push(head_0, v_2)
+        }
+        for _, e2 := range Items(table_1) {
+          var v_2 any = e2
+          _ = v_2
+          M_push(tabs_0, v_2)
+        }
+      }
+      Set(self, "made_now", M_concat(head_0, tabs_0))
+      if true {
+        return Get(self, "made_now")
+      }
+      return nil
+    })
+    c.Method("made_at", func(self any, a1 []any) any {
+      var g_0 any = Arg(a1, 0); _ = g_0; var x_0 any = Arg(a1, 1); _ = x_0; var y_0 any = Arg(a1, 2); _ = y_0;
+      var M_0 any
+      M_0 = Get(self, "made_now")
+      _ = M_0
+      var n_0 any
+      n_0 = Mul(Mul(Get(K("Felt"), "NR"), Get(K("Felt"), "NPHI")), 2.0)
+      _ = n_0
+      var a_0 any
+      a_0 = Elem(M_0, Add(Mul(4.0, g_0), 3.0))
+      _ = a_0
+      if Truthy(Le(a_0, 0.0)) {
+        if true {
+          return Lst(0.0, 0.0)
+        }
+      }
+      var table_0 any
+      table_0 = M_map(Rng(n_0), Fn(func(a3 []any) any {
+        var q_2 any = Arg(a3, 0); _ = q_2;
+        if true {
+          return Elem(M_0, Add(Add(Mul(4.0, Get(self, "discs_n")), Mul(g_0, n_0)), q_2))
+        }
+        return nil
+      }))
+      _ = table_0
+      var got_0 any
+      got_0 = Call(Get(self, "on"), "round_at", []any{ table_0, Div((Sub(x_0, Elem(M_0, Mul(4.0, g_0)))), Elem(M_0, Add(Mul(4.0, g_0), 2.0))), Div((Sub(y_0, Elem(M_0, Add(Mul(4.0, g_0), 1.0)))), Elem(M_0, Add(Mul(4.0, g_0), 2.0))) })
+      _ = got_0
+      if true {
+        return Lst(Mul(Elem(got_0, 0.0), a_0), Mul(Elem(got_0, 1.0), a_0))
+      }
+      return nil
+    })
     c.Field("newton", func(self any) any { return false })
     c.Getter("scale_a0", func(self any, a1 []any) any {
       if true {
@@ -28886,11 +29365,17 @@ func init() {
       var mag_0 any
       mag_0 = Call(K("Fmt"), "hypot", []any{ gx_0, gy_0 })
       _ = mag_0
-      var f_0 any
-      f_0 = Tern(Truthy(Gt(mag_0, 0.0)), func() any { return (Tern(Truthy(Get(self, "newton")), func() any { return mag_0 }, func() any { return Call(K("Law"), "boost", []any{ mag_0, Get(self, "a0") }) })) }, func() any { return 0.0 })
-      _ = f_0
+      var more_0 any
+      more_0 = Call(self, "made_at", []any{ g_0, px_0, py_0 })
+      _ = more_0
+      var ax_0 any
+      ax_0 = Add(gx_0, Elem(more_0, 0.0))
+      _ = ax_0
+      var ay_0 any
+      ay_0 = Add(gy_0, Elem(more_0, 1.0))
+      _ = ay_0
       if true {
-        return Tern(Truthy(Gt(mag_0, 0.0)), func() any { return Lst(Mul(Div(gx_0, mag_0), f_0), Mul(Div(gy_0, mag_0), f_0), mag_0, f_0) }, func() any { return Lst(0.0, 0.0, 0.0, 0.0) })
+        return Lst(ax_0, ay_0, mag_0, Call(K("Fmt"), "hypot", []any{ ax_0, ay_0 }))
       }
       return nil
     })
@@ -29202,15 +29687,39 @@ func init() {
       Set(extra_0, Str("middles"), Get(self, "middles"))
       Set(extra_0, Str("deg"), Get(self, "deg"))
       Set(extra_0, Str("a0"), Mul(Get(self, "a0"), Get(K("Simulation"), "UNIT_G")))
-      Set(extra_0, Str("about"), "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")
+      Set(extra_0, Str("about"), "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")
       if true {
         return Call(K("Measure"), "save", []any{ "galaxy.formed", Lst("density"), cols_0, extra_0 })
       }
       return nil
     })
     c.Static("kernel", func(self any, a1 []any) any {
+      var F_0 any
+      F_0 = Make("Felt", []any{  }...)
+      _ = F_0
+      var r0_0 any
+      r0_0 = Call(K("Shaded"), "literal", []any{ Elem(Get(F_0, "rc"), 0.0) })
+      _ = r0_0
+      var step_0 any
+      step_0 = Call(K("Shaded"), "literal", []any{ Get(F_0, "step") })
+      _ = step_0
+      var topr_0 any
+      topr_0 = Call(K("Shaded"), "literal", []any{ Sub(Sub(Get(K("Felt"), "NR"), 1.0), 0.0001) })
+      _ = topr_0
+      var tau_0 any
+      tau_0 = Call(K("Shaded"), "literal", []any{ (2 * math.Pi) })
+      _ = tau_0
+      var dphi_0 any
+      dphi_0 = Call(K("Shaded"), "literal", []any{ Get(F_0, "dphi") })
+      _ = dphi_0
+      var np_0 any
+      np_0 = Get(K("Felt"), "NPHI")
+      _ = np_0
+      var nr_0 any
+      nr_0 = Get(K("Felt"), "NR")
+      _ = nr_0
       if true {
-        return M_join(Lst("// GENERATED from Formed.ray: stars that pull each other through the law", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + Str(Get(K("Formed"), "TILE")) + ">;", Get(K("Simulation"), "law_wgsl"), "@compute @workgroup_size(" + Str(Get(K("Formed"), "TILE")) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + Str(Get(K("Formed"), "TILE")) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + Str(Get(K("Formed"), "TILE")) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);", "  var f: f32 = 0.0;", "  if (mag > 0.0) {", "    f = mag;", "    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }", "    a = gN / mag * f;", "  }", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " KICKDRIFT" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " KICK" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n")
+        return M_join(Lst("// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> M: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + Str(Get(K("Formed"), "TILE")) + ">;", "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {", "  let a: f32 = M[4u * g + 3u];", "  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];", "  let r: f32 = length(d);", "  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let u: f32 = clamp(log(r / " + Str(r0_0) + ") / " + Str(step_0) + ", 0.0, " + Str(topr_0) + ");", "  let i0: u32 = u32(floor(u));", "  let fu: f32 = u - floor(u);", "  var ph: f32 = atan2(d.y, d.x);", "  if (ph < 0.0) { ph = ph + " + Str(tau_0) + "; }", "  var v: f32 = ph / " + Str(dphi_0) + " - 0.5;", "  if (v < 0.0) { v = v + " + Str(np_0) + ".0; }", "  let k0: u32 = u32(floor(v)) % " + Str(np_0) + "u;", "  let fv: f32 = v - floor(v);", "  let k1: u32 = (k0 + 1u) % " + Str(np_0) + "u;", "  let t: u32 = 4u * P[2] + g * " + Str(nr_0) + "u * " + Str(np_0) + "u * 2u;", "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + Str(np_0) + "u + k0)], M[t + 2u * (i0 * " + Str(np_0) + "u + k0) + 1u]);", "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + Str(np_0) + "u + k1)], M[t + 2u * (i0 * " + Str(np_0) + "u + k1) + 1u]);", "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + Str(np_0) + "u + k0)], M[t + 2u * ((i0 + 1u) * " + Str(np_0) + "u + k0) + 1u]);", "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + Str(np_0) + "u + k1)], M[t + 2u * ((i0 + 1u) * " + Str(np_0) + "u + k1) + 1u]);", "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);", "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;", "}", "@compute @workgroup_size(" + Str(Get(K("Formed"), "TILE")) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + Str(Get(K("Formed"), "TILE")) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + Str(Get(K("Formed"), "TILE")) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  let a: vec2<f32> = gN + made(g, me);", "  let f: f32 = length(a);", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " KICKDRIFT" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + Str(Get(K("Simulation"), "ENTRY")) + " KICK" + Str(Get(K("Simulation"), "ID")) + "", Get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n")
       }
       return nil
     })
@@ -29755,6 +30264,7 @@ func init() {
     c.StaticField("MIDDLE", func(self any) any { return Lst(0.0, 0.2, 0.5) })
     c.StaticField("GAS", func(self any) any { return Lst(Lst(0.0, 1.0), Lst(0.5, 2.0), Lst(0.5, 3.0), Lst(0.9, 2.0), Lst(0.9, 3.0)) })
     c.StaticField("FREEDOMS", func(self any) any { return Lst("mass", "thickness", "middle", "gas") })
+    c.StaticField("NPHI", func(self any) any { return 16.0 })
     c.StaticField("LADDER", func(self any) any { return Lst(Neg(6.5), 5.5, 193.0) })
     c.Getter("step", func(self any, a1 []any) any {
       if true {
@@ -30136,6 +30646,13 @@ func init() {
     })
     c.Field("band", func(self any) any { return Get(self, "factored") })
     c.Getter("factored", func(self any, a1 []any) any {
+      if true {
+        return Call(self, "factored_with", []any{ Filled(Get(self, "cells"), 0.0) })
+      }
+      return nil
+    })
+    c.Method("factored_with", func(self any, a1 []any) any {
+      var extra_0 any = Arg(a1, 0); _ = extra_0;
       var n_0 any
       n_0 = Get(self, "cells")
       _ = n_0
@@ -30160,7 +30677,7 @@ func init() {
         var f_1 any
         f_1 = Elem(Get(self, "faces"), k_1)
         _ = f_1
-        SetAt(m_0, Add(Mul(k_1, W_0), B_0), Add(Add(Add(Elem(f_1, 0.0), Elem(f_1, 1.0)), Elem(f_1, 2.0)), Elem(f_1, 3.0)))
+        SetAt(m_0, Add(Mul(k_1, W_0), B_0), Add(Add(Add(Add(Elem(f_1, 0.0), Elem(f_1, 1.0)), Elem(f_1, 2.0)), Elem(f_1, 3.0)), Elem(extra_0, k_1)))
         if Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))) {
           SetAt(m_0, Add(Add(Mul(k_1, W_0), B_0), B_0), Sub(0.0, Elem(f_1, 0.0)))
         }
@@ -30210,6 +30727,13 @@ func init() {
     })
     c.Method("solve_band", func(self any, a1 []any) any {
       var b_0 any = Arg(a1, 0); _ = b_0;
+      if true {
+        return Call(self, "solve_with", []any{ Get(self, "band"), b_0 })
+      }
+      return nil
+    })
+    c.Method("solve_with", func(self any, a1 []any) any {
+      var m_0 any = Arg(a1, 0); _ = m_0; var b_0 any = Arg(a1, 1); _ = b_0;
       var n_0 any
       n_0 = Get(self, "cells")
       _ = n_0
@@ -30219,9 +30743,6 @@ func init() {
       var W_0 any
       W_0 = Get(self, "width")
       _ = W_0
-      var m_0 any
-      m_0 = Get(self, "band")
-      _ = m_0
       var x_0 any
       x_0 = M_map(b_0, Fn(func(a3 []any) any {
         var v_2 any = Arg(a3, 0); _ = v_2;
@@ -30277,8 +30798,8 @@ func init() {
       }
       return nil
     })
-    c.Method("felt", func(self any, a1 []any) any {
-      var shape_0 any = Arg(a1, 0); _ = shape_0; var s_0 any = Arg(a1, 1); _ = s_0;
+    c.Method("made_rows", func(self any, a1 []any) any {
+      var gr_0 any = Arg(a1, 0); _ = gr_0; var gz_0 any = Arg(a1, 1); _ = gz_0;
       var n_0 any
       n_0 = Get(self, "cells")
       _ = n_0
@@ -30297,14 +30818,8 @@ func init() {
         var j_1 any
         j_1 = Mod(c__1, B_0)
         _ = j_1
-        var gr_1 any
-        gr_1 = Mul(s_0, Elem(Elem(shape_0, 0.0), c__1))
-        _ = gr_1
-        var gz_1 any
-        gz_1 = Mul(s_0, Elem(Elem(shape_0, 1.0), c__1))
-        _ = gz_1
         var f_1 any
-        f_1 = Sub(Call(K("Felt"), "over", []any{ Call(K("Fmt"), "hypot", []any{ gr_1, gz_1 }) }), 1.0)
+        f_1 = Sub(Call(K("Felt"), "over", []any{ Call(K("Fmt"), "hypot", []any{ Elem(gr_0, c__1), Elem(gz_0, c__1) }) }), 1.0)
         _ = f_1
         var mu_1 any
         mu_1 = Elem(Get(self, "mc"), j_1)
@@ -30312,8 +30827,8 @@ func init() {
         var st_1 any
         st_1 = M_sqrt((Sub(1.0, Mul(mu_1, mu_1))))
         _ = st_1
-        SetAt(wr_0, c__1, Mul(f_1, (Add(Mul(gr_1, st_1), Mul(gz_1, mu_1)))))
-        SetAt(wm_0, c__1, Mul(f_1, (Sub(Mul(gz_1, st_1), Mul(gr_1, mu_1)))))
+        SetAt(wr_0, c__1, Mul(f_1, (Add(Mul(Elem(gr_0, c__1), st_1), Mul(Elem(gz_0, c__1), mu_1)))))
+        SetAt(wm_0, c__1, Mul(f_1, (Sub(Mul(Elem(gz_0, c__1), st_1), Mul(Elem(gr_0, c__1), mu_1)))))
       }
       var rhs_0 any
       rhs_0 = Filled(n_0, 0.0)
@@ -30353,6 +30868,512 @@ func init() {
       var psi_0 any
       psi_0 = Call(self, "solve_band", []any{ rhs_0 })
       _ = psi_0
+      if true {
+        return M_map(Rng(Get(K("Felt"), "NR")), Fn(func(a3 []any) any {
+        var i_2 any = Arg(a3, 0); _ = i_2;
+        if true {
+          return Tern(Truthy((Truthy(Gt(i_2, 0.0)) && Truthy(Lt(Add(i_2, 1.0), Get(K("Felt"), "NR"))))), func() any { return Sub(0.0, Div((Sub(Elem(psi_0, Mul((Add(i_2, 1.0)), B_0)), Elem(psi_0, Mul((Sub(i_2, 1.0)), B_0)))), (Sub(Elem(Get(self, "rc"), Add(i_2, 1.0)), Elem(Get(self, "rc"), Sub(i_2, 1.0)))))) }, func() any { return 0.0 })
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Getter("dphi", func(self any, a1 []any) any {
+      if true {
+        return Div((2 * math.Pi), Get(K("Felt"), "NPHI"))
+      }
+      return nil
+    })
+    c.Getter("waves", func(self any, a1 []any) any {
+      if true {
+        return Add(M_floor((Div(Get(K("Felt"), "NPHI"), 2.0))), 1.0)
+      }
+      return nil
+    })
+    c.Field("around", func(self any) any { return M_map(Rng(Get(self, "cells")), Fn(func(a2 []any) any {
+      var c__1 any = Arg(a2, 0); _ = c__1;
+      var i_1 any
+      i_1 = M_floor((Div(c__1, Get(K("Felt"), "NMU"))))
+      _ = i_1
+      var j_1 any
+      j_1 = Mod(c__1, Get(K("Felt"), "NMU"))
+      _ = j_1
+      var st_1 any
+      st_1 = M_sqrt((Sub(1.0, Mul(Elem(Get(self, "mc"), j_1), Elem(Get(self, "mc"), j_1)))))
+      _ = st_1
+      var dth_1 any
+      dth_1 = Sub(Call(K("Felt"), "theta", []any{ Elem(Get(self, "me"), j_1) }), Call(K("Felt"), "theta", []any{ Elem(Get(self, "me"), Add(j_1, 1.0)) }))
+      _ = dth_1
+      if true {
+        return Div(Mul(Mul(Mul(2.0, math.Pi), (Sub(Elem(Get(self, "re"), Add(i_1, 1.0)), Elem(Get(self, "re"), i_1)))), dth_1), (Mul(Mul(st_1, Get(self, "dphi")), Get(self, "dphi"))))
+      }
+      return nil
+    })) })
+    c.Static("theta", func(self any, a1 []any) any {
+      var mu_0 any = Arg(a1, 0); _ = mu_0;
+      if true {
+        return M_atan2(M_sqrt((Sub(1.0, Mul(mu_0, mu_0)))), mu_0)
+      }
+      return nil
+    })
+    c.Field("wave_bands", func(self any) any { return M_map(Rng(Get(self, "waves")), Fn(func(a2 []any) any {
+      var m_1 any = Arg(a2, 0); _ = m_1;
+      if true {
+        return Tern(Truthy(Eq(m_1, 0.0)), func() any { return Get(self, "band") }, func() any { return Call(self, "factored_with", []any{ M_map(Get(self, "around"), Fn(func(a4 []any) any {
+        var a_3 any = Arg(a4, 0); _ = a_3;
+        if true {
+          return Mul(a_3, (Sub(2.0, Mul(2.0, M_cos((Mul(m_1, Get(self, "dphi"))))))))
+        }
+        return nil
+      })) }) })
+      }
+      return nil
+    })) })
+    c.Field("cosines", func(self any) any { return M_map(Rng(Mul(Get(K("Felt"), "NPHI"), Get(K("Felt"), "NPHI"))), Fn(func(a2 []any) any {
+      var q_1 any = Arg(a2, 0); _ = q_1;
+      if true {
+        return M_cos((Mul(Mul(Get(self, "dphi"), M_floor((Div(q_1, Get(K("Felt"), "NPHI"))))), Mod(q_1, Get(K("Felt"), "NPHI")))))
+      }
+      return nil
+    })) })
+    c.Field("sines", func(self any) any { return M_map(Rng(Mul(Get(K("Felt"), "NPHI"), Get(K("Felt"), "NPHI"))), Fn(func(a2 []any) any {
+      var q_1 any = Arg(a2, 0); _ = q_1;
+      if true {
+        return M_sin((Mul(Mul(Get(self, "dphi"), M_floor((Div(q_1, Get(K("Felt"), "NPHI"))))), Mod(q_1, Get(K("Felt"), "NPHI")))))
+      }
+      return nil
+    })) })
+    c.Method("solve_round", func(self any, a1 []any) any {
+      var b_0 any = Arg(a1, 0); _ = b_0;
+      var n_0 any
+      n_0 = Get(self, "cells")
+      _ = n_0
+      var P_0 any
+      P_0 = Get(K("Felt"), "NPHI")
+      _ = P_0
+      var x_0 any
+      x_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = x_0
+      for i1 := 0.0; i1 < Num(Get(self, "waves")); i1++ {
+        var m_1 any = Box(i1)
+        _ = m_1
+        var a_1 any
+        a_1 = M_map(Rng(n_0), Fn(func(a4 []any) any {
+          var c__3 any = Arg(a4, 0); _ = c__3;
+          if true {
+            return M_reduce(Rng(P_0), 0.0, Fn(func(a6 []any) any {
+            var t_5 any = Arg(a6, 0); _ = t_5; var k_5 any = Arg(a6, 1); _ = k_5;
+            if true {
+              return Add(t_5, Mul(Elem(b_0, Add(Mul(c__3, P_0), k_5)), Elem(Get(self, "cosines"), Add(Mul(m_1, P_0), k_5))))
+            }
+            return nil
+          }))
+          }
+          return nil
+        }))
+        _ = a_1
+        var s_1 any
+        s_1 = M_map(Rng(n_0), Fn(func(a4 []any) any {
+          var c__3 any = Arg(a4, 0); _ = c__3;
+          if true {
+            return M_reduce(Rng(P_0), 0.0, Fn(func(a6 []any) any {
+            var t_5 any = Arg(a6, 0); _ = t_5; var k_5 any = Arg(a6, 1); _ = k_5;
+            if true {
+              return Add(t_5, Mul(Elem(b_0, Add(Mul(c__3, P_0), k_5)), Elem(Get(self, "sines"), Add(Mul(m_1, P_0), k_5))))
+            }
+            return nil
+          }))
+          }
+          return nil
+        }))
+        _ = s_1
+        var ya_1 any
+        ya_1 = Call(self, "solve_with", []any{ Elem(Get(self, "wave_bands"), m_1), a_1 })
+        _ = ya_1
+        var ys_1 any
+        ys_1 = Call(self, "solve_with", []any{ Elem(Get(self, "wave_bands"), m_1), s_1 })
+        _ = ys_1
+        var weight_1 any
+        weight_1 = Div((Tern(Truthy((Truthy(Eq(m_1, 0.0)) || Truthy(Eq(Mul(2.0, m_1), P_0)))), func() any { return 1.0 }, func() any { return 2.0 })), P_0)
+        _ = weight_1
+        for i2 := 0.0; i2 < Num(n_0); i2++ {
+          var c__2 any = Box(i2)
+          _ = c__2
+          for i3 := 0.0; i3 < Num(P_0); i3++ {
+            var k_3 any = Box(i3)
+            _ = k_3
+            SetAt(x_0, Add(Mul(c__2, P_0), k_3), Add(Elem(x_0, Add(Mul(c__2, P_0), k_3)), Mul(weight_1, (Add(Mul(Elem(ya_1, c__2), Elem(Get(self, "cosines"), Add(Mul(m_1, P_0), k_3))), Mul(Elem(ys_1, c__2), Elem(Get(self, "sines"), Add(Mul(m_1, P_0), k_3))))))))
+          }
+        }
+      }
+      if true {
+        return x_0
+      }
+      return nil
+    })
+    c.Method("layers", func(self any, a1 []any) any {
+      var r_0 any = Arg(a1, 0); _ = r_0; var h_0 any = Arg(a1, 1); _ = h_0;
+      var raw_0 any
+      raw_0 = M_map(Rng(Get(K("Felt"), "NMU")), Fn(func(a3 []any) any {
+        var j_2 any = Arg(a3, 0); _ = j_2;
+        if true {
+          return Sub(M_exp((Sub(0.0, Div(Mul(r_0, Elem(Get(self, "me"), j_2)), h_0)))), M_exp((Sub(0.0, Div(Mul(r_0, Elem(Get(self, "me"), Add(j_2, 1.0))), h_0)))))
+        }
+        return nil
+      }))
+      _ = raw_0
+      var held_0 any
+      held_0 = M_reduce(raw_0, 0.0, Fn(func(a3 []any) any {
+        var t_2 any = Arg(a3, 0); _ = t_2; var v_2 any = Arg(a3, 1); _ = v_2;
+        if true {
+          return Add(t_2, v_2)
+        }
+        return nil
+      }))
+      _ = held_0
+      if true {
+        return M_map(raw_0, Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return Tern(Truthy(Gt(held_0, 0.0)), func() any { return Div(v_2, held_0) }, func() any { return 0.0 })
+        }
+        return nil
+      }))
+      }
+      return nil
+    })
+    c.Method("round_made", func(self any, a1 []any) any {
+      var xy_0 any = Arg(a1, 0); _ = xy_0; var s_0 any = Arg(a1, 1); _ = s_0; var h_0 any = Arg(a1, 2); _ = h_0;
+      var n_0 any
+      n_0 = Get(self, "cells")
+      _ = n_0
+      var P_0 any
+      P_0 = Get(K("Felt"), "NPHI")
+      _ = P_0
+      var B_0 any
+      B_0 = Get(K("Felt"), "NMU")
+      _ = B_0
+      var dp_0 any
+      dp_0 = Get(self, "dphi")
+      _ = dp_0
+      var rho_0 any
+      rho_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = rho_0
+      var lay_0 any
+      lay_0 = M_map(Rng(Get(K("Felt"), "NR")), Fn(func(a3 []any) any {
+        var i_2 any = Arg(a3, 0); _ = i_2;
+        if true {
+          return Call(self, "layers", []any{ Elem(Get(self, "rc"), i_2), h_0 })
+        }
+        return nil
+      }))
+      _ = lay_0
+      for i1 := 0.0; i1 < Num(M_floor((Div(Len(xy_0), 2.0)))); i1++ {
+        var q_1 any = Box(i1)
+        _ = q_1
+        var x_1 any
+        x_1 = Elem(xy_0, Mul(2.0, q_1))
+        _ = x_1
+        var y_1 any
+        y_1 = Elem(xy_0, Add(Mul(2.0, q_1), 1.0))
+        _ = y_1
+        var r_1 any
+        r_1 = Call(K("Fmt"), "hypot", []any{ x_1, y_1 })
+        _ = r_1
+        var u_1 any
+        u_1 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div(M_ln((Div(r_1, Elem(Get(self, "rc"), 0.0)))), Get(self, "step")), 0.0 }), Sub(Sub(Get(K("Felt"), "NR"), 1.0), 0.000001) })
+        _ = u_1
+        var i0_1 any
+        i0_1 = M_floor(u_1)
+        _ = i0_1
+        var fu_1 any
+        fu_1 = Sub(u_1, i0_1)
+        _ = fu_1
+        var ph_1 any
+        ph_1 = M_atan2(y_1, x_1)
+        _ = ph_1
+        var v_1 any
+        v_1 = Sub(Div((Tern(Truthy(Lt(ph_1, 0.0)), func() any { return Add(ph_1, (2 * math.Pi)) }, func() any { return ph_1 })), dp_0), 0.5)
+        _ = v_1
+        if Truthy(Lt(v_1, 0.0)) {
+          v_1 = Add(v_1, P_0)
+        }
+        var k0_1 any
+        k0_1 = Mod(M_floor(v_1), P_0)
+        _ = k0_1
+        var fv_1 any
+        fv_1 = Sub(v_1, M_floor(v_1))
+        _ = fv_1
+        var k1_1 any
+        k1_1 = Mod((Add(k0_1, 1.0)), P_0)
+        _ = k1_1
+        for _, e2 := range Items(Lst(Lst(i0_1, Sub(1.0, fu_1)), Lst(Add(i0_1, 1.0), fu_1))) {
+          var rw_2 any = e2
+          _ = rw_2
+          if Truthy(Gt(Elem(rw_2, 1.0), 0.0)) {
+            for i3 := 0.0; i3 < Num(B_0); i3++ {
+              var j_3 any = Box(i3)
+              _ = j_3
+              var m_3 any
+              m_3 = Mul(Mul(Div(s_0, 2.0), Elem(rw_2, 1.0)), Elem(Elem(lay_0, Elem(rw_2, 0.0)), j_3))
+              _ = m_3
+              var c__3 any
+              c__3 = Add(Mul(Elem(rw_2, 0.0), B_0), j_3)
+              _ = c__3
+              SetAt(rho_0, Add(Mul(c__3, P_0), k0_1), Add(Elem(rho_0, Add(Mul(c__3, P_0), k0_1)), Mul(m_3, (Sub(1.0, fv_1)))))
+              SetAt(rho_0, Add(Mul(c__3, P_0), k1_1), Add(Elem(rho_0, Add(Mul(c__3, P_0), k1_1)), Mul(m_3, fv_1)))
+            }
+          }
+        }
+      }
+      var phi_0 any
+      phi_0 = Call(self, "solve_round", []any{ M_map(rho_0, Fn(func(a3 []any) any {
+        var m_2 any = Arg(a3, 0); _ = m_2;
+        if true {
+          return Sub(0.0, Div(Mul(Mul(Mul(4.0, math.Pi), m_2), (2 * math.Pi)), dp_0))
+        }
+        return nil
+      })) })
+      _ = phi_0
+      var at_0 any
+      at_0 = Fn(func(a2 []any) any {
+        var i_1 any = Arg(a2, 0); _ = i_1; var j_1 any = Arg(a2, 1); _ = j_1; var k_1 any = Arg(a2, 2); _ = k_1;
+        if true {
+          return Elem(phi_0, Add(Mul((Add(Mul(i_1, B_0), j_1)), P_0), Mod((Add(k_1, P_0)), P_0)))
+        }
+        return nil
+      })
+      _ = at_0
+      var wr_0 any
+      wr_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = wr_0
+      var wm_0 any
+      wm_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = wm_0
+      var wp_0 any
+      wp_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = wp_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var c__1 any = Box(i1)
+        _ = c__1
+        var i_1 any
+        i_1 = M_floor((Div(c__1, B_0)))
+        _ = i_1
+        var j_1 any
+        j_1 = Mod(c__1, B_0)
+        _ = j_1
+        var r_1 any
+        r_1 = Elem(Get(self, "rc"), i_1)
+        _ = r_1
+        var st_1 any
+        st_1 = M_sqrt((Sub(1.0, Mul(Elem(Get(self, "mc"), j_1), Elem(Get(self, "mc"), j_1)))))
+        _ = st_1
+        for i2 := 0.0; i2 < Num(P_0); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          var lo_2 any
+          lo_2 = Call(K("Fmt"), "max", []any{ Sub(i_1, 1.0), 0.0 })
+          _ = lo_2
+          var hi_2 any
+          hi_2 = Call(K("Fmt"), "min", []any{ Add(i_1, 1.0), Sub(Get(K("Felt"), "NR"), 1.0) })
+          _ = hi_2
+          var gr_2 any
+          gr_2 = Sub(0.0, Div((Sub(Invoke(at_0, []any{ hi_2, j_1, k_2 }), Invoke(at_0, []any{ lo_2, j_1, k_2 }))), (Sub(Elem(Get(self, "rc"), hi_2), Elem(Get(self, "rc"), lo_2)))))
+          _ = gr_2
+          var below_2 any
+          below_2 = Tern(Truthy(Gt(j_1, 0.0)), func() any { return Invoke(at_0, []any{ i_1, Sub(j_1, 1.0), k_2 }) }, func() any { return Invoke(at_0, []any{ i_1, 0.0, k_2 }) })
+          _ = below_2
+          var mb_2 any
+          mb_2 = Tern(Truthy(Gt(j_1, 0.0)), func() any { return Elem(Get(self, "mc"), Sub(j_1, 1.0)) }, func() any { return Sub(0.0, Elem(Get(self, "mc"), 0.0)) })
+          _ = mb_2
+          var top_2 any
+          top_2 = Call(K("Fmt"), "min", []any{ Add(j_1, 1.0), Sub(B_0, 1.0) })
+          _ = top_2
+          var gm_2 any
+          gm_2 = Sub(0.0, Div(Mul(Div(st_1, r_1), (Sub(Invoke(at_0, []any{ i_1, top_2, k_2 }), below_2))), (Sub(Elem(Get(self, "mc"), top_2), mb_2))))
+          _ = gm_2
+          var gp_2 any
+          gp_2 = Sub(0.0, Div((Sub(Invoke(at_0, []any{ i_1, j_1, Add(k_2, 1.0) }), Invoke(at_0, []any{ i_1, j_1, Sub(k_2, 1.0) }))), (Mul(Mul(Mul(2.0, dp_0), r_1), st_1))))
+          _ = gp_2
+          var f_2 any
+          f_2 = Sub(Call(K("Felt"), "over", []any{ Call(K("Fmt"), "hypot", []any{ Call(K("Fmt"), "hypot", []any{ gr_2, gm_2 }), gp_2 }) }), 1.0)
+          _ = f_2
+          SetAt(wr_0, Add(Mul(c__1, P_0), k_2), Mul(f_2, gr_2))
+          SetAt(wm_0, Add(Mul(c__1, P_0), k_2), Mul(f_2, gm_2))
+          SetAt(wp_0, Add(Mul(c__1, P_0), k_2), Mul(f_2, gp_2))
+        }
+      }
+      var made_0 any
+      made_0 = Filled(Mul(n_0, P_0), 0.0)
+      _ = made_0
+      for i1 := 0.0; i1 < Num(n_0); i1++ {
+        var c__1 any = Box(i1)
+        _ = c__1
+        var i_1 any
+        i_1 = M_floor((Div(c__1, B_0)))
+        _ = i_1
+        var j_1 any
+        j_1 = Mod(c__1, B_0)
+        _ = j_1
+        var dmu_1 any
+        dmu_1 = Sub(Elem(Get(self, "me"), Add(j_1, 1.0)), Elem(Get(self, "me"), j_1))
+        _ = dmu_1
+        var dr_1 any
+        dr_1 = Sub(Elem(Get(self, "re"), Add(i_1, 1.0)), Elem(Get(self, "re"), i_1))
+        _ = dr_1
+        var dth_1 any
+        dth_1 = Sub(Call(K("Felt"), "theta", []any{ Elem(Get(self, "me"), j_1) }), Call(K("Felt"), "theta", []any{ Elem(Get(self, "me"), Add(j_1, 1.0)) }))
+        _ = dth_1
+        for i2 := 0.0; i2 < Num(P_0); i2++ {
+          var k_2 any = Box(i2)
+          _ = k_2
+          var e_2 any
+          e_2 = Add(Mul(c__1, P_0), k_2)
+          _ = e_2
+          var fo_2 any
+          fo_2 = Tern(Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))), func() any { return Div((Add(Elem(wr_0, e_2), Elem(wr_0, Add(e_2, Mul(B_0, P_0))))), 2.0) }, func() any { return Elem(wr_0, e_2) })
+          _ = fo_2
+          var fi_2 any
+          fi_2 = Tern(Truthy(Gt(i_1, 0.0)), func() any { return Div((Add(Elem(wr_0, Sub(e_2, Mul(B_0, P_0))), Elem(wr_0, e_2))), 2.0) }, func() any { return Elem(wr_0, e_2) })
+          _ = fi_2
+          var up_2 any
+          up_2 = Tern(Truthy(Lt(Add(j_1, 1.0), B_0)), func() any { return Div((Add(Elem(wm_0, e_2), Elem(wm_0, Add(e_2, P_0)))), 2.0) }, func() any { return 0.0 })
+          _ = up_2
+          var down_2 any
+          down_2 = Tern(Truthy(Gt(j_1, 0.0)), func() any { return Div((Add(Elem(wm_0, Sub(e_2, P_0)), Elem(wm_0, e_2))), 2.0) }, func() any { return 0.0 })
+          _ = down_2
+          var ahead_2 any
+          ahead_2 = Div((Add(Elem(wp_0, e_2), Elem(wp_0, Add(Mul(c__1, P_0), Mod((Add(k_2, 1.0)), P_0))))), 2.0)
+          _ = ahead_2
+          var behind_2 any
+          behind_2 = Div((Add(Elem(wp_0, Add(Mul(c__1, P_0), Mod((Sub(Add(k_2, P_0), 1.0)), P_0))), Elem(wp_0, e_2))), 2.0)
+          _ = behind_2
+          var out__2 any
+          out__2 = Add(Sub(Add(Mul(Mul(Mul(Mul(Mul(fo_2, 2.0), math.Pi), Elem(Get(self, "re"), Add(i_1, 1.0))), Elem(Get(self, "re"), Add(i_1, 1.0))), dmu_1), Mul(Mul(Mul(Mul(up_2, 2.0), math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), Add(j_1, 1.0)), Elem(Get(self, "me"), Add(j_1, 1.0)))))), dr_1)), Mul(Mul(Mul(Mul(down_2, 2.0), math.Pi), (Sub(1.0, Mul(Elem(Get(self, "me"), j_1), Elem(Get(self, "me"), j_1))))), dr_1)), Div(Mul(Mul(Mul(Mul((Sub(ahead_2, behind_2)), (2 * math.Pi)), Elem(Get(self, "rc"), i_1)), dr_1), dth_1), dp_0))
+          _ = out__2
+          SetAt(made_0, e_2, Tern(Truthy(Gt(i_1, 0.0)), func() any { return Sub(out__2, Mul(Mul(Mul(Mul(Mul(fi_2, 2.0), math.Pi), Elem(Get(self, "re"), i_1)), Elem(Get(self, "re"), i_1)), dmu_1)) }, func() any { return out__2 }))
+        }
+      }
+      var psi_0 any
+      psi_0 = Call(self, "solve_round", []any{ made_0 })
+      _ = psi_0
+      var out_0 any
+      out_0 = Filled(Mul(Mul(Get(K("Felt"), "NR"), P_0), 2.0), 0.0)
+      _ = out_0
+      var st0_0 any
+      st0_0 = M_sqrt((Sub(1.0, Mul(Elem(Get(self, "mc"), 0.0), Elem(Get(self, "mc"), 0.0)))))
+      _ = st0_0
+      for i1 := 0.0; i1 < Num(Get(K("Felt"), "NR")); i1++ {
+        var i_1 any = Box(i1)
+        _ = i_1
+        if Truthy((Truthy(Gt(i_1, 0.0)) && Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))))) {
+          for i2 := 0.0; i2 < Num(P_0); i2++ {
+            var k_2 any = Box(i2)
+            _ = k_2
+            SetAt(out_0, Mul(2.0, (Add(Mul(i_1, P_0), k_2))), Sub(0.0, Div((Sub(Elem(psi_0, Add(Mul(Mul((Add(i_1, 1.0)), B_0), P_0), k_2)), Elem(psi_0, Add(Mul(Mul((Sub(i_1, 1.0)), B_0), P_0), k_2)))), (Sub(Elem(Get(self, "rc"), Add(i_1, 1.0)), Elem(Get(self, "rc"), Sub(i_1, 1.0)))))))
+            SetAt(out_0, Add(Mul(2.0, (Add(Mul(i_1, P_0), k_2))), 1.0), Sub(0.0, Div((Sub(Elem(psi_0, Add(Mul(Mul(i_1, B_0), P_0), Mod((Add(k_2, 1.0)), P_0))), Elem(psi_0, Add(Mul(Mul(i_1, B_0), P_0), Mod((Sub(Add(k_2, P_0), 1.0)), P_0))))), (Mul(Mul(Mul(2.0, dp_0), Elem(Get(self, "rc"), i_1)), st0_0)))))
+          }
+        }
+      }
+      if true {
+        return out_0
+      }
+      return nil
+    })
+    c.Method("round_at", func(self any, a1 []any) any {
+      var table_0 any = Arg(a1, 0); _ = table_0; var x_0 any = Arg(a1, 1); _ = x_0; var y_0 any = Arg(a1, 2); _ = y_0;
+      var P_0 any
+      P_0 = Get(K("Felt"), "NPHI")
+      _ = P_0
+      var r_0 any
+      r_0 = Call(K("Fmt"), "hypot", []any{ x_0, y_0 })
+      _ = r_0
+      if Truthy(Le(r_0, 0.0)) {
+        if true {
+          return Lst(0.0, 0.0)
+        }
+      }
+      var u_0 any
+      u_0 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div(M_ln((Div(r_0, Elem(Get(self, "rc"), 0.0)))), Get(self, "step")), 0.0 }), Sub(Sub(Get(K("Felt"), "NR"), 1.0), 0.000001) })
+      _ = u_0
+      var i0_0 any
+      i0_0 = M_floor(u_0)
+      _ = i0_0
+      var fu_0 any
+      fu_0 = Sub(u_0, i0_0)
+      _ = fu_0
+      var ph_0 any
+      ph_0 = M_atan2(y_0, x_0)
+      _ = ph_0
+      var v_0 any
+      v_0 = Sub(Div((Tern(Truthy(Lt(ph_0, 0.0)), func() any { return Add(ph_0, (2 * math.Pi)) }, func() any { return ph_0 })), Get(self, "dphi")), 0.5)
+      _ = v_0
+      if Truthy(Lt(v_0, 0.0)) {
+        v_0 = Add(v_0, P_0)
+      }
+      var k0_0 any
+      k0_0 = Mod(M_floor(v_0), P_0)
+      _ = k0_0
+      var fv_0 any
+      fv_0 = Sub(v_0, M_floor(v_0))
+      _ = fv_0
+      var k1_0 any
+      k1_0 = Mod((Add(k0_0, 1.0)), P_0)
+      _ = k1_0
+      var part_0 any
+      part_0 = Fn(func(a2 []any) any {
+        var q_1 any = Arg(a2, 0); _ = q_1;
+        if true {
+          return Add(Mul((Sub(1.0, fu_0)), (Add(Mul((Sub(1.0, fv_0)), Elem(table_0, Add(Mul(2.0, (Add(Mul(i0_0, P_0), k0_0))), q_1))), Mul(fv_0, Elem(table_0, Add(Mul(2.0, (Add(Mul(i0_0, P_0), k1_0))), q_1)))))), Mul(fu_0, (Add(Mul((Sub(1.0, fv_0)), Elem(table_0, Add(Mul(2.0, (Add(Mul((Add(i0_0, 1.0)), P_0), k0_0))), q_1))), Mul(fv_0, Elem(table_0, Add(Mul(2.0, (Add(Mul((Add(i0_0, 1.0)), P_0), k1_0))), q_1)))))))
+        }
+        return nil
+      })
+      _ = part_0
+      var outward_0 any
+      outward_0 = Invoke(part_0, []any{ 0.0 })
+      _ = outward_0
+      var about_0 any
+      about_0 = Invoke(part_0, []any{ 1.0 })
+      _ = about_0
+      if true {
+        return Lst(Div((Sub(Mul(outward_0, x_0), Mul(about_0, y_0))), r_0), Div((Add(Mul(outward_0, y_0), Mul(about_0, x_0))), r_0))
+      }
+      return nil
+    })
+    c.Method("made_at", func(self any, a1 []any) any {
+      var made_0 any = Arg(a1, 0); _ = made_0; var r_0 any = Arg(a1, 1); _ = r_0;
+      var v_0 any
+      v_0 = Call(K("Fmt"), "min", []any{ Call(K("Fmt"), "max", []any{ Div(M_ln((Div(r_0, Elem(Get(self, "rc"), 0.0)))), Get(self, "step")), 1.0 }), Sub(Sub(Get(K("Felt"), "NR"), 2.0), 0.000001) })
+      _ = v_0
+      var t_0 any
+      t_0 = M_floor(v_0)
+      _ = t_0
+      var e_0 any
+      e_0 = Sub(v_0, t_0)
+      _ = e_0
+      if true {
+        return Add(Mul((Sub(1.0, e_0)), Elem(made_0, t_0)), Mul(e_0, Elem(made_0, Add(t_0, 1.0))))
+      }
+      return nil
+    })
+    c.Method("felt", func(self any, a1 []any) any {
+      var shape_0 any = Arg(a1, 0); _ = shape_0; var s_0 any = Arg(a1, 1); _ = s_0;
+      var made_0 any
+      made_0 = Call(self, "made_rows", []any{ M_map(Elem(shape_0, 0.0), Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return Mul(s_0, v_2)
+        }
+        return nil
+      })), M_map(Elem(shape_0, 1.0), Fn(func(a3 []any) any {
+        var v_2 any = Arg(a3, 0); _ = v_2;
+        if true {
+          return Mul(s_0, v_2)
+        }
+        return nil
+      })) })
+      _ = made_0
       var out_0 any
       out_0 = Lst()
       _ = out_0
@@ -30363,13 +31384,10 @@ func init() {
         r_1 = Elem(Get(self, "rc"), i_1)
         _ = r_1
         if Truthy((Truthy((Truthy((Truthy(Gt(i_1, 0.0)) && Truthy(Lt(Add(i_1, 1.0), Get(K("Felt"), "NR"))))) && Truthy(Ge(r_1, Get(K("Felt"), "NEAR"))))) && Truthy(Le(r_1, Get(K("Felt"), "FAR"))))) {
-          var made_1 any
-          made_1 = Sub(0.0, Div((Sub(Elem(psi_0, Mul((Add(i_1, 1.0)), B_0)), Elem(psi_0, Mul((Sub(i_1, 1.0)), B_0)))), (Sub(Elem(Get(self, "rc"), Add(i_1, 1.0)), Elem(Get(self, "rc"), Sub(i_1, 1.0))))))
-          _ = made_1
           var gN_1 any
           gN_1 = Sub(0.0, Mul(s_0, Elem(Elem(shape_0, 2.0), i_1)))
           _ = gN_1
-          M_push(out_0, Lst(r_1, gN_1, Sub(gN_1, made_1)))
+          M_push(out_0, Lst(r_1, gN_1, Sub(gN_1, Elem(made_0, i_1))))
         }
       }
       if true {
@@ -34993,6 +36011,14 @@ func init() {
       return Make(Theorem, Kw("id", "gravity.closing"), Kw("body", Fn(func(a1 []any) any {
         if true {
           return Make("Asked", []any{ Kw("asks", "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), Kw("about", "F_{g} \\aside{closing}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.made", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.made"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?"), Kw("about", "g \\aside{field}"), Kw("also", "-\\nabla^{2}\\psi") }...)
         }
         return nil
       })))

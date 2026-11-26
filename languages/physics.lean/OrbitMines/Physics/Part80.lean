@@ -1205,7 +1205,7 @@ ray_impl_static "simulation" : Picture := do
   if ωtruthy (ωisNull (← stars_0.get)) then
     (← app! fail (("galaxy.stars is not on disk - run the galaxies (`" ++ (← ωtoStr (← ωget (← cls% Galaxies) "SIMULATED")) ++ "`) and try again" : String))) |> ωsink
     pure ()
-  if true then return (← new! Picture («id» := ("galaxy.simulation" : String), «what» := ("galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured" : String), «width» := (960 : Float), «height» := (720 : Float), «frames» := (← ωelem (← ωget (← stars_0.get) "header") ("frames" : String)), «paint» := (fn! [(played_2 : Played)] do
+  if true then return (← new! Picture («id» := ("galaxy.simulation" : String), «what» := ("galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured" : String), «width» := (960 : Float), «height» := (720 : Float), «frames» := (← ωelem (← ωget (← stars_0.get) "header") ("frames" : String)), «paint» := (fn! [(played_2 : Played)] do
     if true then return (← new! Orbiting («stars» := (← stars_0.get)))
     return ωnull)))
   return ωnull
@@ -1284,7 +1284,7 @@ ray_impl_static "formed" : Picture := do
   if ωtruthy (ωisNull (← got_0.get)) then
     (← app! fail (("galaxy.formed is not on disk - run the galaxies (`" ++ (← ωtoStr (← ωget (← cls% Galaxies) "SIMULATED")) ++ "`) and try again" : String))) |> ωsink
     pure ()
-  if true then return (← new! Picture («id» := ("galaxy.formed" : String), «what» := ("discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms" : String), «width» := (960 : Float), «height» := (720 : Float), «frames» := (← ωelem (← ωget (← got_0.get) "header") ("frames" : String)), «paint» := (fn! [(played_2 : Played)] do
+  if true then return (← new! Picture («id» := ("galaxy.formed" : String), «what» := ("discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms" : String), «width» := (960 : Float), «height» := (720 : Float), «frames» := (← ωelem (← ωget (← got_0.get) "header") ("frames" : String)), «paint» := (fn! [(played_2 : Played)] do
     if true then return (← new! Forming («formed» := (← got_0.get)))
     return ωnull)))
   return ωnull
@@ -1415,7 +1415,7 @@ ray_impl_static "formed_panel" (s_0 : Surface) (formed_0 : Measured) (frame_at_0
   let stars_n_0 ← IO.mkRef (← ωelem (← H_0.get) ("stars" : String))
   let q_text_0 ← IO.mkRef (← call! (← cls% Fmt) "fixed" ((← ωelem (← H_0.get) ("Q" : String)), (1 : Float)))
   let a0_text_0 ← IO.mkRef (← call! (← cls% Fmt) "exponential" ((← ωelem (← H_0.get) ("a0" : String)), (3 : Float)))
-  (← call! (← s_0.get) "fill_text" (("" ++ (← ωtoStr (← stars_n_0.get)) ++ " stars each, every one pulled by every other through the law (a₀ " ++ (← ωtoStr (← a0_text_0.get)) ++ " m/s²), no halo; launched smooth at Q " ++ (← ωtoStr (← q_text_0.get)) ++ " — t = " ++ (← ωtoStr (← gyr_0.get)) ++ " Gyr" : String), (22 : Float), (44 : Float))) |> ωsink
+  (← call! (← s_0.get) "fill_text" (("" ++ (← ωtoStr (← stars_n_0.get)) ++ " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " ++ (← ωtoStr (← a0_text_0.get)) ++ " m/s²), no halo; launched smooth at Q " ++ (← ωtoStr (← q_text_0.get)) ++ " — t = " ++ (← ωtoStr (← gyr_0.get)) ++ " Gyr" : String), (22 : Float), (44 : Float))) |> ωsink
   let side_0 ← IO.mkRef (← call! (← cls% Fmt) "min" ((← ωdiv ((← ωsub (← ωget (← s_0.get) "width") (66 : Float))) (2 : Float)), (← ωsub (← ωget (← s_0.get) "height") (110 : Float))))
   for i1 in [0:ωrangeN (← dot! (← names_0.get) rlength ())] do
     let g_1 ← IO.mkRef (ωnatF i1)

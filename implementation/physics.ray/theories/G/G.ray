@@ -683,6 +683,7 @@ G: Theory = class {
   theorem "vacuum.age" () => Asked(asks: "the settled vacuum has room ahead of every ray, and the world grows only where a ray has nowhere to step. How fast does it grow, then?", about: "H \\aside{{frontier}}", also: "\\partial_{{t}}V \\aside{{inside}}")
   theorem "gravity.scale" () => Asked(asks: "a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?", about: "a_{{0}}", also: "H_{{\\Lambda}}")
   theorem "gravity.closing" () => Asked(asks: "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?", about: "F_{{g}} \\aside{{closing}}")
+  theorem "gravity.made" () => Asked(asks: "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?", about: "g \\aside{{field}}", also: "-\\nabla^{{2}}\\psi")
   theorem "gravity.metric" () => Asked(asks: "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?", about: "B \\aside{{held}}", also: "A \\aside{{held}}")
   theorem "gravity.shadow" () => Asked(asks: "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?", about: "b_{{c}}")
 

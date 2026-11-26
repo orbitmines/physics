@@ -23,7 +23,61 @@ static void C_Formed(Cls& c) {
   c.staticField("RINGS", [](const Value& self) -> Value { return 48.0; });
   c.staticField("DISCS", [](const Value& self) -> Value { return list({ list({ 10.7, 3.0 }), list({ 9.3, 2.0 }) }); });
   c.staticField("WHAT", [](const Value& self) -> Value { return list({ "a bright disc", "a dwarf" }); });
+  c.staticField("REFRESH", [](const Value& self) -> Value { return 10.0; });
   c.field("a0", [](const Value& self) -> Value { return div(call(K(S<"Galaxies">()), S<"a0_at">(), { get(self, S<"deg">()) }), get(K(S<"Simulation">()), S<"UNIT_G">())); });
+  c.field("on", [](const Value& self) -> Value { return make(S<"Felt">(), {  }); });
+  c.field("made_now", [](const Value& self) -> Value { return list({  }); });
+  c.method("made_tables", [](Value self, const Args& a1) -> Value {
+    auto state_0 = cell(arg(a1, 0));
+    auto head_0 = cell(); head_0->v = list({  });
+    auto tabs_0 = cell(); tabs_0->v = list({  });
+    for (double i1 = 0, n1 = num(get(self, S<"discs_n">())); i1 < n1; i1++) {
+      auto g_1 = cell(i1);
+      auto rd_1 = cell(); rd_1->v = call(self, S<"scale">(), { g_1->v });
+      auto cx_1 = cell(); cx_1->v = 0.0;
+      auto cy_1 = cell(); cy_1->v = 0.0;
+      for (double i2 = 0, n2 = num(get(K(S<"Formed">()), S<"N">())); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        cx_1->v = add(cx_1->v, div(elem(state_0->v, mul(4.0, (add(mul(g_1->v, get(K(S<"Formed">()), S<"N">())), k_2->v)))), get(K(S<"Formed">()), S<"N">())));
+        cy_1->v = add(cy_1->v, div(elem(state_0->v, add(mul(4.0, (add(mul(g_1->v, get(K(S<"Formed">()), S<"N">())), k_2->v))), 1.0)), get(K(S<"Formed">()), S<"N">())));
+      };
+      auto xy_1 = cell(); xy_1->v = list({  });
+      for (double i2 = 0, n2 = num(get(K(S<"Formed">()), S<"N">())); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        m_push(xy_1->v, div((sub(elem(state_0->v, mul(4.0, (add(mul(g_1->v, get(K(S<"Formed">()), S<"N">())), k_2->v)))), cx_1->v)), rd_1->v));
+        m_push(xy_1->v, div((sub(elem(state_0->v, add(mul(4.0, (add(mul(g_1->v, get(K(S<"Formed">()), S<"N">())), k_2->v))), 1.0)), cy_1->v)), rd_1->v));
+      };
+      auto table_1 = cell(); table_1->v = (truthy(get(self, S<"newton">())) ? Value(filled(mul(mul(get(K(S<"Felt">()), S<"NR">()), get(K(S<"Felt">()), S<"NPHI">())), 2.0), 0.0)) : Value(call(get(self, S<"on">()), S<"round_made">(), { xy_1->v, div(div(call(self, S<"GM">(), { g_1->v }), get(K(S<"Formed">()), S<"N">())), (mul(mul(get(self, S<"a0">()), rd_1->v), rd_1->v))), get(K(S<"Simulation">()), S<"SHAPE_H">()) })));
+      for (const Value& e2 : Each(list({ cx_1->v, cy_1->v, rd_1->v, (truthy(get(self, S<"newton">())) ? Value(0.0) : Value(get(self, S<"a0">()))) }))) {
+        auto v_2 = cell(e2);
+        m_push(head_0->v, v_2->v);
+      };
+      for (const Value& e2 : Each(table_1->v)) {
+        auto v_2 = cell(e2);
+        m_push(tabs_0->v, v_2->v);
+      };
+    };
+    set(self, S<"made_now">(), m_concat(head_0->v, tabs_0->v));
+    return get(self, S<"made_now">());
+    return null;
+  });
+  c.method("made_at", [](Value self, const Args& a1) -> Value {
+    auto g_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1)); auto y_0 = cell(arg(a1, 2));
+    auto M_0 = cell(); M_0->v = get(self, S<"made_now">());
+    auto n_0 = cell(); n_0->v = mul(mul(get(K(S<"Felt">()), S<"NR">()), get(K(S<"Felt">()), S<"NPHI">())), 2.0);
+    auto a_0 = cell(); a_0->v = elem(M_0->v, add(mul(4.0, g_0->v), 3.0));
+    if (truthy(le(a_0->v, 0.0))) {
+      return list({ 0.0, 0.0 });
+    }
+    auto table_0 = cell(); table_0->v = m_map(rng(n_0->v), fn([=](const Args& a3) -> Value {
+      auto q_2 = cell(arg(a3, 0));
+      return elem(M_0->v, add(add(mul(4.0, get(self, S<"discs_n">())), mul(g_0->v, n_0->v)), q_2->v));
+      return null;
+    }));
+    auto got_0 = cell(); got_0->v = call(get(self, S<"on">()), S<"round_at">(), { table_0->v, div((sub(x_0->v, elem(M_0->v, mul(4.0, g_0->v)))), elem(M_0->v, add(mul(4.0, g_0->v), 2.0))), div((sub(y_0->v, elem(M_0->v, add(mul(4.0, g_0->v), 1.0)))), elem(M_0->v, add(mul(4.0, g_0->v), 2.0))) });
+    return list({ mul(elem(got_0->v, 0.0), a_0->v), mul(elem(got_0->v, 1.0), a_0->v) });
+    return null;
+  });
   c.field("newton", [](const Value& self) -> Value { return false; });
   c.getter("scale_a0", [](Value self, const Args& a1) -> Value {
     return (truthy(get(self, S<"newton">())) ? Value(0.0) : Value(get(self, S<"a0">())));
@@ -119,8 +173,10 @@ static void C_Formed(Cls& c) {
     auto gx_0 = cell(); gx_0->v = mul(m_0->v, sx_0->v);
     auto gy_0 = cell(); gy_0->v = mul(m_0->v, sy_0->v);
     auto mag_0 = cell(); mag_0->v = call(K(S<"Fmt">()), S<"hypot">(), { gx_0->v, gy_0->v });
-    auto f_0 = cell(); f_0->v = (truthy(gt(mag_0->v, 0.0)) ? Value(((truthy(get(self, S<"newton">())) ? Value(mag_0->v) : Value(call(K(S<"Law">()), S<"boost">(), { mag_0->v, get(self, S<"a0">()) }))))) : Value(0.0));
-    return (truthy(gt(mag_0->v, 0.0)) ? Value(list({ mul(div(gx_0->v, mag_0->v), f_0->v), mul(div(gy_0->v, mag_0->v), f_0->v), mag_0->v, f_0->v })) : Value(list({ 0.0, 0.0, 0.0, 0.0 })));
+    auto more_0 = cell(); more_0->v = call(self, S<"made_at">(), { g_0->v, px_0->v, py_0->v });
+    auto ax_0 = cell(); ax_0->v = add(gx_0->v, elem(more_0->v, 0.0));
+    auto ay_0 = cell(); ay_0->v = add(gy_0->v, elem(more_0->v, 1.0));
+    return list({ ax_0->v, ay_0->v, mag_0->v, call(K(S<"Fmt">()), S<"hypot">(), { ax_0->v, ay_0->v }) });
     return null;
   });
   c.method("launch", [](Value self, const Args& a1) -> Value {
@@ -291,12 +347,20 @@ static void C_Formed(Cls& c) {
     set(extra_0->v, Sym(str("middles")), get(self, S<"middles">()));
     set(extra_0->v, Sym(str("deg")), get(self, S<"deg">()));
     set(extra_0->v, Sym(str("a0")), mul(get(self, S<"a0">()), get(K(S<"Simulation">()), S<"UNIT_G">())));
-    set(extra_0->v, Sym(str("about")), "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy");
+    set(extra_0->v, Sym(str("about")), "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy");
     return call(K(S<"Measure">()), S<"save">(), { "galaxy.formed", list({ "density" }), cols_0->v, extra_0->v });
     return null;
   });
   c.statik("kernel", [](Value self, const Args& a1) -> Value {
-    return m_join(list({ "// GENERATED from Formed.ray: stars that pull each other through the law", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + str(get(K(S<"Formed">()), S<"TILE">())) + ">;", get(K(S<"Simulation">()), S<"law_wgsl">()), "@compute @workgroup_size(" + str(get(K(S<"Formed">()), S<"TILE">())) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + str(get(K(S<"Formed">()), S<"TILE">())) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + str(get(K(S<"Formed">()), S<"TILE">())) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);", "  var f: f32 = 0.0;", "  if (mag > 0.0) {", "    f = mag;", "    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }", "    a = gN / mag * f;", "  }", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " KICKDRIFT" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " KICK" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}" }), "\n");
+    auto F_0 = cell(); F_0->v = make(S<"Felt">(), {  });
+    auto r0_0 = cell(); r0_0->v = call(K(S<"Shaded">()), S<"literal">(), { elem(get(F_0->v, S<"rc">()), 0.0) });
+    auto step_0 = cell(); step_0->v = call(K(S<"Shaded">()), S<"literal">(), { get(F_0->v, S<"step">()) });
+    auto topr_0 = cell(); topr_0->v = call(K(S<"Shaded">()), S<"literal">(), { sub(sub(get(K(S<"Felt">()), S<"NR">()), 1.0), 0.0001) });
+    auto tau_0 = cell(); tau_0->v = call(K(S<"Shaded">()), S<"literal">(), { (2 * RAY_PI) });
+    auto dphi_0 = cell(); dphi_0->v = call(K(S<"Shaded">()), S<"literal">(), { get(F_0->v, S<"dphi">()) });
+    auto np_0 = cell(); np_0->v = get(K(S<"Felt">()), S<"NPHI">());
+    auto nr_0 = cell(); nr_0->v = get(K(S<"Felt">()), S<"NR">());
+    return m_join(list({ "// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> M: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + str(get(K(S<"Formed">()), S<"TILE">())) + ">;", "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {", "  let a: f32 = M[4u * g + 3u];", "  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];", "  let r: f32 = length(d);", "  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let u: f32 = clamp(log(r / " + str(r0_0->v) + ") / " + str(step_0->v) + ", 0.0, " + str(topr_0->v) + ");", "  let i0: u32 = u32(floor(u));", "  let fu: f32 = u - floor(u);", "  var ph: f32 = atan2(d.y, d.x);", "  if (ph < 0.0) { ph = ph + " + str(tau_0->v) + "; }", "  var v: f32 = ph / " + str(dphi_0->v) + " - 0.5;", "  if (v < 0.0) { v = v + " + str(np_0->v) + ".0; }", "  let k0: u32 = u32(floor(v)) % " + str(np_0->v) + "u;", "  let fv: f32 = v - floor(v);", "  let k1: u32 = (k0 + 1u) % " + str(np_0->v) + "u;", "  let t: u32 = 4u * P[2] + g * " + str(nr_0->v) + "u * " + str(np_0->v) + "u * 2u;", "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + str(np_0->v) + "u + k0)], M[t + 2u * (i0 * " + str(np_0->v) + "u + k0) + 1u]);", "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + str(np_0->v) + "u + k1)], M[t + 2u * (i0 * " + str(np_0->v) + "u + k1) + 1u]);", "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + str(np_0->v) + "u + k0)], M[t + 2u * ((i0 + 1u) * " + str(np_0->v) + "u + k0) + 1u]);", "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + str(np_0->v) + "u + k1)], M[t + 2u * ((i0 + 1u) * " + str(np_0->v) + "u + k1) + 1u]);", "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);", "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;", "}", "@compute @workgroup_size(" + str(get(K(S<"Formed">()), S<"TILE">())) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + str(get(K(S<"Formed">()), S<"TILE">())) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + str(get(K(S<"Formed">()), S<"TILE">())) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  let a: vec2<f32> = gN + made(g, me);", "  let f: f32 = length(a);", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " KICKDRIFT" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " KICK" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}" }), "\n");
     return null;
   });
 }
@@ -656,6 +720,7 @@ static void C_Felt(Cls& c) {
   c.staticField("MIDDLE", [](const Value& self) -> Value { return list({ 0.0, 0.2, 0.5 }); });
   c.staticField("GAS", [](const Value& self) -> Value { return list({ list({ 0.0, 1.0 }), list({ 0.5, 2.0 }), list({ 0.5, 3.0 }), list({ 0.9, 2.0 }), list({ 0.9, 3.0 }) }); });
   c.staticField("FREEDOMS", [](const Value& self) -> Value { return list({ "mass", "thickness", "middle", "gas" }); });
+  c.staticField("NPHI", [](const Value& self) -> Value { return 16.0; });
   c.staticField("LADDER", [](const Value& self) -> Value { return list({ neg(6.5), 5.5, 193.0 }); });
   c.getter("step", [](Value self, const Args& a1) -> Value {
     return div(m_ln((div(get(K(S<"Felt">()), S<"R1">()), get(K(S<"Felt">()), S<"R0">())))), get(K(S<"Felt">()), S<"NR">()));
@@ -863,6 +928,11 @@ static void C_Felt(Cls& c) {
   });
   c.field("band", [](const Value& self) -> Value { return get(self, S<"factored">()); });
   c.getter("factored", [](Value self, const Args& a1) -> Value {
+    return call(self, S<"factored_with">(), { filled(get(self, S<"cells">()), 0.0) });
+    return null;
+  });
+  c.method("factored_with", [](Value self, const Args& a1) -> Value {
+    auto extra_0 = cell(arg(a1, 0));
     auto n_0 = cell(); n_0->v = get(self, S<"cells">());
     auto B_0 = cell(); B_0->v = get(K(S<"Felt">()), S<"NMU">());
     auto W_0 = cell(); W_0->v = get(self, S<"width">());
@@ -872,7 +942,7 @@ static void C_Felt(Cls& c) {
       auto i_1 = cell(); i_1->v = m_floor((div(k_1->v, B_0->v)));
       auto j_1 = cell(); j_1->v = mod(k_1->v, B_0->v);
       auto f_1 = cell(); f_1->v = elem(get(self, S<"faces">()), k_1->v);
-      setAt(m_0->v, add(mul(k_1->v, W_0->v), B_0->v), add(add(add(elem(f_1->v, 0.0), elem(f_1->v, 1.0)), elem(f_1->v, 2.0)), elem(f_1->v, 3.0)));
+      setAt(m_0->v, add(mul(k_1->v, W_0->v), B_0->v), add(add(add(add(elem(f_1->v, 0.0), elem(f_1->v, 1.0)), elem(f_1->v, 2.0)), elem(f_1->v, 3.0)), elem(extra_0->v, k_1->v)));
       if (truthy(lt(add(i_1->v, 1.0), get(K(S<"Felt">()), S<"NR">())))) {
         setAt(m_0->v, add(add(mul(k_1->v, W_0->v), B_0->v), B_0->v), sub(0.0, elem(f_1->v, 0.0)));
       }
@@ -909,10 +979,14 @@ static void C_Felt(Cls& c) {
   });
   c.method("solve_band", [](Value self, const Args& a1) -> Value {
     auto b_0 = cell(arg(a1, 0));
+    return call(self, S<"solve_with">(), { get(self, S<"band">()), b_0->v });
+    return null;
+  });
+  c.method("solve_with", [](Value self, const Args& a1) -> Value {
+    auto m_0 = cell(arg(a1, 0)); auto b_0 = cell(arg(a1, 1));
     auto n_0 = cell(); n_0->v = get(self, S<"cells">());
     auto B_0 = cell(); B_0->v = get(K(S<"Felt">()), S<"NMU">());
     auto W_0 = cell(); W_0->v = get(self, S<"width">());
-    auto m_0 = cell(); m_0->v = get(self, S<"band">());
     auto x_0 = cell(); x_0->v = m_map(b_0->v, fn([=](const Args& a3) -> Value {
       auto v_2 = cell(arg(a3, 0));
       return v_2->v;
@@ -947,8 +1021,8 @@ static void C_Felt(Cls& c) {
     return (truthy(gt(gN_0->v, 0.0)) ? Value(add(0.5, m_sqrt((add(0.25, div(1.0, gN_0->v)))))) : Value(1.0));
     return null;
   });
-  c.method("felt", [](Value self, const Args& a1) -> Value {
-    auto shape_0 = cell(arg(a1, 0)); auto s_0 = cell(arg(a1, 1));
+  c.method("made_rows", [](Value self, const Args& a1) -> Value {
+    auto gr_0 = cell(arg(a1, 0)); auto gz_0 = cell(arg(a1, 1));
     auto n_0 = cell(); n_0->v = get(self, S<"cells">());
     auto B_0 = cell(); B_0->v = get(K(S<"Felt">()), S<"NMU">());
     auto wr_0 = cell(); wr_0->v = filled(n_0->v, 0.0);
@@ -956,13 +1030,11 @@ static void C_Felt(Cls& c) {
     for (double i1 = 0, n1 = num(n_0->v); i1 < n1; i1++) {
       auto c__1 = cell(i1);
       auto j_1 = cell(); j_1->v = mod(c__1->v, B_0->v);
-      auto gr_1 = cell(); gr_1->v = mul(s_0->v, elem(elem(shape_0->v, 0.0), c__1->v));
-      auto gz_1 = cell(); gz_1->v = mul(s_0->v, elem(elem(shape_0->v, 1.0), c__1->v));
-      auto f_1 = cell(); f_1->v = sub(call(K(S<"Felt">()), S<"over">(), { call(K(S<"Fmt">()), S<"hypot">(), { gr_1->v, gz_1->v }) }), 1.0);
+      auto f_1 = cell(); f_1->v = sub(call(K(S<"Felt">()), S<"over">(), { call(K(S<"Fmt">()), S<"hypot">(), { elem(gr_0->v, c__1->v), elem(gz_0->v, c__1->v) }) }), 1.0);
       auto mu_1 = cell(); mu_1->v = elem(get(self, S<"mc">()), j_1->v);
       auto st_1 = cell(); st_1->v = m_sqrt((sub(1.0, mul(mu_1->v, mu_1->v))));
-      setAt(wr_0->v, c__1->v, mul(f_1->v, (add(mul(gr_1->v, st_1->v), mul(gz_1->v, mu_1->v)))));
-      setAt(wm_0->v, c__1->v, mul(f_1->v, (sub(mul(gz_1->v, st_1->v), mul(gr_1->v, mu_1->v)))));
+      setAt(wr_0->v, c__1->v, mul(f_1->v, (add(mul(elem(gr_0->v, c__1->v), st_1->v), mul(elem(gz_0->v, c__1->v), mu_1->v)))));
+      setAt(wm_0->v, c__1->v, mul(f_1->v, (sub(mul(elem(gz_0->v, c__1->v), st_1->v), mul(elem(gr_0->v, c__1->v), mu_1->v)))));
     };
     auto rhs_0 = cell(); rhs_0->v = filled(n_0->v, 0.0);
     for (double i1 = 0, n1 = num(n_0->v); i1 < n1; i1++) {
@@ -979,14 +1051,279 @@ static void C_Felt(Cls& c) {
       setAt(rhs_0->v, c__1->v, (truthy(gt(i_1->v, 0.0)) ? Value(sub(made_1->v, mul(mul(mul(mul(mul(fi_1->v, 2.0), RAY_PI), elem(get(self, S<"re">()), i_1->v)), elem(get(self, S<"re">()), i_1->v)), dmu_1->v))) : Value(made_1->v)));
     };
     auto psi_0 = cell(); psi_0->v = call(self, S<"solve_band">(), { rhs_0->v });
+    return m_map(rng(get(K(S<"Felt">()), S<"NR">())), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return (truthy((truthy(gt(i_2->v, 0.0)) && truthy(lt(add(i_2->v, 1.0), get(K(S<"Felt">()), S<"NR">()))))) ? Value(sub(0.0, div((sub(elem(psi_0->v, mul((add(i_2->v, 1.0)), B_0->v)), elem(psi_0->v, mul((sub(i_2->v, 1.0)), B_0->v)))), (sub(elem(get(self, S<"rc">()), add(i_2->v, 1.0)), elem(get(self, S<"rc">()), sub(i_2->v, 1.0))))))) : Value(0.0));
+      return null;
+    }));
+    return null;
+  });
+  c.getter("dphi", [](Value self, const Args& a1) -> Value {
+    return div((2 * RAY_PI), get(K(S<"Felt">()), S<"NPHI">()));
+    return null;
+  });
+  c.getter("waves", [](Value self, const Args& a1) -> Value {
+    return add(m_floor((div(get(K(S<"Felt">()), S<"NPHI">()), 2.0))), 1.0);
+    return null;
+  });
+  c.field("around", [](const Value& self) -> Value { return m_map(rng(get(self, S<"cells">())), fn([=](const Args& a2) -> Value {
+    auto c__1 = cell(arg(a2, 0));
+    auto i_1 = cell(); i_1->v = m_floor((div(c__1->v, get(K(S<"Felt">()), S<"NMU">()))));
+    auto j_1 = cell(); j_1->v = mod(c__1->v, get(K(S<"Felt">()), S<"NMU">()));
+    auto st_1 = cell(); st_1->v = m_sqrt((sub(1.0, mul(elem(get(self, S<"mc">()), j_1->v), elem(get(self, S<"mc">()), j_1->v)))));
+    auto dth_1 = cell(); dth_1->v = sub(call(K(S<"Felt">()), S<"theta">(), { elem(get(self, S<"me">()), j_1->v) }), call(K(S<"Felt">()), S<"theta">(), { elem(get(self, S<"me">()), add(j_1->v, 1.0)) }));
+    return div(mul(mul(mul(2.0, RAY_PI), (sub(elem(get(self, S<"re">()), add(i_1->v, 1.0)), elem(get(self, S<"re">()), i_1->v)))), dth_1->v), (mul(mul(st_1->v, get(self, S<"dphi">())), get(self, S<"dphi">()))));
+    return null;
+  })); });
+  c.statik("theta", [](Value self, const Args& a1) -> Value {
+    auto mu_0 = cell(arg(a1, 0));
+    return m_atan2(m_sqrt((sub(1.0, mul(mu_0->v, mu_0->v)))), mu_0->v);
+    return null;
+  });
+  c.field("wave_bands", [](const Value& self) -> Value { return m_map(rng(get(self, S<"waves">())), fn([=](const Args& a2) -> Value {
+    auto m_1 = cell(arg(a2, 0));
+    return (truthy(eq(m_1->v, 0.0)) ? Value(get(self, S<"band">())) : Value(call(self, S<"factored_with">(), { m_map(get(self, S<"around">()), fn([=](const Args& a4) -> Value {
+      auto a_3 = cell(arg(a4, 0));
+      return mul(a_3->v, (sub(2.0, mul(2.0, m_cos((mul(m_1->v, get(self, S<"dphi">()))))))));
+      return null;
+    })) })));
+    return null;
+  })); });
+  c.field("cosines", [](const Value& self) -> Value { return m_map(rng(mul(get(K(S<"Felt">()), S<"NPHI">()), get(K(S<"Felt">()), S<"NPHI">()))), fn([=](const Args& a2) -> Value {
+    auto q_1 = cell(arg(a2, 0));
+    return m_cos((mul(mul(get(self, S<"dphi">()), m_floor((div(q_1->v, get(K(S<"Felt">()), S<"NPHI">()))))), mod(q_1->v, get(K(S<"Felt">()), S<"NPHI">())))));
+    return null;
+  })); });
+  c.field("sines", [](const Value& self) -> Value { return m_map(rng(mul(get(K(S<"Felt">()), S<"NPHI">()), get(K(S<"Felt">()), S<"NPHI">()))), fn([=](const Args& a2) -> Value {
+    auto q_1 = cell(arg(a2, 0));
+    return m_sin((mul(mul(get(self, S<"dphi">()), m_floor((div(q_1->v, get(K(S<"Felt">()), S<"NPHI">()))))), mod(q_1->v, get(K(S<"Felt">()), S<"NPHI">())))));
+    return null;
+  })); });
+  c.method("solve_round", [](Value self, const Args& a1) -> Value {
+    auto b_0 = cell(arg(a1, 0));
+    auto n_0 = cell(); n_0->v = get(self, S<"cells">());
+    auto P_0 = cell(); P_0->v = get(K(S<"Felt">()), S<"NPHI">());
+    auto x_0 = cell(); x_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    for (double i1 = 0, n1 = num(get(self, S<"waves">())); i1 < n1; i1++) {
+      auto m_1 = cell(i1);
+      auto a_1 = cell(); a_1->v = m_map(rng(n_0->v), fn([=](const Args& a4) -> Value {
+        auto c__3 = cell(arg(a4, 0));
+        return m_reduce(rng(P_0->v), 0.0, fn([=](const Args& a6) -> Value {
+          auto t_5 = cell(arg(a6, 0)); auto k_5 = cell(arg(a6, 1));
+          return add(t_5->v, mul(elem(b_0->v, add(mul(c__3->v, P_0->v), k_5->v)), elem(get(self, S<"cosines">()), add(mul(m_1->v, P_0->v), k_5->v))));
+          return null;
+        }));
+        return null;
+      }));
+      auto s_1 = cell(); s_1->v = m_map(rng(n_0->v), fn([=](const Args& a4) -> Value {
+        auto c__3 = cell(arg(a4, 0));
+        return m_reduce(rng(P_0->v), 0.0, fn([=](const Args& a6) -> Value {
+          auto t_5 = cell(arg(a6, 0)); auto k_5 = cell(arg(a6, 1));
+          return add(t_5->v, mul(elem(b_0->v, add(mul(c__3->v, P_0->v), k_5->v)), elem(get(self, S<"sines">()), add(mul(m_1->v, P_0->v), k_5->v))));
+          return null;
+        }));
+        return null;
+      }));
+      auto ya_1 = cell(); ya_1->v = call(self, S<"solve_with">(), { elem(get(self, S<"wave_bands">()), m_1->v), a_1->v });
+      auto ys_1 = cell(); ys_1->v = call(self, S<"solve_with">(), { elem(get(self, S<"wave_bands">()), m_1->v), s_1->v });
+      auto weight_1 = cell(); weight_1->v = div(((truthy((truthy(eq(m_1->v, 0.0)) || truthy(eq(mul(2.0, m_1->v), P_0->v)))) ? Value(1.0) : Value(2.0))), P_0->v);
+      for (double i2 = 0, n2 = num(n_0->v); i2 < n2; i2++) {
+        auto c__2 = cell(i2);
+        for (double i3 = 0, n3 = num(P_0->v); i3 < n3; i3++) {
+          auto k_3 = cell(i3);
+          setAt(x_0->v, add(mul(c__2->v, P_0->v), k_3->v), add(elem(x_0->v, add(mul(c__2->v, P_0->v), k_3->v)), mul(weight_1->v, (add(mul(elem(ya_1->v, c__2->v), elem(get(self, S<"cosines">()), add(mul(m_1->v, P_0->v), k_3->v))), mul(elem(ys_1->v, c__2->v), elem(get(self, S<"sines">()), add(mul(m_1->v, P_0->v), k_3->v))))))));
+        };
+      };
+    };
+    return x_0->v;
+    return null;
+  });
+  c.method("layers", [](Value self, const Args& a1) -> Value {
+    auto r_0 = cell(arg(a1, 0)); auto h_0 = cell(arg(a1, 1));
+    auto raw_0 = cell(); raw_0->v = m_map(rng(get(K(S<"Felt">()), S<"NMU">())), fn([=](const Args& a3) -> Value {
+      auto j_2 = cell(arg(a3, 0));
+      return sub(m_exp((sub(0.0, div(mul(r_0->v, elem(get(self, S<"me">()), j_2->v)), h_0->v)))), m_exp((sub(0.0, div(mul(r_0->v, elem(get(self, S<"me">()), add(j_2->v, 1.0))), h_0->v)))));
+      return null;
+    }));
+    auto held_0 = cell(); held_0->v = m_reduce(raw_0->v, 0.0, fn([=](const Args& a3) -> Value {
+      auto t_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return add(t_2->v, v_2->v);
+      return null;
+    }));
+    return m_map(raw_0->v, fn([=](const Args& a3) -> Value {
+      auto v_2 = cell(arg(a3, 0));
+      return (truthy(gt(held_0->v, 0.0)) ? Value(div(v_2->v, held_0->v)) : Value(0.0));
+      return null;
+    }));
+    return null;
+  });
+  c.method("round_made", [](Value self, const Args& a1) -> Value {
+    auto xy_0 = cell(arg(a1, 0)); auto s_0 = cell(arg(a1, 1)); auto h_0 = cell(arg(a1, 2));
+    auto n_0 = cell(); n_0->v = get(self, S<"cells">());
+    auto P_0 = cell(); P_0->v = get(K(S<"Felt">()), S<"NPHI">());
+    auto B_0 = cell(); B_0->v = get(K(S<"Felt">()), S<"NMU">());
+    auto dp_0 = cell(); dp_0->v = get(self, S<"dphi">());
+    auto rho_0 = cell(); rho_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    auto lay_0 = cell(); lay_0->v = m_map(rng(get(K(S<"Felt">()), S<"NR">())), fn([=](const Args& a3) -> Value {
+      auto i_2 = cell(arg(a3, 0));
+      return call(self, S<"layers">(), { elem(get(self, S<"rc">()), i_2->v), h_0->v });
+      return null;
+    }));
+    for (double i1 = 0, n1 = num(m_floor((div(len(xy_0->v), 2.0)))); i1 < n1; i1++) {
+      auto q_1 = cell(i1);
+      auto x_1 = cell(); x_1->v = elem(xy_0->v, mul(2.0, q_1->v));
+      auto y_1 = cell(); y_1->v = elem(xy_0->v, add(mul(2.0, q_1->v), 1.0));
+      auto r_1 = cell(); r_1->v = call(K(S<"Fmt">()), S<"hypot">(), { x_1->v, y_1->v });
+      auto u_1 = cell(); u_1->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div(m_ln((div(r_1->v, elem(get(self, S<"rc">()), 0.0)))), get(self, S<"step">())), 0.0 }), sub(sub(get(K(S<"Felt">()), S<"NR">()), 1.0), 0.000001) });
+      auto i0_1 = cell(); i0_1->v = m_floor(u_1->v);
+      auto fu_1 = cell(); fu_1->v = sub(u_1->v, i0_1->v);
+      auto ph_1 = cell(); ph_1->v = m_atan2(y_1->v, x_1->v);
+      auto v_1 = cell(); v_1->v = sub(div(((truthy(lt(ph_1->v, 0.0)) ? Value(add(ph_1->v, (2 * RAY_PI))) : Value(ph_1->v))), dp_0->v), 0.5);
+      if (truthy(lt(v_1->v, 0.0))) {
+        v_1->v = add(v_1->v, P_0->v);
+      }
+      auto k0_1 = cell(); k0_1->v = mod(m_floor(v_1->v), P_0->v);
+      auto fv_1 = cell(); fv_1->v = sub(v_1->v, m_floor(v_1->v));
+      auto k1_1 = cell(); k1_1->v = mod((add(k0_1->v, 1.0)), P_0->v);
+      for (const Value& e2 : Each(list({ list({ i0_1->v, sub(1.0, fu_1->v) }), list({ add(i0_1->v, 1.0), fu_1->v }) }))) {
+        auto rw_2 = cell(e2);
+        if (truthy(gt(elem(rw_2->v, 1.0), 0.0))) {
+          for (double i3 = 0, n3 = num(B_0->v); i3 < n3; i3++) {
+            auto j_3 = cell(i3);
+            auto m_3 = cell(); m_3->v = mul(mul(div(s_0->v, 2.0), elem(rw_2->v, 1.0)), elem(elem(lay_0->v, elem(rw_2->v, 0.0)), j_3->v));
+            auto c__3 = cell(); c__3->v = add(mul(elem(rw_2->v, 0.0), B_0->v), j_3->v);
+            setAt(rho_0->v, add(mul(c__3->v, P_0->v), k0_1->v), add(elem(rho_0->v, add(mul(c__3->v, P_0->v), k0_1->v)), mul(m_3->v, (sub(1.0, fv_1->v)))));
+            setAt(rho_0->v, add(mul(c__3->v, P_0->v), k1_1->v), add(elem(rho_0->v, add(mul(c__3->v, P_0->v), k1_1->v)), mul(m_3->v, fv_1->v)));
+          };
+        }
+      };
+    };
+    auto phi_0 = cell(); phi_0->v = call(self, S<"solve_round">(), { m_map(rho_0->v, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0));
+      return sub(0.0, div(mul(mul(mul(4.0, RAY_PI), m_2->v), (2 * RAY_PI)), dp_0->v));
+      return null;
+    })) });
+    auto at_0 = cell(); at_0->v = fn([=](const Args& a2) -> Value {
+      auto i_1 = cell(arg(a2, 0)); auto j_1 = cell(arg(a2, 1)); auto k_1 = cell(arg(a2, 2));
+      return elem(phi_0->v, add(mul((add(mul(i_1->v, B_0->v), j_1->v)), P_0->v), mod((add(k_1->v, P_0->v)), P_0->v)));
+      return null;
+    });
+    auto wr_0 = cell(); wr_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    auto wm_0 = cell(); wm_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    auto wp_0 = cell(); wp_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    for (double i1 = 0, n1 = num(n_0->v); i1 < n1; i1++) {
+      auto c__1 = cell(i1);
+      auto i_1 = cell(); i_1->v = m_floor((div(c__1->v, B_0->v)));
+      auto j_1 = cell(); j_1->v = mod(c__1->v, B_0->v);
+      auto r_1 = cell(); r_1->v = elem(get(self, S<"rc">()), i_1->v);
+      auto st_1 = cell(); st_1->v = m_sqrt((sub(1.0, mul(elem(get(self, S<"mc">()), j_1->v), elem(get(self, S<"mc">()), j_1->v)))));
+      for (double i2 = 0, n2 = num(P_0->v); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        auto lo_2 = cell(); lo_2->v = call(K(S<"Fmt">()), S<"max">(), { sub(i_1->v, 1.0), 0.0 });
+        auto hi_2 = cell(); hi_2->v = call(K(S<"Fmt">()), S<"min">(), { add(i_1->v, 1.0), sub(get(K(S<"Felt">()), S<"NR">()), 1.0) });
+        auto gr_2 = cell(); gr_2->v = sub(0.0, div((sub(invoke(at_0->v, { hi_2->v, j_1->v, k_2->v }), invoke(at_0->v, { lo_2->v, j_1->v, k_2->v }))), (sub(elem(get(self, S<"rc">()), hi_2->v), elem(get(self, S<"rc">()), lo_2->v)))));
+        auto below_2 = cell(); below_2->v = (truthy(gt(j_1->v, 0.0)) ? Value(invoke(at_0->v, { i_1->v, sub(j_1->v, 1.0), k_2->v })) : Value(invoke(at_0->v, { i_1->v, 0.0, k_2->v })));
+        auto mb_2 = cell(); mb_2->v = (truthy(gt(j_1->v, 0.0)) ? Value(elem(get(self, S<"mc">()), sub(j_1->v, 1.0))) : Value(sub(0.0, elem(get(self, S<"mc">()), 0.0))));
+        auto top_2 = cell(); top_2->v = call(K(S<"Fmt">()), S<"min">(), { add(j_1->v, 1.0), sub(B_0->v, 1.0) });
+        auto gm_2 = cell(); gm_2->v = sub(0.0, div(mul(div(st_1->v, r_1->v), (sub(invoke(at_0->v, { i_1->v, top_2->v, k_2->v }), below_2->v))), (sub(elem(get(self, S<"mc">()), top_2->v), mb_2->v))));
+        auto gp_2 = cell(); gp_2->v = sub(0.0, div((sub(invoke(at_0->v, { i_1->v, j_1->v, add(k_2->v, 1.0) }), invoke(at_0->v, { i_1->v, j_1->v, sub(k_2->v, 1.0) }))), (mul(mul(mul(2.0, dp_0->v), r_1->v), st_1->v))));
+        auto f_2 = cell(); f_2->v = sub(call(K(S<"Felt">()), S<"over">(), { call(K(S<"Fmt">()), S<"hypot">(), { call(K(S<"Fmt">()), S<"hypot">(), { gr_2->v, gm_2->v }), gp_2->v }) }), 1.0);
+        setAt(wr_0->v, add(mul(c__1->v, P_0->v), k_2->v), mul(f_2->v, gr_2->v));
+        setAt(wm_0->v, add(mul(c__1->v, P_0->v), k_2->v), mul(f_2->v, gm_2->v));
+        setAt(wp_0->v, add(mul(c__1->v, P_0->v), k_2->v), mul(f_2->v, gp_2->v));
+      };
+    };
+    auto made_0 = cell(); made_0->v = filled(mul(n_0->v, P_0->v), 0.0);
+    for (double i1 = 0, n1 = num(n_0->v); i1 < n1; i1++) {
+      auto c__1 = cell(i1);
+      auto i_1 = cell(); i_1->v = m_floor((div(c__1->v, B_0->v)));
+      auto j_1 = cell(); j_1->v = mod(c__1->v, B_0->v);
+      auto dmu_1 = cell(); dmu_1->v = sub(elem(get(self, S<"me">()), add(j_1->v, 1.0)), elem(get(self, S<"me">()), j_1->v));
+      auto dr_1 = cell(); dr_1->v = sub(elem(get(self, S<"re">()), add(i_1->v, 1.0)), elem(get(self, S<"re">()), i_1->v));
+      auto dth_1 = cell(); dth_1->v = sub(call(K(S<"Felt">()), S<"theta">(), { elem(get(self, S<"me">()), j_1->v) }), call(K(S<"Felt">()), S<"theta">(), { elem(get(self, S<"me">()), add(j_1->v, 1.0)) }));
+      for (double i2 = 0, n2 = num(P_0->v); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        auto e_2 = cell(); e_2->v = add(mul(c__1->v, P_0->v), k_2->v);
+        auto fo_2 = cell(); fo_2->v = (truthy(lt(add(i_1->v, 1.0), get(K(S<"Felt">()), S<"NR">()))) ? Value(div((add(elem(wr_0->v, e_2->v), elem(wr_0->v, add(e_2->v, mul(B_0->v, P_0->v))))), 2.0)) : Value(elem(wr_0->v, e_2->v)));
+        auto fi_2 = cell(); fi_2->v = (truthy(gt(i_1->v, 0.0)) ? Value(div((add(elem(wr_0->v, sub(e_2->v, mul(B_0->v, P_0->v))), elem(wr_0->v, e_2->v))), 2.0)) : Value(elem(wr_0->v, e_2->v)));
+        auto up_2 = cell(); up_2->v = (truthy(lt(add(j_1->v, 1.0), B_0->v)) ? Value(div((add(elem(wm_0->v, e_2->v), elem(wm_0->v, add(e_2->v, P_0->v)))), 2.0)) : Value(0.0));
+        auto down_2 = cell(); down_2->v = (truthy(gt(j_1->v, 0.0)) ? Value(div((add(elem(wm_0->v, sub(e_2->v, P_0->v)), elem(wm_0->v, e_2->v))), 2.0)) : Value(0.0));
+        auto ahead_2 = cell(); ahead_2->v = div((add(elem(wp_0->v, e_2->v), elem(wp_0->v, add(mul(c__1->v, P_0->v), mod((add(k_2->v, 1.0)), P_0->v))))), 2.0);
+        auto behind_2 = cell(); behind_2->v = div((add(elem(wp_0->v, add(mul(c__1->v, P_0->v), mod((sub(add(k_2->v, P_0->v), 1.0)), P_0->v))), elem(wp_0->v, e_2->v))), 2.0);
+        auto out__2 = cell(); out__2->v = add(sub(add(mul(mul(mul(mul(mul(fo_2->v, 2.0), RAY_PI), elem(get(self, S<"re">()), add(i_1->v, 1.0))), elem(get(self, S<"re">()), add(i_1->v, 1.0))), dmu_1->v), mul(mul(mul(mul(up_2->v, 2.0), RAY_PI), (sub(1.0, mul(elem(get(self, S<"me">()), add(j_1->v, 1.0)), elem(get(self, S<"me">()), add(j_1->v, 1.0)))))), dr_1->v)), mul(mul(mul(mul(down_2->v, 2.0), RAY_PI), (sub(1.0, mul(elem(get(self, S<"me">()), j_1->v), elem(get(self, S<"me">()), j_1->v))))), dr_1->v)), div(mul(mul(mul(mul((sub(ahead_2->v, behind_2->v)), (2 * RAY_PI)), elem(get(self, S<"rc">()), i_1->v)), dr_1->v), dth_1->v), dp_0->v));
+        setAt(made_0->v, e_2->v, (truthy(gt(i_1->v, 0.0)) ? Value(sub(out__2->v, mul(mul(mul(mul(mul(fi_2->v, 2.0), RAY_PI), elem(get(self, S<"re">()), i_1->v)), elem(get(self, S<"re">()), i_1->v)), dmu_1->v))) : Value(out__2->v)));
+      };
+    };
+    auto psi_0 = cell(); psi_0->v = call(self, S<"solve_round">(), { made_0->v });
+    auto out_0 = cell(); out_0->v = filled(mul(mul(get(K(S<"Felt">()), S<"NR">()), P_0->v), 2.0), 0.0);
+    auto st0_0 = cell(); st0_0->v = m_sqrt((sub(1.0, mul(elem(get(self, S<"mc">()), 0.0), elem(get(self, S<"mc">()), 0.0)))));
+    for (double i1 = 0, n1 = num(get(K(S<"Felt">()), S<"NR">())); i1 < n1; i1++) {
+      auto i_1 = cell(i1);
+      if (truthy((truthy(gt(i_1->v, 0.0)) && truthy(lt(add(i_1->v, 1.0), get(K(S<"Felt">()), S<"NR">())))))) {
+        for (double i2 = 0, n2 = num(P_0->v); i2 < n2; i2++) {
+          auto k_2 = cell(i2);
+          setAt(out_0->v, mul(2.0, (add(mul(i_1->v, P_0->v), k_2->v))), sub(0.0, div((sub(elem(psi_0->v, add(mul(mul((add(i_1->v, 1.0)), B_0->v), P_0->v), k_2->v)), elem(psi_0->v, add(mul(mul((sub(i_1->v, 1.0)), B_0->v), P_0->v), k_2->v)))), (sub(elem(get(self, S<"rc">()), add(i_1->v, 1.0)), elem(get(self, S<"rc">()), sub(i_1->v, 1.0)))))));
+          setAt(out_0->v, add(mul(2.0, (add(mul(i_1->v, P_0->v), k_2->v))), 1.0), sub(0.0, div((sub(elem(psi_0->v, add(mul(mul(i_1->v, B_0->v), P_0->v), mod((add(k_2->v, 1.0)), P_0->v))), elem(psi_0->v, add(mul(mul(i_1->v, B_0->v), P_0->v), mod((sub(add(k_2->v, P_0->v), 1.0)), P_0->v))))), (mul(mul(mul(2.0, dp_0->v), elem(get(self, S<"rc">()), i_1->v)), st0_0->v)))));
+        };
+      }
+    };
+    return out_0->v;
+    return null;
+  });
+  c.method("round_at", [](Value self, const Args& a1) -> Value {
+    auto table_0 = cell(arg(a1, 0)); auto x_0 = cell(arg(a1, 1)); auto y_0 = cell(arg(a1, 2));
+    auto P_0 = cell(); P_0->v = get(K(S<"Felt">()), S<"NPHI">());
+    auto r_0 = cell(); r_0->v = call(K(S<"Fmt">()), S<"hypot">(), { x_0->v, y_0->v });
+    if (truthy(le(r_0->v, 0.0))) {
+      return list({ 0.0, 0.0 });
+    }
+    auto u_0 = cell(); u_0->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div(m_ln((div(r_0->v, elem(get(self, S<"rc">()), 0.0)))), get(self, S<"step">())), 0.0 }), sub(sub(get(K(S<"Felt">()), S<"NR">()), 1.0), 0.000001) });
+    auto i0_0 = cell(); i0_0->v = m_floor(u_0->v);
+    auto fu_0 = cell(); fu_0->v = sub(u_0->v, i0_0->v);
+    auto ph_0 = cell(); ph_0->v = m_atan2(y_0->v, x_0->v);
+    auto v_0 = cell(); v_0->v = sub(div(((truthy(lt(ph_0->v, 0.0)) ? Value(add(ph_0->v, (2 * RAY_PI))) : Value(ph_0->v))), get(self, S<"dphi">())), 0.5);
+    if (truthy(lt(v_0->v, 0.0))) {
+      v_0->v = add(v_0->v, P_0->v);
+    }
+    auto k0_0 = cell(); k0_0->v = mod(m_floor(v_0->v), P_0->v);
+    auto fv_0 = cell(); fv_0->v = sub(v_0->v, m_floor(v_0->v));
+    auto k1_0 = cell(); k1_0->v = mod((add(k0_0->v, 1.0)), P_0->v);
+    auto part_0 = cell(); part_0->v = fn([=](const Args& a2) -> Value {
+      auto q_1 = cell(arg(a2, 0));
+      return add(mul((sub(1.0, fu_0->v)), (add(mul((sub(1.0, fv_0->v)), elem(table_0->v, add(mul(2.0, (add(mul(i0_0->v, P_0->v), k0_0->v))), q_1->v))), mul(fv_0->v, elem(table_0->v, add(mul(2.0, (add(mul(i0_0->v, P_0->v), k1_0->v))), q_1->v)))))), mul(fu_0->v, (add(mul((sub(1.0, fv_0->v)), elem(table_0->v, add(mul(2.0, (add(mul((add(i0_0->v, 1.0)), P_0->v), k0_0->v))), q_1->v))), mul(fv_0->v, elem(table_0->v, add(mul(2.0, (add(mul((add(i0_0->v, 1.0)), P_0->v), k1_0->v))), q_1->v)))))));
+      return null;
+    });
+    auto outward_0 = cell(); outward_0->v = invoke(part_0->v, { 0.0 });
+    auto about_0 = cell(); about_0->v = invoke(part_0->v, { 1.0 });
+    return list({ div((sub(mul(outward_0->v, x_0->v), mul(about_0->v, y_0->v))), r_0->v), div((add(mul(outward_0->v, y_0->v), mul(about_0->v, x_0->v))), r_0->v) });
+    return null;
+  });
+  c.method("made_at", [](Value self, const Args& a1) -> Value {
+    auto made_0 = cell(arg(a1, 0)); auto r_0 = cell(arg(a1, 1));
+    auto v_0 = cell(); v_0->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div(m_ln((div(r_0->v, elem(get(self, S<"rc">()), 0.0)))), get(self, S<"step">())), 1.0 }), sub(sub(get(K(S<"Felt">()), S<"NR">()), 2.0), 0.000001) });
+    auto t_0 = cell(); t_0->v = m_floor(v_0->v);
+    auto e_0 = cell(); e_0->v = sub(v_0->v, t_0->v);
+    return add(mul((sub(1.0, e_0->v)), elem(made_0->v, t_0->v)), mul(e_0->v, elem(made_0->v, add(t_0->v, 1.0))));
+    return null;
+  });
+  c.method("felt", [](Value self, const Args& a1) -> Value {
+    auto shape_0 = cell(arg(a1, 0)); auto s_0 = cell(arg(a1, 1));
+    auto made_0 = cell(); made_0->v = call(self, S<"made_rows">(), { m_map(elem(shape_0->v, 0.0), fn([=](const Args& a3) -> Value {
+      auto v_2 = cell(arg(a3, 0));
+      return mul(s_0->v, v_2->v);
+      return null;
+    })), m_map(elem(shape_0->v, 1.0), fn([=](const Args& a3) -> Value {
+      auto v_2 = cell(arg(a3, 0));
+      return mul(s_0->v, v_2->v);
+      return null;
+    })) });
     auto out_0 = cell(); out_0->v = list({  });
     for (double i1 = 0, n1 = num(get(K(S<"Felt">()), S<"NR">())); i1 < n1; i1++) {
       auto i_1 = cell(i1);
       auto r_1 = cell(); r_1->v = elem(get(self, S<"rc">()), i_1->v);
       if (truthy((truthy((truthy((truthy(gt(i_1->v, 0.0)) && truthy(lt(add(i_1->v, 1.0), get(K(S<"Felt">()), S<"NR">()))))) && truthy(ge(r_1->v, get(K(S<"Felt">()), S<"NEAR">()))))) && truthy(le(r_1->v, get(K(S<"Felt">()), S<"FAR">())))))) {
-        auto made_1 = cell(); made_1->v = sub(0.0, div((sub(elem(psi_0->v, mul((add(i_1->v, 1.0)), B_0->v)), elem(psi_0->v, mul((sub(i_1->v, 1.0)), B_0->v)))), (sub(elem(get(self, S<"rc">()), add(i_1->v, 1.0)), elem(get(self, S<"rc">()), sub(i_1->v, 1.0))))));
         auto gN_1 = cell(); gN_1->v = sub(0.0, mul(s_0->v, elem(elem(shape_0->v, 2.0), i_1->v)));
-        m_push(out_0->v, list({ r_1->v, gN_1->v, sub(gN_1->v, made_1->v) }));
+        m_push(out_0->v, list({ r_1->v, gN_1->v, sub(gN_1->v, elem(made_0->v, i_1->v)) }));
       }
     };
     return out_0->v;
@@ -3719,6 +4056,10 @@ static void C_G(Cls& c) {
   })) }); });
   c.staticField("theorem gravity.closing", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.closing"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
     return make(S<"Asked">(), { kw(S<"asks">(), "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), kw(S<"about">(), "F_{g} \\aside{closing}") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.made", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.made"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?"), kw(S<"about">(), "g \\aside{field}"), kw(S<"also">(), "-\\nabla^{2}\\psi") });
     return null;
   })) }); });
   c.staticField("theorem gravity.metric", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.metric"), kw(S<"body">(), fn([=](const Args& a1) -> Value {

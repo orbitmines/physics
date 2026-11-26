@@ -235,6 +235,19 @@ a stone at c-bar reads A alone: r_s/b, half of it
 
 light has no beat: it goes at A over B's root, so where the clock is slow and the ruler long it is slowed twice, once by each - the index is \sqrt{B/A} = 1 + 2\Phi to first order, where a stone falling past reads only the A. Crossed at closest approach b, at three dimensions, the turn is the index's slope across the path summed along it: twice Newton's. And it is what was measured
 
+**b_c = 5.196152423·m̄**  
+<sub>theorem · where a ray stops coming back</sub>  
+
+```
+a ray turns where r/\sqrt{A} = b, and at three dimensions \delta n_f = m̄/r, r_s = 2m̄
+m̄/b at the turning point = \delta n_f·\sqrt{\frac{-2}{\frac{1}{\delta n_f}} + 1}
+largest where its slope is nought: \delta n_f = 0.333333, the photon sphere at r = 3.0000 m̄
+b_c = 5.1962 m̄; general relativity's is 3\sqrt{3} = 5.1962
+the medium's index read as an isotropic metric instead gives 6.7500 m̄: the same to first order, not to the second - it is not the metric a held clock and ruler read
+```
+
+THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^(2) = B dr^(2) + r^(2)d\Omega^(2)`, and a null ray turns where `r/\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_s/r this is Schwarzschild's metric exactly, so the shadow is general relativity's
+
 **\partial_tV \aside{inside} = 0**  
 <sub>theorem · what the settled vacuum grows</sub>  
 
@@ -312,6 +325,29 @@ F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
 ```
 
 what is felt is what arrives, g_N, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_0/g of it. So g = g_N\paren{1 + a_0/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \sqrt{g_Na_0}: g_N falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling
+
+**-\nabla^(2)\psi = \nabla\cdot\paren{\paren{\sqrt{\frac{g_N^(2)}{4} + g_N·a_0} - \frac{g_N}{2}}\hat{g}_N}**  
+<sub>theorem · the space made, as a source</sub>  
+
+```
+w = F_g - g_N = \sqrt{\frac{g_N^(2)}{4} + g_N·a_0} - \frac{g_N}{2}, along \hat{g}_N
+made where w changes: \nabla\cdot w
+a source of the record: -\nabla^(2)\psi = \nabla\cdot w
+```
+
+the closing hands every place w = F_g - g_N on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (ANNIHILATION), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \psi is the one whose flux is what was made
+
+**g \aside{field} = g_N - \nabla\psi**  
+<sub>theorem · what is felt, solved over the whole field</sub>  
+
+```
+g = g_N - \nabla\psi, -\nabla^(2)\psi = \nabla\cdot w
+no curl: \nabla\times g = 0, as a record's slope
+a sphere: \nabla\psi = -w, so g = F_g
+a disc: \nabla\psi \neq -w - solved over the field (Felt)
+```
+
+what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve
 
 **\frac{a_0}{cH} = \frac{1}{\frac{DEG·\rho_\infty^(2)}{4·\paren{1 - \rho_\infty}} + 1}**  
 <sub>theorem · the scale against the vacuum's growth</sub>  

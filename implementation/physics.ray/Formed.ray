@@ -3,9 +3,11 @@
  *
  * `Simulation` moves tracers on a galaxy's field; nothing they do changes it, so no arm can grow there. Here every star
  * is a body: what ARRIVES at a star is every other star's pull added (the far field's sum over bodies, softened to the
- * disc's thickness), and what it FEELS is the law read at that arrival, along it (as `Simulation.felt`) - at the
- * vacuum's a_0 of the lattice. Nothing else holds the disc: no halo, nothing added. A disc starts smooth, an exponential
- * of scale R_d cut at TRUNC of them, each star going the speed a circle needs where it is (read off the stars' own
+ * disc's thickness), and what it FEELS is that arrival with the record of the space the whole disc makes, solved over
+ * its whole field round the axis as well (`Felt.round_made`, every REFRESH steps: the stars laid on the field, what
+ * arrives solved from them, the closing's w at every cell, and the record of where it changes) - at the vacuum's a_0
+ * of the lattice, never the law read at a star. Nothing else holds the disc: no halo, nothing added. A disc starts
+ * smooth, an exponential of scale R_d cut at TRUNC of them, each star going the speed a circle needs where it is (read off the stars' own
  * first pull, averaged in rings), stirred just enough that the disc is marginally stable - Toomre's Q at Q, with the
  * law's own boost g / g_N standing in for G, since that is what a small clump of the disc pulls its neighbours with.
  * Then it is left: STEPS of DT, kick-drift-kick, every star's pull summed on the device every step (ACCEL, the stars in
@@ -26,7 +28,48 @@ Formed := class < deg: Real {
   static DISCS = [[10.7, 3], [9.3, 2]]
   static WHAT = ["a bright disc", "a dwarf"]
 
+  static REFRESH = 10
   a0: Real = Galaxies.a0_at(this.deg) / Simulation.UNIT_G
+  on: Felt = Felt()
+  /*
+   * THE RECORD OF THE SPACE EACH DISC MAKES, solved from where its stars stand: per disc [middle x, middle y, R_d, a_0]
+   * and then each disc's table along the plane (`Felt.round_made`, in a_0) - the device's M. The grid stands on the
+   * disc's middle; with the law off there is none
+   */
+  made_now: Real[] = []
+  made_tables (state: Real[]): Real[] => {
+    head := []
+    tabs := []
+    Array.range(this.discs_n).for(g => {
+      rd := this.scale(g)
+      cx := 0
+      cy := 0
+      Array.range(Formed.N).for(k => {
+        cx = cx + state[4 * (g * Formed.N + k)] / Formed.N
+        cy = cy + state[4 * (g * Formed.N + k) + 1] / Formed.N
+      })
+      xy := []
+      Array.range(Formed.N).for(k => {
+        xy.push((state[4 * (g * Formed.N + k)] - cx) / rd)
+        xy.push((state[4 * (g * Formed.N + k) + 1] - cy) / rd)
+      })
+      table := this.newton ? Array.filled(Felt.NR * Felt.NPHI * 2, 0) : this.on.round_made(xy, this.GM(g) / Formed.N / (this.a0 * rd * rd), Simulation.SHAPE_H)
+      [cx, cy, rd, this.newton ? 0 : this.a0].for(v => { head.push(v) })
+      table.for(v => { tabs.push(v) })
+    })
+    this.made_now = head.concat(tabs)
+    this.made_now
+  }
+  /* that record at a star, in the run's unit, as the device reads it */
+  made_at (g: N, x: Real, y: Real): Real[] => {
+    M := this.made_now
+    n := Felt.NR * Felt.NPHI * 2
+    a := M[4 * g + 3]
+    return [0, 0] if a <= 0
+    table := Array.range(n).map(q => M[4 * this.discs_n + g * n + q])
+    got := this.on.round_at(table, (x - M[4 * g]) / M[4 * g + 2], (y - M[4 * g + 1]) / M[4 * g + 2])
+    [got[0] * a, got[1] * a]
+  }
   /* the control: the same discs with the law off, every pull as it arrives (Newton) - a_0 handed to the device as nought */
   newton: boolean = false
   scale_a0 (): Real => this.newton ? 0 : this.a0
@@ -84,8 +127,10 @@ Formed := class < deg: Real {
     gx := m * sx
     gy := m * sy
     mag := Fmt.hypot(gx, gy)
-    f := mag > 0 ? (this.newton ? mag : Law.boost(mag, this.a0)) : 0
-    mag > 0 ? [gx / mag * f, gy / mag * f, mag, f] : [0, 0, 0, 0]
+    more := this.made_at(g, px, py)
+    ax := gx + more[0]
+    ay := gy + more[1]
+    [ax, ay, mag, Fmt.hypot(ax, ay)]
   }
 
   /*
@@ -159,10 +204,11 @@ Formed := class < deg: Real {
 
   /* how the stars lie at a frame: counts on GRID x GRID cells, SPAN scales either side of the middle, galaxy after galaxy */
   /*
-   * THE DISC GOES SOMEWHERE. Read at each star, the law does not hand every pull back in an equal and opposite pair, so
-   * a disc's own pulls do not cancel and it sets itself moving (the law off, the same disc stays put to the last digit).
-   * The picture follows each disc's middle so what forms in it stays in view, and `middles` keeps, frame by frame, where
-   * that middle has got to and how fast it goes: [x, y, v_x, v_y] a disc, kpc and km/s
+   * THE DISC STAYS WHERE IT IS - nearly. Read at each star, the law did not hand every pull back in an equal and
+   * opposite pair, and a disc set itself moving (98 kpc in 2.9 Gyr, at 54 km/s). Solved over the field, what is felt is
+   * a field's own and the pulls nearly cancel: the grid and the stars' graininess leave a drift of a few km/s (3.6
+   * kpc in 2.9 Gyr). The picture follows each disc's middle so what forms in it stays in view, and `middles` keeps,
+   * frame by frame, where that middle has got to and how fast it goes: [x, y, v_x, v_y] a disc, kpc and km/s
    */
   middles: Array = []
   binned (state: Real[]): Real[] => {
@@ -206,20 +252,52 @@ Formed := class < deg: Real {
     extra["middles"] = this.middles
     extra["deg"] = this.deg
     extra["a0"] = this.a0 * Simulation.UNIT_G
-    extra["about"] = "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"
+    extra["about"] = "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"
     Measure.save("galaxy.formed", ["density"], cols, extra)
   }
 
   /* ACCEL: one thread a star, every other star of its galaxy summed a tile at a time; KICKDRIFT and KICK: the leapfrog */
-  static kernel (): String => [
-    "// GENERATED from Formed.ray: stars that pull each other through the law",
+  static kernel (): String => {
+    F := Felt()
+    r0 := Shaded.literal(F.rc[0])
+    step := Shaded.literal(F.step)
+    topr := Shaded.literal(Real.of(Felt.NR - 1) - 0.0001)
+    tau := Shaded.literal(Real.TAU)
+    dphi := Shaded.literal(F.dphi)
+    np := Felt.NPHI
+    nr := Felt.NR
+    [
+    "// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)",
     "@group(0) @binding(0) var<storage, read> P: array<u32>;",
-    "@group(0) @binding(1) var<storage, read> L: array<f32>;",
+    "@group(0) @binding(1) var<storage, read> M: array<f32>;",
     "@group(0) @binding(2) var<storage, read> C: array<f32>;",
     "@group(0) @binding(3) var<storage, read_write> X: array<f32>;",
     "@group(0) @binding(4) var<storage, read_write> A: array<f32>;",
     "var<workgroup> tile: array<vec2<f32>, {Formed.TILE}>;",
-    Simulation.law_wgsl,
+    "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {{",
+    "  let a: f32 = M[4u * g + 3u];",
+    "  if (a <= 0.0) {{ return vec2<f32>(0.0, 0.0); }}",
+    "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];",
+    "  let r: f32 = length(d);",
+    "  if (r <= 0.0) {{ return vec2<f32>(0.0, 0.0); }}",
+    "  let u: f32 = clamp(log(r / {r0}) / {step}, 0.0, {topr});",
+    "  let i0: u32 = u32(floor(u));",
+    "  let fu: f32 = u - floor(u);",
+    "  var ph: f32 = atan2(d.y, d.x);",
+    "  if (ph < 0.0) {{ ph = ph + {tau}; }}",
+    "  var v: f32 = ph / {dphi} - 0.5;",
+    "  if (v < 0.0) {{ v = v + {np}.0; }}",
+    "  let k0: u32 = u32(floor(v)) % {np}u;",
+    "  let fv: f32 = v - floor(v);",
+    "  let k1: u32 = (k0 + 1u) % {np}u;",
+    "  let t: u32 = 4u * P[2] + g * {nr}u * {np}u * 2u;",
+    "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * {np}u + k0)], M[t + 2u * (i0 * {np}u + k0) + 1u]);",
+    "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * {np}u + k1)], M[t + 2u * (i0 * {np}u + k1) + 1u]);",
+    "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * {np}u + k0)], M[t + 2u * ((i0 + 1u) * {np}u + k0) + 1u]);",
+    "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * {np}u + k1)], M[t + 2u * ((i0 + 1u) * {np}u + k1) + 1u]);",
+    "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);",
+    "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;",
+    "}}",
     "@compute @workgroup_size({Formed.TILE}) fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {{",
     "  let i: u32 = P[7] + gid.x;",
     "  let per: u32 = P[1];",
@@ -241,13 +319,8 @@ Formed := class < deg: Real {
     "  }}",
     "  let gN: vec2<f32> = C[4u * g] * s;",
     "  let mag: f32 = length(gN);",
-    "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);",
-    "  var f: f32 = 0.0;",
-    "  if (mag > 0.0) {{",
-    "    f = mag;",
-    "    if (C[4u * g + 2u] > 0.0) {{ f = felt(mag, C[4u * g + 2u]); }}",
-    "    a = gN / mag * f;",
-    "  }}",
+    "  let a: vec2<f32> = gN + made(g, me);",
+    "  let f: f32 = length(a);",
     "  A[4u * i] = a.x;",
     "  A[4u * i + 1u] = a.y;",
     "  A[4u * i + 2u] = mag;",
@@ -270,4 +343,5 @@ Formed := class < deg: Real {
     "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;",
     "}}"
   ].join("\n")
+  }
 }

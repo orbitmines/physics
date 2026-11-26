@@ -737,7 +737,13 @@ method body after loading.
   ("gathered": one body; "scattered": every thickness, middle and gas share at 61 masses) lays the tracks on the
   700×520 grid with `by` the fewest freedoms (`mass thickness middle gas`) and `needs` the least mass; written as
   `<id>` and `<id>.solved` (the same cells on DEG 4..40 by halves, with the chain's a_0/cH_Lambda per DEG, `against:
-  "H_Lambda"` - Galaxies.rate_of puts it in m/s^2 with sqrt(Omega_Lambda) H_0). A new class is registered in
+  "H_Lambda"` - Galaxies.rate_of puts it in m/s^2 with sqrt(Omega_Lambda) H_0).
+  The SPARC galaxies are solved the same way: `Simulation.solve_fields` lays each one's
+  annuli and shells on the grid and solves it up a ladder of Υ_disk × Υ_bulge, `laddered` reads between the rungs
+  as the device's FIT does; `made_rows`/`made_at` are the record alone, for a field already in a_0. Round the axis
+  as well: `Felt.round_made(xy, s, h)` lays stars on the grid cut NPHI ways, solves what arrives and then the record
+  wave by wave (`wave_bands`, one band per m), and `round_at` reads it at a star - Formed's discs use it every
+  REFRESH steps; the generated arithmetic is slow, so keep NPHI small. A new class is registered in
   `implementation/gen/Gen.ray`'s `core` list or it is not emitted, and in `TypeScript.exports`
   (implementation/gen/languages/TypeScript.ray) or a generated test cannot name it. A member may not be named
   `read` or `write`: the generated TypeScript's lazy fields are `this.read(name, init)` / `this.write(name, v)`. `Measure.law(model)` writes the curve with the

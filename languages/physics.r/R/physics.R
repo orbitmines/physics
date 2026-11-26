@@ -6949,7 +6949,9 @@ Prover <- ray_class("Prover", Node, function(cl) {
     .set(held, "derivation", lst(tick, falls))
     .set(ruler, "derivation", lst(held))
     .set(defl, "derivation", lst(held, ruler))
-    return(lst(g_, phi, tick, falls, held, ruler, defl))
+    shadow <- Inferences$held_shadow(s, held$fact, ruler$fact)
+    .set(shadow, "derivation", lst(held, ruler))
+    return(lst(g_, phi, tick, falls, held, ruler, defl, shadow))
     NULL
   })
   method(cl, "expansion_of", function(s = NULL, settles = NULL, ...) {
@@ -7017,10 +7019,16 @@ Prover <- ray_class("Prover", Node, function(cl) {
     got <- Prover$neat(Expr$add(lst(half, Expr$pown(Expr$add(lst(Expr$mul(lst(half, half)), Expr$mul(lst(g, a)))), 0.5))))
     closing <- Step$of(Fact$stands("F_{g} \\aside{closing}", got), "what is felt, with the mismatch closed", lst(scale$fact$key), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", lst("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " %+% text_of(Expr$show(got)) %+% ""))
     .set(closing, "derivation", lst(scale))
+    psi <- Expr$field("\\psi")
+    w <- Prover$neat(Expr$sub(got, g))
+    made <- Step$of(Fact$stands("-\\nabla^{2}\\psi", Expr$field("\\nabla\\cdot\\paren{\\paren{" %+% text_of(Expr$show(w)) %+% "}\\hat{g}_{N}}")), "the space made, as a source", lst(closing$fact$key), "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" %+% text_of(met) %+% "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made", lst("w = F_{g} - g_{N} = " %+% text_of(Expr$show(w)) %+% ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w"))
+    .set(made, "derivation", lst(closing, potential))
+    field <- Step$of(Fact$stands("g \\aside{field}", Prover$neat(Expr$sub(g, Expr$field("\\nabla\\psi")))), "what is felt, solved over the whole field", lst(made$fact$key, closing$fact$key), "what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve", lst("g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w", "no curl: \\nabla\\times g = 0, as a record's slope", "a sphere: \\nabla\\psi = -w, so g = F_{g}", "a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)"))
+    .set(field, "derivation", lst(made))
     ratio <- Prover$neat(Expr$div(a0, own))
     against <- Step$of(Fact$stands("\\frac{a_{0}}{cH}", ratio), "the scale against the vacuum's growth", lst(scale$fact$key, lam$fact$key), "a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", lst("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " %+% text_of(Expr$show(Prover$neat(ratio))) %+% "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"))
     .set(against, "derivation", lst(scale))
-    return(lst(straight, potential, lam, scale, closing, against))
+    return(lst(straight, potential, lam, scale, closing, made, field, against))
     NULL
   })
   method(cl, "leftover", function(rays_c = NULL, ...) {
@@ -7757,7 +7765,7 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     NULL
   })
   static_getter(cl, "RULES", function() {
-    return(m_concat(m_concat(lst(Inferences$room_balance, Inferences$ehrhart, Inferences$counting, Inferences$reaching, Inferences$mass_of, Inferences$saturating, Inferences$spreading, Inferences$screening, Inferences$refracting, Inferences$accumulating, Inferences$substituting, Inferences$metric_of, Inferences$relativity, Inferences$schwarzschild, Inferences$shadow, Inferences$balancing, Inferences$unbiased, Inferences$free_path, Inferences$summing, Inferences$horizon, Inferences$bending, Inferences$crossing, Inferences$near_field, Inferences$shadowing, Inferences$receiving, Inferences$moved, Inferences$receding, Inferences$shortfall, Inferences$keeping, Inferences$transporting, Inferences$assembling, Inferences$channelling, Inferences$closing, Inferences$arrangement, Inferences$scale_crossed, Inferences$orbiting, Inferences$curve_ends, Inferences$curves_of_each, Inferences$crowding_of_arrivals, Inferences$making_rate, Inferences$hubble_rate, Inferences$expansion_scale, Inferences$coincidence, Inferences$crowding, Inferences$at_that_density, Inferences$in_motion), m_map(Inferences$IN_FULL, function(of = NULL, ...) {
+    return(m_concat(m_concat(lst(Inferences$room_balance, Inferences$ehrhart, Inferences$counting, Inferences$reaching, Inferences$mass_of, Inferences$saturating, Inferences$spreading, Inferences$screening, Inferences$refracting, Inferences$accumulating, Inferences$substituting, Inferences$metric_of, Inferences$relativity, Inferences$schwarzschild, Inferences$balancing, Inferences$unbiased, Inferences$free_path, Inferences$summing, Inferences$horizon, Inferences$bending, Inferences$crossing, Inferences$near_field, Inferences$shadowing, Inferences$receiving, Inferences$moved, Inferences$receding, Inferences$shortfall, Inferences$keeping, Inferences$transporting, Inferences$assembling, Inferences$channelling, Inferences$closing, Inferences$arrangement, Inferences$scale_crossed, Inferences$orbiting, Inferences$curve_ends, Inferences$curves_of_each, Inferences$crowding_of_arrivals, Inferences$making_rate, Inferences$hubble_rate, Inferences$expansion_scale, Inferences$coincidence, Inferences$crowding, Inferences$at_that_density, Inferences$in_motion), m_map(Inferences$IN_FULL, function(of = NULL, ...) {
       return(Inferences$writing_out(of))
       NULL
     })), lst(Inferences$can_it_push, Inferences$in_three)))
@@ -7896,30 +7904,26 @@ Inferences <- ray_class("Inferences", Node, function(cl) {
     }))
     NULL
   })
-  static_getter(cl, "shadow", function() {
-    return(Inference$new(name = "where a ray stops coming back", because = "a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow", fire = function(s = NULL, ...) {
-      A <- s$fact("is", "A in r")
-      B <- s$fact("is", "B in r")
-      if (truthy((if (truthy(.x <- (if (truthy(.x <- eq(A, NULL))) .x else eq(B, NULL)))) .x else s$has("is", "b_{c}")))) {
-        return(lst())
-      }
-      u <- "\\delta n_{f}"
-      over <- Expr$simplify(Expr$mul(lst(Expr$field(u), Expr$pown(Expr$mul(lst(A$to, Expr$pown(B$to, neg(1)))), 0.5))))
-      env <- Node$new()
-      set_at(env, u, Expr$numeric(Expr$root(Expr$simplify(Expr$d(over, u)), u), env))
-      sphere <- elem(env, u)
-      bc <- r_div(1, Expr$numeric(over, env))
-      .w("bc", r_div(m_round((r_mul(bc, r_pow(10, 9)))), r_pow(10, 9)))
-      half <- Expr$mul(lst(Expr$num(0.5), Expr$field(u)))
-      gA <- Expr$pown(Expr$mul(lst(Expr$sub(Expr$num(1), half), Expr$pown(Expr$add(lst(Expr$num(1), half)), neg(1)))), 2)
-      gB <- Expr$pown(Expr$add(lst(Expr$num(1), half)), 4)
-      gover <- Expr$simplify(Expr$mul(lst(Expr$field(u), Expr$pown(Expr$mul(lst(gA, Expr$pown(gB, neg(1)))), 0.5))))
-      genv <- Node$new()
-      set_at(genv, u, Expr$numeric(Expr$root(Expr$simplify(Expr$d(gover, u)), u), genv))
-      gr <- r_div(1, Expr$numeric(gover, genv))
-      return(lst(Inferences$step("b_{c}", Expr$mul(lst(Expr$num(bc), Expr$field("\\bar{m}"))), "where a ray stops coming back", lst(A$key, B$key), "THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's", lst("a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r", "\\bar{m}/b at the turning point = " %+% text_of(Expr$show(over)) %+% "", "largest where its slope is nought: \\delta n_{f} = " %+% text_of(Fmt$fixed(sphere, 6)) %+% ", the photon sphere at r = " %+% text_of(Fmt$fixed(r_div(1, sphere), 4)) %+% " \\bar{m}", "b_{c} = " %+% text_of(Fmt$fixed(bc, 4)) %+% " \\bar{m}", "general relativity's metric read the same way: b_{c} = " %+% text_of(Fmt$fixed(gr, 4)) %+% " \\bar{m}, which is 3\\sqrt{3}", "so at the same \\bar{m} this shadow is " %+% text_of(Fmt$fixed(r_mul(100, (r_sub(r_div(bc, gr), 1))), 2)) %+% " per cent wider"))))
-      NULL
-    }))
+  statik(cl, "held_shadow", function(s = NULL, A = NULL, B = NULL, ...) {
+    u <- "\\delta n_{f}"
+    Au <- Expr$simplify(Expr$replace(Expr$replace(Expr$replace(A$to, "r_{s}", Expr$num(2)), "D", Expr$num(3)), "r", Expr$pown(Expr$field(u), neg(1))))
+    over <- Expr$simplify(Expr$mul(lst(Expr$field(u), Expr$pown(Au, 0.5))))
+    env <- Node$new()
+    set_at(env, u, Expr$numeric(Expr$root(Expr$simplify(Expr$d(over, u)), u), env))
+    sphere <- elem(env, u)
+    bc <- r_div(1, Expr$numeric(over, env))
+    .w("bc", r_div(m_round((r_mul(bc, r_pow(10, 9)))), r_pow(10, 9)))
+    gr <- r_mul(3, m_sqrt(3))
+    iA <- s$fact("is", "A in r")
+    iB <- s$fact("is", "B in r")
+    index <- NaN
+    if (truthy((if (truthy(.x <- (!eq(iA, NULL)))) (!eq(iB, NULL)) else .x))) {
+      iover <- Expr$simplify(Expr$mul(lst(Expr$field(u), Expr$pown(Expr$mul(lst(iA$to, Expr$pown(iB$to, neg(1)))), 0.5))))
+      ienv <- Node$new()
+      set_at(ienv, u, Expr$numeric(Expr$root(Expr$simplify(Expr$d(iover, u)), u), ienv))
+      .w("index", r_div(1, Expr$numeric(iover, ienv)))
+    }
+    return(Inferences$step("b_{c}", Expr$mul(lst(Expr$num(bc), Expr$field("\\bar{m}"))), "where a ray stops coming back", lst(A$key, B$key), "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", lst("a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = " %+% text_of(Expr$show(over)) %+% "", "largest where its slope is nought: \\delta n_{f} = " %+% text_of(Fmt$fixed(sphere, 6)) %+% ", the photon sphere at r = " %+% text_of(Fmt$fixed(r_div(1, sphere), 4)) %+% " \\bar{m}", "b_{c} = " %+% text_of(Fmt$fixed(bc, 4)) %+% " \\bar{m}; general relativity's is 3\\sqrt{3} = " %+% text_of(Fmt$fixed(gr, 4)) %+% "", (if (truthy(Fmt$finite(index))) "the medium's index read as an isotropic metric instead gives " %+% text_of(Fmt$fixed(index, 4)) %+% " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read" else "the medium's index gives no metric of its own here"))))
     NULL
   })
   static_getter(cl, "metric_of", function() {
@@ -14383,7 +14387,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     if (truthy(eq(stars, NULL))) {
       (fail)("galaxy.stars is not on disk - run the galaxies (`" %+% text_of(Galaxies$SIMULATED) %+% "`) and try again")
     }
-    return(Picture$new(id = "galaxy.simulation", what = "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured", width = 960, height = 720, frames = mem(stars$header, key_("frames")), paint = function(played = NULL, ...) {
+    return(Picture$new(id = "galaxy.simulation", what = "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured", width = 960, height = 720, frames = mem(stars$header, key_("frames")), paint = function(played = NULL, ...) {
       return(Orbiting$new(stars = stars))
       NULL
     }))
@@ -14465,7 +14469,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     if (truthy(eq(got, NULL))) {
       (fail)("galaxy.formed is not on disk - run the galaxies (`" %+% text_of(Galaxies$SIMULATED) %+% "`) and try again")
     }
-    return(Picture$new(id = "galaxy.formed", what = "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms", width = 960, height = 720, frames = mem(got$header, key_("frames")), paint = function(played = NULL, ...) {
+    return(Picture$new(id = "galaxy.formed", what = "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms", width = 960, height = 720, frames = mem(got$header, key_("frames")), paint = function(played = NULL, ...) {
       return(Forming$new(formed = got))
       NULL
     }))
@@ -14600,7 +14604,7 @@ Galaxies <- ray_class("Galaxies", Node, function(cl) {
     stars_n <- mem(H, key_("stars"))
     q_text <- Fmt$fixed(mem(H, key_("Q")), 1)
     a0_text <- Fmt$exponential(mem(H, key_("a0")), 3)
-    s$fill_text("" %+% text_of(stars_n) %+% " stars each, every one pulled by every other through the law (a₀ " %+% text_of(a0_text) %+% " m/s²), no halo; launched smooth at Q " %+% text_of(q_text) %+% " — t = " %+% text_of(gyr) %+% " Gyr", 22, 44)
+    s$fill_text("" %+% text_of(stars_n) %+% " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " %+% text_of(a0_text) %+% " m/s²), no halo; launched smooth at Q " %+% text_of(q_text) %+% " — t = " %+% text_of(gyr) %+% " Gyr", 22, 44)
     side <- Fmt$min(r_div((r_sub(s$width, 66)), 2), r_sub(s$height, 110))
     .r <- for_range(len(names), function(g) {
       ox <- r_add(22, r_mul(g, (r_add(side, 22))))
@@ -15147,6 +15151,12 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
   static_field(cl, "THREAD", function() "  let i: u32 = P[7] + gid.y * 65536u + gid.x;")
   static_field(cl, "ENTRY", function() "@compute @workgroup_size(64) fn")
   static_field(cl, "ID", function() "(@builtin(global_invocation_id) gid: vec3<u32>) {")
+  static_field(cl, "NY", function() 21)
+  static_field(cl, "NB", function() 11)
+  static_field(cl, "RUNG_Y", function() 0.05)
+  static_field(cl, "RUNG_B", function() 0.1)
+  static_field(cl, "RINGS_IN", function() 8)
+  static_field(cl, "FAR_OFF", function() 30)
   static_field(cl, "OMEGA_M", function() 0.315)
   static_field(cl, "FILM_STARS", function() 4096)
   static_field(cl, "FILM_TURNS", function() 0.5)
@@ -15193,7 +15203,14 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     lyd <- Shaded$literal(Fmt$log10(Sparc$YD))
     lyb <- Shaded$literal(Fmt$log10(Sparc$YB))
     py <- Shaded$literal(Simulation$PRIOR_Y)
-    return(m_join(lst("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", Simulation$law_wgsl, "" %+% text_of(Simulation$ENTRY) %+% " FIT" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let YD: f32 = exp(ly * " %+% text_of(ln10) %+% ");", "  let YB: f32 = exp(lb * " %+% text_of(ln10) %+% ");", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " %+% text_of(pi) %+% " / 180.0) / sin(ip * " %+% text_of(pi) %+% " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " %+% text_of(lyd) %+% ") / " %+% text_of(py) %+% ";", "  let pb: f32 = G[b + 7u] * (lb - " %+% text_of(lyb) %+% ") / " %+% text_of(py) %+% ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n"))
+    ly0 <- Shaded$literal(r_sub(Fmt$log10(Sparc$YD), r_div(r_mul(Simulation$RUNG_Y, r_sub(Simulation$NY, 1)), 2)))
+    lb0 <- Shaded$literal(r_sub(Fmt$log10(Sparc$YB), r_div(r_mul(Simulation$RUNG_B, r_sub(Simulation$NB, 1)), 2)))
+    sy <- Shaded$literal(Simulation$RUNG_Y)
+    sb <- Shaded$literal(Simulation$RUNG_B)
+    topy <- Shaded$literal(r_sub(r_sub(Simulation$NY, 1), 0.0001))
+    ny <- Simulation$NY
+    nbs <- Simulation$NB
+    return(m_join(lst("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", "" %+% text_of(Simulation$ENTRY) %+% " FIT" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let uy: f32 = clamp((ly - " %+% text_of(ly0) %+% ") / " %+% text_of(sy) %+% ", 0.0, " %+% text_of(topy) %+% ");", "  let ky: u32 = u32(floor(uy));", "  let fy: f32 = uy - floor(uy);", "  var nb: u32 = 1u;", "  if (G[b + 7u] > 0.0) { nb = " %+% text_of(nbs) %+% "u; }", "  var ub: f32 = 0.0;", "  if (nb > 1u) { ub = clamp((lb - " %+% text_of(lb0) %+% ") / " %+% text_of(sb) %+% ", 0.0, f32(nb - 1u) - 0.0001); }", "  let kb: u32 = u32(floor(ub));", "  let fb: f32 = ub - floor(ub);", "  let kb1: u32 = min(kb + 1u, nb - 1u);", "  let base: u32 = u32(G[b + 15u]);", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " %+% text_of(pi) %+% " / 180.0) / sin(ip * " %+% text_of(pi) %+% " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let o: u32 = p - start;", "    let cnt: u32 = u32(G[b + 1u]);", "    let lo: f32 = (1.0 - fy) * L[base + (kb * " %+% text_of(ny) %+% "u + ky) * cnt + o] + fy * L[base + (kb * " %+% text_of(ny) %+% "u + ky + 1u) * cnt + o];", "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " %+% text_of(ny) %+% "u + ky) * cnt + o] + fy * L[base + (kb1 * " %+% text_of(ny) %+% "u + ky + 1u) * cnt + o];", "    let g: f32 = (1.0 - fb) * lo + fb * hi;", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " %+% text_of(lyd) %+% ") / " %+% text_of(py) %+% ";", "  let pb: f32 = G[b + 7u] * (lb - " %+% text_of(lyb) %+% ") / " %+% text_of(py) %+% ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n"))
     NULL
   })
   static_getter(cl, "best_kernel", function() {
@@ -15201,7 +15218,7 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     NULL
   })
   static_getter(cl, "stars_kernel", function() {
-    return(m_join(lst("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", Simulation$law_wgsl, "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) {", "    let q: f32 = rmax / r;", "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);", "  }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" %+% text_of(Simulation$ENTRY) %+% " START" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" %+% text_of(Simulation$ENTRY) %+% " STEP" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n"))
+    return(m_join(lst("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" %+% text_of(Simulation$ENTRY) %+% " START" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" %+% text_of(Simulation$ENTRY) %+% " STEP" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n"))
     NULL
   })
   static_getter(cl, "runnable", function() {
@@ -15669,6 +15686,204 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     if (!is.null(.r)) return(.r[[1]])
     NULL
   })
+  field(cl, "on", function() Felt$new())
+  method(cl, "unit_of", function(j = NULL, ...) {
+    return(r_div(elem(elem(elem(self$rows, j), r_sub(len(elem(self$rows, j)), 1)), 0), 10))
+    NULL
+  })
+  method(cl, "grid_of", function(j = NULL, ...) {
+    F <- self$on
+    L <- self$unit_of(j)
+    es <- elem(self$edges, j)
+    n <- r_sub(len(es), 1)
+    wd <- elem(self$w_discs, j)
+    wg <- elem(self$w_gases, j)
+    rs <- elem(self$rows, j)
+    t <- elem(self$thick, j)
+    rings <- lst()
+    .r <- for_range(n, function(a) {
+      area <- r_sub(r_mul(elem(es, r_add(a, 1)), elem(es, r_add(a, 1))), r_mul(elem(es, a), elem(es, a)))
+      .r <- for_range(Simulation$RINGS_IN, function(k) {
+        r0 <- r_add(elem(es, a), r_div(r_mul((r_sub(elem(es, r_add(a, 1)), elem(es, a))), k), Simulation$RINGS_IN))
+        r1 <- r_add(elem(es, a), r_div(r_mul((r_sub(elem(es, r_add(a, 1)), elem(es, a))), r_add(k, 1)), Simulation$RINGS_IN))
+        soft <- r_div((r_sub(r1, r0)), 2)
+        m_push(rings, lst(r_div((r_add(r0, r1)), 2), (if (truthy(gt(area, 0))) r_div((r_sub(r_mul(r1, r1), r_mul(r0, r0))), area) else 0), a, r_add(r_mul(t, t), r_mul(soft, soft))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    md <- m_reduce(wd, 0, function(m = NULL, v = NULL, ...) {
+      return(r_add(m, v))
+      NULL
+    })
+    mg <- m_reduce(wg, 0, function(m = NULL, v = NULL, ...) {
+      return(r_add(m, v))
+      NULL
+    })
+    out <- m_map(rng(6), function(k = NULL, ...) {
+      return(filled(F$cells, 0))
+      NULL
+    })
+    .r <- for_range(F$cells, function(c) {
+      i <- m_floor((r_div(c, Felt$NMU)))
+      mu <- elem(F$mc, r_mod(c, Felt$NMU))
+      r <- r_mul(elem(F$rc, i), L)
+      R <- r_mul(r, m_sqrt((r_sub(1, r_mul(mu, mu)))))
+      z <- r_mul(r, mu)
+      if (truthy(gt(r, r_mul(Simulation$FAR_OFF, elem(es, n))))) {
+        set_at(elem(out, 0), c, r_sub(0, r_div(r_mul(md, R), (r_mul(r_mul(r, r), r)))))
+        set_at(elem(out, 1), c, r_sub(0, r_div(r_mul(md, z), (r_mul(r_mul(r, r), r)))))
+        set_at(elem(out, 2), c, r_sub(0, r_div(r_mul(mg, R), (r_mul(r_mul(r, r), r)))))
+        set_at(elem(out, 3), c, r_sub(0, r_div(r_mul(mg, z), (r_mul(r_mul(r, r), r)))))
+      } else {
+        .r <- for_each(rings, function(b) {
+          g <- Felt$ring(R, z, elem(b, 0), 0, elem(b, 3))
+          set_at(elem(out, 0), c, r_add(elem(elem(out, 0), c), r_mul(r_mul(elem(wd, elem(b, 2)), elem(b, 1)), elem(g, 0))))
+          set_at(elem(out, 1), c, r_add(elem(elem(out, 1), c), r_mul(r_mul(elem(wd, elem(b, 2)), elem(b, 1)), elem(g, 1))))
+          set_at(elem(out, 2), c, r_add(elem(elem(out, 2), c), r_mul(r_mul(elem(wg, elem(b, 2)), elem(b, 1)), elem(g, 0))))
+          set_at(elem(out, 3), c, r_add(elem(elem(out, 3), c), r_mul(r_mul(elem(wg, elem(b, 2)), elem(b, 1)), elem(g, 1))))
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+      }
+      gb <- Simulation$bulge_at(rs, r)
+      set_at(elem(out, 4), c, r_sub(0, r_div(r_mul(gb, R), r)))
+      set_at(elem(out, 5), c, r_sub(0, r_div(r_mul(gb, z), r)))
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(out)
+    NULL
+  })
+  method(cl, "made_of", function(grid = NULL, yd = NULL, yb = NULL, ...) {
+    a <- self$a0
+    gr <- m_map(rng(self$on$cells), function(c = NULL, ...) {
+      return(r_div((r_add(r_add(r_mul(yd, elem(elem(grid, 0), c)), elem(elem(grid, 2), c)), r_mul(yb, elem(elem(grid, 4), c)))), a))
+      NULL
+    })
+    gz <- m_map(rng(self$on$cells), function(c = NULL, ...) {
+      return(r_div((r_add(r_add(r_mul(yd, elem(elem(grid, 1), c)), elem(elem(grid, 3), c)), r_mul(yb, elem(elem(grid, 5), c)))), a))
+      NULL
+    })
+    return(m_map(self$on$made_rows(gr, gz), function(v = NULL, ...) {
+      return(r_mul(v, a))
+      NULL
+    }))
+    NULL
+  })
+  method(cl, "felt_at", function(j = NULL, made = NULL, r = NULL, gN = NULL, ...) {
+    return(r_sub(gN, self$on$made_at(made, r_div(r, self$unit_of(j)))))
+    NULL
+  })
+  field(cl, "grids", function() lst())
+  field(cl, "ladder", function() lst())
+  field(cl, "ladder_at", function() lst())
+  method(cl, "rungs", function(j = NULL, ...) {
+    return((if (truthy(self$has_bulge(j))) Simulation$NB else 1))
+    NULL
+  })
+  getter(cl, "solve_fields", function() {
+    self$grids <- lst()
+    self$ladder <- lst()
+    self$ladder_at <- lst()
+    .r <- for_range(len(self$ids), function(j) {
+      grid <- self$grid_of(j)
+      m_push(self$grids, grid)
+      m_push(self$ladder_at, len(self$ladder))
+      kept <- filt(rng(len(elem(self$rows, j))), function(i = NULL, ...) {
+        return(gt(elem(elem(elem(self$rows, j), i), 6), 0))
+        NULL
+      })
+      .r <- for_range(self$rungs(j), function(ib) {
+        yb <- r_pow(10, (self$rung_b(ib)))
+        .r <- for_range(Simulation$NY, function(iy) {
+          yd <- r_pow(10, (self$rung_y(iy)))
+          made <- self$made_of(grid, yd, yb)
+          .r <- for_each(kept, function(i) {
+            p <- elem(elem(self$at_rows, j), i)
+            m_push(self$ladder, self$felt_at(j, made, elem(elem(elem(self$rows, j), i), 0), r_add(r_add(r_mul(yd, elem(p, 0)), r_mul(yb, elem(p, 2))), elem(p, 1))))
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    NULL
+  })
+  method(cl, "rung_y", function(iy = NULL, ...) {
+    return(r_add(Fmt$log10(Sparc$YD), r_mul(Simulation$RUNG_Y, (r_sub(iy, r_div(r_sub(Simulation$NY, 1), 2))))))
+    NULL
+  })
+  method(cl, "rung_b", function(ib = NULL, ...) {
+    return(r_add(Fmt$log10(Sparc$YB), r_mul(Simulation$RUNG_B, (r_sub(ib, r_div(r_sub(Simulation$NB, 1), 2))))))
+    NULL
+  })
+  method(cl, "laddered", function(j = NULL, k = NULL, ly = NULL, lb = NULL, ...) {
+    count <- len(filt(elem(self$rows, j), function(row = NULL, ...) {
+      return(gt(elem(row, 6), 0))
+      NULL
+    }))
+    uy <- Fmt$min(Fmt$max(r_div((r_sub(ly, self$rung_y(0))), Simulation$RUNG_Y), 0), r_sub(r_sub(Simulation$NY, 1), 0.0001))
+    ky <- m_floor(uy)
+    fy <- r_sub(uy, ky)
+    nb <- self$rungs(j)
+    ub <- (if (truthy(gt(nb, 1))) Fmt$min(Fmt$max(r_div((r_sub(lb, self$rung_b(0))), Simulation$RUNG_B), 0), r_sub(r_sub(nb, 1), 0.0001)) else 0)
+    kb <- m_floor(ub)
+    fb <- r_sub(ub, kb)
+    kb1 <- Fmt$min(r_add(kb, 1), r_sub(nb, 1))
+    at <- function(b = NULL, y = NULL, ...) {
+      return(elem(self$ladder, r_add(r_add(elem(self$ladder_at, j), r_mul((r_add(r_mul(b, Simulation$NY), y)), count)), k)))
+      NULL
+    }
+    lo <- r_add(r_mul((r_sub(1, fy)), (at)(kb, ky)), r_mul(fy, (at)(kb, r_add(ky, 1))))
+    hi <- r_add(r_mul((r_sub(1, fy)), (at)(kb1, ky)), r_mul(fy, (at)(kb1, r_add(ky, 1))))
+    return(r_add(r_mul((r_sub(1, fb)), lo), r_mul(fb, hi)))
+    NULL
+  })
+  method(cl, "solved_points", function(yd = NULL, yb = NULL, ...) {
+    measured <- lst()
+    tabled <- lst()
+    .r <- for_range(len(self$ids), function(j) {
+      made <- self$made_of(elem(self$grids, j), elem(yd, j), elem(yb, j))
+      .r <- for_range(len(elem(self$rows, j)), function(i) {
+        p <- elem(elem(self$at_rows, j), i)
+        m_push(measured, self$felt_at(j, made, elem(elem(elem(self$rows, j), i), 0), r_add(r_add(r_mul(elem(yd, j), elem(p, 0)), r_mul(elem(yb, j), elem(p, 2))), elem(p, 1))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      .r <- for_each(elem(self$tables, j), function(t) {
+        m_push(tabled, self$felt_at(j, made, elem(t, 0), r_add(r_add(r_mul(elem(yd, j), elem(t, 1)), r_mul(elem(yb, j), elem(t, 3))), elem(t, 2))))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(m_concat(measured, tabled))
+    NULL
+  })
+  getter(cl, "own_y", function() {
+    return(m_map(self$ids, function(g = NULL, ...) {
+      return(Sparc$YD)
+      NULL
+    }))
+    NULL
+  })
+  getter(cl, "own_b", function() {
+    return(m_map(self$ids, function(g = NULL, ...) {
+      return(Sparc$YB)
+      NULL
+    }))
+    NULL
+  })
   statik(cl, "lift_coefficients", function(theory = NULL, deg = NULL, ...) {
     model <- Model$new(theory = theory)
     e <- model$settled(deg)
@@ -15872,7 +16087,7 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     return(Simulation$laid(m_map(rng(len(self$ids)), function(j = NULL, ...) {
       g <- elem(self$ids, j)
       stop <- (if (truthy(lt(r_add(j, 1), len(self$ids)))) elem(self$fit_at, r_add(j, 1)) else m_floor((r_div(len(pts), 8))))
-      return(lst(elem(self$fit_at, j), r_sub(stop, elem(self$fit_at, j)), elem(mem(S, key_("D")), g), elem(mem(S, key_("e_D")), g), elem(mem(S, key_("Inc")), g), elem(mem(S, key_("e_Inc")), g), self$a0, (if (truthy(self$has_bulge(j))) 1 else 0), elem(self$centre_y, j), elem(self$centre_b, j), elem(self$centre_d, j), elem(self$centre_i, j), r_mul(Simulation$STEP_Y, self$spacing), r_mul(Simulation$STEP_D, self$spacing), r_mul(Simulation$STEP_I, self$spacing), 0))
+      return(lst(elem(self$fit_at, j), r_sub(stop, elem(self$fit_at, j)), elem(mem(S, key_("D")), g), elem(mem(S, key_("e_D")), g), elem(mem(S, key_("Inc")), g), elem(mem(S, key_("e_Inc")), g), self$a0, (if (truthy(self$has_bulge(j))) 1 else 0), elem(self$centre_y, j), elem(self$centre_b, j), elem(self$centre_d, j), elem(self$centre_i, j), r_mul(Simulation$STEP_Y, self$spacing), r_mul(Simulation$STEP_D, self$spacing), r_mul(Simulation$STEP_I, self$spacing), elem(self$ladder_at, j)))
       NULL
     })))
     NULL
@@ -15898,18 +16113,17 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     if (truthy((if (truthy(.x <- (if (truthy(.x <- le(elem(at, 2), 0))) .x else le(elem(at, 3), 0.5)))) .x else gt(elem(at, 3), 90)))) {
       return(r_mul(neg(1), r_pow(10, 30)))
     }
-    YD <- r_pow(10, elem(at, 0))
-    YB <- r_pow(10, elem(at, 1))
     f <- r_div(elem(at, 2), D)
     s <- r_div(m_sin((r_div(r_mul(inc, pi), 180))), m_sin((r_div(r_mul(elem(at, 3), pi), 180))))
     chi <- 0
+    k <- 0
     .r <- for_range(len(elem(self$rows, j)), function(i) {
       row <- elem(elem(self$rows, j), i)
       if (truthy(gt(elem(row, 6), 0))) {
-        p <- elem(elem(self$at_rows, j), i)
-        vm <- m_sqrt(Fmt$max(r_mul(r_mul(f, elem(row, 0)), self$felt(r_add(r_add(r_mul(YD, elem(p, 0)), r_mul(YB, elem(p, 2))), elem(p, 1)))), 0))
+        vm <- m_sqrt(Fmt$max(r_mul(r_mul(f, elem(row, 0)), self$laddered(j, k, elem(at, 0), elem(at, 1))), 0))
         d <- r_div((r_sub(r_mul(elem(row, 1), s), vm)), (r_mul(elem(row, 2), s)))
         .w("chi", r_add(chi, r_mul(d, d)))
+        .w("k", r_add(k, 1))
       }
       CONTINUE
     })
@@ -16372,7 +16586,7 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     .set(extra, key_("rms1"), rms1)
     .set(extra, key_("repro"), self$repro)
     .set(extra, key_("stir"), Simulation$SIGMA)
-    .set(extra, key_("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")
+    .set(extra, key_("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex")
     Measure$save("galaxy.simulated", names, cols, extra)
     fields <- Node$new()
     fnames <- lst("galaxy", "r", "gd", "gg", "gb", "v0", "v1", "vN")
@@ -16406,7 +16620,7 @@ Simulation <- ray_class("Simulation", Node, function(cl) {
     fextra <- Node$new()
     .set(fextra, key_("ids"), self$ids)
     .set(fextra, key_("table"), T)
-    .set(fextra, key_("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")
+    .set(fextra, key_("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)")
     Measure$save("galaxy.fields", fnames, fields, fextra)
     if (truthy((!truthy(m_empty(self$film_ids))))) {
       film <- Node$new()
@@ -16676,7 +16890,63 @@ Formed <- ray_class("Formed", Node, function(cl) {
   static_field(cl, "RINGS", function() 48)
   static_field(cl, "DISCS", function() lst(lst(10.7, 3), lst(9.3, 2)))
   static_field(cl, "WHAT", function() lst("a bright disc", "a dwarf"))
+  static_field(cl, "REFRESH", function() 10)
   field(cl, "a0", function() r_div(Galaxies$a0_at(self$deg), Simulation$UNIT_G))
+  field(cl, "on", function() Felt$new())
+  field(cl, "made_now", function() lst())
+  method(cl, "made_tables", function(state = NULL, ...) {
+    head <- lst()
+    tabs <- lst()
+    .r <- for_range(self$discs_n, function(g) {
+      rd <- self$scale(g)
+      cx <- 0
+      cy <- 0
+      .r <- for_range(Formed$N, function(k) {
+        .w("cx", r_add(cx, r_div(elem(state, r_mul(4, (r_add(r_mul(g, Formed$N), k)))), Formed$N)))
+        .w("cy", r_add(cy, r_div(elem(state, r_add(r_mul(4, (r_add(r_mul(g, Formed$N), k))), 1)), Formed$N)))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      xy <- lst()
+      .r <- for_range(Formed$N, function(k) {
+        m_push(xy, r_div((r_sub(elem(state, r_mul(4, (r_add(r_mul(g, Formed$N), k)))), cx)), rd))
+        m_push(xy, r_div((r_sub(elem(state, r_add(r_mul(4, (r_add(r_mul(g, Formed$N), k))), 1)), cy)), rd))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      table <- (if (truthy(self$newton)) filled(r_mul(r_mul(Felt$NR, Felt$NPHI), 2), 0) else self$on$round_made(xy, r_div(r_div(self$GM(g), Formed$N), (r_mul(r_mul(self$a0, rd), rd))), Simulation$SHAPE_H))
+      .r <- for_each(lst(cx, cy, rd, (if (truthy(self$newton)) 0 else self$a0)), function(v) {
+        m_push(head, v)
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      .r <- for_each(table, function(v) {
+        m_push(tabs, v)
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    self$made_now <- m_concat(head, tabs)
+    return(self$made_now)
+    NULL
+  })
+  method(cl, "made_at", function(g = NULL, x = NULL, y = NULL, ...) {
+    M <- self$made_now
+    n <- r_mul(r_mul(Felt$NR, Felt$NPHI), 2)
+    a <- elem(M, r_add(r_mul(4, g), 3))
+    if (truthy(le(a, 0))) {
+      return(lst(0, 0))
+    }
+    table <- m_map(rng(n), function(q = NULL, ...) {
+      return(elem(M, r_add(r_add(r_mul(4, self$discs_n), r_mul(g, n)), q)))
+      NULL
+    })
+    got <- self$on$round_at(table, r_div((r_sub(x, elem(M, r_mul(4, g)))), elem(M, r_add(r_mul(4, g), 2))), r_div((r_sub(y, elem(M, r_add(r_mul(4, g), 1)))), elem(M, r_add(r_mul(4, g), 2))))
+    return(lst(r_mul(elem(got, 0), a), r_mul(elem(got, 1), a)))
+    NULL
+  })
   field(cl, "newton", function() FALSE)
   getter(cl, "scale_a0", function() {
     return((if (truthy(self$newton)) 0 else self$a0))
@@ -16770,8 +17040,10 @@ Formed <- ray_class("Formed", Node, function(cl) {
     gx <- r_mul(m, sx)
     gy <- r_mul(m, sy)
     mag <- Fmt$hypot(gx, gy)
-    f <- (if (truthy(gt(mag, 0))) ((if (truthy(self$newton)) mag else Law$boost(mag, self$a0))) else 0)
-    return((if (truthy(gt(mag, 0))) lst(r_mul(r_div(gx, mag), f), r_mul(r_div(gy, mag), f), mag, f) else lst(0, 0, 0, 0)))
+    more <- self$made_at(g, px, py)
+    ax <- r_add(gx, elem(more, 0))
+    ay <- r_add(gy, elem(more, 1))
+    return(lst(ax, ay, mag, Fmt$hypot(ax, ay)))
     NULL
   })
   method(cl, "launch", function(state = NULL, acc = NULL, ...) {
@@ -16938,12 +17210,20 @@ Formed <- ray_class("Formed", Node, function(cl) {
     .set(extra, key_("middles"), self$middles)
     .set(extra, key_("deg"), self$deg)
     .set(extra, key_("a0"), r_mul(self$a0, Simulation$UNIT_G))
-    .set(extra, key_("about"), "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")
+    .set(extra, key_("about"), "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy")
     return(Measure$save("galaxy.formed", lst("density"), cols, extra))
     NULL
   })
   static_getter(cl, "kernel", function() {
-    return(m_join(lst("// GENERATED from Formed.ray: stars that pull each other through the law", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " %+% text_of(Formed$TILE) %+% ">;", Simulation$law_wgsl, "@compute @workgroup_size(" %+% text_of(Formed$TILE) %+% ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " %+% text_of(Formed$TILE) %+% "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " %+% text_of(Formed$TILE) %+% "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);", "  var f: f32 = 0.0;", "  if (mag > 0.0) {", "    f = mag;", "    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }", "    a = gN / mag * f;", "  }", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" %+% text_of(Simulation$ENTRY) %+% " KICKDRIFT" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" %+% text_of(Simulation$ENTRY) %+% " KICK" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n"))
+    F <- Felt$new()
+    r0 <- Shaded$literal(elem(F$rc, 0))
+    step <- Shaded$literal(F$step)
+    topr <- Shaded$literal(r_sub(r_sub(Felt$NR, 1), 0.0001))
+    tau <- Shaded$literal((2 * pi))
+    dphi <- Shaded$literal(F$dphi)
+    np <- Felt$NPHI
+    nr <- Felt$NR
+    return(m_join(lst("// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> M: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " %+% text_of(Formed$TILE) %+% ">;", "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {", "  let a: f32 = M[4u * g + 3u];", "  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];", "  let r: f32 = length(d);", "  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let u: f32 = clamp(log(r / " %+% text_of(r0) %+% ") / " %+% text_of(step) %+% ", 0.0, " %+% text_of(topr) %+% ");", "  let i0: u32 = u32(floor(u));", "  let fu: f32 = u - floor(u);", "  var ph: f32 = atan2(d.y, d.x);", "  if (ph < 0.0) { ph = ph + " %+% text_of(tau) %+% "; }", "  var v: f32 = ph / " %+% text_of(dphi) %+% " - 0.5;", "  if (v < 0.0) { v = v + " %+% text_of(np) %+% ".0; }", "  let k0: u32 = u32(floor(v)) % " %+% text_of(np) %+% "u;", "  let fv: f32 = v - floor(v);", "  let k1: u32 = (k0 + 1u) % " %+% text_of(np) %+% "u;", "  let t: u32 = 4u * P[2] + g * " %+% text_of(nr) %+% "u * " %+% text_of(np) %+% "u * 2u;", "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " %+% text_of(np) %+% "u + k0)], M[t + 2u * (i0 * " %+% text_of(np) %+% "u + k0) + 1u]);", "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " %+% text_of(np) %+% "u + k1)], M[t + 2u * (i0 * " %+% text_of(np) %+% "u + k1) + 1u]);", "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " %+% text_of(np) %+% "u + k0)], M[t + 2u * ((i0 + 1u) * " %+% text_of(np) %+% "u + k0) + 1u]);", "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " %+% text_of(np) %+% "u + k1)], M[t + 2u * ((i0 + 1u) * " %+% text_of(np) %+% "u + k1) + 1u]);", "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);", "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;", "}", "@compute @workgroup_size(" %+% text_of(Formed$TILE) %+% ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " %+% text_of(Formed$TILE) %+% "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " %+% text_of(Formed$TILE) %+% "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  let a: vec2<f32> = gN + made(g, me);", "  let f: f32 = length(a);", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" %+% text_of(Simulation$ENTRY) %+% " KICKDRIFT" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" %+% text_of(Simulation$ENTRY) %+% " KICK" %+% text_of(Simulation$ID) %+% "", Simulation$THREAD, "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n"))
     NULL
   })
 })
@@ -17289,6 +17569,7 @@ Felt <- ray_class("Felt", Node, function(cl) {
   static_field(cl, "MIDDLE", function() lst(0, 0.2, 0.5))
   static_field(cl, "GAS", function() lst(lst(0, 1), lst(0.5, 2), lst(0.5, 3), lst(0.9, 2), lst(0.9, 3)))
   static_field(cl, "FREEDOMS", function() lst("mass", "thickness", "middle", "gas"))
+  static_field(cl, "NPHI", function() 16)
   static_field(cl, "LADDER", function() lst(neg(6.5), 5.5, 193))
   getter(cl, "step", function() {
     return(r_div(m_ln((r_div(Felt$R1, Felt$R0))), Felt$NR))
@@ -17486,6 +17767,10 @@ Felt <- ray_class("Felt", Node, function(cl) {
   })
   field(cl, "band", function() self$factored)
   getter(cl, "factored", function() {
+    return(self$factored_with(filled(self$cells, 0)))
+    NULL
+  })
+  method(cl, "factored_with", function(extra = NULL, ...) {
     n <- self$cells
     B <- Felt$NMU
     W <- self$width
@@ -17494,7 +17779,7 @@ Felt <- ray_class("Felt", Node, function(cl) {
       i <- m_floor((r_div(k, B)))
       j <- r_mod(k, B)
       f <- elem(self$faces, k)
-      set_at(m, r_add(r_mul(k, W), B), r_add(r_add(r_add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3)))
+      set_at(m, r_add(r_mul(k, W), B), r_add(r_add(r_add(r_add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3)), elem(extra, k)))
       if (truthy(lt(r_add(i, 1), Felt$NR))) {
         set_at(m, r_add(r_add(r_mul(k, W), B), B), r_sub(0, elem(f, 0)))
       }
@@ -17533,10 +17818,13 @@ Felt <- ray_class("Felt", Node, function(cl) {
     NULL
   })
   method(cl, "solve_band", function(b = NULL, ...) {
+    return(self$solve_with(self$band, b))
+    NULL
+  })
+  method(cl, "solve_with", function(m = NULL, b = NULL, ...) {
     n <- self$cells
     B <- Felt$NMU
     W <- self$width
-    m <- self$band
     x <- m_map(b, function(v = NULL, ...) {
       return(v)
       NULL
@@ -17570,20 +17858,18 @@ Felt <- ray_class("Felt", Node, function(cl) {
     return((if (truthy(gt(gN, 0))) r_add(0.5, m_sqrt((r_add(0.25, r_div(1, gN))))) else 1))
     NULL
   })
-  method(cl, "felt", function(shape = NULL, s = NULL, ...) {
+  method(cl, "made_rows", function(gr = NULL, gz = NULL, ...) {
     n <- self$cells
     B <- Felt$NMU
     wr <- filled(n, 0)
     wm <- filled(n, 0)
     .r <- for_range(n, function(c) {
       j <- r_mod(c, B)
-      gr <- r_mul(s, elem(elem(shape, 0), c))
-      gz <- r_mul(s, elem(elem(shape, 1), c))
-      f <- r_sub(Felt$over(Fmt$hypot(gr, gz)), 1)
+      f <- r_sub(Felt$over(Fmt$hypot(elem(gr, c), elem(gz, c))), 1)
       mu <- elem(self$mc, j)
       st <- m_sqrt((r_sub(1, r_mul(mu, mu))))
-      set_at(wr, c, r_mul(f, (r_add(r_mul(gr, st), r_mul(gz, mu)))))
-      set_at(wm, c, r_mul(f, (r_sub(r_mul(gz, st), r_mul(gr, mu)))))
+      set_at(wr, c, r_mul(f, (r_add(r_mul(elem(gr, c), st), r_mul(elem(gz, c), mu)))))
+      set_at(wm, c, r_mul(f, (r_sub(r_mul(elem(gz, c), st), r_mul(elem(gr, c), mu)))))
       CONTINUE
     })
     if (!is.null(.r)) return(.r[[1]])
@@ -17603,13 +17889,264 @@ Felt <- ray_class("Felt", Node, function(cl) {
     })
     if (!is.null(.r)) return(.r[[1]])
     psi <- self$solve_band(rhs)
+    return(m_map(rng(Felt$NR), function(i = NULL, ...) {
+      return((if (truthy((if (truthy(.x <- gt(i, 0))) lt(r_add(i, 1), Felt$NR) else .x))) r_sub(0, r_div((r_sub(elem(psi, r_mul((r_add(i, 1)), B)), elem(psi, r_mul((r_sub(i, 1)), B)))), (r_sub(elem(self$rc, r_add(i, 1)), elem(self$rc, r_sub(i, 1)))))) else 0))
+      NULL
+    }))
+    NULL
+  })
+  getter(cl, "dphi", function() {
+    return(r_div((2 * pi), Felt$NPHI))
+    NULL
+  })
+  getter(cl, "waves", function() {
+    return(r_add(m_floor((r_div(Felt$NPHI, 2))), 1))
+    NULL
+  })
+  field(cl, "around", function() m_map(rng(self$cells), function(c = NULL, ...) {
+    i <- m_floor((r_div(c, Felt$NMU)))
+    j <- r_mod(c, Felt$NMU)
+    st <- m_sqrt((r_sub(1, r_mul(elem(self$mc, j), elem(self$mc, j)))))
+    dth <- r_sub(Felt$theta(elem(self$me, j)), Felt$theta(elem(self$me, r_add(j, 1))))
+    return(r_div(r_mul(r_mul(r_mul(2, pi), (r_sub(elem(self$re, r_add(i, 1)), elem(self$re, i)))), dth), (r_mul(r_mul(st, self$dphi), self$dphi))))
+    NULL
+  }))
+  statik(cl, "theta", function(mu = NULL, ...) {
+    return(m_atan2(m_sqrt((r_sub(1, r_mul(mu, mu)))), mu))
+    NULL
+  })
+  field(cl, "wave_bands", function() m_map(rng(self$waves), function(m = NULL, ...) {
+    return((if (truthy(eq(m, 0))) self$band else self$factored_with(m_map(self$around, function(a = NULL, ...) {
+      return(r_mul(a, (r_sub(2, r_mul(2, m_cos((r_mul(m, self$dphi))))))))
+      NULL
+    }))))
+    NULL
+  }))
+  field(cl, "cosines", function() m_map(rng(r_mul(Felt$NPHI, Felt$NPHI)), function(q = NULL, ...) {
+    return(m_cos((r_mul(r_mul(self$dphi, m_floor((r_div(q, Felt$NPHI)))), r_mod(q, Felt$NPHI)))))
+    NULL
+  }))
+  field(cl, "sines", function() m_map(rng(r_mul(Felt$NPHI, Felt$NPHI)), function(q = NULL, ...) {
+    return(m_sin((r_mul(r_mul(self$dphi, m_floor((r_div(q, Felt$NPHI)))), r_mod(q, Felt$NPHI)))))
+    NULL
+  }))
+  method(cl, "solve_round", function(b = NULL, ...) {
+    n <- self$cells
+    P <- Felt$NPHI
+    x <- filled(r_mul(n, P), 0)
+    .r <- for_range(self$waves, function(m) {
+      a <- m_map(rng(n), function(c = NULL, ...) {
+        return(m_reduce(rng(P), 0, function(t = NULL, k = NULL, ...) {
+          return(r_add(t, r_mul(elem(b, r_add(r_mul(c, P), k)), elem(self$cosines, r_add(r_mul(m, P), k)))))
+          NULL
+        }))
+        NULL
+      })
+      s <- m_map(rng(n), function(c = NULL, ...) {
+        return(m_reduce(rng(P), 0, function(t = NULL, k = NULL, ...) {
+          return(r_add(t, r_mul(elem(b, r_add(r_mul(c, P), k)), elem(self$sines, r_add(r_mul(m, P), k)))))
+          NULL
+        }))
+        NULL
+      })
+      ya <- self$solve_with(elem(self$wave_bands, m), a)
+      ys <- self$solve_with(elem(self$wave_bands, m), s)
+      weight <- r_div(((if (truthy((if (truthy(.x <- eq(m, 0))) .x else eq(r_mul(2, m), P)))) 1 else 2)), P)
+      .r <- for_range(n, function(c) {
+        .r <- for_range(P, function(k) {
+          set_at(x, r_add(r_mul(c, P), k), r_add(elem(x, r_add(r_mul(c, P), k)), r_mul(weight, (r_add(r_mul(elem(ya, c), elem(self$cosines, r_add(r_mul(m, P), k))), r_mul(elem(ys, c), elem(self$sines, r_add(r_mul(m, P), k))))))))
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(x)
+    NULL
+  })
+  method(cl, "layers", function(r = NULL, h = NULL, ...) {
+    raw <- m_map(rng(Felt$NMU), function(j = NULL, ...) {
+      return(r_sub(m_exp((r_sub(0, r_div(r_mul(r, elem(self$me, j)), h)))), m_exp((r_sub(0, r_div(r_mul(r, elem(self$me, r_add(j, 1))), h))))))
+      NULL
+    })
+    held <- m_reduce(raw, 0, function(t = NULL, v = NULL, ...) {
+      return(r_add(t, v))
+      NULL
+    })
+    return(m_map(raw, function(v = NULL, ...) {
+      return((if (truthy(gt(held, 0))) r_div(v, held) else 0))
+      NULL
+    }))
+    NULL
+  })
+  method(cl, "round_made", function(xy = NULL, s = NULL, h = NULL, ...) {
+    n <- self$cells
+    P <- Felt$NPHI
+    B <- Felt$NMU
+    dp <- self$dphi
+    rho <- filled(r_mul(n, P), 0)
+    lay <- m_map(rng(Felt$NR), function(i = NULL, ...) {
+      return(self$layers(elem(self$rc, i), h))
+      NULL
+    })
+    .r <- for_range(m_floor((r_div(len(xy), 2))), function(q) {
+      x <- elem(xy, r_mul(2, q))
+      y <- elem(xy, r_add(r_mul(2, q), 1))
+      r <- Fmt$hypot(x, y)
+      u <- Fmt$min(Fmt$max(r_div(m_ln((r_div(r, elem(self$rc, 0)))), self$step), 0), r_sub(r_sub(Felt$NR, 1), 0.000001))
+      i0 <- m_floor(u)
+      fu <- r_sub(u, i0)
+      ph <- m_atan2(y, x)
+      v <- r_sub(r_div(((if (truthy(lt(ph, 0))) r_add(ph, (2 * pi)) else ph)), dp), 0.5)
+      if (truthy(lt(v, 0))) {
+        .w("v", r_add(v, P))
+      }
+      k0 <- r_mod(m_floor(v), P)
+      fv <- r_sub(v, m_floor(v))
+      k1 <- r_mod((r_add(k0, 1)), P)
+      .r <- for_each(lst(lst(i0, r_sub(1, fu)), lst(r_add(i0, 1), fu)), function(rw) {
+        if (truthy(gt(elem(rw, 1), 0))) {
+          .r <- for_range(B, function(j) {
+            m <- r_mul(r_mul(r_div(s, 2), elem(rw, 1)), elem(elem(lay, elem(rw, 0)), j))
+            c <- r_add(r_mul(elem(rw, 0), B), j)
+            set_at(rho, r_add(r_mul(c, P), k0), r_add(elem(rho, r_add(r_mul(c, P), k0)), r_mul(m, (r_sub(1, fv)))))
+            set_at(rho, r_add(r_mul(c, P), k1), r_add(elem(rho, r_add(r_mul(c, P), k1)), r_mul(m, fv)))
+            CONTINUE
+          })
+          if (!is.null(.r)) return(.r[[1]])
+        }
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    phi <- self$solve_round(m_map(rho, function(m = NULL, ...) {
+      return(r_sub(0, r_div(r_mul(r_mul(r_mul(4, pi), m), (2 * pi)), dp)))
+      NULL
+    }))
+    at <- function(i = NULL, j = NULL, k = NULL, ...) {
+      return(elem(phi, r_add(r_mul((r_add(r_mul(i, B), j)), P), r_mod((r_add(k, P)), P))))
+      NULL
+    }
+    wr <- filled(r_mul(n, P), 0)
+    wm <- filled(r_mul(n, P), 0)
+    wp <- filled(r_mul(n, P), 0)
+    .r <- for_range(n, function(c) {
+      i <- m_floor((r_div(c, B)))
+      j <- r_mod(c, B)
+      r <- elem(self$rc, i)
+      st <- m_sqrt((r_sub(1, r_mul(elem(self$mc, j), elem(self$mc, j)))))
+      .r <- for_range(P, function(k) {
+        lo <- Fmt$max(r_sub(i, 1), 0)
+        hi <- Fmt$min(r_add(i, 1), r_sub(Felt$NR, 1))
+        gr <- r_sub(0, r_div((r_sub((at)(hi, j, k), (at)(lo, j, k))), (r_sub(elem(self$rc, hi), elem(self$rc, lo)))))
+        below <- (if (truthy(gt(j, 0))) (at)(i, r_sub(j, 1), k) else (at)(i, 0, k))
+        mb <- (if (truthy(gt(j, 0))) elem(self$mc, r_sub(j, 1)) else r_sub(0, elem(self$mc, 0)))
+        top <- Fmt$min(r_add(j, 1), r_sub(B, 1))
+        gm <- r_sub(0, r_div(r_mul(r_div(st, r), (r_sub((at)(i, top, k), below))), (r_sub(elem(self$mc, top), mb))))
+        gp <- r_sub(0, r_div((r_sub((at)(i, j, r_add(k, 1)), (at)(i, j, r_sub(k, 1)))), (r_mul(r_mul(r_mul(2, dp), r), st))))
+        f <- r_sub(Felt$over(Fmt$hypot(Fmt$hypot(gr, gm), gp)), 1)
+        set_at(wr, r_add(r_mul(c, P), k), r_mul(f, gr))
+        set_at(wm, r_add(r_mul(c, P), k), r_mul(f, gm))
+        set_at(wp, r_add(r_mul(c, P), k), r_mul(f, gp))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    made <- filled(r_mul(n, P), 0)
+    .r <- for_range(n, function(c) {
+      i <- m_floor((r_div(c, B)))
+      j <- r_mod(c, B)
+      dmu <- r_sub(elem(self$me, r_add(j, 1)), elem(self$me, j))
+      dr <- r_sub(elem(self$re, r_add(i, 1)), elem(self$re, i))
+      dth <- r_sub(Felt$theta(elem(self$me, j)), Felt$theta(elem(self$me, r_add(j, 1))))
+      .r <- for_range(P, function(k) {
+        e <- r_add(r_mul(c, P), k)
+        fo <- (if (truthy(lt(r_add(i, 1), Felt$NR))) r_div((r_add(elem(wr, e), elem(wr, r_add(e, r_mul(B, P))))), 2) else elem(wr, e))
+        fi <- (if (truthy(gt(i, 0))) r_div((r_add(elem(wr, r_sub(e, r_mul(B, P))), elem(wr, e))), 2) else elem(wr, e))
+        up <- (if (truthy(lt(r_add(j, 1), B))) r_div((r_add(elem(wm, e), elem(wm, r_add(e, P)))), 2) else 0)
+        down <- (if (truthy(gt(j, 0))) r_div((r_add(elem(wm, r_sub(e, P)), elem(wm, e))), 2) else 0)
+        ahead <- r_div((r_add(elem(wp, e), elem(wp, r_add(r_mul(c, P), r_mod((r_add(k, 1)), P))))), 2)
+        behind <- r_div((r_add(elem(wp, r_add(r_mul(c, P), r_mod((r_sub(r_add(k, P), 1)), P))), elem(wp, e))), 2)
+        out_ <- r_add(r_sub(r_add(r_mul(r_mul(r_mul(r_mul(r_mul(fo, 2), pi), elem(self$re, r_add(i, 1))), elem(self$re, r_add(i, 1))), dmu), r_mul(r_mul(r_mul(r_mul(up, 2), pi), (r_sub(1, r_mul(elem(self$me, r_add(j, 1)), elem(self$me, r_add(j, 1)))))), dr)), r_mul(r_mul(r_mul(r_mul(down, 2), pi), (r_sub(1, r_mul(elem(self$me, j), elem(self$me, j))))), dr)), r_div(r_mul(r_mul(r_mul(r_mul((r_sub(ahead, behind)), (2 * pi)), elem(self$rc, i)), dr), dth), dp))
+        set_at(made, e, (if (truthy(gt(i, 0))) r_sub(out_, r_mul(r_mul(r_mul(r_mul(r_mul(fi, 2), pi), elem(self$re, i)), elem(self$re, i)), dmu)) else out_))
+        CONTINUE
+      })
+      if (!is.null(.r)) return(.r[[1]])
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    psi <- self$solve_round(made)
+    out <- filled(r_mul(r_mul(Felt$NR, P), 2), 0)
+    st0 <- m_sqrt((r_sub(1, r_mul(elem(self$mc, 0), elem(self$mc, 0)))))
+    .r <- for_range(Felt$NR, function(i) {
+      if (truthy((if (truthy(.x <- gt(i, 0))) lt(r_add(i, 1), Felt$NR) else .x))) {
+        .r <- for_range(P, function(k) {
+          set_at(out, r_mul(2, (r_add(r_mul(i, P), k))), r_sub(0, r_div((r_sub(elem(psi, r_add(r_mul(r_mul((r_add(i, 1)), B), P), k)), elem(psi, r_add(r_mul(r_mul((r_sub(i, 1)), B), P), k)))), (r_sub(elem(self$rc, r_add(i, 1)), elem(self$rc, r_sub(i, 1)))))))
+          set_at(out, r_add(r_mul(2, (r_add(r_mul(i, P), k))), 1), r_sub(0, r_div((r_sub(elem(psi, r_add(r_mul(r_mul(i, B), P), r_mod((r_add(k, 1)), P))), elem(psi, r_add(r_mul(r_mul(i, B), P), r_mod((r_sub(r_add(k, P), 1)), P))))), (r_mul(r_mul(r_mul(2, dp), elem(self$rc, i)), st0)))))
+          CONTINUE
+        })
+        if (!is.null(.r)) return(.r[[1]])
+      }
+      CONTINUE
+    })
+    if (!is.null(.r)) return(.r[[1]])
+    return(out)
+    NULL
+  })
+  method(cl, "round_at", function(table = NULL, x = NULL, y = NULL, ...) {
+    P <- Felt$NPHI
+    r <- Fmt$hypot(x, y)
+    if (truthy(le(r, 0))) {
+      return(lst(0, 0))
+    }
+    u <- Fmt$min(Fmt$max(r_div(m_ln((r_div(r, elem(self$rc, 0)))), self$step), 0), r_sub(r_sub(Felt$NR, 1), 0.000001))
+    i0 <- m_floor(u)
+    fu <- r_sub(u, i0)
+    ph <- m_atan2(y, x)
+    v <- r_sub(r_div(((if (truthy(lt(ph, 0))) r_add(ph, (2 * pi)) else ph)), self$dphi), 0.5)
+    if (truthy(lt(v, 0))) {
+      .w("v", r_add(v, P))
+    }
+    k0 <- r_mod(m_floor(v), P)
+    fv <- r_sub(v, m_floor(v))
+    k1 <- r_mod((r_add(k0, 1)), P)
+    part <- function(q = NULL, ...) {
+      return(r_add(r_mul((r_sub(1, fu)), (r_add(r_mul((r_sub(1, fv)), elem(table, r_add(r_mul(2, (r_add(r_mul(i0, P), k0))), q))), r_mul(fv, elem(table, r_add(r_mul(2, (r_add(r_mul(i0, P), k1))), q)))))), r_mul(fu, (r_add(r_mul((r_sub(1, fv)), elem(table, r_add(r_mul(2, (r_add(r_mul((r_add(i0, 1)), P), k0))), q))), r_mul(fv, elem(table, r_add(r_mul(2, (r_add(r_mul((r_add(i0, 1)), P), k1))), q))))))))
+      NULL
+    }
+    outward <- (part)(0)
+    about <- (part)(1)
+    return(lst(r_div((r_sub(r_mul(outward, x), r_mul(about, y))), r), r_div((r_add(r_mul(outward, y), r_mul(about, x))), r)))
+    NULL
+  })
+  method(cl, "made_at", function(made = NULL, r = NULL, ...) {
+    v <- Fmt$min(Fmt$max(r_div(m_ln((r_div(r, elem(self$rc, 0)))), self$step), 1), r_sub(r_sub(Felt$NR, 2), 0.000001))
+    t <- m_floor(v)
+    e <- r_sub(v, t)
+    return(r_add(r_mul((r_sub(1, e)), elem(made, t)), r_mul(e, elem(made, r_add(t, 1)))))
+    NULL
+  })
+  method(cl, "felt", function(shape = NULL, s = NULL, ...) {
+    made <- self$made_rows(m_map(elem(shape, 0), function(v = NULL, ...) {
+      return(r_mul(s, v))
+      NULL
+    }), m_map(elem(shape, 1), function(v = NULL, ...) {
+      return(r_mul(s, v))
+      NULL
+    }))
     out <- lst()
     .r <- for_range(Felt$NR, function(i) {
       r <- elem(self$rc, i)
       if (truthy((if (truthy(.x <- (if (truthy(.x <- (if (truthy(.x <- gt(i, 0))) lt(r_add(i, 1), Felt$NR) else .x))) ge(r, Felt$NEAR) else .x))) le(r, Felt$FAR) else .x))) {
-        made <- r_sub(0, r_div((r_sub(elem(psi, r_mul((r_add(i, 1)), B)), elem(psi, r_mul((r_sub(i, 1)), B)))), (r_sub(elem(self$rc, r_add(i, 1)), elem(self$rc, r_sub(i, 1))))))
         gN <- r_sub(0, r_mul(s, elem(elem(shape, 2), i)))
-        m_push(out, lst(r, gN, r_sub(gN, made)))
+        m_push(out, lst(r, gN, r_sub(gN, elem(made, i))))
       }
       CONTINUE
     })
@@ -20226,6 +20763,10 @@ GTheory <- ray_class("G", Theory, function(cl) {
   }))
   static_field(cl, "theorem gravity.closing", function() Theorem$new(`id` = "gravity.closing", `body` = function(...) {
     return(Asked$new(asks = "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?", about = "F_{g} \\aside{closing}"))
+    NULL
+  }))
+  static_field(cl, "theorem gravity.made", function() Theorem$new(`id` = "gravity.made", `body` = function(...) {
+    return(Asked$new(asks = "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?", about = "g \\aside{field}", also = "-\\nabla^{2}\\psi"))
     NULL
   }))
   static_field(cl, "theorem gravity.metric", function() Theorem$new(`id` = "gravity.metric", `body` = function(...) {

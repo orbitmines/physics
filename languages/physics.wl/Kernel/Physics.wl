@@ -28,7 +28,7 @@ items::usage = "items[xs] is a Ray list (a DynamicArray), a text or a Many as a 
 list::usage = "list[a, b, ...] is a Ray list.";
 str::usage = "str[x] is a value as the bootstrap writes it.";
 (* the heads of the classes, made here in the package's own context *)
-{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Measure, Felt, Formed, RayAxis, Sweep, Sighted, Video, Sky, Banded, Growing, Planets, EndCard, Shot, Band, G};
+{Ray, Iterable, Initial, Terminal, Boundary, Edge, Vertex, Vector, Node, Geometry, RayRandom, RayRule, Theory, World, Equation, Field, RayMedium, Prover, Source, Visual, Theorem, RayAround, RayCell, Beam, Port, Bodies, Hole, Rates, RayGrid, RaySolve, Piece, Braced, Args, Reference, RaySetter, Notation, Keyed, Expr, Algebra, ExprReader, Fact, Step, Store, Inference, Asked, RayLine, Standing, RayPart, TermRecord, Proved, Proof, TermInfo, Inferences, Model, Fmt, Aggregate, Shaded, Surface, Measured, Recording, Played, Cached, Live, Painter, Still, RayPane, Picture, Probe, Trial, Orbit, Setup, Body, FieldRecording, FieldPainter, RayPanel, Ink, Side, Lane, Strip, Unrolling, Scripted, RarPoint, Btfr, HighZ, Sparc, Law, Galaxies, Simulation, Sweeping, Orbiting, Forming, HeldDisc, Resolution, Budget, Batching, Output, Plan, RayAnnulus, Felt, Measure, Formed, RayAxis, Sweep, Sighted, Video, Sky, Banded, Growing, Planets, EndCard, Shot, Band, G};
 
 Begin["`Private`"];
 
@@ -4827,7 +4827,9 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     env0["held"]["derivation" -> list[env0["tick"], env0["falls"]]];
     env0["ruler"]["derivation" -> list[env0["held"]]];
     env0["defl"]["derivation" -> list[env0["held"], env0["ruler"]]];
-    Throw[list[env0["g_"], env0["phi"], env0["tick"], env0["falls"], env0["held"], env0["ruler"], env0["defl"]], ret]]];
+    env0["shadow"] = Inferences["held_shadow", env0["s"], env0["held"]["fact"], env0["ruler"]["fact"]];
+    env0["shadow"]["derivation" -> list[env0["held"], env0["ruler"]]];
+    Throw[list[env0["g_"], env0["phi"], env0["tick"], env0["falls"], env0["held"], env0["ruler"], env0["defl"], env0["shadow"]], ret]]];
   method[klass, "expansion_of", mfn[1, { env0["s"] = arg[args1, 0], env0["settles"] = arg[args1, 1] };
     env0["grown"] = self["growth_filled", env0["s"]];
     env0["inside"] = Prover["neat", env0["grown"]["fact"]["to"]];
@@ -4881,10 +4883,16 @@ DefineClass[Prover, "Prover", Node, Function[{klass},
     env0["got"] = Prover["neat", Expr["add", list[env0["half"], Expr["pown", Expr["add", list[Expr["mul", list[env0["half"], env0["half"]]], Expr["mul", list[env0["g"], env0["a"]]]]], 0.5]]]];
     env0["closing"] = Step["of", Fact["stands", "F_{g} \\aside{closing}", env0["got"]], "what is felt, with the mismatch closed", list[env0["scale"]["fact"]["key"]], "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", list["g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " <> str[Expr["show", env0["got"]]] <> ""]];
     env0["closing"]["derivation" -> list[env0["scale"]]];
+    env0["psi"] = Expr["field", "\\psi"];
+    env0["w"] = Prover["neat", Expr["sub", env0["got"], env0["g"]]];
+    env0["made"] = Step["of", Fact["stands", "-\\nabla^{2}\\psi", Expr["field", "\\nabla\\cdot\\paren{\\paren{" <> str[Expr["show", env0["w"]]] <> "}\\hat{g}_{N}}"]], "the space made, as a source", list[env0["closing"]["fact"]["key"]], "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" <> str[env0["met"]] <> "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made", list["w = F_{g} - g_{N} = " <> str[Expr["show", env0["w"]]] <> ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w"]];
+    env0["made"]["derivation" -> list[env0["closing"], env0["potential"]]];
+    env0["field"] = Step["of", Fact["stands", "g \\aside{field}", Prover["neat", Expr["sub", env0["g"], Expr["field", "\\nabla\\psi"]]]], "what is felt, solved over the whole field", list[env0["made"]["fact"]["key"], env0["closing"]["fact"]["key"]], "what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve", list["g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w", "no curl: \\nabla\\times g = 0, as a record's slope", "a sphere: \\nabla\\psi = -w, so g = F_{g}", "a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)"]];
+    env0["field"]["derivation" -> list[env0["made"]]];
     env0["ratio"] = Prover["neat", Expr["div", env0["a0"], env0["own"]]];
     env0["against"] = Step["of", Fact["stands", "\\frac{a_{0}}{cH}", env0["ratio"]], "the scale against the vacuum's growth", list[env0["scale"]["fact"]["key"], env0["lam"]["fact"]["key"]], "a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", list["a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " <> str[Expr["show", Prover["neat", env0["ratio"]]]] <> "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"]];
     env0["against"]["derivation" -> list[env0["scale"]]];
-    Throw[list[env0["straight"], env0["potential"], env0["lam"], env0["scale"], env0["closing"], env0["against"]], ret]]];
+    Throw[list[env0["straight"], env0["potential"], env0["lam"], env0["scale"], env0["closing"], env0["made"], env0["field"], env0["against"]], ret]]];
   method[klass, "leftover", mfn[1, { env0["rays_c"] = arg[args1, 0] };
     env0["m"] = Prover["MASS"]["label"];
     env0["parts"] = mSplit[Expr, Expr["sub", env0["rays_c"]["fact"]["to"], Expr["field", env0["rays_c"]["fact"]["of"]]], env0["m"]];
@@ -5348,7 +5356,7 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
     Throw[Inferences["everywhere", lfn[3, { env2["x"] = arg[args3, 0] };
       Throw[Inferences["clear_root", env2["x"]], ret]], env0["e"]], ret]]];
   statik[klass, "RULES", mfn[1,
-    Throw[mConcat[mConcat[list[Inferences["room_balance"], Inferences["ehrhart"], Inferences["counting"], Inferences["reaching"], Inferences["mass_of"], Inferences["saturating"], Inferences["spreading"], Inferences["screening"], Inferences["refracting"], Inferences["accumulating"], Inferences["substituting"], Inferences["metric_of"], Inferences["relativity"], Inferences["schwarzschild"], Inferences["shadow"], Inferences["balancing"], Inferences["unbiased"], Inferences["free_path"], Inferences["summing"], Inferences["horizon"], Inferences["bending"], Inferences["crossing"], Inferences["near_field"], Inferences["shadowing"], Inferences["receiving"], Inferences["moved"], Inferences["receding"], Inferences["shortfall"], Inferences["keeping"], Inferences["transporting"], Inferences["assembling"], Inferences["channelling"], Inferences["closing"], Inferences["arrangement"], Inferences["scale_crossed"], Inferences["orbiting"], Inferences["curve_ends"], Inferences["curves_of_each"], Inferences["crowding_of_arrivals"], Inferences["making_rate"], Inferences["hubble_rate"], Inferences["expansion_scale"], Inferences["coincidence"], Inferences["crowding"], Inferences["at_that_density"], Inferences["in_motion"]], mMap[Inferences["IN_FULL"], lfn[3, { env2["of"] = arg[args3, 0] };
+    Throw[mConcat[mConcat[list[Inferences["room_balance"], Inferences["ehrhart"], Inferences["counting"], Inferences["reaching"], Inferences["mass_of"], Inferences["saturating"], Inferences["spreading"], Inferences["screening"], Inferences["refracting"], Inferences["accumulating"], Inferences["substituting"], Inferences["metric_of"], Inferences["relativity"], Inferences["schwarzschild"], Inferences["balancing"], Inferences["unbiased"], Inferences["free_path"], Inferences["summing"], Inferences["horizon"], Inferences["bending"], Inferences["crossing"], Inferences["near_field"], Inferences["shadowing"], Inferences["receiving"], Inferences["moved"], Inferences["receding"], Inferences["shortfall"], Inferences["keeping"], Inferences["transporting"], Inferences["assembling"], Inferences["channelling"], Inferences["closing"], Inferences["arrangement"], Inferences["scale_crossed"], Inferences["orbiting"], Inferences["curve_ends"], Inferences["curves_of_each"], Inferences["crowding_of_arrivals"], Inferences["making_rate"], Inferences["hubble_rate"], Inferences["expansion_scale"], Inferences["coincidence"], Inferences["crowding"], Inferences["at_that_density"], Inferences["in_motion"]], mMap[Inferences["IN_FULL"], lfn[3, { env2["of"] = arg[args3, 0] };
       Throw[Inferences["writing_out", env2["of"]], ret]]]], list[Inferences["can_it_push"], Inferences["in_three"]]], ret]]];
   statik[klass, "spreading", mfn[1,
     Throw[Inference[{ "name" -> "spreading", "because" -> "count what crosses a shell in a tick: the sites on it, times what is at each, times how many of those step outward - and MOVEMENT neither makes nor destroys, so that count is the same at every distance", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
@@ -5433,27 +5441,25 @@ DefineClass[Inferences, "Inferences", Node, Function[{klass},
         Throw[list[], ret]];
       env2["via"] = "the metric as general relativity writes it";
       Throw[list[Inferences["step", "r_{s}", Expr["simplify", Expr["mul", list[Expr["num", 2.], env2["puts"]["to"]]]], env2["via"], list[env2["puts"]["key"], env2["dn"]["key"]], "the record a body adds falls off as `r^{-\\paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\\bar{m}` - and the force law fixes `GM = \\bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square", list["\\delta n_{f} = " <> str[Expr["show", env2["dn"]["to"]]] <> "", "A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots", "general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM"]], Inferences["step", "A in r as GR writes it", Expr["simplify", Expr["sub", Expr["num", 1.], Expr["mul", list[Expr["field", "r_{s}"], Expr["to_power", Expr["sym", "r"], Expr["neg", Expr["sub", Inferences["D"], Expr["num", 2.]]]]]]]], env2["via"], list[env2["A"]["key"]], "the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `A = 1 - r_{s}/r` and `B = 1/\\paren{1 - r_{s}/r}` is what this model derives, so light bends by twice the Newtonian amount, `\\gamma` is one, and the perihelion advances by `3\\pi r_{s}/a`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about", list["A = 1 - r_{s}·r^{-\\paren{D - 2}}", "B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}", "\\gamma = 1, and A·B = 1 as Schwarzschild has it"]], Inferences["step", "the deflection this model gives", Expr["simplify", Expr["mul", list[Expr["num", 2.], Expr["field", "r_{s}"], Expr["to_power", Expr["sym", "b"], Expr["neg", Expr["sub", Inferences["D"], Expr["num", 2.]]]]]]], env2["via"], list[env2["A"]["key"]], "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is", list["the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}", "the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r", "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two"]]], ret]] }], ret]]];
-  statik[klass, "shadow", mfn[1,
-    Throw[Inference[{ "name" -> "where a ray stops coming back", "because" -> "a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
-      env2["A"] = env2["s"]["fact", "is", "A in r"];
-      env2["B"] = env2["s"]["fact", "is", "B in r"];
-      If[truthy[orV[orV[eq[env2["A"], Null], eq[env2["B"], Null]], env2["s"]["has", "is", "b_{c}"]]],
-        Throw[list[], ret]];
-      env2["u"] = "\\delta n_{f}";
-      env2["over"] = Expr["simplify", Expr["mul", list[Expr["field", env2["u"]], Expr["pown", Expr["mul", list[env2["A"]["to"], Expr["pown", env2["B"]["to"], neg[1.]]]], 0.5]]]];
-      env2["env"] = Node[{}];
-      setAt[env2["env"], env2["u"], Expr["numeric", Expr["root", Expr["simplify", Expr["d", env2["over"], env2["u"]]], env2["u"]], env2["env"]]];
-      env2["sphere"] = elem[env2["env"], env2["u"]];
-      env2["bc"] = div[1., Expr["numeric", env2["over"], env2["env"]]];
-      env2["bc"] = div[mRound[(mul[env2["bc"], power[10., 9.]])], power[10., 9.]];
-      env2["half"] = Expr["mul", list[Expr["num", 0.5], Expr["field", env2["u"]]]];
-      env2["gA"] = Expr["pown", Expr["mul", list[Expr["sub", Expr["num", 1.], env2["half"]], Expr["pown", Expr["add", list[Expr["num", 1.], env2["half"]]], neg[1.]]]], 2.];
-      env2["gB"] = Expr["pown", Expr["add", list[Expr["num", 1.], env2["half"]]], 4.];
-      env2["gover"] = Expr["simplify", Expr["mul", list[Expr["field", env2["u"]], Expr["pown", Expr["mul", list[env2["gA"], Expr["pown", env2["gB"], neg[1.]]]], 0.5]]]];
-      env2["genv"] = Node[{}];
-      setAt[env2["genv"], env2["u"], Expr["numeric", Expr["root", Expr["simplify", Expr["d", env2["gover"], env2["u"]]], env2["u"]], env2["genv"]]];
-      env2["gr"] = div[1., Expr["numeric", env2["gover"], env2["genv"]]];
-      Throw[list[Inferences["step", "b_{c}", Expr["mul", list[Expr["num", env2["bc"]], Expr["field", "\\bar{m}"]]], "where a ray stops coming back", list[env2["A"]["key"], env2["B"]["key"]], "THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's", list["a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r", "\\bar{m}/b at the turning point = " <> str[Expr["show", env2["over"]]] <> "", "largest where its slope is nought: \\delta n_{f} = " <> str[Fmt["fixed", env2["sphere"], 6.]] <> ", the photon sphere at r = " <> str[Fmt["fixed", div[1., env2["sphere"]], 4.]] <> " \\bar{m}", "b_{c} = " <> str[Fmt["fixed", env2["bc"], 4.]] <> " \\bar{m}", "general relativity's metric read the same way: b_{c} = " <> str[Fmt["fixed", env2["gr"], 4.]] <> " \\bar{m}, which is 3\\sqrt{3}", "so at the same \\bar{m} this shadow is " <> str[Fmt["fixed", mul[100., (sub[div[env2["bc"], env2["gr"]], 1.])], 2.]] <> " per cent wider"]]], ret]] }], ret]]];
+  statik[klass, "held_shadow", mfn[1, { env0["s"] = arg[args1, 0], env0["A"] = arg[args1, 1], env0["B"] = arg[args1, 2] };
+    env0["u"] = "\\delta n_{f}";
+    env0["Au"] = Expr["simplify", Expr["replace", Expr["replace", Expr["replace", env0["A"]["to"], "r_{s}", Expr["num", 2.]], "D", Expr["num", 3.]], "r", Expr["pown", Expr["field", env0["u"]], neg[1.]]]];
+    env0["over"] = Expr["simplify", Expr["mul", list[Expr["field", env0["u"]], Expr["pown", env0["Au"], 0.5]]]];
+    env0["env"] = Node[{}];
+    setAt[env0["env"], env0["u"], Expr["numeric", Expr["root", Expr["simplify", Expr["d", env0["over"], env0["u"]]], env0["u"]], env0["env"]]];
+    env0["sphere"] = elem[env0["env"], env0["u"]];
+    env0["bc"] = div[1., Expr["numeric", env0["over"], env0["env"]]];
+    env0["bc"] = div[mRound[(mul[env0["bc"], power[10., 9.]])], power[10., 9.]];
+    env0["gr"] = mul[3., mSqrt[3.]];
+    env0["iA"] = env0["s"]["fact", "is", "A in r"];
+    env0["iB"] = env0["s"]["fact", "is", "B in r"];
+    env0["index"] = Indeterminate;
+    If[truthy[andV[(!eq[env0["iA"], Null]), (!eq[env0["iB"], Null])]],
+      env0["iover"] = Expr["simplify", Expr["mul", list[Expr["field", env0["u"]], Expr["pown", Expr["mul", list[env0["iA"]["to"], Expr["pown", env0["iB"]["to"], neg[1.]]]], 0.5]]]];
+      env0["ienv"] = Node[{}];
+      setAt[env0["ienv"], env0["u"], Expr["numeric", Expr["root", Expr["simplify", Expr["d", env0["iover"], env0["u"]]], env0["u"]], env0["ienv"]]];
+      env0["index"] = div[1., Expr["numeric", env0["iover"], env0["ienv"]]]];
+    Throw[Inferences["step", "b_{c}", Expr["mul", list[Expr["num", env0["bc"]], Expr["field", "\\bar{m}"]]], "where a ray stops coming back", list[env0["A"]["key"], env0["B"]["key"]], "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", list["a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = " <> str[Expr["show", env0["over"]]] <> "", "largest where its slope is nought: \\delta n_{f} = " <> str[Fmt["fixed", env0["sphere"], 6.]] <> ", the photon sphere at r = " <> str[Fmt["fixed", div[1., env0["sphere"]], 4.]] <> " \\bar{m}", "b_{c} = " <> str[Fmt["fixed", env0["bc"], 4.]] <> " \\bar{m}; general relativity's is 3\\sqrt{3} = " <> str[Fmt["fixed", env0["gr"], 4.]] <> "", If[truthy[Fmt["finite", env0["index"]]], "the medium's index read as an isotropic metric instead gives " <> str[Fmt["fixed", env0["index"], 4.]] <> " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read", "the medium's index gives no metric of its own here"]]], ret]]];
   statik[klass, "metric_of", mfn[1,
     Throw[Inference[{ "name" -> "an index is a metric", "because" -> "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots", "fire" -> lfn[3, { env2["s"] = arg[args3, 0] };
       env2["n"] = orElse[env2["s"]["fact", "is", "N in r"], env2["s"]["fact", "is", "N"]];
@@ -9652,7 +9658,7 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["stars"] = Measured["of", "galaxy.stars"];
     If[truthy[eq[env0["stars"], Null]],
       fail["galaxy.stars is not on disk - run the galaxies (`" <> str[Galaxies["SIMULATED"]] <> "`) and try again"]];
-    Throw[Picture[{ "id" -> "galaxy.simulation", "what" -> "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured", "width" -> 960., "height" -> 720., "frames" -> env0["stars"]["header"][str["frames"]], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+    Throw[Picture[{ "id" -> "galaxy.simulation", "what" -> "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured", "width" -> 960., "height" -> 720., "frames" -> env0["stars"]["header"][str["frames"]], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
       Throw[Orbiting[{ "stars" -> env0["stars"] }], ret]] }], ret]]];
   statik[klass, "orbit_panel", mfn[1, { env0["s"] = arg[args1, 0], env0["stars"] = arg[args1, 1], env0["frame_at"] = arg[args1, 2] };
     env0["s"]["fill_style", Galaxies["BACK"]];
@@ -9718,7 +9724,7 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["got"] = Measured["of", "galaxy.formed"];
     If[truthy[eq[env0["got"], Null]],
       fail["galaxy.formed is not on disk - run the galaxies (`" <> str[Galaxies["SIMULATED"]] <> "`) and try again"]];
-    Throw[Picture[{ "id" -> "galaxy.formed", "what" -> "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms", "width" -> 960., "height" -> 720., "frames" -> env0["got"]["header"][str["frames"]], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
+    Throw[Picture[{ "id" -> "galaxy.formed", "what" -> "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms", "width" -> 960., "height" -> 720., "frames" -> env0["got"]["header"][str["frames"]], "paint" -> lfn[3, { env2["played"] = arg[args3, 0] };
       Throw[Forming[{ "formed" -> env0["got"] }], ret]] }], ret]]];
   statik[klass, "medium", mfn[1,
     env0["got"] = Measured["of", "galaxy.medium"];
@@ -9824,7 +9830,7 @@ DefineClass[Galaxies, "Galaxies", Node, Function[{klass},
     env0["stars_n"] = env0["H"][str["stars"]];
     env0["q_text"] = Fmt["fixed", env0["H"][str["Q"]], 1.];
     env0["a0_text"] = Fmt["exponential", env0["H"][str["a0"]], 3.];
-    env0["s"]["fill_text", "" <> str[env0["stars_n"]] <> " stars each, every one pulled by every other through the law (a₀ " <> str[env0["a0_text"]] <> " m/s²), no halo; launched smooth at Q " <> str[env0["q_text"]] <> " — t = " <> str[env0["gyr"]] <> " Gyr", 22., 44.];
+    env0["s"]["fill_text", "" <> str[env0["stars_n"]] <> " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " <> str[env0["a0_text"]] <> " m/s²), no halo; launched smooth at Q " <> str[env0["q_text"]] <> " — t = " <> str[env0["gyr"]] <> " Gyr", 22., 44.];
     env0["side"] = Fmt["min", div[(sub[env0["s"]["width"], 66.]), 2.], sub[env0["s"]["height"], 110.]];
     Do[loopScope[1, env1["g"] = iter1;
       env1["ox"] = add[22., mul[env1["g"], (add[env0["side"], 22.])]];
@@ -10222,6 +10228,12 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
   staticField[klass, "THREAD", dfn["  let i: u32 = P[7] + gid.y * 65536u + gid.x;"]];
   staticField[klass, "ENTRY", dfn["@compute @workgroup_size(64) fn"]];
   staticField[klass, "ID", dfn["(@builtin(global_invocation_id) gid: vec3<u32>) {"]];
+  staticField[klass, "NY", dfn[21.]];
+  staticField[klass, "NB", dfn[11.]];
+  staticField[klass, "RUNG_Y", dfn[0.05]];
+  staticField[klass, "RUNG_B", dfn[0.1]];
+  staticField[klass, "RINGS_IN", dfn[8.]];
+  staticField[klass, "FAR_OFF", dfn[30.]];
   staticField[klass, "OMEGA_M", dfn[0.315]];
   staticField[klass, "FILM_STARS", dfn[4096.]];
   staticField[klass, "FILM_TURNS", dfn[0.5]];
@@ -10258,11 +10270,18 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["lyd"] = Shaded["literal", Fmt["log10", Sparc["YD"]]];
     env0["lyb"] = Shaded["literal", Fmt["log10", Sparc["YB"]]];
     env0["py"] = Shaded["literal", Simulation["PRIOR_Y"]];
-    Throw[mJoin[list["// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", Simulation["law_wgsl"], "" <> str[Simulation["ENTRY"]] <> " FIT" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let YD: f32 = exp(ly * " <> str[env0["ln10"]] <> ");", "  let YB: f32 = exp(lb * " <> str[env0["ln10"]] <> ");", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " <> str[env0["pi"]] <> " / 180.0) / sin(ip * " <> str[env0["pi"]] <> " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " <> str[env0["lyd"]] <> ") / " <> str[env0["py"]] <> ";", "  let pb: f32 = G[b + 7u] * (lb - " <> str[env0["lyb"]] <> ") / " <> str[env0["py"]] <> ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"], "\n"], ret]]];
+    env0["ly0"] = Shaded["literal", sub[Fmt["log10", Sparc["YD"]], div[mul[Simulation["RUNG_Y"], sub[Simulation["NY"], 1.]], 2.]]];
+    env0["lb0"] = Shaded["literal", sub[Fmt["log10", Sparc["YB"]], div[mul[Simulation["RUNG_B"], sub[Simulation["NB"], 1.]], 2.]]];
+    env0["sy"] = Shaded["literal", Simulation["RUNG_Y"]];
+    env0["sb"] = Shaded["literal", Simulation["RUNG_B"]];
+    env0["topy"] = Shaded["literal", sub[sub[Simulation["NY"], 1.], 0.0001]];
+    env0["ny"] = Simulation["NY"];
+    env0["nbs"] = Simulation["NB"];
+    Throw[mJoin[list["// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", "" <> str[Simulation["ENTRY"]] <> " FIT" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let uy: f32 = clamp((ly - " <> str[env0["ly0"]] <> ") / " <> str[env0["sy"]] <> ", 0.0, " <> str[env0["topy"]] <> ");", "  let ky: u32 = u32(floor(uy));", "  let fy: f32 = uy - floor(uy);", "  var nb: u32 = 1u;", "  if (G[b + 7u] > 0.0) { nb = " <> str[env0["nbs"]] <> "u; }", "  var ub: f32 = 0.0;", "  if (nb > 1u) { ub = clamp((lb - " <> str[env0["lb0"]] <> ") / " <> str[env0["sb"]] <> ", 0.0, f32(nb - 1u) - 0.0001); }", "  let kb: u32 = u32(floor(ub));", "  let fb: f32 = ub - floor(ub);", "  let kb1: u32 = min(kb + 1u, nb - 1u);", "  let base: u32 = u32(G[b + 15u]);", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " <> str[env0["pi"]] <> " / 180.0) / sin(ip * " <> str[env0["pi"]] <> " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let o: u32 = p - start;", "    let cnt: u32 = u32(G[b + 1u]);", "    let lo: f32 = (1.0 - fy) * L[base + (kb * " <> str[env0["ny"]] <> "u + ky) * cnt + o] + fy * L[base + (kb * " <> str[env0["ny"]] <> "u + ky + 1u) * cnt + o];", "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " <> str[env0["ny"]] <> "u + ky) * cnt + o] + fy * L[base + (kb1 * " <> str[env0["ny"]] <> "u + ky + 1u) * cnt + o];", "    let g: f32 = (1.0 - fb) * lo + fb * hi;", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " <> str[env0["lyd"]] <> ") / " <> str[env0["py"]] <> ";", "  let pb: f32 = G[b + 7u] * (lb - " <> str[env0["lyb"]] <> ") / " <> str[env0["py"]] <> ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"], "\n"], ret]]];
   statik[klass, "best_kernel", mfn[1,
     Throw[mJoin[list["// GENERATED from Simulation.ray: BEST - each galaxy's best point of its grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> V: array<f32>;", "@group(0) @binding(2) var<storage, read_write> O: array<f32>;", "" <> str[Simulation["ENTRY"]] <> " BEST" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  var best: f32 = -3e38;", "  var pos: u32 = 0u;", "  for (var c: u32 = 0u; c < P[1]; c = c + 1u) {", "    let v: f32 = V[i * P[1] + c];", "    if (v > best) { best = v; pos = c; }", "  }", "  O[2u * i] = f32(pos);", "  O[2u * i + 1u] = best;", "}"], "\n"], ret]]];
   statik[klass, "stars_kernel", mfn[1,
-    Throw[mJoin[list["// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", Simulation["law_wgsl"], "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) {", "    let q: f32 = rmax / r;", "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);", "  }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" <> str[Simulation["ENTRY"]] <> " START" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" <> str[Simulation["ENTRY"]] <> " STEP" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"], "\n"], ret]]];
+    Throw[mJoin[list["// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" <> str[Simulation["ENTRY"]] <> " START" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" <> str[Simulation["ENTRY"]] <> " STEP" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"], "\n"], ret]]];
   statik[klass, "runnable", mfn[1,
     env0["C"] = Sparc["curves"]["columns"];
     env0["counts"] = Node[{}];
@@ -10522,6 +10541,123 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
           Throw[add[env4["s"], mul[elem[env0["spulls"], add[add[elem[self["measured_at"], env1["j"]], mul[env2["i"], env1["n"]]], env4["a"]]], elem[env2["w"], env4["a"]]]], ret]]], ret]];
       mPush[self["seen_rows"], mMap[rng[len[env1["rs"]]], lfn[4, { env3["i"] = arg[args4, 0] };
         Throw[list[env1["seen"][env3["i"], elem[self["w_discs"], env1["j"]]], env1["seen"][env3["i"], elem[self["w_gases"], env1["j"]]], Simulation["bulge_arrives", env1["rs"], elem[elem[env1["rs"], env3["i"]], 0.], elem[self["thick"], env1["j"]]]], ret]]]]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
+  field[klass, "on", dfn[Felt[{}]]];
+  method[klass, "unit_of", mfn[1, { env0["j"] = arg[args1, 0] };
+    Throw[div[elem[elem[elem[self["rows"], env0["j"]], sub[len[elem[self["rows"], env0["j"]]], 1.]], 0.], 10.], ret]]];
+  method[klass, "grid_of", mfn[1, { env0["j"] = arg[args1, 0] };
+    env0["F"] = self["on"];
+    env0["L"] = self["unit_of", env0["j"]];
+    env0["es"] = elem[self["edges"], env0["j"]];
+    env0["n"] = sub[len[env0["es"]], 1.];
+    env0["wd"] = elem[self["w_discs"], env0["j"]];
+    env0["wg"] = elem[self["w_gases"], env0["j"]];
+    env0["rs"] = elem[self["rows"], env0["j"]];
+    env0["t"] = elem[self["thick"], env0["j"]];
+    env0["rings"] = list[];
+    Do[loopScope[1, env1["a"] = iter1;
+      env1["area"] = sub[mul[elem[env0["es"], add[env1["a"], 1.]], elem[env0["es"], add[env1["a"], 1.]]], mul[elem[env0["es"], env1["a"]], elem[env0["es"], env1["a"]]]];
+      Do[loopScope[2, env2["k"] = iter2;
+        env2["r0"] = add[elem[env0["es"], env1["a"]], div[mul[(sub[elem[env0["es"], add[env1["a"], 1.]], elem[env0["es"], env1["a"]]]), env2["k"]], Simulation["RINGS_IN"]]];
+        env2["r1"] = add[elem[env0["es"], env1["a"]], div[mul[(sub[elem[env0["es"], add[env1["a"], 1.]], elem[env0["es"], env1["a"]]]), add[env2["k"], 1.]], Simulation["RINGS_IN"]]];
+        env2["soft"] = div[(sub[env2["r1"], env2["r0"]]), 2.];
+        mPush[env0["rings"], list[div[(add[env2["r0"], env2["r1"]]), 2.], If[truthy[gt[env1["area"], 0.]], div[(sub[mul[env2["r1"], env2["r1"]], mul[env2["r0"], env2["r0"]]]), env1["area"]], 0.], env1["a"], add[mul[env0["t"], env0["t"]], mul[env2["soft"], env2["soft"]]]]]], {iter2, 0., num[Simulation["RINGS_IN"]] - 1.}]], {iter1, 0., num[env0["n"]] - 1.}];
+    env0["md"] = mReduce[env0["wd"], 0., lfn[3, { env2["m"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[add[env2["m"], env2["v"]], ret]]];
+    env0["mg"] = mReduce[env0["wg"], 0., lfn[3, { env2["m"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[add[env2["m"], env2["v"]], ret]]];
+    env0["out"] = mMap[rng[6.], lfn[3, { env2["k"] = arg[args3, 0] };
+      Throw[filled[env0["F"]["cells"], 0.], ret]]];
+    Do[loopScope[1, env1["c"] = iter1;
+      env1["i"] = mFloor[(div[env1["c"], Felt["NMU"]])];
+      env1["mu"] = elem[env0["F"]["mc"], mod[env1["c"], Felt["NMU"]]];
+      env1["r"] = mul[elem[env0["F"]["rc"], env1["i"]], env0["L"]];
+      env1["R"] = mul[env1["r"], mSqrt[(sub[1., mul[env1["mu"], env1["mu"]]])]];
+      env1["z"] = mul[env1["r"], env1["mu"]];
+      If[truthy[gt[env1["r"], mul[Simulation["FAR_OFF"], elem[env0["es"], env0["n"]]]]],
+        setAt[elem[env0["out"], 0.], env1["c"], sub[0., div[mul[env0["md"], env1["R"]], (mul[mul[env1["r"], env1["r"]], env1["r"]])]]];
+        setAt[elem[env0["out"], 1.], env1["c"], sub[0., div[mul[env0["md"], env1["z"]], (mul[mul[env1["r"], env1["r"]], env1["r"]])]]];
+        setAt[elem[env0["out"], 2.], env1["c"], sub[0., div[mul[env0["mg"], env1["R"]], (mul[mul[env1["r"], env1["r"]], env1["r"]])]]];
+        setAt[elem[env0["out"], 3.], env1["c"], sub[0., div[mul[env0["mg"], env1["z"]], (mul[mul[env1["r"], env1["r"]], env1["r"]])]]],
+        Do[loopScope[2, env2["b"] = iter2;
+          env2["g"] = Felt["ring", env1["R"], env1["z"], elem[env2["b"], 0.], 0., elem[env2["b"], 3.]];
+          setAt[elem[env0["out"], 0.], env1["c"], add[elem[elem[env0["out"], 0.], env1["c"]], mul[mul[elem[env0["wd"], elem[env2["b"], 2.]], elem[env2["b"], 1.]], elem[env2["g"], 0.]]]];
+          setAt[elem[env0["out"], 1.], env1["c"], add[elem[elem[env0["out"], 1.], env1["c"]], mul[mul[elem[env0["wd"], elem[env2["b"], 2.]], elem[env2["b"], 1.]], elem[env2["g"], 1.]]]];
+          setAt[elem[env0["out"], 2.], env1["c"], add[elem[elem[env0["out"], 2.], env1["c"]], mul[mul[elem[env0["wg"], elem[env2["b"], 2.]], elem[env2["b"], 1.]], elem[env2["g"], 0.]]]];
+          setAt[elem[env0["out"], 3.], env1["c"], add[elem[elem[env0["out"], 3.], env1["c"]], mul[mul[elem[env0["wg"], elem[env2["b"], 2.]], elem[env2["b"], 1.]], elem[env2["g"], 1.]]]]], {iter2, items[env0["rings"]]}]];
+      env1["gb"] = Simulation["bulge_at", env0["rs"], env1["r"]];
+      setAt[elem[env0["out"], 4.], env1["c"], sub[0., div[mul[env1["gb"], env1["R"]], env1["r"]]]];
+      setAt[elem[env0["out"], 5.], env1["c"], sub[0., div[mul[env1["gb"], env1["z"]], env1["r"]]]]], {iter1, 0., num[env0["F"]["cells"]] - 1.}];
+    Throw[env0["out"], ret]]];
+  method[klass, "made_of", mfn[1, { env0["grid"] = arg[args1, 0], env0["yd"] = arg[args1, 1], env0["yb"] = arg[args1, 2] };
+    env0["a"] = self["a0"];
+    env0["gr"] = mMap[rng[self["on"]["cells"]], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[div[(add[add[mul[env0["yd"], elem[elem[env0["grid"], 0.], env2["c"]]], elem[elem[env0["grid"], 2.], env2["c"]]], mul[env0["yb"], elem[elem[env0["grid"], 4.], env2["c"]]]]), env0["a"]], ret]]];
+    env0["gz"] = mMap[rng[self["on"]["cells"]], lfn[3, { env2["c"] = arg[args3, 0] };
+      Throw[div[(add[add[mul[env0["yd"], elem[elem[env0["grid"], 1.], env2["c"]]], elem[elem[env0["grid"], 3.], env2["c"]]], mul[env0["yb"], elem[elem[env0["grid"], 5.], env2["c"]]]]), env0["a"]], ret]]];
+    Throw[mMap[self["on"]["made_rows", env0["gr"], env0["gz"]], lfn[3, { env2["v"] = arg[args3, 0] };
+      Throw[mul[env2["v"], env0["a"]], ret]]], ret]]];
+  method[klass, "felt_at", mfn[1, { env0["j"] = arg[args1, 0], env0["made"] = arg[args1, 1], env0["r"] = arg[args1, 2], env0["gN"] = arg[args1, 3] };
+    Throw[sub[env0["gN"], self["on"]["made_at", env0["made"], div[env0["r"], self["unit_of", env0["j"]]]]], ret]]];
+  field[klass, "grids", dfn[list[]]];
+  field[klass, "ladder", dfn[list[]]];
+  field[klass, "ladder_at", dfn[list[]]];
+  method[klass, "rungs", mfn[1, { env0["j"] = arg[args1, 0] };
+    Throw[If[truthy[self["has_bulge", env0["j"]]], Simulation["NB"], 1.], ret]]];
+  getter[klass, "solve_fields", mfn[1,
+    self["grids" -> list[]];
+    self["ladder" -> list[]];
+    self["ladder_at" -> list[]];
+    Do[loopScope[1, env1["j"] = iter1;
+      env1["grid"] = self["grid_of", env1["j"]];
+      mPush[self["grids"], env1["grid"]];
+      mPush[self["ladder_at"], len[self["ladder"]]];
+      env1["kept"] = filt[rng[len[elem[self["rows"], env1["j"]]]], lfn[4, { env3["i"] = arg[args4, 0] };
+        Throw[gt[elem[elem[elem[self["rows"], env1["j"]], env3["i"]], 6.], 0.], ret]]];
+      Do[loopScope[2, env2["ib"] = iter2;
+        env2["yb"] = power[10., (self["rung_b", env2["ib"]])];
+        Do[loopScope[3, env3["iy"] = iter3;
+          env3["yd"] = power[10., (self["rung_y", env3["iy"]])];
+          env3["made"] = self["made_of", env1["grid"], env3["yd"], env2["yb"]];
+          Do[loopScope[4, env4["i"] = iter4;
+            env4["p"] = elem[elem[self["at_rows"], env1["j"]], env4["i"]];
+            mPush[self["ladder"], self["felt_at", env1["j"], env3["made"], elem[elem[elem[self["rows"], env1["j"]], env4["i"]], 0.], add[add[mul[env3["yd"], elem[env4["p"], 0.]], mul[env2["yb"], elem[env4["p"], 2.]]], elem[env4["p"], 1.]]]]], {iter4, items[env1["kept"]]}]], {iter3, 0., num[Simulation["NY"]] - 1.}]], {iter2, 0., num[self["rungs", env1["j"]]] - 1.}]], {iter1, 0., num[len[self["ids"]]] - 1.}]]];
+  method[klass, "rung_y", mfn[1, { env0["iy"] = arg[args1, 0] };
+    Throw[add[Fmt["log10", Sparc["YD"]], mul[Simulation["RUNG_Y"], (sub[env0["iy"], div[sub[Simulation["NY"], 1.], 2.]])]], ret]]];
+  method[klass, "rung_b", mfn[1, { env0["ib"] = arg[args1, 0] };
+    Throw[add[Fmt["log10", Sparc["YB"]], mul[Simulation["RUNG_B"], (sub[env0["ib"], div[sub[Simulation["NB"], 1.], 2.]])]], ret]]];
+  method[klass, "laddered", mfn[1, { env0["j"] = arg[args1, 0], env0["k"] = arg[args1, 1], env0["ly"] = arg[args1, 2], env0["lb"] = arg[args1, 3] };
+    env0["count"] = len[filt[elem[self["rows"], env0["j"]], lfn[3, { env2["row"] = arg[args3, 0] };
+      Throw[gt[elem[env2["row"], 6.], 0.], ret]]]];
+    env0["uy"] = Fmt["min", Fmt["max", div[(sub[env0["ly"], self["rung_y", 0.]]), Simulation["RUNG_Y"]], 0.], sub[sub[Simulation["NY"], 1.], 0.0001]];
+    env0["ky"] = mFloor[env0["uy"]];
+    env0["fy"] = sub[env0["uy"], env0["ky"]];
+    env0["nb"] = self["rungs", env0["j"]];
+    env0["ub"] = If[truthy[gt[env0["nb"], 1.]], Fmt["min", Fmt["max", div[(sub[env0["lb"], self["rung_b", 0.]]), Simulation["RUNG_B"]], 0.], sub[sub[env0["nb"], 1.], 0.0001]], 0.];
+    env0["kb"] = mFloor[env0["ub"]];
+    env0["fb"] = sub[env0["ub"], env0["kb"]];
+    env0["kb1"] = Fmt["min", add[env0["kb"], 1.], sub[env0["nb"], 1.]];
+    env0["at"] = lfn[2, { env1["b"] = arg[args2, 0], env1["y"] = arg[args2, 1] };
+      Throw[elem[self["ladder"], add[add[elem[self["ladder_at"], env0["j"]], mul[(add[mul[env1["b"], Simulation["NY"]], env1["y"]]), env0["count"]]], env0["k"]]], ret]];
+    env0["lo"] = add[mul[(sub[1., env0["fy"]]), env0["at"][env0["kb"], env0["ky"]]], mul[env0["fy"], env0["at"][env0["kb"], add[env0["ky"], 1.]]]];
+    env0["hi"] = add[mul[(sub[1., env0["fy"]]), env0["at"][env0["kb1"], env0["ky"]]], mul[env0["fy"], env0["at"][env0["kb1"], add[env0["ky"], 1.]]]];
+    Throw[add[mul[(sub[1., env0["fb"]]), env0["lo"]], mul[env0["fb"], env0["hi"]]], ret]]];
+  method[klass, "solved_points", mfn[1, { env0["yd"] = arg[args1, 0], env0["yb"] = arg[args1, 1] };
+    env0["measured"] = list[];
+    env0["tabled"] = list[];
+    Do[loopScope[1, env1["j"] = iter1;
+      env1["made"] = self["made_of", elem[self["grids"], env1["j"]], elem[env0["yd"], env1["j"]], elem[env0["yb"], env1["j"]]];
+      Do[loopScope[2, env2["i"] = iter2;
+        env2["p"] = elem[elem[self["at_rows"], env1["j"]], env2["i"]];
+        mPush[env0["measured"], self["felt_at", env1["j"], env1["made"], elem[elem[elem[self["rows"], env1["j"]], env2["i"]], 0.], add[add[mul[elem[env0["yd"], env1["j"]], elem[env2["p"], 0.]], mul[elem[env0["yb"], env1["j"]], elem[env2["p"], 2.]]], elem[env2["p"], 1.]]]]], {iter2, 0., num[len[elem[self["rows"], env1["j"]]]] - 1.}];
+      Do[loopScope[2, env2["t"] = iter2;
+        mPush[env0["tabled"], self["felt_at", env1["j"], env1["made"], elem[env2["t"], 0.], add[add[mul[elem[env0["yd"], env1["j"]], elem[env2["t"], 1.]], mul[elem[env0["yb"], env1["j"]], elem[env2["t"], 3.]]], elem[env2["t"], 2.]]]]], {iter2, items[elem[self["tables"], env1["j"]]]}]], {iter1, 0., num[len[self["ids"]]] - 1.}];
+    Throw[mConcat[env0["measured"], env0["tabled"]], ret]]];
+  getter[klass, "own_y", mfn[1,
+    Throw[mMap[self["ids"], lfn[3, { env2["g"] = arg[args3, 0] };
+      Throw[Sparc["YD"], ret]]], ret]]];
+  getter[klass, "own_b", mfn[1,
+    Throw[mMap[self["ids"], lfn[3, { env2["g"] = arg[args3, 0] };
+      Throw[Sparc["YB"], ret]]], ret]]];
   statik[klass, "lift_coefficients", mfn[1, { env0["theory"] = arg[args1, 0], env0["deg"] = arg[args1, 1] };
     env0["model"] = Model[{ "theory" -> env0["theory"] }];
     env0["e"] = env0["model"]["settled", env0["deg"]];
@@ -10642,7 +10778,7 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     Throw[Simulation["laid", mMap[rng[len[self["ids"]]], lfn[3, { env2["j"] = arg[args3, 0] };
       env2["g"] = elem[self["ids"], env2["j"]];
       env2["stop"] = If[truthy[lt[add[env2["j"], 1.], len[self["ids"]]]], elem[self["fit_at"], add[env2["j"], 1.]], mFloor[(div[len[env0["pts"]], 8.])]];
-      Throw[list[elem[self["fit_at"], env2["j"]], sub[env2["stop"], elem[self["fit_at"], env2["j"]]], elem[env0["S"][str["D"]], env2["g"]], elem[env0["S"][str["e_D"]], env2["g"]], elem[env0["S"][str["Inc"]], env2["g"]], elem[env0["S"][str["e_Inc"]], env2["g"]], self["a0"], If[truthy[self["has_bulge", env2["j"]]], 1., 0.], elem[self["centre_y"], env2["j"]], elem[self["centre_b"], env2["j"]], elem[self["centre_d"], env2["j"]], elem[self["centre_i"], env2["j"]], mul[Simulation["STEP_Y"], self["spacing"]], mul[Simulation["STEP_D"], self["spacing"]], mul[Simulation["STEP_I"], self["spacing"]], 0.], ret]]]], ret]]];
+      Throw[list[elem[self["fit_at"], env2["j"]], sub[env2["stop"], elem[self["fit_at"], env2["j"]]], elem[env0["S"][str["D"]], env2["g"]], elem[env0["S"][str["e_D"]], env2["g"]], elem[env0["S"][str["Inc"]], env2["g"]], elem[env0["S"][str["e_Inc"]], env2["g"]], self["a0"], If[truthy[self["has_bulge", env2["j"]]], 1., 0.], elem[self["centre_y"], env2["j"]], elem[self["centre_b"], env2["j"]], elem[self["centre_d"], env2["j"]], elem[self["centre_i"], env2["j"]], mul[Simulation["STEP_Y"], self["spacing"]], mul[Simulation["STEP_D"], self["spacing"]], mul[Simulation["STEP_I"], self["spacing"]], elem[self["ladder_at"], env2["j"]]], ret]]]], ret]]];
   method[klass, "combo", mfn[1, { env0["j"] = arg[args1, 0], env0["c"] = arg[args1, 1], env0["n"] = arg[args1, 2] };
     env0["S"] = Sparc["sample"]["columns"];
     env0["g"] = elem[self["ids"], env0["j"]];
@@ -10661,18 +10797,17 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["einc"] = elem[env0["S"][str["e_Inc"]], env0["g"]];
     If[truthy[orV[orV[le[elem[env0["at"], 2.], 0.], le[elem[env0["at"], 3.], 0.5]], gt[elem[env0["at"], 3.], 90.]]],
       Throw[mul[neg[1.], power[10., 30.]], ret]];
-    env0["YD"] = power[10., elem[env0["at"], 0.]];
-    env0["YB"] = power[10., elem[env0["at"], 1.]];
     env0["f"] = div[elem[env0["at"], 2.], env0["D"]];
     env0["s"] = div[mSin[(div[mul[env0["inc"], 3.141592653589793], 180.])], mSin[(div[mul[elem[env0["at"], 3.], 3.141592653589793], 180.])]];
     env0["chi"] = 0.;
+    env0["k"] = 0.;
     Do[loopScope[1, env1["i"] = iter1;
       env1["row"] = elem[elem[self["rows"], env0["j"]], env1["i"]];
       If[truthy[gt[elem[env1["row"], 6.], 0.]],
-        env1["p"] = elem[elem[self["at_rows"], env0["j"]], env1["i"]];
-        env1["vm"] = mSqrt[Fmt["max", mul[mul[env0["f"], elem[env1["row"], 0.]], self["felt", add[add[mul[env0["YD"], elem[env1["p"], 0.]], mul[env0["YB"], elem[env1["p"], 2.]]], elem[env1["p"], 1.]]]], 0.]];
+        env1["vm"] = mSqrt[Fmt["max", mul[mul[env0["f"], elem[env1["row"], 0.]], self["laddered", env0["j"], env0["k"], elem[env0["at"], 0.], elem[env0["at"], 1.]]], 0.]];
         env1["d"] = div[(sub[mul[elem[env1["row"], 1.], env0["s"]], env1["vm"]]), (mul[elem[env1["row"], 2.], env0["s"]])];
-        env0["chi"] = add[env0["chi"], mul[env1["d"], env1["d"]]]]], {iter1, 0., num[len[elem[self["rows"], env0["j"]]]] - 1.}];
+        env0["chi"] = add[env0["chi"], mul[env1["d"], env1["d"]]];
+        env0["k"] = add[env0["k"], 1.]]], {iter1, 0., num[len[elem[self["rows"], env0["j"]]]] - 1.}];
     env0["py"] = div[(sub[elem[env0["at"], 0.], Fmt["log10", Sparc["YD"]]]), Simulation["PRIOR_Y"]];
     env0["pb"] = If[truthy[self["has_bulge", env0["j"]]], div[(sub[elem[env0["at"], 1.], Fmt["log10", Sparc["YB"]]]), Simulation["PRIOR_Y"]], 0.];
     env0["pd"] = If[truthy[gt[env0["eD"], 0.]], div[(sub[elem[env0["at"], 2.], env0["D"]]), env0["eD"]], 0.];
@@ -10966,7 +11101,7 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["extra"][str["rms1"] -> env0["rms1"]];
     env0["extra"][str["repro"] -> self["repro"]];
     env0["extra"][str["stir"] -> Simulation["SIGMA"]];
-    env0["extra"][str["about"] -> "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"];
+    env0["extra"][str["about"] -> "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"];
     Measure["save", "galaxy.simulated", env0["names"], env0["cols"], env0["extra"]];
     env0["fields"] = Node[{}];
     env0["fnames"] = list["galaxy", "r", "gd", "gg", "gb", "v0", "v1", "vN"];
@@ -10988,7 +11123,7 @@ DefineClass[Simulation, "Simulation", Node, Function[{klass},
     env0["fextra"] = Node[{}];
     env0["fextra"][str["ids"] -> self["ids"]];
     env0["fextra"][str["table"] -> env0["T"]];
-    env0["fextra"][str["about"] -> "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"];
+    env0["fextra"][str["about"] -> "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"];
     Measure["save", "galaxy.fields", env0["fnames"], env0["fields"], env0["fextra"]];
     If[truthy[not[mEmpty[self["film_ids"]]]],
       env0["film"] = Node[{}];
@@ -11148,7 +11283,41 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
   staticField[klass, "RINGS", dfn[48.]];
   staticField[klass, "DISCS", dfn[list[list[10.7, 3.], list[9.3, 2.]]]];
   staticField[klass, "WHAT", dfn[list["a bright disc", "a dwarf"]]];
+  staticField[klass, "REFRESH", dfn[10.]];
   field[klass, "a0", dfn[div[Galaxies["a0_at", self["deg"]], Simulation["UNIT_G"]]]];
+  field[klass, "on", dfn[Felt[{}]]];
+  field[klass, "made_now", dfn[list[]]];
+  method[klass, "made_tables", mfn[1, { env0["state"] = arg[args1, 0] };
+    env0["head"] = list[];
+    env0["tabs"] = list[];
+    Do[loopScope[1, env1["g"] = iter1;
+      env1["rd"] = self["scale", env1["g"]];
+      env1["cx"] = 0.;
+      env1["cy"] = 0.;
+      Do[loopScope[2, env2["k"] = iter2;
+        env1["cx"] = add[env1["cx"], div[elem[env0["state"], mul[4., (add[mul[env1["g"], Formed["N"]], env2["k"]])]], Formed["N"]]];
+        env1["cy"] = add[env1["cy"], div[elem[env0["state"], add[mul[4., (add[mul[env1["g"], Formed["N"]], env2["k"]])], 1.]], Formed["N"]]]], {iter2, 0., num[Formed["N"]] - 1.}];
+      env1["xy"] = list[];
+      Do[loopScope[2, env2["k"] = iter2;
+        mPush[env1["xy"], div[(sub[elem[env0["state"], mul[4., (add[mul[env1["g"], Formed["N"]], env2["k"]])]], env1["cx"]]), env1["rd"]]];
+        mPush[env1["xy"], div[(sub[elem[env0["state"], add[mul[4., (add[mul[env1["g"], Formed["N"]], env2["k"]])], 1.]], env1["cy"]]), env1["rd"]]]], {iter2, 0., num[Formed["N"]] - 1.}];
+      env1["table"] = If[truthy[self["newton"]], filled[mul[mul[Felt["NR"], Felt["NPHI"]], 2.], 0.], self["on"]["round_made", env1["xy"], div[div[self["GM", env1["g"]], Formed["N"]], (mul[mul[self["a0"], env1["rd"]], env1["rd"]])], Simulation["SHAPE_H"]]];
+      Do[loopScope[2, env2["v"] = iter2;
+        mPush[env0["head"], env2["v"]]], {iter2, items[list[env1["cx"], env1["cy"], env1["rd"], If[truthy[self["newton"]], 0., self["a0"]]]]}];
+      Do[loopScope[2, env2["v"] = iter2;
+        mPush[env0["tabs"], env2["v"]]], {iter2, items[env1["table"]]}]], {iter1, 0., num[self["discs_n"]] - 1.}];
+    self["made_now" -> mConcat[env0["head"], env0["tabs"]]];
+    Throw[self["made_now"], ret]]];
+  method[klass, "made_at", mfn[1, { env0["g"] = arg[args1, 0], env0["x"] = arg[args1, 1], env0["y"] = arg[args1, 2] };
+    env0["M"] = self["made_now"];
+    env0["n"] = mul[mul[Felt["NR"], Felt["NPHI"]], 2.];
+    env0["a"] = elem[env0["M"], add[mul[4., env0["g"]], 3.]];
+    If[truthy[le[env0["a"], 0.]],
+      Throw[list[0., 0.], ret]];
+    env0["table"] = mMap[rng[env0["n"]], lfn[3, { env2["q"] = arg[args3, 0] };
+      Throw[elem[env0["M"], add[add[mul[4., self["discs_n"]], mul[env0["g"], env0["n"]]], env2["q"]]], ret]]];
+    env0["got"] = self["on"]["round_at", env0["table"], div[(sub[env0["x"], elem[env0["M"], mul[4., env0["g"]]]]), elem[env0["M"], add[mul[4., env0["g"]], 2.]]], div[(sub[env0["y"], elem[env0["M"], add[mul[4., env0["g"]], 1.]]]), elem[env0["M"], add[mul[4., env0["g"]], 2.]]]];
+    Throw[list[mul[elem[env0["got"], 0.], env0["a"]], mul[elem[env0["got"], 1.], env0["a"]]], ret]]];
   field[klass, "newton", dfn[False]];
   getter[klass, "scale_a0", mfn[1,
     Throw[If[truthy[self["newton"]], 0., self["a0"]], ret]]];
@@ -11205,8 +11374,10 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
     env0["gx"] = mul[env0["m"], env0["sx"]];
     env0["gy"] = mul[env0["m"], env0["sy"]];
     env0["mag"] = Fmt["hypot", env0["gx"], env0["gy"]];
-    env0["f"] = If[truthy[gt[env0["mag"], 0.]], (If[truthy[self["newton"]], env0["mag"], Law["boost", env0["mag"], self["a0"]]]), 0.];
-    Throw[If[truthy[gt[env0["mag"], 0.]], list[mul[div[env0["gx"], env0["mag"]], env0["f"]], mul[div[env0["gy"], env0["mag"]], env0["f"]], env0["mag"], env0["f"]], list[0., 0., 0., 0.]], ret]]];
+    env0["more"] = self["made_at", env0["g"], env0["px"], env0["py"]];
+    env0["ax"] = add[env0["gx"], elem[env0["more"], 0.]];
+    env0["ay"] = add[env0["gy"], elem[env0["more"], 1.]];
+    Throw[list[env0["ax"], env0["ay"], env0["mag"], Fmt["hypot", env0["ax"], env0["ay"]]], ret]]];
   method[klass, "launch", mfn[1, { env0["state"] = arg[args1, 0], env0["acc"] = arg[args1, 1] };
     env0["rng"] = RayRandom[{ "seed" -> 29. }];
     env0["out"] = mMap[env0["state"], lfn[3, { env2["v"] = arg[args3, 0] };
@@ -11313,10 +11484,18 @@ DefineClass[Formed, "Formed", Node, Function[{klass},
     env0["extra"][str["middles"] -> self["middles"]];
     env0["extra"][str["deg"] -> self["deg"]];
     env0["extra"][str["a0"] -> mul[self["a0"], Simulation["UNIT_G"]]];
-    env0["extra"][str["about"] -> "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"];
+    env0["extra"][str["about"] -> "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"];
     Throw[Measure["save", "galaxy.formed", list["density"], env0["cols"], env0["extra"]], ret]]];
   statik[klass, "kernel", mfn[1,
-    Throw[mJoin[list["// GENERATED from Formed.ray: stars that pull each other through the law", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " <> str[Formed["TILE"]] <> ">;", Simulation["law_wgsl"], "@compute @workgroup_size(" <> str[Formed["TILE"]] <> ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " <> str[Formed["TILE"]] <> "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " <> str[Formed["TILE"]] <> "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);", "  var f: f32 = 0.0;", "  if (mag > 0.0) {", "    f = mag;", "    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }", "    a = gN / mag * f;", "  }", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" <> str[Simulation["ENTRY"]] <> " KICKDRIFT" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" <> str[Simulation["ENTRY"]] <> " KICK" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"], "\n"], ret]]]]];
+    env0["F"] = Felt[{}];
+    env0["r0"] = Shaded["literal", elem[env0["F"]["rc"], 0.]];
+    env0["step"] = Shaded["literal", env0["F"]["step"]];
+    env0["topr"] = Shaded["literal", sub[sub[Felt["NR"], 1.], 0.0001]];
+    env0["tau"] = Shaded["literal", 6.283185307179586];
+    env0["dphi"] = Shaded["literal", env0["F"]["dphi"]];
+    env0["np"] = Felt["NPHI"];
+    env0["nr"] = Felt["NR"];
+    Throw[mJoin[list["// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> M: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " <> str[Formed["TILE"]] <> ">;", "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {", "  let a: f32 = M[4u * g + 3u];", "  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];", "  let r: f32 = length(d);", "  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let u: f32 = clamp(log(r / " <> str[env0["r0"]] <> ") / " <> str[env0["step"]] <> ", 0.0, " <> str[env0["topr"]] <> ");", "  let i0: u32 = u32(floor(u));", "  let fu: f32 = u - floor(u);", "  var ph: f32 = atan2(d.y, d.x);", "  if (ph < 0.0) { ph = ph + " <> str[env0["tau"]] <> "; }", "  var v: f32 = ph / " <> str[env0["dphi"]] <> " - 0.5;", "  if (v < 0.0) { v = v + " <> str[env0["np"]] <> ".0; }", "  let k0: u32 = u32(floor(v)) % " <> str[env0["np"]] <> "u;", "  let fv: f32 = v - floor(v);", "  let k1: u32 = (k0 + 1u) % " <> str[env0["np"]] <> "u;", "  let t: u32 = 4u * P[2] + g * " <> str[env0["nr"]] <> "u * " <> str[env0["np"]] <> "u * 2u;", "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " <> str[env0["np"]] <> "u + k0)], M[t + 2u * (i0 * " <> str[env0["np"]] <> "u + k0) + 1u]);", "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " <> str[env0["np"]] <> "u + k1)], M[t + 2u * (i0 * " <> str[env0["np"]] <> "u + k1) + 1u]);", "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " <> str[env0["np"]] <> "u + k0)], M[t + 2u * ((i0 + 1u) * " <> str[env0["np"]] <> "u + k0) + 1u]);", "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " <> str[env0["np"]] <> "u + k1)], M[t + 2u * ((i0 + 1u) * " <> str[env0["np"]] <> "u + k1) + 1u]);", "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);", "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;", "}", "@compute @workgroup_size(" <> str[Formed["TILE"]] <> ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " <> str[Formed["TILE"]] <> "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " <> str[Formed["TILE"]] <> "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  let a: vec2<f32> = gN + made(g, me);", "  let f: f32 = length(a);", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" <> str[Simulation["ENTRY"]] <> " KICKDRIFT" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" <> str[Simulation["ENTRY"]] <> " KICK" <> str[Simulation["ID"]] <> "", Simulation["THREAD"], "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"], "\n"], ret]]]]];
 
 DefineClass[Model, "Model", Node, Function[{klass},
   field[klass, "theory"];
@@ -11566,6 +11745,7 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
   staticField[klass, "MIDDLE", dfn[list[0., 0.2, 0.5]]];
   staticField[klass, "GAS", dfn[list[list[0., 1.], list[0.5, 2.], list[0.5, 3.], list[0.9, 2.], list[0.9, 3.]]]];
   staticField[klass, "FREEDOMS", dfn[list["mass", "thickness", "middle", "gas"]]];
+  staticField[klass, "NPHI", dfn[16.]];
   staticField[klass, "LADDER", dfn[list[neg[6.5], 5.5, 193.]]];
   getter[klass, "step", mfn[1,
     Throw[div[mLn[(div[Felt["R1"], Felt["R0"]])], Felt["NR"]], ret]]];
@@ -11696,6 +11876,8 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
     Throw[add[mul[env0["k"], self["width"]], (add[sub[env0["l"], env0["k"]], Felt["NMU"]])], ret]]];
   field[klass, "band", dfn[self["factored"]]];
   getter[klass, "factored", mfn[1,
+    Throw[self["factored_with", filled[self["cells"], 0.]], ret]]];
+  method[klass, "factored_with", mfn[1, { env0["extra"] = arg[args1, 0] };
     env0["n"] = self["cells"];
     env0["B"] = Felt["NMU"];
     env0["W"] = self["width"];
@@ -11704,7 +11886,7 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
       env1["i"] = mFloor[(div[env1["k"], env0["B"]])];
       env1["j"] = mod[env1["k"], env0["B"]];
       env1["f"] = elem[self["faces"], env1["k"]];
-      setAt[env0["m"], add[mul[env1["k"], env0["W"]], env0["B"]], add[add[add[elem[env1["f"], 0.], elem[env1["f"], 1.]], elem[env1["f"], 2.]], elem[env1["f"], 3.]]];
+      setAt[env0["m"], add[mul[env1["k"], env0["W"]], env0["B"]], add[add[add[add[elem[env1["f"], 0.], elem[env1["f"], 1.]], elem[env1["f"], 2.]], elem[env1["f"], 3.]], elem[env0["extra"], env1["k"]]]];
       If[truthy[lt[add[env1["i"], 1.], Felt["NR"]]],
         setAt[env0["m"], add[add[mul[env1["k"], env0["W"]], env0["B"]], env0["B"]], sub[0., elem[env1["f"], 0.]]]];
       If[truthy[gt[env1["i"], 0.]],
@@ -11728,10 +11910,11 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
         env1["l"] = add[env1["l"], 1.]]], {iter1, 0., num[env0["n"]] - 1.}];
     Throw[env0["m"], ret]]];
   method[klass, "solve_band", mfn[1, { env0["b"] = arg[args1, 0] };
+    Throw[self["solve_with", self["band"], env0["b"]], ret]]];
+  method[klass, "solve_with", mfn[1, { env0["m"] = arg[args1, 0], env0["b"] = arg[args1, 1] };
     env0["n"] = self["cells"];
     env0["B"] = Felt["NMU"];
     env0["W"] = self["width"];
-    env0["m"] = self["band"];
     env0["x"] = mMap[env0["b"], lfn[3, { env2["v"] = arg[args3, 0] };
       Throw[env2["v"], ret]]];
     Do[loopScope[1, env1["k"] = iter1;
@@ -11753,20 +11936,18 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
     Throw[env0["x"], ret]]];
   statik[klass, "over", mfn[1, { env0["gN"] = arg[args1, 0] };
     Throw[If[truthy[gt[env0["gN"], 0.]], add[0.5, mSqrt[(add[0.25, div[1., env0["gN"]]])]], 1.], ret]]];
-  method[klass, "felt", mfn[1, { env0["shape"] = arg[args1, 0], env0["s"] = arg[args1, 1] };
+  method[klass, "made_rows", mfn[1, { env0["gr"] = arg[args1, 0], env0["gz"] = arg[args1, 1] };
     env0["n"] = self["cells"];
     env0["B"] = Felt["NMU"];
     env0["wr"] = filled[env0["n"], 0.];
     env0["wm"] = filled[env0["n"], 0.];
     Do[loopScope[1, env1["c"] = iter1;
       env1["j"] = mod[env1["c"], env0["B"]];
-      env1["gr"] = mul[env0["s"], elem[elem[env0["shape"], 0.], env1["c"]]];
-      env1["gz"] = mul[env0["s"], elem[elem[env0["shape"], 1.], env1["c"]]];
-      env1["f"] = sub[Felt["over", Fmt["hypot", env1["gr"], env1["gz"]]], 1.];
+      env1["f"] = sub[Felt["over", Fmt["hypot", elem[env0["gr"], env1["c"]], elem[env0["gz"], env1["c"]]]], 1.];
       env1["mu"] = elem[self["mc"], env1["j"]];
       env1["st"] = mSqrt[(sub[1., mul[env1["mu"], env1["mu"]]])];
-      setAt[env0["wr"], env1["c"], mul[env1["f"], (add[mul[env1["gr"], env1["st"]], mul[env1["gz"], env1["mu"]]])]];
-      setAt[env0["wm"], env1["c"], mul[env1["f"], (sub[mul[env1["gz"], env1["st"]], mul[env1["gr"], env1["mu"]]])]]], {iter1, 0., num[env0["n"]] - 1.}];
+      setAt[env0["wr"], env1["c"], mul[env1["f"], (add[mul[elem[env0["gr"], env1["c"]], env1["st"]], mul[elem[env0["gz"], env1["c"]], env1["mu"]]])]];
+      setAt[env0["wm"], env1["c"], mul[env1["f"], (sub[mul[elem[env0["gz"], env1["c"]], env1["st"]], mul[elem[env0["gr"], env1["c"]], env1["mu"]]])]]], {iter1, 0., num[env0["n"]] - 1.}];
     env0["rhs"] = filled[env0["n"], 0.];
     Do[loopScope[1, env1["c"] = iter1;
       env1["i"] = mFloor[(div[env1["c"], env0["B"]])];
@@ -11780,13 +11961,167 @@ DefineClass[Felt, "Felt", Node, Function[{klass},
       env1["made"] = sub[add[mul[mul[mul[mul[mul[env1["fo"], 2.], 3.141592653589793], elem[self["re"], add[env1["i"], 1.]]], elem[self["re"], add[env1["i"], 1.]]], env1["dmu"]], mul[mul[mul[mul[env1["up"], 2.], 3.141592653589793], (sub[1., mul[elem[self["me"], add[env1["j"], 1.]], elem[self["me"], add[env1["j"], 1.]]]])], env1["dr"]]], mul[mul[mul[mul[env1["down"], 2.], 3.141592653589793], (sub[1., mul[elem[self["me"], env1["j"]], elem[self["me"], env1["j"]]]])], env1["dr"]]];
       setAt[env0["rhs"], env1["c"], If[truthy[gt[env1["i"], 0.]], sub[env1["made"], mul[mul[mul[mul[mul[env1["fi"], 2.], 3.141592653589793], elem[self["re"], env1["i"]]], elem[self["re"], env1["i"]]], env1["dmu"]]], env1["made"]]]], {iter1, 0., num[env0["n"]] - 1.}];
     env0["psi"] = self["solve_band", env0["rhs"]];
+    Throw[mMap[rng[Felt["NR"]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[If[truthy[andV[gt[env2["i"], 0.], lt[add[env2["i"], 1.], Felt["NR"]]]], sub[0., div[(sub[elem[env0["psi"], mul[(add[env2["i"], 1.]), env0["B"]]], elem[env0["psi"], mul[(sub[env2["i"], 1.]), env0["B"]]]]), (sub[elem[self["rc"], add[env2["i"], 1.]], elem[self["rc"], sub[env2["i"], 1.]]])]], 0.], ret]]], ret]]];
+  getter[klass, "dphi", mfn[1,
+    Throw[div[6.283185307179586, Felt["NPHI"]], ret]]];
+  getter[klass, "waves", mfn[1,
+    Throw[add[mFloor[(div[Felt["NPHI"], 2.])], 1.], ret]]];
+  field[klass, "around", dfn[mMap[rng[self["cells"]], lfn[2, { env1["c"] = arg[args2, 0] };
+    env1["i"] = mFloor[(div[env1["c"], Felt["NMU"]])];
+    env1["j"] = mod[env1["c"], Felt["NMU"]];
+    env1["st"] = mSqrt[(sub[1., mul[elem[self["mc"], env1["j"]], elem[self["mc"], env1["j"]]]])];
+    env1["dth"] = sub[Felt["theta", elem[self["me"], env1["j"]]], Felt["theta", elem[self["me"], add[env1["j"], 1.]]]];
+    Throw[div[mul[mul[mul[2., 3.141592653589793], (sub[elem[self["re"], add[env1["i"], 1.]], elem[self["re"], env1["i"]]])], env1["dth"]], (mul[mul[env1["st"], self["dphi"]], self["dphi"]])], ret]]]]];
+  statik[klass, "theta", mfn[1, { env0["mu"] = arg[args1, 0] };
+    Throw[mAtan2[mSqrt[(sub[1., mul[env0["mu"], env0["mu"]]])], env0["mu"]], ret]]];
+  field[klass, "wave_bands", dfn[mMap[rng[self["waves"]], lfn[2, { env1["m"] = arg[args2, 0] };
+    Throw[If[truthy[eq[env1["m"], 0.]], self["band"], self["factored_with", mMap[self["around"], lfn[4, { env3["a"] = arg[args4, 0] };
+      Throw[mul[env3["a"], (sub[2., mul[2., mCos[(mul[env1["m"], self["dphi"]])]]])], ret]]]]], ret]]]]];
+  field[klass, "cosines", dfn[mMap[rng[mul[Felt["NPHI"], Felt["NPHI"]]], lfn[2, { env1["q"] = arg[args2, 0] };
+    Throw[mCos[(mul[mul[self["dphi"], mFloor[(div[env1["q"], Felt["NPHI"]])]], mod[env1["q"], Felt["NPHI"]]])], ret]]]]];
+  field[klass, "sines", dfn[mMap[rng[mul[Felt["NPHI"], Felt["NPHI"]]], lfn[2, { env1["q"] = arg[args2, 0] };
+    Throw[mSin[(mul[mul[self["dphi"], mFloor[(div[env1["q"], Felt["NPHI"]])]], mod[env1["q"], Felt["NPHI"]]])], ret]]]]];
+  method[klass, "solve_round", mfn[1, { env0["b"] = arg[args1, 0] };
+    env0["n"] = self["cells"];
+    env0["P"] = Felt["NPHI"];
+    env0["x"] = filled[mul[env0["n"], env0["P"]], 0.];
+    Do[loopScope[1, env1["m"] = iter1;
+      env1["a"] = mMap[rng[env0["n"]], lfn[4, { env3["c"] = arg[args4, 0] };
+        Throw[mReduce[rng[env0["P"]], 0., lfn[6, { env5["t"] = arg[args6, 0], env5["k"] = arg[args6, 1] };
+          Throw[add[env5["t"], mul[elem[env0["b"], add[mul[env3["c"], env0["P"]], env5["k"]]], elem[self["cosines"], add[mul[env1["m"], env0["P"]], env5["k"]]]]], ret]]], ret]]];
+      env1["s"] = mMap[rng[env0["n"]], lfn[4, { env3["c"] = arg[args4, 0] };
+        Throw[mReduce[rng[env0["P"]], 0., lfn[6, { env5["t"] = arg[args6, 0], env5["k"] = arg[args6, 1] };
+          Throw[add[env5["t"], mul[elem[env0["b"], add[mul[env3["c"], env0["P"]], env5["k"]]], elem[self["sines"], add[mul[env1["m"], env0["P"]], env5["k"]]]]], ret]]], ret]]];
+      env1["ya"] = self["solve_with", elem[self["wave_bands"], env1["m"]], env1["a"]];
+      env1["ys"] = self["solve_with", elem[self["wave_bands"], env1["m"]], env1["s"]];
+      env1["weight"] = div[(If[truthy[orV[eq[env1["m"], 0.], eq[mul[2., env1["m"]], env0["P"]]]], 1., 2.]), env0["P"]];
+      Do[loopScope[2, env2["c"] = iter2;
+        Do[loopScope[3, env3["k"] = iter3;
+          setAt[env0["x"], add[mul[env2["c"], env0["P"]], env3["k"]], add[elem[env0["x"], add[mul[env2["c"], env0["P"]], env3["k"]]], mul[env1["weight"], (add[mul[elem[env1["ya"], env2["c"]], elem[self["cosines"], add[mul[env1["m"], env0["P"]], env3["k"]]]], mul[elem[env1["ys"], env2["c"]], elem[self["sines"], add[mul[env1["m"], env0["P"]], env3["k"]]]]])]]]], {iter3, 0., num[env0["P"]] - 1.}]], {iter2, 0., num[env0["n"]] - 1.}]], {iter1, 0., num[self["waves"]] - 1.}];
+    Throw[env0["x"], ret]]];
+  method[klass, "layers", mfn[1, { env0["r"] = arg[args1, 0], env0["h"] = arg[args1, 1] };
+    env0["raw"] = mMap[rng[Felt["NMU"]], lfn[3, { env2["j"] = arg[args3, 0] };
+      Throw[sub[mExp[(sub[0., div[mul[env0["r"], elem[self["me"], env2["j"]]], env0["h"]]])], mExp[(sub[0., div[mul[env0["r"], elem[self["me"], add[env2["j"], 1.]]], env0["h"]]])]], ret]]];
+    env0["held"] = mReduce[env0["raw"], 0., lfn[3, { env2["t"] = arg[args3, 0], env2["v"] = arg[args3, 1] };
+      Throw[add[env2["t"], env2["v"]], ret]]];
+    Throw[mMap[env0["raw"], lfn[3, { env2["v"] = arg[args3, 0] };
+      Throw[If[truthy[gt[env0["held"], 0.]], div[env2["v"], env0["held"]], 0.], ret]]], ret]]];
+  method[klass, "round_made", mfn[1, { env0["xy"] = arg[args1, 0], env0["s"] = arg[args1, 1], env0["h"] = arg[args1, 2] };
+    env0["n"] = self["cells"];
+    env0["P"] = Felt["NPHI"];
+    env0["B"] = Felt["NMU"];
+    env0["dp"] = self["dphi"];
+    env0["rho"] = filled[mul[env0["n"], env0["P"]], 0.];
+    env0["lay"] = mMap[rng[Felt["NR"]], lfn[3, { env2["i"] = arg[args3, 0] };
+      Throw[self["layers", elem[self["rc"], env2["i"]], env0["h"]], ret]]];
+    Do[loopScope[1, env1["q"] = iter1;
+      env1["x"] = elem[env0["xy"], mul[2., env1["q"]]];
+      env1["y"] = elem[env0["xy"], add[mul[2., env1["q"]], 1.]];
+      env1["r"] = Fmt["hypot", env1["x"], env1["y"]];
+      env1["u"] = Fmt["min", Fmt["max", div[mLn[(div[env1["r"], elem[self["rc"], 0.]])], self["step"]], 0.], sub[sub[Felt["NR"], 1.], 0.000001]];
+      env1["i0"] = mFloor[env1["u"]];
+      env1["fu"] = sub[env1["u"], env1["i0"]];
+      env1["ph"] = mAtan2[env1["y"], env1["x"]];
+      env1["v"] = sub[div[(If[truthy[lt[env1["ph"], 0.]], add[env1["ph"], 6.283185307179586], env1["ph"]]), env0["dp"]], 0.5];
+      If[truthy[lt[env1["v"], 0.]],
+        env1["v"] = add[env1["v"], env0["P"]]];
+      env1["k0"] = mod[mFloor[env1["v"]], env0["P"]];
+      env1["fv"] = sub[env1["v"], mFloor[env1["v"]]];
+      env1["k1"] = mod[(add[env1["k0"], 1.]), env0["P"]];
+      Do[loopScope[2, env2["rw"] = iter2;
+        If[truthy[gt[elem[env2["rw"], 1.], 0.]],
+          Do[loopScope[3, env3["j"] = iter3;
+            env3["m"] = mul[mul[div[env0["s"], 2.], elem[env2["rw"], 1.]], elem[elem[env0["lay"], elem[env2["rw"], 0.]], env3["j"]]];
+            env3["c"] = add[mul[elem[env2["rw"], 0.], env0["B"]], env3["j"]];
+            setAt[env0["rho"], add[mul[env3["c"], env0["P"]], env1["k0"]], add[elem[env0["rho"], add[mul[env3["c"], env0["P"]], env1["k0"]]], mul[env3["m"], (sub[1., env1["fv"]])]]];
+            setAt[env0["rho"], add[mul[env3["c"], env0["P"]], env1["k1"]], add[elem[env0["rho"], add[mul[env3["c"], env0["P"]], env1["k1"]]], mul[env3["m"], env1["fv"]]]]], {iter3, 0., num[env0["B"]] - 1.}]]], {iter2, items[list[list[env1["i0"], sub[1., env1["fu"]]], list[add[env1["i0"], 1.], env1["fu"]]]]}]], {iter1, 0., num[mFloor[(div[len[env0["xy"]], 2.])]] - 1.}];
+    env0["phi"] = self["solve_round", mMap[env0["rho"], lfn[3, { env2["m"] = arg[args3, 0] };
+      Throw[sub[0., div[mul[mul[mul[4., 3.141592653589793], env2["m"]], 6.283185307179586], env0["dp"]]], ret]]]];
+    env0["at"] = lfn[2, { env1["i"] = arg[args2, 0], env1["j"] = arg[args2, 1], env1["k"] = arg[args2, 2] };
+      Throw[elem[env0["phi"], add[mul[(add[mul[env1["i"], env0["B"]], env1["j"]]), env0["P"]], mod[(add[env1["k"], env0["P"]]), env0["P"]]]], ret]];
+    env0["wr"] = filled[mul[env0["n"], env0["P"]], 0.];
+    env0["wm"] = filled[mul[env0["n"], env0["P"]], 0.];
+    env0["wp"] = filled[mul[env0["n"], env0["P"]], 0.];
+    Do[loopScope[1, env1["c"] = iter1;
+      env1["i"] = mFloor[(div[env1["c"], env0["B"]])];
+      env1["j"] = mod[env1["c"], env0["B"]];
+      env1["r"] = elem[self["rc"], env1["i"]];
+      env1["st"] = mSqrt[(sub[1., mul[elem[self["mc"], env1["j"]], elem[self["mc"], env1["j"]]]])];
+      Do[loopScope[2, env2["k"] = iter2;
+        env2["lo"] = Fmt["max", sub[env1["i"], 1.], 0.];
+        env2["hi"] = Fmt["min", add[env1["i"], 1.], sub[Felt["NR"], 1.]];
+        env2["gr"] = sub[0., div[(sub[env0["at"][env2["hi"], env1["j"], env2["k"]], env0["at"][env2["lo"], env1["j"], env2["k"]]]), (sub[elem[self["rc"], env2["hi"]], elem[self["rc"], env2["lo"]]])]];
+        env2["below"] = If[truthy[gt[env1["j"], 0.]], env0["at"][env1["i"], sub[env1["j"], 1.], env2["k"]], env0["at"][env1["i"], 0., env2["k"]]];
+        env2["mb"] = If[truthy[gt[env1["j"], 0.]], elem[self["mc"], sub[env1["j"], 1.]], sub[0., elem[self["mc"], 0.]]];
+        env2["top"] = Fmt["min", add[env1["j"], 1.], sub[env0["B"], 1.]];
+        env2["gm"] = sub[0., div[mul[div[env1["st"], env1["r"]], (sub[env0["at"][env1["i"], env2["top"], env2["k"]], env2["below"]])], (sub[elem[self["mc"], env2["top"]], env2["mb"]])]];
+        env2["gp"] = sub[0., div[(sub[env0["at"][env1["i"], env1["j"], add[env2["k"], 1.]], env0["at"][env1["i"], env1["j"], sub[env2["k"], 1.]]]), (mul[mul[mul[2., env0["dp"]], env1["r"]], env1["st"]])]];
+        env2["f"] = sub[Felt["over", Fmt["hypot", Fmt["hypot", env2["gr"], env2["gm"]], env2["gp"]]], 1.];
+        setAt[env0["wr"], add[mul[env1["c"], env0["P"]], env2["k"]], mul[env2["f"], env2["gr"]]];
+        setAt[env0["wm"], add[mul[env1["c"], env0["P"]], env2["k"]], mul[env2["f"], env2["gm"]]];
+        setAt[env0["wp"], add[mul[env1["c"], env0["P"]], env2["k"]], mul[env2["f"], env2["gp"]]]], {iter2, 0., num[env0["P"]] - 1.}]], {iter1, 0., num[env0["n"]] - 1.}];
+    env0["made"] = filled[mul[env0["n"], env0["P"]], 0.];
+    Do[loopScope[1, env1["c"] = iter1;
+      env1["i"] = mFloor[(div[env1["c"], env0["B"]])];
+      env1["j"] = mod[env1["c"], env0["B"]];
+      env1["dmu"] = sub[elem[self["me"], add[env1["j"], 1.]], elem[self["me"], env1["j"]]];
+      env1["dr"] = sub[elem[self["re"], add[env1["i"], 1.]], elem[self["re"], env1["i"]]];
+      env1["dth"] = sub[Felt["theta", elem[self["me"], env1["j"]]], Felt["theta", elem[self["me"], add[env1["j"], 1.]]]];
+      Do[loopScope[2, env2["k"] = iter2;
+        env2["e"] = add[mul[env1["c"], env0["P"]], env2["k"]];
+        env2["fo"] = If[truthy[lt[add[env1["i"], 1.], Felt["NR"]]], div[(add[elem[env0["wr"], env2["e"]], elem[env0["wr"], add[env2["e"], mul[env0["B"], env0["P"]]]]]), 2.], elem[env0["wr"], env2["e"]]];
+        env2["fi"] = If[truthy[gt[env1["i"], 0.]], div[(add[elem[env0["wr"], sub[env2["e"], mul[env0["B"], env0["P"]]]], elem[env0["wr"], env2["e"]]]), 2.], elem[env0["wr"], env2["e"]]];
+        env2["up"] = If[truthy[lt[add[env1["j"], 1.], env0["B"]]], div[(add[elem[env0["wm"], env2["e"]], elem[env0["wm"], add[env2["e"], env0["P"]]]]), 2.], 0.];
+        env2["down"] = If[truthy[gt[env1["j"], 0.]], div[(add[elem[env0["wm"], sub[env2["e"], env0["P"]]], elem[env0["wm"], env2["e"]]]), 2.], 0.];
+        env2["ahead"] = div[(add[elem[env0["wp"], env2["e"]], elem[env0["wp"], add[mul[env1["c"], env0["P"]], mod[(add[env2["k"], 1.]), env0["P"]]]]]), 2.];
+        env2["behind"] = div[(add[elem[env0["wp"], add[mul[env1["c"], env0["P"]], mod[(sub[add[env2["k"], env0["P"]], 1.]), env0["P"]]]], elem[env0["wp"], env2["e"]]]), 2.];
+        env2["out_"] = add[sub[add[mul[mul[mul[mul[mul[env2["fo"], 2.], 3.141592653589793], elem[self["re"], add[env1["i"], 1.]]], elem[self["re"], add[env1["i"], 1.]]], env1["dmu"]], mul[mul[mul[mul[env2["up"], 2.], 3.141592653589793], (sub[1., mul[elem[self["me"], add[env1["j"], 1.]], elem[self["me"], add[env1["j"], 1.]]]])], env1["dr"]]], mul[mul[mul[mul[env2["down"], 2.], 3.141592653589793], (sub[1., mul[elem[self["me"], env1["j"]], elem[self["me"], env1["j"]]]])], env1["dr"]]], div[mul[mul[mul[mul[(sub[env2["ahead"], env2["behind"]]), 6.283185307179586], elem[self["rc"], env1["i"]]], env1["dr"]], env1["dth"]], env0["dp"]]];
+        setAt[env0["made"], env2["e"], If[truthy[gt[env1["i"], 0.]], sub[env2["out_"], mul[mul[mul[mul[mul[env2["fi"], 2.], 3.141592653589793], elem[self["re"], env1["i"]]], elem[self["re"], env1["i"]]], env1["dmu"]]], env2["out_"]]]], {iter2, 0., num[env0["P"]] - 1.}]], {iter1, 0., num[env0["n"]] - 1.}];
+    env0["psi"] = self["solve_round", env0["made"]];
+    env0["out"] = filled[mul[mul[Felt["NR"], env0["P"]], 2.], 0.];
+    env0["st0"] = mSqrt[(sub[1., mul[elem[self["mc"], 0.], elem[self["mc"], 0.]]])];
+    Do[loopScope[1, env1["i"] = iter1;
+      If[truthy[andV[gt[env1["i"], 0.], lt[add[env1["i"], 1.], Felt["NR"]]]],
+        Do[loopScope[2, env2["k"] = iter2;
+          setAt[env0["out"], mul[2., (add[mul[env1["i"], env0["P"]], env2["k"]])], sub[0., div[(sub[elem[env0["psi"], add[mul[mul[(add[env1["i"], 1.]), env0["B"]], env0["P"]], env2["k"]]], elem[env0["psi"], add[mul[mul[(sub[env1["i"], 1.]), env0["B"]], env0["P"]], env2["k"]]]]), (sub[elem[self["rc"], add[env1["i"], 1.]], elem[self["rc"], sub[env1["i"], 1.]]])]]];
+          setAt[env0["out"], add[mul[2., (add[mul[env1["i"], env0["P"]], env2["k"]])], 1.], sub[0., div[(sub[elem[env0["psi"], add[mul[mul[env1["i"], env0["B"]], env0["P"]], mod[(add[env2["k"], 1.]), env0["P"]]]], elem[env0["psi"], add[mul[mul[env1["i"], env0["B"]], env0["P"]], mod[(sub[add[env2["k"], env0["P"]], 1.]), env0["P"]]]]]), (mul[mul[mul[2., env0["dp"]], elem[self["rc"], env1["i"]]], env0["st0"]])]]]], {iter2, 0., num[env0["P"]] - 1.}]]], {iter1, 0., num[Felt["NR"]] - 1.}];
+    Throw[env0["out"], ret]]];
+  method[klass, "round_at", mfn[1, { env0["table"] = arg[args1, 0], env0["x"] = arg[args1, 1], env0["y"] = arg[args1, 2] };
+    env0["P"] = Felt["NPHI"];
+    env0["r"] = Fmt["hypot", env0["x"], env0["y"]];
+    If[truthy[le[env0["r"], 0.]],
+      Throw[list[0., 0.], ret]];
+    env0["u"] = Fmt["min", Fmt["max", div[mLn[(div[env0["r"], elem[self["rc"], 0.]])], self["step"]], 0.], sub[sub[Felt["NR"], 1.], 0.000001]];
+    env0["i0"] = mFloor[env0["u"]];
+    env0["fu"] = sub[env0["u"], env0["i0"]];
+    env0["ph"] = mAtan2[env0["y"], env0["x"]];
+    env0["v"] = sub[div[(If[truthy[lt[env0["ph"], 0.]], add[env0["ph"], 6.283185307179586], env0["ph"]]), self["dphi"]], 0.5];
+    If[truthy[lt[env0["v"], 0.]],
+      env0["v"] = add[env0["v"], env0["P"]]];
+    env0["k0"] = mod[mFloor[env0["v"]], env0["P"]];
+    env0["fv"] = sub[env0["v"], mFloor[env0["v"]]];
+    env0["k1"] = mod[(add[env0["k0"], 1.]), env0["P"]];
+    env0["part"] = lfn[2, { env1["q"] = arg[args2, 0] };
+      Throw[add[mul[(sub[1., env0["fu"]]), (add[mul[(sub[1., env0["fv"]]), elem[env0["table"], add[mul[2., (add[mul[env0["i0"], env0["P"]], env0["k0"]])], env1["q"]]]], mul[env0["fv"], elem[env0["table"], add[mul[2., (add[mul[env0["i0"], env0["P"]], env0["k1"]])], env1["q"]]]]])], mul[env0["fu"], (add[mul[(sub[1., env0["fv"]]), elem[env0["table"], add[mul[2., (add[mul[(add[env0["i0"], 1.]), env0["P"]], env0["k0"]])], env1["q"]]]], mul[env0["fv"], elem[env0["table"], add[mul[2., (add[mul[(add[env0["i0"], 1.]), env0["P"]], env0["k1"]])], env1["q"]]]]])]], ret]];
+    env0["outward"] = env0["part"][0.];
+    env0["about"] = env0["part"][1.];
+    Throw[list[div[(sub[mul[env0["outward"], env0["x"]], mul[env0["about"], env0["y"]]]), env0["r"]], div[(add[mul[env0["outward"], env0["y"]], mul[env0["about"], env0["x"]]]), env0["r"]]], ret]]];
+  method[klass, "made_at", mfn[1, { env0["made"] = arg[args1, 0], env0["r"] = arg[args1, 1] };
+    env0["v"] = Fmt["min", Fmt["max", div[mLn[(div[env0["r"], elem[self["rc"], 0.]])], self["step"]], 1.], sub[sub[Felt["NR"], 2.], 0.000001]];
+    env0["t"] = mFloor[env0["v"]];
+    env0["e"] = sub[env0["v"], env0["t"]];
+    Throw[add[mul[(sub[1., env0["e"]]), elem[env0["made"], env0["t"]]], mul[env0["e"], elem[env0["made"], add[env0["t"], 1.]]]], ret]]];
+  method[klass, "felt", mfn[1, { env0["shape"] = arg[args1, 0], env0["s"] = arg[args1, 1] };
+    env0["made"] = self["made_rows", mMap[elem[env0["shape"], 0.], lfn[3, { env2["v"] = arg[args3, 0] };
+      Throw[mul[env0["s"], env2["v"]], ret]]], mMap[elem[env0["shape"], 1.], lfn[3, { env2["v"] = arg[args3, 0] };
+      Throw[mul[env0["s"], env2["v"]], ret]]]];
     env0["out"] = list[];
     Do[loopScope[1, env1["i"] = iter1;
       env1["r"] = elem[self["rc"], env1["i"]];
       If[truthy[andV[andV[andV[gt[env1["i"], 0.], lt[add[env1["i"], 1.], Felt["NR"]]], ge[env1["r"], Felt["NEAR"]]], le[env1["r"], Felt["FAR"]]]],
-        env1["made"] = sub[0., div[(sub[elem[env0["psi"], mul[(add[env1["i"], 1.]), env0["B"]]], elem[env0["psi"], mul[(sub[env1["i"], 1.]), env0["B"]]]]), (sub[elem[self["rc"], add[env1["i"], 1.]], elem[self["rc"], sub[env1["i"], 1.]]])]];
         env1["gN"] = sub[0., mul[env0["s"], elem[elem[env0["shape"], 2.], env1["i"]]]];
-        mPush[env0["out"], list[env1["r"], env1["gN"], sub[env1["gN"], env1["made"]]]]]], {iter1, 0., num[Felt["NR"]] - 1.}];
+        mPush[env0["out"], list[env1["r"], env1["gN"], sub[env1["gN"], elem[env0["made"], env1["i"]]]]]]], {iter1, 0., num[Felt["NR"]] - 1.}];
     Throw[env0["out"], ret]]];
   method[klass, "ladder", mfn[1, { env0["shape"] = arg[args1, 0] };
     Throw[mMap[rng[elem[Felt["LADDER"], 2.]], lfn[3, { env2["k"] = arg[args3, 0] };
@@ -13552,6 +13887,8 @@ DefineClass[G, "G", Theory, Function[{klass},
     Throw[Asked[{ "asks" -> "a source moves or it emits, and the vacuum it emits into pulses every other tick. What cuts the mismatch between the two off - the scale an acceleration is measured against?", "about" -> "a_{0}", "also" -> "H_{\\Lambda}" }], ret]] }]]];
   staticField[klass, "theorem gravity.closing", dfn[Theorem[{ "id" -> "gravity.closing", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?", "about" -> "F_{g} \\aside{closing}" }], ret]] }]]];
+  staticField[klass, "theorem gravity.made", dfn[Theorem[{ "id" -> "gravity.made", "body" -> lfn[1,
+    Throw[Asked[{ "asks" -> "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?", "about" -> "g \\aside{field}", "also" -> "-\\nabla^{2}\\psi" }], ret]] }]]];
   staticField[klass, "theorem gravity.metric", dfn[Theorem[{ "id" -> "gravity.metric", "body" -> lfn[1,
     Throw[Asked[{ "asks" -> "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?", "about" -> "B \\aside{held}", "also" -> "A \\aside{held}" }], ret]] }]]];
   staticField[klass, "theorem gravity.shadow", dfn[Theorem[{ "id" -> "gravity.shadow", "body" -> lfn[1,

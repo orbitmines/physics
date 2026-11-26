@@ -6185,7 +6185,9 @@ export class Prover extends Node {
     held.derivation = [tick, falls];
     ruler.derivation = [held];
     defl.derivation = [held, ruler];
-    return [g_, phi, tick, falls, held, ruler, defl];
+    let shadow = Inferences.held_shadow(s, held.fact, ruler.fact);
+    shadow.derivation = [held, ruler];
+    return [g_, phi, tick, falls, held, ruler, defl, shadow];
   }
   expansion_of(s: Store, settles: Step): Step[] {
     let grown = this.growth_filled(s);
@@ -6247,10 +6249,16 @@ export class Prover extends Node {
     let got = Prover.neat(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
     let closing = Step.of(Fact.stands(`F_{g} \\aside{closing}`, got), `what is felt, with the mismatch closed`, [scale.fact.key], `what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling`, [`g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3`, `F_{g} = ${Expr.show(got)}`]);
     closing.derivation = [scale];
+    let psi = Expr.field(`\\psi`);
+    let w = Prover.neat(Expr.sub(got, g));
+    let made = Step.of(Fact.stands(`-\\nabla^{2}\\psi`, Expr.field(`\\nabla\\cdot\\paren{\\paren{${Expr.show(w)}}\\hat{g}_{N}}`)), `the space made, as a source`, [closing.fact.key], `the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (${met}), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made`, [`w = F_{g} - g_{N} = ${Expr.show(w)}, along \\hat{g}_{N}`, `made where w changes: \\nabla\\cdot w`, `a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w`]);
+    made.derivation = [closing, potential];
+    let field = Step.of(Fact.stands(`g \\aside{field}`, Prover.neat(Expr.sub(g, Expr.field(`\\nabla\\psi`)))), `what is felt, solved over the whole field`, [made.fact.key, closing.fact.key], `what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve`, [`g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w`, `no curl: \\nabla\\times g = 0, as a record's slope`, `a sphere: \\nabla\\psi = -w, so g = F_{g}`, `a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)`]);
+    field.derivation = [made];
     let ratio = Prover.neat(Expr.div(a0, own));
     let against = Step.of(Fact.stands(`\\frac{a_{0}}{cH}`, ratio), `the scale against the vacuum's growth`, [scale.fact.key, lam.fact.key], `a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183`, [`a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}`, `\\frac{a_{0}}{cH_{vac}} = ${Expr.show(Prover.neat(ratio))}`, `against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}`]);
     against.derivation = [scale];
-    return [straight, potential, lam, scale, closing, against];
+    return [straight, potential, lam, scale, closing, made, field, against];
   }
   leftover(rays_c: Step): (Step | null) {
     let m = Prover.MASS.label;
@@ -6868,7 +6876,7 @@ export class Inferences extends Node {
     }), e);
   }
   static get RULES(): Inference[] {
-    return [Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.shadow, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion].concat(Inferences.IN_FULL.map(((of: any) => {
+    return [Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion].concat(Inferences.IN_FULL.map(((of: any) => {
       return Inferences.writing_out(of);
     }))).concat([Inferences.can_it_push, Inferences.in_three]);
   }
@@ -6985,29 +6993,26 @@ export class Inferences extends Node {
       return [Inferences.step(`r_{s}`, Expr.simplify(Expr.mul([Expr.num(2), puts.to])), via, [puts.key, dn.key], `the record a body adds falls off as \`r^{-\\paren{D - 2}}\` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions \`A = 1 - 2\\bar{m}/r\`. Read against \`A = 1 - r_{s}/r\` that says \`r_{s} = 2\\bar{m}\` - and the force law fixes \`GM = \\bar{m}\`, so this is \`r_{s} = 2GM\`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square`, [`\\delta n_{f} = ${Expr.show(dn.to)}`, `A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots`, `general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM`]), Inferences.step(`A in r as GR writes it`, Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`r`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))), via, [A.key], `the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: \`A = 1 - r_{s}/r\` and \`B = 1/\\paren{1 - r_{s}/r}\` is what this model derives, so light bends by twice the Newtonian amount, \`\\gamma\` is one, and the perihelion advances by \`3\\pi r_{s}/a\`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about`, [`A = 1 - r_{s}·r^{-\\paren{D - 2}}`, `B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}`, `\\gamma = 1, and A·B = 1 as Schwarzschild has it`]), Inferences.step(`the deflection this model gives`, Expr.simplify(Expr.mul([Expr.num(2), Expr.field(`r_{s}`), Expr.to_power(Expr.sym(`b`), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))])), via, [A.key], `light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is`, [`the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}`, `the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r`, `so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two`])];
     }) });
   }
-  static get shadow(): Inference {
-    return new Inference({ name: `where a ray stops coming back`, because: `a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow`, fire: ((s: Store) => {
-      let A = s.fact(`is`, `A in r`);
-      let B = s.fact(`is`, `B in r`);
-      if (((eq(A, null) || eq(B, null)) || s.has(`is`, `b_{c}`))) {
-        return [];
-      }
-      let u = `\\delta n_{f}`;
-      let over = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([A.to, Expr.pown(B.to, (-1))]), 0.5)]));
-      let env = ({});
-      env[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(over, u)), u), env);
-      let sphere = elem(env, u);
-      let bc = div(1, Expr.numeric(over, env));
-      bc = div(Math.round((mul(bc, Math.pow(10, 9)))), Math.pow(10, 9));
-      let half = Expr.mul([Expr.num(0.5), Expr.field(u)]);
-      let gA = Expr.pown(Expr.mul([Expr.sub(Expr.num(1), half), Expr.pown(Expr.add([Expr.num(1), half]), (-1))]), 2);
-      let gB = Expr.pown(Expr.add([Expr.num(1), half]), 4);
-      let gover = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([gA, Expr.pown(gB, (-1))]), 0.5)]));
-      let genv = ({});
-      genv[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(gover, u)), u), genv);
-      let gr = div(1, Expr.numeric(gover, genv));
-      return [Inferences.step(`b_{c}`, Expr.mul([Expr.num(bc), Expr.field(`\\bar{m}`)]), `where a ray stops coming back`, [A.key, B.key], `THE SHADOW, off the metric alone. A null ray in \`A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}\` turns where \`r\\sqrt{B/A} = b\`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: \`\\bar{m}\` is the one the record is written in, \`\\delta n_{f} = \\bar{m}/r\`, which to first order is general relativity's \`GM\`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's`, [`a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r`, `\\bar{m}/b at the turning point = ${Expr.show(over)}`, `largest where its slope is nought: \\delta n_{f} = ${Fmt.fixed(sphere, 6)}, the photon sphere at r = ${Fmt.fixed(div(1, sphere), 4)} \\bar{m}`, `b_{c} = ${Fmt.fixed(bc, 4)} \\bar{m}`, `general relativity's metric read the same way: b_{c} = ${Fmt.fixed(gr, 4)} \\bar{m}, which is 3\\sqrt{3}`, `so at the same \\bar{m} this shadow is ${Fmt.fixed(mul(100, (sub(div(bc, gr), 1))), 2)} per cent wider`])];
-    }) });
+  static held_shadow(s: Store, A: Fact, B: Fact): Step {
+    let u = `\\delta n_{f}`;
+    let Au = Expr.simplify(Expr.replace(Expr.replace(Expr.replace(A.to, `r_{s}`, Expr.num(2)), `D`, Expr.num(3)), `r`, Expr.pown(Expr.field(u), (-1))));
+    let over = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Au, 0.5)]));
+    let env = ({});
+    env[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(over, u)), u), env);
+    let sphere = elem(env, u);
+    let bc = div(1, Expr.numeric(over, env));
+    bc = div(Math.round((mul(bc, Math.pow(10, 9)))), Math.pow(10, 9));
+    let gr = mul(3, Math.sqrt(3));
+    let iA = s.fact(`is`, `A in r`);
+    let iB = s.fact(`is`, `B in r`);
+    let index = NaN;
+    if ((!eq(iA, null) && !eq(iB, null))) {
+      let iover = Expr.simplify(Expr.mul([Expr.field(u), Expr.pown(Expr.mul([iA.to, Expr.pown(iB.to, (-1))]), 0.5)]));
+      let ienv = ({});
+      ienv[u] = Expr.numeric(Expr.root(Expr.simplify(Expr.d(iover, u)), u), ienv);
+      index = div(1, Expr.numeric(iover, ienv));
+    }
+    return Inferences.step(`b_{c}`, Expr.mul([Expr.num(bc), Expr.field(`\\bar{m}`)]), `where a ray stops coming back`, [A.key, B.key], `THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is \`A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}\`, and a null ray turns where \`r/\\sqrt{A} = b\`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's`, [`a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}`, `\\bar{m}/b at the turning point = ${Expr.show(over)}`, `largest where its slope is nought: \\delta n_{f} = ${Fmt.fixed(sphere, 6)}, the photon sphere at r = ${Fmt.fixed(div(1, sphere), 4)} \\bar{m}`, `b_{c} = ${Fmt.fixed(bc, 4)} \\bar{m}; general relativity's is 3\\sqrt{3} = ${Fmt.fixed(gr, 4)}`, (Fmt.finite(index) ? `the medium's index read as an isotropic metric instead gives ${Fmt.fixed(index, 4)} \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read` : `the medium's index gives no metric of its own here`)]);
   }
   static get metric_of(): Inference {
     return new Inference({ name: `an index is a metric`, because: `MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies \`dt^{2}\` and \`dr^{2}\` and what MOVEMENT counts is \`d\\tau/dt\` and \`d\\ell/dr\` - the roots`, fire: ((s: Store) => {
@@ -12674,7 +12679,7 @@ export class Galaxies extends Node {
     if (eq(stars, null)) {
       fail(`galaxy.stars is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
     }
-    return new Picture({ id: `galaxy.simulation`, what: `galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured`, width: 960, height: 720, frames: stars.header[`frames`], paint: ((played: (Played | null)) => {
+    return new Picture({ id: `galaxy.simulation`, what: `galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured`, width: 960, height: 720, frames: stars.header[`frames`], paint: ((played: (Played | null)) => {
       return new Orbiting({ stars: stars });
     }) });
   }
@@ -12749,7 +12754,7 @@ export class Galaxies extends Node {
     if (eq(got, null)) {
       fail(`galaxy.formed is not on disk - run the galaxies (\`${Galaxies.SIMULATED}\`) and try again`);
     }
-    return new Picture({ id: `galaxy.formed`, what: `discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms`, width: 960, height: 720, frames: got.header[`frames`], paint: ((played: (Played | null)) => {
+    return new Picture({ id: `galaxy.formed`, what: `discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms`, width: 960, height: 720, frames: got.header[`frames`], paint: ((played: (Played | null)) => {
       return new Forming({ formed: got });
     }) });
   }
@@ -12869,7 +12874,7 @@ export class Galaxies extends Node {
     let stars_n = H[`stars`];
     let q_text = Fmt.fixed(H[`Q`], 1);
     let a0_text = Fmt.exponential(H[`a0`], 3);
-    s.fill_text(`${stars_n} stars each, every one pulled by every other through the law (a₀ ${a0_text} m/s²), no halo; launched smooth at Q ${q_text} — t = ${gyr} Gyr`, 22, 44);
+    s.fill_text(`${stars_n} stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ ${a0_text} m/s²), no halo; launched smooth at Q ${q_text} — t = ${gyr} Gyr`, 22, 44);
     let side = Fmt.min(div((sub(s.width, 66)), 2), sub(s.height, 110));
     for (let g = 0; g < names.length; g++) {
       let ox = add(22, mul(g, (add(side, 22))));
@@ -13386,6 +13391,12 @@ export class Simulation extends Node {
   static THREAD = `  let i: u32 = P[7] + gid.y * 65536u + gid.x;`;
   static ENTRY = `@compute @workgroup_size(64) fn`;
   static ID = `(@builtin(global_invocation_id) gid: vec3<u32>) {`;
+  static NY = 21;
+  static NB = 11;
+  static RUNG_Y = 0.05;
+  static RUNG_B = 0.1;
+  static RINGS_IN = 8;
+  static FAR_OFF = 30;
   static OMEGA_M = 0.315;
   static FILM_STARS = 4096;
   static FILM_TURNS = 0.5;
@@ -13427,13 +13438,20 @@ export class Simulation extends Node {
     let lyd = Shaded.literal(Fmt.log10(Sparc.YD));
     let lyb = Shaded.literal(Fmt.log10(Sparc.YB));
     let py = Shaded.literal(Simulation.PRIOR_Y);
-    return [`// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> Q: array<f32>;`, `@group(0) @binding(3) var<storage, read> G: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> O: array<f32>;`, Simulation.law_wgsl, `${Simulation.ENTRY} FIT${Simulation.ID}`, Simulation.THREAD, `  let n: u32 = P[1];`, `  let C: u32 = n * n * n * n;`, `  if (i >= P[0] * C) { return; }`, `  let j: u32 = i / C;`, `  let c: u32 = i % C;`, `  let h: f32 = f32((n - 1u) / 2u);`, `  let b: u32 = 16u * j;`, `  let D: f32 = G[b + 2u];`, `  let eD: f32 = G[b + 3u];`, `  let inc: f32 = G[b + 4u];`, `  let einc: f32 = G[b + 5u];`, `  let a0: f32 = G[b + 6u];`, `  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];`, `  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];`, `  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;`, `  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;`, `  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }`, `  let YD: f32 = exp(ly * ${ln10});`, `  let YB: f32 = exp(lb * ${ln10});`, `  let f: f32 = Dp / D;`, `  let s: f32 = sin(inc * ${pi} / 180.0) / sin(ip * ${pi} / 180.0);`, `  var chi: f32 = 0.0;`, `  let start: u32 = u32(G[b]);`, `  let stop: u32 = start + u32(G[b + 1u]);`, `  for (var p: u32 = start; p < stop; p = p + 1u) {`, `    let q: u32 = 8u * p;`, `    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);`, `    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));`, `    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);`, `    chi = chi + d * d;`, `  }`, `  let py: f32 = (ly - ${lyd}) / ${py};`, `  let pb: f32 = G[b + 7u] * (lb - ${lyb}) / ${py};`, `  var pd: f32 = 0.0;`, `  if (eD > 0.0) { pd = (Dp - D) / eD; }`, `  var pi_: f32 = 0.0;`, `  if (einc > 0.0) { pi_ = (ip - inc) / einc; }`, `  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);`, `}`].join(`\n`);
+    let ly0 = Shaded.literal(sub(Fmt.log10(Sparc.YD), div(mul(Simulation.RUNG_Y, sub(Simulation.NY, 1)), 2)));
+    let lb0 = Shaded.literal(sub(Fmt.log10(Sparc.YB), div(mul(Simulation.RUNG_B, sub(Simulation.NB, 1)), 2)));
+    let sy = Shaded.literal(Simulation.RUNG_Y);
+    let sb = Shaded.literal(Simulation.RUNG_B);
+    let topy = Shaded.literal(sub(sub(Simulation.NY, 1), 0.0001));
+    let ny = Simulation.NY;
+    let nbs = Simulation.NB;
+    return [`// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> Q: array<f32>;`, `@group(0) @binding(3) var<storage, read> G: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} FIT${Simulation.ID}`, Simulation.THREAD, `  let n: u32 = P[1];`, `  let C: u32 = n * n * n * n;`, `  if (i >= P[0] * C) { return; }`, `  let j: u32 = i / C;`, `  let c: u32 = i % C;`, `  let h: f32 = f32((n - 1u) / 2u);`, `  let b: u32 = 16u * j;`, `  let D: f32 = G[b + 2u];`, `  let eD: f32 = G[b + 3u];`, `  let inc: f32 = G[b + 4u];`, `  let einc: f32 = G[b + 5u];`, `  let a0: f32 = G[b + 6u];`, `  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];`, `  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];`, `  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;`, `  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;`, `  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }`, `  let uy: f32 = clamp((ly - ${ly0}) / ${sy}, 0.0, ${topy});`, `  let ky: u32 = u32(floor(uy));`, `  let fy: f32 = uy - floor(uy);`, `  var nb: u32 = 1u;`, `  if (G[b + 7u] > 0.0) { nb = ${nbs}u; }`, `  var ub: f32 = 0.0;`, `  if (nb > 1u) { ub = clamp((lb - ${lb0}) / ${sb}, 0.0, f32(nb - 1u) - 0.0001); }`, `  let kb: u32 = u32(floor(ub));`, `  let fb: f32 = ub - floor(ub);`, `  let kb1: u32 = min(kb + 1u, nb - 1u);`, `  let base: u32 = u32(G[b + 15u]);`, `  let f: f32 = Dp / D;`, `  let s: f32 = sin(inc * ${pi} / 180.0) / sin(ip * ${pi} / 180.0);`, `  var chi: f32 = 0.0;`, `  let start: u32 = u32(G[b]);`, `  let stop: u32 = start + u32(G[b + 1u]);`, `  for (var p: u32 = start; p < stop; p = p + 1u) {`, `    let q: u32 = 8u * p;`, `    let o: u32 = p - start;`, `    let cnt: u32 = u32(G[b + 1u]);`, `    let lo: f32 = (1.0 - fy) * L[base + (kb * ${ny}u + ky) * cnt + o] + fy * L[base + (kb * ${ny}u + ky + 1u) * cnt + o];`, `    let hi: f32 = (1.0 - fy) * L[base + (kb1 * ${ny}u + ky) * cnt + o] + fy * L[base + (kb1 * ${ny}u + ky + 1u) * cnt + o];`, `    let g: f32 = (1.0 - fb) * lo + fb * hi;`, `    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));`, `    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);`, `    chi = chi + d * d;`, `  }`, `  let py: f32 = (ly - ${lyd}) / ${py};`, `  let pb: f32 = G[b + 7u] * (lb - ${lyb}) / ${py};`, `  var pd: f32 = 0.0;`, `  if (eD > 0.0) { pd = (Dp - D) / eD; }`, `  var pi_: f32 = 0.0;`, `  if (einc > 0.0) { pi_ = (ip - inc) / einc; }`, `  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);`, `}`].join(`\n`);
   }
   static get best_kernel(): string {
     return [`// GENERATED from Simulation.ray: BEST - each galaxy's best point of its grid`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> V: array<f32>;`, `@group(0) @binding(2) var<storage, read_write> O: array<f32>;`, `${Simulation.ENTRY} BEST${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  var best: f32 = -3e38;`, `  var pos: u32 = 0u;`, `  for (var c: u32 = 0u; c < P[1]; c = c + 1u) {`, `    let v: f32 = V[i * P[1] + c];`, `    if (v > best) { best = v; pos = c; }`, `  }`, `  O[2u * i] = f32(pos);`, `  O[2u * i + 1u] = best;`, `}`].join(`\n`);
   }
   static get stars_kernel(): string {
-    return [`// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> GT: array<f32>;`, `@group(0) @binding(3) var<storage, read> GI: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> S: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> F: array<f32>;`, Simulation.law_wgsl, `fn g_at(j: u32, r: f32) -> f32 {`, `  let rmax: f32 = GI[12u * j];`, `  let T: u32 = P[2];`, `  let base: u32 = j * T;`, `  let u: f32 = r / rmax * f32(T);`, `  if (u <= 1.0) { return GT[base] * u; }`, `  if (u >= f32(T)) {`, `    let q: f32 = rmax / r;`, `    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);`, `  }`, `  let t0: u32 = u32(floor(u)) - 1u;`, `  let fr: f32 = u - floor(u);`, `  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;`, `}`, `${Simulation.ENTRY} START${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let k: u32 = 10u * i;`, `  let r0: f32 = S[k];`, `  let phi: f32 = S[k + 1u];`, `  let sig: f32 = GI[12u * j + 9u];`, `  let g: f32 = g_at(j, r0);`, `  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];`, `  let vr: f32 = sig * S[k + 3u];`, `  let c: f32 = cos(phi);`, `  let s: f32 = sin(phi);`, `  S[k] = r0 * c;`, `  S[k + 1u] = r0 * s;`, `  S[k + 2u] = vr * c - vp * s;`, `  S[k + 3u] = vr * s + vp * c;`, `  S[k + 4u] = 0.0 - g * c;`, `  S[k + 5u] = 0.0 - g * s;`, `  S[k + 6u] = 0.0;`, `  S[k + 7u] = 0.0;`, `  S[k + 8u] = 0.0;`, `}`, `${Simulation.ENTRY} STEP${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let b: u32 = 12u * j;`, `  let dt: f32 = GI[b + 1u];`, `  let n: u32 = u32(GI[b + 2u]);`, `  let avg_from: u32 = u32(GI[b + 3u]);`, `  let film: f32 = GI[b + 4u];`, `  let every: u32 = max(u32(GI[b + 7u]), 1u);`, `  let ffrom: u32 = u32(GI[b + 8u]);`, `  let k: u32 = 10u * i;`, `  var x: f32 = S[k];`, `  var y: f32 = S[k + 1u];`, `  var vx: f32 = S[k + 2u];`, `  var vy: f32 = S[k + 3u];`, `  var ax: f32 = S[k + 4u];`, `  var ay: f32 = S[k + 5u];`, `  var sr: f32 = S[k + 6u];`, `  var sv: f32 = S[k + 7u];`, `  var sn: f32 = S[k + 8u];`, `  let stop: u32 = min(P[4], n);`, `  for (var t: u32 = P[3]; t < stop; t = t + 1u) {`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    x = x + vx * dt;`, `    y = y + vy * dt;`, `    let r: f32 = max(sqrt(x * x + y * y), 1e-6);`, `    let g: f32 = g_at(j, r);`, `    ax = 0.0 - g * x / r;`, `    ay = 0.0 - g * y / r;`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    if (t >= avg_from) {`, `      sr = sr + r;`, `      sv = sv + (x * vy - y * vx) / r;`, `      sn = sn + 1.0;`, `    }`, `    let kk: u32 = t + 1u;`, `    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {`, `      let fr: u32 = (kk - ffrom) / every - 1u;`, `      if (fr < P[5]) {`, `        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;`, `        F[o] = x;`, `        F[o + 1u] = y;`, `      }`, `    }`, `  }`, `  S[k] = x;`, `  S[k + 1u] = y;`, `  S[k + 2u] = vx;`, `  S[k + 3u] = vy;`, `  S[k + 4u] = ax;`, `  S[k + 5u] = ay;`, `  S[k + 6u] = sr;`, `  S[k + 7u] = sv;`, `  S[k + 8u] = sn;`, `}`].join(`\n`);
+    return [`// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> GT: array<f32>;`, `@group(0) @binding(3) var<storage, read> GI: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> S: array<f32>;`, `@group(0) @binding(5) var<storage, read_write> F: array<f32>;`, `fn g_at(j: u32, r: f32) -> f32 {`, `  let rmax: f32 = GI[12u * j];`, `  let T: u32 = P[2];`, `  let base: u32 = j * T;`, `  let u: f32 = r / rmax * f32(T);`, `  if (u <= 1.0) { return GT[base] * u; }`, `  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }`, `  let t0: u32 = u32(floor(u)) - 1u;`, `  let fr: f32 = u - floor(u);`, `  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;`, `}`, `${Simulation.ENTRY} START${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let k: u32 = 10u * i;`, `  let r0: f32 = S[k];`, `  let phi: f32 = S[k + 1u];`, `  let sig: f32 = GI[12u * j + 9u];`, `  let g: f32 = g_at(j, r0);`, `  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];`, `  let vr: f32 = sig * S[k + 3u];`, `  let c: f32 = cos(phi);`, `  let s: f32 = sin(phi);`, `  S[k] = r0 * c;`, `  S[k + 1u] = r0 * s;`, `  S[k + 2u] = vr * c - vp * s;`, `  S[k + 3u] = vr * s + vp * c;`, `  S[k + 4u] = 0.0 - g * c;`, `  S[k + 5u] = 0.0 - g * s;`, `  S[k + 6u] = 0.0;`, `  S[k + 7u] = 0.0;`, `  S[k + 8u] = 0.0;`, `}`, `${Simulation.ENTRY} STEP${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let j: u32 = i / P[1];`, `  let b: u32 = 12u * j;`, `  let dt: f32 = GI[b + 1u];`, `  let n: u32 = u32(GI[b + 2u]);`, `  let avg_from: u32 = u32(GI[b + 3u]);`, `  let film: f32 = GI[b + 4u];`, `  let every: u32 = max(u32(GI[b + 7u]), 1u);`, `  let ffrom: u32 = u32(GI[b + 8u]);`, `  let k: u32 = 10u * i;`, `  var x: f32 = S[k];`, `  var y: f32 = S[k + 1u];`, `  var vx: f32 = S[k + 2u];`, `  var vy: f32 = S[k + 3u];`, `  var ax: f32 = S[k + 4u];`, `  var ay: f32 = S[k + 5u];`, `  var sr: f32 = S[k + 6u];`, `  var sv: f32 = S[k + 7u];`, `  var sn: f32 = S[k + 8u];`, `  let stop: u32 = min(P[4], n);`, `  for (var t: u32 = P[3]; t < stop; t = t + 1u) {`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    x = x + vx * dt;`, `    y = y + vy * dt;`, `    let r: f32 = max(sqrt(x * x + y * y), 1e-6);`, `    let g: f32 = g_at(j, r);`, `    ax = 0.0 - g * x / r;`, `    ay = 0.0 - g * y / r;`, `    vx = vx + 0.5 * ax * dt;`, `    vy = vy + 0.5 * ay * dt;`, `    if (t >= avg_from) {`, `      sr = sr + r;`, `      sv = sv + (x * vy - y * vx) / r;`, `      sn = sn + 1.0;`, `    }`, `    let kk: u32 = t + 1u;`, `    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {`, `      let fr: u32 = (kk - ffrom) / every - 1u;`, `      if (fr < P[5]) {`, `        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;`, `        F[o] = x;`, `        F[o + 1u] = y;`, `      }`, `    }`, `  }`, `  S[k] = x;`, `  S[k + 1u] = y;`, `  S[k + 2u] = vx;`, `  S[k + 3u] = vy;`, `  S[k + 4u] = ax;`, `  S[k + 5u] = ay;`, `  S[k + 6u] = sr;`, `  S[k + 7u] = sv;`, `  S[k + 8u] = sn;`, `}`].join(`\n`);
   }
   static get runnable(): number[] {
     let C = Sparc.curves.columns;
@@ -13807,6 +13825,163 @@ export class Simulation extends Node {
       })));
     };
   }
+  get on(): Felt { return this.read("on", () => new Felt({  })); }
+  set on(v: Felt) { this.write("on", v); }
+  unit_of(j: number): number {
+    return div(elem(elem(elem(this.rows, j), sub(elem(this.rows, j).length, 1)), 0), 10);
+  }
+  grid_of(j: number): number[][] {
+    let F = this.on;
+    let L = this.unit_of(j);
+    let es = elem(this.edges, j);
+    let n = sub(es.length, 1);
+    let wd = elem(this.w_discs, j);
+    let wg = elem(this.w_gases, j);
+    let rs = elem(this.rows, j);
+    let t = elem(this.thick, j);
+    let rings = [];
+    for (let a = 0; a < n; a++) {
+      let area = sub(mul(elem(es, add(a, 1)), elem(es, add(a, 1))), mul(elem(es, a), elem(es, a)));
+      for (let k = 0; k < Simulation.RINGS_IN; k++) {
+        let r0 = add(elem(es, a), div(mul((sub(elem(es, add(a, 1)), elem(es, a))), k), Simulation.RINGS_IN));
+        let r1 = add(elem(es, a), div(mul((sub(elem(es, add(a, 1)), elem(es, a))), add(k, 1)), Simulation.RINGS_IN));
+        let soft = div((sub(r1, r0)), 2);
+        push(rings, [div((add(r0, r1)), 2), (gt(area, 0) ? div((sub(mul(r1, r1), mul(r0, r0))), area) : 0), a, add(mul(t, t), mul(soft, soft))]);
+      };
+    };
+    let md = wd.reduce(((m: any, v: any) => {
+      return add(m, v);
+    }), 0);
+    let mg = wg.reduce(((m: any, v: any) => {
+      return add(m, v);
+    }), 0);
+    let out = range(6).map(((k: any) => {
+      return filled(F.cells, 0);
+    }));
+    for (let c = 0; c < F.cells; c++) {
+      let i = Math.floor((div(c, Felt.NMU)));
+      let mu = elem(F.mc, mod(c, Felt.NMU));
+      let r = mul(elem(F.rc, i), L);
+      let R = mul(r, Math.sqrt((sub(1, mul(mu, mu)))));
+      let z = mul(r, mu);
+      if (gt(r, mul(Simulation.FAR_OFF, elem(es, n)))) {
+        elem(out, 0)[c] = sub(0, div(mul(md, R), (mul(mul(r, r), r))));
+        elem(out, 1)[c] = sub(0, div(mul(md, z), (mul(mul(r, r), r))));
+        elem(out, 2)[c] = sub(0, div(mul(mg, R), (mul(mul(r, r), r))));
+        elem(out, 3)[c] = sub(0, div(mul(mg, z), (mul(mul(r, r), r))));
+      } else {
+        for (const b of [...rings]) {
+          let g = Felt.ring(R, z, elem(b, 0), 0, elem(b, 3));
+          elem(out, 0)[c] = add(elem(elem(out, 0), c), mul(mul(elem(wd, elem(b, 2)), elem(b, 1)), elem(g, 0)));
+          elem(out, 1)[c] = add(elem(elem(out, 1), c), mul(mul(elem(wd, elem(b, 2)), elem(b, 1)), elem(g, 1)));
+          elem(out, 2)[c] = add(elem(elem(out, 2), c), mul(mul(elem(wg, elem(b, 2)), elem(b, 1)), elem(g, 0)));
+          elem(out, 3)[c] = add(elem(elem(out, 3), c), mul(mul(elem(wg, elem(b, 2)), elem(b, 1)), elem(g, 1)));
+        };
+      }
+      let gb = Simulation.bulge_at(rs, r);
+      elem(out, 4)[c] = sub(0, div(mul(gb, R), r));
+      elem(out, 5)[c] = sub(0, div(mul(gb, z), r));
+    };
+    return out;
+  }
+  made_of(grid: number[][], yd: number, yb: number): number[] {
+    let a = this.a0;
+    let gr = range(this.on.cells).map(((c: any) => {
+      return div((add(add(mul(yd, elem(elem(grid, 0), c)), elem(elem(grid, 2), c)), mul(yb, elem(elem(grid, 4), c)))), a);
+    }));
+    let gz = range(this.on.cells).map(((c: any) => {
+      return div((add(add(mul(yd, elem(elem(grid, 1), c)), elem(elem(grid, 3), c)), mul(yb, elem(elem(grid, 5), c)))), a);
+    }));
+    return this.on.made_rows(gr, gz).map(((v: any) => {
+      return mul(v, a);
+    }));
+  }
+  felt_at(j: number, made: number[], r: number, gN: number): number {
+    return sub(gN, this.on.made_at(made, div(r, this.unit_of(j))));
+  }
+  get grids(): any[] { return this.read("grids", () => []); }
+  set grids(v: any[]) { this.write("grids", v); }
+  get ladder(): number[] { return this.read("ladder", () => []); }
+  set ladder(v: number[]) { this.write("ladder", v); }
+  get ladder_at(): number[] { return this.read("ladder_at", () => []); }
+  set ladder_at(v: number[]) { this.write("ladder_at", v); }
+  rungs(j: number): number {
+    return (this.has_bulge(j) ? Simulation.NB : 1);
+  }
+  get solve_fields() {
+    this.grids = [];
+    this.ladder = [];
+    this.ladder_at = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let grid = this.grid_of(j);
+      push(this.grids, grid);
+      push(this.ladder_at, this.ladder.length);
+      let kept = range(elem(this.rows, j).length).filter(((i: any) => {
+        return gt(elem(elem(elem(this.rows, j), i), 6), 0);
+      }));
+      for (let ib = 0; ib < this.rungs(j); ib++) {
+        let yb = Math.pow(10, (this.rung_b(ib)));
+        for (let iy = 0; iy < Simulation.NY; iy++) {
+          let yd = Math.pow(10, (this.rung_y(iy)));
+          let made = this.made_of(grid, yd, yb);
+          for (const i of [...kept]) {
+            let p = elem(elem(this.at_rows, j), i);
+            push(this.ladder, this.felt_at(j, made, elem(elem(elem(this.rows, j), i), 0), add(add(mul(yd, elem(p, 0)), mul(yb, elem(p, 2))), elem(p, 1))));
+          };
+        };
+      };
+    };
+  }
+  rung_y(iy: number): number {
+    return add(Fmt.log10(Sparc.YD), mul(Simulation.RUNG_Y, (sub(iy, div(sub(Simulation.NY, 1), 2)))));
+  }
+  rung_b(ib: number): number {
+    return add(Fmt.log10(Sparc.YB), mul(Simulation.RUNG_B, (sub(ib, div(sub(Simulation.NB, 1), 2)))));
+  }
+  laddered(j: number, k: number, ly: number, lb: number): number {
+    let count = elem(this.rows, j).filter(((row: any) => {
+      return gt(elem(row, 6), 0);
+    })).length;
+    let uy = Fmt.min(Fmt.max(div((sub(ly, this.rung_y(0))), Simulation.RUNG_Y), 0), sub(sub(Simulation.NY, 1), 0.0001));
+    let ky = Math.floor(uy);
+    let fy = sub(uy, ky);
+    let nb = this.rungs(j);
+    let ub = (gt(nb, 1) ? Fmt.min(Fmt.max(div((sub(lb, this.rung_b(0))), Simulation.RUNG_B), 0), sub(sub(nb, 1), 0.0001)) : 0);
+    let kb = Math.floor(ub);
+    let fb = sub(ub, kb);
+    let kb1 = Fmt.min(add(kb, 1), sub(nb, 1));
+    let at = ((b: number, y: number) => {
+      return elem(this.ladder, add(add(elem(this.ladder_at, j), mul((add(mul(b, Simulation.NY), y)), count)), k));
+    });
+    let lo = add(mul((sub(1, fy)), at(kb, ky)), mul(fy, at(kb, add(ky, 1))));
+    let hi = add(mul((sub(1, fy)), at(kb1, ky)), mul(fy, at(kb1, add(ky, 1))));
+    return add(mul((sub(1, fb)), lo), mul(fb, hi));
+  }
+  solved_points(yd: number[], yb: number[]): number[] {
+    let measured = [];
+    let tabled = [];
+    for (let j = 0; j < this.ids.length; j++) {
+      let made = this.made_of(elem(this.grids, j), elem(yd, j), elem(yb, j));
+      for (let i = 0; i < elem(this.rows, j).length; i++) {
+        let p = elem(elem(this.at_rows, j), i);
+        push(measured, this.felt_at(j, made, elem(elem(elem(this.rows, j), i), 0), add(add(mul(elem(yd, j), elem(p, 0)), mul(elem(yb, j), elem(p, 2))), elem(p, 1))));
+      };
+      for (const t of [...elem(this.tables, j)]) {
+        push(tabled, this.felt_at(j, made, elem(t, 0), add(add(mul(elem(yd, j), elem(t, 1)), mul(elem(yb, j), elem(t, 3))), elem(t, 2))));
+      };
+    };
+    return measured.concat(tabled);
+  }
+  get own_y(): number[] {
+    return this.ids.map(((g: any) => {
+      return Sparc.YD;
+    }));
+  }
+  get own_b(): number[] {
+    return this.ids.map(((g: any) => {
+      return Sparc.YB;
+    }));
+  }
   static lift_coefficients(theory: Theory, deg: number): number[] {
     let model = new Model({ theory: theory });
     let e = model.settled(deg);
@@ -13978,7 +14153,7 @@ export class Simulation extends Node {
     return Simulation.laid(range(this.ids.length).map(((j: any) => {
       let g = elem(this.ids, j);
       let stop = (lt(add(j, 1), this.ids.length) ? elem(this.fit_at, add(j, 1)) : Math.floor((div(pts.length, 8))));
-      return [elem(this.fit_at, j), sub(stop, elem(this.fit_at, j)), elem(S[`D`], g), elem(S[`e_D`], g), elem(S[`Inc`], g), elem(S[`e_Inc`], g), this.a0, (this.has_bulge(j) ? 1 : 0), elem(this.centre_y, j), elem(this.centre_b, j), elem(this.centre_d, j), elem(this.centre_i, j), mul(Simulation.STEP_Y, this.spacing), mul(Simulation.STEP_D, this.spacing), mul(Simulation.STEP_I, this.spacing), 0];
+      return [elem(this.fit_at, j), sub(stop, elem(this.fit_at, j)), elem(S[`D`], g), elem(S[`e_D`], g), elem(S[`Inc`], g), elem(S[`e_Inc`], g), this.a0, (this.has_bulge(j) ? 1 : 0), elem(this.centre_y, j), elem(this.centre_b, j), elem(this.centre_d, j), elem(this.centre_i, j), mul(Simulation.STEP_Y, this.spacing), mul(Simulation.STEP_D, this.spacing), mul(Simulation.STEP_I, this.spacing), elem(this.ladder_at, j)];
     })));
   }
   combo(j: number, c: number, n: number): number[] {
@@ -14001,18 +14176,17 @@ export class Simulation extends Node {
     if (((le(elem(at, 2), 0) || le(elem(at, 3), 0.5)) || gt(elem(at, 3), 90))) {
       return mul((-1), Math.pow(10, 30));
     }
-    let YD = Math.pow(10, elem(at, 0));
-    let YB = Math.pow(10, elem(at, 1));
     let f = div(elem(at, 2), D);
     let s = div(Math.sin((div(mul(inc, Math.PI), 180))), Math.sin((div(mul(elem(at, 3), Math.PI), 180))));
     let chi = 0;
+    let k = 0;
     for (let i = 0; i < elem(this.rows, j).length; i++) {
       let row = elem(elem(this.rows, j), i);
       if (gt(elem(row, 6), 0)) {
-        let p = elem(elem(this.at_rows, j), i);
-        let vm = Math.sqrt(Fmt.max(mul(mul(f, elem(row, 0)), this.felt(add(add(mul(YD, elem(p, 0)), mul(YB, elem(p, 2))), elem(p, 1)))), 0));
+        let vm = Math.sqrt(Fmt.max(mul(mul(f, elem(row, 0)), this.laddered(j, k, elem(at, 0), elem(at, 1))), 0));
         let d = div((sub(mul(elem(row, 1), s), vm)), (mul(elem(row, 2), s)));
         chi = add(chi, mul(d, d));
+        k = add(k, 1);
       }
     };
     let py = div((sub(elem(at, 0), Fmt.log10(Sparc.YD))), Simulation.PRIOR_Y);
@@ -14393,7 +14567,7 @@ export class Simulation extends Node {
     extra[`rms1`] = rms1;
     extra[`repro`] = this.repro;
     extra[`stir`] = Simulation.SIGMA;
-    extra[`about`] = `every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex`;
+    extra[`about`] = `every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex`;
     Measure.save(`galaxy.simulated`, names, cols, extra);
     let fields = ({});
     let fnames = [`galaxy`, `r`, `gd`, `gg`, `gb`, `v0`, `v1`, `vN`];
@@ -14419,7 +14593,7 @@ export class Simulation extends Node {
     let fextra = ({});
     fextra[`ids`] = this.ids;
     fextra[`table`] = T;
-    fextra[`about`] = `the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)`;
+    fextra[`about`] = `the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)`;
     Measure.save(`galaxy.fields`, fnames, fields, fextra);
     if (!((this.film_ids.length === 0))) {
       let film = ({});
@@ -14628,8 +14802,53 @@ export class Formed extends Node {
   static RINGS = 48;
   static DISCS = [[10.7, 3], [9.3, 2]];
   static WHAT = [`a bright disc`, `a dwarf`];
+  static REFRESH = 10;
   get a0(): number { return this.read("a0", () => div(Galaxies.a0_at(this.deg), Simulation.UNIT_G)); }
   set a0(v: number) { this.write("a0", v); }
+  get on(): Felt { return this.read("on", () => new Felt({  })); }
+  set on(v: Felt) { this.write("on", v); }
+  get made_now(): number[] { return this.read("made_now", () => []); }
+  set made_now(v: number[]) { this.write("made_now", v); }
+  made_tables(state: number[]): number[] {
+    let head = [];
+    let tabs = [];
+    for (let g = 0; g < this.discs_n; g++) {
+      let rd = this.scale(g);
+      let cx = 0;
+      let cy = 0;
+      for (let k = 0; k < Formed.N; k++) {
+        cx = add(cx, div(elem(state, mul(4, (add(mul(g, Formed.N), k)))), Formed.N));
+        cy = add(cy, div(elem(state, add(mul(4, (add(mul(g, Formed.N), k))), 1)), Formed.N));
+      };
+      let xy = [];
+      for (let k = 0; k < Formed.N; k++) {
+        push(xy, div((sub(elem(state, mul(4, (add(mul(g, Formed.N), k)))), cx)), rd));
+        push(xy, div((sub(elem(state, add(mul(4, (add(mul(g, Formed.N), k))), 1)), cy)), rd));
+      };
+      let table = (this.newton ? filled(mul(mul(Felt.NR, Felt.NPHI), 2), 0) : this.on.round_made(xy, div(div(this.GM(g), Formed.N), (mul(mul(this.a0, rd), rd))), Simulation.SHAPE_H));
+      for (const v of [...[cx, cy, rd, (this.newton ? 0 : this.a0)]]) {
+        push(head, v);
+      };
+      for (const v of [...table]) {
+        push(tabs, v);
+      };
+    };
+    this.made_now = head.concat(tabs);
+    return this.made_now;
+  }
+  made_at(g: number, x: number, y: number): number[] {
+    let M = this.made_now;
+    let n = mul(mul(Felt.NR, Felt.NPHI), 2);
+    let a = elem(M, add(mul(4, g), 3));
+    if (le(a, 0)) {
+      return [0, 0];
+    }
+    let table = range(n).map(((q: any) => {
+      return elem(M, add(add(mul(4, this.discs_n), mul(g, n)), q));
+    }));
+    let got = this.on.round_at(table, div((sub(x, elem(M, mul(4, g)))), elem(M, add(mul(4, g), 2))), div((sub(y, elem(M, add(mul(4, g), 1)))), elem(M, add(mul(4, g), 2))));
+    return [mul(elem(got, 0), a), mul(elem(got, 1), a)];
+  }
   get newton(): boolean { return this.read("newton", () => false); }
   set newton(v: boolean) { this.write("newton", v); }
   get scale_a0(): number {
@@ -14704,8 +14923,10 @@ export class Formed extends Node {
     let gx = mul(m, sx);
     let gy = mul(m, sy);
     let mag = Fmt.hypot(gx, gy);
-    let f = (gt(mag, 0) ? ((this.newton ? mag : Law.boost(mag, this.a0))) : 0);
-    return (gt(mag, 0) ? [mul(div(gx, mag), f), mul(div(gy, mag), f), mag, f] : [0, 0, 0, 0]);
+    let more = this.made_at(g, px, py);
+    let ax = add(gx, elem(more, 0));
+    let ay = add(gy, elem(more, 1));
+    return [ax, ay, mag, Fmt.hypot(ax, ay)];
   }
   launch(state: number[], acc: number[]): number[] {
     let rng = new Random({ seed: 29 });
@@ -14839,11 +15060,19 @@ export class Formed extends Node {
     extra[`middles`] = this.middles;
     extra[`deg`] = this.deg;
     extra[`a0`] = mul(this.a0, Simulation.UNIT_G);
-    extra[`about`] = `discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy`;
+    extra[`about`] = `discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy`;
     return Measure.save(`galaxy.formed`, [`density`], cols, extra);
   }
   static get kernel(): string {
-    return [`// GENERATED from Formed.ray: stars that pull each other through the law`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> L: array<f32>;`, `@group(0) @binding(2) var<storage, read> C: array<f32>;`, `@group(0) @binding(3) var<storage, read_write> X: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> A: array<f32>;`, `var<workgroup> tile: array<vec2<f32>, ${Formed.TILE}>;`, Simulation.law_wgsl, `@compute @workgroup_size(${Formed.TILE}) fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {`, `  let i: u32 = P[7] + gid.x;`, `  let per: u32 = P[1];`, `  let g: u32 = i / per;`, `  let base: u32 = g * per;`, `  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);`, `  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];`, `  var s: vec2<f32> = vec2<f32>(0.0, 0.0);`, `  for (var t: u32 = 0u; t < per; t = t + ${Formed.TILE}u) {`, `    let j: u32 = base + t + lid.x;`, `    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);`, `    workgroupBarrier();`, `    for (var k: u32 = 0u; k < ${Formed.TILE}u; k = k + 1u) {`, `      let d: vec2<f32> = tile[k] - me;`, `      let inv: f32 = inverseSqrt(dot(d, d) + e2);`, `      s = s + d * (inv * inv * inv);`, `    }`, `    workgroupBarrier();`, `  }`, `  let gN: vec2<f32> = C[4u * g] * s;`, `  let mag: f32 = length(gN);`, `  var a: vec2<f32> = vec2<f32>(0.0, 0.0);`, `  var f: f32 = 0.0;`, `  if (mag > 0.0) {`, `    f = mag;`, `    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }`, `    a = gN / mag * f;`, `  }`, `  A[4u * i] = a.x;`, `  A[4u * i + 1u] = a.y;`, `  A[4u * i + 2u] = mag;`, `  A[4u * i + 3u] = f;`, `}`, `${Simulation.ENTRY} KICKDRIFT${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;`, `  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;`, `}`, `${Simulation.ENTRY} KICK${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `}`].join(`\n`);
+    let F = new Felt({  });
+    let r0 = Shaded.literal(elem(F.rc, 0));
+    let step = Shaded.literal(F.step);
+    let topr = Shaded.literal(sub(sub(Felt.NR, 1), 0.0001));
+    let tau = Shaded.literal((2 * Math.PI));
+    let dphi = Shaded.literal(F.dphi);
+    let np = Felt.NPHI;
+    let nr = Felt.NR;
+    return [`// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)`, `@group(0) @binding(0) var<storage, read> P: array<u32>;`, `@group(0) @binding(1) var<storage, read> M: array<f32>;`, `@group(0) @binding(2) var<storage, read> C: array<f32>;`, `@group(0) @binding(3) var<storage, read_write> X: array<f32>;`, `@group(0) @binding(4) var<storage, read_write> A: array<f32>;`, `var<workgroup> tile: array<vec2<f32>, ${Formed.TILE}>;`, `fn made(g: u32, at: vec2<f32>) -> vec2<f32> {`, `  let a: f32 = M[4u * g + 3u];`, `  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }`, `  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];`, `  let r: f32 = length(d);`, `  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }`, `  let u: f32 = clamp(log(r / ${r0}) / ${step}, 0.0, ${topr});`, `  let i0: u32 = u32(floor(u));`, `  let fu: f32 = u - floor(u);`, `  var ph: f32 = atan2(d.y, d.x);`, `  if (ph < 0.0) { ph = ph + ${tau}; }`, `  var v: f32 = ph / ${dphi} - 0.5;`, `  if (v < 0.0) { v = v + ${np}.0; }`, `  let k0: u32 = u32(floor(v)) % ${np}u;`, `  let fv: f32 = v - floor(v);`, `  let k1: u32 = (k0 + 1u) % ${np}u;`, `  let t: u32 = 4u * P[2] + g * ${nr}u * ${np}u * 2u;`, `  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ${np}u + k0)], M[t + 2u * (i0 * ${np}u + k0) + 1u]);`, `  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ${np}u + k1)], M[t + 2u * (i0 * ${np}u + k1) + 1u]);`, `  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ${np}u + k0)], M[t + 2u * ((i0 + 1u) * ${np}u + k0) + 1u]);`, `  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ${np}u + k1)], M[t + 2u * ((i0 + 1u) * ${np}u + k1) + 1u]);`, `  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);`, `  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;`, `}`, `@compute @workgroup_size(${Formed.TILE}) fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {`, `  let i: u32 = P[7] + gid.x;`, `  let per: u32 = P[1];`, `  let g: u32 = i / per;`, `  let base: u32 = g * per;`, `  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);`, `  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];`, `  var s: vec2<f32> = vec2<f32>(0.0, 0.0);`, `  for (var t: u32 = 0u; t < per; t = t + ${Formed.TILE}u) {`, `    let j: u32 = base + t + lid.x;`, `    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);`, `    workgroupBarrier();`, `    for (var k: u32 = 0u; k < ${Formed.TILE}u; k = k + 1u) {`, `      let d: vec2<f32> = tile[k] - me;`, `      let inv: f32 = inverseSqrt(dot(d, d) + e2);`, `      s = s + d * (inv * inv * inv);`, `    }`, `    workgroupBarrier();`, `  }`, `  let gN: vec2<f32> = C[4u * g] * s;`, `  let mag: f32 = length(gN);`, `  let a: vec2<f32> = gN + made(g, me);`, `  let f: f32 = length(a);`, `  A[4u * i] = a.x;`, `  A[4u * i + 1u] = a.y;`, `  A[4u * i + 2u] = mag;`, `  A[4u * i + 3u] = f;`, `}`, `${Simulation.ENTRY} KICKDRIFT${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;`, `  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;`, `}`, `${Simulation.ENTRY} KICK${Simulation.ID}`, Simulation.THREAD, `  if (i >= P[0]) { return; }`, `  let dt: f32 = C[4u * (i / P[1]) + 3u];`, `  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;`, `  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;`, `}`].join(`\n`);
   }
 }
 
@@ -15152,6 +15381,7 @@ export class Felt extends Node {
   static MIDDLE = [0, 0.2, 0.5];
   static GAS = [[0, 1], [0.5, 2], [0.5, 3], [0.9, 2], [0.9, 3]];
   static FREEDOMS = [`mass`, `thickness`, `middle`, `gas`];
+  static NPHI = 16;
   static LADDER = [(-6.5), 5.5, 193];
   get step(): number {
     return div(Math.log((div(Felt.R1, Felt.R0))), Felt.NR);
@@ -15319,6 +15549,9 @@ export class Felt extends Node {
   get band(): number[] { return this.read("band", () => this.factored); }
   set band(v: number[]) { this.write("band", v); }
   get factored(): number[] {
+    return this.factored_with(filled(this.cells, 0));
+  }
+  factored_with(extra: number[]): number[] {
     let n = this.cells;
     let B = Felt.NMU;
     let W = this.width;
@@ -15327,7 +15560,7 @@ export class Felt extends Node {
       let i = Math.floor((div(k, B)));
       let j = mod(k, B);
       let f = elem(this.faces, k);
-      m[add(mul(k, W), B)] = add(add(add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3));
+      m[add(mul(k, W), B)] = add(add(add(add(elem(f, 0), elem(f, 1)), elem(f, 2)), elem(f, 3)), elem(extra, k));
       if (lt(add(i, 1), Felt.NR)) {
         m[add(add(mul(k, W), B), B)] = sub(0, elem(f, 0));
       }
@@ -15361,10 +15594,12 @@ export class Felt extends Node {
     return m;
   }
   solve_band(b: number[]): number[] {
+    return this.solve_with(this.band, b);
+  }
+  solve_with(m: number[], b: number[]): number[] {
     let n = this.cells;
     let B = Felt.NMU;
     let W = this.width;
-    let m = this.band;
     let x = b.map(((v: any) => {
       return v;
     }));
@@ -15393,20 +15628,18 @@ export class Felt extends Node {
   static over(gN: number): number {
     return (gt(gN, 0) ? add(0.5, Math.sqrt((add(0.25, div(1, gN))))) : 1);
   }
-  felt(shape: number[][], s: number): number[][] {
+  made_rows(gr: number[], gz: number[]): number[] {
     let n = this.cells;
     let B = Felt.NMU;
     let wr = filled(n, 0);
     let wm = filled(n, 0);
     for (let c = 0; c < n; c++) {
       let j = mod(c, B);
-      let gr = mul(s, elem(elem(shape, 0), c));
-      let gz = mul(s, elem(elem(shape, 1), c));
-      let f = sub(Felt.over(Fmt.hypot(gr, gz)), 1);
+      let f = sub(Felt.over(Fmt.hypot(elem(gr, c), elem(gz, c))), 1);
       let mu = elem(this.mc, j);
       let st = Math.sqrt((sub(1, mul(mu, mu))));
-      wr[c] = mul(f, (add(mul(gr, st), mul(gz, mu))));
-      wm[c] = mul(f, (sub(mul(gz, st), mul(gr, mu))));
+      wr[c] = mul(f, (add(mul(elem(gr, c), st), mul(elem(gz, c), mu))));
+      wm[c] = mul(f, (sub(mul(elem(gz, c), st), mul(elem(gr, c), mu))));
     };
     let rhs = filled(n, 0);
     for (let c = 0; c < n; c++) {
@@ -15422,13 +15655,216 @@ export class Felt extends Node {
       rhs[c] = (gt(i, 0) ? sub(made, mul(mul(mul(mul(mul(fi, 2), Math.PI), elem(this.re, i)), elem(this.re, i)), dmu)) : made);
     };
     let psi = this.solve_band(rhs);
+    return range(Felt.NR).map(((i: any) => {
+      return ((gt(i, 0) && lt(add(i, 1), Felt.NR)) ? sub(0, div((sub(elem(psi, mul((add(i, 1)), B)), elem(psi, mul((sub(i, 1)), B)))), (sub(elem(this.rc, add(i, 1)), elem(this.rc, sub(i, 1)))))) : 0);
+    }));
+  }
+  get dphi(): number {
+    return div((2 * Math.PI), Felt.NPHI);
+  }
+  get waves(): number {
+    return add(Math.floor((div(Felt.NPHI, 2))), 1);
+  }
+  get around(): number[] { return this.read("around", () => range(this.cells).map(((c: any) => {
+    let i = Math.floor((div(c, Felt.NMU)));
+    let j = mod(c, Felt.NMU);
+    let st = Math.sqrt((sub(1, mul(elem(this.mc, j), elem(this.mc, j)))));
+    let dth = sub(Felt.theta(elem(this.me, j)), Felt.theta(elem(this.me, add(j, 1))));
+    return div(mul(mul(mul(2, Math.PI), (sub(elem(this.re, add(i, 1)), elem(this.re, i)))), dth), (mul(mul(st, this.dphi), this.dphi)));
+  }))); }
+  set around(v: number[]) { this.write("around", v); }
+  static theta(mu: number): number {
+    return Math.atan2(Math.sqrt((sub(1, mul(mu, mu)))), mu);
+  }
+  get wave_bands(): any[] { return this.read("wave_bands", () => range(this.waves).map(((m: any) => {
+    return (eq(m, 0) ? this.band : this.factored_with(this.around.map(((a: any) => {
+      return mul(a, (sub(2, mul(2, Math.cos((mul(m, this.dphi)))))));
+    }))));
+  }))); }
+  set wave_bands(v: any[]) { this.write("wave_bands", v); }
+  get cosines(): number[] { return this.read("cosines", () => range(mul(Felt.NPHI, Felt.NPHI)).map(((q: any) => {
+    return Math.cos((mul(mul(this.dphi, Math.floor((div(q, Felt.NPHI)))), mod(q, Felt.NPHI))));
+  }))); }
+  set cosines(v: number[]) { this.write("cosines", v); }
+  get sines(): number[] { return this.read("sines", () => range(mul(Felt.NPHI, Felt.NPHI)).map(((q: any) => {
+    return Math.sin((mul(mul(this.dphi, Math.floor((div(q, Felt.NPHI)))), mod(q, Felt.NPHI))));
+  }))); }
+  set sines(v: number[]) { this.write("sines", v); }
+  solve_round(b: number[]): number[] {
+    let n = this.cells;
+    let P = Felt.NPHI;
+    let x = filled(mul(n, P), 0);
+    for (let m = 0; m < this.waves; m++) {
+      let a = range(n).map(((c: any) => {
+        return range(P).reduce(((t: any, k: any) => {
+          return add(t, mul(elem(b, add(mul(c, P), k)), elem(this.cosines, add(mul(m, P), k))));
+        }), 0);
+      }));
+      let s = range(n).map(((c: any) => {
+        return range(P).reduce(((t: any, k: any) => {
+          return add(t, mul(elem(b, add(mul(c, P), k)), elem(this.sines, add(mul(m, P), k))));
+        }), 0);
+      }));
+      let ya = this.solve_with(elem(this.wave_bands, m), a);
+      let ys = this.solve_with(elem(this.wave_bands, m), s);
+      let weight = div((((eq(m, 0) || eq(mul(2, m), P)) ? 1 : 2)), P);
+      for (let c = 0; c < n; c++) {
+        for (let k = 0; k < P; k++) {
+          x[add(mul(c, P), k)] = add(elem(x, add(mul(c, P), k)), mul(weight, (add(mul(elem(ya, c), elem(this.cosines, add(mul(m, P), k))), mul(elem(ys, c), elem(this.sines, add(mul(m, P), k)))))));
+        };
+      };
+    };
+    return x;
+  }
+  layers(r: number, h: number): number[] {
+    let raw = range(Felt.NMU).map(((j: any) => {
+      return sub(Math.exp((sub(0, div(mul(r, elem(this.me, j)), h)))), Math.exp((sub(0, div(mul(r, elem(this.me, add(j, 1))), h)))));
+    }));
+    let held = raw.reduce(((t: any, v: any) => {
+      return add(t, v);
+    }), 0);
+    return raw.map(((v: any) => {
+      return (gt(held, 0) ? div(v, held) : 0);
+    }));
+  }
+  round_made(xy: number[], s: number, h: number): number[] {
+    let n = this.cells;
+    let P = Felt.NPHI;
+    let B = Felt.NMU;
+    let dp = this.dphi;
+    let rho = filled(mul(n, P), 0);
+    let lay = range(Felt.NR).map(((i: any) => {
+      return this.layers(elem(this.rc, i), h);
+    }));
+    for (let q = 0; q < Math.floor((div(xy.length, 2))); q++) {
+      let x = elem(xy, mul(2, q));
+      let y = elem(xy, add(mul(2, q), 1));
+      let r = Fmt.hypot(x, y);
+      let u = Fmt.min(Fmt.max(div(Math.log((div(r, elem(this.rc, 0)))), this.step), 0), sub(sub(Felt.NR, 1), 0.000001));
+      let i0 = Math.floor(u);
+      let fu = sub(u, i0);
+      let ph = Math.atan2(y, x);
+      let v = sub(div(((lt(ph, 0) ? add(ph, (2 * Math.PI)) : ph)), dp), 0.5);
+      if (lt(v, 0)) {
+        v = add(v, P);
+      }
+      let k0 = mod(Math.floor(v), P);
+      let fv = sub(v, Math.floor(v));
+      let k1 = mod((add(k0, 1)), P);
+      for (const rw of [...[[i0, sub(1, fu)], [add(i0, 1), fu]]]) {
+        if (gt(elem(rw, 1), 0)) {
+          for (let j = 0; j < B; j++) {
+            let m = mul(mul(div(s, 2), elem(rw, 1)), elem(elem(lay, elem(rw, 0)), j));
+            let c = add(mul(elem(rw, 0), B), j);
+            rho[add(mul(c, P), k0)] = add(elem(rho, add(mul(c, P), k0)), mul(m, (sub(1, fv))));
+            rho[add(mul(c, P), k1)] = add(elem(rho, add(mul(c, P), k1)), mul(m, fv));
+          };
+        }
+      };
+    };
+    let phi = this.solve_round(rho.map(((m: any) => {
+      return sub(0, div(mul(mul(mul(4, Math.PI), m), (2 * Math.PI)), dp));
+    })));
+    let at = ((i: number, j: number, k: number) => {
+      return elem(phi, add(mul((add(mul(i, B), j)), P), mod((add(k, P)), P)));
+    });
+    let wr = filled(mul(n, P), 0);
+    let wm = filled(mul(n, P), 0);
+    let wp = filled(mul(n, P), 0);
+    for (let c = 0; c < n; c++) {
+      let i = Math.floor((div(c, B)));
+      let j = mod(c, B);
+      let r = elem(this.rc, i);
+      let st = Math.sqrt((sub(1, mul(elem(this.mc, j), elem(this.mc, j)))));
+      for (let k = 0; k < P; k++) {
+        let lo = Fmt.max(sub(i, 1), 0);
+        let hi = Fmt.min(add(i, 1), sub(Felt.NR, 1));
+        let gr = sub(0, div((sub(at(hi, j, k), at(lo, j, k))), (sub(elem(this.rc, hi), elem(this.rc, lo)))));
+        let below = (gt(j, 0) ? at(i, sub(j, 1), k) : at(i, 0, k));
+        let mb = (gt(j, 0) ? elem(this.mc, sub(j, 1)) : sub(0, elem(this.mc, 0)));
+        let top = Fmt.min(add(j, 1), sub(B, 1));
+        let gm = sub(0, div(mul(div(st, r), (sub(at(i, top, k), below))), (sub(elem(this.mc, top), mb))));
+        let gp = sub(0, div((sub(at(i, j, add(k, 1)), at(i, j, sub(k, 1)))), (mul(mul(mul(2, dp), r), st))));
+        let f = sub(Felt.over(Fmt.hypot(Fmt.hypot(gr, gm), gp)), 1);
+        wr[add(mul(c, P), k)] = mul(f, gr);
+        wm[add(mul(c, P), k)] = mul(f, gm);
+        wp[add(mul(c, P), k)] = mul(f, gp);
+      };
+    };
+    let made = filled(mul(n, P), 0);
+    for (let c = 0; c < n; c++) {
+      let i = Math.floor((div(c, B)));
+      let j = mod(c, B);
+      let dmu = sub(elem(this.me, add(j, 1)), elem(this.me, j));
+      let dr = sub(elem(this.re, add(i, 1)), elem(this.re, i));
+      let dth = sub(Felt.theta(elem(this.me, j)), Felt.theta(elem(this.me, add(j, 1))));
+      for (let k = 0; k < P; k++) {
+        let e = add(mul(c, P), k);
+        let fo = (lt(add(i, 1), Felt.NR) ? div((add(elem(wr, e), elem(wr, add(e, mul(B, P))))), 2) : elem(wr, e));
+        let fi = (gt(i, 0) ? div((add(elem(wr, sub(e, mul(B, P))), elem(wr, e))), 2) : elem(wr, e));
+        let up = (lt(add(j, 1), B) ? div((add(elem(wm, e), elem(wm, add(e, P)))), 2) : 0);
+        let down = (gt(j, 0) ? div((add(elem(wm, sub(e, P)), elem(wm, e))), 2) : 0);
+        let ahead = div((add(elem(wp, e), elem(wp, add(mul(c, P), mod((add(k, 1)), P))))), 2);
+        let behind = div((add(elem(wp, add(mul(c, P), mod((sub(add(k, P), 1)), P))), elem(wp, e))), 2);
+        let out_ = add(sub(add(mul(mul(mul(mul(mul(fo, 2), Math.PI), elem(this.re, add(i, 1))), elem(this.re, add(i, 1))), dmu), mul(mul(mul(mul(up, 2), Math.PI), (sub(1, mul(elem(this.me, add(j, 1)), elem(this.me, add(j, 1)))))), dr)), mul(mul(mul(mul(down, 2), Math.PI), (sub(1, mul(elem(this.me, j), elem(this.me, j))))), dr)), div(mul(mul(mul(mul((sub(ahead, behind)), (2 * Math.PI)), elem(this.rc, i)), dr), dth), dp));
+        made[e] = (gt(i, 0) ? sub(out_, mul(mul(mul(mul(mul(fi, 2), Math.PI), elem(this.re, i)), elem(this.re, i)), dmu)) : out_);
+      };
+    };
+    let psi = this.solve_round(made);
+    let out = filled(mul(mul(Felt.NR, P), 2), 0);
+    let st0 = Math.sqrt((sub(1, mul(elem(this.mc, 0), elem(this.mc, 0)))));
+    for (let i = 0; i < Felt.NR; i++) {
+      if ((gt(i, 0) && lt(add(i, 1), Felt.NR))) {
+        for (let k = 0; k < P; k++) {
+          out[mul(2, (add(mul(i, P), k)))] = sub(0, div((sub(elem(psi, add(mul(mul((add(i, 1)), B), P), k)), elem(psi, add(mul(mul((sub(i, 1)), B), P), k)))), (sub(elem(this.rc, add(i, 1)), elem(this.rc, sub(i, 1))))));
+          out[add(mul(2, (add(mul(i, P), k))), 1)] = sub(0, div((sub(elem(psi, add(mul(mul(i, B), P), mod((add(k, 1)), P))), elem(psi, add(mul(mul(i, B), P), mod((sub(add(k, P), 1)), P))))), (mul(mul(mul(2, dp), elem(this.rc, i)), st0))));
+        };
+      }
+    };
+    return out;
+  }
+  round_at(table: number[], x: number, y: number): number[] {
+    let P = Felt.NPHI;
+    let r = Fmt.hypot(x, y);
+    if (le(r, 0)) {
+      return [0, 0];
+    }
+    let u = Fmt.min(Fmt.max(div(Math.log((div(r, elem(this.rc, 0)))), this.step), 0), sub(sub(Felt.NR, 1), 0.000001));
+    let i0 = Math.floor(u);
+    let fu = sub(u, i0);
+    let ph = Math.atan2(y, x);
+    let v = sub(div(((lt(ph, 0) ? add(ph, (2 * Math.PI)) : ph)), this.dphi), 0.5);
+    if (lt(v, 0)) {
+      v = add(v, P);
+    }
+    let k0 = mod(Math.floor(v), P);
+    let fv = sub(v, Math.floor(v));
+    let k1 = mod((add(k0, 1)), P);
+    let part = ((q: number) => {
+      return add(mul((sub(1, fu)), (add(mul((sub(1, fv)), elem(table, add(mul(2, (add(mul(i0, P), k0))), q))), mul(fv, elem(table, add(mul(2, (add(mul(i0, P), k1))), q)))))), mul(fu, (add(mul((sub(1, fv)), elem(table, add(mul(2, (add(mul((add(i0, 1)), P), k0))), q))), mul(fv, elem(table, add(mul(2, (add(mul((add(i0, 1)), P), k1))), q)))))));
+    });
+    let outward = part(0);
+    let about = part(1);
+    return [div((sub(mul(outward, x), mul(about, y))), r), div((add(mul(outward, y), mul(about, x))), r)];
+  }
+  made_at(made: number[], r: number): number {
+    let v = Fmt.min(Fmt.max(div(Math.log((div(r, elem(this.rc, 0)))), this.step), 1), sub(sub(Felt.NR, 2), 0.000001));
+    let t = Math.floor(v);
+    let e = sub(v, t);
+    return add(mul((sub(1, e)), elem(made, t)), mul(e, elem(made, add(t, 1))));
+  }
+  felt(shape: number[][], s: number): number[][] {
+    let made = this.made_rows(elem(shape, 0).map(((v: any) => {
+      return mul(s, v);
+    })), elem(shape, 1).map(((v: any) => {
+      return mul(s, v);
+    })));
     let out = [];
     for (let i = 0; i < Felt.NR; i++) {
       let r = elem(this.rc, i);
       if ((((gt(i, 0) && lt(add(i, 1), Felt.NR)) && ge(r, Felt.NEAR)) && le(r, Felt.FAR))) {
-        let made = sub(0, div((sub(elem(psi, mul((add(i, 1)), B)), elem(psi, mul((sub(i, 1)), B)))), (sub(elem(this.rc, add(i, 1)), elem(this.rc, sub(i, 1))))));
         let gN = sub(0, mul(s, elem(elem(shape, 2), i)));
-        push(out, [r, gN, sub(gN, made)]);
+        push(out, [r, gN, sub(gN, elem(made, i))]);
       }
     };
     return out;
@@ -17716,6 +18152,9 @@ export const G = new (class G extends Theory {
   } });
   static "theorem gravity.closing" = new Theorem({ id: "gravity.closing", body: () => {
     return new Asked({ asks: `what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?`, about: `F_{g} \\aside{closing}` });
+  } });
+  static "theorem gravity.made" = new Theorem({ id: "gravity.made", body: () => {
+    return new Asked({ asks: `the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?`, about: `g \\aside{field}`, also: `-\\nabla^{2}\\psi` });
   } });
   static "theorem gravity.metric" = new Theorem({ id: "gravity.metric", body: () => {
     return new Asked({ asks: `a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?`, about: `B \\aside{held}`, also: `A \\aside{held}` });

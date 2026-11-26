@@ -5,8 +5,8 @@
  * need a million cells to the c-bar. So it is laid in its own units (kiloparsecs and km/s) and the model is carried
  * there as the chain says it acts: what ARRIVES at a place is every piece of the galaxy's mass added (`what a local
  * feels from every body` - the far field is a sum over the bodies, each at its own distance, and a body of ways holding
- * 6e-10 of a ray adds linearly), and what is FELT there is the law read at that arrival (`Law.boost`, a_0 read at the
- * place - as `Model.as_stars_parts` has it: the arrivals added, the law applied once to the total). The galaxy is far too
+ * 6e-10 of a ray adds linearly), and what is FELT is that arrival with the record of the space it made, solved over
+ * the galaxy's whole field at once (`Felt`, `solve_fields`) - never the law read at a place. The galaxy is far too
  * dilute to thin the vacuum, so a_0 is the vacuum's own at the lattice: the chain's a_0/cH times c H_0.
  *
  * THE MASS. SPARC gives each galaxy's gas, disc and bulge as the speed each alone would hold a circle at, at every
@@ -15,11 +15,12 @@
  * so the laid galaxy pulls exactly as SPARC's does at those radii; the bulge is laid as spherical shells, the mass inside
  * each radius read off its own speed. Then the galaxy exists everywhere in its plane, not only where it was measured.
  *
- * THE DEVICE (`galaxy.gpu.ts`, `npx ray measure galaxy.simulated`): PULL sums the annuli element by element; LAW reads
- * the law at every place; FIT searches the data's own freedoms (what the starlight weighs, the distance, the
- * inclination) under the priors the data come with; STARS launches a disc of tracers on the field and follows them
- * for three turns of the outermost radius, and what they move at is read off their motion. The plan and every number
- * the device is handed are here, so the device and the CPU (`Annulus.pull`, `Law.boost`, `logpost`) can only differ in
+ * THE DEVICE (`galaxy.gpu.ts`, `npx ray measure galaxy.simulated`): PULL sums the annuli element by element; the
+ * CPU lays each galaxy on the field's grid and solves it up a ladder of what its starlight weighs (FELT); FIT searches
+ * the data's own freedoms (what the starlight weighs, the distance, the inclination) under the priors the data come
+ * with, reading between the ladder's rungs; STARS launches a disc of tracers on the solved field and follows them for
+ * three turns of the outermost radius, and what they move at is read off their motion. The plan and every number the
+ * device is handed are here, so the device and the CPU (`Annulus.pull`, `laddered`, `logpost`) can only differ in
  * floating point, and the driver checks that they do not.
  */
 
@@ -189,14 +190,20 @@ Simulation := class < deg: Real {
     lyd := Shaded.literal(Fmt.log10(Sparc.YD))
     lyb := Shaded.literal(Fmt.log10(Sparc.YB))
     py := Shaded.literal(Simulation.PRIOR_Y)
+    ly0 := Shaded.literal(Fmt.log10(Sparc.YD) - Simulation.RUNG_Y * Real.of(Simulation.NY - 1) / 2)
+    lb0 := Shaded.literal(Fmt.log10(Sparc.YB) - Simulation.RUNG_B * Real.of(Simulation.NB - 1) / 2)
+    sy := Shaded.literal(Simulation.RUNG_Y)
+    sb := Shaded.literal(Simulation.RUNG_B)
+    topy := Shaded.literal(Real.of(Simulation.NY - 1) - 0.0001)
+    ny := Simulation.NY
+    nbs := Simulation.NB
     [
-      "// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid",
+      "// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields",
       "@group(0) @binding(0) var<storage, read> P: array<u32>;",
       "@group(0) @binding(1) var<storage, read> L: array<f32>;",
       "@group(0) @binding(2) var<storage, read> Q: array<f32>;",
       "@group(0) @binding(3) var<storage, read> G: array<f32>;",
       "@group(0) @binding(4) var<storage, read_write> O: array<f32>;",
-      Simulation.law_wgsl,
       "{Simulation.ENTRY} FIT{Simulation.ID}",
       Simulation.THREAD,
       "  let n: u32 = P[1];",
@@ -216,8 +223,17 @@ Simulation := class < deg: Real {
       "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;",
       "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;",
       "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) {{ O[i] = -1e30; return; }}",
-      "  let YD: f32 = exp(ly * {ln10});",
-      "  let YB: f32 = exp(lb * {ln10});",
+      "  let uy: f32 = clamp((ly - {ly0}) / {sy}, 0.0, {topy});",
+      "  let ky: u32 = u32(floor(uy));",
+      "  let fy: f32 = uy - floor(uy);",
+      "  var nb: u32 = 1u;",
+      "  if (G[b + 7u] > 0.0) {{ nb = {nbs}u; }}",
+      "  var ub: f32 = 0.0;",
+      "  if (nb > 1u) {{ ub = clamp((lb - {lb0}) / {sb}, 0.0, f32(nb - 1u) - 0.0001); }}",
+      "  let kb: u32 = u32(floor(ub));",
+      "  let fb: f32 = ub - floor(ub);",
+      "  let kb1: u32 = min(kb + 1u, nb - 1u);",
+      "  let base: u32 = u32(G[b + 15u]);",
       "  let f: f32 = Dp / D;",
       "  let s: f32 = sin(inc * {pi} / 180.0) / sin(ip * {pi} / 180.0);",
       "  var chi: f32 = 0.0;",
@@ -225,7 +241,11 @@ Simulation := class < deg: Real {
       "  let stop: u32 = start + u32(G[b + 1u]);",
       "  for (var p: u32 = start; p < stop; p = p + 1u) {{",
       "    let q: u32 = 8u * p;",
-      "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);",
+      "    let o: u32 = p - start;",
+      "    let cnt: u32 = u32(G[b + 1u]);",
+      "    let lo: f32 = (1.0 - fy) * L[base + (kb * {ny}u + ky) * cnt + o] + fy * L[base + (kb * {ny}u + ky + 1u) * cnt + o];",
+      "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * {ny}u + ky) * cnt + o] + fy * L[base + (kb1 * {ny}u + ky + 1u) * cnt + o];",
+      "    let g: f32 = (1.0 - fb) * lo + fb * hi;",
       "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));",
       "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);",
       "    chi = chi + d * d;",
@@ -261,8 +281,9 @@ Simulation := class < deg: Real {
   ].join("\n")
   /*
    * STARS: START puts each tracer on the field (the speed a circle needs there, plus the stir), STEP follows it - kick,
-   * drift, kick - toward the middle at what is felt where it is: the table between its entries, straight to the middle
-   * inside the first, and past the reach the whole galaxy's arrival falling as the square of the distance, read by the law
+   * drift, kick - toward the middle at what is felt where it is: the solved table between its entries, straight to the
+   * middle inside the first, and past the reach falling as 1/R, as the solved field does far out of a galaxy (the
+   * record of the space it made walks out as the root of its mass over the distance)
    */
   static stars_kernel (): String => [
     "// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field",
@@ -272,17 +293,13 @@ Simulation := class < deg: Real {
     "@group(0) @binding(3) var<storage, read> GI: array<f32>;",
     "@group(0) @binding(4) var<storage, read_write> S: array<f32>;",
     "@group(0) @binding(5) var<storage, read_write> F: array<f32>;",
-    Simulation.law_wgsl,
     "fn g_at(j: u32, r: f32) -> f32 {{",
     "  let rmax: f32 = GI[12u * j];",
     "  let T: u32 = P[2];",
     "  let base: u32 = j * T;",
     "  let u: f32 = r / rmax * f32(T);",
     "  if (u <= 1.0) {{ return GT[base] * u; }}",
-    "  if (u >= f32(T)) {{",
-    "    let q: f32 = rmax / r;",
-    "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);",
-    "  }}",
+    "  if (u >= f32(T)) {{ return GT[base + T - 1u] * rmax / r; }}",
     "  let t0: u32 = u32(floor(u)) - 1u;",
     "  let fr: f32 = u - floor(u);",
     "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;",
@@ -627,6 +644,145 @@ Simulation := class < deg: Real {
   }
 
   /*
+   * WHAT IS FELT, SOLVED OVER EACH GALAXY'S WHOLE FIELD (`Felt`). The galaxy laid - its annuli of disc and gas, its
+   * bulge's shells - is put on the field's grid, in units of a tenth of its last measured radius (the solve is the
+   * same in any unit: lengths and masses scale out together at one a_0). At every cell the closing says how much more
+   * is felt than arrives; where that changes, space was made; and what is felt along the plane is what arrives less
+   * the record of all of it, solved at once. Nothing is read point by point. What the starlight weighs changes the
+   * field, so each galaxy is solved on a ladder of it - NY rungs of the disc's mass-to-light, NB of the bulge's where
+   * it has one - and the fit reads between the rungs. Moving the distance or the inclination needs no new solve
+   */
+  static NY = 21
+  static NB = 11
+  static RUNG_Y = 0.05
+  static RUNG_B = 0.1
+  static RINGS_IN = 8
+  static FAR_OFF = 30
+  on: Felt = Felt()
+  unit_of (j: N): Real => this.rows[j][this.rows[j].length - 1][0] / 10
+  /* the galaxy on every cell, toward it, per unit of each part's mass-to-light: [disc R, disc z, gas R, gas z, bulge R, bulge z] in the run's unit */
+  grid_of (j: N): Real[][] => {
+    F := this.on
+    L := this.unit_of(j)
+    es := this.edges[j]
+    n := es.length - 1
+    wd := this.w_discs[j]
+    wg := this.w_gases[j]
+    rs := this.rows[j]
+    t := this.thick[j]
+    /* each annulus as RINGS_IN rings, each holding its share of the annulus's area */
+    rings := []
+    Array.range(n).for(a => {
+      area := es[a + 1] * es[a + 1] - es[a] * es[a]
+      Array.range(Simulation.RINGS_IN).for(k => {
+        r0 := es[a] + (es[a + 1] - es[a]) * Real.of(k) / Real.of(Simulation.RINGS_IN)
+        r1 := es[a] + (es[a + 1] - es[a]) * Real.of(k + 1) / Real.of(Simulation.RINGS_IN)
+        soft := (r1 - r0) / 2
+        rings.push([(r0 + r1) / 2, area > 0 ? (r1 * r1 - r0 * r0) / area : 0, a, t * t + soft * soft])
+      })
+    })
+    md := wd.reduce(0, (m, v) => m + v)
+    mg := wg.reduce(0, (m, v) => m + v)
+    out := Array.range(6).map(k => Array.filled(F.cells, 0))
+    Array.range(F.cells).for(c => {
+      i := (c / Felt.NMU).floor
+      mu := F.mc[c % Felt.NMU]
+      r := F.rc[i] * L
+      R := r * (1 - mu * mu).sqrt
+      z := r * mu
+      if r > Simulation.FAR_OFF * es[n] {
+        /* far off, the disc and the gas are each one body at the middle */
+        out[0][c] = 0 - md * R / (r * r * r)
+        out[1][c] = 0 - md * z / (r * r * r)
+        out[2][c] = 0 - mg * R / (r * r * r)
+        out[3][c] = 0 - mg * z / (r * r * r)
+      } else {
+        rings.for(b => {
+          g := Felt.ring(R, z, b[0], 0, b[3])
+          out[0][c] = out[0][c] + wd[b[2]] * b[1] * g[0]
+          out[1][c] = out[1][c] + wd[b[2]] * b[1] * g[1]
+          out[2][c] = out[2][c] + wg[b[2]] * b[1] * g[0]
+          out[3][c] = out[3][c] + wg[b[2]] * b[1] * g[1]
+        })
+      }
+      gb := Simulation.bulge_at(rs, r)
+      out[4][c] = 0 - gb * R / r
+      out[5][c] = 0 - gb * z / r
+    })
+    out
+  }
+  /* the record of made space along the plane, in the run's unit, for that galaxy at those mass-to-lights */
+  made_of (grid: Real[][], yd: Real, yb: Real): Real[] => {
+    a := this.a0
+    gr := Array.range(this.on.cells).map(c => (yd * grid[0][c] + grid[2][c] + yb * grid[4][c]) / a)
+    gz := Array.range(this.on.cells).map(c => (yd * grid[1][c] + grid[3][c] + yb * grid[5][c]) / a)
+    this.on.made_rows(gr, gz).map(v => v * a)
+  }
+  /* what is felt at a radius (kpc): what arrives there - the laid galaxy's own pull, `at_rows` and `tables` - less the record */
+  felt_at (j: N, made: Real[], r: Real, gN: Real): Real => gN - this.on.made_at(made, r / this.unit_of(j))
+  grids: Array = []
+  ladder: Real[] = []
+  ladder_at: N[] = []
+  rungs (j: N): N => this.has_bulge(j) ? Simulation.NB : 1
+  /* every galaxy on its grid and solved up its ladder: per galaxy, rung after rung (bulge outer, disc inner), what is felt at each kept radius */
+  solve_fields () => {
+    this.grids = []
+    this.ladder = []
+    this.ladder_at = []
+    Array.range(this.ids.length).for(j => {
+      grid := this.grid_of(j)
+      this.grids.push(grid)
+      this.ladder_at.push(this.ladder.length)
+      kept := Array.range(this.rows[j].length).filter(i => this.rows[j][i][6] > 0)
+      Array.range(this.rungs(j)).for(ib => {
+        yb := 10 ^ (this.rung_b(ib))
+        Array.range(Simulation.NY).for(iy => {
+          yd := 10 ^ (this.rung_y(iy))
+          made := this.made_of(grid, yd, yb)
+          kept.for(i => {
+            p := this.at_rows[j][i]
+            this.ladder.push(this.felt_at(j, made, this.rows[j][i][0], yd * p[0] + yb * p[2] + p[1]))
+          })
+        })
+      })
+    })
+  }
+  rung_y (iy: N): Real => Fmt.log10(Sparc.YD) + Simulation.RUNG_Y * (Real.of(iy) - Real.of(Simulation.NY - 1) / 2)
+  rung_b (ib: N): Real => Fmt.log10(Sparc.YB) + Simulation.RUNG_B * (Real.of(ib) - Real.of(Simulation.NB - 1) / 2)
+  /* the ladder read between its rungs, at the k-th kept radius of galaxy j: as the device's FIT reads it */
+  laddered (j: N, k: N, ly: Real, lb: Real): Real => {
+    count := this.rows[j].filter(row => row[6] > 0).length
+    uy := Fmt.min(Fmt.max((ly - this.rung_y(0)) / Simulation.RUNG_Y, 0), Real.of(Simulation.NY - 1) - 0.0001)
+    ky := uy.floor
+    fy := uy - Real.of(ky)
+    nb := this.rungs(j)
+    ub := nb > 1 ? Fmt.min(Fmt.max((lb - this.rung_b(0)) / Simulation.RUNG_B, 0), Real.of(nb - 1) - 0.0001) : 0
+    kb := ub.floor
+    fb := ub - Real.of(kb)
+    kb1 := Fmt.min(kb + 1, nb - 1)
+    at := (b: N, y: N): Real => this.ladder[this.ladder_at[j] + (b * Simulation.NY + y) * count + k]
+    lo := (1 - fy) * at(kb, ky) + fy * at(kb, ky + 1)
+    hi := (1 - fy) * at(kb1, ky) + fy * at(kb1, ky + 1)
+    (1 - fb) * lo + fb * hi
+  }
+  /* what is felt at every measured radius and then every table radius, each galaxy solved once at its own mass-to-lights - the layout LAW wrote */
+  solved_points (yd: Real[], yb: Real[]): Real[] => {
+    measured := []
+    tabled := []
+    Array.range(this.ids.length).for(j => {
+      made := this.made_of(this.grids[j], yd[j], yb[j])
+      Array.range(this.rows[j].length).for(i => {
+        p := this.at_rows[j][i]
+        measured.push(this.felt_at(j, made, this.rows[j][i][0], yd[j] * p[0] + yb[j] * p[2] + p[1]))
+      })
+      this.tables[j].for(t => { tabled.push(this.felt_at(j, made, t[0], yd[j] * t[1] + yb[j] * t[3] + t[2])) })
+    })
+    measured.concat(tabled)
+  }
+  own_y (): Real[] => this.ids.map(g => Sparc.YD)
+  own_b (): Real[] => this.ids.map(g => Sparc.YB)
+
+  /*
    * THE LIFT, TWO WAYS, off the chain and the medium - nothing fitted. Near a body the vacuum makes room for what the
    * body sends (Medium.settle_rho: vacuum and body together stand at rho_inf), so the density crossed is rho_inf - n_s,
    * n_s the source's rays on a way; what arrives is the medium's meeting rate times those rays (Medium.pull_at); and
@@ -773,7 +929,7 @@ Simulation := class < deg: Real {
     Simulation.laid(Array.range(this.ids.length).map(j => {
       g := this.ids[j]
       stop := j + 1 < this.ids.length ? this.fit_at[j + 1] : (pts.length / 8).floor
-      [this.fit_at[j], stop - this.fit_at[j], S["D"][g], S["e_D"][g], S["Inc"][g], S["e_Inc"][g], this.a0, this.has_bulge(j) ? 1 : 0, this.centre_y[j], this.centre_b[j], this.centre_d[j], this.centre_i[j], Simulation.STEP_Y * this.spacing, Simulation.STEP_D * this.spacing, Simulation.STEP_I * this.spacing, 0]
+      [this.fit_at[j], stop - this.fit_at[j], S["D"][g], S["e_D"][g], S["Inc"][g], S["e_Inc"][g], this.a0, this.has_bulge(j) ? 1 : 0, this.centre_y[j], this.centre_b[j], this.centre_d[j], this.centre_i[j], Simulation.STEP_Y * this.spacing, Simulation.STEP_D * this.spacing, Simulation.STEP_I * this.spacing, this.ladder_at[j]]
     }))
   }
   /* the grid point `c` of a search n a side, as [log Y_d, log Y_b, D, i] */
@@ -795,18 +951,17 @@ Simulation := class < deg: Real {
     inc := S["Inc"][g]
     einc := S["e_Inc"][g]
     return -1 * 10 ^ 30 if at[2] <= 0 | at[3] <= 0.5 | at[3] > 90
-    YD := 10 ^ at[0]
-    YB := 10 ^ at[1]
     f := at[2] / D
     s := (inc * Real.PI / 180).sin / (at[3] * Real.PI / 180).sin
     chi := 0
+    k := 0
     Array.range(this.rows[j].length).for(i => {
       row := this.rows[j][i]
       if row[6] > 0 {
-        p := this.at_rows[j][i]
-        vm := Fmt.max(f * row[0] * this.felt(YD * p[0] + YB * p[2] + p[1]), 0).sqrt
+        vm := Fmt.max(f * row[0] * this.laddered(j, k, at[0], at[1]), 0).sqrt
         d := (row[1] * s - vm) / (row[2] * s)
         chi = chi + d * d
+        k = k + 1
       }
     })
     py := (at[0] - Fmt.log10(Sparc.YD)) / Simulation.PRIOR_Y
@@ -836,8 +991,7 @@ Simulation := class < deg: Real {
   /*
    * THE TRACERS. Each galaxy gets STARS, laid evenly in radius across what was measured, at a random angle, going the
    * speed a circle there needs off the field plus the gas's own stir; they are followed with the same kick-drift-kick
-   * step everywhere, pulled toward the middle by what is felt where each one is. Past the table the whole galaxy is
-   * inside, so what arrives falls as the square of the distance and the law is read on that
+   * step everywhere, pulled toward the middle by what is felt where each one is - the field solved (`solved_points`)
    */
   film_ids: N[] = []
   film (names: String[]) => {
@@ -1140,7 +1294,7 @@ Simulation := class < deg: Real {
     extra["rms1"] = rms1
     extra["repro"] = this.repro
     extra["stir"] = Simulation.SIGMA
-    extra["about"] = "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"
+    extra["about"] = "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"
     Measure.save("galaxy.simulated", names, cols, extra)
 
     fields := { }
@@ -1163,7 +1317,7 @@ Simulation := class < deg: Real {
     fextra := { }
     fextra["ids"] = this.ids
     fextra["table"] = T
-    fextra["about"] = "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"
+    fextra["about"] = "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"
     Measure.save("galaxy.fields", fnames, fields, fextra)
 
     if !this.film_ids.empty {

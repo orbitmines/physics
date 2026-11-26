@@ -2029,11 +2029,59 @@ t("tests/theorems.ray:15 on closure") {
     if guard_ > 8 || !has(it, "tick") { return SKIP }
     try get(it, "tick")
   }
-  let ok: Bool = truthy(V.b(try eq(try len(try get(it, "ids")), 51.0)))
-  return ok ? PASS : "failed: " + "V.b(try eq(try len(try get(it, \"ids\")), 51.0))"
+  let ok: Bool = truthy(V.b(try eq(try len(try get(it, "ids")), 65.0)))
+  return ok ? PASS : "failed: " + "V.b(try eq(try len(try get(it, \"ids\")), 65.0))"
 }
 
 t("tests/theorems.ray:16 on closure") {
+  let it: V = try get((try K("G")), "proved")
+  var guard_: Int = 0
+  while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try call(it, "standing", [V.s(cat("gravity.made"))]))
+  return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.made\"))])"
+}
+
+t("tests/theorems.ray:18 on closure") {
+  let it: V = try get((try K("G")), "proved")
+  var guard_: Int = 0
+  while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try call(it, "standing", [V.s(cat("gravity.shadow"))]))
+  return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.shadow\"))])"
+}
+
+t("tests/theorems.ray:19 on closure") {
+  let it: V = try get((try K("G")), "proved")
+  var guard_: Int = 0
+  while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(V.b(try eq(try call(it, "concluded", [V.s(cat("gravity.shadow"))]), V.s(cat("b_{c} = 5.196152423·\\bar{m}")))))
+  return ok ? PASS : "failed: " + "V.b(try eq(try call(it, \"concluded\", [V.s(cat(\"gravity.shadow\"))]), V.s(cat(\"b_{c} = 5.196152423·\\\\bar{m}\"))))"
+}
+
+t("tests/theorems.ray:20 on closure") {
+  let it: V = try get((try K("G")), "proved")
+  var guard_: Int = 0
+  while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
+    guard_ += 1
+    if guard_ > 8 || !has(it, "tick") { return SKIP }
+    try get(it, "tick")
+  }
+  let ok: Bool = truthy(try call(it, "standing", [V.s(cat("gravity.closing"))]))
+  return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.closing\"))])"
+}
+
+t("tests/theorems.ray:21 on closure") {
   let it: V = try get((try K("G")), "proved")
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
@@ -2045,7 +2093,7 @@ t("tests/theorems.ray:16 on closure") {
   return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.coincidence\"))])"
 }
 
-t("tests/theorems.ray:17 on closure") {
+t("tests/theorems.ray:22 on closure") {
   let it: V = try get((try K("G")), "proved")
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
@@ -2057,7 +2105,7 @@ t("tests/theorems.ray:17 on closure") {
   return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.bent\"))])"
 }
 
-t("tests/theorems.ray:18 on closure") {
+t("tests/theorems.ray:23 on closure") {
   let it: V = try get((try K("G")), "proved")
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
@@ -2069,7 +2117,7 @@ t("tests/theorems.ray:18 on closure") {
   return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.standing\"))])"
 }
 
-t("tests/theorems.ray:19 on closure") {
+t("tests/theorems.ray:24 on closure") {
   let it: V = try get((try K("G")), "proved")
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {
@@ -2081,7 +2129,7 @@ t("tests/theorems.ray:19 on closure") {
   return ok ? PASS : "failed: " + "try call(it, \"standing\", [V.s(cat(\"gravity.mass\"))])"
 }
 
-t("tests/theorems.ray:20 on closure") {
+t("tests/theorems.ray:25 on closure") {
   let it: V = try get((try K("G")), "proved")
   var guard_: Int = 0
   while !truthy(V.b(try eq(try get(it, "theory"), V.s(cat("G"))))) {

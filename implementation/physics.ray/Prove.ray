@@ -1333,7 +1333,10 @@ Prover := class < theory: Theory {
     held.derivation = [tick, falls]
     ruler.derivation = [held]
     defl.derivation = [held, ruler]
-    [g_, phi, tick, falls, held, ruler, defl]
+    /* the shadow, off the held metric: a ray turns where r / sqrt(A) = b (Inferences.held_shadow) */
+    shadow := Inferences.held_shadow(s, held.fact, ruler.fact)
+    shadow.derivation = [held, ruler]
+    [g_, phi, tick, falls, held, ruler, defl, shadow]
   }
   /*
    * THE EXPANSION, OFF THE GROWTH LEDGER: inside the settled vacuum every ray has room ahead, so nothing grows there; the
@@ -1419,12 +1422,29 @@ Prover := class < theory: Theory {
       "what is felt is what arrives, g_{{N}}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{{0}}/g of it. So g = g_{{N}}\\paren{{1 + a_{{0}}/g}}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{{g_{{N}}a_{{0}}}}: g_{{N}} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling",
       ["g = g_{{N}}\\paren{{1 + \\frac{{a_{{0}}}}{{g}}}}", "g^{{2}} - g_{{N}}g - g_{{N}}a_{{0}} = 0", "strong: g \\to g_{{N}};  weak: g \\to \\sqrt{{g_{{N}}a_{{0}}}}, so v^{{4}} = G m a_{{0}} at D = 3", "F_{{g}} = {Expr.show(got)}"])
     closing.derivation = [scale]
+    /*
+     * THE CLOSING OVER A WHOLE FIELD. The closing says how much more is felt at a place than arrives there, w = F_g - g_N
+     * along the arrival. But what is felt is the slope of a record (the flux law: the pull is the record's gradient), so
+     * it has no curl, and w has curl wherever the field is not round. What the record holds is the room the vacuum made:
+     * space made where a body's rays meet the vacuum's, at the edge of its influence, as much as w changes there - its
+     * divergence. Space made is a source of the record like any other, so it is solved over the whole field at once
+     */
+    psi := Expr.field("\\psi")
+    w := Prover.neat(Expr.sub(got, g))
+    made := Step.of(Fact.stands("-\\nabla^{{2}}\\psi", Expr.field("\\nabla\\cdot\\paren{{\\paren{{{Expr.show(w)}}}\\hat{{g}}_{{N}}}}")), "the space made, as a source", [closing.fact.key],
+      "the closing hands every place w = F_{{g}} - g_{{N}} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind ({met}), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made",
+      ["w = F_{{g}} - g_{{N}} = {Expr.show(w)}, along \\hat{{g}}_{{N}}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{{2}}\\psi = \\nabla\\cdot w"])
+    made.derivation = [closing, potential]
+    field := Step.of(Fact.stands("g \\aside{{field}}", Prover.neat(Expr.sub(g, Expr.field("\\nabla\\psi")))), "what is felt, solved over the whole field", [made.fact.key, closing.fact.key],
+      "what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve",
+      ["g = g_{{N}} - \\nabla\\psi, -\\nabla^{{2}}\\psi = \\nabla\\cdot w", "no curl: \\nabla\\times g = 0, as a record's slope", "a sphere: \\nabla\\psi = -w, so g = F_{{g}}", "a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)"])
+    field.derivation = [made]
     ratio := Prover.neat(Expr.div(a0, own))
     against := Step.of(Fact.stands("\\frac{{a_{{0}}}}{{cH}}", ratio), "the scale against the vacuum's growth", [scale.fact.key, lam.fact.key],
       "a_{{0}} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{{0}}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{{\\Omega_{{\\Lambda}}}} of it - so a_{{0}}/cH_{{0}} = v\\sqrt{{\\Omega_{{\\Lambda}}}}. Measured it is 0.155 to 0.183",
       ["a_{{0}} = vH_{{vac}}, cH_{{vac}} = \\bar{{c}}H_{{vac}}", "\\frac{{a_{{0}}}}{{cH_{{vac}}}} = {Expr.show(Prover.neat(ratio))}", "against what is measured: a_{{0}}/cH_{{0}} = v\\sqrt{{\\Omega_{{\\Lambda}}}}, \\Omega_{{\\Lambda}} = \\paren{{H_{{vac}}/H_{{0}}}}^{{2}}"])
     against.derivation = [scale]
-    [straight, potential, lam, scale, closing, against]
+    [straight, potential, lam, scale, closing, made, field, against]
   }
   /* THE MASS IS THE LEFTOVER: the rays' line solved for what a source puts in - how the lit share moved, less what the vacuum's own rules did to it */
   leftover (rays_c: Step): Step? => {

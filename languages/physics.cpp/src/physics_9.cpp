@@ -1274,7 +1274,7 @@ static void C_Galaxies(Cls& c) {
     if (truthy(eq(stars_0->v, null))) {
       invoke(fail, { "galaxy.stars is not on disk - run the galaxies (`" + str(get(K(S<"Galaxies">()), S<"SIMULATED">())) + "`) and try again" });
     }
-    return make(S<"Picture">(), { kw(S<"id">(), "galaxy.simulation"), kw(S<"what">(), "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured"), kw(S<"width">(), 960.0), kw(S<"height">(), 720.0), kw(S<"frames">(), get(get(stars_0->v, S<"header">()), Sym(str("frames")))), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+    return make(S<"Picture">(), { kw(S<"id">(), "galaxy.simulation"), kw(S<"what">(), "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured"), kw(S<"width">(), 960.0), kw(S<"height">(), 720.0), kw(S<"frames">(), get(get(stars_0->v, S<"header">()), Sym(str("frames")))), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
       auto played_2 = cell(arg(a3, 0));
       return make(S<"Orbiting">(), { kw(S<"stars">(), stars_0->v) });
       return null;
@@ -1356,7 +1356,7 @@ static void C_Galaxies(Cls& c) {
     if (truthy(eq(got_0->v, null))) {
       invoke(fail, { "galaxy.formed is not on disk - run the galaxies (`" + str(get(K(S<"Galaxies">()), S<"SIMULATED">())) + "`) and try again" });
     }
-    return make(S<"Picture">(), { kw(S<"id">(), "galaxy.formed"), kw(S<"what">(), "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms"), kw(S<"width">(), 960.0), kw(S<"height">(), 720.0), kw(S<"frames">(), get(get(got_0->v, S<"header">()), Sym(str("frames")))), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
+    return make(S<"Picture">(), { kw(S<"id">(), "galaxy.formed"), kw(S<"what">(), "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms"), kw(S<"width">(), 960.0), kw(S<"height">(), 720.0), kw(S<"frames">(), get(get(got_0->v, S<"header">()), Sym(str("frames")))), kw(S<"paint">(), fn([=](const Args& a3) -> Value {
       auto played_2 = cell(arg(a3, 0));
       return make(S<"Forming">(), { kw(S<"formed">(), got_0->v) });
       return null;
@@ -1490,7 +1490,7 @@ static void C_Galaxies(Cls& c) {
     auto stars_n_0 = cell(); stars_n_0->v = get(H_0->v, Sym(str("stars")));
     auto q_text_0 = cell(); q_text_0->v = call(K(S<"Fmt">()), S<"fixed">(), { get(H_0->v, Sym(str("Q"))), 1.0 });
     auto a0_text_0 = cell(); a0_text_0->v = call(K(S<"Fmt">()), S<"exponential">(), { get(H_0->v, Sym(str("a0"))), 3.0 });
-    call(s_0->v, S<"fill_text">(), { "" + str(stars_n_0->v) + " stars each, every one pulled by every other through the law (a₀ " + str(a0_text_0->v) + " m/s²), no halo; launched smooth at Q " + str(q_text_0->v) + " — t = " + str(gyr_0->v) + " Gyr", 22.0, 44.0 });
+    call(s_0->v, S<"fill_text">(), { "" + str(stars_n_0->v) + " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " + str(a0_text_0->v) + " m/s²), no halo; launched smooth at Q " + str(q_text_0->v) + " — t = " + str(gyr_0->v) + " Gyr", 22.0, 44.0 });
     auto side_0 = cell(); side_0->v = call(K(S<"Fmt">()), S<"min">(), { div((sub(get(s_0->v, S<"width">()), 66.0)), 2.0), sub(get(s_0->v, S<"height">()), 110.0) });
     for (double i1 = 0, n1 = num(len(names_0->v)); i1 < n1; i1++) {
       auto g_1 = cell(i1);
@@ -1883,6 +1883,104 @@ static void C_Output(Cls& c) {
   c.field("sources", [](const Value& self) -> Value { return false; });
 }
 static const bool R_Output = define_class("Output", "Node", &C_Output);
+
+static void C_Plan(Cls& c) {
+  c.field("sources", nullptr);
+  c.field("side", nullptr);
+  c.field("resolution", [](const Value& self) -> Value { return make(S<"Resolution">(), {  }); });
+  c.field("budget", [](const Value& self) -> Value { return make(S<"Budget">(), {  }); });
+  c.field("batching", [](const Value& self) -> Value { return make(S<"Batching">(), {  }); });
+  c.field("output", [](const Value& self) -> Value { return make(S<"Output">(), {  }); });
+  c.getter("box_side", [](Value self, const Args& a1) -> Value {
+    return add(get(self, S<"side">()), mul(mul(2.0, get(get(self, S<"resolution">()), S<"margin">())), get(get(self, S<"resolution">()), S<"cells">())));
+    return null;
+  });
+  c.getter("box_cells", [](Value self, const Args& a1) -> Value {
+    return mul(get(self, S<"box_side">()), get(self, S<"box_side">()));
+    return null;
+  });
+  c.getter("reach", [](Value self, const Args& a1) -> Value {
+    return add(mul(3.0, get(get(self, S<"resolution">()), S<"cells">())), 4.0);
+    return null;
+  });
+  c.getter("tile_side", [](Value self, const Args& a1) -> Value {
+    return add(m_floor((div(sub(add(get(self, S<"box_side">()), get(get(self, S<"batching">()), S<"tiles">())), 1.0), get(get(self, S<"batching">()), S<"tiles">())))), mul(mul(2.0, get(self, S<"reach">())), get(get(self, S<"batching">()), S<"ticks">())));
+    return null;
+  });
+  c.getter("tile_cells", [](Value self, const Args& a1) -> Value {
+    return (truthy(eq(get(get(self, S<"batching">()), S<"tiles">()), 1.0)) ? Value(get(self, S<"box_cells">())) : Value(mul(get(self, S<"tile_side">()), get(self, S<"tile_side">()))));
+    return null;
+  });
+  c.getter("tile_sources", [](Value self, const Args& a1) -> Value {
+    return div(mul(get(self, S<"sources">()), get(self, S<"tile_cells">())), get(self, S<"box_cells">()));
+    return null;
+  });
+  c.getter("parts", [](Value self, const Args& a1) -> Value {
+    auto c__0 = cell(); c__0->v = get(self, S<"tile_cells">());
+    auto s_0 = cell(); s_0->v = get(self, S<"tile_sources">());
+    auto r_0 = cell(); r_0->v = get(self, S<"resolution">());
+    auto held_0 = cell(); held_0->v = mul(mul(c__0->v, (add(add(add(add(add(add(add(add(add(add(mul(mul(get(r_0->v, S<"ways">()), get(r_0->v, S<"keeps">())), 8.0), 1.0), get(r_0->v, S<"ways">())), 12.0), 2.0), 4.0), 4.0), 9.0), get(r_0->v, S<"near_list">())), 1.0), 1.0))), 4.0);
+    auto each_0 = cell(); each_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(0.0) : Value(add(add(add(12.0, 4.0), 2.0), 1.0)));
+    auto ledgers_0 = cell(); ledgers_0->v = mul((add(add(mul(c__0->v, add(add(11.0, 384.0), 2.0)), mul(s_0->v, each_0->v)), mul(mul(4096.0, 64.0), 4.0))), 4.0);
+    auto lists_0 = cell(); lists_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(mul((add(mul(10.0, c__0->v), mul(1024.0, 1024.0))), 4.0)) : Value(mul((add(mul(2.0, c__0->v), s_0->v)), 4.0)));
+    auto base_0 = cell(); base_0->v = list({ list({ "held rays (a box)", held_0->v, true }), list({ "held rays (the other)", held_0->v, true }), list({ "ledgers and sources", ledgers_0->v, true }), list({ "sources by cell", lists_0->v, true }), list({ "planes", mul(mul(3.0, c__0->v), 4.0), true }) });
+    auto shards_0 = cell(); shards_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(filt(m_map(rng(8.0), fn([=](const Args& a4) -> Value {
+      auto k_3 = cell(arg(a4, 0));
+      return call(K(S<"Fmt">()), S<"max">(), { 0.0, call(K(S<"Fmt">()), S<"min">(), { 178956970.0, sub(s_0->v, mul(k_3->v, 178956970.0)) }) });
+      return null;
+    })), fn([=](const Args& a3) -> Value {
+      auto n_2 = cell(arg(a3, 0));
+      return gt(n_2->v, 0.0);
+      return null;
+    }))) : Value(list({  })));
+    return m_concat(base_0->v, m_map(rng(len(shards_0->v)), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return list({ "sources (shard " + str(k_2->v) + ")", mul(elem(shards_0->v, k_2->v), 12.0), true });
+      return null;
+    })));
+    return null;
+  });
+  c.getter("total", [](Value self, const Args& a1) -> Value {
+    return m_sum(m_map(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0));
+      return elem(p_2->v, 1.0);
+      return null;
+    })));
+    return null;
+  });
+  c.getter("per_source", [](Value self, const Args& a1) -> Value {
+    return (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(12.0) : Value(mul(add(add(add(add(12.0, 4.0), 2.0), 1.0), 1.0), 4.0)));
+    return null;
+  });
+  c.method("fits", [](Value self, const Args& a1) -> Value {
+    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
+    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
+    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
+    return (truthy(le(get(self, S<"total">()), cap_0->v)) && truthy(m_every(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0));
+      return le(elem(p_2->v, 1.0), one_0->v);
+      return null;
+    }))));
+    return null;
+  });
+  c.method("report", [](Value self, const Args& a1) -> Value {
+    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
+    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
+    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
+    auto over_0 = cell(); over_0->v = " - more than one binding holds (" + str(call(K(S<"Fmt">()), S<"fixed">(), { div(one_0->v, 1048576.0), 0.0 })) + " MiB)";
+    auto lines_0 = cell(); lines_0->v = m_map(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
+      auto p_2 = cell(arg(a3, 0));
+      auto tail_2 = cell(); tail_2->v = (truthy(gt(elem(p_2->v, 1.0), one_0->v)) ? Value(over_0->v) : Value(""));
+      return "  " + str(elem(p_2->v, 0.0)) + ": " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(elem(p_2->v, 1.0), 1048576.0), 0.0 })) + " MiB" + str(tail_2->v) + "";
+      return null;
+    }));
+    auto head_0 = cell(); head_0->v = "" + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"sources">()), 0.0 })) + " sources on a " + str(get(self, S<"side">())) + "-cell view in a " + str(get(self, S<"box_side">())) + "-cell box (" + str(mul(get(get(self, S<"batching">()), S<"tiles">()), get(get(self, S<"batching">()), S<"tiles">()))) + " tile(s), " + str(get(get(self, S<"resolution">()), S<"cells">())) + " cells to a c-bar, " + str(get(get(self, S<"resolution">()), S<"ways">())) + " ways): " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(get(self, S<"total">()), 1073741824.0), 2.0 })) + " GiB of " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(cap_0->v, 1073741824.0), 2.0 })) + " GiB, " + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"per_source">()), 0.0 })) + " bytes a source";
+    auto verdict_0 = cell(); verdict_0->v = (truthy(call(self, S<"fits">(), { memory_0->v, binding_0->v })) ? Value("  fits") : Value("  does not fit"));
+    return m_join(m_concat(m_concat(list({ head_0->v }), lines_0->v), list({ verdict_0->v })), "\n");
+    return null;
+  });
+}
+static const bool R_Plan = define_class("Plan", "Node", &C_Plan);
 
 
 

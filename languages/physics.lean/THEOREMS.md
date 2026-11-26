@@ -21,11 +21,11 @@ A step of the prover is a READING (a rule's own body, the continuous model, the 
 
 What stays NOT CHECKED, each with its reason in the module: an inference that concludes nothing when its lines stand as names (it looks inside a value, or a guard goes the other way); a relation holding a root in the density that the lines it stands on are written in (the prover puts them in under the root by name; a prover's substitution does not); a relation that, with the lines put back, is not the line (the inference did something else to them than it does to names); a cancellation of a sum carrying a real power (1 - q^R), which the algebra of a field cannot show is not nought; and the equation chain's readings - the line solved along a heading, the past taken as infinite, the sum over bodies - which are not algebra at all.
 
-In all: 668 steps in 64 theorems - 325 premises, 182 checked, 161 not checked; 59 of the 64 answers checked.
+In all: 669 steps in 65 theorems - 325 premises, 181 checked, 163 not checked; 60 of the 65 answers checked.
 
 | theorem | steps | premises | checked | not checked | answer |
 |---|---|---|---|---|---|
-| [vacuum.equation](OrbitMines/Physics/Proofs/G/vacuum_equation.lean) | 28 | 3 | 0 | 25 | checked |
+| [vacuum.equation](OrbitMines/Physics/Proofs/G/vacuum_equation.lean) | 31 | 3 | 0 | 28 | checked |
 | [vacuum.rays](OrbitMines/Physics/Proofs/G/vacuum_rays.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.space](OrbitMines/Physics/Proofs/G/vacuum_space.lean) | 2 | 1 | 0 | 1 | checked |
 | [vacuum.creation](OrbitMines/Physics/Proofs/G/vacuum_creation.lean) | 2 | 2 | 0 | 0 | checked |
@@ -87,8 +87,9 @@ In all: 668 steps in 64 theorems - 325 premises, 182 checked, 161 not checked; 5
 | [vacuum.age](OrbitMines/Physics/Proofs/G/vacuum_age.lean) | 2 | 1 | 0 | 1 | checked |
 | [gravity.scale](OrbitMines/Physics/Proofs/G/gravity_scale.lean) | 2 | 1 | 0 | 1 | checked |
 | [gravity.closing](OrbitMines/Physics/Proofs/G/gravity_closing.lean) | 2 | 1 | 0 | 1 | checked |
+| [gravity.made](OrbitMines/Physics/Proofs/G/gravity_made.lean) | 2 | 1 | 0 | 1 | checked |
 | [gravity.metric](OrbitMines/Physics/Proofs/G/gravity_metric.lean) | 2 | 1 | 0 | 1 | checked |
-| [gravity.shadow](OrbitMines/Physics/Proofs/G/gravity_shadow.lean) | 6 | 2 | 1 | 3 | checked |
+| [gravity.shadow](OrbitMines/Physics/Proofs/G/gravity_shadow.lean) | 2 | 1 | 0 | 1 | checked |
 
 ## Theorem by theorem
 
@@ -96,7 +97,7 @@ In all: 668 steps in 64 theorems - 325 premises, 182 checked, 161 not checked; 5
 
 every rule of the theory is a term, and every rule touches two things - the population and the space. What ARE the continuous equations, counted off the rules?
 
-Lean checked 0 of its 28 steps; 3 are premises read off the program and 25 are not checked. And the answer is CHECKED (it names \bar{m} again (claim 28), and its value is the earlier one's by algebra).
+Lean checked 0 of its 31 steps; 3 are premises read off the program and 28 are not checked. And the answer is CHECKED (it names \bar{m} again (claim 31), and its value is the earlier one's by algebra).
 
 - step 1 (the rays at a local, as the rules narrow it), NOT checked: the inference 'the rays at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 2 (the space at a local, as the rules narrow it), NOT checked: the inference 'the space at a local, as the rules narrow it' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
@@ -114,16 +115,19 @@ Lean checked 0 of its 28 steps; 3 are premises read off the program and 25 are n
 - step 17 (a clock held where a body falls), NOT checked: the inference 'a clock held where a body falls' reached it from \frac{d\tau}{dt} = \sqrt{1 - \beta^{2}}; \beta^{2} \aside{falling} = 2·\Phi in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 18 (a ruler held where a body falls), NOT checked: the inference 'a ruler held where a body falls' reached it from A \aside{held} = 1 - r_{s}·r^{2 - D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - step 19 (light crossing a held field), NOT checked: the inference 'light crossing a held field' reached it from A \aside{held} = 1 - r_{s}·r^{2 - D}; B \aside{held} = \frac{1}{1 - r_{s}·r^{2 - D}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 20 (what the settled vacuum grows), NOT checked: the inference 'what the settled vacuum grows' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 21 (the world grows at its frontier), NOT checked: the inference 'the world grows at its frontier' reached it from \partial_{t}V \aside{inside} = 0 in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 22 (what a heading keeps straight), NOT checked: the inference 'what a heading keeps straight' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 23 (what the vacuum would grow, had no mass been there), NOT checked: the inference 'what the vacuum would grow, had no mass been there' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 24 (the rate the vacuum would expand at), NOT checked: the inference 'the rate the vacuum would expand at' reached it from \varepsilon = 2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 25 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from v \aside{straight} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 26 (what is felt, with the mismatch closed), NOT checked: the inference 'what is felt, with the mismatch closed' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 27 (the scale against the vacuum's growth), NOT checked: the inference 'the scale against the vacuum's growth' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- step 28 (the mass is what the vacuum leaves over), NOT checked: the inference 'the mass is what the vacuum leaves over' reached it from \Delta\rho = S^{+} + \bar{m} - S^{-} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
-- answer (the answer), checked: it names \bar{m} again (claim 28), and its value is the earlier one's by algebra
+- step 20 (where a ray stops coming back), NOT checked: the inference 'where a ray stops coming back' reached it from A \aside{held} = 1 - r_{s}·r^{2 - D}; B \aside{held} = \frac{1}{1 - r_{s}·r^{2 - D}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 21 (what the settled vacuum grows), NOT checked: the inference 'what the settled vacuum grows' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 22 (the world grows at its frontier), NOT checked: the inference 'the world grows at its frontier' reached it from \partial_{t}V \aside{inside} = 0 in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 23 (what a heading keeps straight), NOT checked: the inference 'what a heading keeps straight' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 24 (what the vacuum would grow, had no mass been there), NOT checked: the inference 'what the vacuum would grow, had no mass been there' reached it from n_{f} = \frac{DEG_{0}·\rho^{2}}{4·\paren{1 - \rho}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 25 (the rate the vacuum would expand at), NOT checked: the inference 'the rate the vacuum would expand at' reached it from \varepsilon = 2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 26 (the scale is the vacuum's own growth), NOT checked: the inference 'the scale is the vacuum's own growth' reached it from v \aside{straight} = \frac{1}{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 27 (what is felt, with the mismatch closed), NOT checked: the inference 'what is felt, with the mismatch closed' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 28 (the space made, as a source), NOT checked: the inference 'the space made, as a source' reached it from F_{g} \aside{closing} = \frac{g_{N}}{2} + \sqrt{\frac{g_{N}^{2}}{4} + g_{N}·a_{0}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 29 (what is felt, solved over the whole field), NOT checked: the inference 'what is felt, solved over the whole field' reached it from -\nabla^{2}\psi = \nabla\cdot\paren{\paren{\sqrt{\frac{g_{N}^{2}}{4} + g_{N}·a_{0}} - \frac{g_{N}}{2}}\hat{g}_{N}}; F_{g} \aside{closing} = \frac{g_{N}}{2} + \sqrt{\frac{g_{N}^{2}}{4} + g_{N}·a_{0}} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 30 (the scale against the vacuum's growth), NOT checked: the inference 'the scale against the vacuum's growth' reached it from a_{0} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{\paren{\frac{DEG·\rho_{\infty}^{2}}{4·\paren{1 - \rho_{\infty}}} + 1}·D}; H_{\Lambda} = \frac{2·\sigma·F·\rho_{\infty}^{2}·\paren{1 - \rho_{\infty}}}{D} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- step 31 (the mass is what the vacuum leaves over), NOT checked: the inference 'the mass is what the vacuum leaves over' reached it from \Delta\rho = S^{+} + \bar{m} - S^{-} in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names \bar{m} again (claim 31), and its value is the earlier one's by algebra
 
 ### vacuum.rays (G)
 
@@ -993,6 +997,15 @@ Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not
 - step 2 (what is felt, with the mismatch closed), NOT checked: the inference 'what is felt, with the mismatch closed' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
 - answer (the answer), checked: it names F_{g} \aside{closing} again (claim 2), and its value is the earlier one's by algebra
 
+### gravity.made (G)
+
+the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?
+
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names g \aside{field} again (claim 2), and its value is the earlier one's by algebra).
+
+- step 2 (what is felt, solved over the whole field), NOT checked: the inference 'what is felt, solved over the whole field' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names g \aside{field} again (claim 2), and its value is the earlier one's by algebra
+
 ### gravity.metric (G)
 
 a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?
@@ -1006,10 +1019,7 @@ Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not
 
 the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?
 
-Lean checked 1 of its 6 steps; 2 are premises read off the program and 3 are not checked. And the answer is CHECKED (claim 6 with the settled numbers put in).
+Lean checked 0 of its 2 steps; 1 are premises read off the program and 1 are not checked. And the answer is CHECKED (it names b_{c} again (claim 2), and its value is the earlier one's by algebra).
 
-- step 3 (what a place stands for, counted off what a fold does), NOT checked: the inference 'what a place stands for, counted off what a fold does' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it
-- step 4 (an index is a metric), checked: the inference's relation (claim 7, read off its code) with the lines it stands on put in - N = \frac{1}{1 - \delta n_{f}} - is this line, by algebra
-- step 5 (an index is a metric), NOT checked: the inference 'an index is a metric' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: it concluded nothing for this line (it looks inside a value, or a guard went the other way); and with every line of the store standing as its name: it concluded nothing for this line (it looks inside a value, or a guard went the other way). So there is no relation to check the line against, and it is stated as the prover wrote it
-- step 6 (where a ray stops coming back), NOT checked: the inference 'where a ray stops coming back' (Inferences.ray) was run again with the lines it cites standing as their names, to read the relation it applies off its code: its relation could not be sampled (a power of a negative base); and with every line of the store standing as its name: its relation could not be sampled (a power of a negative base). So there is no relation to check the line against, and it is stated as the prover wrote it
-- answer (the answer), checked: claim 6 with the settled numbers put in
+- step 2 (where a ray stops coming back), NOT checked: the inference 'where a ray stops coming back' reached it from what the store held in its own code (Inferences.ray, Prove.ray): the relation it applies to them is not recorded with the step, so there is nothing to check the line against - it is stated as the prover wrote it
+- answer (the answer), checked: it names b_{c} again (claim 2), and its value is the earlier one's by algebra

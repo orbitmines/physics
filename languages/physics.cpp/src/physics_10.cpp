@@ -9,104 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_Plan(Cls& c) {
-  c.field("sources", nullptr);
-  c.field("side", nullptr);
-  c.field("resolution", [](const Value& self) -> Value { return make(S<"Resolution">(), {  }); });
-  c.field("budget", [](const Value& self) -> Value { return make(S<"Budget">(), {  }); });
-  c.field("batching", [](const Value& self) -> Value { return make(S<"Batching">(), {  }); });
-  c.field("output", [](const Value& self) -> Value { return make(S<"Output">(), {  }); });
-  c.getter("box_side", [](Value self, const Args& a1) -> Value {
-    return add(get(self, S<"side">()), mul(mul(2.0, get(get(self, S<"resolution">()), S<"margin">())), get(get(self, S<"resolution">()), S<"cells">())));
-    return null;
-  });
-  c.getter("box_cells", [](Value self, const Args& a1) -> Value {
-    return mul(get(self, S<"box_side">()), get(self, S<"box_side">()));
-    return null;
-  });
-  c.getter("reach", [](Value self, const Args& a1) -> Value {
-    return add(mul(3.0, get(get(self, S<"resolution">()), S<"cells">())), 4.0);
-    return null;
-  });
-  c.getter("tile_side", [](Value self, const Args& a1) -> Value {
-    return add(m_floor((div(sub(add(get(self, S<"box_side">()), get(get(self, S<"batching">()), S<"tiles">())), 1.0), get(get(self, S<"batching">()), S<"tiles">())))), mul(mul(2.0, get(self, S<"reach">())), get(get(self, S<"batching">()), S<"ticks">())));
-    return null;
-  });
-  c.getter("tile_cells", [](Value self, const Args& a1) -> Value {
-    return (truthy(eq(get(get(self, S<"batching">()), S<"tiles">()), 1.0)) ? Value(get(self, S<"box_cells">())) : Value(mul(get(self, S<"tile_side">()), get(self, S<"tile_side">()))));
-    return null;
-  });
-  c.getter("tile_sources", [](Value self, const Args& a1) -> Value {
-    return div(mul(get(self, S<"sources">()), get(self, S<"tile_cells">())), get(self, S<"box_cells">()));
-    return null;
-  });
-  c.getter("parts", [](Value self, const Args& a1) -> Value {
-    auto c__0 = cell(); c__0->v = get(self, S<"tile_cells">());
-    auto s_0 = cell(); s_0->v = get(self, S<"tile_sources">());
-    auto r_0 = cell(); r_0->v = get(self, S<"resolution">());
-    auto held_0 = cell(); held_0->v = mul(mul(c__0->v, (add(add(add(add(add(add(add(add(add(add(mul(mul(get(r_0->v, S<"ways">()), get(r_0->v, S<"keeps">())), 8.0), 1.0), get(r_0->v, S<"ways">())), 12.0), 2.0), 4.0), 4.0), 9.0), get(r_0->v, S<"near_list">())), 1.0), 1.0))), 4.0);
-    auto each_0 = cell(); each_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(0.0) : Value(add(add(add(12.0, 4.0), 2.0), 1.0)));
-    auto ledgers_0 = cell(); ledgers_0->v = mul((add(add(mul(c__0->v, add(add(11.0, 384.0), 2.0)), mul(s_0->v, each_0->v)), mul(mul(4096.0, 64.0), 4.0))), 4.0);
-    auto lists_0 = cell(); lists_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(mul((add(mul(10.0, c__0->v), mul(1024.0, 1024.0))), 4.0)) : Value(mul((add(mul(2.0, c__0->v), s_0->v)), 4.0)));
-    auto base_0 = cell(); base_0->v = list({ list({ "held rays (a box)", held_0->v, true }), list({ "held rays (the other)", held_0->v, true }), list({ "ledgers and sources", ledgers_0->v, true }), list({ "sources by cell", lists_0->v, true }), list({ "planes", mul(mul(3.0, c__0->v), 4.0), true }) });
-    auto shards_0 = cell(); shards_0->v = (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(filt(m_map(rng(8.0), fn([=](const Args& a4) -> Value {
-      auto k_3 = cell(arg(a4, 0));
-      return call(K(S<"Fmt">()), S<"max">(), { 0.0, call(K(S<"Fmt">()), S<"min">(), { 178956970.0, sub(s_0->v, mul(k_3->v, 178956970.0)) }) });
-      return null;
-    })), fn([=](const Args& a3) -> Value {
-      auto n_2 = cell(arg(a3, 0));
-      return gt(n_2->v, 0.0);
-      return null;
-    }))) : Value(list({  })));
-    return m_concat(base_0->v, m_map(rng(len(shards_0->v)), fn([=](const Args& a3) -> Value {
-      auto k_2 = cell(arg(a3, 0));
-      return list({ "sources (shard " + str(k_2->v) + ")", mul(elem(shards_0->v, k_2->v), 12.0), true });
-      return null;
-    })));
-    return null;
-  });
-  c.getter("total", [](Value self, const Args& a1) -> Value {
-    return m_sum(m_map(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
-      auto p_2 = cell(arg(a3, 0));
-      return elem(p_2->v, 1.0);
-      return null;
-    })));
-    return null;
-  });
-  c.getter("per_source", [](Value self, const Args& a1) -> Value {
-    return (truthy(get(get(self, S<"budget">()), S<"compact">())) ? Value(12.0) : Value(mul(add(add(add(add(12.0, 4.0), 2.0), 1.0), 1.0), 4.0)));
-    return null;
-  });
-  c.method("fits", [](Value self, const Args& a1) -> Value {
-    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
-    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
-    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
-    return (truthy(le(get(self, S<"total">()), cap_0->v)) && truthy(m_every(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
-      auto p_2 = cell(arg(a3, 0));
-      return le(elem(p_2->v, 1.0), one_0->v);
-      return null;
-    }))));
-    return null;
-  });
-  c.method("report", [](Value self, const Args& a1) -> Value {
-    auto memory_0 = cell(arg(a1, 0)); auto binding_0 = cell(arg(a1, 1));
-    auto cap_0 = cell(); cap_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"memory">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"memory">())) : Value(memory_0->v));
-    auto one_0 = cell(); one_0->v = (truthy(gt(get(get(self, S<"budget">()), S<"binding">()), 0.0)) ? Value(get(get(self, S<"budget">()), S<"binding">())) : Value(binding_0->v));
-    auto over_0 = cell(); over_0->v = " - more than one binding holds (" + str(call(K(S<"Fmt">()), S<"fixed">(), { div(one_0->v, 1048576.0), 0.0 })) + " MiB)";
-    auto lines_0 = cell(); lines_0->v = m_map(get(self, S<"parts">()), fn([=](const Args& a3) -> Value {
-      auto p_2 = cell(arg(a3, 0));
-      auto tail_2 = cell(); tail_2->v = (truthy(gt(elem(p_2->v, 1.0), one_0->v)) ? Value(over_0->v) : Value(""));
-      return "  " + str(elem(p_2->v, 0.0)) + ": " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(elem(p_2->v, 1.0), 1048576.0), 0.0 })) + " MiB" + str(tail_2->v) + "";
-      return null;
-    }));
-    auto head_0 = cell(); head_0->v = "" + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"sources">()), 0.0 })) + " sources on a " + str(get(self, S<"side">())) + "-cell view in a " + str(get(self, S<"box_side">())) + "-cell box (" + str(mul(get(get(self, S<"batching">()), S<"tiles">()), get(get(self, S<"batching">()), S<"tiles">()))) + " tile(s), " + str(get(get(self, S<"resolution">()), S<"cells">())) + " cells to a c-bar, " + str(get(get(self, S<"resolution">()), S<"ways">())) + " ways): " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(get(self, S<"total">()), 1073741824.0), 2.0 })) + " GiB of " + str(call(K(S<"Fmt">()), S<"fixed">(), { div(cap_0->v, 1073741824.0), 2.0 })) + " GiB, " + str(call(K(S<"Fmt">()), S<"fixed">(), { get(self, S<"per_source">()), 0.0 })) + " bytes a source";
-    auto verdict_0 = cell(); verdict_0->v = (truthy(call(self, S<"fits">(), { memory_0->v, binding_0->v })) ? Value("  fits") : Value("  does not fit"));
-    return m_join(m_concat(m_concat(list({ head_0->v }), lines_0->v), list({ verdict_0->v })), "\n");
-    return null;
-  });
-}
-static const bool R_Plan = define_class("Plan", "Node", &C_Plan);
-
 static void C_Annulus(Cls& c) {
   c.field("inner", nullptr);
   c.field("outer", nullptr);
@@ -180,6 +82,12 @@ static void C_Simulation(Cls& c) {
   c.staticField("THREAD", [](const Value& self) -> Value { return "  let i: u32 = P[7] + gid.y * 65536u + gid.x;"; });
   c.staticField("ENTRY", [](const Value& self) -> Value { return "@compute @workgroup_size(64) fn"; });
   c.staticField("ID", [](const Value& self) -> Value { return "(@builtin(global_invocation_id) gid: vec3<u32>) {"; });
+  c.staticField("NY", [](const Value& self) -> Value { return 21.0; });
+  c.staticField("NB", [](const Value& self) -> Value { return 11.0; });
+  c.staticField("RUNG_Y", [](const Value& self) -> Value { return 0.05; });
+  c.staticField("RUNG_B", [](const Value& self) -> Value { return 0.1; });
+  c.staticField("RINGS_IN", [](const Value& self) -> Value { return 8.0; });
+  c.staticField("FAR_OFF", [](const Value& self) -> Value { return 30.0; });
   c.staticField("OMEGA_M", [](const Value& self) -> Value { return 0.315; });
   c.staticField("FILM_STARS", [](const Value& self) -> Value { return 4096.0; });
   c.staticField("FILM_TURNS", [](const Value& self) -> Value { return 0.5; });
@@ -228,7 +136,14 @@ static void C_Simulation(Cls& c) {
     auto lyd_0 = cell(); lyd_0->v = call(K(S<"Shaded">()), S<"literal">(), { call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YD">()) }) });
     auto lyb_0 = cell(); lyb_0->v = call(K(S<"Shaded">()), S<"literal">(), { call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YB">()) }) });
     auto py_0 = cell(); py_0->v = call(K(S<"Shaded">()), S<"literal">(), { get(K(S<"Simulation">()), S<"PRIOR_Y">()) });
-    return m_join(list({ "// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", get(K(S<"Simulation">()), S<"law_wgsl">()), "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " FIT" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let YD: f32 = exp(ly * " + str(ln10_0->v) + ");", "  let YB: f32 = exp(lb * " + str(ln10_0->v) + ");", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + str(pi_0->v) + " / 180.0) / sin(ip * " + str(pi_0->v) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + str(lyd_0->v) + ") / " + str(py_0->v) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + str(lyb_0->v) + ") / " + str(py_0->v) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}" }), "\n");
+    auto ly0_0 = cell(); ly0_0->v = call(K(S<"Shaded">()), S<"literal">(), { sub(call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YD">()) }), div(mul(get(K(S<"Simulation">()), S<"RUNG_Y">()), sub(get(K(S<"Simulation">()), S<"NY">()), 1.0)), 2.0)) });
+    auto lb0_0 = cell(); lb0_0->v = call(K(S<"Shaded">()), S<"literal">(), { sub(call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YB">()) }), div(mul(get(K(S<"Simulation">()), S<"RUNG_B">()), sub(get(K(S<"Simulation">()), S<"NB">()), 1.0)), 2.0)) });
+    auto sy_0 = cell(); sy_0->v = call(K(S<"Shaded">()), S<"literal">(), { get(K(S<"Simulation">()), S<"RUNG_Y">()) });
+    auto sb_0 = cell(); sb_0->v = call(K(S<"Shaded">()), S<"literal">(), { get(K(S<"Simulation">()), S<"RUNG_B">()) });
+    auto topy_0 = cell(); topy_0->v = call(K(S<"Shaded">()), S<"literal">(), { sub(sub(get(K(S<"Simulation">()), S<"NY">()), 1.0), 0.0001) });
+    auto ny_0 = cell(); ny_0->v = get(K(S<"Simulation">()), S<"NY">());
+    auto nbs_0 = cell(); nbs_0->v = get(K(S<"Simulation">()), S<"NB">());
+    return m_join(list({ "// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " FIT" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let uy: f32 = clamp((ly - " + str(ly0_0->v) + ") / " + str(sy_0->v) + ", 0.0, " + str(topy_0->v) + ");", "  let ky: u32 = u32(floor(uy));", "  let fy: f32 = uy - floor(uy);", "  var nb: u32 = 1u;", "  if (G[b + 7u] > 0.0) { nb = " + str(nbs_0->v) + "u; }", "  var ub: f32 = 0.0;", "  if (nb > 1u) { ub = clamp((lb - " + str(lb0_0->v) + ") / " + str(sb_0->v) + ", 0.0, f32(nb - 1u) - 0.0001); }", "  let kb: u32 = u32(floor(ub));", "  let fb: f32 = ub - floor(ub);", "  let kb1: u32 = min(kb + 1u, nb - 1u);", "  let base: u32 = u32(G[b + 15u]);", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + str(pi_0->v) + " / 180.0) / sin(ip * " + str(pi_0->v) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let o: u32 = p - start;", "    let cnt: u32 = u32(G[b + 1u]);", "    let lo: f32 = (1.0 - fy) * L[base + (kb * " + str(ny_0->v) + "u + ky) * cnt + o] + fy * L[base + (kb * " + str(ny_0->v) + "u + ky + 1u) * cnt + o];", "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " + str(ny_0->v) + "u + ky) * cnt + o] + fy * L[base + (kb1 * " + str(ny_0->v) + "u + ky + 1u) * cnt + o];", "    let g: f32 = (1.0 - fb) * lo + fb * hi;", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + str(lyd_0->v) + ") / " + str(py_0->v) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + str(lyb_0->v) + ") / " + str(py_0->v) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}" }), "\n");
     return null;
   });
   c.statik("best_kernel", [](Value self, const Args& a1) -> Value {
@@ -236,7 +151,7 @@ static void C_Simulation(Cls& c) {
     return null;
   });
   c.statik("stars_kernel", [](Value self, const Args& a1) -> Value {
-    return m_join(list({ "// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", get(K(S<"Simulation">()), S<"law_wgsl">()), "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) {", "    let q: f32 = rmax / r;", "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);", "  }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " START" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " STEP" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}" }), "\n");
+    return m_join(list({ "// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " START" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + str(get(K(S<"Simulation">()), S<"ENTRY">())) + " STEP" + str(get(K(S<"Simulation">()), S<"ID">())) + "", get(K(S<"Simulation">()), S<"THREAD">()), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}" }), "\n");
     return null;
   });
   c.statik("runnable", [](Value self, const Args& a1) -> Value {
@@ -723,6 +638,213 @@ static void C_Simulation(Cls& c) {
     };
     return null;
   });
+  c.field("on", [](const Value& self) -> Value { return make(S<"Felt">(), {  }); });
+  c.method("unit_of", [](Value self, const Args& a1) -> Value {
+    auto j_0 = cell(arg(a1, 0));
+    return div(elem(elem(elem(get(self, S<"rows">()), j_0->v), sub(len(elem(get(self, S<"rows">()), j_0->v)), 1.0)), 0.0), 10.0);
+    return null;
+  });
+  c.method("grid_of", [](Value self, const Args& a1) -> Value {
+    auto j_0 = cell(arg(a1, 0));
+    auto F_0 = cell(); F_0->v = get(self, S<"on">());
+    auto L_0 = cell(); L_0->v = call(self, S<"unit_of">(), { j_0->v });
+    auto es_0 = cell(); es_0->v = elem(get(self, S<"edges">()), j_0->v);
+    auto n_0 = cell(); n_0->v = sub(len(es_0->v), 1.0);
+    auto wd_0 = cell(); wd_0->v = elem(get(self, S<"w_discs">()), j_0->v);
+    auto wg_0 = cell(); wg_0->v = elem(get(self, S<"w_gases">()), j_0->v);
+    auto rs_0 = cell(); rs_0->v = elem(get(self, S<"rows">()), j_0->v);
+    auto t_0 = cell(); t_0->v = elem(get(self, S<"thick">()), j_0->v);
+    auto rings_0 = cell(); rings_0->v = list({  });
+    for (double i1 = 0, n1 = num(n_0->v); i1 < n1; i1++) {
+      auto a_1 = cell(i1);
+      auto area_1 = cell(); area_1->v = sub(mul(elem(es_0->v, add(a_1->v, 1.0)), elem(es_0->v, add(a_1->v, 1.0))), mul(elem(es_0->v, a_1->v), elem(es_0->v, a_1->v)));
+      for (double i2 = 0, n2 = num(get(K(S<"Simulation">()), S<"RINGS_IN">())); i2 < n2; i2++) {
+        auto k_2 = cell(i2);
+        auto r0_2 = cell(); r0_2->v = add(elem(es_0->v, a_1->v), div(mul((sub(elem(es_0->v, add(a_1->v, 1.0)), elem(es_0->v, a_1->v))), k_2->v), get(K(S<"Simulation">()), S<"RINGS_IN">())));
+        auto r1_2 = cell(); r1_2->v = add(elem(es_0->v, a_1->v), div(mul((sub(elem(es_0->v, add(a_1->v, 1.0)), elem(es_0->v, a_1->v))), add(k_2->v, 1.0)), get(K(S<"Simulation">()), S<"RINGS_IN">())));
+        auto soft_2 = cell(); soft_2->v = div((sub(r1_2->v, r0_2->v)), 2.0);
+        m_push(rings_0->v, list({ div((add(r0_2->v, r1_2->v)), 2.0), (truthy(gt(area_1->v, 0.0)) ? Value(div((sub(mul(r1_2->v, r1_2->v), mul(r0_2->v, r0_2->v))), area_1->v)) : Value(0.0)), a_1->v, add(mul(t_0->v, t_0->v), mul(soft_2->v, soft_2->v)) }));
+      };
+    };
+    auto md_0 = cell(); md_0->v = m_reduce(wd_0->v, 0.0, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return add(m_2->v, v_2->v);
+      return null;
+    }));
+    auto mg_0 = cell(); mg_0->v = m_reduce(wg_0->v, 0.0, fn([=](const Args& a3) -> Value {
+      auto m_2 = cell(arg(a3, 0)); auto v_2 = cell(arg(a3, 1));
+      return add(m_2->v, v_2->v);
+      return null;
+    }));
+    auto out_0 = cell(); out_0->v = m_map(rng(6.0), fn([=](const Args& a3) -> Value {
+      auto k_2 = cell(arg(a3, 0));
+      return filled(get(F_0->v, S<"cells">()), 0.0);
+      return null;
+    }));
+    for (double i1 = 0, n1 = num(get(F_0->v, S<"cells">())); i1 < n1; i1++) {
+      auto c__1 = cell(i1);
+      auto i_1 = cell(); i_1->v = m_floor((div(c__1->v, get(K(S<"Felt">()), S<"NMU">()))));
+      auto mu_1 = cell(); mu_1->v = elem(get(F_0->v, S<"mc">()), mod(c__1->v, get(K(S<"Felt">()), S<"NMU">())));
+      auto r_1 = cell(); r_1->v = mul(elem(get(F_0->v, S<"rc">()), i_1->v), L_0->v);
+      auto R_1 = cell(); R_1->v = mul(r_1->v, m_sqrt((sub(1.0, mul(mu_1->v, mu_1->v)))));
+      auto z_1 = cell(); z_1->v = mul(r_1->v, mu_1->v);
+      if (truthy(gt(r_1->v, mul(get(K(S<"Simulation">()), S<"FAR_OFF">()), elem(es_0->v, n_0->v))))) {
+        setAt(elem(out_0->v, 0.0), c__1->v, sub(0.0, div(mul(md_0->v, R_1->v), (mul(mul(r_1->v, r_1->v), r_1->v)))));
+        setAt(elem(out_0->v, 1.0), c__1->v, sub(0.0, div(mul(md_0->v, z_1->v), (mul(mul(r_1->v, r_1->v), r_1->v)))));
+        setAt(elem(out_0->v, 2.0), c__1->v, sub(0.0, div(mul(mg_0->v, R_1->v), (mul(mul(r_1->v, r_1->v), r_1->v)))));
+        setAt(elem(out_0->v, 3.0), c__1->v, sub(0.0, div(mul(mg_0->v, z_1->v), (mul(mul(r_1->v, r_1->v), r_1->v)))));
+      } else {
+        for (const Value& e2 : Each(rings_0->v)) {
+          auto b_2 = cell(e2);
+          auto g_2 = cell(); g_2->v = call(K(S<"Felt">()), S<"ring">(), { R_1->v, z_1->v, elem(b_2->v, 0.0), 0.0, elem(b_2->v, 3.0) });
+          setAt(elem(out_0->v, 0.0), c__1->v, add(elem(elem(out_0->v, 0.0), c__1->v), mul(mul(elem(wd_0->v, elem(b_2->v, 2.0)), elem(b_2->v, 1.0)), elem(g_2->v, 0.0))));
+          setAt(elem(out_0->v, 1.0), c__1->v, add(elem(elem(out_0->v, 1.0), c__1->v), mul(mul(elem(wd_0->v, elem(b_2->v, 2.0)), elem(b_2->v, 1.0)), elem(g_2->v, 1.0))));
+          setAt(elem(out_0->v, 2.0), c__1->v, add(elem(elem(out_0->v, 2.0), c__1->v), mul(mul(elem(wg_0->v, elem(b_2->v, 2.0)), elem(b_2->v, 1.0)), elem(g_2->v, 0.0))));
+          setAt(elem(out_0->v, 3.0), c__1->v, add(elem(elem(out_0->v, 3.0), c__1->v), mul(mul(elem(wg_0->v, elem(b_2->v, 2.0)), elem(b_2->v, 1.0)), elem(g_2->v, 1.0))));
+        };
+      }
+      auto gb_1 = cell(); gb_1->v = call(K(S<"Simulation">()), S<"bulge_at">(), { rs_0->v, r_1->v });
+      setAt(elem(out_0->v, 4.0), c__1->v, sub(0.0, div(mul(gb_1->v, R_1->v), r_1->v)));
+      setAt(elem(out_0->v, 5.0), c__1->v, sub(0.0, div(mul(gb_1->v, z_1->v), r_1->v)));
+    };
+    return out_0->v;
+    return null;
+  });
+  c.method("made_of", [](Value self, const Args& a1) -> Value {
+    auto grid_0 = cell(arg(a1, 0)); auto yd_0 = cell(arg(a1, 1)); auto yb_0 = cell(arg(a1, 2));
+    auto a_0 = cell(); a_0->v = get(self, S<"a0">());
+    auto gr_0 = cell(); gr_0->v = m_map(rng(get(get(self, S<"on">()), S<"cells">())), fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return div((add(add(mul(yd_0->v, elem(elem(grid_0->v, 0.0), c__2->v)), elem(elem(grid_0->v, 2.0), c__2->v)), mul(yb_0->v, elem(elem(grid_0->v, 4.0), c__2->v)))), a_0->v);
+      return null;
+    }));
+    auto gz_0 = cell(); gz_0->v = m_map(rng(get(get(self, S<"on">()), S<"cells">())), fn([=](const Args& a3) -> Value {
+      auto c__2 = cell(arg(a3, 0));
+      return div((add(add(mul(yd_0->v, elem(elem(grid_0->v, 1.0), c__2->v)), elem(elem(grid_0->v, 3.0), c__2->v)), mul(yb_0->v, elem(elem(grid_0->v, 5.0), c__2->v)))), a_0->v);
+      return null;
+    }));
+    return m_map(call(get(self, S<"on">()), S<"made_rows">(), { gr_0->v, gz_0->v }), fn([=](const Args& a3) -> Value {
+      auto v_2 = cell(arg(a3, 0));
+      return mul(v_2->v, a_0->v);
+      return null;
+    }));
+    return null;
+  });
+  c.method("felt_at", [](Value self, const Args& a1) -> Value {
+    auto j_0 = cell(arg(a1, 0)); auto made_0 = cell(arg(a1, 1)); auto r_0 = cell(arg(a1, 2)); auto gN_0 = cell(arg(a1, 3));
+    return sub(gN_0->v, call(get(self, S<"on">()), S<"made_at">(), { made_0->v, div(r_0->v, call(self, S<"unit_of">(), { j_0->v })) }));
+    return null;
+  });
+  c.field("grids", [](const Value& self) -> Value { return list({  }); });
+  c.field("ladder", [](const Value& self) -> Value { return list({  }); });
+  c.field("ladder_at", [](const Value& self) -> Value { return list({  }); });
+  c.method("rungs", [](Value self, const Args& a1) -> Value {
+    auto j_0 = cell(arg(a1, 0));
+    return (truthy(call(self, S<"has_bulge">(), { j_0->v })) ? Value(get(K(S<"Simulation">()), S<"NB">())) : Value(1.0));
+    return null;
+  });
+  c.getter("solve_fields", [](Value self, const Args& a1) -> Value {
+    set(self, S<"grids">(), list({  }));
+    set(self, S<"ladder">(), list({  }));
+    set(self, S<"ladder_at">(), list({  }));
+    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
+      auto j_1 = cell(i1);
+      auto grid_1 = cell(); grid_1->v = call(self, S<"grid_of">(), { j_1->v });
+      m_push(get(self, S<"grids">()), grid_1->v);
+      m_push(get(self, S<"ladder_at">()), len(get(self, S<"ladder">())));
+      auto kept_1 = cell(); kept_1->v = filt(rng(len(elem(get(self, S<"rows">()), j_1->v))), fn([=](const Args& a4) -> Value {
+        auto i_3 = cell(arg(a4, 0));
+        return gt(elem(elem(elem(get(self, S<"rows">()), j_1->v), i_3->v), 6.0), 0.0);
+        return null;
+      }));
+      for (double i2 = 0, n2 = num(call(self, S<"rungs">(), { j_1->v })); i2 < n2; i2++) {
+        auto ib_2 = cell(i2);
+        auto yb_2 = cell(); yb_2->v = power(10.0, (call(self, S<"rung_b">(), { ib_2->v })));
+        for (double i3 = 0, n3 = num(get(K(S<"Simulation">()), S<"NY">())); i3 < n3; i3++) {
+          auto iy_3 = cell(i3);
+          auto yd_3 = cell(); yd_3->v = power(10.0, (call(self, S<"rung_y">(), { iy_3->v })));
+          auto made_3 = cell(); made_3->v = call(self, S<"made_of">(), { grid_1->v, yd_3->v, yb_2->v });
+          for (const Value& e4 : Each(kept_1->v)) {
+            auto i_4 = cell(e4);
+            auto p_4 = cell(); p_4->v = elem(elem(get(self, S<"at_rows">()), j_1->v), i_4->v);
+            m_push(get(self, S<"ladder">()), call(self, S<"felt_at">(), { j_1->v, made_3->v, elem(elem(elem(get(self, S<"rows">()), j_1->v), i_4->v), 0.0), add(add(mul(yd_3->v, elem(p_4->v, 0.0)), mul(yb_2->v, elem(p_4->v, 2.0))), elem(p_4->v, 1.0)) }));
+          };
+        };
+      };
+    };
+    return null;
+  });
+  c.method("rung_y", [](Value self, const Args& a1) -> Value {
+    auto iy_0 = cell(arg(a1, 0));
+    return add(call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YD">()) }), mul(get(K(S<"Simulation">()), S<"RUNG_Y">()), (sub(iy_0->v, div(sub(get(K(S<"Simulation">()), S<"NY">()), 1.0), 2.0)))));
+    return null;
+  });
+  c.method("rung_b", [](Value self, const Args& a1) -> Value {
+    auto ib_0 = cell(arg(a1, 0));
+    return add(call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YB">()) }), mul(get(K(S<"Simulation">()), S<"RUNG_B">()), (sub(ib_0->v, div(sub(get(K(S<"Simulation">()), S<"NB">()), 1.0), 2.0)))));
+    return null;
+  });
+  c.method("laddered", [](Value self, const Args& a1) -> Value {
+    auto j_0 = cell(arg(a1, 0)); auto k_0 = cell(arg(a1, 1)); auto ly_0 = cell(arg(a1, 2)); auto lb_0 = cell(arg(a1, 3));
+    auto count_0 = cell(); count_0->v = len(filt(elem(get(self, S<"rows">()), j_0->v), fn([=](const Args& a3) -> Value {
+      auto row_2 = cell(arg(a3, 0));
+      return gt(elem(row_2->v, 6.0), 0.0);
+      return null;
+    })));
+    auto uy_0 = cell(); uy_0->v = call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div((sub(ly_0->v, call(self, S<"rung_y">(), { 0.0 }))), get(K(S<"Simulation">()), S<"RUNG_Y">())), 0.0 }), sub(sub(get(K(S<"Simulation">()), S<"NY">()), 1.0), 0.0001) });
+    auto ky_0 = cell(); ky_0->v = m_floor(uy_0->v);
+    auto fy_0 = cell(); fy_0->v = sub(uy_0->v, ky_0->v);
+    auto nb_0 = cell(); nb_0->v = call(self, S<"rungs">(), { j_0->v });
+    auto ub_0 = cell(); ub_0->v = (truthy(gt(nb_0->v, 1.0)) ? Value(call(K(S<"Fmt">()), S<"min">(), { call(K(S<"Fmt">()), S<"max">(), { div((sub(lb_0->v, call(self, S<"rung_b">(), { 0.0 }))), get(K(S<"Simulation">()), S<"RUNG_B">())), 0.0 }), sub(sub(nb_0->v, 1.0), 0.0001) })) : Value(0.0));
+    auto kb_0 = cell(); kb_0->v = m_floor(ub_0->v);
+    auto fb_0 = cell(); fb_0->v = sub(ub_0->v, kb_0->v);
+    auto kb1_0 = cell(); kb1_0->v = call(K(S<"Fmt">()), S<"min">(), { add(kb_0->v, 1.0), sub(nb_0->v, 1.0) });
+    auto at_0 = cell(); at_0->v = fn([=](const Args& a2) -> Value {
+      auto b_1 = cell(arg(a2, 0)); auto y_1 = cell(arg(a2, 1));
+      return elem(get(self, S<"ladder">()), add(add(elem(get(self, S<"ladder_at">()), j_0->v), mul((add(mul(b_1->v, get(K(S<"Simulation">()), S<"NY">())), y_1->v)), count_0->v)), k_0->v));
+      return null;
+    });
+    auto lo_0 = cell(); lo_0->v = add(mul((sub(1.0, fy_0->v)), invoke(at_0->v, { kb_0->v, ky_0->v })), mul(fy_0->v, invoke(at_0->v, { kb_0->v, add(ky_0->v, 1.0) })));
+    auto hi_0 = cell(); hi_0->v = add(mul((sub(1.0, fy_0->v)), invoke(at_0->v, { kb1_0->v, ky_0->v })), mul(fy_0->v, invoke(at_0->v, { kb1_0->v, add(ky_0->v, 1.0) })));
+    return add(mul((sub(1.0, fb_0->v)), lo_0->v), mul(fb_0->v, hi_0->v));
+    return null;
+  });
+  c.method("solved_points", [](Value self, const Args& a1) -> Value {
+    auto yd_0 = cell(arg(a1, 0)); auto yb_0 = cell(arg(a1, 1));
+    auto measured_0 = cell(); measured_0->v = list({  });
+    auto tabled_0 = cell(); tabled_0->v = list({  });
+    for (double i1 = 0, n1 = num(len(get(self, S<"ids">()))); i1 < n1; i1++) {
+      auto j_1 = cell(i1);
+      auto made_1 = cell(); made_1->v = call(self, S<"made_of">(), { elem(get(self, S<"grids">()), j_1->v), elem(yd_0->v, j_1->v), elem(yb_0->v, j_1->v) });
+      for (double i2 = 0, n2 = num(len(elem(get(self, S<"rows">()), j_1->v))); i2 < n2; i2++) {
+        auto i_2 = cell(i2);
+        auto p_2 = cell(); p_2->v = elem(elem(get(self, S<"at_rows">()), j_1->v), i_2->v);
+        m_push(measured_0->v, call(self, S<"felt_at">(), { j_1->v, made_1->v, elem(elem(elem(get(self, S<"rows">()), j_1->v), i_2->v), 0.0), add(add(mul(elem(yd_0->v, j_1->v), elem(p_2->v, 0.0)), mul(elem(yb_0->v, j_1->v), elem(p_2->v, 2.0))), elem(p_2->v, 1.0)) }));
+      };
+      for (const Value& e2 : Each(elem(get(self, S<"tables">()), j_1->v))) {
+        auto t_2 = cell(e2);
+        m_push(tabled_0->v, call(self, S<"felt_at">(), { j_1->v, made_1->v, elem(t_2->v, 0.0), add(add(mul(elem(yd_0->v, j_1->v), elem(t_2->v, 1.0)), mul(elem(yb_0->v, j_1->v), elem(t_2->v, 3.0))), elem(t_2->v, 2.0)) }));
+      };
+    };
+    return m_concat(measured_0->v, tabled_0->v);
+    return null;
+  });
+  c.getter("own_y", [](Value self, const Args& a1) -> Value {
+    return m_map(get(self, S<"ids">()), fn([=](const Args& a3) -> Value {
+      auto g_2 = cell(arg(a3, 0));
+      return get(K(S<"Sparc">()), S<"YD">());
+      return null;
+    }));
+    return null;
+  });
+  c.getter("own_b", [](Value self, const Args& a1) -> Value {
+    return m_map(get(self, S<"ids">()), fn([=](const Args& a3) -> Value {
+      auto g_2 = cell(arg(a3, 0));
+      return get(K(S<"Sparc">()), S<"YB">());
+      return null;
+    }));
+    return null;
+  });
   c.statik("lift_coefficients", [](Value self, const Args& a1) -> Value {
     auto theory_0 = cell(arg(a1, 0)); auto deg_0 = cell(arg(a1, 1));
     auto model_0 = cell(); model_0->v = make(S<"Model">(), { kw(S<"theory">(), theory_0->v) });
@@ -946,7 +1068,7 @@ static void C_Simulation(Cls& c) {
       auto j_2 = cell(arg(a3, 0));
       auto g_2 = cell(); g_2->v = elem(get(self, S<"ids">()), j_2->v);
       auto stop_2 = cell(); stop_2->v = (truthy(lt(add(j_2->v, 1.0), len(get(self, S<"ids">())))) ? Value(elem(get(self, S<"fit_at">()), add(j_2->v, 1.0))) : Value(m_floor((div(len(pts_0->v), 8.0)))));
-      return list({ elem(get(self, S<"fit_at">()), j_2->v), sub(stop_2->v, elem(get(self, S<"fit_at">()), j_2->v)), elem(get(S_0->v, Sym(str("D"))), g_2->v), elem(get(S_0->v, Sym(str("e_D"))), g_2->v), elem(get(S_0->v, Sym(str("Inc"))), g_2->v), elem(get(S_0->v, Sym(str("e_Inc"))), g_2->v), get(self, S<"a0">()), (truthy(call(self, S<"has_bulge">(), { j_2->v })) ? Value(1.0) : Value(0.0)), elem(get(self, S<"centre_y">()), j_2->v), elem(get(self, S<"centre_b">()), j_2->v), elem(get(self, S<"centre_d">()), j_2->v), elem(get(self, S<"centre_i">()), j_2->v), mul(get(K(S<"Simulation">()), S<"STEP_Y">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_D">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_I">()), get(self, S<"spacing">())), 0.0 });
+      return list({ elem(get(self, S<"fit_at">()), j_2->v), sub(stop_2->v, elem(get(self, S<"fit_at">()), j_2->v)), elem(get(S_0->v, Sym(str("D"))), g_2->v), elem(get(S_0->v, Sym(str("e_D"))), g_2->v), elem(get(S_0->v, Sym(str("Inc"))), g_2->v), elem(get(S_0->v, Sym(str("e_Inc"))), g_2->v), get(self, S<"a0">()), (truthy(call(self, S<"has_bulge">(), { j_2->v })) ? Value(1.0) : Value(0.0)), elem(get(self, S<"centre_y">()), j_2->v), elem(get(self, S<"centre_b">()), j_2->v), elem(get(self, S<"centre_d">()), j_2->v), elem(get(self, S<"centre_i">()), j_2->v), mul(get(K(S<"Simulation">()), S<"STEP_Y">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_D">()), get(self, S<"spacing">())), mul(get(K(S<"Simulation">()), S<"STEP_I">()), get(self, S<"spacing">())), elem(get(self, S<"ladder_at">()), j_2->v) });
       return null;
     })) });
     return null;
@@ -974,19 +1096,18 @@ static void C_Simulation(Cls& c) {
     if (truthy((truthy((truthy(le(elem(at_0->v, 2.0), 0.0)) || truthy(le(elem(at_0->v, 3.0), 0.5)))) || truthy(gt(elem(at_0->v, 3.0), 90.0))))) {
       return mul(neg(1.0), power(10.0, 30.0));
     }
-    auto YD_0 = cell(); YD_0->v = power(10.0, elem(at_0->v, 0.0));
-    auto YB_0 = cell(); YB_0->v = power(10.0, elem(at_0->v, 1.0));
     auto f_0 = cell(); f_0->v = div(elem(at_0->v, 2.0), D_0->v);
     auto s_0 = cell(); s_0->v = div(m_sin((div(mul(inc_0->v, RAY_PI), 180.0))), m_sin((div(mul(elem(at_0->v, 3.0), RAY_PI), 180.0))));
     auto chi_0 = cell(); chi_0->v = 0.0;
+    auto k_0 = cell(); k_0->v = 0.0;
     for (double i1 = 0, n1 = num(len(elem(get(self, S<"rows">()), j_0->v))); i1 < n1; i1++) {
       auto i_1 = cell(i1);
       auto row_1 = cell(); row_1->v = elem(elem(get(self, S<"rows">()), j_0->v), i_1->v);
       if (truthy(gt(elem(row_1->v, 6.0), 0.0))) {
-        auto p_1 = cell(); p_1->v = elem(elem(get(self, S<"at_rows">()), j_0->v), i_1->v);
-        auto vm_1 = cell(); vm_1->v = m_sqrt(call(K(S<"Fmt">()), S<"max">(), { mul(mul(f_0->v, elem(row_1->v, 0.0)), call(self, S<"felt">(), { add(add(mul(YD_0->v, elem(p_1->v, 0.0)), mul(YB_0->v, elem(p_1->v, 2.0))), elem(p_1->v, 1.0)) })), 0.0 }));
+        auto vm_1 = cell(); vm_1->v = m_sqrt(call(K(S<"Fmt">()), S<"max">(), { mul(mul(f_0->v, elem(row_1->v, 0.0)), call(self, S<"laddered">(), { j_0->v, k_0->v, elem(at_0->v, 0.0), elem(at_0->v, 1.0) })), 0.0 }));
         auto d_1 = cell(); d_1->v = div((sub(mul(elem(row_1->v, 1.0), s_0->v), vm_1->v)), (mul(elem(row_1->v, 2.0), s_0->v)));
         chi_0->v = add(chi_0->v, mul(d_1->v, d_1->v));
+        k_0->v = add(k_0->v, 1.0);
       }
     };
     auto py_0 = cell(); py_0->v = div((sub(elem(at_0->v, 0.0), call(K(S<"Fmt">()), S<"log10">(), { get(K(S<"Sparc">()), S<"YD">()) }))), get(K(S<"Simulation">()), S<"PRIOR_Y">()));
@@ -1454,7 +1575,7 @@ static void C_Simulation(Cls& c) {
     set(extra_0->v, Sym(str("rms1")), rms1_0->v);
     set(extra_0->v, Sym(str("repro")), get(self, S<"repro">()));
     set(extra_0->v, Sym(str("stir")), get(K(S<"Simulation">()), S<"SIGMA">()));
-    set(extra_0->v, Sym(str("about")), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex");
+    set(extra_0->v, Sym(str("about")), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex");
     call(K(S<"Measure">()), S<"save">(), { "galaxy.simulated", names_0->v, cols_0->v, extra_0->v });
     auto fields_0 = cell(); fields_0->v = make(S<"Node">(), { });
     auto fnames_0 = cell(); fnames_0->v = list({ "galaxy", "r", "gd", "gg", "gb", "v0", "v1", "vN" });
@@ -1484,7 +1605,7 @@ static void C_Simulation(Cls& c) {
     auto fextra_0 = cell(); fextra_0->v = make(S<"Node">(), { });
     set(fextra_0->v, Sym(str("ids")), get(self, S<"ids">()));
     set(fextra_0->v, Sym(str("table")), T_0->v);
-    set(fextra_0->v, Sym(str("about")), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)");
+    set(fextra_0->v, Sym(str("about")), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)");
     call(K(S<"Measure">()), S<"save">(), { "galaxy.fields", fnames_0->v, fields_0->v, fextra_0->v });
     if (truthy((!truthy(m_empty(get(self, S<"film_ids">())))))) {
       auto film_0 = cell(); film_0->v = make(S<"Node">(), { });

@@ -2050,7 +2050,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&eq(&len(&get(&it, "ids")), &51.0)) { PASS.to_string() } else { format!("failed: {}", "eq(&len(&get(&it, \"ids\")), &51.0)") }
+      if truthy(&eq(&len(&get(&it, "ids")), &65.0)) { PASS.to_string() } else { format!("failed: {}", "eq(&len(&get(&it, \"ids\")), &65.0)") }
     });
 
     t(s, "tests/theorems.ray:16 on closure", || {
@@ -2062,19 +2062,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&call(&it, "standing", args![sv!["gravity.coincidence"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.coincidence\"]])") }
-    });
-
-    t(s, "tests/theorems.ray:17 on closure", || {
-      let self_: &'static Value = &Value::Null;
-      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
-      let mut guard = 0;
-      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
-        guard += 1;
-        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
-        get(it, "tick");
-      }
-      if truthy(&call(&it, "standing", args![sv!["gravity.bent"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.bent\"]])") }
+      if truthy(&call(&it, "standing", args![sv!["gravity.made"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.made\"]])") }
     });
 
     t(s, "tests/theorems.ray:18 on closure", || {
@@ -2086,7 +2074,7 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&call(&it, "standing", args![sv!["gravity.standing"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.standing\"]])") }
+      if truthy(&call(&it, "standing", args![sv!["gravity.shadow"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.shadow\"]])") }
     });
 
     t(s, "tests/theorems.ray:19 on closure", || {
@@ -2098,10 +2086,70 @@ fn run(only: Option<String>) -> bool {
         if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
         get(it, "tick");
       }
-      if truthy(&call(&it, "standing", args![sv!["gravity.mass"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.mass\"]])") }
+      if truthy(&eq(&call(&it, "concluded", args![sv!["gravity.shadow"]]), &sv!["b_{c} = 5.196152423·\\bar{m}"])) { PASS.to_string() } else { format!("failed: {}", "eq(&call(&it, \"concluded\", args![sv![\"gravity.shadow\"]]), &sv![\"b_{c} = 5.196152423·\\\\bar{m}\"])") }
     });
 
     t(s, "tests/theorems.ray:20 on closure", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&call(&it, "standing", args![sv!["gravity.closing"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.closing\"]])") }
+    });
+
+    t(s, "tests/theorems.ray:21 on closure", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&call(&it, "standing", args![sv!["gravity.coincidence"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.coincidence\"]])") }
+    });
+
+    t(s, "tests/theorems.ray:22 on closure", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&call(&it, "standing", args![sv!["gravity.bent"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.bent\"]])") }
+    });
+
+    t(s, "tests/theorems.ray:23 on closure", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&call(&it, "standing", args![sv!["gravity.standing"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.standing\"]])") }
+    });
+
+    t(s, "tests/theorems.ray:24 on closure", || {
+      let self_: &'static Value = &Value::Null;
+      let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
+      let mut guard = 0;
+      while !truthy(&eq(&get(&it, "theory"), &sv!["G"])) {
+        guard += 1;
+        if guard > 8 || !has(it, "tick") { return SKIP.to_string(); }
+        get(it, "tick");
+      }
+      if truthy(&call(&it, "standing", args![sv!["gravity.mass"]])) { PASS.to_string() } else { format!("failed: {}", "call(&it, \"standing\", args![sv![\"gravity.mass\"]])") }
+    });
+
+    t(s, "tests/theorems.ray:25 on closure", || {
       let self_: &'static Value = &Value::Null;
       let it: &'static Value = Box::leak(Box::new(own(&get(&k!("G"), "proved"))));
       let mut guard = 0;

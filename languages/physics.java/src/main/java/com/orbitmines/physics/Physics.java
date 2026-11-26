@@ -7598,7 +7598,9 @@ static final class C_Prover {
       set(held_0[0], "derivation", list(tick_0[0], falls_0[0]));
       set(ruler_0[0], "derivation", list(held_0[0]));
       set(defl_0[0], "derivation", list(held_0[0], ruler_0[0]));
-      if (true) return list(g__0[0], phi_0[0], tick_0[0], falls_0[0], held_0[0], ruler_0[0], defl_0[0]);
+      Object[] shadow_0 = new Object[1]; shadow_0[0] = call(K("Inferences"), "held_shadow", new Object[] { s_0[0], get(held_0[0], "fact"), get(ruler_0[0], "fact") });
+      set(shadow_0[0], "derivation", list(held_0[0], ruler_0[0]));
+      if (true) return list(g__0[0], phi_0[0], tick_0[0], falls_0[0], held_0[0], ruler_0[0], defl_0[0], shadow_0[0]);
       return null;
     });
     c.method("expansion_of", (self, a1) -> {
@@ -7672,10 +7674,16 @@ static final class C_Prover {
       Object[] got_0 = new Object[1]; got_0[0] = call(K("Prover"), "neat", new Object[] { call(K("Expr"), "add", new Object[] { list(half_0[0], call(K("Expr"), "pown", new Object[] { call(K("Expr"), "add", new Object[] { list(call(K("Expr"), "mul", new Object[] { list(half_0[0], half_0[0]) }), call(K("Expr"), "mul", new Object[] { list(g_0[0], a_0[0]) })) }), 0.5 })) }) });
       Object[] closing_0 = new Object[1]; closing_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "F_{g} \\aside{closing}", got_0[0] }), "what is felt, with the mismatch closed", list(get(get(scale_0[0], "fact"), "key")), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", list("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " + str(call(K("Expr"), "show", new Object[] { got_0[0] })) + "") });
       set(closing_0[0], "derivation", list(scale_0[0]));
+      Object[] psi_0 = new Object[1]; psi_0[0] = call(K("Expr"), "field", new Object[] { "\\psi" });
+      Object[] w_0 = new Object[1]; w_0[0] = call(K("Prover"), "neat", new Object[] { call(K("Expr"), "sub", new Object[] { got_0[0], g_0[0] }) });
+      Object[] made_0 = new Object[1]; made_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "-\\nabla^{2}\\psi", call(K("Expr"), "field", new Object[] { "\\nabla\\cdot\\paren{\\paren{" + str(call(K("Expr"), "show", new Object[] { w_0[0] })) + "}\\hat{g}_{N}}" }) }), "the space made, as a source", list(get(get(closing_0[0], "fact"), "key")), "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" + str(met_0[0]) + "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made", list("w = F_{g} - g_{N} = " + str(call(K("Expr"), "show", new Object[] { w_0[0] })) + ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w") });
+      set(made_0[0], "derivation", list(closing_0[0], potential_0[0]));
+      Object[] field_0 = new Object[1]; field_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "g \\aside{field}", call(K("Prover"), "neat", new Object[] { call(K("Expr"), "sub", new Object[] { g_0[0], call(K("Expr"), "field", new Object[] { "\\nabla\\psi" }) }) }) }), "what is felt, solved over the whole field", list(get(get(made_0[0], "fact"), "key"), get(get(closing_0[0], "fact"), "key")), "what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve", list("g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w", "no curl: \\nabla\\times g = 0, as a record's slope", "a sphere: \\nabla\\psi = -w, so g = F_{g}", "a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)") });
+      set(field_0[0], "derivation", list(made_0[0]));
       Object[] ratio_0 = new Object[1]; ratio_0[0] = call(K("Prover"), "neat", new Object[] { call(K("Expr"), "div", new Object[] { a0_0[0], own_0[0] }) });
       Object[] against_0 = new Object[1]; against_0[0] = call(K("Step"), "of", new Object[] { call(K("Fact"), "stands", new Object[] { "\\frac{a_{0}}{cH}", ratio_0[0] }), "the scale against the vacuum's growth", list(get(get(scale_0[0], "fact"), "key"), get(get(lam_0[0], "fact"), "key")), "a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183", list("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}", "\\frac{a_{0}}{cH_{vac}} = " + str(call(K("Expr"), "show", new Object[] { call(K("Prover"), "neat", new Object[] { ratio_0[0] }) })) + "", "against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}") });
       set(against_0[0], "derivation", list(scale_0[0]));
-      if (true) return list(straight_0[0], potential_0[0], lam_0[0], scale_0[0], closing_0[0], against_0[0]);
+      if (true) return list(straight_0[0], potential_0[0], lam_0[0], scale_0[0], closing_0[0], made_0[0], field_0[0], against_0[0]);
       return null;
     });
     c.method("leftover", (self, a1) -> {
@@ -8471,7 +8479,7 @@ static final class C_Inferences {
       return null;
     });
     c.statik("RULES", (self, a1) -> {
-      if (true) return m_concat(m_concat(list(get(K("Inferences"), "room_balance"), get(K("Inferences"), "ehrhart"), get(K("Inferences"), "counting"), get(K("Inferences"), "reaching"), get(K("Inferences"), "mass_of"), get(K("Inferences"), "saturating"), get(K("Inferences"), "spreading"), get(K("Inferences"), "screening"), get(K("Inferences"), "refracting"), get(K("Inferences"), "accumulating"), get(K("Inferences"), "substituting"), get(K("Inferences"), "metric_of"), get(K("Inferences"), "relativity"), get(K("Inferences"), "schwarzschild"), get(K("Inferences"), "shadow"), get(K("Inferences"), "balancing"), get(K("Inferences"), "unbiased"), get(K("Inferences"), "free_path"), get(K("Inferences"), "summing"), get(K("Inferences"), "horizon"), get(K("Inferences"), "bending"), get(K("Inferences"), "crossing"), get(K("Inferences"), "near_field"), get(K("Inferences"), "shadowing"), get(K("Inferences"), "receiving"), get(K("Inferences"), "moved"), get(K("Inferences"), "receding"), get(K("Inferences"), "shortfall"), get(K("Inferences"), "keeping"), get(K("Inferences"), "transporting"), get(K("Inferences"), "assembling"), get(K("Inferences"), "channelling"), get(K("Inferences"), "closing"), get(K("Inferences"), "arrangement"), get(K("Inferences"), "scale_crossed"), get(K("Inferences"), "orbiting"), get(K("Inferences"), "curve_ends"), get(K("Inferences"), "curves_of_each"), get(K("Inferences"), "crowding_of_arrivals"), get(K("Inferences"), "making_rate"), get(K("Inferences"), "hubble_rate"), get(K("Inferences"), "expansion_scale"), get(K("Inferences"), "coincidence"), get(K("Inferences"), "crowding"), get(K("Inferences"), "at_that_density"), get(K("Inferences"), "in_motion")), m_map(get(K("Inferences"), "IN_FULL"), (Fn) (a3) -> {
+      if (true) return m_concat(m_concat(list(get(K("Inferences"), "room_balance"), get(K("Inferences"), "ehrhart"), get(K("Inferences"), "counting"), get(K("Inferences"), "reaching"), get(K("Inferences"), "mass_of"), get(K("Inferences"), "saturating"), get(K("Inferences"), "spreading"), get(K("Inferences"), "screening"), get(K("Inferences"), "refracting"), get(K("Inferences"), "accumulating"), get(K("Inferences"), "substituting"), get(K("Inferences"), "metric_of"), get(K("Inferences"), "relativity"), get(K("Inferences"), "schwarzschild"), get(K("Inferences"), "balancing"), get(K("Inferences"), "unbiased"), get(K("Inferences"), "free_path"), get(K("Inferences"), "summing"), get(K("Inferences"), "horizon"), get(K("Inferences"), "bending"), get(K("Inferences"), "crossing"), get(K("Inferences"), "near_field"), get(K("Inferences"), "shadowing"), get(K("Inferences"), "receiving"), get(K("Inferences"), "moved"), get(K("Inferences"), "receding"), get(K("Inferences"), "shortfall"), get(K("Inferences"), "keeping"), get(K("Inferences"), "transporting"), get(K("Inferences"), "assembling"), get(K("Inferences"), "channelling"), get(K("Inferences"), "closing"), get(K("Inferences"), "arrangement"), get(K("Inferences"), "scale_crossed"), get(K("Inferences"), "orbiting"), get(K("Inferences"), "curve_ends"), get(K("Inferences"), "curves_of_each"), get(K("Inferences"), "crowding_of_arrivals"), get(K("Inferences"), "making_rate"), get(K("Inferences"), "hubble_rate"), get(K("Inferences"), "expansion_scale"), get(K("Inferences"), "coincidence"), get(K("Inferences"), "crowding"), get(K("Inferences"), "at_that_density"), get(K("Inferences"), "in_motion")), m_map(get(K("Inferences"), "IN_FULL"), (Fn) (a3) -> {
         Object[] of_2 = { arg(a3, 0) };
         if (true) return call(K("Inferences"), "writing_out", new Object[] { of_2[0] });
         return null;
@@ -8616,31 +8624,27 @@ static final class C_Inferences {
       }) });
       return null;
     });
-    c.statik("shadow", (self, a1) -> {
-      if (true) return make("Inference", new Object[] { kw("name", "where a ray stops coming back"), kw("because", "a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow"), kw("fire", (Fn) (a3) -> {
-        Object[] s_2 = { arg(a3, 0) };
-        Object[] A_2 = new Object[1]; A_2[0] = call(s_2[0], "fact", new Object[] { "is", "A in r" });
-        Object[] B_2 = new Object[1]; B_2[0] = call(s_2[0], "fact", new Object[] { "is", "B in r" });
-        if (truthy((truthy((truthy(eq(A_2[0], null)) || truthy(eq(B_2[0], null)))) || truthy(call(s_2[0], "has", new Object[] { "is", "b_{c}" }))))) {
-          if (true) return list();
-        }
-        Object[] u_2 = new Object[1]; u_2[0] = "\\delta n_{f}";
-        Object[] over_2 = new Object[1]; over_2[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "field", new Object[] { u_2[0] }), call(K("Expr"), "pown", new Object[] { call(K("Expr"), "mul", new Object[] { list(get(A_2[0], "to"), call(K("Expr"), "pown", new Object[] { get(B_2[0], "to"), neg(1.0) })) }), 0.5 })) }) });
-        Object[] env_2 = new Object[1]; env_2[0] = make(NODE);
-        setAt(env_2[0], u_2[0], call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "root", new Object[] { call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "d", new Object[] { over_2[0], u_2[0] }) }), u_2[0] }), env_2[0] }));
-        Object[] sphere_2 = new Object[1]; sphere_2[0] = elem(env_2[0], u_2[0]);
-        Object[] bc_2 = new Object[1]; bc_2[0] = div(1.0, call(K("Expr"), "numeric", new Object[] { over_2[0], env_2[0] }));
-        bc_2[0] = div(m_round((mul(bc_2[0], power(10.0, 9.0)))), power(10.0, 9.0));
-        Object[] half_2 = new Object[1]; half_2[0] = call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "num", new Object[] { 0.5 }), call(K("Expr"), "field", new Object[] { u_2[0] })) });
-        Object[] gA_2 = new Object[1]; gA_2[0] = call(K("Expr"), "pown", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "sub", new Object[] { call(K("Expr"), "num", new Object[] { 1.0 }), half_2[0] }), call(K("Expr"), "pown", new Object[] { call(K("Expr"), "add", new Object[] { list(call(K("Expr"), "num", new Object[] { 1.0 }), half_2[0]) }), neg(1.0) })) }), 2.0 });
-        Object[] gB_2 = new Object[1]; gB_2[0] = call(K("Expr"), "pown", new Object[] { call(K("Expr"), "add", new Object[] { list(call(K("Expr"), "num", new Object[] { 1.0 }), half_2[0]) }), 4.0 });
-        Object[] gover_2 = new Object[1]; gover_2[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "field", new Object[] { u_2[0] }), call(K("Expr"), "pown", new Object[] { call(K("Expr"), "mul", new Object[] { list(gA_2[0], call(K("Expr"), "pown", new Object[] { gB_2[0], neg(1.0) })) }), 0.5 })) }) });
-        Object[] genv_2 = new Object[1]; genv_2[0] = make(NODE);
-        setAt(genv_2[0], u_2[0], call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "root", new Object[] { call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "d", new Object[] { gover_2[0], u_2[0] }) }), u_2[0] }), genv_2[0] }));
-        Object[] gr_2 = new Object[1]; gr_2[0] = div(1.0, call(K("Expr"), "numeric", new Object[] { gover_2[0], genv_2[0] }));
-        if (true) return list(call(K("Inferences"), "step", new Object[] { "b_{c}", call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "num", new Object[] { bc_2[0] }), call(K("Expr"), "field", new Object[] { "\\bar{m}" })) }), "where a ray stops coming back", list(get(A_2[0], "key"), get(B_2[0], "key")), "THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's", list("a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r", "\\bar{m}/b at the turning point = " + str(call(K("Expr"), "show", new Object[] { over_2[0] })) + "", "largest where its slope is nought: \\delta n_{f} = " + str(call(K("Fmt"), "fixed", new Object[] { sphere_2[0], 6.0 })) + ", the photon sphere at r = " + str(call(K("Fmt"), "fixed", new Object[] { div(1.0, sphere_2[0]), 4.0 })) + " \\bar{m}", "b_{c} = " + str(call(K("Fmt"), "fixed", new Object[] { bc_2[0], 4.0 })) + " \\bar{m}", "general relativity's metric read the same way: b_{c} = " + str(call(K("Fmt"), "fixed", new Object[] { gr_2[0], 4.0 })) + " \\bar{m}, which is 3\\sqrt{3}", "so at the same \\bar{m} this shadow is " + str(call(K("Fmt"), "fixed", new Object[] { mul(100.0, (sub(div(bc_2[0], gr_2[0]), 1.0))), 2.0 })) + " per cent wider") }));
-        return null;
-      }) });
+    c.statik("held_shadow", (self, a1) -> {
+      Object[] s_0 = { arg(a1, 0) }; Object[] A_0 = { arg(a1, 1) }; Object[] B_0 = { arg(a1, 2) };
+      Object[] u_0 = new Object[1]; u_0[0] = "\\delta n_{f}";
+      Object[] Au_0 = new Object[1]; Au_0[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "replace", new Object[] { call(K("Expr"), "replace", new Object[] { call(K("Expr"), "replace", new Object[] { get(A_0[0], "to"), "r_{s}", call(K("Expr"), "num", new Object[] { 2.0 }) }), "D", call(K("Expr"), "num", new Object[] { 3.0 }) }), "r", call(K("Expr"), "pown", new Object[] { call(K("Expr"), "field", new Object[] { u_0[0] }), neg(1.0) }) }) });
+      Object[] over_0 = new Object[1]; over_0[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "field", new Object[] { u_0[0] }), call(K("Expr"), "pown", new Object[] { Au_0[0], 0.5 })) }) });
+      Object[] env_0 = new Object[1]; env_0[0] = make(NODE);
+      setAt(env_0[0], u_0[0], call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "root", new Object[] { call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "d", new Object[] { over_0[0], u_0[0] }) }), u_0[0] }), env_0[0] }));
+      Object[] sphere_0 = new Object[1]; sphere_0[0] = elem(env_0[0], u_0[0]);
+      Object[] bc_0 = new Object[1]; bc_0[0] = div(1.0, call(K("Expr"), "numeric", new Object[] { over_0[0], env_0[0] }));
+      bc_0[0] = div(m_round((mul(bc_0[0], power(10.0, 9.0)))), power(10.0, 9.0));
+      Object[] gr_0 = new Object[1]; gr_0[0] = mul(3.0, m_sqrt(3.0));
+      Object[] iA_0 = new Object[1]; iA_0[0] = call(s_0[0], "fact", new Object[] { "is", "A in r" });
+      Object[] iB_0 = new Object[1]; iB_0[0] = call(s_0[0], "fact", new Object[] { "is", "B in r" });
+      Object[] index_0 = new Object[1]; index_0[0] = Double.NaN;
+      if (truthy((truthy(!eq(iA_0[0], null)) && truthy(!eq(iB_0[0], null))))) {
+        Object[] iover_0 = new Object[1]; iover_0[0] = call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "field", new Object[] { u_0[0] }), call(K("Expr"), "pown", new Object[] { call(K("Expr"), "mul", new Object[] { list(get(iA_0[0], "to"), call(K("Expr"), "pown", new Object[] { get(iB_0[0], "to"), neg(1.0) })) }), 0.5 })) }) });
+        Object[] ienv_0 = new Object[1]; ienv_0[0] = make(NODE);
+        setAt(ienv_0[0], u_0[0], call(K("Expr"), "numeric", new Object[] { call(K("Expr"), "root", new Object[] { call(K("Expr"), "simplify", new Object[] { call(K("Expr"), "d", new Object[] { iover_0[0], u_0[0] }) }), u_0[0] }), ienv_0[0] }));
+        index_0[0] = div(1.0, call(K("Expr"), "numeric", new Object[] { iover_0[0], ienv_0[0] }));
+      }
+      if (true) return call(K("Inferences"), "step", new Object[] { "b_{c}", call(K("Expr"), "mul", new Object[] { list(call(K("Expr"), "num", new Object[] { bc_0[0] }), call(K("Expr"), "field", new Object[] { "\\bar{m}" })) }), "where a ray stops coming back", list(get(A_0[0], "key"), get(B_0[0], "key")), "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", list("a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = " + str(call(K("Expr"), "show", new Object[] { over_0[0] })) + "", "largest where its slope is nought: \\delta n_{f} = " + str(call(K("Fmt"), "fixed", new Object[] { sphere_0[0], 6.0 })) + ", the photon sphere at r = " + str(call(K("Fmt"), "fixed", new Object[] { div(1.0, sphere_0[0]), 4.0 })) + " \\bar{m}", "b_{c} = " + str(call(K("Fmt"), "fixed", new Object[] { bc_0[0], 4.0 })) + " \\bar{m}; general relativity's is 3\\sqrt{3} = " + str(call(K("Fmt"), "fixed", new Object[] { gr_0[0], 4.0 })) + "", (truthy(call(K("Fmt"), "finite", new Object[] { index_0[0] })) ? (Object) "the medium's index read as an isotropic metric instead gives " + str(call(K("Fmt"), "fixed", new Object[] { index_0[0], 4.0 })) + " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read" : (Object) "the medium's index gives no metric of its own here")) });
       return null;
     });
     c.statik("metric_of", (self, a1) -> {
@@ -15404,7 +15408,7 @@ static final class C_Galaxies {
       if (truthy(eq(stars_0[0], null))) {
         invoke(fail, new Object[] { "galaxy.stars is not on disk - run the galaxies (`" + str(get(K("Galaxies"), "SIMULATED")) + "`) and try again" });
       }
-      if (true) return make("Picture", new Object[] { kw("id", "galaxy.simulation"), kw("what", "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured"), kw("width", 960.0), kw("height", 720.0), kw("frames", get(get(stars_0[0], "header"), str("frames"))), kw("paint", (Fn) (a3) -> {
+      if (true) return make("Picture", new Object[] { kw("id", "galaxy.simulation"), kw("what", "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured"), kw("width", 960.0), kw("height", 720.0), kw("frames", get(get(stars_0[0], "header"), str("frames"))), kw("paint", (Fn) (a3) -> {
         Object[] played_2 = { arg(a3, 0) };
         if (true) return make("Orbiting", new Object[] { kw("stars", stars_0[0]) });
         return null;
@@ -15486,7 +15490,7 @@ static final class C_Galaxies {
       if (truthy(eq(got_0[0], null))) {
         invoke(fail, new Object[] { "galaxy.formed is not on disk - run the galaxies (`" + str(get(K("Galaxies"), "SIMULATED")) + "`) and try again" });
       }
-      if (true) return make("Picture", new Object[] { kw("id", "galaxy.formed"), kw("what", "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms"), kw("width", 960.0), kw("height", 720.0), kw("frames", get(get(got_0[0], "header"), str("frames"))), kw("paint", (Fn) (a3) -> {
+      if (true) return make("Picture", new Object[] { kw("id", "galaxy.formed"), kw("what", "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms"), kw("width", 960.0), kw("height", 720.0), kw("frames", get(get(got_0[0], "header"), str("frames"))), kw("paint", (Fn) (a3) -> {
         Object[] played_2 = { arg(a3, 0) };
         if (true) return make("Forming", new Object[] { kw("formed", got_0[0]) });
         return null;
@@ -15620,7 +15624,7 @@ static final class C_Galaxies {
       Object[] stars_n_0 = new Object[1]; stars_n_0[0] = get(H_0[0], str("stars"));
       Object[] q_text_0 = new Object[1]; q_text_0[0] = call(K("Fmt"), "fixed", new Object[] { get(H_0[0], str("Q")), 1.0 });
       Object[] a0_text_0 = new Object[1]; a0_text_0[0] = call(K("Fmt"), "exponential", new Object[] { get(H_0[0], str("a0")), 3.0 });
-      call(s_0[0], "fill_text", new Object[] { "" + str(stars_n_0[0]) + " stars each, every one pulled by every other through the law (a₀ " + str(a0_text_0[0]) + " m/s²), no halo; launched smooth at Q " + str(q_text_0[0]) + " — t = " + str(gyr_0[0]) + " Gyr", 22.0, 44.0 });
+      call(s_0[0], "fill_text", new Object[] { "" + str(stars_n_0[0]) + " stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ " + str(a0_text_0[0]) + " m/s²), no halo; launched smooth at Q " + str(q_text_0[0]) + " — t = " + str(gyr_0[0]) + " Gyr", 22.0, 44.0 });
       Object[] side_0 = new Object[1]; side_0[0] = call(K("Fmt"), "min", new Object[] { div((sub(get(s_0[0], "width"), 66.0)), 2.0), sub(get(s_0[0], "height"), 110.0) });
       for (double i1 = 0; i1 < num(len(names_0[0])); i1++) {
         Object[] g_1 = { i1 };
@@ -16207,6 +16211,12 @@ static final class C_Simulation {
     c.staticField("THREAD", self -> "  let i: u32 = P[7] + gid.y * 65536u + gid.x;");
     c.staticField("ENTRY", self -> "@compute @workgroup_size(64) fn");
     c.staticField("ID", self -> "(@builtin(global_invocation_id) gid: vec3<u32>) {");
+    c.staticField("NY", self -> 21.0);
+    c.staticField("NB", self -> 11.0);
+    c.staticField("RUNG_Y", self -> 0.05);
+    c.staticField("RUNG_B", self -> 0.1);
+    c.staticField("RINGS_IN", self -> 8.0);
+    c.staticField("FAR_OFF", self -> 30.0);
     c.staticField("OMEGA_M", self -> 0.315);
     c.staticField("FILM_STARS", self -> 4096.0);
     c.staticField("FILM_TURNS", self -> 0.5);
@@ -16255,7 +16265,14 @@ static final class C_Simulation {
       Object[] lyd_0 = new Object[1]; lyd_0[0] = call(K("Shaded"), "literal", new Object[] { call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YD") }) });
       Object[] lyb_0 = new Object[1]; lyb_0[0] = call(K("Shaded"), "literal", new Object[] { call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YB") }) });
       Object[] py_0 = new Object[1]; py_0[0] = call(K("Shaded"), "literal", new Object[] { get(K("Simulation"), "PRIOR_Y") });
-      if (true) return m_join(list("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", get(K("Simulation"), "law_wgsl"), "" + str(get(K("Simulation"), "ENTRY")) + " FIT" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let YD: f32 = exp(ly * " + str(ln10_0[0]) + ");", "  let YB: f32 = exp(lb * " + str(ln10_0[0]) + ");", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + str(pi_0[0]) + " / 180.0) / sin(ip * " + str(pi_0[0]) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + str(lyd_0[0]) + ") / " + str(py_0[0]) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + str(lyb_0[0]) + ") / " + str(py_0[0]) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n");
+      Object[] ly0_0 = new Object[1]; ly0_0[0] = call(K("Shaded"), "literal", new Object[] { sub(call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YD") }), div(mul(get(K("Simulation"), "RUNG_Y"), sub(get(K("Simulation"), "NY"), 1.0)), 2.0)) });
+      Object[] lb0_0 = new Object[1]; lb0_0[0] = call(K("Shaded"), "literal", new Object[] { sub(call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YB") }), div(mul(get(K("Simulation"), "RUNG_B"), sub(get(K("Simulation"), "NB"), 1.0)), 2.0)) });
+      Object[] sy_0 = new Object[1]; sy_0[0] = call(K("Shaded"), "literal", new Object[] { get(K("Simulation"), "RUNG_Y") });
+      Object[] sb_0 = new Object[1]; sb_0[0] = call(K("Shaded"), "literal", new Object[] { get(K("Simulation"), "RUNG_B") });
+      Object[] topy_0 = new Object[1]; topy_0[0] = call(K("Shaded"), "literal", new Object[] { sub(sub(get(K("Simulation"), "NY"), 1.0), 0.0001) });
+      Object[] ny_0 = new Object[1]; ny_0[0] = get(K("Simulation"), "NY");
+      Object[] nbs_0 = new Object[1]; nbs_0[0] = get(K("Simulation"), "NB");
+      if (true) return m_join(list("// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> Q: array<f32>;", "@group(0) @binding(3) var<storage, read> G: array<f32>;", "@group(0) @binding(4) var<storage, read_write> O: array<f32>;", "" + str(get(K("Simulation"), "ENTRY")) + " FIT" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  let n: u32 = P[1];", "  let C: u32 = n * n * n * n;", "  if (i >= P[0] * C) { return; }", "  let j: u32 = i / C;", "  let c: u32 = i % C;", "  let h: f32 = f32((n - 1u) / 2u);", "  let b: u32 = 16u * j;", "  let D: f32 = G[b + 2u];", "  let eD: f32 = G[b + 3u];", "  let inc: f32 = G[b + 4u];", "  let einc: f32 = G[b + 5u];", "  let a0: f32 = G[b + 6u];", "  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];", "  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];", "  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;", "  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;", "  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }", "  let uy: f32 = clamp((ly - " + str(ly0_0[0]) + ") / " + str(sy_0[0]) + ", 0.0, " + str(topy_0[0]) + ");", "  let ky: u32 = u32(floor(uy));", "  let fy: f32 = uy - floor(uy);", "  var nb: u32 = 1u;", "  if (G[b + 7u] > 0.0) { nb = " + str(nbs_0[0]) + "u; }", "  var ub: f32 = 0.0;", "  if (nb > 1u) { ub = clamp((lb - " + str(lb0_0[0]) + ") / " + str(sb_0[0]) + ", 0.0, f32(nb - 1u) - 0.0001); }", "  let kb: u32 = u32(floor(ub));", "  let fb: f32 = ub - floor(ub);", "  let kb1: u32 = min(kb + 1u, nb - 1u);", "  let base: u32 = u32(G[b + 15u]);", "  let f: f32 = Dp / D;", "  let s: f32 = sin(inc * " + str(pi_0[0]) + " / 180.0) / sin(ip * " + str(pi_0[0]) + " / 180.0);", "  var chi: f32 = 0.0;", "  let start: u32 = u32(G[b]);", "  let stop: u32 = start + u32(G[b + 1u]);", "  for (var p: u32 = start; p < stop; p = p + 1u) {", "    let q: u32 = 8u * p;", "    let o: u32 = p - start;", "    let cnt: u32 = u32(G[b + 1u]);", "    let lo: f32 = (1.0 - fy) * L[base + (kb * " + str(ny_0[0]) + "u + ky) * cnt + o] + fy * L[base + (kb * " + str(ny_0[0]) + "u + ky + 1u) * cnt + o];", "    let hi: f32 = (1.0 - fy) * L[base + (kb1 * " + str(ny_0[0]) + "u + ky) * cnt + o] + fy * L[base + (kb1 * " + str(ny_0[0]) + "u + ky + 1u) * cnt + o];", "    let g: f32 = (1.0 - fb) * lo + fb * hi;", "    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));", "    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);", "    chi = chi + d * d;", "  }", "  let py: f32 = (ly - " + str(lyd_0[0]) + ") / " + str(py_0[0]) + ";", "  let pb: f32 = G[b + 7u] * (lb - " + str(lyb_0[0]) + ") / " + str(py_0[0]) + ";", "  var pd: f32 = 0.0;", "  if (eD > 0.0) { pd = (Dp - D) / eD; }", "  var pi_: f32 = 0.0;", "  if (einc > 0.0) { pi_ = (ip - inc) / einc; }", "  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);", "}"), "\n");
       return null;
     });
     c.statik("best_kernel", (self, a1) -> {
@@ -16263,7 +16280,7 @@ static final class C_Simulation {
       return null;
     });
     c.statik("stars_kernel", (self, a1) -> {
-      if (true) return m_join(list("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", get(K("Simulation"), "law_wgsl"), "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) {", "    let q: f32 = rmax / r;", "    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);", "  }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " START" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " STEP" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n");
+      if (true) return m_join(list("// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> GT: array<f32>;", "@group(0) @binding(3) var<storage, read> GI: array<f32>;", "@group(0) @binding(4) var<storage, read_write> S: array<f32>;", "@group(0) @binding(5) var<storage, read_write> F: array<f32>;", "fn g_at(j: u32, r: f32) -> f32 {", "  let rmax: f32 = GI[12u * j];", "  let T: u32 = P[2];", "  let base: u32 = j * T;", "  let u: f32 = r / rmax * f32(T);", "  if (u <= 1.0) { return GT[base] * u; }", "  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }", "  let t0: u32 = u32(floor(u)) - 1u;", "  let fr: f32 = u - floor(u);", "  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " START" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let k: u32 = 10u * i;", "  let r0: f32 = S[k];", "  let phi: f32 = S[k + 1u];", "  let sig: f32 = GI[12u * j + 9u];", "  let g: f32 = g_at(j, r0);", "  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];", "  let vr: f32 = sig * S[k + 3u];", "  let c: f32 = cos(phi);", "  let s: f32 = sin(phi);", "  S[k] = r0 * c;", "  S[k + 1u] = r0 * s;", "  S[k + 2u] = vr * c - vp * s;", "  S[k + 3u] = vr * s + vp * c;", "  S[k + 4u] = 0.0 - g * c;", "  S[k + 5u] = 0.0 - g * s;", "  S[k + 6u] = 0.0;", "  S[k + 7u] = 0.0;", "  S[k + 8u] = 0.0;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " STEP" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let j: u32 = i / P[1];", "  let b: u32 = 12u * j;", "  let dt: f32 = GI[b + 1u];", "  let n: u32 = u32(GI[b + 2u]);", "  let avg_from: u32 = u32(GI[b + 3u]);", "  let film: f32 = GI[b + 4u];", "  let every: u32 = max(u32(GI[b + 7u]), 1u);", "  let ffrom: u32 = u32(GI[b + 8u]);", "  let k: u32 = 10u * i;", "  var x: f32 = S[k];", "  var y: f32 = S[k + 1u];", "  var vx: f32 = S[k + 2u];", "  var vy: f32 = S[k + 3u];", "  var ax: f32 = S[k + 4u];", "  var ay: f32 = S[k + 5u];", "  var sr: f32 = S[k + 6u];", "  var sv: f32 = S[k + 7u];", "  var sn: f32 = S[k + 8u];", "  let stop: u32 = min(P[4], n);", "  for (var t: u32 = P[3]; t < stop; t = t + 1u) {", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    x = x + vx * dt;", "    y = y + vy * dt;", "    let r: f32 = max(sqrt(x * x + y * y), 1e-6);", "    let g: f32 = g_at(j, r);", "    ax = 0.0 - g * x / r;", "    ay = 0.0 - g * y / r;", "    vx = vx + 0.5 * ax * dt;", "    vy = vy + 0.5 * ay * dt;", "    if (t >= avg_from) {", "      sr = sr + r;", "      sv = sv + (x * vy - y * vx) / r;", "      sn = sn + 1.0;", "    }", "    let kk: u32 = t + 1u;", "    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {", "      let fr: u32 = (kk - ffrom) / every - 1u;", "      if (fr < P[5]) {", "        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;", "        F[o] = x;", "        F[o + 1u] = y;", "      }", "    }", "  }", "  S[k] = x;", "  S[k + 1u] = y;", "  S[k + 2u] = vx;", "  S[k + 3u] = vy;", "  S[k + 4u] = ax;", "  S[k + 5u] = ay;", "  S[k + 6u] = sr;", "  S[k + 7u] = sv;", "  S[k + 8u] = sn;", "}"), "\n");
       return null;
     });
     c.statik("runnable", (self, a1) -> {
@@ -16750,6 +16767,213 @@ static final class C_Simulation {
       };
       return null;
     });
+    c.field("on", self -> make("Felt", new Object[] {  }));
+    c.method("unit_of", (self, a1) -> {
+      Object[] j_0 = { arg(a1, 0) };
+      if (true) return div(elem(elem(elem(get(self, "rows"), j_0[0]), sub(len(elem(get(self, "rows"), j_0[0])), 1.0)), 0.0), 10.0);
+      return null;
+    });
+    c.method("grid_of", (self, a1) -> {
+      Object[] j_0 = { arg(a1, 0) };
+      Object[] F_0 = new Object[1]; F_0[0] = get(self, "on");
+      Object[] L_0 = new Object[1]; L_0[0] = call(self, "unit_of", new Object[] { j_0[0] });
+      Object[] es_0 = new Object[1]; es_0[0] = elem(get(self, "edges"), j_0[0]);
+      Object[] n_0 = new Object[1]; n_0[0] = sub(len(es_0[0]), 1.0);
+      Object[] wd_0 = new Object[1]; wd_0[0] = elem(get(self, "w_discs"), j_0[0]);
+      Object[] wg_0 = new Object[1]; wg_0[0] = elem(get(self, "w_gases"), j_0[0]);
+      Object[] rs_0 = new Object[1]; rs_0[0] = elem(get(self, "rows"), j_0[0]);
+      Object[] t_0 = new Object[1]; t_0[0] = elem(get(self, "thick"), j_0[0]);
+      Object[] rings_0 = new Object[1]; rings_0[0] = list();
+      for (double i1 = 0; i1 < num(n_0[0]); i1++) {
+        Object[] a_1 = { i1 };
+        Object[] area_1 = new Object[1]; area_1[0] = sub(mul(elem(es_0[0], add(a_1[0], 1.0)), elem(es_0[0], add(a_1[0], 1.0))), mul(elem(es_0[0], a_1[0]), elem(es_0[0], a_1[0])));
+        for (double i2 = 0; i2 < num(get(K("Simulation"), "RINGS_IN")); i2++) {
+          Object[] k_2 = { i2 };
+          Object[] r0_2 = new Object[1]; r0_2[0] = add(elem(es_0[0], a_1[0]), div(mul((sub(elem(es_0[0], add(a_1[0], 1.0)), elem(es_0[0], a_1[0]))), k_2[0]), get(K("Simulation"), "RINGS_IN")));
+          Object[] r1_2 = new Object[1]; r1_2[0] = add(elem(es_0[0], a_1[0]), div(mul((sub(elem(es_0[0], add(a_1[0], 1.0)), elem(es_0[0], a_1[0]))), add(k_2[0], 1.0)), get(K("Simulation"), "RINGS_IN")));
+          Object[] soft_2 = new Object[1]; soft_2[0] = div((sub(r1_2[0], r0_2[0])), 2.0);
+          m_push(rings_0[0], list(div((add(r0_2[0], r1_2[0])), 2.0), (truthy(gt(area_1[0], 0.0)) ? (Object) div((sub(mul(r1_2[0], r1_2[0]), mul(r0_2[0], r0_2[0]))), area_1[0]) : (Object) 0.0), a_1[0], add(mul(t_0[0], t_0[0]), mul(soft_2[0], soft_2[0]))));
+        };
+      };
+      Object[] md_0 = new Object[1]; md_0[0] = m_reduce(wd_0[0], 0.0, (Fn) (a3) -> {
+        Object[] m_2 = { arg(a3, 0) }; Object[] v_2 = { arg(a3, 1) };
+        if (true) return add(m_2[0], v_2[0]);
+        return null;
+      });
+      Object[] mg_0 = new Object[1]; mg_0[0] = m_reduce(wg_0[0], 0.0, (Fn) (a3) -> {
+        Object[] m_2 = { arg(a3, 0) }; Object[] v_2 = { arg(a3, 1) };
+        if (true) return add(m_2[0], v_2[0]);
+        return null;
+      });
+      Object[] out_0 = new Object[1]; out_0[0] = m_map(rng(6.0), (Fn) (a3) -> {
+        Object[] k_2 = { arg(a3, 0) };
+        if (true) return filled(get(F_0[0], "cells"), 0.0);
+        return null;
+      });
+      for (double i1 = 0; i1 < num(get(F_0[0], "cells")); i1++) {
+        Object[] c__1 = { i1 };
+        Object[] i_1 = new Object[1]; i_1[0] = m_floor((div(c__1[0], get(K("Felt"), "NMU"))));
+        Object[] mu_1 = new Object[1]; mu_1[0] = elem(get(F_0[0], "mc"), mod(c__1[0], get(K("Felt"), "NMU")));
+        Object[] r_1 = new Object[1]; r_1[0] = mul(elem(get(F_0[0], "rc"), i_1[0]), L_0[0]);
+        Object[] R_1 = new Object[1]; R_1[0] = mul(r_1[0], m_sqrt((sub(1.0, mul(mu_1[0], mu_1[0])))));
+        Object[] z_1 = new Object[1]; z_1[0] = mul(r_1[0], mu_1[0]);
+        if (truthy(gt(r_1[0], mul(get(K("Simulation"), "FAR_OFF"), elem(es_0[0], n_0[0]))))) {
+          setAt(elem(out_0[0], 0.0), c__1[0], sub(0.0, div(mul(md_0[0], R_1[0]), (mul(mul(r_1[0], r_1[0]), r_1[0])))));
+          setAt(elem(out_0[0], 1.0), c__1[0], sub(0.0, div(mul(md_0[0], z_1[0]), (mul(mul(r_1[0], r_1[0]), r_1[0])))));
+          setAt(elem(out_0[0], 2.0), c__1[0], sub(0.0, div(mul(mg_0[0], R_1[0]), (mul(mul(r_1[0], r_1[0]), r_1[0])))));
+          setAt(elem(out_0[0], 3.0), c__1[0], sub(0.0, div(mul(mg_0[0], z_1[0]), (mul(mul(r_1[0], r_1[0]), r_1[0])))));
+        } else {
+          for (Object e2 : items(rings_0[0])) {
+            Object[] b_2 = { e2 };
+            Object[] g_2 = new Object[1]; g_2[0] = call(K("Felt"), "ring", new Object[] { R_1[0], z_1[0], elem(b_2[0], 0.0), 0.0, elem(b_2[0], 3.0) });
+            setAt(elem(out_0[0], 0.0), c__1[0], add(elem(elem(out_0[0], 0.0), c__1[0]), mul(mul(elem(wd_0[0], elem(b_2[0], 2.0)), elem(b_2[0], 1.0)), elem(g_2[0], 0.0))));
+            setAt(elem(out_0[0], 1.0), c__1[0], add(elem(elem(out_0[0], 1.0), c__1[0]), mul(mul(elem(wd_0[0], elem(b_2[0], 2.0)), elem(b_2[0], 1.0)), elem(g_2[0], 1.0))));
+            setAt(elem(out_0[0], 2.0), c__1[0], add(elem(elem(out_0[0], 2.0), c__1[0]), mul(mul(elem(wg_0[0], elem(b_2[0], 2.0)), elem(b_2[0], 1.0)), elem(g_2[0], 0.0))));
+            setAt(elem(out_0[0], 3.0), c__1[0], add(elem(elem(out_0[0], 3.0), c__1[0]), mul(mul(elem(wg_0[0], elem(b_2[0], 2.0)), elem(b_2[0], 1.0)), elem(g_2[0], 1.0))));
+          };
+        }
+        Object[] gb_1 = new Object[1]; gb_1[0] = call(K("Simulation"), "bulge_at", new Object[] { rs_0[0], r_1[0] });
+        setAt(elem(out_0[0], 4.0), c__1[0], sub(0.0, div(mul(gb_1[0], R_1[0]), r_1[0])));
+        setAt(elem(out_0[0], 5.0), c__1[0], sub(0.0, div(mul(gb_1[0], z_1[0]), r_1[0])));
+      };
+      if (true) return out_0[0];
+      return null;
+    });
+    c.method("made_of", (self, a1) -> {
+      Object[] grid_0 = { arg(a1, 0) }; Object[] yd_0 = { arg(a1, 1) }; Object[] yb_0 = { arg(a1, 2) };
+      Object[] a_0 = new Object[1]; a_0[0] = get(self, "a0");
+      Object[] gr_0 = new Object[1]; gr_0[0] = m_map(rng(get(get(self, "on"), "cells")), (Fn) (a3) -> {
+        Object[] c__2 = { arg(a3, 0) };
+        if (true) return div((add(add(mul(yd_0[0], elem(elem(grid_0[0], 0.0), c__2[0])), elem(elem(grid_0[0], 2.0), c__2[0])), mul(yb_0[0], elem(elem(grid_0[0], 4.0), c__2[0])))), a_0[0]);
+        return null;
+      });
+      Object[] gz_0 = new Object[1]; gz_0[0] = m_map(rng(get(get(self, "on"), "cells")), (Fn) (a3) -> {
+        Object[] c__2 = { arg(a3, 0) };
+        if (true) return div((add(add(mul(yd_0[0], elem(elem(grid_0[0], 1.0), c__2[0])), elem(elem(grid_0[0], 3.0), c__2[0])), mul(yb_0[0], elem(elem(grid_0[0], 5.0), c__2[0])))), a_0[0]);
+        return null;
+      });
+      if (true) return m_map(call(get(self, "on"), "made_rows", new Object[] { gr_0[0], gz_0[0] }), (Fn) (a3) -> {
+        Object[] v_2 = { arg(a3, 0) };
+        if (true) return mul(v_2[0], a_0[0]);
+        return null;
+      });
+      return null;
+    });
+    c.method("felt_at", (self, a1) -> {
+      Object[] j_0 = { arg(a1, 0) }; Object[] made_0 = { arg(a1, 1) }; Object[] r_0 = { arg(a1, 2) }; Object[] gN_0 = { arg(a1, 3) };
+      if (true) return sub(gN_0[0], call(get(self, "on"), "made_at", new Object[] { made_0[0], div(r_0[0], call(self, "unit_of", new Object[] { j_0[0] })) }));
+      return null;
+    });
+    c.field("grids", self -> list());
+    c.field("ladder", self -> list());
+    c.field("ladder_at", self -> list());
+    c.method("rungs", (self, a1) -> {
+      Object[] j_0 = { arg(a1, 0) };
+      if (true) return (truthy(call(self, "has_bulge", new Object[] { j_0[0] })) ? (Object) get(K("Simulation"), "NB") : (Object) 1.0);
+      return null;
+    });
+    c.getter("solve_fields", (self, a1) -> {
+      set(self, "grids", list());
+      set(self, "ladder", list());
+      set(self, "ladder_at", list());
+      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
+        Object[] j_1 = { i1 };
+        Object[] grid_1 = new Object[1]; grid_1[0] = call(self, "grid_of", new Object[] { j_1[0] });
+        m_push(get(self, "grids"), grid_1[0]);
+        m_push(get(self, "ladder_at"), len(get(self, "ladder")));
+        Object[] kept_1 = new Object[1]; kept_1[0] = filt(rng(len(elem(get(self, "rows"), j_1[0]))), (Fn) (a4) -> {
+          Object[] i_3 = { arg(a4, 0) };
+          if (true) return gt(elem(elem(elem(get(self, "rows"), j_1[0]), i_3[0]), 6.0), 0.0);
+          return null;
+        });
+        for (double i2 = 0; i2 < num(call(self, "rungs", new Object[] { j_1[0] })); i2++) {
+          Object[] ib_2 = { i2 };
+          Object[] yb_2 = new Object[1]; yb_2[0] = power(10.0, (call(self, "rung_b", new Object[] { ib_2[0] })));
+          for (double i3 = 0; i3 < num(get(K("Simulation"), "NY")); i3++) {
+            Object[] iy_3 = { i3 };
+            Object[] yd_3 = new Object[1]; yd_3[0] = power(10.0, (call(self, "rung_y", new Object[] { iy_3[0] })));
+            Object[] made_3 = new Object[1]; made_3[0] = call(self, "made_of", new Object[] { grid_1[0], yd_3[0], yb_2[0] });
+            for (Object e4 : items(kept_1[0])) {
+              Object[] i_4 = { e4 };
+              Object[] p_4 = new Object[1]; p_4[0] = elem(elem(get(self, "at_rows"), j_1[0]), i_4[0]);
+              m_push(get(self, "ladder"), call(self, "felt_at", new Object[] { j_1[0], made_3[0], elem(elem(elem(get(self, "rows"), j_1[0]), i_4[0]), 0.0), add(add(mul(yd_3[0], elem(p_4[0], 0.0)), mul(yb_2[0], elem(p_4[0], 2.0))), elem(p_4[0], 1.0)) }));
+            };
+          };
+        };
+      };
+      return null;
+    });
+    c.method("rung_y", (self, a1) -> {
+      Object[] iy_0 = { arg(a1, 0) };
+      if (true) return add(call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YD") }), mul(get(K("Simulation"), "RUNG_Y"), (sub(iy_0[0], div(sub(get(K("Simulation"), "NY"), 1.0), 2.0)))));
+      return null;
+    });
+    c.method("rung_b", (self, a1) -> {
+      Object[] ib_0 = { arg(a1, 0) };
+      if (true) return add(call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YB") }), mul(get(K("Simulation"), "RUNG_B"), (sub(ib_0[0], div(sub(get(K("Simulation"), "NB"), 1.0), 2.0)))));
+      return null;
+    });
+    c.method("laddered", (self, a1) -> {
+      Object[] j_0 = { arg(a1, 0) }; Object[] k_0 = { arg(a1, 1) }; Object[] ly_0 = { arg(a1, 2) }; Object[] lb_0 = { arg(a1, 3) };
+      Object[] count_0 = new Object[1]; count_0[0] = len(filt(elem(get(self, "rows"), j_0[0]), (Fn) (a3) -> {
+        Object[] row_2 = { arg(a3, 0) };
+        if (true) return gt(elem(row_2[0], 6.0), 0.0);
+        return null;
+      }));
+      Object[] uy_0 = new Object[1]; uy_0[0] = call(K("Fmt"), "min", new Object[] { call(K("Fmt"), "max", new Object[] { div((sub(ly_0[0], call(self, "rung_y", new Object[] { 0.0 }))), get(K("Simulation"), "RUNG_Y")), 0.0 }), sub(sub(get(K("Simulation"), "NY"), 1.0), 0.0001) });
+      Object[] ky_0 = new Object[1]; ky_0[0] = m_floor(uy_0[0]);
+      Object[] fy_0 = new Object[1]; fy_0[0] = sub(uy_0[0], ky_0[0]);
+      Object[] nb_0 = new Object[1]; nb_0[0] = call(self, "rungs", new Object[] { j_0[0] });
+      Object[] ub_0 = new Object[1]; ub_0[0] = (truthy(gt(nb_0[0], 1.0)) ? (Object) call(K("Fmt"), "min", new Object[] { call(K("Fmt"), "max", new Object[] { div((sub(lb_0[0], call(self, "rung_b", new Object[] { 0.0 }))), get(K("Simulation"), "RUNG_B")), 0.0 }), sub(sub(nb_0[0], 1.0), 0.0001) }) : (Object) 0.0);
+      Object[] kb_0 = new Object[1]; kb_0[0] = m_floor(ub_0[0]);
+      Object[] fb_0 = new Object[1]; fb_0[0] = sub(ub_0[0], kb_0[0]);
+      Object[] kb1_0 = new Object[1]; kb1_0[0] = call(K("Fmt"), "min", new Object[] { add(kb_0[0], 1.0), sub(nb_0[0], 1.0) });
+      Object[] at_0 = new Object[1]; at_0[0] = (Fn) (a2) -> {
+        Object[] b_1 = { arg(a2, 0) }; Object[] y_1 = { arg(a2, 1) };
+        if (true) return elem(get(self, "ladder"), add(add(elem(get(self, "ladder_at"), j_0[0]), mul((add(mul(b_1[0], get(K("Simulation"), "NY")), y_1[0])), count_0[0])), k_0[0]));
+        return null;
+      };
+      Object[] lo_0 = new Object[1]; lo_0[0] = add(mul((sub(1.0, fy_0[0])), invoke(at_0[0], new Object[] { kb_0[0], ky_0[0] })), mul(fy_0[0], invoke(at_0[0], new Object[] { kb_0[0], add(ky_0[0], 1.0) })));
+      Object[] hi_0 = new Object[1]; hi_0[0] = add(mul((sub(1.0, fy_0[0])), invoke(at_0[0], new Object[] { kb1_0[0], ky_0[0] })), mul(fy_0[0], invoke(at_0[0], new Object[] { kb1_0[0], add(ky_0[0], 1.0) })));
+      if (true) return add(mul((sub(1.0, fb_0[0])), lo_0[0]), mul(fb_0[0], hi_0[0]));
+      return null;
+    });
+    c.method("solved_points", (self, a1) -> {
+      Object[] yd_0 = { arg(a1, 0) }; Object[] yb_0 = { arg(a1, 1) };
+      Object[] measured_0 = new Object[1]; measured_0[0] = list();
+      Object[] tabled_0 = new Object[1]; tabled_0[0] = list();
+      for (double i1 = 0; i1 < num(len(get(self, "ids"))); i1++) {
+        Object[] j_1 = { i1 };
+        Object[] made_1 = new Object[1]; made_1[0] = call(self, "made_of", new Object[] { elem(get(self, "grids"), j_1[0]), elem(yd_0[0], j_1[0]), elem(yb_0[0], j_1[0]) });
+        for (double i2 = 0; i2 < num(len(elem(get(self, "rows"), j_1[0]))); i2++) {
+          Object[] i_2 = { i2 };
+          Object[] p_2 = new Object[1]; p_2[0] = elem(elem(get(self, "at_rows"), j_1[0]), i_2[0]);
+          m_push(measured_0[0], call(self, "felt_at", new Object[] { j_1[0], made_1[0], elem(elem(elem(get(self, "rows"), j_1[0]), i_2[0]), 0.0), add(add(mul(elem(yd_0[0], j_1[0]), elem(p_2[0], 0.0)), mul(elem(yb_0[0], j_1[0]), elem(p_2[0], 2.0))), elem(p_2[0], 1.0)) }));
+        };
+        for (Object e2 : items(elem(get(self, "tables"), j_1[0]))) {
+          Object[] t_2 = { e2 };
+          m_push(tabled_0[0], call(self, "felt_at", new Object[] { j_1[0], made_1[0], elem(t_2[0], 0.0), add(add(mul(elem(yd_0[0], j_1[0]), elem(t_2[0], 1.0)), mul(elem(yb_0[0], j_1[0]), elem(t_2[0], 3.0))), elem(t_2[0], 2.0)) }));
+        };
+      };
+      if (true) return m_concat(measured_0[0], tabled_0[0]);
+      return null;
+    });
+    c.getter("own_y", (self, a1) -> {
+      if (true) return m_map(get(self, "ids"), (Fn) (a3) -> {
+        Object[] g_2 = { arg(a3, 0) };
+        if (true) return get(K("Sparc"), "YD");
+        return null;
+      });
+      return null;
+    });
+    c.getter("own_b", (self, a1) -> {
+      if (true) return m_map(get(self, "ids"), (Fn) (a3) -> {
+        Object[] g_2 = { arg(a3, 0) };
+        if (true) return get(K("Sparc"), "YB");
+        return null;
+      });
+      return null;
+    });
     c.statik("lift_coefficients", (self, a1) -> {
       Object[] theory_0 = { arg(a1, 0) }; Object[] deg_0 = { arg(a1, 1) };
       Object[] model_0 = new Object[1]; model_0[0] = make("Model", new Object[] { kw("theory", theory_0[0]) });
@@ -16973,7 +17197,7 @@ static final class C_Simulation {
         Object[] j_2 = { arg(a3, 0) };
         Object[] g_2 = new Object[1]; g_2[0] = elem(get(self, "ids"), j_2[0]);
         Object[] stop_2 = new Object[1]; stop_2[0] = (truthy(lt(add(j_2[0], 1.0), len(get(self, "ids")))) ? (Object) elem(get(self, "fit_at"), add(j_2[0], 1.0)) : (Object) m_floor((div(len(pts_0[0]), 8.0))));
-        if (true) return list(elem(get(self, "fit_at"), j_2[0]), sub(stop_2[0], elem(get(self, "fit_at"), j_2[0])), elem(get(S_0[0], str("D")), g_2[0]), elem(get(S_0[0], str("e_D")), g_2[0]), elem(get(S_0[0], str("Inc")), g_2[0]), elem(get(S_0[0], str("e_Inc")), g_2[0]), get(self, "a0"), (truthy(call(self, "has_bulge", new Object[] { j_2[0] })) ? (Object) 1.0 : (Object) 0.0), elem(get(self, "centre_y"), j_2[0]), elem(get(self, "centre_b"), j_2[0]), elem(get(self, "centre_d"), j_2[0]), elem(get(self, "centre_i"), j_2[0]), mul(get(K("Simulation"), "STEP_Y"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_D"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_I"), get(self, "spacing")), 0.0);
+        if (true) return list(elem(get(self, "fit_at"), j_2[0]), sub(stop_2[0], elem(get(self, "fit_at"), j_2[0])), elem(get(S_0[0], str("D")), g_2[0]), elem(get(S_0[0], str("e_D")), g_2[0]), elem(get(S_0[0], str("Inc")), g_2[0]), elem(get(S_0[0], str("e_Inc")), g_2[0]), get(self, "a0"), (truthy(call(self, "has_bulge", new Object[] { j_2[0] })) ? (Object) 1.0 : (Object) 0.0), elem(get(self, "centre_y"), j_2[0]), elem(get(self, "centre_b"), j_2[0]), elem(get(self, "centre_d"), j_2[0]), elem(get(self, "centre_i"), j_2[0]), mul(get(K("Simulation"), "STEP_Y"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_D"), get(self, "spacing")), mul(get(K("Simulation"), "STEP_I"), get(self, "spacing")), elem(get(self, "ladder_at"), j_2[0]));
         return null;
       }) });
       return null;
@@ -17001,19 +17225,18 @@ static final class C_Simulation {
       if (truthy((truthy((truthy(le(elem(at_0[0], 2.0), 0.0)) || truthy(le(elem(at_0[0], 3.0), 0.5)))) || truthy(gt(elem(at_0[0], 3.0), 90.0))))) {
         if (true) return mul(neg(1.0), power(10.0, 30.0));
       }
-      Object[] YD_0 = new Object[1]; YD_0[0] = power(10.0, elem(at_0[0], 0.0));
-      Object[] YB_0 = new Object[1]; YB_0[0] = power(10.0, elem(at_0[0], 1.0));
       Object[] f_0 = new Object[1]; f_0[0] = div(elem(at_0[0], 2.0), D_0[0]);
       Object[] s_0 = new Object[1]; s_0[0] = div(m_sin((div(mul(inc_0[0], Math.PI), 180.0))), m_sin((div(mul(elem(at_0[0], 3.0), Math.PI), 180.0))));
       Object[] chi_0 = new Object[1]; chi_0[0] = 0.0;
+      Object[] k_0 = new Object[1]; k_0[0] = 0.0;
       for (double i1 = 0; i1 < num(len(elem(get(self, "rows"), j_0[0]))); i1++) {
         Object[] i_1 = { i1 };
         Object[] row_1 = new Object[1]; row_1[0] = elem(elem(get(self, "rows"), j_0[0]), i_1[0]);
         if (truthy(gt(elem(row_1[0], 6.0), 0.0))) {
-          Object[] p_1 = new Object[1]; p_1[0] = elem(elem(get(self, "at_rows"), j_0[0]), i_1[0]);
-          Object[] vm_1 = new Object[1]; vm_1[0] = m_sqrt(call(K("Fmt"), "max", new Object[] { mul(mul(f_0[0], elem(row_1[0], 0.0)), call(self, "felt", new Object[] { add(add(mul(YD_0[0], elem(p_1[0], 0.0)), mul(YB_0[0], elem(p_1[0], 2.0))), elem(p_1[0], 1.0)) })), 0.0 }));
+          Object[] vm_1 = new Object[1]; vm_1[0] = m_sqrt(call(K("Fmt"), "max", new Object[] { mul(mul(f_0[0], elem(row_1[0], 0.0)), call(self, "laddered", new Object[] { j_0[0], k_0[0], elem(at_0[0], 0.0), elem(at_0[0], 1.0) })), 0.0 }));
           Object[] d_1 = new Object[1]; d_1[0] = div((sub(mul(elem(row_1[0], 1.0), s_0[0]), vm_1[0])), (mul(elem(row_1[0], 2.0), s_0[0])));
           chi_0[0] = add(chi_0[0], mul(d_1[0], d_1[0]));
+          k_0[0] = add(k_0[0], 1.0);
         }
       };
       Object[] py_0 = new Object[1]; py_0[0] = div((sub(elem(at_0[0], 0.0), call(K("Fmt"), "log10", new Object[] { get(K("Sparc"), "YD") }))), get(K("Simulation"), "PRIOR_Y"));
@@ -17481,7 +17704,7 @@ static final class C_Simulation {
       set(extra_0[0], str("rms1"), rms1_0[0]);
       set(extra_0[0], str("repro"), get(self, "repro"));
       set(extra_0[0], str("stir"), get(K("Simulation"), "SIGMA"));
-      set(extra_0[0], str("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex");
+      set(extra_0[0], str("about"), "every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex");
       call(K("Measure"), "save", new Object[] { "galaxy.simulated", names_0[0], cols_0[0], extra_0[0] });
       Object[] fields_0 = new Object[1]; fields_0[0] = make(NODE);
       Object[] fnames_0 = new Object[1]; fnames_0[0] = list("galaxy", "r", "gd", "gg", "gb", "v0", "v1", "vN");
@@ -17511,7 +17734,7 @@ static final class C_Simulation {
       Object[] fextra_0 = new Object[1]; fextra_0[0] = make(NODE);
       set(fextra_0[0], str("ids"), get(self, "ids"));
       set(fextra_0[0], str("table"), T_0[0]);
-      set(fextra_0[0], str("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)");
+      set(fextra_0[0], str("about"), "the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)");
       call(K("Measure"), "save", new Object[] { "galaxy.fields", fnames_0[0], fields_0[0], fextra_0[0] });
       if (truthy(not(m_empty(get(self, "film_ids"))))) {
         Object[] film_0 = new Object[1]; film_0[0] = make(NODE);
@@ -17778,7 +18001,61 @@ static final class C_Formed {
     c.staticField("RINGS", self -> 48.0);
     c.staticField("DISCS", self -> list(list(10.7, 3.0), list(9.3, 2.0)));
     c.staticField("WHAT", self -> list("a bright disc", "a dwarf"));
+    c.staticField("REFRESH", self -> 10.0);
     c.field("a0", self -> div(call(K("Galaxies"), "a0_at", new Object[] { get(self, "deg") }), get(K("Simulation"), "UNIT_G")));
+    c.field("on", self -> make("Felt", new Object[] {  }));
+    c.field("made_now", self -> list());
+    c.method("made_tables", (self, a1) -> {
+      Object[] state_0 = { arg(a1, 0) };
+      Object[] head_0 = new Object[1]; head_0[0] = list();
+      Object[] tabs_0 = new Object[1]; tabs_0[0] = list();
+      for (double i1 = 0; i1 < num(get(self, "discs_n")); i1++) {
+        Object[] g_1 = { i1 };
+        Object[] rd_1 = new Object[1]; rd_1[0] = call(self, "scale", new Object[] { g_1[0] });
+        Object[] cx_1 = new Object[1]; cx_1[0] = 0.0;
+        Object[] cy_1 = new Object[1]; cy_1[0] = 0.0;
+        for (double i2 = 0; i2 < num(get(K("Formed"), "N")); i2++) {
+          Object[] k_2 = { i2 };
+          cx_1[0] = add(cx_1[0], div(elem(state_0[0], mul(4.0, (add(mul(g_1[0], get(K("Formed"), "N")), k_2[0])))), get(K("Formed"), "N")));
+          cy_1[0] = add(cy_1[0], div(elem(state_0[0], add(mul(4.0, (add(mul(g_1[0], get(K("Formed"), "N")), k_2[0]))), 1.0)), get(K("Formed"), "N")));
+        };
+        Object[] xy_1 = new Object[1]; xy_1[0] = list();
+        for (double i2 = 0; i2 < num(get(K("Formed"), "N")); i2++) {
+          Object[] k_2 = { i2 };
+          m_push(xy_1[0], div((sub(elem(state_0[0], mul(4.0, (add(mul(g_1[0], get(K("Formed"), "N")), k_2[0])))), cx_1[0])), rd_1[0]));
+          m_push(xy_1[0], div((sub(elem(state_0[0], add(mul(4.0, (add(mul(g_1[0], get(K("Formed"), "N")), k_2[0]))), 1.0)), cy_1[0])), rd_1[0]));
+        };
+        Object[] table_1 = new Object[1]; table_1[0] = (truthy(get(self, "newton")) ? (Object) filled(mul(mul(get(K("Felt"), "NR"), get(K("Felt"), "NPHI")), 2.0), 0.0) : (Object) call(get(self, "on"), "round_made", new Object[] { xy_1[0], div(div(call(self, "GM", new Object[] { g_1[0] }), get(K("Formed"), "N")), (mul(mul(get(self, "a0"), rd_1[0]), rd_1[0]))), get(K("Simulation"), "SHAPE_H") }));
+        for (Object e2 : items(list(cx_1[0], cy_1[0], rd_1[0], (truthy(get(self, "newton")) ? (Object) 0.0 : (Object) get(self, "a0"))))) {
+          Object[] v_2 = { e2 };
+          m_push(head_0[0], v_2[0]);
+        };
+        for (Object e2 : items(table_1[0])) {
+          Object[] v_2 = { e2 };
+          m_push(tabs_0[0], v_2[0]);
+        };
+      };
+      set(self, "made_now", m_concat(head_0[0], tabs_0[0]));
+      if (true) return get(self, "made_now");
+      return null;
+    });
+    c.method("made_at", (self, a1) -> {
+      Object[] g_0 = { arg(a1, 0) }; Object[] x_0 = { arg(a1, 1) }; Object[] y_0 = { arg(a1, 2) };
+      Object[] M_0 = new Object[1]; M_0[0] = get(self, "made_now");
+      Object[] n_0 = new Object[1]; n_0[0] = mul(mul(get(K("Felt"), "NR"), get(K("Felt"), "NPHI")), 2.0);
+      Object[] a_0 = new Object[1]; a_0[0] = elem(M_0[0], add(mul(4.0, g_0[0]), 3.0));
+      if (truthy(le(a_0[0], 0.0))) {
+        if (true) return list(0.0, 0.0);
+      }
+      Object[] table_0 = new Object[1]; table_0[0] = m_map(rng(n_0[0]), (Fn) (a3) -> {
+        Object[] q_2 = { arg(a3, 0) };
+        if (true) return elem(M_0[0], add(add(mul(4.0, get(self, "discs_n")), mul(g_0[0], n_0[0])), q_2[0]));
+        return null;
+      });
+      Object[] got_0 = new Object[1]; got_0[0] = call(get(self, "on"), "round_at", new Object[] { table_0[0], div((sub(x_0[0], elem(M_0[0], mul(4.0, g_0[0])))), elem(M_0[0], add(mul(4.0, g_0[0]), 2.0))), div((sub(y_0[0], elem(M_0[0], add(mul(4.0, g_0[0]), 1.0)))), elem(M_0[0], add(mul(4.0, g_0[0]), 2.0))) });
+      if (true) return list(mul(elem(got_0[0], 0.0), a_0[0]), mul(elem(got_0[0], 1.0), a_0[0]));
+      return null;
+    });
     c.field("newton", self -> false);
     c.getter("scale_a0", (self, a1) -> {
       if (true) return (truthy(get(self, "newton")) ? (Object) 0.0 : (Object) get(self, "a0"));
@@ -17874,8 +18151,10 @@ static final class C_Formed {
       Object[] gx_0 = new Object[1]; gx_0[0] = mul(m_0[0], sx_0[0]);
       Object[] gy_0 = new Object[1]; gy_0[0] = mul(m_0[0], sy_0[0]);
       Object[] mag_0 = new Object[1]; mag_0[0] = call(K("Fmt"), "hypot", new Object[] { gx_0[0], gy_0[0] });
-      Object[] f_0 = new Object[1]; f_0[0] = (truthy(gt(mag_0[0], 0.0)) ? (Object) ((truthy(get(self, "newton")) ? (Object) mag_0[0] : (Object) call(K("Law"), "boost", new Object[] { mag_0[0], get(self, "a0") }))) : (Object) 0.0);
-      if (true) return (truthy(gt(mag_0[0], 0.0)) ? (Object) list(mul(div(gx_0[0], mag_0[0]), f_0[0]), mul(div(gy_0[0], mag_0[0]), f_0[0]), mag_0[0], f_0[0]) : (Object) list(0.0, 0.0, 0.0, 0.0));
+      Object[] more_0 = new Object[1]; more_0[0] = call(self, "made_at", new Object[] { g_0[0], px_0[0], py_0[0] });
+      Object[] ax_0 = new Object[1]; ax_0[0] = add(gx_0[0], elem(more_0[0], 0.0));
+      Object[] ay_0 = new Object[1]; ay_0[0] = add(gy_0[0], elem(more_0[0], 1.0));
+      if (true) return list(ax_0[0], ay_0[0], mag_0[0], call(K("Fmt"), "hypot", new Object[] { ax_0[0], ay_0[0] }));
       return null;
     });
     c.method("launch", (self, a1) -> {
@@ -18046,12 +18325,20 @@ static final class C_Formed {
       set(extra_0[0], str("middles"), get(self, "middles"));
       set(extra_0[0], str("deg"), get(self, "deg"));
       set(extra_0[0], str("a0"), mul(get(self, "a0"), get(K("Simulation"), "UNIT_G")));
-      set(extra_0[0], str("about"), "discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy");
+      set(extra_0[0], str("about"), "discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy");
       if (true) return call(K("Measure"), "save", new Object[] { "galaxy.formed", list("density"), cols_0[0], extra_0[0] });
       return null;
     });
     c.statik("kernel", (self, a1) -> {
-      if (true) return m_join(list("// GENERATED from Formed.ray: stars that pull each other through the law", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> L: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + str(get(K("Formed"), "TILE")) + ">;", get(K("Simulation"), "law_wgsl"), "@compute @workgroup_size(" + str(get(K("Formed"), "TILE")) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + str(get(K("Formed"), "TILE")) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + str(get(K("Formed"), "TILE")) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  var a: vec2<f32> = vec2<f32>(0.0, 0.0);", "  var f: f32 = 0.0;", "  if (mag > 0.0) {", "    f = mag;", "    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }", "    a = gN / mag * f;", "  }", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " KICKDRIFT" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " KICK" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n");
+      Object[] F_0 = new Object[1]; F_0[0] = make("Felt", new Object[] {  });
+      Object[] r0_0 = new Object[1]; r0_0[0] = call(K("Shaded"), "literal", new Object[] { elem(get(F_0[0], "rc"), 0.0) });
+      Object[] step_0 = new Object[1]; step_0[0] = call(K("Shaded"), "literal", new Object[] { get(F_0[0], "step") });
+      Object[] topr_0 = new Object[1]; topr_0[0] = call(K("Shaded"), "literal", new Object[] { sub(sub(get(K("Felt"), "NR"), 1.0), 0.0001) });
+      Object[] tau_0 = new Object[1]; tau_0[0] = call(K("Shaded"), "literal", new Object[] { (2 * Math.PI) });
+      Object[] dphi_0 = new Object[1]; dphi_0[0] = call(K("Shaded"), "literal", new Object[] { get(F_0[0], "dphi") });
+      Object[] np_0 = new Object[1]; np_0[0] = get(K("Felt"), "NPHI");
+      Object[] nr_0 = new Object[1]; nr_0[0] = get(K("Felt"), "NR");
+      if (true) return m_join(list("// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)", "@group(0) @binding(0) var<storage, read> P: array<u32>;", "@group(0) @binding(1) var<storage, read> M: array<f32>;", "@group(0) @binding(2) var<storage, read> C: array<f32>;", "@group(0) @binding(3) var<storage, read_write> X: array<f32>;", "@group(0) @binding(4) var<storage, read_write> A: array<f32>;", "var<workgroup> tile: array<vec2<f32>, " + str(get(K("Formed"), "TILE")) + ">;", "fn made(g: u32, at: vec2<f32>) -> vec2<f32> {", "  let a: f32 = M[4u * g + 3u];", "  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];", "  let r: f32 = length(d);", "  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }", "  let u: f32 = clamp(log(r / " + str(r0_0[0]) + ") / " + str(step_0[0]) + ", 0.0, " + str(topr_0[0]) + ");", "  let i0: u32 = u32(floor(u));", "  let fu: f32 = u - floor(u);", "  var ph: f32 = atan2(d.y, d.x);", "  if (ph < 0.0) { ph = ph + " + str(tau_0[0]) + "; }", "  var v: f32 = ph / " + str(dphi_0[0]) + " - 0.5;", "  if (v < 0.0) { v = v + " + str(np_0[0]) + ".0; }", "  let k0: u32 = u32(floor(v)) % " + str(np_0[0]) + "u;", "  let fv: f32 = v - floor(v);", "  let k1: u32 = (k0 + 1u) % " + str(np_0[0]) + "u;", "  let t: u32 = 4u * P[2] + g * " + str(nr_0[0]) + "u * " + str(np_0[0]) + "u * 2u;", "  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + str(np_0[0]) + "u + k0)], M[t + 2u * (i0 * " + str(np_0[0]) + "u + k0) + 1u]);", "  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * " + str(np_0[0]) + "u + k1)], M[t + 2u * (i0 * " + str(np_0[0]) + "u + k1) + 1u]);", "  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + str(np_0[0]) + "u + k0)], M[t + 2u * ((i0 + 1u) * " + str(np_0[0]) + "u + k0) + 1u]);", "  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * " + str(np_0[0]) + "u + k1)], M[t + 2u * ((i0 + 1u) * " + str(np_0[0]) + "u + k1) + 1u]);", "  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);", "  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;", "}", "@compute @workgroup_size(" + str(get(K("Formed"), "TILE")) + ") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {", "  let i: u32 = P[7] + gid.x;", "  let per: u32 = P[1];", "  let g: u32 = i / per;", "  let base: u32 = g * per;", "  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);", "  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];", "  var s: vec2<f32> = vec2<f32>(0.0, 0.0);", "  for (var t: u32 = 0u; t < per; t = t + " + str(get(K("Formed"), "TILE")) + "u) {", "    let j: u32 = base + t + lid.x;", "    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);", "    workgroupBarrier();", "    for (var k: u32 = 0u; k < " + str(get(K("Formed"), "TILE")) + "u; k = k + 1u) {", "      let d: vec2<f32> = tile[k] - me;", "      let inv: f32 = inverseSqrt(dot(d, d) + e2);", "      s = s + d * (inv * inv * inv);", "    }", "    workgroupBarrier();", "  }", "  let gN: vec2<f32> = C[4u * g] * s;", "  let mag: f32 = length(gN);", "  let a: vec2<f32> = gN + made(g, me);", "  let f: f32 = length(a);", "  A[4u * i] = a.x;", "  A[4u * i + 1u] = a.y;", "  A[4u * i + 2u] = mag;", "  A[4u * i + 3u] = f;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " KICKDRIFT" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;", "  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;", "}", "" + str(get(K("Simulation"), "ENTRY")) + " KICK" + str(get(K("Simulation"), "ID")) + "", get(K("Simulation"), "THREAD"), "  if (i >= P[0]) { return; }", "  let dt: f32 = C[4u * (i / P[1]) + 3u];", "  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;", "  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;", "}"), "\n");
       return null;
     });
   }
@@ -18415,6 +18702,7 @@ static final class C_Felt {
     c.staticField("MIDDLE", self -> list(0.0, 0.2, 0.5));
     c.staticField("GAS", self -> list(list(0.0, 1.0), list(0.5, 2.0), list(0.5, 3.0), list(0.9, 2.0), list(0.9, 3.0)));
     c.staticField("FREEDOMS", self -> list("mass", "thickness", "middle", "gas"));
+    c.staticField("NPHI", self -> 16.0);
     c.staticField("LADDER", self -> list(neg(6.5), 5.5, 193.0));
     c.getter("step", (self, a1) -> {
       if (true) return div(m_ln((div(get(K("Felt"), "R1"), get(K("Felt"), "R0")))), get(K("Felt"), "NR"));
@@ -18622,6 +18910,11 @@ static final class C_Felt {
     });
     c.field("band", self -> get(self, "factored"));
     c.getter("factored", (self, a1) -> {
+      if (true) return call(self, "factored_with", new Object[] { filled(get(self, "cells"), 0.0) });
+      return null;
+    });
+    c.method("factored_with", (self, a1) -> {
+      Object[] extra_0 = { arg(a1, 0) };
       Object[] n_0 = new Object[1]; n_0[0] = get(self, "cells");
       Object[] B_0 = new Object[1]; B_0[0] = get(K("Felt"), "NMU");
       Object[] W_0 = new Object[1]; W_0[0] = get(self, "width");
@@ -18631,7 +18924,7 @@ static final class C_Felt {
         Object[] i_1 = new Object[1]; i_1[0] = m_floor((div(k_1[0], B_0[0])));
         Object[] j_1 = new Object[1]; j_1[0] = mod(k_1[0], B_0[0]);
         Object[] f_1 = new Object[1]; f_1[0] = elem(get(self, "faces"), k_1[0]);
-        setAt(m_0[0], add(mul(k_1[0], W_0[0]), B_0[0]), add(add(add(elem(f_1[0], 0.0), elem(f_1[0], 1.0)), elem(f_1[0], 2.0)), elem(f_1[0], 3.0)));
+        setAt(m_0[0], add(mul(k_1[0], W_0[0]), B_0[0]), add(add(add(add(elem(f_1[0], 0.0), elem(f_1[0], 1.0)), elem(f_1[0], 2.0)), elem(f_1[0], 3.0)), elem(extra_0[0], k_1[0])));
         if (truthy(lt(add(i_1[0], 1.0), get(K("Felt"), "NR")))) {
           setAt(m_0[0], add(add(mul(k_1[0], W_0[0]), B_0[0]), B_0[0]), sub(0.0, elem(f_1[0], 0.0)));
         }
@@ -18668,10 +18961,14 @@ static final class C_Felt {
     });
     c.method("solve_band", (self, a1) -> {
       Object[] b_0 = { arg(a1, 0) };
+      if (true) return call(self, "solve_with", new Object[] { get(self, "band"), b_0[0] });
+      return null;
+    });
+    c.method("solve_with", (self, a1) -> {
+      Object[] m_0 = { arg(a1, 0) }; Object[] b_0 = { arg(a1, 1) };
       Object[] n_0 = new Object[1]; n_0[0] = get(self, "cells");
       Object[] B_0 = new Object[1]; B_0[0] = get(K("Felt"), "NMU");
       Object[] W_0 = new Object[1]; W_0[0] = get(self, "width");
-      Object[] m_0 = new Object[1]; m_0[0] = get(self, "band");
       Object[] x_0 = new Object[1]; x_0[0] = m_map(b_0[0], (Fn) (a3) -> {
         Object[] v_2 = { arg(a3, 0) };
         if (true) return v_2[0];
@@ -18706,8 +19003,8 @@ static final class C_Felt {
       if (true) return (truthy(gt(gN_0[0], 0.0)) ? (Object) add(0.5, m_sqrt((add(0.25, div(1.0, gN_0[0]))))) : (Object) 1.0);
       return null;
     });
-    c.method("felt", (self, a1) -> {
-      Object[] shape_0 = { arg(a1, 0) }; Object[] s_0 = { arg(a1, 1) };
+    c.method("made_rows", (self, a1) -> {
+      Object[] gr_0 = { arg(a1, 0) }; Object[] gz_0 = { arg(a1, 1) };
       Object[] n_0 = new Object[1]; n_0[0] = get(self, "cells");
       Object[] B_0 = new Object[1]; B_0[0] = get(K("Felt"), "NMU");
       Object[] wr_0 = new Object[1]; wr_0[0] = filled(n_0[0], 0.0);
@@ -18715,13 +19012,11 @@ static final class C_Felt {
       for (double i1 = 0; i1 < num(n_0[0]); i1++) {
         Object[] c__1 = { i1 };
         Object[] j_1 = new Object[1]; j_1[0] = mod(c__1[0], B_0[0]);
-        Object[] gr_1 = new Object[1]; gr_1[0] = mul(s_0[0], elem(elem(shape_0[0], 0.0), c__1[0]));
-        Object[] gz_1 = new Object[1]; gz_1[0] = mul(s_0[0], elem(elem(shape_0[0], 1.0), c__1[0]));
-        Object[] f_1 = new Object[1]; f_1[0] = sub(call(K("Felt"), "over", new Object[] { call(K("Fmt"), "hypot", new Object[] { gr_1[0], gz_1[0] }) }), 1.0);
+        Object[] f_1 = new Object[1]; f_1[0] = sub(call(K("Felt"), "over", new Object[] { call(K("Fmt"), "hypot", new Object[] { elem(gr_0[0], c__1[0]), elem(gz_0[0], c__1[0]) }) }), 1.0);
         Object[] mu_1 = new Object[1]; mu_1[0] = elem(get(self, "mc"), j_1[0]);
         Object[] st_1 = new Object[1]; st_1[0] = m_sqrt((sub(1.0, mul(mu_1[0], mu_1[0]))));
-        setAt(wr_0[0], c__1[0], mul(f_1[0], (add(mul(gr_1[0], st_1[0]), mul(gz_1[0], mu_1[0])))));
-        setAt(wm_0[0], c__1[0], mul(f_1[0], (sub(mul(gz_1[0], st_1[0]), mul(gr_1[0], mu_1[0])))));
+        setAt(wr_0[0], c__1[0], mul(f_1[0], (add(mul(elem(gr_0[0], c__1[0]), st_1[0]), mul(elem(gz_0[0], c__1[0]), mu_1[0])))));
+        setAt(wm_0[0], c__1[0], mul(f_1[0], (sub(mul(elem(gz_0[0], c__1[0]), st_1[0]), mul(elem(gr_0[0], c__1[0]), mu_1[0])))));
       };
       Object[] rhs_0 = new Object[1]; rhs_0[0] = filled(n_0[0], 0.0);
       for (double i1 = 0; i1 < num(n_0[0]); i1++) {
@@ -18738,14 +19033,279 @@ static final class C_Felt {
         setAt(rhs_0[0], c__1[0], (truthy(gt(i_1[0], 0.0)) ? (Object) sub(made_1[0], mul(mul(mul(mul(mul(fi_1[0], 2.0), Math.PI), elem(get(self, "re"), i_1[0])), elem(get(self, "re"), i_1[0])), dmu_1[0])) : (Object) made_1[0]));
       };
       Object[] psi_0 = new Object[1]; psi_0[0] = call(self, "solve_band", new Object[] { rhs_0[0] });
+      if (true) return m_map(rng(get(K("Felt"), "NR")), (Fn) (a3) -> {
+        Object[] i_2 = { arg(a3, 0) };
+        if (true) return (truthy((truthy(gt(i_2[0], 0.0)) && truthy(lt(add(i_2[0], 1.0), get(K("Felt"), "NR"))))) ? (Object) sub(0.0, div((sub(elem(psi_0[0], mul((add(i_2[0], 1.0)), B_0[0])), elem(psi_0[0], mul((sub(i_2[0], 1.0)), B_0[0])))), (sub(elem(get(self, "rc"), add(i_2[0], 1.0)), elem(get(self, "rc"), sub(i_2[0], 1.0)))))) : (Object) 0.0);
+        return null;
+      });
+      return null;
+    });
+    c.getter("dphi", (self, a1) -> {
+      if (true) return div((2 * Math.PI), get(K("Felt"), "NPHI"));
+      return null;
+    });
+    c.getter("waves", (self, a1) -> {
+      if (true) return add(m_floor((div(get(K("Felt"), "NPHI"), 2.0))), 1.0);
+      return null;
+    });
+    c.field("around", self -> m_map(rng(get(self, "cells")), (Fn) (a2) -> {
+      Object[] c__1 = { arg(a2, 0) };
+      Object[] i_1 = new Object[1]; i_1[0] = m_floor((div(c__1[0], get(K("Felt"), "NMU"))));
+      Object[] j_1 = new Object[1]; j_1[0] = mod(c__1[0], get(K("Felt"), "NMU"));
+      Object[] st_1 = new Object[1]; st_1[0] = m_sqrt((sub(1.0, mul(elem(get(self, "mc"), j_1[0]), elem(get(self, "mc"), j_1[0])))));
+      Object[] dth_1 = new Object[1]; dth_1[0] = sub(call(K("Felt"), "theta", new Object[] { elem(get(self, "me"), j_1[0]) }), call(K("Felt"), "theta", new Object[] { elem(get(self, "me"), add(j_1[0], 1.0)) }));
+      if (true) return div(mul(mul(mul(2.0, Math.PI), (sub(elem(get(self, "re"), add(i_1[0], 1.0)), elem(get(self, "re"), i_1[0])))), dth_1[0]), (mul(mul(st_1[0], get(self, "dphi")), get(self, "dphi"))));
+      return null;
+    }));
+    c.statik("theta", (self, a1) -> {
+      Object[] mu_0 = { arg(a1, 0) };
+      if (true) return m_atan2(m_sqrt((sub(1.0, mul(mu_0[0], mu_0[0])))), mu_0[0]);
+      return null;
+    });
+    c.field("wave_bands", self -> m_map(rng(get(self, "waves")), (Fn) (a2) -> {
+      Object[] m_1 = { arg(a2, 0) };
+      if (true) return (truthy(eq(m_1[0], 0.0)) ? (Object) get(self, "band") : (Object) call(self, "factored_with", new Object[] { m_map(get(self, "around"), (Fn) (a4) -> {
+        Object[] a_3 = { arg(a4, 0) };
+        if (true) return mul(a_3[0], (sub(2.0, mul(2.0, m_cos((mul(m_1[0], get(self, "dphi"))))))));
+        return null;
+      }) }));
+      return null;
+    }));
+    c.field("cosines", self -> m_map(rng(mul(get(K("Felt"), "NPHI"), get(K("Felt"), "NPHI"))), (Fn) (a2) -> {
+      Object[] q_1 = { arg(a2, 0) };
+      if (true) return m_cos((mul(mul(get(self, "dphi"), m_floor((div(q_1[0], get(K("Felt"), "NPHI"))))), mod(q_1[0], get(K("Felt"), "NPHI")))));
+      return null;
+    }));
+    c.field("sines", self -> m_map(rng(mul(get(K("Felt"), "NPHI"), get(K("Felt"), "NPHI"))), (Fn) (a2) -> {
+      Object[] q_1 = { arg(a2, 0) };
+      if (true) return m_sin((mul(mul(get(self, "dphi"), m_floor((div(q_1[0], get(K("Felt"), "NPHI"))))), mod(q_1[0], get(K("Felt"), "NPHI")))));
+      return null;
+    }));
+    c.method("solve_round", (self, a1) -> {
+      Object[] b_0 = { arg(a1, 0) };
+      Object[] n_0 = new Object[1]; n_0[0] = get(self, "cells");
+      Object[] P_0 = new Object[1]; P_0[0] = get(K("Felt"), "NPHI");
+      Object[] x_0 = new Object[1]; x_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      for (double i1 = 0; i1 < num(get(self, "waves")); i1++) {
+        Object[] m_1 = { i1 };
+        Object[] a_1 = new Object[1]; a_1[0] = m_map(rng(n_0[0]), (Fn) (a4) -> {
+          Object[] c__3 = { arg(a4, 0) };
+          if (true) return m_reduce(rng(P_0[0]), 0.0, (Fn) (a6) -> {
+            Object[] t_5 = { arg(a6, 0) }; Object[] k_5 = { arg(a6, 1) };
+            if (true) return add(t_5[0], mul(elem(b_0[0], add(mul(c__3[0], P_0[0]), k_5[0])), elem(get(self, "cosines"), add(mul(m_1[0], P_0[0]), k_5[0]))));
+            return null;
+          });
+          return null;
+        });
+        Object[] s_1 = new Object[1]; s_1[0] = m_map(rng(n_0[0]), (Fn) (a4) -> {
+          Object[] c__3 = { arg(a4, 0) };
+          if (true) return m_reduce(rng(P_0[0]), 0.0, (Fn) (a6) -> {
+            Object[] t_5 = { arg(a6, 0) }; Object[] k_5 = { arg(a6, 1) };
+            if (true) return add(t_5[0], mul(elem(b_0[0], add(mul(c__3[0], P_0[0]), k_5[0])), elem(get(self, "sines"), add(mul(m_1[0], P_0[0]), k_5[0]))));
+            return null;
+          });
+          return null;
+        });
+        Object[] ya_1 = new Object[1]; ya_1[0] = call(self, "solve_with", new Object[] { elem(get(self, "wave_bands"), m_1[0]), a_1[0] });
+        Object[] ys_1 = new Object[1]; ys_1[0] = call(self, "solve_with", new Object[] { elem(get(self, "wave_bands"), m_1[0]), s_1[0] });
+        Object[] weight_1 = new Object[1]; weight_1[0] = div(((truthy((truthy(eq(m_1[0], 0.0)) || truthy(eq(mul(2.0, m_1[0]), P_0[0])))) ? (Object) 1.0 : (Object) 2.0)), P_0[0]);
+        for (double i2 = 0; i2 < num(n_0[0]); i2++) {
+          Object[] c__2 = { i2 };
+          for (double i3 = 0; i3 < num(P_0[0]); i3++) {
+            Object[] k_3 = { i3 };
+            setAt(x_0[0], add(mul(c__2[0], P_0[0]), k_3[0]), add(elem(x_0[0], add(mul(c__2[0], P_0[0]), k_3[0])), mul(weight_1[0], (add(mul(elem(ya_1[0], c__2[0]), elem(get(self, "cosines"), add(mul(m_1[0], P_0[0]), k_3[0]))), mul(elem(ys_1[0], c__2[0]), elem(get(self, "sines"), add(mul(m_1[0], P_0[0]), k_3[0]))))))));
+          };
+        };
+      };
+      if (true) return x_0[0];
+      return null;
+    });
+    c.method("layers", (self, a1) -> {
+      Object[] r_0 = { arg(a1, 0) }; Object[] h_0 = { arg(a1, 1) };
+      Object[] raw_0 = new Object[1]; raw_0[0] = m_map(rng(get(K("Felt"), "NMU")), (Fn) (a3) -> {
+        Object[] j_2 = { arg(a3, 0) };
+        if (true) return sub(m_exp((sub(0.0, div(mul(r_0[0], elem(get(self, "me"), j_2[0])), h_0[0])))), m_exp((sub(0.0, div(mul(r_0[0], elem(get(self, "me"), add(j_2[0], 1.0))), h_0[0])))));
+        return null;
+      });
+      Object[] held_0 = new Object[1]; held_0[0] = m_reduce(raw_0[0], 0.0, (Fn) (a3) -> {
+        Object[] t_2 = { arg(a3, 0) }; Object[] v_2 = { arg(a3, 1) };
+        if (true) return add(t_2[0], v_2[0]);
+        return null;
+      });
+      if (true) return m_map(raw_0[0], (Fn) (a3) -> {
+        Object[] v_2 = { arg(a3, 0) };
+        if (true) return (truthy(gt(held_0[0], 0.0)) ? (Object) div(v_2[0], held_0[0]) : (Object) 0.0);
+        return null;
+      });
+      return null;
+    });
+    c.method("round_made", (self, a1) -> {
+      Object[] xy_0 = { arg(a1, 0) }; Object[] s_0 = { arg(a1, 1) }; Object[] h_0 = { arg(a1, 2) };
+      Object[] n_0 = new Object[1]; n_0[0] = get(self, "cells");
+      Object[] P_0 = new Object[1]; P_0[0] = get(K("Felt"), "NPHI");
+      Object[] B_0 = new Object[1]; B_0[0] = get(K("Felt"), "NMU");
+      Object[] dp_0 = new Object[1]; dp_0[0] = get(self, "dphi");
+      Object[] rho_0 = new Object[1]; rho_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      Object[] lay_0 = new Object[1]; lay_0[0] = m_map(rng(get(K("Felt"), "NR")), (Fn) (a3) -> {
+        Object[] i_2 = { arg(a3, 0) };
+        if (true) return call(self, "layers", new Object[] { elem(get(self, "rc"), i_2[0]), h_0[0] });
+        return null;
+      });
+      for (double i1 = 0; i1 < num(m_floor((div(len(xy_0[0]), 2.0)))); i1++) {
+        Object[] q_1 = { i1 };
+        Object[] x_1 = new Object[1]; x_1[0] = elem(xy_0[0], mul(2.0, q_1[0]));
+        Object[] y_1 = new Object[1]; y_1[0] = elem(xy_0[0], add(mul(2.0, q_1[0]), 1.0));
+        Object[] r_1 = new Object[1]; r_1[0] = call(K("Fmt"), "hypot", new Object[] { x_1[0], y_1[0] });
+        Object[] u_1 = new Object[1]; u_1[0] = call(K("Fmt"), "min", new Object[] { call(K("Fmt"), "max", new Object[] { div(m_ln((div(r_1[0], elem(get(self, "rc"), 0.0)))), get(self, "step")), 0.0 }), sub(sub(get(K("Felt"), "NR"), 1.0), 0.000001) });
+        Object[] i0_1 = new Object[1]; i0_1[0] = m_floor(u_1[0]);
+        Object[] fu_1 = new Object[1]; fu_1[0] = sub(u_1[0], i0_1[0]);
+        Object[] ph_1 = new Object[1]; ph_1[0] = m_atan2(y_1[0], x_1[0]);
+        Object[] v_1 = new Object[1]; v_1[0] = sub(div(((truthy(lt(ph_1[0], 0.0)) ? (Object) add(ph_1[0], (2 * Math.PI)) : (Object) ph_1[0])), dp_0[0]), 0.5);
+        if (truthy(lt(v_1[0], 0.0))) {
+          v_1[0] = add(v_1[0], P_0[0]);
+        }
+        Object[] k0_1 = new Object[1]; k0_1[0] = mod(m_floor(v_1[0]), P_0[0]);
+        Object[] fv_1 = new Object[1]; fv_1[0] = sub(v_1[0], m_floor(v_1[0]));
+        Object[] k1_1 = new Object[1]; k1_1[0] = mod((add(k0_1[0], 1.0)), P_0[0]);
+        for (Object e2 : items(list(list(i0_1[0], sub(1.0, fu_1[0])), list(add(i0_1[0], 1.0), fu_1[0])))) {
+          Object[] rw_2 = { e2 };
+          if (truthy(gt(elem(rw_2[0], 1.0), 0.0))) {
+            for (double i3 = 0; i3 < num(B_0[0]); i3++) {
+              Object[] j_3 = { i3 };
+              Object[] m_3 = new Object[1]; m_3[0] = mul(mul(div(s_0[0], 2.0), elem(rw_2[0], 1.0)), elem(elem(lay_0[0], elem(rw_2[0], 0.0)), j_3[0]));
+              Object[] c__3 = new Object[1]; c__3[0] = add(mul(elem(rw_2[0], 0.0), B_0[0]), j_3[0]);
+              setAt(rho_0[0], add(mul(c__3[0], P_0[0]), k0_1[0]), add(elem(rho_0[0], add(mul(c__3[0], P_0[0]), k0_1[0])), mul(m_3[0], (sub(1.0, fv_1[0])))));
+              setAt(rho_0[0], add(mul(c__3[0], P_0[0]), k1_1[0]), add(elem(rho_0[0], add(mul(c__3[0], P_0[0]), k1_1[0])), mul(m_3[0], fv_1[0])));
+            };
+          }
+        };
+      };
+      Object[] phi_0 = new Object[1]; phi_0[0] = call(self, "solve_round", new Object[] { m_map(rho_0[0], (Fn) (a3) -> {
+        Object[] m_2 = { arg(a3, 0) };
+        if (true) return sub(0.0, div(mul(mul(mul(4.0, Math.PI), m_2[0]), (2 * Math.PI)), dp_0[0]));
+        return null;
+      }) });
+      Object[] at_0 = new Object[1]; at_0[0] = (Fn) (a2) -> {
+        Object[] i_1 = { arg(a2, 0) }; Object[] j_1 = { arg(a2, 1) }; Object[] k_1 = { arg(a2, 2) };
+        if (true) return elem(phi_0[0], add(mul((add(mul(i_1[0], B_0[0]), j_1[0])), P_0[0]), mod((add(k_1[0], P_0[0])), P_0[0])));
+        return null;
+      };
+      Object[] wr_0 = new Object[1]; wr_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      Object[] wm_0 = new Object[1]; wm_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      Object[] wp_0 = new Object[1]; wp_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      for (double i1 = 0; i1 < num(n_0[0]); i1++) {
+        Object[] c__1 = { i1 };
+        Object[] i_1 = new Object[1]; i_1[0] = m_floor((div(c__1[0], B_0[0])));
+        Object[] j_1 = new Object[1]; j_1[0] = mod(c__1[0], B_0[0]);
+        Object[] r_1 = new Object[1]; r_1[0] = elem(get(self, "rc"), i_1[0]);
+        Object[] st_1 = new Object[1]; st_1[0] = m_sqrt((sub(1.0, mul(elem(get(self, "mc"), j_1[0]), elem(get(self, "mc"), j_1[0])))));
+        for (double i2 = 0; i2 < num(P_0[0]); i2++) {
+          Object[] k_2 = { i2 };
+          Object[] lo_2 = new Object[1]; lo_2[0] = call(K("Fmt"), "max", new Object[] { sub(i_1[0], 1.0), 0.0 });
+          Object[] hi_2 = new Object[1]; hi_2[0] = call(K("Fmt"), "min", new Object[] { add(i_1[0], 1.0), sub(get(K("Felt"), "NR"), 1.0) });
+          Object[] gr_2 = new Object[1]; gr_2[0] = sub(0.0, div((sub(invoke(at_0[0], new Object[] { hi_2[0], j_1[0], k_2[0] }), invoke(at_0[0], new Object[] { lo_2[0], j_1[0], k_2[0] }))), (sub(elem(get(self, "rc"), hi_2[0]), elem(get(self, "rc"), lo_2[0])))));
+          Object[] below_2 = new Object[1]; below_2[0] = (truthy(gt(j_1[0], 0.0)) ? (Object) invoke(at_0[0], new Object[] { i_1[0], sub(j_1[0], 1.0), k_2[0] }) : (Object) invoke(at_0[0], new Object[] { i_1[0], 0.0, k_2[0] }));
+          Object[] mb_2 = new Object[1]; mb_2[0] = (truthy(gt(j_1[0], 0.0)) ? (Object) elem(get(self, "mc"), sub(j_1[0], 1.0)) : (Object) sub(0.0, elem(get(self, "mc"), 0.0)));
+          Object[] top_2 = new Object[1]; top_2[0] = call(K("Fmt"), "min", new Object[] { add(j_1[0], 1.0), sub(B_0[0], 1.0) });
+          Object[] gm_2 = new Object[1]; gm_2[0] = sub(0.0, div(mul(div(st_1[0], r_1[0]), (sub(invoke(at_0[0], new Object[] { i_1[0], top_2[0], k_2[0] }), below_2[0]))), (sub(elem(get(self, "mc"), top_2[0]), mb_2[0]))));
+          Object[] gp_2 = new Object[1]; gp_2[0] = sub(0.0, div((sub(invoke(at_0[0], new Object[] { i_1[0], j_1[0], add(k_2[0], 1.0) }), invoke(at_0[0], new Object[] { i_1[0], j_1[0], sub(k_2[0], 1.0) }))), (mul(mul(mul(2.0, dp_0[0]), r_1[0]), st_1[0]))));
+          Object[] f_2 = new Object[1]; f_2[0] = sub(call(K("Felt"), "over", new Object[] { call(K("Fmt"), "hypot", new Object[] { call(K("Fmt"), "hypot", new Object[] { gr_2[0], gm_2[0] }), gp_2[0] }) }), 1.0);
+          setAt(wr_0[0], add(mul(c__1[0], P_0[0]), k_2[0]), mul(f_2[0], gr_2[0]));
+          setAt(wm_0[0], add(mul(c__1[0], P_0[0]), k_2[0]), mul(f_2[0], gm_2[0]));
+          setAt(wp_0[0], add(mul(c__1[0], P_0[0]), k_2[0]), mul(f_2[0], gp_2[0]));
+        };
+      };
+      Object[] made_0 = new Object[1]; made_0[0] = filled(mul(n_0[0], P_0[0]), 0.0);
+      for (double i1 = 0; i1 < num(n_0[0]); i1++) {
+        Object[] c__1 = { i1 };
+        Object[] i_1 = new Object[1]; i_1[0] = m_floor((div(c__1[0], B_0[0])));
+        Object[] j_1 = new Object[1]; j_1[0] = mod(c__1[0], B_0[0]);
+        Object[] dmu_1 = new Object[1]; dmu_1[0] = sub(elem(get(self, "me"), add(j_1[0], 1.0)), elem(get(self, "me"), j_1[0]));
+        Object[] dr_1 = new Object[1]; dr_1[0] = sub(elem(get(self, "re"), add(i_1[0], 1.0)), elem(get(self, "re"), i_1[0]));
+        Object[] dth_1 = new Object[1]; dth_1[0] = sub(call(K("Felt"), "theta", new Object[] { elem(get(self, "me"), j_1[0]) }), call(K("Felt"), "theta", new Object[] { elem(get(self, "me"), add(j_1[0], 1.0)) }));
+        for (double i2 = 0; i2 < num(P_0[0]); i2++) {
+          Object[] k_2 = { i2 };
+          Object[] e_2 = new Object[1]; e_2[0] = add(mul(c__1[0], P_0[0]), k_2[0]);
+          Object[] fo_2 = new Object[1]; fo_2[0] = (truthy(lt(add(i_1[0], 1.0), get(K("Felt"), "NR"))) ? (Object) div((add(elem(wr_0[0], e_2[0]), elem(wr_0[0], add(e_2[0], mul(B_0[0], P_0[0]))))), 2.0) : (Object) elem(wr_0[0], e_2[0]));
+          Object[] fi_2 = new Object[1]; fi_2[0] = (truthy(gt(i_1[0], 0.0)) ? (Object) div((add(elem(wr_0[0], sub(e_2[0], mul(B_0[0], P_0[0]))), elem(wr_0[0], e_2[0]))), 2.0) : (Object) elem(wr_0[0], e_2[0]));
+          Object[] up_2 = new Object[1]; up_2[0] = (truthy(lt(add(j_1[0], 1.0), B_0[0])) ? (Object) div((add(elem(wm_0[0], e_2[0]), elem(wm_0[0], add(e_2[0], P_0[0])))), 2.0) : (Object) 0.0);
+          Object[] down_2 = new Object[1]; down_2[0] = (truthy(gt(j_1[0], 0.0)) ? (Object) div((add(elem(wm_0[0], sub(e_2[0], P_0[0])), elem(wm_0[0], e_2[0]))), 2.0) : (Object) 0.0);
+          Object[] ahead_2 = new Object[1]; ahead_2[0] = div((add(elem(wp_0[0], e_2[0]), elem(wp_0[0], add(mul(c__1[0], P_0[0]), mod((add(k_2[0], 1.0)), P_0[0]))))), 2.0);
+          Object[] behind_2 = new Object[1]; behind_2[0] = div((add(elem(wp_0[0], add(mul(c__1[0], P_0[0]), mod((sub(add(k_2[0], P_0[0]), 1.0)), P_0[0]))), elem(wp_0[0], e_2[0]))), 2.0);
+          Object[] out__2 = new Object[1]; out__2[0] = add(sub(add(mul(mul(mul(mul(mul(fo_2[0], 2.0), Math.PI), elem(get(self, "re"), add(i_1[0], 1.0))), elem(get(self, "re"), add(i_1[0], 1.0))), dmu_1[0]), mul(mul(mul(mul(up_2[0], 2.0), Math.PI), (sub(1.0, mul(elem(get(self, "me"), add(j_1[0], 1.0)), elem(get(self, "me"), add(j_1[0], 1.0)))))), dr_1[0])), mul(mul(mul(mul(down_2[0], 2.0), Math.PI), (sub(1.0, mul(elem(get(self, "me"), j_1[0]), elem(get(self, "me"), j_1[0]))))), dr_1[0])), div(mul(mul(mul(mul((sub(ahead_2[0], behind_2[0])), (2 * Math.PI)), elem(get(self, "rc"), i_1[0])), dr_1[0]), dth_1[0]), dp_0[0]));
+          setAt(made_0[0], e_2[0], (truthy(gt(i_1[0], 0.0)) ? (Object) sub(out__2[0], mul(mul(mul(mul(mul(fi_2[0], 2.0), Math.PI), elem(get(self, "re"), i_1[0])), elem(get(self, "re"), i_1[0])), dmu_1[0])) : (Object) out__2[0]));
+        };
+      };
+      Object[] psi_0 = new Object[1]; psi_0[0] = call(self, "solve_round", new Object[] { made_0[0] });
+      Object[] out_0 = new Object[1]; out_0[0] = filled(mul(mul(get(K("Felt"), "NR"), P_0[0]), 2.0), 0.0);
+      Object[] st0_0 = new Object[1]; st0_0[0] = m_sqrt((sub(1.0, mul(elem(get(self, "mc"), 0.0), elem(get(self, "mc"), 0.0)))));
+      for (double i1 = 0; i1 < num(get(K("Felt"), "NR")); i1++) {
+        Object[] i_1 = { i1 };
+        if (truthy((truthy(gt(i_1[0], 0.0)) && truthy(lt(add(i_1[0], 1.0), get(K("Felt"), "NR")))))) {
+          for (double i2 = 0; i2 < num(P_0[0]); i2++) {
+            Object[] k_2 = { i2 };
+            setAt(out_0[0], mul(2.0, (add(mul(i_1[0], P_0[0]), k_2[0]))), sub(0.0, div((sub(elem(psi_0[0], add(mul(mul((add(i_1[0], 1.0)), B_0[0]), P_0[0]), k_2[0])), elem(psi_0[0], add(mul(mul((sub(i_1[0], 1.0)), B_0[0]), P_0[0]), k_2[0])))), (sub(elem(get(self, "rc"), add(i_1[0], 1.0)), elem(get(self, "rc"), sub(i_1[0], 1.0)))))));
+            setAt(out_0[0], add(mul(2.0, (add(mul(i_1[0], P_0[0]), k_2[0]))), 1.0), sub(0.0, div((sub(elem(psi_0[0], add(mul(mul(i_1[0], B_0[0]), P_0[0]), mod((add(k_2[0], 1.0)), P_0[0]))), elem(psi_0[0], add(mul(mul(i_1[0], B_0[0]), P_0[0]), mod((sub(add(k_2[0], P_0[0]), 1.0)), P_0[0]))))), (mul(mul(mul(2.0, dp_0[0]), elem(get(self, "rc"), i_1[0])), st0_0[0])))));
+          };
+        }
+      };
+      if (true) return out_0[0];
+      return null;
+    });
+    c.method("round_at", (self, a1) -> {
+      Object[] table_0 = { arg(a1, 0) }; Object[] x_0 = { arg(a1, 1) }; Object[] y_0 = { arg(a1, 2) };
+      Object[] P_0 = new Object[1]; P_0[0] = get(K("Felt"), "NPHI");
+      Object[] r_0 = new Object[1]; r_0[0] = call(K("Fmt"), "hypot", new Object[] { x_0[0], y_0[0] });
+      if (truthy(le(r_0[0], 0.0))) {
+        if (true) return list(0.0, 0.0);
+      }
+      Object[] u_0 = new Object[1]; u_0[0] = call(K("Fmt"), "min", new Object[] { call(K("Fmt"), "max", new Object[] { div(m_ln((div(r_0[0], elem(get(self, "rc"), 0.0)))), get(self, "step")), 0.0 }), sub(sub(get(K("Felt"), "NR"), 1.0), 0.000001) });
+      Object[] i0_0 = new Object[1]; i0_0[0] = m_floor(u_0[0]);
+      Object[] fu_0 = new Object[1]; fu_0[0] = sub(u_0[0], i0_0[0]);
+      Object[] ph_0 = new Object[1]; ph_0[0] = m_atan2(y_0[0], x_0[0]);
+      Object[] v_0 = new Object[1]; v_0[0] = sub(div(((truthy(lt(ph_0[0], 0.0)) ? (Object) add(ph_0[0], (2 * Math.PI)) : (Object) ph_0[0])), get(self, "dphi")), 0.5);
+      if (truthy(lt(v_0[0], 0.0))) {
+        v_0[0] = add(v_0[0], P_0[0]);
+      }
+      Object[] k0_0 = new Object[1]; k0_0[0] = mod(m_floor(v_0[0]), P_0[0]);
+      Object[] fv_0 = new Object[1]; fv_0[0] = sub(v_0[0], m_floor(v_0[0]));
+      Object[] k1_0 = new Object[1]; k1_0[0] = mod((add(k0_0[0], 1.0)), P_0[0]);
+      Object[] part_0 = new Object[1]; part_0[0] = (Fn) (a2) -> {
+        Object[] q_1 = { arg(a2, 0) };
+        if (true) return add(mul((sub(1.0, fu_0[0])), (add(mul((sub(1.0, fv_0[0])), elem(table_0[0], add(mul(2.0, (add(mul(i0_0[0], P_0[0]), k0_0[0]))), q_1[0]))), mul(fv_0[0], elem(table_0[0], add(mul(2.0, (add(mul(i0_0[0], P_0[0]), k1_0[0]))), q_1[0])))))), mul(fu_0[0], (add(mul((sub(1.0, fv_0[0])), elem(table_0[0], add(mul(2.0, (add(mul((add(i0_0[0], 1.0)), P_0[0]), k0_0[0]))), q_1[0]))), mul(fv_0[0], elem(table_0[0], add(mul(2.0, (add(mul((add(i0_0[0], 1.0)), P_0[0]), k1_0[0]))), q_1[0])))))));
+        return null;
+      };
+      Object[] outward_0 = new Object[1]; outward_0[0] = invoke(part_0[0], new Object[] { 0.0 });
+      Object[] about_0 = new Object[1]; about_0[0] = invoke(part_0[0], new Object[] { 1.0 });
+      if (true) return list(div((sub(mul(outward_0[0], x_0[0]), mul(about_0[0], y_0[0]))), r_0[0]), div((add(mul(outward_0[0], y_0[0]), mul(about_0[0], x_0[0]))), r_0[0]));
+      return null;
+    });
+    c.method("made_at", (self, a1) -> {
+      Object[] made_0 = { arg(a1, 0) }; Object[] r_0 = { arg(a1, 1) };
+      Object[] v_0 = new Object[1]; v_0[0] = call(K("Fmt"), "min", new Object[] { call(K("Fmt"), "max", new Object[] { div(m_ln((div(r_0[0], elem(get(self, "rc"), 0.0)))), get(self, "step")), 1.0 }), sub(sub(get(K("Felt"), "NR"), 2.0), 0.000001) });
+      Object[] t_0 = new Object[1]; t_0[0] = m_floor(v_0[0]);
+      Object[] e_0 = new Object[1]; e_0[0] = sub(v_0[0], t_0[0]);
+      if (true) return add(mul((sub(1.0, e_0[0])), elem(made_0[0], t_0[0])), mul(e_0[0], elem(made_0[0], add(t_0[0], 1.0))));
+      return null;
+    });
+    c.method("felt", (self, a1) -> {
+      Object[] shape_0 = { arg(a1, 0) }; Object[] s_0 = { arg(a1, 1) };
+      Object[] made_0 = new Object[1]; made_0[0] = call(self, "made_rows", new Object[] { m_map(elem(shape_0[0], 0.0), (Fn) (a3) -> {
+        Object[] v_2 = { arg(a3, 0) };
+        if (true) return mul(s_0[0], v_2[0]);
+        return null;
+      }), m_map(elem(shape_0[0], 1.0), (Fn) (a3) -> {
+        Object[] v_2 = { arg(a3, 0) };
+        if (true) return mul(s_0[0], v_2[0]);
+        return null;
+      }) });
       Object[] out_0 = new Object[1]; out_0[0] = list();
       for (double i1 = 0; i1 < num(get(K("Felt"), "NR")); i1++) {
         Object[] i_1 = { i1 };
         Object[] r_1 = new Object[1]; r_1[0] = elem(get(self, "rc"), i_1[0]);
         if (truthy((truthy((truthy((truthy(gt(i_1[0], 0.0)) && truthy(lt(add(i_1[0], 1.0), get(K("Felt"), "NR"))))) && truthy(ge(r_1[0], get(K("Felt"), "NEAR"))))) && truthy(le(r_1[0], get(K("Felt"), "FAR")))))) {
-          Object[] made_1 = new Object[1]; made_1[0] = sub(0.0, div((sub(elem(psi_0[0], mul((add(i_1[0], 1.0)), B_0[0])), elem(psi_0[0], mul((sub(i_1[0], 1.0)), B_0[0])))), (sub(elem(get(self, "rc"), add(i_1[0], 1.0)), elem(get(self, "rc"), sub(i_1[0], 1.0))))));
           Object[] gN_1 = new Object[1]; gN_1[0] = sub(0.0, mul(s_0[0], elem(elem(shape_0[0], 2.0), i_1[0])));
-          m_push(out_0[0], list(r_1[0], gN_1[0], sub(gN_1[0], made_1[0])));
+          m_push(out_0[0], list(r_1[0], gN_1[0], sub(gN_1[0], elem(made_0[0], i_1[0]))));
         }
       };
       if (true) return out_0[0];
@@ -21506,6 +22066,10 @@ static final class C_G {
     })));
     c.staticField("theorem gravity.closing", self -> make(Theorem, kw("id", "gravity.closing"), kw("body", (Fn) (a1) -> {
       if (true) return make("Asked", new Object[] { kw("asks", "what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), kw("about", "F_{g} \\aside{closing}") });
+      return null;
+    })));
+    c.staticField("theorem gravity.made", self -> make(Theorem, kw("id", "gravity.made"), kw("body", (Fn) (a1) -> {
+      if (true) return make("Asked", new Object[] { kw("asks", "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?"), kw("about", "g \\aside{field}"), kw("also", "-\\nabla^{2}\\psi") });
       return null;
     })));
     c.staticField("theorem gravity.metric", self -> make(Theorem, kw("id", "gravity.metric"), kw("body", (Fn) (a1) -> {

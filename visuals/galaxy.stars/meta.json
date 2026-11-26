@@ -5,7 +5,7 @@
     "y"
   ],
   "rows": 1966080,
-  "measured": "2026-11-25T16:45:57.130Z",
+  "measured": "2026-11-26T11:59:08.205Z",
   "film": [
     31,
     35,
@@ -39,10 +39,10 @@
     null
   ],
   "span": [
-    198.9635846605674,
-    235.38260179480923,
-    471.7274889692666,
-    738.7499495480478
+    173.60965155938993,
+    225.79925409859604,
+    484.30636209535214,
+    738.1336539622349
   ],
   "about": "the filmed galaxies face on, their stars laid where the light is (or the laid mass, where there is no image): x and y in kpc, star after star, frame after frame, from the moment the picture was taken, over FILM_TURNS of the outermost radius; span in Myr"
 }

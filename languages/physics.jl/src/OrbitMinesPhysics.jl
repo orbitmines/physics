@@ -5889,7 +5889,9 @@ end
     held_0.derivation = Any[tick_0, falls_0]
     ruler_0.derivation = Any[held_0]
     defl_0.derivation = Any[held_0, ruler_0]
-    return Any[g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0]
+    shadow_0 = held_shadow(Inferences, s_0, fact(held_0), fact(ruler_0))
+    shadow_0.derivation = Any[held_0, ruler_0]
+    return Any[g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0, shadow_0]
   end
   function expansion_of(self::__class__, s_0 = nothing, settles_0 = nothing, _...)
     grown_0 = growth_filled(self, s_0)
@@ -5951,10 +5953,16 @@ end
     got_0 = neat(Prover, add(Expr, Any[half_0, pown(Expr, add(Expr, Any[mul(Expr, Any[half_0, half_0]), mul(Expr, Any[g_0, a_0])]), 0.5)]))
     closing_0 = of(Step, stands(Fact, Base.string(j"F_{g} \\aside{closing}"), got_0), Base.string(j"what is felt, with the mismatch closed"), Any[key(fact(scale_0))], Base.string(j"what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling"), Any[Base.string(j"g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"), Base.string(j"g^{2} - g_{N}g - g_{N}a_{0} = 0"), Base.string(j"strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3"), Base.string(j"F_{g} = ", str(show(Expr, got_0)), j"")])
     closing_0.derivation = Any[scale_0]
+    psi_0 = field(Expr, Base.string(j"\\psi"))
+    w_0 = neat(Prover, sub(Expr, got_0, g_0))
+    made_0 = of(Step, stands(Fact, Base.string(j"-\\nabla^{2}\\psi"), field(Expr, Base.string(j"\\nabla\\cdot\\paren{\\paren{", str(show(Expr, w_0)), j"}\\hat{g}_{N}}"))), Base.string(j"the space made, as a source"), Any[key(fact(closing_0))], Base.string(j"the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", str(met_0), j"), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made"), Any[Base.string(j"w = F_{g} - g_{N} = ", str(show(Expr, w_0)), j", along \\hat{g}_{N}"), Base.string(j"made where w changes: \\nabla\\cdot w"), Base.string(j"a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w")])
+    made_0.derivation = Any[closing_0, potential_0]
+    field_0 = of(Step, stands(Fact, Base.string(j"g \\aside{field}"), neat(Prover, sub(Expr, g_0, field(Expr, Base.string(j"\\nabla\\psi"))))), Base.string(j"what is felt, solved over the whole field"), Any[key(fact(made_0)), key(fact(closing_0))], Base.string(j"what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve"), Any[Base.string(j"g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w"), Base.string(j"no curl: \\nabla\\times g = 0, as a record's slope"), Base.string(j"a sphere: \\nabla\\psi = -w, so g = F_{g}"), Base.string(j"a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)")])
+    field_0.derivation = Any[made_0]
     ratio_0 = neat(Prover, div(Expr, a0_0, own_0))
     against_0 = of(Step, stands(Fact, Base.string(j"\\frac{a_{0}}{cH}"), ratio_0), Base.string(j"the scale against the vacuum's growth"), Any[key(fact(scale_0)), key(fact(lam_0))], Base.string(j"a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183"), Any[Base.string(j"a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}"), Base.string(j"\\frac{a_{0}}{cH_{vac}} = ", str(show(Expr, neat(Prover, ratio_0))), j""), Base.string(j"against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")])
     against_0.derivation = Any[scale_0]
-    return Any[straight_0, potential_0, lam_0, scale_0, closing_0, against_0]
+    return Any[straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0]
   end
   function leftover(self::__class__, rays_c_0 = nothing, _...)
     m_0 = label(MASS(Prover))
@@ -6576,7 +6584,7 @@ end
     end), e_0)
   end
   function RULES(self::Type{<:__class__})
-    return concat(concat(Any[room_balance(Inferences), ehrhart(Inferences), counting(Inferences), reaching(Inferences), mass_of(Inferences), saturating(Inferences), spreading(Inferences), screening(Inferences), refracting(Inferences), accumulating(Inferences), substituting(Inferences), metric_of(Inferences), relativity(Inferences), schwarzschild(Inferences), shadow(Inferences), balancing(Inferences), unbiased(Inferences), free_path(Inferences), summing(Inferences), horizon(Inferences), bending(Inferences), crossing(Inferences), near_field(Inferences), shadowing(Inferences), receiving(Inferences), moved(Inferences), receding(Inferences), shortfall(Inferences), keeping(Inferences), transporting(Inferences), assembling(Inferences), channelling(Inferences), closing(Inferences), arrangement(Inferences), scale_crossed(Inferences), orbiting(Inferences), curve_ends(Inferences), curves_of_each(Inferences), crowding_of_arrivals(Inferences), making_rate(Inferences), hubble_rate(Inferences), expansion_scale(Inferences), coincidence(Inferences), crowding(Inferences), at_that_density(Inferences), in_motion(Inferences)], map(IN_FULL(Inferences), (function (of_2 = nothing, _...)
+    return concat(concat(Any[room_balance(Inferences), ehrhart(Inferences), counting(Inferences), reaching(Inferences), mass_of(Inferences), saturating(Inferences), spreading(Inferences), screening(Inferences), refracting(Inferences), accumulating(Inferences), substituting(Inferences), metric_of(Inferences), relativity(Inferences), schwarzschild(Inferences), balancing(Inferences), unbiased(Inferences), free_path(Inferences), summing(Inferences), horizon(Inferences), bending(Inferences), crossing(Inferences), near_field(Inferences), shadowing(Inferences), receiving(Inferences), moved(Inferences), receding(Inferences), shortfall(Inferences), keeping(Inferences), transporting(Inferences), assembling(Inferences), channelling(Inferences), closing(Inferences), arrangement(Inferences), scale_crossed(Inferences), orbiting(Inferences), curve_ends(Inferences), curves_of_each(Inferences), crowding_of_arrivals(Inferences), making_rate(Inferences), hubble_rate(Inferences), expansion_scale(Inferences), coincidence(Inferences), crowding(Inferences), at_that_density(Inferences), in_motion(Inferences)], map(IN_FULL(Inferences), (function (of_2 = nothing, _...)
       return writing_out(Inferences, of_2)
     end))), Any[can_it_push(Inferences), in_three(Inferences)])
   end
@@ -6693,29 +6701,26 @@ end
       return Any[step(Inferences, Base.string(j"r_{s}"), simplify(Expr, mul(Expr, Any[num(Expr, 2.0), to(puts_2)])), via_2, Any[key(puts_2), key(dn_2)], Base.string(j"the record a body adds falls off as `r^{-\\paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\\bar{m}` - and the force law fixes `GM = \\bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square"), Any[Base.string(j"\\delta n_{f} = ", str(show(Expr, to(dn_2))), j""), Base.string(j"A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots"), Base.string(j"general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM")]), step(Inferences, Base.string(j"A in r as GR writes it"), simplify(Expr, sub(Expr, num(Expr, 1.0), mul(Expr, Any[field(Expr, Base.string(j"r_{s}")), to_power(Expr, sym(Expr, Base.string(j"r")), neg(Expr, sub(Expr, D(Inferences), num(Expr, 2.0))))]))), via_2, Any[key(A_2)], Base.string(j"the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `A = 1 - r_{s}/r` and `B = 1/\\paren{1 - r_{s}/r}` is what this model derives, so light bends by twice the Newtonian amount, `\\gamma` is one, and the perihelion advances by `3\\pi r_{s}/a`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about"), Any[Base.string(j"A = 1 - r_{s}·r^{-\\paren{D - 2}}"), Base.string(j"B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}"), Base.string(j"\\gamma = 1, and A·B = 1 as Schwarzschild has it")]), step(Inferences, Base.string(j"the deflection this model gives"), simplify(Expr, mul(Expr, Any[num(Expr, 2.0), field(Expr, Base.string(j"r_{s}")), to_power(Expr, sym(Expr, Base.string(j"b")), neg(Expr, sub(Expr, D(Inferences), num(Expr, 2.0))))])), via_2, Any[key(A_2)], Base.string(j"light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is"), Any[Base.string(j"the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}"), Base.string(j"the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r"), Base.string(j"so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two")])]
     end))
   end
-  function shadow(self::Type{<:__class__})
-    return Inference(name = Base.string(j"where a ray stops coming back"), because = Base.string(j"a ray aimed past a body at impact parameter b turns where r·\\sqrt{B/A} = b, so one aimed inside the least value that takes never turns - and that least value is the edge of the shadow"), fire = (function (s_2 = nothing, _...)
-      A_2 = fact(s_2, Base.string(j"is"), Base.string(j"A in r"))
-      B_2 = fact(s_2, Base.string(j"is"), Base.string(j"B in r"))
-      if truthy((truthy((truthy((A_2 == nothing)) || truthy((B_2 == nothing)))) || truthy(has(s_2, Base.string(j"is"), Base.string(j"b_{c}")))))
-        return Any[]
-      end
-      u_2 = Base.string(j"\\delta n_{f}")
-      over_2 = simplify(Expr, mul(Expr, Any[field(Expr, u_2), pown(Expr, mul(Expr, Any[to(A_2), pown(Expr, to(B_2), (-1.0))]), 0.5)]))
-      env_2 = Node()
-      setat!(env_2, u_2, numeric(Expr, root(Expr, simplify(Expr, d(Expr, over_2, u_2)), u_2), env_2))
-      sphere_2 = getat(env_2, u_2)
-      bc_2 = (1.0 / numeric(Expr, over_2, env_2))
-      bc_2 = (round(((bc_2 * (10.0 ^ 9.0)))) / (10.0 ^ 9.0))
-      half_2 = mul(Expr, Any[num(Expr, 0.5), field(Expr, u_2)])
-      gA_2 = pown(Expr, mul(Expr, Any[sub(Expr, num(Expr, 1.0), half_2), pown(Expr, add(Expr, Any[num(Expr, 1.0), half_2]), (-1.0))]), 2.0)
-      gB_2 = pown(Expr, add(Expr, Any[num(Expr, 1.0), half_2]), 4.0)
-      gover_2 = simplify(Expr, mul(Expr, Any[field(Expr, u_2), pown(Expr, mul(Expr, Any[gA_2, pown(Expr, gB_2, (-1.0))]), 0.5)]))
-      genv_2 = Node()
-      setat!(genv_2, u_2, numeric(Expr, root(Expr, simplify(Expr, d(Expr, gover_2, u_2)), u_2), genv_2))
-      gr_2 = (1.0 / numeric(Expr, gover_2, genv_2))
-      return Any[step(Inferences, Base.string(j"b_{c}"), mul(Expr, Any[num(Expr, bc_2), field(Expr, Base.string(j"\\bar{m}"))]), Base.string(j"where a ray stops coming back"), Any[key(A_2), key(B_2)], Base.string(j"THE SHADOW, off the metric alone. A null ray in `A dt^{2} = B\\paren{dr^{2} + r^{2}d\\Omega^{2}}` turns where `r\\sqrt{B/A} = b`, and one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. THE SAME MASS IS IN BOTH: `\\bar{m}` is the one the record is written in, `\\delta n_{f} = \\bar{m}/r`, which to first order is general relativity's `GM`. So the two differ only where the SECOND order term of the metric matters - near a photon sphere and nowhere a planet goes. What an instrument compares against is a mass measured some other way, and in this model that is the force law's, not the metric's"), Any[Base.string(j"a ray turns where r\\sqrt{B/A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r"), Base.string(j"\\bar{m}/b at the turning point = ", str(show(Expr, over_2)), j""), Base.string(j"largest where its slope is nought: \\delta n_{f} = ", str(fixed(Fmt, sphere_2, 6.0)), j", the photon sphere at r = ", str(fixed(Fmt, (1.0 / sphere_2), 4.0)), j" \\bar{m}"), Base.string(j"b_{c} = ", str(fixed(Fmt, bc_2, 4.0)), j" \\bar{m}"), Base.string(j"general relativity's metric read the same way: b_{c} = ", str(fixed(Fmt, gr_2, 4.0)), j" \\bar{m}, which is 3\\sqrt{3}"), Base.string(j"so at the same \\bar{m} this shadow is ", str(fixed(Fmt, (100.0 * (((bc_2 / gr_2) - 1.0))), 2.0)), j" per cent wider")])]
-    end))
+  function held_shadow(self::Type{<:__class__}, s_0 = nothing, A_0 = nothing, B_0 = nothing, _...)
+    u_0 = Base.string(j"\\delta n_{f}")
+    Au_0 = simplify(Expr, replace(Expr, replace(Expr, replace(Expr, to(A_0), Base.string(j"r_{s}"), num(Expr, 2.0)), Base.string(j"D"), num(Expr, 3.0)), Base.string(j"r"), pown(Expr, field(Expr, u_0), (-1.0))))
+    over_0 = simplify(Expr, mul(Expr, Any[field(Expr, u_0), pown(Expr, Au_0, 0.5)]))
+    env_0 = Node()
+    setat!(env_0, u_0, numeric(Expr, root(Expr, simplify(Expr, d(Expr, over_0, u_0)), u_0), env_0))
+    sphere_0 = getat(env_0, u_0)
+    bc_0 = (1.0 / numeric(Expr, over_0, env_0))
+    bc_0 = (round(((bc_0 * (10.0 ^ 9.0)))) / (10.0 ^ 9.0))
+    gr_0 = (3.0 * sqrt(3.0))
+    iA_0 = fact(s_0, Base.string(j"is"), Base.string(j"A in r"))
+    iB_0 = fact(s_0, Base.string(j"is"), Base.string(j"B in r"))
+    index_0 = NaN
+    if truthy((truthy((iA_0 != nothing)) && truthy((iB_0 != nothing))))
+      iover_0 = simplify(Expr, mul(Expr, Any[field(Expr, u_0), pown(Expr, mul(Expr, Any[to(iA_0), pown(Expr, to(iB_0), (-1.0))]), 0.5)]))
+      ienv_0 = Node()
+      setat!(ienv_0, u_0, numeric(Expr, root(Expr, simplify(Expr, d(Expr, iover_0, u_0)), u_0), ienv_0))
+      index_0 = (1.0 / numeric(Expr, iover_0, ienv_0))
+    end
+    return step(Inferences, Base.string(j"b_{c}"), mul(Expr, Any[num(Expr, bc_0), field(Expr, Base.string(j"\\bar{m}"))]), Base.string(j"where a ray stops coming back"), Any[key(A_0), key(B_0)], Base.string(j"THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's"), Any[Base.string(j"a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}"), Base.string(j"\\bar{m}/b at the turning point = ", str(show(Expr, over_0)), j""), Base.string(j"largest where its slope is nought: \\delta n_{f} = ", str(fixed(Fmt, sphere_0, 6.0)), j", the photon sphere at r = ", str(fixed(Fmt, (1.0 / sphere_0), 4.0)), j" \\bar{m}"), Base.string(j"b_{c} = ", str(fixed(Fmt, bc_0, 4.0)), j" \\bar{m}; general relativity's is 3\\sqrt{3} = ", str(fixed(Fmt, gr_0, 4.0)), j""), (truthy(finite(Fmt, index_0)) ? (Base.string(j"the medium's index read as an isotropic metric instead gives ", str(fixed(Fmt, index_0, 4.0)), j" \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read")) : (Base.string(j"the medium's index gives no metric of its own here")))])
   end
   function metric_of(self::Type{<:__class__})
     return Inference(name = Base.string(j"an index is a metric"), because = Base.string(j"MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots"), fire = (function (s_2 = nothing, _...)
@@ -12342,7 +12347,7 @@ end
     if truthy((stars_0 == nothing))
       fail(Base.string(j"galaxy.stars is not on disk - run the galaxies (`", str(SIMULATED(Galaxies)), j"`) and try again"))
     end
-    return Picture(id = Base.string(j"galaxy.simulation"), what = Base.string(j"galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured"), width = 960.0, height = 720.0, frames = getat(header(stars_0), Base.string(j"frames")), paint = (function (played_2 = nothing, _...)
+    return Picture(id = Base.string(j"galaxy.simulation"), what = Base.string(j"galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured"), width = 960.0, height = 720.0, frames = getat(header(stars_0), Base.string(j"frames")), paint = (function (played_2 = nothing, _...)
       return Orbiting(stars = stars_0)
     end))
   end
@@ -12419,7 +12424,7 @@ end
     if truthy((got_0 == nothing))
       fail(Base.string(j"galaxy.formed is not on disk - run the galaxies (`", str(SIMULATED(Galaxies)), j"`) and try again"))
     end
-    return Picture(id = Base.string(j"galaxy.formed"), what = Base.string(j"discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms"), width = 960.0, height = 720.0, frames = getat(header(got_0), Base.string(j"frames")), paint = (function (played_2 = nothing, _...)
+    return Picture(id = Base.string(j"galaxy.formed"), what = Base.string(j"discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms"), width = 960.0, height = 720.0, frames = getat(header(got_0), Base.string(j"frames")), paint = (function (played_2 = nothing, _...)
       return Forming(formed = got_0)
     end))
   end
@@ -12544,7 +12549,7 @@ end
     stars_n_0 = getat(H_0, Base.string(j"stars"))
     q_text_0 = fixed(Fmt, getat(H_0, Base.string(j"Q")), 1.0)
     a0_text_0 = exponential(Fmt, getat(H_0, Base.string(j"a0")), 3.0)
-    fill_text(s_0, Base.string(j"", str(stars_n_0), j" stars each, every one pulled by every other through the law (a₀ ", str(a0_text_0), j" m/s²), no halo; launched smooth at Q ", str(q_text_0), j" — t = ", str(gyr_0), j" Gyr"), 22.0, 44.0)
+    fill_text(s_0, Base.string(j"", str(stars_n_0), j" stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ ", str(a0_text_0), j" m/s²), no halo; launched smooth at Q ", str(q_text_0), j" — t = ", str(gyr_0), j" Gyr"), 22.0, 44.0)
     side_0 = min(Fmt, (((width(s_0) - 66.0)) / 2.0), (height(s_0) - 110.0))
     for i1 in 0:(ceil(Int, Rt.num(length(names_0))) - 1)
       g_1 = Float64(i1)
@@ -13036,6 +13041,12 @@ end
   @static_field THREAD = Base.string(j"  let i: u32 = P[7] + gid.y * 65536u + gid.x;")
   @static_field ENTRY = Base.string(j"@compute @workgroup_size(64) fn")
   @static_field ID = Base.string(j"(@builtin(global_invocation_id) gid: vec3<u32>) {")
+  @static_field NY = 21.0
+  @static_field NB = 11.0
+  @static_field RUNG_Y = 0.05
+  @static_field RUNG_B = 0.1
+  @static_field RINGS_IN = 8.0
+  @static_field FAR_OFF = 30.0
   @static_field OMEGA_M = 0.315
   @static_field FILM_STARS = 4096.0
   @static_field FILM_TURNS = 0.5
@@ -13077,13 +13088,20 @@ end
     lyd_0 = literal(Shaded, log10(Fmt, YD(Sparc)))
     lyb_0 = literal(Shaded, log10(Fmt, YB(Sparc)))
     py_0 = literal(Shaded, PRIOR_Y(Simulation))
-    return join(Any[Base.string(j"// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> L: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> Q: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read> G: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> O: array<f32>;"), law_wgsl(Simulation), Base.string(j"", str(ENTRY(Simulation)), j" FIT", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  let n: u32 = P[1];"), Base.string(j"  let C: u32 = n * n * n * n;"), Base.string(j"  if (i >= P[0] * C) { return; }"), Base.string(j"  let j: u32 = i / C;"), Base.string(j"  let c: u32 = i % C;"), Base.string(j"  let h: f32 = f32((n - 1u) / 2u);"), Base.string(j"  let b: u32 = 16u * j;"), Base.string(j"  let D: f32 = G[b + 2u];"), Base.string(j"  let eD: f32 = G[b + 3u];"), Base.string(j"  let inc: f32 = G[b + 4u];"), Base.string(j"  let einc: f32 = G[b + 5u];"), Base.string(j"  let a0: f32 = G[b + 6u];"), Base.string(j"  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];"), Base.string(j"  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];"), Base.string(j"  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;"), Base.string(j"  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;"), Base.string(j"  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }"), Base.string(j"  let YD: f32 = exp(ly * ", str(ln10_0), j");"), Base.string(j"  let YB: f32 = exp(lb * ", str(ln10_0), j");"), Base.string(j"  let f: f32 = Dp / D;"), Base.string(j"  let s: f32 = sin(inc * ", str(pi_0), j" / 180.0) / sin(ip * ", str(pi_0), j" / 180.0);"), Base.string(j"  var chi: f32 = 0.0;"), Base.string(j"  let start: u32 = u32(G[b]);"), Base.string(j"  let stop: u32 = start + u32(G[b + 1u]);"), Base.string(j"  for (var p: u32 = start; p < stop; p = p + 1u) {"), Base.string(j"    let q: u32 = 8u * p;"), Base.string(j"    let g: f32 = felt(YD * Q[q + 3u] + YB * Q[q + 5u] + Q[q + 4u], a0);"), Base.string(j"    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));"), Base.string(j"    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);"), Base.string(j"    chi = chi + d * d;"), Base.string(j"  }"), Base.string(j"  let py: f32 = (ly - ", str(lyd_0), j") / ", str(py_0), j";"), Base.string(j"  let pb: f32 = G[b + 7u] * (lb - ", str(lyb_0), j") / ", str(py_0), j";"), Base.string(j"  var pd: f32 = 0.0;"), Base.string(j"  if (eD > 0.0) { pd = (Dp - D) / eD; }"), Base.string(j"  var pi_: f32 = 0.0;"), Base.string(j"  if (einc > 0.0) { pi_ = (ip - inc) / einc; }"), Base.string(j"  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);"), Base.string(j"}")], Base.string(j"\n"))
+    ly0_0 = literal(Shaded, (log10(Fmt, YD(Sparc)) - ((RUNG_Y(Simulation) * (NY(Simulation) - 1.0)) / 2.0)))
+    lb0_0 = literal(Shaded, (log10(Fmt, YB(Sparc)) - ((RUNG_B(Simulation) * (NB(Simulation) - 1.0)) / 2.0)))
+    sy_0 = literal(Shaded, RUNG_Y(Simulation))
+    sb_0 = literal(Shaded, RUNG_B(Simulation))
+    topy_0 = literal(Shaded, ((NY(Simulation) - 1.0) - 0.0001))
+    ny_0 = NY(Simulation)
+    nbs_0 = NB(Simulation)
+    return join(Any[Base.string(j"// GENERATED from Simulation.ray: FIT - the log of the posterior of the data's own freedoms, on a grid; L is each galaxy's ladder of solved fields"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> L: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> Q: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read> G: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> O: array<f32>;"), Base.string(j"", str(ENTRY(Simulation)), j" FIT", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  let n: u32 = P[1];"), Base.string(j"  let C: u32 = n * n * n * n;"), Base.string(j"  if (i >= P[0] * C) { return; }"), Base.string(j"  let j: u32 = i / C;"), Base.string(j"  let c: u32 = i % C;"), Base.string(j"  let h: f32 = f32((n - 1u) / 2u);"), Base.string(j"  let b: u32 = 16u * j;"), Base.string(j"  let D: f32 = G[b + 2u];"), Base.string(j"  let eD: f32 = G[b + 3u];"), Base.string(j"  let inc: f32 = G[b + 4u];"), Base.string(j"  let einc: f32 = G[b + 5u];"), Base.string(j"  let a0: f32 = G[b + 6u];"), Base.string(j"  let ly: f32 = G[b + 8u] + (f32(c % n) - h) * G[b + 12u];"), Base.string(j"  let lb: f32 = G[b + 9u] + (f32((c / n) % n) - h) * G[b + 12u];"), Base.string(j"  let Dp: f32 = G[b + 10u] + (f32((c / (n * n)) % n) - h) * G[b + 13u] * eD;"), Base.string(j"  let ip: f32 = G[b + 11u] + (f32(c / (n * n * n)) - h) * G[b + 14u] * einc;"), Base.string(j"  if (Dp <= 0.0 || ip <= 0.5 || ip > 90.0) { O[i] = -1e30; return; }"), Base.string(j"  let uy: f32 = clamp((ly - ", str(ly0_0), j") / ", str(sy_0), j", 0.0, ", str(topy_0), j");"), Base.string(j"  let ky: u32 = u32(floor(uy));"), Base.string(j"  let fy: f32 = uy - floor(uy);"), Base.string(j"  var nb: u32 = 1u;"), Base.string(j"  if (G[b + 7u] > 0.0) { nb = ", str(nbs_0), j"u; }"), Base.string(j"  var ub: f32 = 0.0;"), Base.string(j"  if (nb > 1u) { ub = clamp((lb - ", str(lb0_0), j") / ", str(sb_0), j", 0.0, f32(nb - 1u) - 0.0001); }"), Base.string(j"  let kb: u32 = u32(floor(ub));"), Base.string(j"  let fb: f32 = ub - floor(ub);"), Base.string(j"  let kb1: u32 = min(kb + 1u, nb - 1u);"), Base.string(j"  let base: u32 = u32(G[b + 15u]);"), Base.string(j"  let f: f32 = Dp / D;"), Base.string(j"  let s: f32 = sin(inc * ", str(pi_0), j" / 180.0) / sin(ip * ", str(pi_0), j" / 180.0);"), Base.string(j"  var chi: f32 = 0.0;"), Base.string(j"  let start: u32 = u32(G[b]);"), Base.string(j"  let stop: u32 = start + u32(G[b + 1u]);"), Base.string(j"  for (var p: u32 = start; p < stop; p = p + 1u) {"), Base.string(j"    let q: u32 = 8u * p;"), Base.string(j"    let o: u32 = p - start;"), Base.string(j"    let cnt: u32 = u32(G[b + 1u]);"), Base.string(j"    let lo: f32 = (1.0 - fy) * L[base + (kb * ", str(ny_0), j"u + ky) * cnt + o] + fy * L[base + (kb * ", str(ny_0), j"u + ky + 1u) * cnt + o];"), Base.string(j"    let hi: f32 = (1.0 - fy) * L[base + (kb1 * ", str(ny_0), j"u + ky) * cnt + o] + fy * L[base + (kb1 * ", str(ny_0), j"u + ky + 1u) * cnt + o];"), Base.string(j"    let g: f32 = (1.0 - fb) * lo + fb * hi;"), Base.string(j"    let vm: f32 = sqrt(max(f * Q[q] * g, 0.0));"), Base.string(j"    let d: f32 = (Q[q + 1u] * s - vm) / (Q[q + 2u] * s);"), Base.string(j"    chi = chi + d * d;"), Base.string(j"  }"), Base.string(j"  let py: f32 = (ly - ", str(lyd_0), j") / ", str(py_0), j";"), Base.string(j"  let pb: f32 = G[b + 7u] * (lb - ", str(lyb_0), j") / ", str(py_0), j";"), Base.string(j"  var pd: f32 = 0.0;"), Base.string(j"  if (eD > 0.0) { pd = (Dp - D) / eD; }"), Base.string(j"  var pi_: f32 = 0.0;"), Base.string(j"  if (einc > 0.0) { pi_ = (ip - inc) / einc; }"), Base.string(j"  O[i] = -0.5 * (chi + py * py + pb * pb + pd * pd + pi_ * pi_);"), Base.string(j"}")], Base.string(j"\n"))
   end
   function best_kernel(self::Type{<:__class__})
     return join(Any[Base.string(j"// GENERATED from Simulation.ray: BEST - each galaxy's best point of its grid"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> V: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read_write> O: array<f32>;"), Base.string(j"", str(ENTRY(Simulation)), j" BEST", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  var best: f32 = -3e38;"), Base.string(j"  var pos: u32 = 0u;"), Base.string(j"  for (var c: u32 = 0u; c < P[1]; c = c + 1u) {"), Base.string(j"    let v: f32 = V[i * P[1] + c];"), Base.string(j"    if (v > best) { best = v; pos = c; }"), Base.string(j"  }"), Base.string(j"  O[2u * i] = f32(pos);"), Base.string(j"  O[2u * i + 1u] = best;"), Base.string(j"}")], Base.string(j"\n"))
   end
   function stars_kernel(self::Type{<:__class__})
-    return join(Any[Base.string(j"// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> L: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> GT: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read> GI: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> S: array<f32>;"), Base.string(j"@group(0) @binding(5) var<storage, read_write> F: array<f32>;"), law_wgsl(Simulation), Base.string(j"fn g_at(j: u32, r: f32) -> f32 {"), Base.string(j"  let rmax: f32 = GI[12u * j];"), Base.string(j"  let T: u32 = P[2];"), Base.string(j"  let base: u32 = j * T;"), Base.string(j"  let u: f32 = r / rmax * f32(T);"), Base.string(j"  if (u <= 1.0) { return GT[base] * u; }"), Base.string(j"  if (u >= f32(T)) {"), Base.string(j"    let q: f32 = rmax / r;"), Base.string(j"    return felt(GI[12u * j + 5u] * q * q, GI[12u * j + 6u]);"), Base.string(j"  }"), Base.string(j"  let t0: u32 = u32(floor(u)) - 1u;"), Base.string(j"  let fr: f32 = u - floor(u);"), Base.string(j"  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" START", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let j: u32 = i / P[1];"), Base.string(j"  let k: u32 = 10u * i;"), Base.string(j"  let r0: f32 = S[k];"), Base.string(j"  let phi: f32 = S[k + 1u];"), Base.string(j"  let sig: f32 = GI[12u * j + 9u];"), Base.string(j"  let g: f32 = g_at(j, r0);"), Base.string(j"  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];"), Base.string(j"  let vr: f32 = sig * S[k + 3u];"), Base.string(j"  let c: f32 = cos(phi);"), Base.string(j"  let s: f32 = sin(phi);"), Base.string(j"  S[k] = r0 * c;"), Base.string(j"  S[k + 1u] = r0 * s;"), Base.string(j"  S[k + 2u] = vr * c - vp * s;"), Base.string(j"  S[k + 3u] = vr * s + vp * c;"), Base.string(j"  S[k + 4u] = 0.0 - g * c;"), Base.string(j"  S[k + 5u] = 0.0 - g * s;"), Base.string(j"  S[k + 6u] = 0.0;"), Base.string(j"  S[k + 7u] = 0.0;"), Base.string(j"  S[k + 8u] = 0.0;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" STEP", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let j: u32 = i / P[1];"), Base.string(j"  let b: u32 = 12u * j;"), Base.string(j"  let dt: f32 = GI[b + 1u];"), Base.string(j"  let n: u32 = u32(GI[b + 2u]);"), Base.string(j"  let avg_from: u32 = u32(GI[b + 3u]);"), Base.string(j"  let film: f32 = GI[b + 4u];"), Base.string(j"  let every: u32 = max(u32(GI[b + 7u]), 1u);"), Base.string(j"  let ffrom: u32 = u32(GI[b + 8u]);"), Base.string(j"  let k: u32 = 10u * i;"), Base.string(j"  var x: f32 = S[k];"), Base.string(j"  var y: f32 = S[k + 1u];"), Base.string(j"  var vx: f32 = S[k + 2u];"), Base.string(j"  var vy: f32 = S[k + 3u];"), Base.string(j"  var ax: f32 = S[k + 4u];"), Base.string(j"  var ay: f32 = S[k + 5u];"), Base.string(j"  var sr: f32 = S[k + 6u];"), Base.string(j"  var sv: f32 = S[k + 7u];"), Base.string(j"  var sn: f32 = S[k + 8u];"), Base.string(j"  let stop: u32 = min(P[4], n);"), Base.string(j"  for (var t: u32 = P[3]; t < stop; t = t + 1u) {"), Base.string(j"    vx = vx + 0.5 * ax * dt;"), Base.string(j"    vy = vy + 0.5 * ay * dt;"), Base.string(j"    x = x + vx * dt;"), Base.string(j"    y = y + vy * dt;"), Base.string(j"    let r: f32 = max(sqrt(x * x + y * y), 1e-6);"), Base.string(j"    let g: f32 = g_at(j, r);"), Base.string(j"    ax = 0.0 - g * x / r;"), Base.string(j"    ay = 0.0 - g * y / r;"), Base.string(j"    vx = vx + 0.5 * ax * dt;"), Base.string(j"    vy = vy + 0.5 * ay * dt;"), Base.string(j"    if (t >= avg_from) {"), Base.string(j"      sr = sr + r;"), Base.string(j"      sv = sv + (x * vy - y * vx) / r;"), Base.string(j"      sn = sn + 1.0;"), Base.string(j"    }"), Base.string(j"    let kk: u32 = t + 1u;"), Base.string(j"    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {"), Base.string(j"      let fr: u32 = (kk - ffrom) / every - 1u;"), Base.string(j"      if (fr < P[5]) {"), Base.string(j"        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;"), Base.string(j"        F[o] = x;"), Base.string(j"        F[o + 1u] = y;"), Base.string(j"      }"), Base.string(j"    }"), Base.string(j"  }"), Base.string(j"  S[k] = x;"), Base.string(j"  S[k + 1u] = y;"), Base.string(j"  S[k + 2u] = vx;"), Base.string(j"  S[k + 3u] = vy;"), Base.string(j"  S[k + 4u] = ax;"), Base.string(j"  S[k + 5u] = ay;"), Base.string(j"  S[k + 6u] = sr;"), Base.string(j"  S[k + 7u] = sv;"), Base.string(j"  S[k + 8u] = sn;"), Base.string(j"}")], Base.string(j"\n"))
+    return join(Any[Base.string(j"// GENERATED from Simulation.ray: STARS - tracers followed on every galaxy's field"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> L: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> GT: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read> GI: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> S: array<f32>;"), Base.string(j"@group(0) @binding(5) var<storage, read_write> F: array<f32>;"), Base.string(j"fn g_at(j: u32, r: f32) -> f32 {"), Base.string(j"  let rmax: f32 = GI[12u * j];"), Base.string(j"  let T: u32 = P[2];"), Base.string(j"  let base: u32 = j * T;"), Base.string(j"  let u: f32 = r / rmax * f32(T);"), Base.string(j"  if (u <= 1.0) { return GT[base] * u; }"), Base.string(j"  if (u >= f32(T)) { return GT[base + T - 1u] * rmax / r; }"), Base.string(j"  let t0: u32 = u32(floor(u)) - 1u;"), Base.string(j"  let fr: f32 = u - floor(u);"), Base.string(j"  return GT[base + t0] * (1.0 - fr) + GT[base + t0 + 1u] * fr;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" START", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let j: u32 = i / P[1];"), Base.string(j"  let k: u32 = 10u * i;"), Base.string(j"  let r0: f32 = S[k];"), Base.string(j"  let phi: f32 = S[k + 1u];"), Base.string(j"  let sig: f32 = GI[12u * j + 9u];"), Base.string(j"  let g: f32 = g_at(j, r0);"), Base.string(j"  let vp: f32 = sqrt(max(r0 * g, 0.0)) + sig * S[k + 2u];"), Base.string(j"  let vr: f32 = sig * S[k + 3u];"), Base.string(j"  let c: f32 = cos(phi);"), Base.string(j"  let s: f32 = sin(phi);"), Base.string(j"  S[k] = r0 * c;"), Base.string(j"  S[k + 1u] = r0 * s;"), Base.string(j"  S[k + 2u] = vr * c - vp * s;"), Base.string(j"  S[k + 3u] = vr * s + vp * c;"), Base.string(j"  S[k + 4u] = 0.0 - g * c;"), Base.string(j"  S[k + 5u] = 0.0 - g * s;"), Base.string(j"  S[k + 6u] = 0.0;"), Base.string(j"  S[k + 7u] = 0.0;"), Base.string(j"  S[k + 8u] = 0.0;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" STEP", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let j: u32 = i / P[1];"), Base.string(j"  let b: u32 = 12u * j;"), Base.string(j"  let dt: f32 = GI[b + 1u];"), Base.string(j"  let n: u32 = u32(GI[b + 2u]);"), Base.string(j"  let avg_from: u32 = u32(GI[b + 3u]);"), Base.string(j"  let film: f32 = GI[b + 4u];"), Base.string(j"  let every: u32 = max(u32(GI[b + 7u]), 1u);"), Base.string(j"  let ffrom: u32 = u32(GI[b + 8u]);"), Base.string(j"  let k: u32 = 10u * i;"), Base.string(j"  var x: f32 = S[k];"), Base.string(j"  var y: f32 = S[k + 1u];"), Base.string(j"  var vx: f32 = S[k + 2u];"), Base.string(j"  var vy: f32 = S[k + 3u];"), Base.string(j"  var ax: f32 = S[k + 4u];"), Base.string(j"  var ay: f32 = S[k + 5u];"), Base.string(j"  var sr: f32 = S[k + 6u];"), Base.string(j"  var sv: f32 = S[k + 7u];"), Base.string(j"  var sn: f32 = S[k + 8u];"), Base.string(j"  let stop: u32 = min(P[4], n);"), Base.string(j"  for (var t: u32 = P[3]; t < stop; t = t + 1u) {"), Base.string(j"    vx = vx + 0.5 * ax * dt;"), Base.string(j"    vy = vy + 0.5 * ay * dt;"), Base.string(j"    x = x + vx * dt;"), Base.string(j"    y = y + vy * dt;"), Base.string(j"    let r: f32 = max(sqrt(x * x + y * y), 1e-6);"), Base.string(j"    let g: f32 = g_at(j, r);"), Base.string(j"    ax = 0.0 - g * x / r;"), Base.string(j"    ay = 0.0 - g * y / r;"), Base.string(j"    vx = vx + 0.5 * ax * dt;"), Base.string(j"    vy = vy + 0.5 * ay * dt;"), Base.string(j"    if (t >= avg_from) {"), Base.string(j"      sr = sr + r;"), Base.string(j"      sv = sv + (x * vy - y * vx) / r;"), Base.string(j"      sn = sn + 1.0;"), Base.string(j"    }"), Base.string(j"    let kk: u32 = t + 1u;"), Base.string(j"    if (film >= 0.0 && kk > ffrom && (kk - ffrom) % every == 0u) {"), Base.string(j"      let fr: u32 = (kk - ffrom) / every - 1u;"), Base.string(j"      if (fr < P[5]) {"), Base.string(j"        let o: u32 = ((u32(film) * P[1] + i % P[1]) * P[5] + fr) * 2u;"), Base.string(j"        F[o] = x;"), Base.string(j"        F[o + 1u] = y;"), Base.string(j"      }"), Base.string(j"    }"), Base.string(j"  }"), Base.string(j"  S[k] = x;"), Base.string(j"  S[k + 1u] = y;"), Base.string(j"  S[k + 2u] = vx;"), Base.string(j"  S[k + 3u] = vy;"), Base.string(j"  S[k + 4u] = ax;"), Base.string(j"  S[k + 5u] = ay;"), Base.string(j"  S[k + 6u] = sr;"), Base.string(j"  S[k + 7u] = sv;"), Base.string(j"  S[k + 8u] = sn;"), Base.string(j"}")], Base.string(j"\n"))
   end
   function runnable(self::Type{<:__class__})
     C_0 = columns(curves(Sparc))
@@ -13465,6 +13483,167 @@ end
       end)))
     end
   end
+  @field on::Felt = Felt()
+  function unit_of(self::__class__, j_0 = nothing, _...)
+    return (getat(getat(getat(rows(self), j_0), (length(getat(rows(self), j_0)) - 1.0)), 0.0) / 10.0)
+  end
+  function grid_of(self::__class__, j_0 = nothing, _...)
+    F_0 = on(self)
+    L_0 = unit_of(self, j_0)
+    es_0 = getat(edges(self), j_0)
+    n_0 = (length(es_0) - 1.0)
+    wd_0 = getat(w_discs(self), j_0)
+    wg_0 = getat(w_gases(self), j_0)
+    rs_0 = getat(rows(self), j_0)
+    t_0 = getat(thick(self), j_0)
+    rings_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      a_1 = Float64(i1)
+      area_1 = ((getat(es_0, (a_1 + 1.0)) * getat(es_0, (a_1 + 1.0))) - (getat(es_0, a_1) * getat(es_0, a_1)))
+      for i2 in 0:(ceil(Int, Rt.num(RINGS_IN(Simulation))) - 1)
+        k_2 = Float64(i2)
+        r0_2 = (getat(es_0, a_1) + ((((getat(es_0, (a_1 + 1.0)) - getat(es_0, a_1))) * k_2) / RINGS_IN(Simulation)))
+        r1_2 = (getat(es_0, a_1) + ((((getat(es_0, (a_1 + 1.0)) - getat(es_0, a_1))) * (k_2 + 1.0)) / RINGS_IN(Simulation)))
+        soft_2 = (((r1_2 - r0_2)) / 2.0)
+        push(rings_0, Any[(((r0_2 + r1_2)) / 2.0), (truthy((area_1 > 0.0)) ? (((((r1_2 * r1_2) - (r0_2 * r0_2))) / area_1)) : (0.0)), a_1, ((t_0 * t_0) + (soft_2 * soft_2))])
+      end
+    end
+    md_0 = reduce(wd_0, 0.0, (function (m_2 = nothing, v_2 = nothing, _...)
+      return (m_2 + v_2)
+    end))
+    mg_0 = reduce(wg_0, 0.0, (function (m_2 = nothing, v_2 = nothing, _...)
+      return (m_2 + v_2)
+    end))
+    out_0 = map(rng(6.0), (function (k_2 = nothing, _...)
+      return filled(cells(F_0), 0.0)
+    end))
+    for i1 in 0:(ceil(Int, Rt.num(cells(F_0))) - 1)
+      c_1 = Float64(i1)
+      i_1 = floor(((c_1 / NMU(Felt))))
+      mu_1 = getat(mc(F_0), (c_1 % NMU(Felt)))
+      r_1 = (getat(rc(F_0), i_1) * L_0)
+      R_1 = (r_1 * sqrt(((1.0 - (mu_1 * mu_1)))))
+      z_1 = (r_1 * mu_1)
+      if truthy((r_1 > (FAR_OFF(Simulation) * getat(es_0, n_0))))
+        setat!(getat(out_0, 0.0), c_1, (0.0 - ((md_0 * R_1) / (((r_1 * r_1) * r_1)))))
+        setat!(getat(out_0, 1.0), c_1, (0.0 - ((md_0 * z_1) / (((r_1 * r_1) * r_1)))))
+        setat!(getat(out_0, 2.0), c_1, (0.0 - ((mg_0 * R_1) / (((r_1 * r_1) * r_1)))))
+        setat!(getat(out_0, 3.0), c_1, (0.0 - ((mg_0 * z_1) / (((r_1 * r_1) * r_1)))))
+      else
+        for b_2 in items(rings_0)
+          g_2 = ring(Felt, R_1, z_1, getat(b_2, 0.0), 0.0, getat(b_2, 3.0))
+          setat!(getat(out_0, 0.0), c_1, (getat(getat(out_0, 0.0), c_1) + ((getat(wd_0, getat(b_2, 2.0)) * getat(b_2, 1.0)) * getat(g_2, 0.0))))
+          setat!(getat(out_0, 1.0), c_1, (getat(getat(out_0, 1.0), c_1) + ((getat(wd_0, getat(b_2, 2.0)) * getat(b_2, 1.0)) * getat(g_2, 1.0))))
+          setat!(getat(out_0, 2.0), c_1, (getat(getat(out_0, 2.0), c_1) + ((getat(wg_0, getat(b_2, 2.0)) * getat(b_2, 1.0)) * getat(g_2, 0.0))))
+          setat!(getat(out_0, 3.0), c_1, (getat(getat(out_0, 3.0), c_1) + ((getat(wg_0, getat(b_2, 2.0)) * getat(b_2, 1.0)) * getat(g_2, 1.0))))
+        end
+      end
+      gb_1 = bulge_at(Simulation, rs_0, r_1)
+      setat!(getat(out_0, 4.0), c_1, (0.0 - ((gb_1 * R_1) / r_1)))
+      setat!(getat(out_0, 5.0), c_1, (0.0 - ((gb_1 * z_1) / r_1)))
+    end
+    return out_0
+  end
+  function made_of(self::__class__, grid_0 = nothing, yd_0 = nothing, yb_0 = nothing, _...)
+    a_0 = a0(self)
+    gr_0 = map(rng(cells(on(self))), (function (c_2 = nothing, _...)
+      return (((((yd_0 * getat(getat(grid_0, 0.0), c_2)) + getat(getat(grid_0, 2.0), c_2)) + (yb_0 * getat(getat(grid_0, 4.0), c_2)))) / a_0)
+    end))
+    gz_0 = map(rng(cells(on(self))), (function (c_2 = nothing, _...)
+      return (((((yd_0 * getat(getat(grid_0, 1.0), c_2)) + getat(getat(grid_0, 3.0), c_2)) + (yb_0 * getat(getat(grid_0, 5.0), c_2)))) / a_0)
+    end))
+    return map(made_rows(on(self), gr_0, gz_0), (function (v_2 = nothing, _...)
+      return (v_2 * a_0)
+    end))
+  end
+  function felt_at(self::__class__, j_0 = nothing, made_0 = nothing, r_0 = nothing, gN_0 = nothing, _...)
+    return (gN_0 - made_at(on(self), made_0, (r_0 / unit_of(self, j_0))))
+  end
+  @field grids::List = Any[]
+  @field ladder::List = Any[]
+  @field ladder_at::List = Any[]
+  function rungs(self::__class__, j_0 = nothing, _...)
+    return (truthy(has_bulge(self, j_0)) ? (NB(Simulation)) : (1.0))
+  end
+  function solve_fields(self::__class__)
+    self.grids = Any[]
+    self.ladder = Any[]
+    self.ladder_at = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
+      j_1 = Float64(i1)
+      grid_1 = grid_of(self, j_1)
+      push(grids(self), grid_1)
+      push(ladder_at(self), length(ladder(self)))
+      kept_1 = filter(rng(length(getat(rows(self), j_1))), (function (i_3 = nothing, _...)
+        return (getat(getat(getat(rows(self), j_1), i_3), 6.0) > 0.0)
+      end))
+      for i2 in 0:(ceil(Int, Rt.num(rungs(self, j_1))) - 1)
+        ib_2 = Float64(i2)
+        yb_2 = (10.0 ^ (rung_b(self, ib_2)))
+        for i3 in 0:(ceil(Int, Rt.num(NY(Simulation))) - 1)
+          iy_3 = Float64(i3)
+          yd_3 = (10.0 ^ (rung_y(self, iy_3)))
+          made_3 = made_of(self, grid_1, yd_3, yb_2)
+          for i_4 in items(kept_1)
+            p_4 = getat(getat(at_rows(self), j_1), i_4)
+            push(ladder(self), felt_at(self, j_1, made_3, getat(getat(getat(rows(self), j_1), i_4), 0.0), (((yd_3 * getat(p_4, 0.0)) + (yb_2 * getat(p_4, 2.0))) + getat(p_4, 1.0))))
+          end
+        end
+      end
+    end
+  end
+  function rung_y(self::__class__, iy_0 = nothing, _...)
+    return (log10(Fmt, YD(Sparc)) + (RUNG_Y(Simulation) * ((iy_0 - ((NY(Simulation) - 1.0) / 2.0)))))
+  end
+  function rung_b(self::__class__, ib_0 = nothing, _...)
+    return (log10(Fmt, YB(Sparc)) + (RUNG_B(Simulation) * ((ib_0 - ((NB(Simulation) - 1.0) / 2.0)))))
+  end
+  function laddered(self::__class__, j_0 = nothing, k_0 = nothing, ly_0 = nothing, lb_0 = nothing, _...)
+    count_0 = length(filter(getat(rows(self), j_0), (function (row_2 = nothing, _...)
+      return (getat(row_2, 6.0) > 0.0)
+    end)))
+    uy_0 = min(Fmt, max(Fmt, (((ly_0 - rung_y(self, 0.0))) / RUNG_Y(Simulation)), 0.0), ((NY(Simulation) - 1.0) - 0.0001))
+    ky_0 = floor(uy_0)
+    fy_0 = (uy_0 - ky_0)
+    nb_0 = rungs(self, j_0)
+    ub_0 = (truthy((nb_0 > 1.0)) ? (min(Fmt, max(Fmt, (((lb_0 - rung_b(self, 0.0))) / RUNG_B(Simulation)), 0.0), ((nb_0 - 1.0) - 0.0001))) : (0.0))
+    kb_0 = floor(ub_0)
+    fb_0 = (ub_0 - kb_0)
+    kb1_0 = min(Fmt, (kb_0 + 1.0), (nb_0 - 1.0))
+    at_0 = (function (b_1 = nothing, y_1 = nothing, _...)
+      return getat(ladder(self), ((getat(ladder_at(self), j_0) + ((((b_1 * NY(Simulation)) + y_1)) * count_0)) + k_0))
+    end)
+    lo_0 = ((((1.0 - fy_0)) * at_0(kb_0, ky_0)) + (fy_0 * at_0(kb_0, (ky_0 + 1.0))))
+    hi_0 = ((((1.0 - fy_0)) * at_0(kb1_0, ky_0)) + (fy_0 * at_0(kb1_0, (ky_0 + 1.0))))
+    return ((((1.0 - fb_0)) * lo_0) + (fb_0 * hi_0))
+  end
+  function solved_points(self::__class__, yd_0 = nothing, yb_0 = nothing, _...)
+    measured_0 = Any[]
+    tabled_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(length(ids(self)))) - 1)
+      j_1 = Float64(i1)
+      made_1 = made_of(self, getat(grids(self), j_1), getat(yd_0, j_1), getat(yb_0, j_1))
+      for i2 in 0:(ceil(Int, Rt.num(length(getat(rows(self), j_1)))) - 1)
+        i_2 = Float64(i2)
+        p_2 = getat(getat(at_rows(self), j_1), i_2)
+        push(measured_0, felt_at(self, j_1, made_1, getat(getat(getat(rows(self), j_1), i_2), 0.0), (((getat(yd_0, j_1) * getat(p_2, 0.0)) + (getat(yb_0, j_1) * getat(p_2, 2.0))) + getat(p_2, 1.0))))
+      end
+      for t_2 in items(getat(tables(self), j_1))
+        push(tabled_0, felt_at(self, j_1, made_1, getat(t_2, 0.0), (((getat(yd_0, j_1) * getat(t_2, 1.0)) + (getat(yb_0, j_1) * getat(t_2, 3.0))) + getat(t_2, 2.0))))
+      end
+    end
+    return concat(measured_0, tabled_0)
+  end
+  function own_y(self::__class__)
+    return map(ids(self), (function (g_2 = nothing, _...)
+      return YD(Sparc)
+    end))
+  end
+  function own_b(self::__class__)
+    return map(ids(self), (function (g_2 = nothing, _...)
+      return YB(Sparc)
+    end))
+  end
   function lift_coefficients(self::Type{<:__class__}, theory_0 = nothing, deg_0 = nothing, _...)
     model_0 = Model(theory = theory_0)
     e_0 = settled(model_0, deg_0)
@@ -13630,7 +13809,7 @@ end
     return laid(Simulation, map(rng(length(ids(self))), (function (j_2 = nothing, _...)
       g_2 = getat(ids(self), j_2)
       stop_2 = (truthy(((j_2 + 1.0) < length(ids(self)))) ? (getat(fit_at(self), (j_2 + 1.0))) : (floor(((length(pts_0) / 8.0)))))
-      return Any[getat(fit_at(self), j_2), (stop_2 - getat(fit_at(self), j_2)), getat(getat(S_0, Base.string(j"D")), g_2), getat(getat(S_0, Base.string(j"e_D")), g_2), getat(getat(S_0, Base.string(j"Inc")), g_2), getat(getat(S_0, Base.string(j"e_Inc")), g_2), a0(self), (truthy(has_bulge(self, j_2)) ? (1.0) : (0.0)), getat(centre_y(self), j_2), getat(centre_b(self), j_2), getat(centre_d(self), j_2), getat(centre_i(self), j_2), (STEP_Y(Simulation) * spacing(self)), (STEP_D(Simulation) * spacing(self)), (STEP_I(Simulation) * spacing(self)), 0.0]
+      return Any[getat(fit_at(self), j_2), (stop_2 - getat(fit_at(self), j_2)), getat(getat(S_0, Base.string(j"D")), g_2), getat(getat(S_0, Base.string(j"e_D")), g_2), getat(getat(S_0, Base.string(j"Inc")), g_2), getat(getat(S_0, Base.string(j"e_Inc")), g_2), a0(self), (truthy(has_bulge(self, j_2)) ? (1.0) : (0.0)), getat(centre_y(self), j_2), getat(centre_b(self), j_2), getat(centre_d(self), j_2), getat(centre_i(self), j_2), (STEP_Y(Simulation) * spacing(self)), (STEP_D(Simulation) * spacing(self)), (STEP_I(Simulation) * spacing(self)), getat(ladder_at(self), j_2)]
     end)))
   end
   function combo(self::__class__, j_0 = nothing, c_0 = nothing, n_0 = nothing, _...)
@@ -13653,19 +13832,18 @@ end
     if truthy((truthy((truthy((getat(at_0, 2.0) <= 0.0)) || truthy((getat(at_0, 3.0) <= 0.5)))) || truthy((getat(at_0, 3.0) > 90.0))))
       return ((-1.0) * (10.0 ^ 30.0))
     end
-    YD_0 = (10.0 ^ getat(at_0, 0.0))
-    YB_0 = (10.0 ^ getat(at_0, 1.0))
     f_0 = (getat(at_0, 2.0) / D_0)
     s_0 = (sin((((inc_0 * 3.141592653589793) / 180.0))) / sin((((getat(at_0, 3.0) * 3.141592653589793) / 180.0))))
     chi_0 = 0.0
+    k_0 = 0.0
     for i1 in 0:(ceil(Int, Rt.num(length(getat(rows(self), j_0)))) - 1)
       i_1 = Float64(i1)
       row_1 = getat(getat(rows(self), j_0), i_1)
       if truthy((getat(row_1, 6.0) > 0.0))
-        p_1 = getat(getat(at_rows(self), j_0), i_1)
-        vm_1 = sqrt(max(Fmt, ((f_0 * getat(row_1, 0.0)) * felt(self, (((YD_0 * getat(p_1, 0.0)) + (YB_0 * getat(p_1, 2.0))) + getat(p_1, 1.0)))), 0.0))
+        vm_1 = sqrt(max(Fmt, ((f_0 * getat(row_1, 0.0)) * laddered(self, j_0, k_0, getat(at_0, 0.0), getat(at_0, 1.0))), 0.0))
         d_1 = ((((getat(row_1, 1.0) * s_0) - vm_1)) / ((getat(row_1, 2.0) * s_0)))
         chi_0 = (chi_0 + (d_1 * d_1))
+        k_0 = (k_0 + 1.0)
       end
     end
     py_0 = (((getat(at_0, 0.0) - log10(Fmt, YD(Sparc)))) / PRIOR_Y(Simulation))
@@ -14056,7 +14234,7 @@ end
     setat!(extra_0, Base.string(j"rms1"), rms1_0)
     setat!(extra_0, Base.string(j"repro"), repro(self))
     setat!(extra_0, Base.string(j"stir"), SIGMA(Simulation))
-    setat!(extra_0, Base.string(j"about"), Base.string(j"every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"))
+    setat!(extra_0, Base.string(j"about"), Base.string(j"every measured radius of every galaxy run: the laid galaxy's disc, gas and bulge pull (mass-to-light one, (km/s)^2/kpc), the circular speed solved over its whole field (Felt) at SPARC's own freedoms (v0) and at the fitted ones as the data would see them (v1), what the tracers moved at (vs); per galaxy in the header the fitted freedoms and the rms in dex"))
     save(Measure, Base.string(j"galaxy.simulated"), names_0, cols_0, extra_0)
     fields_0 = Node()
     fnames_0 = Any[Base.string(j"galaxy"), Base.string(j"r"), Base.string(j"gd"), Base.string(j"gg"), Base.string(j"gb"), Base.string(j"v0"), Base.string(j"v1"), Base.string(j"vN")]
@@ -14085,7 +14263,7 @@ end
     fextra_0 = Node()
     setat!(fextra_0, Base.string(j"ids"), ids(self))
     setat!(fextra_0, Base.string(j"table"), T_0)
-    setat!(fextra_0, Base.string(j"about"), Base.string(j"the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"))
+    setat!(fextra_0, Base.string(j"about"), Base.string(j"the laid galaxy's field on the table, every galaxy run: disc, gas and bulge at mass-to-light one, the circular speed solved over its whole field at SPARC's freedoms (v0), at the fitted ones as the data would see them (v1), and Newton at SPARC's (vN)"))
     save(Measure, Base.string(j"galaxy.fields"), fnames_0, fields_0, fextra_0)
     if truthy(!(empty(film_ids(self))))
       film_0 = Node()
@@ -14304,7 +14482,53 @@ end
   @static_field RINGS = 48.0
   @static_field DISCS = Any[Any[10.7, 3.0], Any[9.3, 2.0]]
   @static_field WHAT = Any[Base.string(j"a bright disc"), Base.string(j"a dwarf")]
+  @static_field REFRESH = 10.0
   @field a0::Float64 = (a0_at(Galaxies, deg(self)) / UNIT_G(Simulation))
+  @field on::Felt = Felt()
+  @field made_now::List = Any[]
+  function made_tables(self::__class__, state_0 = nothing, _...)
+    head_0 = Any[]
+    tabs_0 = Any[]
+    for i1 in 0:(ceil(Int, Rt.num(discs_n(self))) - 1)
+      g_1 = Float64(i1)
+      rd_1 = scale(self, g_1)
+      cx_1 = 0.0
+      cy_1 = 0.0
+      for i2 in 0:(ceil(Int, Rt.num(N(Formed))) - 1)
+        k_2 = Float64(i2)
+        cx_1 = (cx_1 + (getat(state_0, (4.0 * (((g_1 * N(Formed)) + k_2)))) / N(Formed)))
+        cy_1 = (cy_1 + (getat(state_0, ((4.0 * (((g_1 * N(Formed)) + k_2))) + 1.0)) / N(Formed)))
+      end
+      xy_1 = Any[]
+      for i2 in 0:(ceil(Int, Rt.num(N(Formed))) - 1)
+        k_2 = Float64(i2)
+        push(xy_1, (((getat(state_0, (4.0 * (((g_1 * N(Formed)) + k_2)))) - cx_1)) / rd_1))
+        push(xy_1, (((getat(state_0, ((4.0 * (((g_1 * N(Formed)) + k_2))) + 1.0)) - cy_1)) / rd_1))
+      end
+      table_1 = (truthy(newton(self)) ? (filled(((NR(Felt) * NPHI(Felt)) * 2.0), 0.0)) : (round_made(on(self), xy_1, ((GM(self, g_1) / N(Formed)) / (((a0(self) * rd_1) * rd_1))), SHAPE_H(Simulation))))
+      for v_2 in items(Any[cx_1, cy_1, rd_1, (truthy(newton(self)) ? (0.0) : (a0(self)))])
+        push(head_0, v_2)
+      end
+      for v_2 in items(table_1)
+        push(tabs_0, v_2)
+      end
+    end
+    self.made_now = concat(head_0, tabs_0)
+    return made_now(self)
+  end
+  function made_at(self::__class__, g_0 = nothing, x_0 = nothing, y_0 = nothing, _...)
+    M_0 = made_now(self)
+    n_0 = ((NR(Felt) * NPHI(Felt)) * 2.0)
+    a_0 = getat(M_0, ((4.0 * g_0) + 3.0))
+    if truthy((a_0 <= 0.0))
+      return Any[0.0, 0.0]
+    end
+    table_0 = map(rng(n_0), (function (q_2 = nothing, _...)
+      return getat(M_0, (((4.0 * discs_n(self)) + (g_0 * n_0)) + q_2))
+    end))
+    got_0 = round_at(on(self), table_0, (((x_0 - getat(M_0, (4.0 * g_0)))) / getat(M_0, ((4.0 * g_0) + 2.0))), (((y_0 - getat(M_0, ((4.0 * g_0) + 1.0)))) / getat(M_0, ((4.0 * g_0) + 2.0))))
+    return Any[(getat(got_0, 0.0) * a_0), (getat(got_0, 1.0) * a_0)]
+  end
   @field newton::Bool = false
   function scale_a0(self::__class__)
     return (truthy(newton(self)) ? (0.0) : (a0(self)))
@@ -14382,8 +14606,10 @@ end
     gx_0 = (m_0 * sx_0)
     gy_0 = (m_0 * sy_0)
     mag_0 = hypot(Fmt, gx_0, gy_0)
-    f_0 = (truthy((mag_0 > 0.0)) ? (((truthy(newton(self)) ? (mag_0) : (boost(Law, mag_0, a0(self)))))) : (0.0))
-    return (truthy((mag_0 > 0.0)) ? (Any[((gx_0 / mag_0) * f_0), ((gy_0 / mag_0) * f_0), mag_0, f_0]) : (Any[0.0, 0.0, 0.0, 0.0]))
+    more_0 = made_at(self, g_0, px_0, py_0)
+    ax_0 = (gx_0 + getat(more_0, 0.0))
+    ay_0 = (gy_0 + getat(more_0, 1.0))
+    return Any[ax_0, ay_0, mag_0, hypot(Fmt, ax_0, ay_0)]
   end
   function launch(self::__class__, state_0 = nothing, acc_0 = nothing, _...)
     rng_0 = Random(seed = 29.0)
@@ -14526,11 +14752,19 @@ end
     setat!(extra_0, Base.string(j"middles"), middles(self))
     setat!(extra_0, Base.string(j"deg"), deg(self))
     setat!(extra_0, Base.string(j"a0"), (a0(self) * UNIT_G(Simulation)))
-    setat!(extra_0, Base.string(j"about"), Base.string(j"discs of stars that pull each other through the law, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"))
+    setat!(extra_0, Base.string(j"about"), Base.string(j"discs of stars that pull each other, with the record of the space each disc makes solved over its whole field, from smooth to whatever forms: star counts on grid x grid cells, span kpc either side of the middle, frame after frame, galaxy after galaxy"))
     return save(Measure, Base.string(j"galaxy.formed"), Any[Base.string(j"density")], cols_0, extra_0)
   end
   function kernel(self::Type{<:__class__})
-    return join(Any[Base.string(j"// GENERATED from Formed.ray: stars that pull each other through the law"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> L: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> C: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read_write> X: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> A: array<f32>;"), Base.string(j"var<workgroup> tile: array<vec2<f32>, ", str(TILE(Formed)), j">;"), law_wgsl(Simulation), Base.string(j"@compute @workgroup_size(", str(TILE(Formed)), j") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {"), Base.string(j"  let i: u32 = P[7] + gid.x;"), Base.string(j"  let per: u32 = P[1];"), Base.string(j"  let g: u32 = i / per;"), Base.string(j"  let base: u32 = g * per;"), Base.string(j"  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);"), Base.string(j"  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];"), Base.string(j"  var s: vec2<f32> = vec2<f32>(0.0, 0.0);"), Base.string(j"  for (var t: u32 = 0u; t < per; t = t + ", str(TILE(Formed)), j"u) {"), Base.string(j"    let j: u32 = base + t + lid.x;"), Base.string(j"    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);"), Base.string(j"    workgroupBarrier();"), Base.string(j"    for (var k: u32 = 0u; k < ", str(TILE(Formed)), j"u; k = k + 1u) {"), Base.string(j"      let d: vec2<f32> = tile[k] - me;"), Base.string(j"      let inv: f32 = inverseSqrt(dot(d, d) + e2);"), Base.string(j"      s = s + d * (inv * inv * inv);"), Base.string(j"    }"), Base.string(j"    workgroupBarrier();"), Base.string(j"  }"), Base.string(j"  let gN: vec2<f32> = C[4u * g] * s;"), Base.string(j"  let mag: f32 = length(gN);"), Base.string(j"  var a: vec2<f32> = vec2<f32>(0.0, 0.0);"), Base.string(j"  var f: f32 = 0.0;"), Base.string(j"  if (mag > 0.0) {"), Base.string(j"    f = mag;"), Base.string(j"    if (C[4u * g + 2u] > 0.0) { f = felt(mag, C[4u * g + 2u]); }"), Base.string(j"    a = gN / mag * f;"), Base.string(j"  }"), Base.string(j"  A[4u * i] = a.x;"), Base.string(j"  A[4u * i + 1u] = a.y;"), Base.string(j"  A[4u * i + 2u] = mag;"), Base.string(j"  A[4u * i + 3u] = f;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" KICKDRIFT", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let dt: f32 = C[4u * (i / P[1]) + 3u];"), Base.string(j"  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;"), Base.string(j"  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;"), Base.string(j"  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;"), Base.string(j"  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" KICK", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let dt: f32 = C[4u * (i / P[1]) + 3u];"), Base.string(j"  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;"), Base.string(j"  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;"), Base.string(j"}")], Base.string(j"\n"))
+    F_0 = Felt()
+    r0_0 = literal(Shaded, getat(rc(F_0), 0.0))
+    step_0 = literal(Shaded, step(F_0))
+    topr_0 = literal(Shaded, ((NR(Felt) - 1.0) - 0.0001))
+    tau_0 = literal(Shaded, 6.283185307179586)
+    dphi_0 = literal(Shaded, dphi(F_0))
+    np_0 = NPHI(Felt)
+    nr_0 = NR(Felt)
+    return join(Any[Base.string(j"// GENERATED from Formed.ray: stars that pull each other, and the record of the space their disc makes (M)"), Base.string(j"@group(0) @binding(0) var<storage, read> P: array<u32>;"), Base.string(j"@group(0) @binding(1) var<storage, read> M: array<f32>;"), Base.string(j"@group(0) @binding(2) var<storage, read> C: array<f32>;"), Base.string(j"@group(0) @binding(3) var<storage, read_write> X: array<f32>;"), Base.string(j"@group(0) @binding(4) var<storage, read_write> A: array<f32>;"), Base.string(j"var<workgroup> tile: array<vec2<f32>, ", str(TILE(Formed)), j">;"), Base.string(j"fn made(g: u32, at: vec2<f32>) -> vec2<f32> {"), Base.string(j"  let a: f32 = M[4u * g + 3u];"), Base.string(j"  if (a <= 0.0) { return vec2<f32>(0.0, 0.0); }"), Base.string(j"  let d: vec2<f32> = (at - vec2<f32>(M[4u * g], M[4u * g + 1u])) / M[4u * g + 2u];"), Base.string(j"  let r: f32 = length(d);"), Base.string(j"  if (r <= 0.0) { return vec2<f32>(0.0, 0.0); }"), Base.string(j"  let u: f32 = clamp(log(r / ", str(r0_0), j") / ", str(step_0), j", 0.0, ", str(topr_0), j");"), Base.string(j"  let i0: u32 = u32(floor(u));"), Base.string(j"  let fu: f32 = u - floor(u);"), Base.string(j"  var ph: f32 = atan2(d.y, d.x);"), Base.string(j"  if (ph < 0.0) { ph = ph + ", str(tau_0), j"; }"), Base.string(j"  var v: f32 = ph / ", str(dphi_0), j" - 0.5;"), Base.string(j"  if (v < 0.0) { v = v + ", str(np_0), j".0; }"), Base.string(j"  let k0: u32 = u32(floor(v)) % ", str(np_0), j"u;"), Base.string(j"  let fv: f32 = v - floor(v);"), Base.string(j"  let k1: u32 = (k0 + 1u) % ", str(np_0), j"u;"), Base.string(j"  let t: u32 = 4u * P[2] + g * ", str(nr_0), j"u * ", str(np_0), j"u * 2u;"), Base.string(j"  let a00: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ", str(np_0), j"u + k0)], M[t + 2u * (i0 * ", str(np_0), j"u + k0) + 1u]);"), Base.string(j"  let a01: vec2<f32> = vec2<f32>(M[t + 2u * (i0 * ", str(np_0), j"u + k1)], M[t + 2u * (i0 * ", str(np_0), j"u + k1) + 1u]);"), Base.string(j"  let a10: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ", str(np_0), j"u + k0)], M[t + 2u * ((i0 + 1u) * ", str(np_0), j"u + k0) + 1u]);"), Base.string(j"  let a11: vec2<f32> = vec2<f32>(M[t + 2u * ((i0 + 1u) * ", str(np_0), j"u + k1)], M[t + 2u * ((i0 + 1u) * ", str(np_0), j"u + k1) + 1u]);"), Base.string(j"  let p: vec2<f32> = (1.0 - fu) * ((1.0 - fv) * a00 + fv * a01) + fu * ((1.0 - fv) * a10 + fv * a11);"), Base.string(j"  return vec2<f32>(p.x * d.x - p.y * d.y, p.x * d.y + p.y * d.x) / r * a;"), Base.string(j"}"), Base.string(j"@compute @workgroup_size(", str(TILE(Formed)), j") fn ACCEL(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(local_invocation_id) lid: vec3<u32>) {"), Base.string(j"  let i: u32 = P[7] + gid.x;"), Base.string(j"  let per: u32 = P[1];"), Base.string(j"  let g: u32 = i / per;"), Base.string(j"  let base: u32 = g * per;"), Base.string(j"  let me: vec2<f32> = vec2<f32>(X[4u * i], X[4u * i + 1u]);"), Base.string(j"  let e2: f32 = C[4u * g + 1u] * C[4u * g + 1u];"), Base.string(j"  var s: vec2<f32> = vec2<f32>(0.0, 0.0);"), Base.string(j"  for (var t: u32 = 0u; t < per; t = t + ", str(TILE(Formed)), j"u) {"), Base.string(j"    let j: u32 = base + t + lid.x;"), Base.string(j"    tile[lid.x] = vec2<f32>(X[4u * j], X[4u * j + 1u]);"), Base.string(j"    workgroupBarrier();"), Base.string(j"    for (var k: u32 = 0u; k < ", str(TILE(Formed)), j"u; k = k + 1u) {"), Base.string(j"      let d: vec2<f32> = tile[k] - me;"), Base.string(j"      let inv: f32 = inverseSqrt(dot(d, d) + e2);"), Base.string(j"      s = s + d * (inv * inv * inv);"), Base.string(j"    }"), Base.string(j"    workgroupBarrier();"), Base.string(j"  }"), Base.string(j"  let gN: vec2<f32> = C[4u * g] * s;"), Base.string(j"  let mag: f32 = length(gN);"), Base.string(j"  let a: vec2<f32> = gN + made(g, me);"), Base.string(j"  let f: f32 = length(a);"), Base.string(j"  A[4u * i] = a.x;"), Base.string(j"  A[4u * i + 1u] = a.y;"), Base.string(j"  A[4u * i + 2u] = mag;"), Base.string(j"  A[4u * i + 3u] = f;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" KICKDRIFT", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let dt: f32 = C[4u * (i / P[1]) + 3u];"), Base.string(j"  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;"), Base.string(j"  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;"), Base.string(j"  X[4u * i] = X[4u * i] + X[4u * i + 2u] * dt;"), Base.string(j"  X[4u * i + 1u] = X[4u * i + 1u] + X[4u * i + 3u] * dt;"), Base.string(j"}"), Base.string(j"", str(ENTRY(Simulation)), j" KICK", str(ID(Simulation)), j""), THREAD(Simulation), Base.string(j"  if (i >= P[0]) { return; }"), Base.string(j"  let dt: f32 = C[4u * (i / P[1]) + 3u];"), Base.string(j"  X[4u * i + 2u] = X[4u * i + 2u] + 0.5 * A[4u * i] * dt;"), Base.string(j"  X[4u * i + 3u] = X[4u * i + 3u] + 0.5 * A[4u * i + 1u] * dt;"), Base.string(j"}")], Base.string(j"\n"))
   end
 end
 
@@ -14837,6 +15071,7 @@ end
   @static_field MIDDLE = Any[0.0, 0.2, 0.5]
   @static_field GAS = Any[Any[0.0, 1.0], Any[0.5, 2.0], Any[0.5, 3.0], Any[0.9, 2.0], Any[0.9, 3.0]]
   @static_field FREEDOMS = Any[Base.string(j"mass"), Base.string(j"thickness"), Base.string(j"middle"), Base.string(j"gas")]
+  @static_field NPHI = 16.0
   @static_field LADDER = Any[(-6.5), 5.5, 193.0]
   function step(self::__class__)
     return (ln(((R1(Felt) / R0(Felt)))) / NR(Felt))
@@ -15004,6 +15239,9 @@ end
   end
   @field band::List = factored(self)
   function factored(self::__class__)
+    return factored_with(self, filled(cells(self), 0.0))
+  end
+  function factored_with(self::__class__, extra_0 = nothing, _...)
     n_0 = cells(self)
     B_0 = NMU(Felt)
     W_0 = width(self)
@@ -15013,7 +15251,7 @@ end
       i_1 = floor(((k_1 / B_0)))
       j_1 = (k_1 % B_0)
       f_1 = getat(faces(self), k_1)
-      setat!(m_0, ((k_1 * W_0) + B_0), (((getat(f_1, 0.0) + getat(f_1, 1.0)) + getat(f_1, 2.0)) + getat(f_1, 3.0)))
+      setat!(m_0, ((k_1 * W_0) + B_0), ((((getat(f_1, 0.0) + getat(f_1, 1.0)) + getat(f_1, 2.0)) + getat(f_1, 3.0)) + getat(extra_0, k_1)))
       if truthy(((i_1 + 1.0) < NR(Felt)))
         setat!(m_0, (((k_1 * W_0) + B_0) + B_0), (0.0 - getat(f_1, 0.0)))
       end
@@ -15048,10 +15286,12 @@ end
     return m_0
   end
   function solve_band(self::__class__, b_0 = nothing, _...)
+    return solve_with(self, band(self), b_0)
+  end
+  function solve_with(self::__class__, m_0 = nothing, b_0 = nothing, _...)
     n_0 = cells(self)
     B_0 = NMU(Felt)
     W_0 = width(self)
-    m_0 = band(self)
     x_0 = map(b_0, (function (v_2 = nothing, _...)
       return v_2
     end))
@@ -15081,7 +15321,7 @@ end
   function over(self::Type{<:__class__}, gN_0 = nothing, _...)
     return (truthy((gN_0 > 0.0)) ? ((0.5 + sqrt(((0.25 + (1.0 / gN_0)))))) : (1.0))
   end
-  function felt(self::__class__, shape_0 = nothing, s_0 = nothing, _...)
+  function made_rows(self::__class__, gr_0 = nothing, gz_0 = nothing, _...)
     n_0 = cells(self)
     B_0 = NMU(Felt)
     wr_0 = filled(n_0, 0.0)
@@ -15089,13 +15329,11 @@ end
     for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
       c_1 = Float64(i1)
       j_1 = (c_1 % B_0)
-      gr_1 = (s_0 * getat(getat(shape_0, 0.0), c_1))
-      gz_1 = (s_0 * getat(getat(shape_0, 1.0), c_1))
-      f_1 = (over(Felt, hypot(Fmt, gr_1, gz_1)) - 1.0)
+      f_1 = (over(Felt, hypot(Fmt, getat(gr_0, c_1), getat(gz_0, c_1))) - 1.0)
       mu_1 = getat(mc(self), j_1)
       st_1 = sqrt(((1.0 - (mu_1 * mu_1))))
-      setat!(wr_0, c_1, (f_1 * (((gr_1 * st_1) + (gz_1 * mu_1)))))
-      setat!(wm_0, c_1, (f_1 * (((gz_1 * st_1) - (gr_1 * mu_1)))))
+      setat!(wr_0, c_1, (f_1 * (((getat(gr_0, c_1) * st_1) + (getat(gz_0, c_1) * mu_1)))))
+      setat!(wm_0, c_1, (f_1 * (((getat(gz_0, c_1) * st_1) - (getat(gr_0, c_1) * mu_1)))))
     end
     rhs_0 = filled(n_0, 0.0)
     for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
@@ -15112,14 +15350,224 @@ end
       setat!(rhs_0, c_1, (truthy((i_1 > 0.0)) ? ((made_1 - (((((fi_1 * 2.0) * 3.141592653589793) * getat(re(self), i_1)) * getat(re(self), i_1)) * dmu_1))) : (made_1)))
     end
     psi_0 = solve_band(self, rhs_0)
+    return map(rng(NR(Felt)), (function (i_2 = nothing, _...)
+      return (truthy((truthy((i_2 > 0.0)) && truthy(((i_2 + 1.0) < NR(Felt))))) ? ((0.0 - (((getat(psi_0, (((i_2 + 1.0)) * B_0)) - getat(psi_0, (((i_2 - 1.0)) * B_0)))) / ((getat(rc(self), (i_2 + 1.0)) - getat(rc(self), (i_2 - 1.0))))))) : (0.0))
+    end))
+  end
+  function dphi(self::__class__)
+    return (6.283185307179586 / NPHI(Felt))
+  end
+  function waves(self::__class__)
+    return (floor(((NPHI(Felt) / 2.0))) + 1.0)
+  end
+  @field around::List = map(rng(cells(self)), (function (c_1 = nothing, _...)
+    i_1 = floor(((c_1 / NMU(Felt))))
+    j_1 = (c_1 % NMU(Felt))
+    st_1 = sqrt(((1.0 - (getat(mc(self), j_1) * getat(mc(self), j_1)))))
+    dth_1 = (theta(Felt, getat(me(self), j_1)) - theta(Felt, getat(me(self), (j_1 + 1.0))))
+    return ((((2.0 * 3.141592653589793) * ((getat(re(self), (i_1 + 1.0)) - getat(re(self), i_1)))) * dth_1) / (((st_1 * dphi(self)) * dphi(self))))
+  end))
+  function theta(self::Type{<:__class__}, mu_0 = nothing, _...)
+    return atan2(sqrt(((1.0 - (mu_0 * mu_0)))), mu_0)
+  end
+  @field wave_bands::List = map(rng(waves(self)), (function (m_1 = nothing, _...)
+    return (truthy((m_1 == 0.0)) ? (band(self)) : (factored_with(self, map(around(self), (function (a_3 = nothing, _...)
+      return (a_3 * ((2.0 - (2.0 * cos(((m_1 * dphi(self))))))))
+    end)))))
+  end))
+  @field cosines::List = map(rng((NPHI(Felt) * NPHI(Felt))), (function (q_1 = nothing, _...)
+    return cos((((dphi(self) * floor(((q_1 / NPHI(Felt))))) * (q_1 % NPHI(Felt)))))
+  end))
+  @field sines::List = map(rng((NPHI(Felt) * NPHI(Felt))), (function (q_1 = nothing, _...)
+    return sin((((dphi(self) * floor(((q_1 / NPHI(Felt))))) * (q_1 % NPHI(Felt)))))
+  end))
+  function solve_round(self::__class__, b_0 = nothing, _...)
+    n_0 = cells(self)
+    P_0 = NPHI(Felt)
+    x_0 = filled((n_0 * P_0), 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(waves(self))) - 1)
+      m_1 = Float64(i1)
+      a_1 = map(rng(n_0), (function (c_3 = nothing, _...)
+        return reduce(rng(P_0), 0.0, (function (t_5 = nothing, k_5 = nothing, _...)
+          return (t_5 + (getat(b_0, ((c_3 * P_0) + k_5)) * getat(cosines(self), ((m_1 * P_0) + k_5))))
+        end))
+      end))
+      s_1 = map(rng(n_0), (function (c_3 = nothing, _...)
+        return reduce(rng(P_0), 0.0, (function (t_5 = nothing, k_5 = nothing, _...)
+          return (t_5 + (getat(b_0, ((c_3 * P_0) + k_5)) * getat(sines(self), ((m_1 * P_0) + k_5))))
+        end))
+      end))
+      ya_1 = solve_with(self, getat(wave_bands(self), m_1), a_1)
+      ys_1 = solve_with(self, getat(wave_bands(self), m_1), s_1)
+      weight_1 = (((truthy((truthy((m_1 == 0.0)) || truthy(((2.0 * m_1) == P_0)))) ? (1.0) : (2.0))) / P_0)
+      for i2 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+        c_2 = Float64(i2)
+        for i3 in 0:(ceil(Int, Rt.num(P_0)) - 1)
+          k_3 = Float64(i3)
+          setat!(x_0, ((c_2 * P_0) + k_3), (getat(x_0, ((c_2 * P_0) + k_3)) + (weight_1 * (((getat(ya_1, c_2) * getat(cosines(self), ((m_1 * P_0) + k_3))) + (getat(ys_1, c_2) * getat(sines(self), ((m_1 * P_0) + k_3))))))))
+        end
+      end
+    end
+    return x_0
+  end
+  function layers(self::__class__, r_0 = nothing, h_0 = nothing, _...)
+    raw_0 = map(rng(NMU(Felt)), (function (j_2 = nothing, _...)
+      return (exp(((0.0 - ((r_0 * getat(me(self), j_2)) / h_0)))) - exp(((0.0 - ((r_0 * getat(me(self), (j_2 + 1.0))) / h_0)))))
+    end))
+    held_0 = reduce(raw_0, 0.0, (function (t_2 = nothing, v_2 = nothing, _...)
+      return (t_2 + v_2)
+    end))
+    return map(raw_0, (function (v_2 = nothing, _...)
+      return (truthy((held_0 > 0.0)) ? ((v_2 / held_0)) : (0.0))
+    end))
+  end
+  function round_made(self::__class__, xy_0 = nothing, s_0 = nothing, h_0 = nothing, _...)
+    n_0 = cells(self)
+    P_0 = NPHI(Felt)
+    B_0 = NMU(Felt)
+    dp_0 = dphi(self)
+    rho_0 = filled((n_0 * P_0), 0.0)
+    lay_0 = map(rng(NR(Felt)), (function (i_2 = nothing, _...)
+      return layers(self, getat(rc(self), i_2), h_0)
+    end))
+    for i1 in 0:(ceil(Int, Rt.num(floor(((length(xy_0) / 2.0))))) - 1)
+      q_1 = Float64(i1)
+      x_1 = getat(xy_0, (2.0 * q_1))
+      y_1 = getat(xy_0, ((2.0 * q_1) + 1.0))
+      r_1 = hypot(Fmt, x_1, y_1)
+      u_1 = min(Fmt, max(Fmt, (ln(((r_1 / getat(rc(self), 0.0)))) / step(self)), 0.0), ((NR(Felt) - 1.0) - 0.000001))
+      i0_1 = floor(u_1)
+      fu_1 = (u_1 - i0_1)
+      ph_1 = atan2(y_1, x_1)
+      v_1 = ((((truthy((ph_1 < 0.0)) ? ((ph_1 + 6.283185307179586)) : (ph_1))) / dp_0) - 0.5)
+      if truthy((v_1 < 0.0))
+        v_1 = (v_1 + P_0)
+      end
+      k0_1 = (floor(v_1) % P_0)
+      fv_1 = (v_1 - floor(v_1))
+      k1_1 = (((k0_1 + 1.0)) % P_0)
+      for rw_2 in items(Any[Any[i0_1, (1.0 - fu_1)], Any[(i0_1 + 1.0), fu_1]])
+        if truthy((getat(rw_2, 1.0) > 0.0))
+          for i3 in 0:(ceil(Int, Rt.num(B_0)) - 1)
+            j_3 = Float64(i3)
+            m_3 = (((s_0 / 2.0) * getat(rw_2, 1.0)) * getat(getat(lay_0, getat(rw_2, 0.0)), j_3))
+            c_3 = ((getat(rw_2, 0.0) * B_0) + j_3)
+            setat!(rho_0, ((c_3 * P_0) + k0_1), (getat(rho_0, ((c_3 * P_0) + k0_1)) + (m_3 * ((1.0 - fv_1)))))
+            setat!(rho_0, ((c_3 * P_0) + k1_1), (getat(rho_0, ((c_3 * P_0) + k1_1)) + (m_3 * fv_1)))
+          end
+        end
+      end
+    end
+    phi_0 = solve_round(self, map(rho_0, (function (m_2 = nothing, _...)
+      return (0.0 - ((((4.0 * 3.141592653589793) * m_2) * 6.283185307179586) / dp_0))
+    end)))
+    at_0 = (function (i_1 = nothing, j_1 = nothing, k_1 = nothing, _...)
+      return getat(phi_0, (((((i_1 * B_0) + j_1)) * P_0) + (((k_1 + P_0)) % P_0)))
+    end)
+    wr_0 = filled((n_0 * P_0), 0.0)
+    wm_0 = filled((n_0 * P_0), 0.0)
+    wp_0 = filled((n_0 * P_0), 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      c_1 = Float64(i1)
+      i_1 = floor(((c_1 / B_0)))
+      j_1 = (c_1 % B_0)
+      r_1 = getat(rc(self), i_1)
+      st_1 = sqrt(((1.0 - (getat(mc(self), j_1) * getat(mc(self), j_1)))))
+      for i2 in 0:(ceil(Int, Rt.num(P_0)) - 1)
+        k_2 = Float64(i2)
+        lo_2 = max(Fmt, (i_1 - 1.0), 0.0)
+        hi_2 = min(Fmt, (i_1 + 1.0), (NR(Felt) - 1.0))
+        gr_2 = (0.0 - (((at_0(hi_2, j_1, k_2) - at_0(lo_2, j_1, k_2))) / ((getat(rc(self), hi_2) - getat(rc(self), lo_2)))))
+        below_2 = (truthy((j_1 > 0.0)) ? (at_0(i_1, (j_1 - 1.0), k_2)) : (at_0(i_1, 0.0, k_2)))
+        mb_2 = (truthy((j_1 > 0.0)) ? (getat(mc(self), (j_1 - 1.0))) : ((0.0 - getat(mc(self), 0.0))))
+        top_2 = min(Fmt, (j_1 + 1.0), (B_0 - 1.0))
+        gm_2 = (0.0 - (((st_1 / r_1) * ((at_0(i_1, top_2, k_2) - below_2))) / ((getat(mc(self), top_2) - mb_2))))
+        gp_2 = (0.0 - (((at_0(i_1, j_1, (k_2 + 1.0)) - at_0(i_1, j_1, (k_2 - 1.0)))) / ((((2.0 * dp_0) * r_1) * st_1))))
+        f_2 = (over(Felt, hypot(Fmt, hypot(Fmt, gr_2, gm_2), gp_2)) - 1.0)
+        setat!(wr_0, ((c_1 * P_0) + k_2), (f_2 * gr_2))
+        setat!(wm_0, ((c_1 * P_0) + k_2), (f_2 * gm_2))
+        setat!(wp_0, ((c_1 * P_0) + k_2), (f_2 * gp_2))
+      end
+    end
+    made_0 = filled((n_0 * P_0), 0.0)
+    for i1 in 0:(ceil(Int, Rt.num(n_0)) - 1)
+      c_1 = Float64(i1)
+      i_1 = floor(((c_1 / B_0)))
+      j_1 = (c_1 % B_0)
+      dmu_1 = (getat(me(self), (j_1 + 1.0)) - getat(me(self), j_1))
+      dr_1 = (getat(re(self), (i_1 + 1.0)) - getat(re(self), i_1))
+      dth_1 = (theta(Felt, getat(me(self), j_1)) - theta(Felt, getat(me(self), (j_1 + 1.0))))
+      for i2 in 0:(ceil(Int, Rt.num(P_0)) - 1)
+        k_2 = Float64(i2)
+        e_2 = ((c_1 * P_0) + k_2)
+        fo_2 = (truthy(((i_1 + 1.0) < NR(Felt))) ? ((((getat(wr_0, e_2) + getat(wr_0, (e_2 + (B_0 * P_0))))) / 2.0)) : (getat(wr_0, e_2)))
+        fi_2 = (truthy((i_1 > 0.0)) ? ((((getat(wr_0, (e_2 - (B_0 * P_0))) + getat(wr_0, e_2))) / 2.0)) : (getat(wr_0, e_2)))
+        up_2 = (truthy(((j_1 + 1.0) < B_0)) ? ((((getat(wm_0, e_2) + getat(wm_0, (e_2 + P_0)))) / 2.0)) : (0.0))
+        down_2 = (truthy((j_1 > 0.0)) ? ((((getat(wm_0, (e_2 - P_0)) + getat(wm_0, e_2))) / 2.0)) : (0.0))
+        ahead_2 = (((getat(wp_0, e_2) + getat(wp_0, ((c_1 * P_0) + (((k_2 + 1.0)) % P_0))))) / 2.0)
+        behind_2 = (((getat(wp_0, ((c_1 * P_0) + ((((k_2 + P_0) - 1.0)) % P_0))) + getat(wp_0, e_2))) / 2.0)
+        out__2 = ((((((((fo_2 * 2.0) * 3.141592653589793) * getat(re(self), (i_1 + 1.0))) * getat(re(self), (i_1 + 1.0))) * dmu_1) + ((((up_2 * 2.0) * 3.141592653589793) * ((1.0 - (getat(me(self), (j_1 + 1.0)) * getat(me(self), (j_1 + 1.0)))))) * dr_1)) - ((((down_2 * 2.0) * 3.141592653589793) * ((1.0 - (getat(me(self), j_1) * getat(me(self), j_1))))) * dr_1)) + (((((((ahead_2 - behind_2)) * 6.283185307179586) * getat(rc(self), i_1)) * dr_1) * dth_1) / dp_0))
+        setat!(made_0, e_2, (truthy((i_1 > 0.0)) ? ((out__2 - (((((fi_2 * 2.0) * 3.141592653589793) * getat(re(self), i_1)) * getat(re(self), i_1)) * dmu_1))) : (out__2)))
+      end
+    end
+    psi_0 = solve_round(self, made_0)
+    out_0 = filled(((NR(Felt) * P_0) * 2.0), 0.0)
+    st0_0 = sqrt(((1.0 - (getat(mc(self), 0.0) * getat(mc(self), 0.0)))))
+    for i1 in 0:(ceil(Int, Rt.num(NR(Felt))) - 1)
+      i_1 = Float64(i1)
+      if truthy((truthy((i_1 > 0.0)) && truthy(((i_1 + 1.0) < NR(Felt)))))
+        for i2 in 0:(ceil(Int, Rt.num(P_0)) - 1)
+          k_2 = Float64(i2)
+          setat!(out_0, (2.0 * (((i_1 * P_0) + k_2))), (0.0 - (((getat(psi_0, (((((i_1 + 1.0)) * B_0) * P_0) + k_2)) - getat(psi_0, (((((i_1 - 1.0)) * B_0) * P_0) + k_2)))) / ((getat(rc(self), (i_1 + 1.0)) - getat(rc(self), (i_1 - 1.0)))))))
+          setat!(out_0, ((2.0 * (((i_1 * P_0) + k_2))) + 1.0), (0.0 - (((getat(psi_0, (((i_1 * B_0) * P_0) + (((k_2 + 1.0)) % P_0))) - getat(psi_0, (((i_1 * B_0) * P_0) + ((((k_2 + P_0) - 1.0)) % P_0))))) / ((((2.0 * dp_0) * getat(rc(self), i_1)) * st0_0)))))
+        end
+      end
+    end
+    return out_0
+  end
+  function round_at(self::__class__, table_0 = nothing, x_0 = nothing, y_0 = nothing, _...)
+    P_0 = NPHI(Felt)
+    r_0 = hypot(Fmt, x_0, y_0)
+    if truthy((r_0 <= 0.0))
+      return Any[0.0, 0.0]
+    end
+    u_0 = min(Fmt, max(Fmt, (ln(((r_0 / getat(rc(self), 0.0)))) / step(self)), 0.0), ((NR(Felt) - 1.0) - 0.000001))
+    i0_0 = floor(u_0)
+    fu_0 = (u_0 - i0_0)
+    ph_0 = atan2(y_0, x_0)
+    v_0 = ((((truthy((ph_0 < 0.0)) ? ((ph_0 + 6.283185307179586)) : (ph_0))) / dphi(self)) - 0.5)
+    if truthy((v_0 < 0.0))
+      v_0 = (v_0 + P_0)
+    end
+    k0_0 = (floor(v_0) % P_0)
+    fv_0 = (v_0 - floor(v_0))
+    k1_0 = (((k0_0 + 1.0)) % P_0)
+    part_0 = (function (q_1 = nothing, _...)
+      return ((((1.0 - fu_0)) * (((((1.0 - fv_0)) * getat(table_0, ((2.0 * (((i0_0 * P_0) + k0_0))) + q_1))) + (fv_0 * getat(table_0, ((2.0 * (((i0_0 * P_0) + k1_0))) + q_1)))))) + (fu_0 * (((((1.0 - fv_0)) * getat(table_0, ((2.0 * (((((i0_0 + 1.0)) * P_0) + k0_0))) + q_1))) + (fv_0 * getat(table_0, ((2.0 * (((((i0_0 + 1.0)) * P_0) + k1_0))) + q_1)))))))
+    end)
+    outward_0 = part_0(0.0)
+    about_0 = part_0(1.0)
+    return Any[((((outward_0 * x_0) - (about_0 * y_0))) / r_0), ((((outward_0 * y_0) + (about_0 * x_0))) / r_0)]
+  end
+  function made_at(self::__class__, made_0 = nothing, r_0 = nothing, _...)
+    v_0 = min(Fmt, max(Fmt, (ln(((r_0 / getat(rc(self), 0.0)))) / step(self)), 1.0), ((NR(Felt) - 2.0) - 0.000001))
+    t_0 = floor(v_0)
+    e_0 = (v_0 - t_0)
+    return ((((1.0 - e_0)) * getat(made_0, t_0)) + (e_0 * getat(made_0, (t_0 + 1.0))))
+  end
+  function felt(self::__class__, shape_0 = nothing, s_0 = nothing, _...)
+    made_0 = made_rows(self, map(getat(shape_0, 0.0), (function (v_2 = nothing, _...)
+      return (s_0 * v_2)
+    end)), map(getat(shape_0, 1.0), (function (v_2 = nothing, _...)
+      return (s_0 * v_2)
+    end)))
     out_0 = Any[]
     for i1 in 0:(ceil(Int, Rt.num(NR(Felt))) - 1)
       i_1 = Float64(i1)
       r_1 = getat(rc(self), i_1)
       if truthy((truthy((truthy((truthy((i_1 > 0.0)) && truthy(((i_1 + 1.0) < NR(Felt))))) && truthy((r_1 >= NEAR(Felt))))) && truthy((r_1 <= FAR(Felt)))))
-        made_1 = (0.0 - (((getat(psi_0, (((i_1 + 1.0)) * B_0)) - getat(psi_0, (((i_1 - 1.0)) * B_0)))) / ((getat(rc(self), (i_1 + 1.0)) - getat(rc(self), (i_1 - 1.0))))))
         gN_1 = (0.0 - (s_0 * getat(getat(shape_0, 2.0), i_1)))
-        push(out_0, Any[r_1, gN_1, (gN_1 - made_1)])
+        push(out_0, Any[r_1, gN_1, (gN_1 - getat(made_0, i_1))])
       end
     end
     return out_0
@@ -17376,6 +17824,9 @@ end
   end))
   @theorem Theorem(id = j"gravity.closing", body = (function (_...)
     return Asked(asks = Base.string(j"what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?"), about = Base.string(j"F_{g} \\aside{closing}"))
+  end))
+  @theorem Theorem(id = j"gravity.made", body = (function (_...)
+    return Asked(asks = Base.string(j"the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?"), about = Base.string(j"g \\aside{field}"), also = Base.string(j"-\\nabla^{2}\\psi"))
   end))
   @theorem Theorem(id = j"gravity.metric", body = (function (_...)
     return Asked(asks = Base.string(j"a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?"), about = Base.string(j"B \\aside{held}"), also = Base.string(j"A \\aside{held}"))

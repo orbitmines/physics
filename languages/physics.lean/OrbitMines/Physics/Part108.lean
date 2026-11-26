@@ -627,6 +627,10 @@ ray_impl_sfield "theorem gravity.closing" : Theorem := do
   return (← new! Theorem (id := "gravity.closing", body := (fn! [] do
     if true then return (← new! Asked («asks» := ("what a body feels is what arrives and the mismatch its acceleration has piled up. What is that law - and what does it do where the field is weak?" : String), «about» := ("F_{g} \\aside{closing}" : String)))
     return ωnull)))
+ray_impl_sfield "theorem gravity.made" : Theorem := do
+  return (← new! Theorem (id := "gravity.made", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?" : String), «about» := ("g \\aside{field}" : String), «also» := ("-\\nabla^{2}\\psi" : String)))
+    return ωnull)))
 ray_impl_sfield "theorem gravity.metric" : Theorem := do
   return (← new! Theorem (id := "gravity.metric", body := (fn! [] do
     if true then return (← new! Asked («asks» := ("a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?" : String), «about» := ("B \\aside{held}" : String), «also» := ("A \\aside{held}" : String)))

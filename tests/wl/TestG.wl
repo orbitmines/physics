@@ -1159,38 +1159,66 @@ t["tests/theorems.ray:15 on closure", Module[{it, guard = 0},
   it = G["proved"];
   Catch[
     While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[eq[len[it["ids"]], 51.]], "pass", "failed: " <> "eq[len[it[\"ids\"]], 51.]"],
+    If[truthy[eq[len[it["ids"]], 65.]], "pass", "failed: " <> "eq[len[it[\"ids\"]], 65.]"],
     skip]]];
 
 t["tests/theorems.ray:16 on closure", Module[{it, guard = 0},
   it = G["proved"];
   Catch[
     While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[it["standing", "gravity.coincidence"]], "pass", "failed: " <> "it[\"standing\", \"gravity.coincidence\"]"],
-    skip]]];
-
-t["tests/theorems.ray:17 on closure", Module[{it, guard = 0},
-  it = G["proved"];
-  Catch[
-    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[it["standing", "gravity.bent"]], "pass", "failed: " <> "it[\"standing\", \"gravity.bent\"]"],
+    If[truthy[it["standing", "gravity.made"]], "pass", "failed: " <> "it[\"standing\", \"gravity.made\"]"],
     skip]]];
 
 t["tests/theorems.ray:18 on closure", Module[{it, guard = 0},
   it = G["proved"];
   Catch[
     While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[it["standing", "gravity.standing"]], "pass", "failed: " <> "it[\"standing\", \"gravity.standing\"]"],
+    If[truthy[it["standing", "gravity.shadow"]], "pass", "failed: " <> "it[\"standing\", \"gravity.shadow\"]"],
     skip]]];
 
 t["tests/theorems.ray:19 on closure", Module[{it, guard = 0},
   it = G["proved"];
   Catch[
     While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
-    If[truthy[it["standing", "gravity.mass"]], "pass", "failed: " <> "it[\"standing\", \"gravity.mass\"]"],
+    If[truthy[eq[it["concluded", "gravity.shadow"], "b_{c} = 5.196152423·\\bar{m}"]], "pass", "failed: " <> "eq[it[\"concluded\", \"gravity.shadow\"], \"b_{c} = 5.196152423·\\\\bar{m}\"]"],
     skip]]];
 
 t["tests/theorems.ray:20 on closure", Module[{it, guard = 0},
+  it = G["proved"];
+  Catch[
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.closing"]], "pass", "failed: " <> "it[\"standing\", \"gravity.closing\"]"],
+    skip]]];
+
+t["tests/theorems.ray:21 on closure", Module[{it, guard = 0},
+  it = G["proved"];
+  Catch[
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.coincidence"]], "pass", "failed: " <> "it[\"standing\", \"gravity.coincidence\"]"],
+    skip]]];
+
+t["tests/theorems.ray:22 on closure", Module[{it, guard = 0},
+  it = G["proved"];
+  Catch[
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.bent"]], "pass", "failed: " <> "it[\"standing\", \"gravity.bent\"]"],
+    skip]]];
+
+t["tests/theorems.ray:23 on closure", Module[{it, guard = 0},
+  it = G["proved"];
+  Catch[
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.standing"]], "pass", "failed: " <> "it[\"standing\", \"gravity.standing\"]"],
+    skip]]];
+
+t["tests/theorems.ray:24 on closure", Module[{it, guard = 0},
+  it = G["proved"];
+  Catch[
+    While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];
+    If[truthy[it["standing", "gravity.mass"]], "pass", "failed: " <> "it[\"standing\", \"gravity.mass\"]"],
+    skip]]];
+
+t["tests/theorems.ray:25 on closure", Module[{it, guard = 0},
   it = G["proved"];
   Catch[
     While[!truthy[eq[it["theory"], "G"]], If[++guard > 8 || !has[it, "tick"], Throw["skip", skip]]; it["tick"]];

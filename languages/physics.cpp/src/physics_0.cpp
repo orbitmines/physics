@@ -2526,6 +2526,77 @@ static void C_Reference(Cls& c) {
 }
 static const bool R_Reference = define_class("Reference", "Node", &C_Reference);
 
+static void C_Setter(Cls& c) {
+  c.staticField("KINDS", [](const Value& self) -> Value { return list({ "var", "count", "fn", "muted", "bar", "hat", "tilde", "vec", "dot", "ddot", "bold", "cal", "bb", "sqrt", "sup", "sub", "paren" }); });
+  c.staticField("OPENS", [](const Value& self) -> Value { return list({ "<i>", "<b class=\"k\">", "<b class=\"d\">", "<span class=\"mu\">", "<span class=\"bar\">", "<span class=\"acc hat\">", "<span class=\"acc tld\">", "<span class=\"acc vec\">", "<span class=\"acc dot\">", "<span class=\"acc ddot\">", "<b class=\"bf\">", "<span class=\"cal\">", "<span class=\"bb\">", "<span class=\"sqrt\"><span class=\"sign\">&#8730;</span><span class=\"of\">", "<sup>", "<sub>", "<span class=\"paren\">" }); });
+  c.staticField("CLOSES", [](const Value& self) -> Value { return list({ "</i>", "</b>", "</b>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</span>", "</b>", "</span>", "</span>", "</span></span>", "</sup>", "</sub>", "</span>" }); });
+  c.method("together", [](Value self, const Args& a1) -> Value {
+    auto parts_0 = cell(arg(a1, 0));
+    return m_join(parts_0->v, "");
+    return null;
+  });
+  c.method("text", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0));
+    return call(K(S<"Notation">()), S<"escaped">(), { t_0->v });
+    return null;
+  });
+  c.method("words", [](Value self, const Args& a1) -> Value {
+    auto t_0 = cell(arg(a1, 0));
+    return "<span class=\"tx\">" + str(call(K(S<"Notation">()), S<"escaped">(), { t_0->v })) + "</span>";
+    return null;
+  });
+  c.method("wrap", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto c__0 = cell(arg(a1, 1));
+    auto i_0 = cell(); i_0->v = m_index_of(get(K(S<"Setter">()), S<"KINDS">()), kind_0->v);
+    return (truthy(eq(i_0->v, null)) ? Value("<span class=\"" + str(kind_0->v) + "\">" + str(c__0->v) + "</span>") : Value("" + str(elem(get(K(S<"Setter">()), S<"OPENS">()), i_0->v)) + "" + str(c__0->v) + "" + str(elem(get(K(S<"Setter">()), S<"CLOSES">()), i_0->v)) + ""));
+    return null;
+  });
+  c.method("big", [](Value self, const Args& a1) -> Value {
+    auto kind_0 = cell(arg(a1, 0)); auto lo_0 = cell(arg(a1, 1)); auto hi_0 = cell(arg(a1, 2));
+    auto sign_0 = cell(); sign_0->v = (truthy(eq(kind_0->v, "int")) ? Value("&#8747;") : Value(((truthy(eq(kind_0->v, "oint")) ? Value("&#8750;") : Value(((truthy(eq(kind_0->v, "sum")) ? Value("&#8721;") : Value("&#8719;"))))))));
+    auto limits_0 = cell(); limits_0->v = (truthy(((truthy(eq(lo_0->v, "")) && truthy(eq(hi_0->v, ""))))) ? Value("") : Value("<span class=\"lim\"><sup>" + str(hi_0->v) + "</sup><sub>" + str(lo_0->v) + "</sub></span>"));
+    return "<span class=\"big\"><span class=\"sign\">" + str(sign_0->v) + "</span>" + str(limits_0->v) + "</span>";
+    return null;
+  });
+  c.method("frac", [](Value self, const Args& a1) -> Value {
+    auto over_0 = cell(arg(a1, 0)); auto under_0 = cell(arg(a1, 1));
+    return "<span class=\"frac\"><span class=\"o\">" + str(over_0->v) + "</span><span class=\"u\">" + str(under_0->v) + "</span></span>";
+    return null;
+  });
+  c.method("binom", [](Value self, const Args& a1) -> Value {
+    auto over_0 = cell(arg(a1, 0)); auto under_0 = cell(arg(a1, 1));
+    return "<span class=\"paren\"><span class=\"binom\"><span class=\"o\">" + str(over_0->v) + "</span><span class=\"u\">" + str(under_0->v) + "</span></span></span>";
+    return null;
+  });
+  c.method("scripted", [](Value self, const Args& a1) -> Value {
+    auto base_0 = cell(arg(a1, 0)); auto sup_0 = cell(arg(a1, 1)); auto sub_0 = cell(arg(a1, 2));
+    auto up_0 = cell(); up_0->v = (truthy(eq(sup_0->v, null)) ? Value("") : Value("<sup>" + str(sup_0->v) + "</sup>"));
+    auto down_0 = cell(); down_0->v = (truthy(eq(sub_0->v, null)) ? Value("") : Value("<sub>" + str(sub_0->v) + "</sub>"));
+    return "<span class=\"scripted\"><span class=\"base\">" + str(base_0->v) + "</span><span class=\"scripts\">" + str(up_0->v) + "" + str(down_0->v) + "</span></span>";
+    return null;
+  });
+  c.method("underset", [](Value self, const Args& a1) -> Value {
+    auto base_0 = cell(arg(a1, 0)); auto under_0 = cell(arg(a1, 1));
+    return "<span class=\"under\"><span class=\"base\">" + str(base_0->v) + "</span><span class=\"cond\">" + str(under_0->v) + "</span></span>";
+    return null;
+  });
+  c.method("ref", [](Value self, const Args& a1) -> Value {
+    auto key_0 = cell(arg(a1, 0));
+    auto r_0 = cell(); r_0->v = call(K(S<"Notation">()), S<"reference">(), { key_0->v });
+    if (truthy(eq(r_0->v, null))) {
+      return "[" + str(call(K(S<"Notation">()), S<"escaped">(), { key_0->v })) + "]";
+    }
+    auto label_0 = cell(); label_0->v = call(K(S<"Notation">()), S<"escaped">(), { get(r_0->v, S<"short">()) });
+    auto says_0 = cell(); says_0->v = call(K(S<"Notation">()), S<"escaped">(), { get(r_0->v, S<"says">()) });
+    if (truthy((!eq(get(r_0->v, S<"link">()), null)))) {
+      return "<a class=\"ref\" href=\"" + str(get(r_0->v, S<"link">())) + "\" target=\"_blank\" rel=\"noreferrer\" title=\"" + str(says_0->v) + "\">" + str(label_0->v) + "</a>";
+    }
+    return "<span class=\"ref\" title=\"" + str(says_0->v) + "\">" + str(label_0->v) + "</span>";
+    return null;
+  });
+}
+static const bool R_Setter = define_class("Setter", "Node", &C_Setter);
+
 
 
 void part_0() { }

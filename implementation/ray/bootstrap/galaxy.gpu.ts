@@ -1208,7 +1208,6 @@ const worst = (what: string, pairs: [number, number][], tol: number) => {
 };
 
 const PULL = (await compile(S.pull_kernel, ["PULL"])).PULL;
-const LAW = (await compile(S.law_kernel, ["LAW"])).LAW;
 const FIT = (await compile(S.fit_kernel, ["FIT"])).FIT;
 const BEST = (await compile(S.best_kernel, ["BEST"])).BEST;
 const STARS = await compile(S.stars_kernel, ["START", "STEP"]);
@@ -1339,20 +1338,25 @@ for (const j of repro.map((r, j) => [r, j]).sort((a, b) => b[0] - a[0]).slice(0,
 }
 console.log(`  the laid galaxies pull as SPARC's do: worst speed off at a measured radius over the galaxy's top, median ${(100 * sortedRepro[G >> 1]).toFixed(2)}%, 90th ${(100 * sortedRepro[Math.floor(G * 0.9)]).toFixed(2)}%, worst ${(100 * sortedRepro[G - 1]).toFixed(2)}% (${physics.Sparc.names[plan.ids[repro.indexOf(sortedRepro[G - 1])]]})`);
 
-/* LAW: what is felt at every measured and table radius, at a set of freedoms */
-const points = new Float32Array(plan.points);
-const np = points.length / 6;
-const pointsBuf = upload(points);
-const lawAt = async (fitted: boolean) => {
-  const out = blank(np);
-  await run(LAW, [u32(np), lawBuf, pointsBuf, upload(new Float32Array(plan.nuisances(fitted))), out], np);
-  return read(out, np);
-};
-const felt0 = await lawAt(false);
-worst("LAW", [0, np >> 2, np >> 1, np - 1].map(i => {
-  const gN = physics.Sparc.YD * points[6 * i + 2] + physics.Sparc.YB * points[6 * i + 4] + points[6 * i + 3];
-  return [plan.felt(gN), felt0[i]] as [number, number];
-}).filter(([c]) => c !== 0), 1e-3);
+/* FELT: every galaxy laid on the field's grid and solved over its whole field, up a ladder of what its starlight weighs (Simulation.solve_fields) - nothing read point by point */
+plan.solve_fields;
+console.log(`  FELT               ${G} galaxies solved over their fields, ${plan.ladder.length} kept radii up their ladders (${secs()})`);
+const T: number = S.TABLE;
+const np = plan.rows.reduce((n: number, rs: number[][]) => n + rs.length, 0) + G * T;
+const felt0 = plan.solved_points(plan.own_y, plan.own_b);
+{
+  /* how far the solved field sits from the closing read point by point, at SPARC's own mass-to-lights */
+  const off: number[] = [];
+  let k = 0;
+  plan.rows.forEach((rs: number[][], j: number) => rs.forEach((row: number[], i: number) => {
+    const p = plan.at_rows[j][i], gN = physics.Sparc.YD * p[0] + physics.Sparc.YB * p[2] + p[1];
+    if (gN > 0 && felt0[k] > 0) off.push(Math.log10(felt0[k] / (gN * physics.Felt.over(gN / plan.a0))));
+    k++;
+  }));
+  off.sort((a, b) => a - b);
+  console.log(`  FELT               solved against the closing read point by point: median ${off[off.length >> 1].toFixed(3)} dex, 5% ${off[Math.floor(off.length * 0.05)].toFixed(3)}, 95% ${off[Math.floor(off.length * 0.95)].toFixed(3)}`);
+}
+const ladderBuf = upload(new Float32Array(plan.ladder));
 
 /* FIT: the data's freedoms, a wide grid and then a fine one about each galaxy's best */
 plan.begin_fit;
@@ -1361,7 +1365,7 @@ const pass = async (n: number, last: boolean) => {
   const C = n ** 4;
   const searches = new Float32Array(plan.searches);
   const lp = blank(G * C), best = blank(2 * G);
-  await run(FIT, [u32(G, n), lawBuf, fitPoints, upload(searches), lp], G * C, 1 << 18);
+  await run(FIT, [u32(G, n), ladderBuf, fitPoints, upload(searches), lp], G * C, 1 << 18);
   await run(BEST, [u32(G, C), lp, best], G);
   const got = await read(best, 2 * G);
   /* the device's posterior against the CPU's at a galaxy's best */
@@ -1374,10 +1378,9 @@ const pass = async (n: number, last: boolean) => {
 await pass(S.GRID, false);
 await pass(S.FINE, true);
 console.log(`  FIT                the data's freedoms searched, ${G} galaxies (${secs()})`);
-const felt1 = await lawAt(true);
+const felt1 = plan.solved_points(plan.best_y, plan.best_b);
 
-/* STARS: every galaxy's tracers followed on its field at SPARC's own freedoms */
-const T: number = S.TABLE;
+/* STARS: every galaxy's tracers followed on its solved field at SPARC's own freedoms */
 const measuredPoints = np - G * T;
 const tableFelt = Array.from(felt0.slice(measuredPoints));
 const runs = new Float32Array(plan.runs(tableFelt));
@@ -1434,7 +1437,7 @@ plan.save(Array.from(felt0), Array.from(felt1), Array.from(stars), Array.from(fi
 
 }
 
-/* GALAXIES LEFT TO THEMSELVES (Formed.ray): every star pulled by every other through the law, from smooth to whatever forms */
+/* GALAXIES LEFT TO THEMSELVES (Formed.ray): every star pulled by every other, with the record of the space the disc makes solved over its field, from smooth to whatever forms */
 {
   const F = physics.Formed;
   const formed = new F({ deg });
@@ -1444,8 +1447,13 @@ plan.save(Array.from(felt0), Array.from(felt1), Array.from(stars), Array.from(fi
   const total: number = formed.discs_n * F.N;
   const seeds = new Float32Array(formed.seeds);
   const X = upload(seeds), A = blank(total * 4), Cb = upload(new Float32Array(formed.constants));
+  /* M: the record of the space each disc makes, solved over its whole field from where the stars stand (Formed.made_tables), every REFRESH steps */
+  let t0m = performance.now();
+  const Mb = upload(new Float32Array(formed.made_tables(Array.from(seeds))));
+  console.log(`  FORMED             the record of made space solved over each disc's field: ${((performance.now() - t0m) / 1000).toFixed(1)}s`);
+  const remade = async () => { device.queue.writeBuffer(Mb, 0, new Float32Array(formed.made_tables(Array.from(await read(X, total * 4))))); };
   /* ACCEL runs in pieces of `piece` stars, each with its own P (P[7] the first star): one bind group a piece, made once */
-  const bindAt = (k: any, off: number) => device.createBindGroup({ layout: k.group, entries: [upload(new Uint32Array([total, F.N, formed.discs_n, 0, 0, 0, 0, off])), lawBuf, Cb, X, A].map((buffer, binding) => ({ binding, resource: { buffer } })) });
+  const bindAt = (k: any, off: number) => device.createBindGroup({ layout: k.group, entries: [upload(new Uint32Array([total, F.N, formed.discs_n, 0, 0, 0, 0, off])), Mb, Cb, X, A].map((buffer, binding) => ({ binding, resource: { buffer } })) });
   const leap = { KICKDRIFT: bindAt(K.KICKDRIFT, 0), KICK: bindAt(K.KICK, 0) };
   let piece = Math.min(total, 2048);
   let pieceMs = Infinity;
@@ -1511,6 +1519,7 @@ plan.save(Array.from(felt0), Array.from(felt1), Array.from(stars), Array.from(fi
   for (let f = 1; f < Math.min(F.FRAMES, upTo); f++) {
     /* one step a submission: every star's pull summed is heavy, and a long submission is taken for a hung device */
     for (let k = 0; k < every; k++) {
+      if (((f - 1) * every + k) % F.REFRESH === 0) await remade();
       if (accels.length * pieceMs <= 60) await passes(["KICKDRIFT", "ACCEL", "KICK"]);
       else { await passes(["KICKDRIFT"]); await pullAll(); await passes(["KICK"]); }
     }

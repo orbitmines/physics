@@ -1029,7 +1029,7 @@ Galaxies := class {
   static simulation (): Picture => {
     stars := Measured.of("galaxy.stars")
     fail("galaxy.stars is not on disk - run the galaxies (`{Galaxies.SIMULATED}`) and try again") if stars == None
-    Picture(id: "galaxy.simulation", what: "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, and beside it the curve they trace against what was measured", width: 960, height: 720, frames: stars.header["frames"], paint: (played: Played?) => Orbiting(stars: stars))
+    Picture(id: "galaxy.simulation", what: "galaxies run: each laid from its own gas, disc and bulge, its tracers followed on the field the model gives it, solved over the whole galaxy, and beside it the curve they trace against what was measured", width: 960, height: 720, frames: stars.header["frames"], paint: (played: Played?) => Orbiting(stars: stars))
   }
   static orbit_panel (s: Surface, stars: Measured, frame_at: N) => {
     s.fill_style(Galaxies.BACK)
@@ -1105,7 +1105,7 @@ Galaxies := class {
   static formed (): Picture => {
     got := Measured.of("galaxy.formed")
     fail("galaxy.formed is not on disk - run the galaxies (`{Galaxies.SIMULATED}`) and try again") if got == None
-    Picture(id: "galaxy.formed", what: "discs of stars left to themselves: every star pulled by every other through the law, nothing else holding them - smooth at the start, then whatever forms", width: 960, height: 720, frames: got.header["frames"], paint: (played: Played?) => Forming(formed: got))
+    Picture(id: "galaxy.formed", what: "discs of stars left to themselves: every star pulled by every other, and by the record of the space the disc makes solved over its whole field, nothing else holding them - smooth at the start, then whatever forms", width: 960, height: 720, frames: got.header["frames"], paint: (played: Played?) => Forming(formed: got))
   }
   /*
    * A GALAXY IN THE MEDIUM ITSELF, FILMED: every star its own body, held where the rays are (Medium.local_rays) - each
@@ -1220,7 +1220,7 @@ Galaxies := class {
     stars_n := H["stars"]
     q_text := Fmt.fixed(H["Q"], 1)
     a0_text := Fmt.exponential(H["a0"], 3)
-    s.fill_text("{stars_n} stars each, every one pulled by every other through the law (a₀ {a0_text} m/s²), no halo; launched smooth at Q {q_text} — t = {gyr} Gyr", 22, 44)
+    s.fill_text("{stars_n} stars each, every one pulled by every other and by the space its disc makes, solved over the field (a₀ {a0_text} m/s²), no halo; launched smooth at Q {q_text} — t = {gyr} Gyr", 22, 44)
     side := Fmt.min((s.width - 66) / 2, s.height - 110)
     Array.range(names.length).for(g => {
       ox := 22 + g * (side + 22)

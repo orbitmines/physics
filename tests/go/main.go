@@ -2904,13 +2904,81 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Eq(Len(Get(it, "ids")), 51.0)) {
+    if Truthy(Eq(Len(Get(it, "ids")), 65.0)) {
       return pass_
     }
-    return "failed: " + "Eq(Len(Get(it, \"ids\")), 51.0)"
+    return "failed: " + "Eq(Len(Get(it, \"ids\")), 65.0)"
   })
 
   t("tests/theorems.ray:16 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.made" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.made\" })"
+  })
+
+  t("tests/theorems.ray:18 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.shadow" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.shadow\" })"
+  })
+
+  t("tests/theorems.ray:19 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Eq(Call(it, "concluded", []any{ "gravity.shadow" }), "b_{c} = 5.196152423·\\bar{m}")) {
+      return pass_
+    }
+    return "failed: " + "Eq(Call(it, \"concluded\", []any{ \"gravity.shadow\" }), \"b_{c} = 5.196152423·\\\\bar{m}\")"
+  })
+
+  t("tests/theorems.ray:20 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.closing" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.closing\" })"
+  })
+
+  t("tests/theorems.ray:21 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2927,7 +2995,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.coincidence\" })"
   })
 
-  t("tests/theorems.ray:17 on closure", func() any {
+  t("tests/theorems.ray:22 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2944,7 +3012,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.bent\" })"
   })
 
-  t("tests/theorems.ray:18 on closure", func() any {
+  t("tests/theorems.ray:23 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2961,7 +3029,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.standing\" })"
   })
 
-  t("tests/theorems.ray:19 on closure", func() any {
+  t("tests/theorems.ray:24 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2978,7 +3046,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.mass\" })"
   })
 
-  t("tests/theorems.ray:20 on closure", func() any {
+  t("tests/theorems.ray:25 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
