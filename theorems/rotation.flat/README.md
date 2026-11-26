@@ -291,10 +291,10 @@ a circular orbit is an acceleration of v^(2)/R toward the centre and the medium 
 
 ```
 read off the continuous model: \varepsilon, which stands on every term of it alike
-\varepsilon = 2·\sigma·F·\paren{1 - \rho}·\rho^(2), a placeholder until derived
+\varepsilon = 2·\sigma·F·\paren{1 - \rho}·\rho^(2): \sigma F\rho^(2) meetings, two ends, dark behind at 1 - \rho
 ```
 
-READ OFF THE CONTINUOUS MODEL - not one term of it but all of them, since this is about how the line is made. what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before
+READ OFF THE CONTINUOUS MODEL - not one term of it but all of them, since this is about how the line is made. what the empty vacuum would grow on its own, per point per tick, had no mass been there: every meeting leaves the point behind each of its two ends where the way behind is dark, 1 - \rho of the time (gravity.scale). Gross, not net - the fold took a point first - so it is what keeps the vacuum from collapsing
 
 **H_\Lambda = \frac{2·\sigma·F·\paren{1 - \rho}·\rho^(2)}{D}**  
 <sub>theorem · the rate the empty vacuum expands at</sub>  

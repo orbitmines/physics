@@ -639,6 +639,18 @@ ray_impl_sfield "theorem gravity.shadow" : Theorem := do
   return (← new! Theorem (id := "gravity.shadow", body := (fn! [] do
     if true then return (← new! Asked («asks» := ("the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?" : String), «about» := ("b_{c}" : String)))
     return ωnull)))
+ray_impl_sfield "theorem gravity.perihelion" : Theorem := do
+  return (← new! Theorem (id := "gravity.perihelion", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("a bound orbit in the held metric is not quite an ellipse. How far does it turn each lap - and is that Mercury's?" : String), «about» := ("\\Delta\\varphi" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.shapiro" : Theorem := do
+  return (← new! Theorem (id := "gravity.shapiro", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("light passing a body has to cross the slow clock and the long ruler both. How late does it arrive?" : String), «about» := ("\\Delta t \\aside{Shapiro}" : String)))
+    return ωnull)))
+ray_impl_sfield "theorem gravity.ppn" : Theorem := do
+  return (← new! Theorem (id := "gravity.ppn", body := (fn! [] do
+    if true then return (← new! Asked («asks» := ("the post-Newtonian parameters say how much space one unit of the potential curves, and how much the potential adds to itself. What are they off the held metric?" : String), «about» := ("\\gamma \\aside{PPN}" : String)))
+    return ωnull)))
 ray_impl_sfield "rule S.2" : Rule := do
   return (← new! Rule (id := "/S.2", name := "Attenuation", rate := ωnull, over := "World", single := true, «where» := ωnull, source := ("rule /S.2 \"Attenuation\" () => {\n\n}" : String), body := (fn! [] do
 

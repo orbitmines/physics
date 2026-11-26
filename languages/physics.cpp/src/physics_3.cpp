@@ -9,18 +9,6 @@
 
 namespace orbitmines::physics {
 
-static void C_TermRecord(Cls& c) {
-  c.field("symbol", nullptr);
-  c.field("sign", nullptr);
-  c.field("degree", nullptr);
-  c.field("facing", nullptr);
-  c.field("rays", nullptr);
-  c.field("space", nullptr);
-  c.field("rules", nullptr);
-  c.field("says", nullptr);
-}
-static const bool R_TermRecord = define_class("TermRecord", "Node", &C_TermRecord);
-
 static void C_Proved(Cls& c) {
   c.field("theorem", nullptr);
   c.field("theory", nullptr);

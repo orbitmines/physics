@@ -93,12 +93,12 @@ test("tests/theorems.ray:14 on closure", (t) => {
   assert.ok(got, "it.standing(`gravity.horizon`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:15 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => eq(it.ids.length, 65) });
+want("closure", () => G.proved, { label: "tests/theorems.ray:15 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => eq(it.ids.length, 68) });
 test("tests/theorems.ray:15 on closure", (t) => {
   const got = outcome("closure", "tests/theorems.ray:15 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
-  assert.ok(got, "eq(it.ids.length, 65)");
+  assert.ok(got, "eq(it.ids.length, 68)");
 });
 
 want("closure", () => G.proved, { label: "tests/theorems.ray:16 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.made`) });
@@ -125,49 +125,81 @@ test("tests/theorems.ray:19 on closure", (t) => {
   assert.ok(got, "eq(it.concluded(`gravity.shadow`), `b_{c} = 5.196152423·\\\\bar{m}`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:20 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.closing`) });
-test("tests/theorems.ray:20 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:20 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:21 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.perihelion`) });
+test("tests/theorems.ray:21 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:21 on closure");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "it.standing(`gravity.perihelion`)");
+});
+
+want("closure", () => G.proved, { label: "tests/theorems.ray:22 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.shapiro`) });
+test("tests/theorems.ray:22 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:22 on closure");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "it.standing(`gravity.shapiro`)");
+});
+
+want("closure", () => G.proved, { label: "tests/theorems.ray:23 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.ppn`) });
+test("tests/theorems.ray:23 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:23 on closure");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "it.standing(`gravity.ppn`)");
+});
+
+want("closure", () => G.proved, { label: "tests/theorems.ray:24 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.coupling`) });
+test("tests/theorems.ray:24 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:24 on closure");
+  if (got === SKIP) return t.skip("the refinement never held");
+  if (got instanceof Error) throw got;
+  assert.ok(got, "it.standing(`gravity.coupling`)");
+});
+
+want("closure", () => G.proved, { label: "tests/theorems.ray:25 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.closing`) });
+test("tests/theorems.ray:25 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:25 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.closing`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:21 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.coincidence`) });
-test("tests/theorems.ray:21 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:21 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:26 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.coincidence`) });
+test("tests/theorems.ray:26 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:26 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.coincidence`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:22 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.bent`) });
-test("tests/theorems.ray:22 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:22 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:27 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.bent`) });
+test("tests/theorems.ray:27 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:27 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.bent`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:23 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.standing`) });
-test("tests/theorems.ray:23 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:23 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:28 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.standing`) });
+test("tests/theorems.ray:28 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:28 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.standing`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:24 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.mass`) });
-test("tests/theorems.ray:24 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:24 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:29 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.mass`) });
+test("tests/theorems.ray:29 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:29 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.mass`)");
 });
 
-want("closure", () => G.proved, { label: "tests/theorems.ray:25 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.newton`) });
-test("tests/theorems.ray:25 on closure", (t) => {
-  const got = outcome("closure", "tests/theorems.ray:25 on closure");
+want("closure", () => G.proved, { label: "tests/theorems.ray:30 on closure", holds: (it) => eq(it.theory, `G`), until: 8, requirement: (it) => it.standing(`gravity.newton`) });
+test("tests/theorems.ray:30 on closure", (t) => {
+  const got = outcome("closure", "tests/theorems.ray:30 on closure");
   if (got === SKIP) return t.skip("the refinement never held");
   if (got instanceof Error) throw got;
   assert.ok(got, "it.standing(`gravity.newton`)");

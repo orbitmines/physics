@@ -2475,6 +2475,18 @@ static void C_Part(Cls& c) {
 }
 static const bool R_Part = define_class("Part", "Node", &C_Part);
 
+static void C_TermRecord(Cls& c) {
+  c.field("symbol", nullptr);
+  c.field("sign", nullptr);
+  c.field("degree", nullptr);
+  c.field("facing", nullptr);
+  c.field("rays", nullptr);
+  c.field("space", nullptr);
+  c.field("rules", nullptr);
+  c.field("says", nullptr);
+}
+static const bool R_TermRecord = define_class("TermRecord", "Node", &C_TermRecord);
+
 
 
 void part_2() { }

@@ -2904,10 +2904,10 @@ func main() {
       }
       Get(it, "tick")
     }
-    if Truthy(Eq(Len(Get(it, "ids")), 65.0)) {
+    if Truthy(Eq(Len(Get(it, "ids")), 68.0)) {
       return pass_
     }
-    return "failed: " + "Eq(Len(Get(it, \"ids\")), 65.0)"
+    return "failed: " + "Eq(Len(Get(it, \"ids\")), 68.0)"
   })
 
   t("tests/theorems.ray:16 on closure", func() any {
@@ -2961,7 +2961,75 @@ func main() {
     return "failed: " + "Eq(Call(it, \"concluded\", []any{ \"gravity.shadow\" }), \"b_{c} = 5.196152423·\\\\bar{m}\")"
   })
 
-  t("tests/theorems.ray:20 on closure", func() any {
+  t("tests/theorems.ray:21 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.perihelion" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.perihelion\" })"
+  })
+
+  t("tests/theorems.ray:22 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.shapiro" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.shapiro\" })"
+  })
+
+  t("tests/theorems.ray:23 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.ppn" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.ppn\" })"
+  })
+
+  t("tests/theorems.ray:24 on closure", func() any {
+    var it any = Get(K("G"), "proved")
+    _ = it
+    guard := 0.0
+    for !Truthy(Eq(Get(it, "theory"), "G")) {
+      guard++
+      if guard > 8 || !Has(it, "tick") {
+        return skip_
+      }
+      Get(it, "tick")
+    }
+    if Truthy(Call(it, "standing", []any{ "gravity.coupling" })) {
+      return pass_
+    }
+    return "failed: " + "Call(it, \"standing\", []any{ \"gravity.coupling\" })"
+  })
+
+  t("tests/theorems.ray:25 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2978,7 +3046,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.closing\" })"
   })
 
-  t("tests/theorems.ray:21 on closure", func() any {
+  t("tests/theorems.ray:26 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -2995,7 +3063,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.coincidence\" })"
   })
 
-  t("tests/theorems.ray:22 on closure", func() any {
+  t("tests/theorems.ray:27 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -3012,7 +3080,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.bent\" })"
   })
 
-  t("tests/theorems.ray:23 on closure", func() any {
+  t("tests/theorems.ray:28 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -3029,7 +3097,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.standing\" })"
   })
 
-  t("tests/theorems.ray:24 on closure", func() any {
+  t("tests/theorems.ray:29 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0
@@ -3046,7 +3114,7 @@ func main() {
     return "failed: " + "Call(it, \"standing\", []any{ \"gravity.mass\" })"
   })
 
-  t("tests/theorems.ray:25 on closure", func() any {
+  t("tests/theorems.ray:30 on closure", func() any {
     var it any = Get(K("G"), "proved")
     _ = it
     guard := 0.0

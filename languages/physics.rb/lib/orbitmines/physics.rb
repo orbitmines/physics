@@ -6304,7 +6304,7 @@ class Prover < Node
       rho_ = Prover.rho
       Ops.m_push(out, Step.of(Fact.stands("\\bar{n}", Expr.num(0)), "the world", [], "how much of a way carries some body's ray, on the world's mean - a fact about what the world holds, not about its rules, so it is put in; in the settled vacuum, with no body in it, it is nought", ["\\bar{n} = 0 in the empty vacuum, an input where a world is asked about"]))
       eps = Expr.simplify(Expr.mul([Expr.num(2), Expr.field("\\sigma"), Expr.field("F"), Expr.sub(Expr.num(1), rho_), Expr.pown(rho_, 2)]))
-      Ops.m_push(out, Step.of(Fact.stands("\\varepsilon", eps), "the vacuum", [], "what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before", ["\\varepsilon = #{Expr.show(eps)}, a placeholder until derived"]))
+      Ops.m_push(out, Step.of(Fact.stands("\\varepsilon", eps), "the vacuum", [], "what the empty vacuum would grow on its own, per point per tick, had no mass been there: every meeting leaves the point behind each of its two ends where the way behind is dark, 1 - \\rho of the time (gravity.scale). Gross, not net - the fold took a point first - so it is what keeps the vacuum from collapsing", ["\\varepsilon = #{Expr.show(eps)}: \\sigma F\\rho^{2} meetings, two ends, dark behind at 1 - \\rho"]))
       matter = Expr.simplify(Expr.mul([Expr.field("\\sigma"), Expr.field("F"), Expr.pown(Expr.field("\\bar{n}"), 2), grown]))
       Ops.m_push(out, Step.of(Fact.stands("the world's matter grows", matter), named, [Fact.key_of("is", "what bodies' rays grow where they meet"), Fact.key_of("is", "\\bar{n}")], "two bodies' rays meet as any two rays do - at the rate, facing, each end carrying - and each such meeting grows what the rule read on bodies' rays says: per point per tick, that is how much the world grows", ["\\sigma F \\bar{n}^{2}: two bodies' rays facing on a way", "times #{Expr.show(grown)} grown a meeting", "= #{Expr.show(matter)}"]))
     end
@@ -7258,7 +7258,18 @@ class Prover < Node
     defl.derivation = [held, ruler]
     shadow = Inferences.held_shadow(s, held.fact, ruler.fact)
     shadow.derivation = [held, ruler]
-    return [g_, phi, tick, falls, held, ruler, defl, shadow]
+    twice = Prover.neat(Expr.mul([Expr.num(2), Expr.field("\\Phi")]))
+    less = Prover.neat(Expr.sub(Expr.num(1), _A))
+    ratio = Prover.neat(Expr.div(Expr.replace(less, "r_{s}", rs), Expr.replace(Expr.mul([Expr.num(2), pot]), "x.\\bar{R}", r)))
+    fieldeq = Step.of(Fact.stands("the field equation", twice), "the time part answers the potential", [held.fact.key, phi.fact.key], "EINSTEIN'S FIELD EQUATION, in the static field where it is a statement about one function: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu} comes to 1 - A = 2\\Phi with \\nabla^{2}\\Phi = 4\\pi G\\rho. The held clock beats at the falling body's beat, and that body's speed squared is twice the potential the pull integrates to - so 1 - A is 2\\Phi, the whole of it and not its first order. The same \\rho sources it, through the same flux law, at Einstein's coupling", ["1 - A = #{Expr.show(less)}, r_{s} = #{Expr.show(rs)}", "2\\Phi \\aside{far} = #{Expr.show(Prover.neat(Expr.mul([Expr.num(2), pot])))}", "\\frac{1 - A}{2\\Phi} = #{Expr.show(ratio)}", "so \\nabla^{2}\\paren{1 - A} = 2\\nabla^{2}\\Phi = 8\\pi G\\rho, Einstein's"])
+    fieldeq.derivation = [held, phi]
+    coupling = Step.of(Fact.stands("\\kappa", ratio), "what Einstein's coupling is multiplied by", [fieldeq.fact.key], "what Einstein's coupling has to be multiplied by to give this model's: 1 - A over 2\\Phi. The held metric gives one, at every distance - the metric is sourced by the same potential the pull is, once through the falling body's speed and once through the square of its beat", ["\\kappa = \\frac{1 - A}{2\\Phi} = #{Expr.show(ratio)}"])
+    coupling.derivation = [fieldeq]
+    tests = Inferences.held_tests(s, held.fact, ruler.fact)
+    Ops.list(tests).each do |t|
+      t.derivation = [held, ruler]
+    end
+    return Ops.m_concat([g_, phi, tick, falls, held, ruler, defl, shadow, fieldeq, coupling], tests)
   end
   def expansion_of(s, settles)
     grown = self.growth_filled(s)
@@ -7954,7 +7965,7 @@ class Inferences < Node
     }, e)
   end
   def self.RULES
-    return Ops.m_concat(Ops.m_concat([Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion], Ops.m_map(Inferences.IN_FULL, ->(of) {
+    return Ops.m_concat(Ops.m_concat([Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening, Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field, Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting, Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends, Inferences.curves_of_each, Inferences.crowding_of_arrivals, Inferences.making_rate, Inferences.hubble_rate, Inferences.expansion_scale, Inferences.coincidence, Inferences.crowding, Inferences.at_that_density, Inferences.in_motion], Ops.m_map(Inferences.IN_FULL, ->(of) {
       return Inferences.writing_out(of)
     })), [Inferences.can_it_push, Inferences.in_three])
   end
@@ -8046,29 +8057,11 @@ class Inferences < Node
       }))) : gN)
       pull = Expr.simplify(Expr.mul([Expr.field("\\bar{m}"), Expr.to_power(Inferences.rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1)))), carried]))
       pot = Ops.or_else(Expr.integrate(pull, "\\bar{r}")) { Expr.simplify(Expr.mul([pull, Inferences.rbar])) }
-      _Amet = s.fact("is", "A in r")
-      if Ops.eq(_Amet, nil)
-        return []
-      end
-      metric = Expr.simplify(Expr.swap(_Amet.to, Expr.field("\\delta n_{f}"), Expr.field("\\Phi")))
-      kappa = Expr.simplify(Expr.div(Expr.sub(Expr.num(1), metric), Expr.mul([Expr.num(2), Expr.field("\\Phi")])))
       mine = ->(of) {
         return Fact.key_of("is", of)
       }
       via = "general relativity's equations, off these rules"
-      return [Inferences.step("the flux through any shell", flux, via, [per.key, v.key], "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic", ["shell = #{Expr.show(shell)}", "what is at each = #{Expr.show(per.to)}", "how fast = #{Expr.show(v.to)}", "their product = #{Expr.show(flux)}, which carries no r"]), Inferences.step("\\Phi", pot, via, [mine.("the flux through any shell")], "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-\\paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has", ["the force falls as r^{-\\paren{D - 1}}", "\\Phi = \\int, one power weaker = #{Expr.show(pot)}"]), Inferences.step("\\nabla^{2}\\Phi", Expr.num(0), via, [mine.("the flux through any shell"), mine.("\\Phi")], "POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose sources are all in one place satisfies `\\nabla^{2}\\Phi = 0` everywhere else - which is what conserving the flux MEANS, read as a differential rather than as an integral. General relativity's weak field limit is `\\nabla^{2}\\Phi = 4\\pi G\\rho`, the same statement with the source put back", ["the flux through any shell is the same at every radius", "so the divergence away from the source is nothing"]), Inferences.step("the equation of motion", pull, via, [mine.("\\Phi")], "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other", ["a = -\\nabla\\Phi = #{Expr.show(pull)}", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives"]), Inferences.step("\\kappa", kappa, via, [mine.("A, off the record a ray crosses"), mine.("\\Phi")], "WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model's. `1 - A = 2\\Phi` is general relativity's; here it is `2\\Phi` times this. FAR FROM ANYTHING IT IS A HALF - the screened channel has died, the exchange one has gone to its constant, and what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: it carries both transports, so the correction is itself a function of distance and the model departs from Einstein by more than a constant where the field is strong", ["A = #{Expr.show(metric)}, so 1 - A = #{Expr.show(Expr.simplify(Expr.sub(Expr.num(1), metric)))}", "Einstein: 1 - A = 2\\Phi", "so this model is Einstein's times #{Expr.show(kappa)}"]), Inferences.step("the field equation", Expr.simplify(Expr.sub(Expr.num(1), metric)), via, [mine.("\\kappa")], "EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about one function. `G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}` comes to `\\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho`: the curvature of the time part answers the mass density, with a coupling of `8\\pi G`. THESE RULES GIVE THE SAME EQUATION WITH HALF THAT COUPLING - `\\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho` - because the record a ray crosses enters the metric once where Einstein's potential enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same `\\rho` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out as the geodesic gives it. It is one number in front, and it is a factor of two", ["A = 1 - \\Phi, so \\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho", "Einstein: A = 1 - 2\\Phi, so \\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho", "same source, same motion, half the coupling"]), Inferences.step("A, off the record a ray crosses", metric, via, [dn.key, mine.("\\Phi")], "THE METRIC. `metricOf` reads it off the record a ray crosses, and that record IS the potential - the same accumulation, derived twice - so `\\delta n_{f}` and `\\Phi` are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'S, INCLUDING THE TWO: `metricOf` gives `A` as the SQUARE of the tick rate, because a metric coefficient multiplies `dt^{2}` while MOVEMENT counts `d\\tau/dt`, and the square of `1 - \\Phi` is `1 - 2\\Phi` to first order. THE FACTOR OF TWO THIS MODEL WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. What is left over is the second order term, which is a real difference from Schwarzschild's exact `1 - r_{s}/r` and shows up only where the field is strong", ["the record a body adds is \\delta n_{f} = #{Expr.show(dn.to)}", "and that is \\Phi, so A = #{Expr.show(metric)}", "general relativity: A = 1 - 2\\Phi, which is this to first order"])]
-    })
-  end
-  def self.schwarzschild
-    return Inference.new(name: "the metric as general relativity writes it", because: "the derived metric has Schwarzschild's shape exactly, so it can be stated in Schwarzschild's own names - and what is left over is where the two theories differ", fire: ->(s) {
-      _A = s.fact("is", "A in r")
-      dn = s.fact("is", "\\delta n_{f}")
-      puts = s.fact("is", "what a body puts into the medium")
-      if (((Ops.eq(_A, nil) || Ops.eq(dn, nil)) || Ops.eq(puts, nil)) || s.has("is", "r_{s}"))
-        return []
-      end
-      via = "the metric as general relativity writes it"
-      return [Inferences.step("r_{s}", Expr.simplify(Expr.mul([Expr.num(2), puts.to])), via, [puts.key, dn.key], "the record a body adds falls off as `r^{-\\paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\\bar{m}` - and the force law fixes `GM = \\bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square", ["\\delta n_{f} = #{Expr.show(dn.to)}", "A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots", "general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM"]), Inferences.step("A in r as GR writes it", Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.field("r_{s}"), Expr.to_power(Expr.sym("r"), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))), via, [_A.key], "the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `A = 1 - r_{s}/r` and `B = 1/\\paren{1 - r_{s}/r}` is what this model derives, so light bends by twice the Newtonian amount, `\\gamma` is one, and the perihelion advances by `3\\pi r_{s}/a`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about", ["A = 1 - r_{s}·r^{-\\paren{D - 2}}", "B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}", "\\gamma = 1, and A·B = 1 as Schwarzschild has it"]), Inferences.step("the deflection this model gives", Expr.simplify(Expr.mul([Expr.num(2), Expr.field("r_{s}"), Expr.to_power(Expr.sym("b"), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))])), via, [_A.key], "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is", ["the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}", "the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r", "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two"])]
+      return [Inferences.step("the flux through any shell", flux, via, [per.key, v.key], "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic", ["shell = #{Expr.show(shell)}", "what is at each = #{Expr.show(per.to)}", "how fast = #{Expr.show(v.to)}", "their product = #{Expr.show(flux)}, which carries no r"]), Inferences.step("\\Phi", pot, via, [mine.("the flux through any shell")], "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-\\paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has", ["the force falls as r^{-\\paren{D - 1}}", "\\Phi = \\int, one power weaker = #{Expr.show(pot)}"]), Inferences.step("\\nabla^{2}\\Phi", Expr.num(0), via, [mine.("the flux through any shell"), mine.("\\Phi")], "POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose sources are all in one place satisfies `\\nabla^{2}\\Phi = 0` everywhere else - which is what conserving the flux MEANS, read as a differential rather than as an integral. General relativity's weak field limit is `\\nabla^{2}\\Phi = 4\\pi G\\rho`, the same statement with the source put back", ["the flux through any shell is the same at every radius", "so the divergence away from the source is nothing"]), Inferences.step("the equation of motion", pull, via, [mine.("\\Phi")], "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other", ["a = -\\nabla\\Phi = #{Expr.show(pull)}", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives"])]
     })
   end
   def self.held_shadow(s, _A, _B)
@@ -8091,6 +8084,51 @@ class Inferences < Node
       index = Ops.div(1, Expr.numeric(iover, ienv))
     end
     return Inferences.step("b_{c}", Expr.mul([Expr.num(bc), Expr.field("\\bar{m}")]), "where a ray stops coming back", [_A.key, _B.key], "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", ["a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = #{Expr.show(over)}", "largest where its slope is nought: \\delta n_{f} = #{Fmt.fixed(sphere, 6)}, the photon sphere at r = #{Fmt.fixed(Ops.div(1, sphere), 4)} \\bar{m}", "b_{c} = #{Fmt.fixed(bc, 4)} \\bar{m}; general relativity's is 3\\sqrt{3} = #{Fmt.fixed(gr, 4)}", (Fmt.finite(index) ? "the medium's index read as an isotropic metric instead gives #{Fmt.fixed(index, 4)} \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read" : "the medium's index gives no metric of its own here")])
+  end
+  def self.in_m(e, u)
+    return Expr.simplify(Expr.replace(Expr.replace(Expr.replace(e, "r_{s}", Expr.num(2)), "D", Expr.num(3)), "r", Expr.pown(Expr.field(u), (-1))))
+  end
+  def self.at_nought(e, u, times)
+    env = Node.new
+    Ops.set_at(env, u, 0)
+    Ops.setattr(env, "L", 1)
+    d = e
+    times.times do |_|
+      d = Expr.simplify(Expr.d(d, u))
+    end
+    return Expr.numeric(d, env)
+  end
+  def self.held_tests(s, _A, _B)
+    u = "u"
+    _Au = Inferences.in_m(_A.to, u)
+    _Bu = Inferences.in_m(_B.to, u)
+    newton = Ops.sub(0, Ops.div(Inferences.at_nought(_Au, u, 1), 2))
+    gamma = Ops.div(Inferences.at_nought(_Bu, u, 1), 2)
+    beta = Ops.add(gamma, Ops.div(Inferences.at_nought(_Au, u, 2), 4))
+    iA = s.fact("is", "A in r")
+    iB = s.fact("is", "B in r")
+    dn = "\\delta n_{f}"
+    ibeta = (Ops.eq(iA, nil) ? Float::NAN : Ops.div(Inferences.at_nought(iA.to, dn, 2), 4))
+    igamma = (Ops.eq(iB, nil) ? Float::NAN : Ops.div(Inferences.at_nought(iB.to, dn, 1), 2))
+    via = "the held metric, read for the classical tests"
+    ppn = Inferences.step("\\gamma \\aside{PPN}", Expr.num(gamma), via, [_A.key, _B.key], "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", ["A in u = \\bar{m}/r: #{Expr.show(_Au)}, B: #{Expr.show(_Bu)}", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = #{Fmt.fixed(newton, 6)}", "\\gamma = B'/2 = #{Fmt.fixed(gamma, 6)}", "\\beta = \\gamma + A''/4 = #{Fmt.fixed(beta, 6)}", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", (Fmt.finite(ibeta) ? "the medium's index read as an isotropic metric: \\gamma = #{Fmt.fixed(igamma, 4)}, \\beta = #{Fmt.fixed(ibeta, 4)} - a held clock does not read it" : "the medium's index gives no metric of its own here")])
+    _L = Expr.field("L")
+    q = Expr.mul([_Au, Expr.add([Expr.pown(_L, (-2)), Expr.pown(Expr.field(u), 2)])])
+    orbit = Expr.simplify(Expr.add([Expr.mul([Expr.num((-0.5)), Expr.d(q, u)]), Expr.field(u)]))
+    mu = Inferences.at_nought(orbit, u, 0)
+    lin = Inferences.at_nought(orbit, u, 1)
+    eps = Ops.div(Inferences.at_nought(orbit, u, 2), 2)
+    k = Ops.mul(Ops.mul(2, eps), mu)
+    k = Ops.div(Ops.m_round((Ops.mul(k, Ops.power(10, 9)))), Ops.power(10, 9))
+    m_sun = 1476.625
+    a_m = 57909050000
+    e_m = 0.205630
+    lap = Ops.div(Ops.mul(Ops.mul(k, Math::PI), m_sun), (Ops.mul(a_m, (Ops.sub(1, Ops.mul(e_m, e_m))))))
+    century = Ops.mul(Ops.div(Ops.mul(lap, 36525), 87.9691), 206264.806)
+    ipp = (Fmt.finite(ibeta) ? Ops.div((Ops.sub(Ops.add(2, Ops.mul(2, igamma)), ibeta)), 3) : Float::NAN)
+    peri = Inferences.step("\\Delta\\varphi", Expr.mul([Expr.num(k), Expr.field("\\pi"), Expr.field("\\bar{m}"), Expr.pown(Expr.field("a\\paren{1 - e^{2}}"), (-1))]), "a bound orbit in the held metric", [_A.key, _B.key], "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", ["u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = #{Expr.show(orbit)}", "\\mu = #{Fmt.fixed(mu, 6)}/L^{2}, linear #{Fmt.fixed(lin, 6)}, \\epsilon = #{Fmt.fixed(eps, 6)}\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = #{Fmt.fixed(k, 6)}\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): #{Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04", (Fmt.finite(ipp) ? "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = #{Fmt.fixed(ipp, 4)} of it" : "the medium's index gives no metric of its own here")])
+    delay = Inferences.step("\\Delta t \\aside{Shapiro}", Expr.mul([Expr.num(Ops.add(1, gamma)), Expr.field("\\bar{m}"), Expr.log(Expr.field("\\frac{4r_{1}r_{2}}{b^{2}}"))]), "light passing a body, timed", [_B.key, _A.key], "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", ["\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = #{Fmt.fixed(gamma, 6)}", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: #{Fmt.fixed(Ops.mul(Ops.mul(Ops.mul(2, (Ops.add(1, gamma))), 4.925491), Ops.m_ln((Ops.div(Ops.mul(Ops.mul(4, 149597870700.0), 1433530000000.0), (Ops.mul(695700000.0, 695700000.0)))))), 1)} \\mu s"])
+    return [ppn, peri, delay]
   end
   def self.metric_of
     return Inference.new(name: "an index is a metric", because: "MOVEMENT costs a ray one tick per point the place stands for, so a place standing for N points takes N ticks to cross AND spans N points - the same count, once as a time and once as a length, which is what fixes each part separately rather than their ratio. AND EACH ENTERS THE METRIC SQUARED, because a metric coefficient multiplies `dt^{2}` and `dr^{2}` and what MOVEMENT counts is `d\\tau/dt` and `d\\ell/dr` - the roots", fire: ->(s) {
@@ -21510,6 +21548,15 @@ class GTheory < Theory
   })
   THEOREM_gravity_shadow = Theorem.new(id: "gravity.shadow", body: -> {
     return Asked.new(asks: "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?", about: "b_{c}")
+  })
+  THEOREM_gravity_perihelion = Theorem.new(id: "gravity.perihelion", body: -> {
+    return Asked.new(asks: "a bound orbit in the held metric is not quite an ellipse. How far does it turn each lap - and is that Mercury's?", about: "\\Delta\\varphi")
+  })
+  THEOREM_gravity_shapiro = Theorem.new(id: "gravity.shapiro", body: -> {
+    return Asked.new(asks: "light passing a body has to cross the slow clock and the long ruler both. How late does it arrive?", about: "\\Delta t \\aside{Shapiro}")
+  })
+  THEOREM_gravity_ppn = Theorem.new(id: "gravity.ppn", body: -> {
+    return Asked.new(asks: "the post-Newtonian parameters say how much space one unit of the potential curves, and how much the potential adds to itself. What are they off the held metric?", about: "\\gamma \\aside{PPN}")
   })
   RULE_S_2 = Rule.new(id: "/S.2", name: "Attenuation", rate: nil, over: "World", single: true, where: nil, source: "\"rule /S.2 \\\"Attenuation\\\" () => {\\n\\n}\"", body: ->(_ = nil) {
     nil

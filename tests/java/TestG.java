@@ -1707,7 +1707,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(eq(len(get(it, "ids")), 65.0)) ? PASS : "failed: " + "eq(len(get(it, \"ids\")), 65.0)";
+      return truthy(eq(len(get(it, "ids")), 68.0)) ? PASS : "failed: " + "eq(len(get(it, \"ids\")), 68.0)";
     });
 
     t("tests/theorems.ray:16 on closure", () -> {
@@ -1740,16 +1740,6 @@ public final class TestG {
       return truthy(eq(call(it, "concluded", new Object[] { "gravity.shadow" }), "b_{c} = 5.196152423·\\bar{m}")) ? PASS : "failed: " + "eq(call(it, \"concluded\", new Object[] { \"gravity.shadow\" }), \"b_{c} = 5.196152423·\\\\bar{m}\")";
     });
 
-    t("tests/theorems.ray:20 on closure", () -> {
-      Object it = get(K("G"), "proved");
-      int guard = 0;
-      while (!truthy(eq(get(it, "theory"), "G"))) {
-        if (++guard > 8 || !has(it, "tick")) return SKIP;
-        get(it, "tick");
-      }
-      return truthy(call(it, "standing", new Object[] { "gravity.closing" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.closing\" })";
-    });
-
     t("tests/theorems.ray:21 on closure", () -> {
       Object it = get(K("G"), "proved");
       int guard = 0;
@@ -1757,7 +1747,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(call(it, "standing", new Object[] { "gravity.coincidence" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.coincidence\" })";
+      return truthy(call(it, "standing", new Object[] { "gravity.perihelion" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.perihelion\" })";
     });
 
     t("tests/theorems.ray:22 on closure", () -> {
@@ -1767,7 +1757,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(call(it, "standing", new Object[] { "gravity.bent" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.bent\" })";
+      return truthy(call(it, "standing", new Object[] { "gravity.shapiro" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.shapiro\" })";
     });
 
     t("tests/theorems.ray:23 on closure", () -> {
@@ -1777,7 +1767,7 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(call(it, "standing", new Object[] { "gravity.standing" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.standing\" })";
+      return truthy(call(it, "standing", new Object[] { "gravity.ppn" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.ppn\" })";
     });
 
     t("tests/theorems.ray:24 on closure", () -> {
@@ -1787,10 +1777,60 @@ public final class TestG {
         if (++guard > 8 || !has(it, "tick")) return SKIP;
         get(it, "tick");
       }
-      return truthy(call(it, "standing", new Object[] { "gravity.mass" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.mass\" })";
+      return truthy(call(it, "standing", new Object[] { "gravity.coupling" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.coupling\" })";
     });
 
     t("tests/theorems.ray:25 on closure", () -> {
+      Object it = get(K("G"), "proved");
+      int guard = 0;
+      while (!truthy(eq(get(it, "theory"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(call(it, "standing", new Object[] { "gravity.closing" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.closing\" })";
+    });
+
+    t("tests/theorems.ray:26 on closure", () -> {
+      Object it = get(K("G"), "proved");
+      int guard = 0;
+      while (!truthy(eq(get(it, "theory"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(call(it, "standing", new Object[] { "gravity.coincidence" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.coincidence\" })";
+    });
+
+    t("tests/theorems.ray:27 on closure", () -> {
+      Object it = get(K("G"), "proved");
+      int guard = 0;
+      while (!truthy(eq(get(it, "theory"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(call(it, "standing", new Object[] { "gravity.bent" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.bent\" })";
+    });
+
+    t("tests/theorems.ray:28 on closure", () -> {
+      Object it = get(K("G"), "proved");
+      int guard = 0;
+      while (!truthy(eq(get(it, "theory"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(call(it, "standing", new Object[] { "gravity.standing" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.standing\" })";
+    });
+
+    t("tests/theorems.ray:29 on closure", () -> {
+      Object it = get(K("G"), "proved");
+      int guard = 0;
+      while (!truthy(eq(get(it, "theory"), "G"))) {
+        if (++guard > 8 || !has(it, "tick")) return SKIP;
+        get(it, "tick");
+      }
+      return truthy(call(it, "standing", new Object[] { "gravity.mass" })) ? PASS : "failed: " + "call(it, \"standing\", new Object[] { \"gravity.mass\" })";
+    });
+
+    t("tests/theorems.ray:30 on closure", () -> {
       Object it = get(K("G"), "proved");
       int guard = 0;
       while (!truthy(eq(get(it, "theory"), "G"))) {

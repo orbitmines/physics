@@ -1816,7 +1816,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(Ops.eq(it.ids.length, 65), "Ops.eq(it.ids.length, 65)")
+    assert(Ops.eq(it.ids.length, 68), "Ops.eq(it.ids.length, 68)")
   end
 
   def test_tests_theorems_ray_16_on_closure
@@ -1852,17 +1852,6 @@ class TestG < Minitest::Test
     assert(Ops.eq(it.concluded("gravity.shadow"), "b_{c} = 5.196152423·\\bar{m}"), "Ops.eq(it.concluded(\"gravity.shadow\"), \"b_{c} = 5.196152423·\\\\bar{m}\")")
   end
 
-  def test_tests_theorems_ray_20_on_closure
-    it = G.proved
-    guard = 0
-    until Ops.eq(it.theory, "G")
-      guard += 1
-      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
-      it.tick
-    end
-    assert(it.standing("gravity.closing"), "it.standing(\"gravity.closing\")")
-  end
-
   def test_tests_theorems_ray_21_on_closure
     it = G.proved
     guard = 0
@@ -1871,7 +1860,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(it.standing("gravity.coincidence"), "it.standing(\"gravity.coincidence\")")
+    assert(it.standing("gravity.perihelion"), "it.standing(\"gravity.perihelion\")")
   end
 
   def test_tests_theorems_ray_22_on_closure
@@ -1882,7 +1871,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(it.standing("gravity.bent"), "it.standing(\"gravity.bent\")")
+    assert(it.standing("gravity.shapiro"), "it.standing(\"gravity.shapiro\")")
   end
 
   def test_tests_theorems_ray_23_on_closure
@@ -1893,7 +1882,7 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(it.standing("gravity.standing"), "it.standing(\"gravity.standing\")")
+    assert(it.standing("gravity.ppn"), "it.standing(\"gravity.ppn\")")
   end
 
   def test_tests_theorems_ray_24_on_closure
@@ -1904,10 +1893,65 @@ class TestG < Minitest::Test
       skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
       it.tick
     end
-    assert(it.standing("gravity.mass"), "it.standing(\"gravity.mass\")")
+    assert(it.standing("gravity.coupling"), "it.standing(\"gravity.coupling\")")
   end
 
   def test_tests_theorems_ray_25_on_closure
+    it = G.proved
+    guard = 0
+    until Ops.eq(it.theory, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(it.standing("gravity.closing"), "it.standing(\"gravity.closing\")")
+  end
+
+  def test_tests_theorems_ray_26_on_closure
+    it = G.proved
+    guard = 0
+    until Ops.eq(it.theory, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(it.standing("gravity.coincidence"), "it.standing(\"gravity.coincidence\")")
+  end
+
+  def test_tests_theorems_ray_27_on_closure
+    it = G.proved
+    guard = 0
+    until Ops.eq(it.theory, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(it.standing("gravity.bent"), "it.standing(\"gravity.bent\")")
+  end
+
+  def test_tests_theorems_ray_28_on_closure
+    it = G.proved
+    guard = 0
+    until Ops.eq(it.theory, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(it.standing("gravity.standing"), "it.standing(\"gravity.standing\")")
+  end
+
+  def test_tests_theorems_ray_29_on_closure
+    it = G.proved
+    guard = 0
+    until Ops.eq(it.theory, "G")
+      guard += 1
+      skip("the refinement never held") if guard > 8 || !it.respond_to?(:tick)
+      it.tick
+    end
+    assert(it.standing("gravity.mass"), "it.standing(\"gravity.mass\")")
+  end
+
+  def test_tests_theorems_ray_30_on_closure
     it = G.proved
     guard = 0
     until Ops.eq(it.theory, "G")

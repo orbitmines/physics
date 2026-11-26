@@ -12,11 +12,16 @@ Proof{theory == "G"} += {
   dynamically assert concluded("force.range") == "\\lambda = \\frac{{2}}{{\\rho}}"
   dynamically assert standing("gravity.falloff")
   dynamically assert standing("gravity.horizon")
-  dynamically assert ids.length == 65
+  dynamically assert ids.length == 68
   dynamically assert standing("gravity.made")
   /* the held metric is Schwarzschild's, so its shadow is general relativity's 3 sqrt 3 */
   dynamically assert standing("gravity.shadow")
   dynamically assert concluded("gravity.shadow") == "b_{{c}} = 5.196152423·\\bar{{m}}"
+  /* and off the same metric the classical tests: Mercury's 6 pi, Shapiro's (1 + gamma), Einstein's coupling */
+  dynamically assert standing("gravity.perihelion")
+  dynamically assert standing("gravity.shapiro")
+  dynamically assert standing("gravity.ppn")
+  dynamically assert standing("gravity.coupling")
   dynamically assert standing("gravity.closing")
   dynamically assert standing("gravity.coincidence")
   dynamically assert standing("gravity.bent")

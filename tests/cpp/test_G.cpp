@@ -1716,7 +1716,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(eq(len(get(it, S<"ids">())), 65.0)) ? std::string(PASS) : std::string("failed: ") + "eq(len(get(it, S<\"ids\">())), 65.0)";
+    return truthy(eq(len(get(it, S<"ids">())), 68.0)) ? std::string(PASS) : std::string("failed: ") + "eq(len(get(it, S<\"ids\">())), 68.0)";
   });
 
   t("tests/theorems.ray:16 on closure", [&]() -> std::string {
@@ -1749,16 +1749,6 @@ int main(int argc, char** argv) {
     return truthy(eq(call(it, S<"concluded">(), { "gravity.shadow" }), "b_{c} = 5.196152423·\\bar{m}")) ? std::string(PASS) : std::string("failed: ") + "eq(call(it, S<\"concluded\">(), { \"gravity.shadow\" }), \"b_{c} = 5.196152423·\\\\bar{m}\")";
   });
 
-  t("tests/theorems.ray:20 on closure", [&]() -> std::string {
-    Value it = get(K(S<"G">()), S<"proved">());
-    int guard = 0;
-    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
-      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
-      get(it, S<"tick">());
-    }
-    return truthy(call(it, S<"standing">(), { "gravity.closing" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.closing\" })";
-  });
-
   t("tests/theorems.ray:21 on closure", [&]() -> std::string {
     Value it = get(K(S<"G">()), S<"proved">());
     int guard = 0;
@@ -1766,7 +1756,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(call(it, S<"standing">(), { "gravity.coincidence" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.coincidence\" })";
+    return truthy(call(it, S<"standing">(), { "gravity.perihelion" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.perihelion\" })";
   });
 
   t("tests/theorems.ray:22 on closure", [&]() -> std::string {
@@ -1776,7 +1766,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(call(it, S<"standing">(), { "gravity.bent" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.bent\" })";
+    return truthy(call(it, S<"standing">(), { "gravity.shapiro" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.shapiro\" })";
   });
 
   t("tests/theorems.ray:23 on closure", [&]() -> std::string {
@@ -1786,7 +1776,7 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(call(it, S<"standing">(), { "gravity.standing" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.standing\" })";
+    return truthy(call(it, S<"standing">(), { "gravity.ppn" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.ppn\" })";
   });
 
   t("tests/theorems.ray:24 on closure", [&]() -> std::string {
@@ -1796,10 +1786,60 @@ int main(int argc, char** argv) {
       if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
       get(it, S<"tick">());
     }
-    return truthy(call(it, S<"standing">(), { "gravity.mass" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.mass\" })";
+    return truthy(call(it, S<"standing">(), { "gravity.coupling" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.coupling\" })";
   });
 
   t("tests/theorems.ray:25 on closure", [&]() -> std::string {
+    Value it = get(K(S<"G">()), S<"proved">());
+    int guard = 0;
+    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(call(it, S<"standing">(), { "gravity.closing" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.closing\" })";
+  });
+
+  t("tests/theorems.ray:26 on closure", [&]() -> std::string {
+    Value it = get(K(S<"G">()), S<"proved">());
+    int guard = 0;
+    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(call(it, S<"standing">(), { "gravity.coincidence" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.coincidence\" })";
+  });
+
+  t("tests/theorems.ray:27 on closure", [&]() -> std::string {
+    Value it = get(K(S<"G">()), S<"proved">());
+    int guard = 0;
+    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(call(it, S<"standing">(), { "gravity.bent" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.bent\" })";
+  });
+
+  t("tests/theorems.ray:28 on closure", [&]() -> std::string {
+    Value it = get(K(S<"G">()), S<"proved">());
+    int guard = 0;
+    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(call(it, S<"standing">(), { "gravity.standing" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.standing\" })";
+  });
+
+  t("tests/theorems.ray:29 on closure", [&]() -> std::string {
+    Value it = get(K(S<"G">()), S<"proved">());
+    int guard = 0;
+    while (!truthy(eq(get(it, S<"theory">()), "G"))) {
+      if (++guard > 8 || !has(it, S<"tick">())) return SKIP;
+      get(it, S<"tick">());
+    }
+    return truthy(call(it, S<"standing">(), { "gravity.mass" })) ? std::string(PASS) : std::string("failed: ") + "call(it, S<\"standing\">(), { \"gravity.mass\" })";
+  });
+
+  t("tests/theorems.ray:30 on closure", [&]() -> std::string {
     Value it = get(K(S<"G">()), S<"proved">());
     int guard = 0;
     while (!truthy(eq(get(it, S<"theory">()), "G"))) {

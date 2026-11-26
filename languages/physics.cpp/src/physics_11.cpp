@@ -4070,6 +4070,18 @@ static void C_G(Cls& c) {
     return make(S<"Asked">(), { kw(S<"asks">(), "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?"), kw(S<"about">(), "b_{c}") });
     return null;
   })) }); });
+  c.staticField("theorem gravity.perihelion", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.perihelion"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "a bound orbit in the held metric is not quite an ellipse. How far does it turn each lap - and is that Mercury's?"), kw(S<"about">(), "\\Delta\\varphi") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.shapiro", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.shapiro"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "light passing a body has to cross the slow clock and the long ruler both. How late does it arrive?"), kw(S<"about">(), "\\Delta t \\aside{Shapiro}") });
+    return null;
+  })) }); });
+  c.staticField("theorem gravity.ppn", [](const Value& self) -> Value { return make(S<"Theorem">(), { kw(S<"id">(), "gravity.ppn"), kw(S<"body">(), fn([=](const Args& a1) -> Value {
+    return make(S<"Asked">(), { kw(S<"asks">(), "the post-Newtonian parameters say how much space one unit of the potential curves, and how much the potential adds to itself. What are they off the held metric?"), kw(S<"about">(), "\\gamma \\aside{PPN}") });
+    return null;
+  })) }); });
   c.staticField("rule S.2", [](const Value& self) -> Value { return make(S<"Rule">(), { kw(S<"id">(), "/S.2"), kw(S<"name">(), "Attenuation"), kw(S<"rate">(), null), kw(S<"over">(), "World"), kw(S<"single">(), true), kw(S<"where">(), null), kw(S<"source">(), "\"rule /S.2 \\\"Attenuation\\\" () => {\\n\\n}\""), kw(S<"body">(), fn([=](const Args& a1) -> Value {
 
     return null;

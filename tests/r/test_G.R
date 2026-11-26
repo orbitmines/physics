@@ -1852,7 +1852,7 @@ t_case("tests/theorems.ray:15 on closure", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(eq(len(it$ids), 65))) "pass" else paste0("failed: ", "eq(len(it$ids), 65)")
+  if (truthy(eq(len(it$ids), 68))) "pass" else paste0("failed: ", "eq(len(it$ids), 68)")
 })
 
 t_case("tests/theorems.ray:16 on closure", function() {
@@ -1888,17 +1888,6 @@ t_case("tests/theorems.ray:19 on closure", function() {
   if (truthy(eq(it$concluded("gravity.shadow"), "b_{c} = 5.196152423·\\bar{m}"))) "pass" else paste0("failed: ", "eq(it$concluded(\"gravity.shadow\"), \"b_{c} = 5.196152423·\\\\bar{m}\")")
 })
 
-t_case("tests/theorems.ray:20 on closure", function() {
-  it <- G$proved
-  guard <- 0
-  while (!truthy(eq(it$theory, "G"))) {
-    guard <- guard + 1
-    if (guard > 8 || !has(it, "tick")) return("skip")
-    it$tick
-  }
-  if (truthy(it$standing("gravity.closing"))) "pass" else paste0("failed: ", "it$standing(\"gravity.closing\")")
-})
-
 t_case("tests/theorems.ray:21 on closure", function() {
   it <- G$proved
   guard <- 0
@@ -1907,7 +1896,7 @@ t_case("tests/theorems.ray:21 on closure", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(it$standing("gravity.coincidence"))) "pass" else paste0("failed: ", "it$standing(\"gravity.coincidence\")")
+  if (truthy(it$standing("gravity.perihelion"))) "pass" else paste0("failed: ", "it$standing(\"gravity.perihelion\")")
 })
 
 t_case("tests/theorems.ray:22 on closure", function() {
@@ -1918,7 +1907,7 @@ t_case("tests/theorems.ray:22 on closure", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(it$standing("gravity.bent"))) "pass" else paste0("failed: ", "it$standing(\"gravity.bent\")")
+  if (truthy(it$standing("gravity.shapiro"))) "pass" else paste0("failed: ", "it$standing(\"gravity.shapiro\")")
 })
 
 t_case("tests/theorems.ray:23 on closure", function() {
@@ -1929,7 +1918,7 @@ t_case("tests/theorems.ray:23 on closure", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(it$standing("gravity.standing"))) "pass" else paste0("failed: ", "it$standing(\"gravity.standing\")")
+  if (truthy(it$standing("gravity.ppn"))) "pass" else paste0("failed: ", "it$standing(\"gravity.ppn\")")
 })
 
 t_case("tests/theorems.ray:24 on closure", function() {
@@ -1940,10 +1929,65 @@ t_case("tests/theorems.ray:24 on closure", function() {
     if (guard > 8 || !has(it, "tick")) return("skip")
     it$tick
   }
-  if (truthy(it$standing("gravity.mass"))) "pass" else paste0("failed: ", "it$standing(\"gravity.mass\")")
+  if (truthy(it$standing("gravity.coupling"))) "pass" else paste0("failed: ", "it$standing(\"gravity.coupling\")")
 })
 
 t_case("tests/theorems.ray:25 on closure", function() {
+  it <- G$proved
+  guard <- 0
+  while (!truthy(eq(it$theory, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(it$standing("gravity.closing"))) "pass" else paste0("failed: ", "it$standing(\"gravity.closing\")")
+})
+
+t_case("tests/theorems.ray:26 on closure", function() {
+  it <- G$proved
+  guard <- 0
+  while (!truthy(eq(it$theory, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(it$standing("gravity.coincidence"))) "pass" else paste0("failed: ", "it$standing(\"gravity.coincidence\")")
+})
+
+t_case("tests/theorems.ray:27 on closure", function() {
+  it <- G$proved
+  guard <- 0
+  while (!truthy(eq(it$theory, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(it$standing("gravity.bent"))) "pass" else paste0("failed: ", "it$standing(\"gravity.bent\")")
+})
+
+t_case("tests/theorems.ray:28 on closure", function() {
+  it <- G$proved
+  guard <- 0
+  while (!truthy(eq(it$theory, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(it$standing("gravity.standing"))) "pass" else paste0("failed: ", "it$standing(\"gravity.standing\")")
+})
+
+t_case("tests/theorems.ray:29 on closure", function() {
+  it <- G$proved
+  guard <- 0
+  while (!truthy(eq(it$theory, "G"))) {
+    guard <- guard + 1
+    if (guard > 8 || !has(it, "tick")) return("skip")
+    it$tick
+  }
+  if (truthy(it$standing("gravity.mass"))) "pass" else paste0("failed: ", "it$standing(\"gravity.mass\")")
+})
+
+t_case("tests/theorems.ray:30 on closure", function() {
   it <- G$proved
   guard <- 0
   while (!truthy(eq(it$theory, "G"))) {

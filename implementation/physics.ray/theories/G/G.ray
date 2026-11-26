@@ -686,6 +686,9 @@ G: Theory = class {
   theorem "gravity.made" () => Asked(asks: "the closing says how much more is felt at a place than arrives. But what is felt is a record's slope. Over a whole galaxy, then - where is space made, and what is felt?", about: "g \\aside{{field}}", also: "-\\nabla^{{2}}\\psi")
   theorem "gravity.metric" () => Asked(asks: "a body moves or it emits, and a held clock is passed by what falls. What metric is the medium, then?", about: "B \\aside{{held}}", also: "A \\aside{{held}}")
   theorem "gravity.shadow" () => Asked(asks: "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?", about: "b_{{c}}")
+  theorem "gravity.perihelion" () => Asked(asks: "a bound orbit in the held metric is not quite an ellipse. How far does it turn each lap - and is that Mercury's?", about: "\\Delta\\varphi")
+  theorem "gravity.shapiro" () => Asked(asks: "light passing a body has to cross the slow clock and the long ruler both. How late does it arrive?", about: "\\Delta t \\aside{{Shapiro}}")
+  theorem "gravity.ppn" () => Asked(asks: "the post-Newtonian parameters say how much space one unit of the potential curves, and how much the potential adds to itself. What are they off the held metric?", about: "\\gamma \\aside{{PPN}}")
 
   rule /S.2 "Attenuation" () => {
     // TODO Define possible configurations for the theory to absorb, or to let through the rays as if the point is just a spherical area.

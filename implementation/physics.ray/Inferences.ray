@@ -58,7 +58,7 @@ Inferences := class {
 
   static RULES (): Inference[] => [
     Inferences.room_balance, Inferences.ehrhart, Inferences.counting, Inferences.reaching, Inferences.mass_of, Inferences.saturating, Inferences.spreading, Inferences.screening,
-    Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity, Inferences.schwarzschild,
+    Inferences.refracting, Inferences.accumulating, Inferences.substituting, Inferences.metric_of, Inferences.relativity,
     Inferences.balancing, Inferences.unbiased, Inferences.free_path, Inferences.summing, Inferences.horizon, Inferences.bending, Inferences.crossing, Inferences.near_field,
     Inferences.shadowing, Inferences.receiving, Inferences.moved, Inferences.receding, Inferences.shortfall, Inferences.keeping, Inferences.transporting,
     Inferences.assembling, Inferences.channelling, Inferences.closing, Inferences.arrangement, Inferences.scale_crossed, Inferences.orbiting, Inferences.curve_ends,
@@ -157,10 +157,6 @@ Inferences := class {
       carried := gN.kind == "mul" ? Expr.simplify(Expr.mul(gN.of.filter(x => !(x.kind == "field" & x.label.contains("\\bar{{m}}'"))))) : gN
       pull := Expr.simplify(Expr.mul([Expr.field("\\bar{{m}}"), Expr.to_power(Inferences.rbar, Expr.neg(Expr.sub(Inferences.D, Expr.num(1)))), carried]))
       pot := Expr.integrate(pull, "\\bar{{r}}") ?? Expr.simplify(Expr.mul([pull, Inferences.rbar]))
-      Amet := s.fact("is", "A in r")
-      return [] if Amet == None
-      metric := Expr.simplify(Expr.swap(Amet.to, Expr.field("\\delta n_{{f}}"), Expr.field("\\Phi")))
-      kappa := Expr.simplify(Expr.div(Expr.sub(Expr.num(1), metric), Expr.mul([Expr.num(2), Expr.field("\\Phi")])))
       mine := (of: String): String => Fact.key_of("is", of)
       via := "general relativity's equations, off these rules"
       [
@@ -175,37 +171,7 @@ Inferences := class {
           ["the flux through any shell is the same at every radius", "so the divergence away from the source is nothing"]),
         Inferences.step("the equation of motion", pull, via, [mine("\\Phi")],
           "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other",
-          ["a = -\\nabla\\Phi = {Expr.show(pull)}", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives"]),
-        Inferences.step("\\kappa", kappa, via, [mine("A, off the record a ray crosses"), mine("\\Phi")],
-          "WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model's. `1 - A = 2\\Phi` is general relativity's; here it is `2\\Phi` times this. FAR FROM ANYTHING IT IS A HALF - the screened channel has died, the exchange one has gone to its constant, and what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: it carries both transports, so the correction is itself a function of distance and the model departs from Einstein by more than a constant where the field is strong",
-          ["A = {Expr.show(metric)}, so 1 - A = {Expr.show(Expr.simplify(Expr.sub(Expr.num(1), metric)))}", "Einstein: 1 - A = 2\\Phi", "so this model is Einstein's times {Expr.show(kappa)}"]),
-        Inferences.step("the field equation", Expr.simplify(Expr.sub(Expr.num(1), metric)), via, [mine("\\kappa")],
-          "EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about one function. `G_{{\\mu\\nu}} = 8\\pi G T_{{\\mu\\nu}}` comes to `\\nabla^{{2}}A = -2\\nabla^{{2}}\\Phi = -8\\pi G\\rho`: the curvature of the time part answers the mass density, with a coupling of `8\\pi G`. THESE RULES GIVE THE SAME EQUATION WITH HALF THAT COUPLING - `\\nabla^{{2}}A = -\\nabla^{{2}}\\Phi = -4\\pi G\\rho` - because the record a ray crosses enters the metric once where Einstein's potential enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same `\\rho` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out as the geodesic gives it. It is one number in front, and it is a factor of two",
-          ["A = 1 - \\Phi, so \\nabla^{{2}}A = -\\nabla^{{2}}\\Phi = -4\\pi G\\rho", "Einstein: A = 1 - 2\\Phi, so \\nabla^{{2}}A = -2\\nabla^{{2}}\\Phi = -8\\pi G\\rho", "same source, same motion, half the coupling"]),
-        Inferences.step("A, off the record a ray crosses", metric, via, [dn.key, mine("\\Phi")],
-          "THE METRIC. `metricOf` reads it off the record a ray crosses, and that record IS the potential - the same accumulation, derived twice - so `\\delta n_{{f}}` and `\\Phi` are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'S, INCLUDING THE TWO: `metricOf` gives `A` as the SQUARE of the tick rate, because a metric coefficient multiplies `dt^{{2}}` while MOVEMENT counts `d\\tau/dt`, and the square of `1 - \\Phi` is `1 - 2\\Phi` to first order. THE FACTOR OF TWO THIS MODEL WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. What is left over is the second order term, which is a real difference from Schwarzschild's exact `1 - r_{{s}}/r` and shows up only where the field is strong",
-          ["the record a body adds is \\delta n_{{f}} = {Expr.show(dn.to)}", "and that is \\Phi, so A = {Expr.show(metric)}", "general relativity: A = 1 - 2\\Phi, which is this to first order"])
-      ]
-    })
-
-  static schwarzschild (): Inference => Inference(name: "the metric as general relativity writes it",
-    because: "the derived metric has Schwarzschild's shape exactly, so it can be stated in Schwarzschild's own names - and what is left over is where the two theories differ",
-    fire: (s: Store) => {
-      A := s.fact("is", "A in r")
-      dn := s.fact("is", "\\delta n_{{f}}")
-      puts := s.fact("is", "what a body puts into the medium")
-      return [] if A == None | dn == None | puts == None | s.has("is", "r_{{s}}")
-      via := "the metric as general relativity writes it"
-      [
-        Inferences.step("r_{{s}}", Expr.simplify(Expr.mul([Expr.num(2), puts.to])), via, [puts.key, dn.key],
-          "the record a body adds falls off as `r^{{-\\paren{{D - 2}}}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\\bar{{m}}/r`. Read against `A = 1 - r_{{s}}/r` that says `r_{{s}} = 2\\bar{{m}}` - and the force law fixes `GM = \\bar{{m}}`, so this is `r_{{s}} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square",
-          ["\\delta n_{{f}} = {Expr.show(dn.to)}", "A = \\paren{{1 - \\delta n_{{f}}}}^{{2}} = 1 - 2\\delta n_{{f}} + \\ldots", "general relativity writes A = 1 - r_{{s}}/r, so r_{{s}} = 2\\bar{{m}} = 2GM"]),
-        Inferences.step("A in r as GR writes it", Expr.simplify(Expr.sub(Expr.num(1), Expr.mul([Expr.field("r_{{s}}"), Expr.to_power(Expr.sym("r"), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))]))), via, [A.key],
-          "the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `A = 1 - r_{{s}}/r` and `B = 1/\\paren{{1 - r_{{s}}/r}}` is what this model derives, so light bends by twice the Newtonian amount, `\\gamma` is one, and the perihelion advances by `3\\pi r_{{s}}/a`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about",
-          ["A = 1 - r_{{s}}·r^{{-\\paren{{D - 2}}}}", "B = \\frac{{1}}{{1 - r_{{s}}·r^{{-\\paren{{D - 2}}}}}}", "\\gamma = 1, and A·B = 1 as Schwarzschild has it"]),
-        Inferences.step("the deflection this model gives", Expr.simplify(Expr.mul([Expr.num(2), Expr.field("r_{{s}}"), Expr.to_power(Expr.sym("b"), Expr.neg(Expr.sub(Inferences.D, Expr.num(2))))])), via, [A.key],
-          "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is",
-          ["the force law gives a = \\bar{{m}}/r^{{2}}, so GM = \\bar{{m}}", "the metric gives A = 1 - \\bar{{m}}/r, where GR has 1 - 2GM/r", "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two"])
+          ["a = -\\nabla\\Phi = {Expr.show(pull)}", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives"])
       ]
     })
 
@@ -241,6 +207,66 @@ Inferences := class {
       Inferences.step("b_{{c}}", Expr.mul([Expr.num(bc), Expr.field("\\bar{{m}}")]), "where a ray stops coming back", [A.key, B.key],
         "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{{2}} = B dr^{{2}} + r^{{2}}d\\Omega^{{2}}`, and a null ray turns where `r/\\sqrt{{A}} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{{s}}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's",
         ["a ray turns where r/\\sqrt{{A}} = b, and at three dimensions \\delta n_{{f}} = \\bar{{m}}/r, r_{{s}} = 2\\bar{{m}}", "\\bar{{m}}/b at the turning point = {Expr.show(over)}", "largest where its slope is nought: \\delta n_{{f}} = {Fmt.fixed(sphere, 6)}, the photon sphere at r = {Fmt.fixed(1 / sphere, 4)} \\bar{{m}}", "b_{{c}} = {Fmt.fixed(bc, 4)} \\bar{{m}}; general relativity's is 3\\sqrt{{3}} = {Fmt.fixed(gr, 4)}", Fmt.finite(index) ? "the medium's index read as an isotropic metric instead gives {Fmt.fixed(index, 4)} \\bar{{m}}: the same to first order, not to the second - it is not the metric a held clock and ruler read" : "the medium's index gives no metric of its own here"])
+  }
+
+  /*
+   * THE CLASSICAL TESTS, off the held metric and nothing else - the one move-or-emit gives (`gravity.metric`). At three
+   * dimensions every length is in m-bar: u = m-bar/r, r_s = 2. Each is read off A and B by differentiating them, not
+   * by quoting general relativity's answer: the orbit's equation off A for the perihelion, B's slope for the delay, and
+   * the two together for the post-Newtonian gamma and beta. The medium's index read as an isotropic metric is set
+   * beside them where the rules give one
+   */
+  static in_m (e: Expr, u: String): Expr => Expr.simplify(Expr.replace(Expr.replace(Expr.replace(e, "r_{{s}}", Expr.num(2)), "D", Expr.num(3)), "r", Expr.pown(Expr.field(u), -1)))
+  static at_nought (e: Expr, u: String, times: N): Real => {
+    env := { }
+    env[u] = 0
+    env["L"] = 1
+    d := e
+    Array.range(times).for(_ => { d = Expr.simplify(Expr.d(d, u)) })
+    Expr.numeric(d, env)
+  }
+  static held_tests (s: Store, A: Fact, B: Fact): Step[] => {
+    u := "u"
+    Au := Inferences.in_m(A.to, u)
+    Bu := Inferences.in_m(B.to, u)
+    /* post-Newtonian, in the area radius the held clock and ruler are laid in: A = 1 - 2U + 2(beta - gamma)U^2, B = 1 + 2 gamma U */
+    newton := 0 - Inferences.at_nought(Au, u, 1) / 2
+    gamma := Inferences.at_nought(Bu, u, 1) / 2
+    beta := gamma + Inferences.at_nought(Au, u, 2) / 4
+    /* the index's own, read as an isotropic metric: A = 1 - 2U + 2 beta U^2, B = 1 + 2 gamma U */
+    iA := s.fact("is", "A in r")
+    iB := s.fact("is", "B in r")
+    dn := "\\delta n_{{f}}"
+    ibeta := iA == None ? Real.NAN : Inferences.at_nought(iA.to, dn, 2) / 4
+    igamma := iB == None ? Real.NAN : Inferences.at_nought(iB.to, dn, 1) / 2
+    via := "the held metric, read for the classical tests"
+    ppn := Inferences.step("\\gamma \\aside{{PPN}}", Expr.num(gamma), via, [A.key, B.key],
+      "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls",
+      ["A in u = \\bar{{m}}/r: {Expr.show(Au)}, B: {Expr.show(Bu)}", "A = 1 - 2U + 2\\paren{{\\beta - \\gamma}}U^{{2}}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = {Fmt.fixed(newton, 6)}", "\\gamma = B'/2 = {Fmt.fixed(gamma, 6)}", "\\beta = \\gamma + A''/4 = {Fmt.fixed(beta, 6)}", "Cassini: \\gamma - 1 = \\paren{{2.1 \\pm 2.3}}·10^{{-5}}; the perihelia: \\beta - 1 below 10^{{-4}}", Fmt.finite(ibeta) ? "the medium's index read as an isotropic metric: \\gamma = {Fmt.fixed(igamma, 4)}, \\beta = {Fmt.fixed(ibeta, 4)} - a held clock does not read it" : "the medium's index gives no metric of its own here"])
+    /* the orbit: (du/dphi)^2 = E^2/L^2 - A(u)(1/L^2 + u^2), so u'' + u = u - A'(1/L^2 + u^2)/2 - A u */
+    L := Expr.field("L")
+    q := Expr.mul([Au, Expr.add([Expr.pown(L, -2), Expr.pown(Expr.field(u), 2)])])
+    orbit := Expr.simplify(Expr.add([Expr.mul([Expr.num(-0.5), Expr.d(q, u)]), Expr.field(u)]))
+    mu := Inferences.at_nought(orbit, u, 0)
+    lin := Inferences.at_nought(orbit, u, 1)
+    eps := Inferences.at_nought(orbit, u, 2) / 2
+    /* u'' + u = mu + eps u^2: the ellipse u = mu(1 + e cos phi) turns by 2 pi eps mu a lap, and mu = 1/(a(1 - e^2)) in m-bar */
+    k := 2 * eps * mu
+    k = (k * 10 ^ 9).round / 10 ^ 9
+    /* Mercury: GM/c^2 of the sun, the orbit's semi-major axis and eccentricity, its period - measured, only to put a number on it */
+    m_sun := 1476.625
+    a_m := 57909050000
+    e_m := 0.205630
+    lap := k * Real.PI * m_sun / (a_m * (1 - e_m * e_m))
+    century := lap * 36525 / 87.9691 * 206264.806
+    ipp := Fmt.finite(ibeta) ? (2 + 2 * igamma - ibeta) / 3 : Real.NAN
+    peri := Inferences.step("\\Delta\\varphi", Expr.mul([Expr.num(k), Expr.field("\\pi"), Expr.field("\\bar{{m}}"), Expr.pown(Expr.field("a\\paren{{1 - e^{{2}}}}"), -1)]), "a bound orbit in the held metric", [A.key, B.key],
+      "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{{2}} = E^{{2}}/L^{{2}} - A(u)(1/L^{{2}} + u^{{2}})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{{2}}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{{2}} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{{2}}), and Mercury's 43 seconds of arc a century",
+      ["u'' + u = -\\frac{{1}}{{2}}\\frac{{d}}{{du}}\\left[A(u)\\paren{{L^{{-2}} + u^{{2}}}}\\right] + u = {Expr.show(orbit)}", "\\mu = {Fmt.fixed(mu, 6)}/L^{{2}}, linear {Fmt.fixed(lin, 6)}, \\epsilon = {Fmt.fixed(eps, 6)}\\bar{{m}}", "a lap: 2\\pi\\epsilon\\mu = {Fmt.fixed(k, 6)}\\pi\\bar{{m}}/a\\paren{{1 - e^{{2}}}}; general relativity's 6\\pi", "Mercury (GM/c^{{2}} = 1476.6 m, a = 5.79·10^{{10}} m, e = 0.2056): {Fmt.fixed(century, 2)}'' a century; measured 42.98 \\pm 0.04", Fmt.finite(ipp) ? "the medium's index as an isotropic metric would give \\paren{{2 + 2\\gamma - \\beta}}/3 = {Fmt.fixed(ipp, 4)} of it" : "the medium's index gives no metric of its own here"])
+    delay := Inferences.step("\\Delta t \\aside{{Shapiro}}", Expr.mul([Expr.num(1 + gamma), Expr.field("\\bar{{m}}"), Expr.log(Expr.field("\\frac{{4r_{{1}}r_{{2}}}}{{b^{{2}}}}"))]), "light passing a body, timed", [B.key, A.key],
+      "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{{B/A}} ticks a cell, and past a body that is one more than flat by \\paren{{1 + \\gamma}}U - the clock's share and the ruler's. Summed along a straight path from r_{{1}} to r_{{2}} that grazes at b, the excess is \\paren{{1 + \\gamma}}\\bar{{m}}\\ln\\paren{{4r_{{1}}r_{{2}}/b^{{2}}}}: Shapiro's, with \\gamma = 1",
+      ["\\sqrt{{B/A}} = 1 + \\paren{{1 + \\gamma}}U + \\ldots, \\gamma = {Fmt.fixed(gamma, 6)}", "\\int \\paren{{1 + \\gamma}}\\bar{{m}}/\\sqrt{{b^{{2}} + z^{{2}}}}\\,dz from -r_{{1}} to r_{{2}} = \\paren{{1 + \\gamma}}\\bar{{m}}\\ln\\paren{{4r_{{1}}r_{{2}}/b^{{2}}}}", "Earth to Saturn grazing the sun, there and back: {Fmt.fixed(2 * (1 + gamma) * 4.925491 * (4 * 149597870700.0 * 1433530000000.0 / (695700000.0 * 695700000.0)).ln, 1)} \\mu s"])
+    [ppn, peri, delay]
   }
 
   static metric_of (): Inference => Inference(name: "an index is a metric",

@@ -65,5 +65,8 @@ import OrbitMines.Physics.Proofs.G.gravity_closing
 import OrbitMines.Physics.Proofs.G.gravity_made
 import OrbitMines.Physics.Proofs.G.gravity_metric
 import OrbitMines.Physics.Proofs.G.gravity_shadow
+import OrbitMines.Physics.Proofs.G.gravity_perihelion
+import OrbitMines.Physics.Proofs.G.gravity_shapiro
+import OrbitMines.Physics.Proofs.G.gravity_ppn
 
 /-! Every theorem of G, stated for Lean and checked where it is algebra: see THEOREMS.md. -/

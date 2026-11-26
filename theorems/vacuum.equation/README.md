@@ -248,6 +248,66 @@ the medium's index read as an isotropic metric instead gives 6.7500 m̄: the sam
 
 THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^(2) = B dr^(2) + r^(2)d\Omega^(2)`, and a null ray turns where `r/\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_s/r this is Schwarzschild's metric exactly, so the shadow is general relativity's
 
+**the field equation = 2·\Phi**  
+<sub>theorem · the time part answers the potential</sub>  
+
+```
+1 - A = r_s·r^(2 - D), r_s = \frac{D·\sigma·F·\rho_\infty·x.m̄}{D - 2}
+2\Phi \aside{far} = \frac{D·\sigma·F·\rho_\infty·x.m̄·x.R̄^(2 - D)}{D - 2}
+\frac{1 - A}{2\Phi} = 1
+so \nabla^(2)\paren{1 - A} = 2\nabla^(2)\Phi = 8\pi G\rho, Einstein's
+```
+
+EINSTEIN'S FIELD EQUATION, in the static field where it is a statement about one function: G_\mu\nu = 8\pi G T_\mu\nu comes to 1 - A = 2\Phi with \nabla^(2)\Phi = 4\pi G\rho. The held clock beats at the falling body's beat, and that body's speed squared is twice the potential the pull integrates to - so 1 - A is 2\Phi, the whole of it and not its first order. The same \rho sources it, through the same flux law, at Einstein's coupling
+
+**\kappa = 1**  
+<sub>theorem · what Einstein's coupling is multiplied by</sub>  
+
+```
+\kappa = \frac{1 - A}{2\Phi} = 1
+```
+
+what Einstein's coupling has to be multiplied by to give this model's: 1 - A over 2\Phi. The held metric gives one, at every distance - the metric is sourced by the same potential the pull is, once through the falling body's speed and once through the square of its beat
+
+**\gamma \aside{PPN} = 1**  
+<sub>theorem · the held metric, read for the classical tests</sub>  
+
+```
+A in u = m̄/r: \frac{-2}{\frac{1}{u}} + 1, B: \frac{1}{\frac{-2}{\frac{1}{u}} + 1}
+A = 1 - 2U + 2\paren{\beta - \gamma}U^(2), B = 1 + 2\gamma U, in the area radius
+Newton: -A'/2 = 1.000000
+\gamma = B'/2 = 1.000000
+\beta = \gamma + A''/4 = 1.000000
+Cassini: \gamma - 1 = \paren{2.1 \pm 2.3}·10^(-5); the perihelia: \beta - 1 below 10^(-4)
+the medium's index read as an isotropic metric: \gamma = 1.0000, \beta = 0.5000 - a held clock does not read it
+```
+
+THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \gamma; and what A has at the second order beyond what the area radius puts there is \beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls
+
+**\Delta\varphi = \frac{6·\pi·m̄}{a\paren{1 - e^(2)}}**  
+<sub>theorem · a bound orbit in the held metric</sub>  
+
+```
+u'' + u = -\frac{1}{2}\frac{d}{du}\left[A(u)\paren{L^(-2) + u^(2)}\right] + u = L^(-2) + u^(2) + u - u·\paren{\frac{-2}{\frac{1}{u}} + 1}
+\mu = 1.000000/L^(2), linear 0.000000, \epsilon = 3.000000m̄
+a lap: 2\pi\epsilon\mu = 6.000000\pim̄/a\paren{1 - e^(2)}; general relativity's 6\pi
+Mercury (GM/c^(2) = 1476.6 m, a = 5.79·10^(10) m, e = 0.2056): 42.98'' a century; measured 42.98 \pm 0.04
+the medium's index as an isotropic metric would give \paren{2 + 2\gamma - \beta}/3 = 1.1667 of it
+```
+
+THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\varphi)^(2) = E^(2)/L^(2) - A(u)(1/L^(2) + u^(2))` - and differentiated, `u'' + u = \mu + \epsilon u^(2)`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^(2) puts there, turns the ellipse a little every lap: `2\pi\epsilon\mu`. That is general relativity's 6\pi GM/a(1 - e^(2)), and Mercury's 43 seconds of arc a century
+
+**\Delta t \aside{Shapiro} = 2·m̄·\ln\paren{\frac{4r_1r_2}{b^(2)}}**  
+<sub>theorem · light passing a body, timed</sub>  
+
+```
+\sqrt{B/A} = 1 + \paren{1 + \gamma}U + \ldots, \gamma = 1.000000
+\int \paren{1 + \gamma}m̄/\sqrt{b^(2) + z^(2)}\,dz from -r_1 to r_2 = \paren{1 + \gamma}m̄\ln\paren{4r_1r_2/b^(2)}
+Earth to Saturn grazing the sun, there and back: 283.5 \mu s
+```
+
+THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \sqrt{B/A} ticks a cell, and past a body that is one more than flat by \paren{1 + \gamma}U - the clock's share and the ruler's. Summed along a straight path from r_1 to r_2 that grazes at b, the excess is \paren{1 + \gamma}m̄\ln\paren{4r_1r_2/b^(2)}: Shapiro's, with \gamma = 1
+
 **\partial_tV \aside{inside} = 0**  
 <sub>theorem · what the settled vacuum grows</sub>  
 

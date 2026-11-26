@@ -363,16 +363,14 @@ Prover := class < theory: Theory {
         "how much of a way carries some body's ray, on the world's mean - a fact about what the world holds, not about its rules, so it is put in; in the settled vacuum, with no body in it, it is nought",
         ["\\bar{{n}} = 0 in the empty vacuum, an input where a world is asked about"]))
       /*
-       * AND WHAT THE EMPTY VACUUM GROWS ON ITS OWN, \varepsilon: the rate at which its beat, left to itself, still grows
-       * points - where a vacuum ray comes to a meeting with the way behind it not lit together with it. Read with every way
-       * of a point lit as one event it is nought; the rules' own mixing (a step swaps points, a fold merges them) is what
-       * could break that, and that rate is not derived yet. Until it is, it stands at what the vacuum's meetings were read
-       * to grow before, 2 sigma F (1 - rho) rho^2 - a placeholder, so nothing downstream moves while it is found
+       * AND WHAT THE EMPTY VACUUM WOULD GROW, \varepsilon, had no mass been there: on the continuous line nothing ties the
+       * way behind a meeting's end to the ray that met, so it is dark at 1 - rho, and every meeting leaves a point behind
+       * each of its two ends that often - 2 sigma F (1 - rho) rho^2, the same reading `scale_of` makes. Gross, not net
        */
       eps := Expr.simplify(Expr.mul([Expr.num(2), Expr.field("\\sigma"), Expr.field("F"), Expr.sub(Expr.num(1), rho_), Expr.pown(rho_, 2)]))
       out.push(Step.of(Fact.stands("\\varepsilon", eps), "the vacuum", [],
-        "what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before",
-        ["\\varepsilon = {Expr.show(eps)}, a placeholder until derived"]))
+        "what the empty vacuum would grow on its own, per point per tick, had no mass been there: every meeting leaves the point behind each of its two ends where the way behind is dark, 1 - \\rho of the time (gravity.scale). Gross, not net - the fold took a point first - so it is what keeps the vacuum from collapsing",
+        ["\\varepsilon = {Expr.show(eps)}: \\sigma F\\rho^{{2}} meetings, two ends, dark behind at 1 - \\rho"]))
       matter := Expr.simplify(Expr.mul([Expr.field("\\sigma"), Expr.field("F"), Expr.pown(Expr.field("\\bar{{n}}"), 2), grown]))
       out.push(Step.of(Fact.stands("the world's matter grows", matter), named, [Fact.key_of("is", "what bodies' rays grow where they meet"), Fact.key_of("is", "\\bar{{n}}")],
         "two bodies' rays meet as any two rays do - at the rate, facing, each end carrying - and each such meeting grows what the rule read on bodies' rays says: per point per tick, that is how much the world grows",
@@ -1336,7 +1334,21 @@ Prover := class < theory: Theory {
     /* the shadow, off the held metric: a ray turns where r / sqrt(A) = b (Inferences.held_shadow) */
     shadow := Inferences.held_shadow(s, held.fact, ruler.fact)
     shadow.derivation = [held, ruler]
-    [g_, phi, tick, falls, held, ruler, defl, shadow]
+    /* the field equation, off the held time part: what the mass does to A is twice the potential, exactly */
+    twice := Prover.neat(Expr.mul([Expr.num(2), Expr.field("\\Phi")]))
+    less := Prover.neat(Expr.sub(Expr.num(1), A))
+    ratio := Prover.neat(Expr.div(Expr.replace(less, "r_{{s}}", rs), Expr.replace(Expr.mul([Expr.num(2), pot]), "x.\\bar{{R}}", r)))
+    fieldeq := Step.of(Fact.stands("the field equation", twice), "the time part answers the potential", [held.fact.key, phi.fact.key],
+      "EINSTEIN'S FIELD EQUATION, in the static field where it is a statement about one function: G_{{\\mu\\nu}} = 8\\pi G T_{{\\mu\\nu}} comes to 1 - A = 2\\Phi with \\nabla^{{2}}\\Phi = 4\\pi G\\rho. The held clock beats at the falling body's beat, and that body's speed squared is twice the potential the pull integrates to - so 1 - A is 2\\Phi, the whole of it and not its first order. The same \\rho sources it, through the same flux law, at Einstein's coupling",
+      ["1 - A = {Expr.show(less)}, r_{{s}} = {Expr.show(rs)}", "2\\Phi \\aside{{far}} = {Expr.show(Prover.neat(Expr.mul([Expr.num(2), pot])))}", "\\frac{{1 - A}}{{2\\Phi}} = {Expr.show(ratio)}", "so \\nabla^{{2}}\\paren{{1 - A}} = 2\\nabla^{{2}}\\Phi = 8\\pi G\\rho, Einstein's"])
+    fieldeq.derivation = [held, phi]
+    coupling := Step.of(Fact.stands("\\kappa", ratio), "what Einstein's coupling is multiplied by", [fieldeq.fact.key],
+      "what Einstein's coupling has to be multiplied by to give this model's: 1 - A over 2\\Phi. The held metric gives one, at every distance - the metric is sourced by the same potential the pull is, once through the falling body's speed and once through the square of its beat",
+      ["\\kappa = \\frac{{1 - A}}{{2\\Phi}} = {Expr.show(ratio)}"])
+    coupling.derivation = [fieldeq]
+    tests := Inferences.held_tests(s, held.fact, ruler.fact)
+    tests.for(t => { t.derivation = [held, ruler] })
+    [g_, phi, tick, falls, held, ruler, defl, shadow, fieldeq, coupling].concat(tests)
   }
   /*
    * THE EXPANSION, OFF THE GROWTH LEDGER: inside the settled vacuum every ray has room ahead, so nothing grows there; the

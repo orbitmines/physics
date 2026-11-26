@@ -2001,7 +2001,7 @@ run_case(j"tests/theorems.ray:15 on closure", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy((length(ids(it)) == 65.0)) ? TEST_PASS : Base.:*("failed: ", j"(length(ids(it)) == 65.0)")
+  truthy((length(ids(it)) == 68.0)) ? TEST_PASS : Base.:*("failed: ", j"(length(ids(it)) == 68.0)")
 end))
 
 
@@ -2041,18 +2041,6 @@ run_case(j"tests/theorems.ray:19 on closure", @dynamic_names(() -> begin
 end))
 
 
-run_case(j"tests/theorems.ray:20 on closure", @dynamic_names(() -> begin
-  it = proved(G)
-  guard = 0
-  while !truthy((theory(it) == Base.string(j"G")))
-    guard = Base.:+(guard, 1)
-    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
-    tick(it)
-  end
-  truthy(standing(it, Base.string(j"gravity.closing"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.closing\"))")
-end))
-
-
 run_case(j"tests/theorems.ray:21 on closure", @dynamic_names(() -> begin
   it = proved(G)
   guard = 0
@@ -2061,7 +2049,7 @@ run_case(j"tests/theorems.ray:21 on closure", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(standing(it, Base.string(j"gravity.coincidence"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.coincidence\"))")
+  truthy(standing(it, Base.string(j"gravity.perihelion"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.perihelion\"))")
 end))
 
 
@@ -2073,7 +2061,7 @@ run_case(j"tests/theorems.ray:22 on closure", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(standing(it, Base.string(j"gravity.bent"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.bent\"))")
+  truthy(standing(it, Base.string(j"gravity.shapiro"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.shapiro\"))")
 end))
 
 
@@ -2085,7 +2073,7 @@ run_case(j"tests/theorems.ray:23 on closure", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(standing(it, Base.string(j"gravity.standing"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.standing\"))")
+  truthy(standing(it, Base.string(j"gravity.ppn"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.ppn\"))")
 end))
 
 
@@ -2097,11 +2085,71 @@ run_case(j"tests/theorems.ray:24 on closure", @dynamic_names(() -> begin
     (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
     tick(it)
   end
-  truthy(standing(it, Base.string(j"gravity.mass"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.mass\"))")
+  truthy(standing(it, Base.string(j"gravity.coupling"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.coupling\"))")
 end))
 
 
 run_case(j"tests/theorems.ray:25 on closure", @dynamic_names(() -> begin
+  it = proved(G)
+  guard = 0
+  while !truthy((theory(it) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(standing(it, Base.string(j"gravity.closing"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.closing\"))")
+end))
+
+
+run_case(j"tests/theorems.ray:26 on closure", @dynamic_names(() -> begin
+  it = proved(G)
+  guard = 0
+  while !truthy((theory(it) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(standing(it, Base.string(j"gravity.coincidence"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.coincidence\"))")
+end))
+
+
+run_case(j"tests/theorems.ray:27 on closure", @dynamic_names(() -> begin
+  it = proved(G)
+  guard = 0
+  while !truthy((theory(it) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(standing(it, Base.string(j"gravity.bent"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.bent\"))")
+end))
+
+
+run_case(j"tests/theorems.ray:28 on closure", @dynamic_names(() -> begin
+  it = proved(G)
+  guard = 0
+  while !truthy((theory(it) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(standing(it, Base.string(j"gravity.standing"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.standing\"))")
+end))
+
+
+run_case(j"tests/theorems.ray:29 on closure", @dynamic_names(() -> begin
+  it = proved(G)
+  guard = 0
+  while !truthy((theory(it) == Base.string(j"G")))
+    guard = Base.:+(guard, 1)
+    (Base.:>(guard, 8) || !hasmember(it, :tick)) && return TEST_SKIP
+    tick(it)
+  end
+  truthy(standing(it, Base.string(j"gravity.mass"))) ? TEST_PASS : Base.:*("failed: ", j"standing(it, Base.string(j\"gravity.mass\"))")
+end))
+
+
+run_case(j"tests/theorems.ray:30 on closure", @dynamic_names(() -> begin
   it = proved(G)
   guard = 0
   while !truthy((theory(it) == Base.string(j"G")))

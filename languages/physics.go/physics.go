@@ -9651,7 +9651,7 @@ func init() {
         var eps_0 any
         eps_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "\\sigma" }), Call(K("Expr"), "field", []any{ "F" }), Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), rho__0 }), Call(K("Expr"), "pown", []any{ rho__0, 2.0 })) }) })
         _ = eps_0
-        M_push(out_0, Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\varepsilon", eps_0 }), "the vacuum", Lst(), "what the empty vacuum grows on its own, per point per tick: a vacuum ray meeting with the way behind it not lit in the same event. Not yet derived from the rules - put in, at the rate the meetings were read to grow at before", Lst("\\varepsilon = " + Str(Call(K("Expr"), "show", []any{ eps_0 })) + ", a placeholder until derived") }))
+        M_push(out_0, Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\varepsilon", eps_0 }), "the vacuum", Lst(), "what the empty vacuum would grow on its own, per point per tick, had no mass been there: every meeting leaves the point behind each of its two ends where the way behind is dark, 1 - \\rho of the time (gravity.scale). Gross, not net - the fold took a point first - so it is what keeps the vacuum from collapsing", Lst("\\varepsilon = " + Str(Call(K("Expr"), "show", []any{ eps_0 })) + ": \\sigma F\\rho^{2} meetings, two ends, dark behind at 1 - \\rho") }))
         var matter_0 any
         matter_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "\\sigma" }), Call(K("Expr"), "field", []any{ "F" }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "\\bar{n}" }), 2.0 }), grown_0) }) })
         _ = matter_0
@@ -11835,8 +11835,33 @@ func init() {
       shadow_0 = Call(K("Inferences"), "held_shadow", []any{ s_0, Get(held_0, "fact"), Get(ruler_0, "fact") })
       _ = shadow_0
       Set(shadow_0, "derivation", Lst(held_0, ruler_0))
+      var twice_0 any
+      twice_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "\\Phi" })) }) })
+      _ = twice_0
+      var less_0 any
+      less_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), A_0 }) })
+      _ = less_0
+      var ratio_0 any
+      ratio_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "div", []any{ Call(K("Expr"), "replace", []any{ less_0, "r_{s}", rs_0 }), Call(K("Expr"), "replace", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), pot_0) }), "x.\\bar{R}", r_0 }) }) })
+      _ = ratio_0
+      var fieldeq_0 any
+      fieldeq_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "the field equation", twice_0 }), "the time part answers the potential", Lst(Get(Get(held_0, "fact"), "key"), Get(Get(phi_0, "fact"), "key")), "EINSTEIN'S FIELD EQUATION, in the static field where it is a statement about one function: G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu} comes to 1 - A = 2\\Phi with \\nabla^{2}\\Phi = 4\\pi G\\rho. The held clock beats at the falling body's beat, and that body's speed squared is twice the potential the pull integrates to - so 1 - A is 2\\Phi, the whole of it and not its first order. The same \\rho sources it, through the same flux law, at Einstein's coupling", Lst("1 - A = " + Str(Call(K("Expr"), "show", []any{ less_0 })) + ", r_{s} = " + Str(Call(K("Expr"), "show", []any{ rs_0 })) + "", "2\\Phi \\aside{far} = " + Str(Call(K("Expr"), "show", []any{ Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), pot_0) }) }) })) + "", "\\frac{1 - A}{2\\Phi} = " + Str(Call(K("Expr"), "show", []any{ ratio_0 })) + "", "so \\nabla^{2}\\paren{1 - A} = 2\\nabla^{2}\\Phi = 8\\pi G\\rho, Einstein's") })
+      _ = fieldeq_0
+      Set(fieldeq_0, "derivation", Lst(held_0, phi_0))
+      var coupling_0 any
+      coupling_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\kappa", ratio_0 }), "what Einstein's coupling is multiplied by", Lst(Get(Get(fieldeq_0, "fact"), "key")), "what Einstein's coupling has to be multiplied by to give this model's: 1 - A over 2\\Phi. The held metric gives one, at every distance - the metric is sourced by the same potential the pull is, once through the falling body's speed and once through the square of its beat", Lst("\\kappa = \\frac{1 - A}{2\\Phi} = " + Str(Call(K("Expr"), "show", []any{ ratio_0 })) + "") })
+      _ = coupling_0
+      Set(coupling_0, "derivation", Lst(fieldeq_0))
+      var tests_0 any
+      tests_0 = Call(K("Inferences"), "held_tests", []any{ s_0, Get(held_0, "fact"), Get(ruler_0, "fact") })
+      _ = tests_0
+      for _, e1 := range Items(tests_0) {
+        var t_1 any = e1
+        _ = t_1
+        Set(t_1, "derivation", Lst(held_0, ruler_0))
+      }
       if true {
-        return Lst(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0, shadow_0)
+        return M_concat(Lst(g__0, phi_0, tick_0, falls_0, held_0, ruler_0, defl_0, shadow_0, fieldeq_0, coupling_0), tests_0)
       }
       return nil
     })
@@ -13392,7 +13417,7 @@ func init() {
     })
     c.Static("RULES", func(self any, a1 []any) any {
       if true {
-        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "schwarzschild"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "keeping"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
+        return M_concat(M_concat(Lst(Get(K("Inferences"), "room_balance"), Get(K("Inferences"), "ehrhart"), Get(K("Inferences"), "counting"), Get(K("Inferences"), "reaching"), Get(K("Inferences"), "mass_of"), Get(K("Inferences"), "saturating"), Get(K("Inferences"), "spreading"), Get(K("Inferences"), "screening"), Get(K("Inferences"), "refracting"), Get(K("Inferences"), "accumulating"), Get(K("Inferences"), "substituting"), Get(K("Inferences"), "metric_of"), Get(K("Inferences"), "relativity"), Get(K("Inferences"), "balancing"), Get(K("Inferences"), "unbiased"), Get(K("Inferences"), "free_path"), Get(K("Inferences"), "summing"), Get(K("Inferences"), "horizon"), Get(K("Inferences"), "bending"), Get(K("Inferences"), "crossing"), Get(K("Inferences"), "near_field"), Get(K("Inferences"), "shadowing"), Get(K("Inferences"), "receiving"), Get(K("Inferences"), "moved"), Get(K("Inferences"), "receding"), Get(K("Inferences"), "shortfall"), Get(K("Inferences"), "keeping"), Get(K("Inferences"), "transporting"), Get(K("Inferences"), "assembling"), Get(K("Inferences"), "channelling"), Get(K("Inferences"), "closing"), Get(K("Inferences"), "arrangement"), Get(K("Inferences"), "scale_crossed"), Get(K("Inferences"), "orbiting"), Get(K("Inferences"), "curve_ends"), Get(K("Inferences"), "curves_of_each"), Get(K("Inferences"), "crowding_of_arrivals"), Get(K("Inferences"), "making_rate"), Get(K("Inferences"), "hubble_rate"), Get(K("Inferences"), "expansion_scale"), Get(K("Inferences"), "coincidence"), Get(K("Inferences"), "crowding"), Get(K("Inferences"), "at_that_density"), Get(K("Inferences"), "in_motion")), M_map(Get(K("Inferences"), "IN_FULL"), Fn(func(a3 []any) any {
         var of_2 any = Arg(a3, 0); _ = of_2;
         if true {
           return Call(K("Inferences"), "writing_out", []any{ of_2 })
@@ -13594,20 +13619,6 @@ func init() {
         var pot_2 any
         pot_2 = OrElse(Call(K("Expr"), "integrate", []any{ pull_2, "\\bar{r}" }), func() any { return Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(pull_2, Get(K("Inferences"), "rbar")) }) }) })
         _ = pot_2
-        var Amet_2 any
-        Amet_2 = Call(s_2, "fact", []any{ "is", "A in r" })
-        _ = Amet_2
-        if Truthy(Eq(Amet_2, nil)) {
-          if true {
-            return Lst()
-          }
-        }
-        var metric_2 any
-        metric_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "swap", []any{ Get(Amet_2, "to"), Call(K("Expr"), "field", []any{ "\\delta n_{f}" }), Call(K("Expr"), "field", []any{ "\\Phi" }) }) })
-        _ = metric_2
-        var kappa_2 any
-        kappa_2 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "div", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), metric_2 }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "\\Phi" })) }) }) })
-        _ = kappa_2
         var mine_2 any
         mine_2 = Fn(func(a4 []any) any {
           var of_3 any = Arg(a4, 0); _ = of_3;
@@ -13621,36 +13632,7 @@ func init() {
         via_2 = "general relativity's equations, off these rules"
         _ = via_2
         if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "the flux through any shell", flux_2, via_2, Lst(Get(per_2, "key"), Get(v_2, "key")), "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic", Lst("shell = " + Str(Call(K("Expr"), "show", []any{ shell_2 })) + "", "what is at each = " + Str(Call(K("Expr"), "show", []any{ Get(per_2, "to") })) + "", "how fast = " + Str(Call(K("Expr"), "show", []any{ Get(v_2, "to") })) + "", "their product = " + Str(Call(K("Expr"), "show", []any{ flux_2 })) + ", which carries no r") }), Call(K("Inferences"), "step", []any{ "\\Phi", pot_2, via_2, Lst(Invoke(mine_2, []any{ "the flux through any shell" })), "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-\\paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has", Lst("the force falls as r^{-\\paren{D - 1}}", "\\Phi = \\int, one power weaker = " + Str(Call(K("Expr"), "show", []any{ pot_2 })) + "") }), Call(K("Inferences"), "step", []any{ "\\nabla^{2}\\Phi", Call(K("Expr"), "num", []any{ 0.0 }), via_2, Lst(Invoke(mine_2, []any{ "the flux through any shell" }), Invoke(mine_2, []any{ "\\Phi" })), "POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose sources are all in one place satisfies `\\nabla^{2}\\Phi = 0` everywhere else - which is what conserving the flux MEANS, read as a differential rather than as an integral. General relativity's weak field limit is `\\nabla^{2}\\Phi = 4\\pi G\\rho`, the same statement with the source put back", Lst("the flux through any shell is the same at every radius", "so the divergence away from the source is nothing") }), Call(K("Inferences"), "step", []any{ "the equation of motion", pull_2, via_2, Lst(Invoke(mine_2, []any{ "\\Phi" })), "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other", Lst("a = -\\nabla\\Phi = " + Str(Call(K("Expr"), "show", []any{ pull_2 })) + "", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives") }), Call(K("Inferences"), "step", []any{ "\\kappa", kappa_2, via_2, Lst(Invoke(mine_2, []any{ "A, off the record a ray crosses" }), Invoke(mine_2, []any{ "\\Phi" })), "WHAT EINSTEIN'S COUPLING HAS TO BE MULTIPLIED BY to give this model's. `1 - A = 2\\Phi` is general relativity's; here it is `2\\Phi` times this. FAR FROM ANYTHING IT IS A HALF - the screened channel has died, the exchange one has gone to its constant, and what is left is the factor of two the deflection is short by. NEAR A BODY IT IS NOT: it carries both transports, so the correction is itself a function of distance and the model departs from Einstein by more than a constant where the field is strong", Lst("A = " + Str(Call(K("Expr"), "show", []any{ metric_2 })) + ", so 1 - A = " + Str(Call(K("Expr"), "show", []any{ Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), metric_2 }) }) })) + "", "Einstein: 1 - A = 2\\Phi", "so this model is Einstein's times " + Str(Call(K("Expr"), "show", []any{ kappa_2 })) + "") }), Call(K("Inferences"), "step", []any{ "the field equation", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), metric_2 }) }), via_2, Lst(Invoke(mine_2, []any{ "\\kappa" })), "EINSTEIN'S FIELD EQUATION, in the weak static field where it is a statement about one function. `G_{\\mu\\nu} = 8\\pi G T_{\\mu\\nu}` comes to `\\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho`: the curvature of the time part answers the mass density, with a coupling of `8\\pi G`. THESE RULES GIVE THE SAME EQUATION WITH HALF THAT COUPLING - `\\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho` - because the record a ray crosses enters the metric once where Einstein's potential enters twice. SO THE DIFFERENCE IS NOT IN WHAT SOURCES GRAVITY, which is the same `\\rho` through the same Poisson equation, NOR IN HOW A BODY MOVES, which comes out as the geodesic gives it. It is one number in front, and it is a factor of two", Lst("A = 1 - \\Phi, so \\nabla^{2}A = -\\nabla^{2}\\Phi = -4\\pi G\\rho", "Einstein: A = 1 - 2\\Phi, so \\nabla^{2}A = -2\\nabla^{2}\\Phi = -8\\pi G\\rho", "same source, same motion, half the coupling") }), Call(K("Inferences"), "step", []any{ "A, off the record a ray crosses", metric_2, via_2, Lst(Get(dn_2, "key"), Invoke(mine_2, []any{ "\\Phi" })), "THE METRIC. `metricOf` reads it off the record a ray crosses, and that record IS the potential - the same accumulation, derived twice - so `\\delta n_{f}` and `\\Phi` are one quantity and this is that substitution. WHAT COMES OUT IS EINSTEIN'S, INCLUDING THE TWO: `metricOf` gives `A` as the SQUARE of the tick rate, because a metric coefficient multiplies `dt^{2}` while MOVEMENT counts `d\\tau/dt`, and the square of `1 - \\Phi` is `1 - 2\\Phi` to first order. THE FACTOR OF TWO THIS MODEL WAS SHORT BY WAS A ROOT MISTAKEN FOR A COEFFICIENT, and nothing was added to fix it. What is left over is the second order term, which is a real difference from Schwarzschild's exact `1 - r_{s}/r` and shows up only where the field is strong", Lst("the record a body adds is \\delta n_{f} = " + Str(Call(K("Expr"), "show", []any{ Get(dn_2, "to") })) + "", "and that is \\Phi, so A = " + Str(Call(K("Expr"), "show", []any{ metric_2 })) + "", "general relativity: A = 1 - 2\\Phi, which is this to first order") }))
-        }
-        return nil
-      })) }...)
-      }
-      return nil
-    })
-    c.Static("schwarzschild", func(self any, a1 []any) any {
-      if true {
-        return Make("Inference", []any{ Kw("name", "the metric as general relativity writes it"), Kw("because", "the derived metric has Schwarzschild's shape exactly, so it can be stated in Schwarzschild's own names - and what is left over is where the two theories differ"), Kw("fire", Fn(func(a3 []any) any {
-        var s_2 any = Arg(a3, 0); _ = s_2;
-        var A_2 any
-        A_2 = Call(s_2, "fact", []any{ "is", "A in r" })
-        _ = A_2
-        var dn_2 any
-        dn_2 = Call(s_2, "fact", []any{ "is", "\\delta n_{f}" })
-        _ = dn_2
-        var puts_2 any
-        puts_2 = Call(s_2, "fact", []any{ "is", "what a body puts into the medium" })
-        _ = puts_2
-        if Truthy((Truthy((Truthy((Truthy(Eq(A_2, nil)) || Truthy(Eq(dn_2, nil)))) || Truthy(Eq(puts_2, nil)))) || Truthy(Call(s_2, "has", []any{ "is", "r_{s}" })))) {
-          if true {
-            return Lst()
-          }
-        }
-        var via_2 any
-        via_2 = "the metric as general relativity writes it"
-        _ = via_2
-        if true {
-          return Lst(Call(K("Inferences"), "step", []any{ "r_{s}", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Get(puts_2, "to")) }) }), via_2, Lst(Get(puts_2, "key"), Get(dn_2, "key")), "the record a body adds falls off as `r^{-\\paren{D - 2}}` and the metric is the SQUARE of one less it, so its linear term is TWICE the record and at three dimensions `A = 1 - 2\\bar{m}/r`. Read against `A = 1 - r_{s}/r` that says `r_{s} = 2\\bar{m}` - and the force law fixes `GM = \\bar{m}`, so this is `r_{s} = 2GM`, THE SCHWARZSCHILD RADIUS ITSELF and not half of it. Nothing is fitted: the two are read off each other and the two comes from the square", Lst("\\delta n_{f} = " + Str(Call(K("Expr"), "show", []any{ Get(dn_2, "to") })) + "", "A = \\paren{1 - \\delta n_{f}}^{2} = 1 - 2\\delta n_{f} + \\ldots", "general relativity writes A = 1 - r_{s}/r, so r_{s} = 2\\bar{m} = 2GM") }), Call(K("Inferences"), "step", []any{ "A in r as GR writes it", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "sub", []any{ Call(K("Expr"), "num", []any{ 1.0 }), Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "r_{s}" }), Call(K("Expr"), "to_power", []any{ Call(K("Expr"), "sym", []any{ "r" }), Call(K("Expr"), "neg", []any{ Call(K("Expr"), "sub", []any{ Get(K("Inferences"), "D"), Call(K("Expr"), "num", []any{ 2.0 }) }) }) })) }) }) }), via_2, Lst(Get(A_2, "key")), "the same metric in Schwarzschild's names. IT IS THE WHOLE FUNCTION AND NOT AN EXPANSION: `A = 1 - r_{s}/r` and `B = 1/\\paren{1 - r_{s}/r}` is what this model derives, so light bends by twice the Newtonian amount, `\\gamma` is one, and the perihelion advances by `3\\pi r_{s}/a`. WHERE THE TWO THEORIES PART is not here - it is that general relativity has the metric and the force as ONE object and this has them as two derivations sourced by two different masses, and that the force carries a recursion the metric knows nothing about", Lst("A = 1 - r_{s}·r^{-\\paren{D - 2}}", "B = \\frac{1}{1 - r_{s}·r^{-\\paren{D - 2}}}", "\\gamma = 1, and A·B = 1 as Schwarzschild has it") }), Call(K("Inferences"), "step", []any{ "the deflection this model gives", Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ 2.0 }), Call(K("Expr"), "field", []any{ "r_{s}" }), Call(K("Expr"), "to_power", []any{ Call(K("Expr"), "sym", []any{ "b" }), Call(K("Expr"), "neg", []any{ Call(K("Expr"), "sub", []any{ Get(K("Inferences"), "D"), Call(K("Expr"), "num", []any{ 2.0 }) }) }) })) }) }), via_2, Lst(Get(A_2, "key")), "light follows the index and the index is the record, so the bend is twice the record at closest approach. WRITTEN IN THE MASS THE FORCE LAW FIXES this is 2GM/b, which is NEWTON'S deflection - a stone's answer. General relativity gives 4GM/b and the measurement gives general relativity. The two differ by exactly two, everywhere and at every lattice, and THIS MODEL DOES NOT DERIVE THAT TWO: it would need the record to enter the metric twice over, and no rule here says it does. It is written as a mismatch because that is what it is", Lst("the force law gives a = \\bar{m}/r^{2}, so GM = \\bar{m}", "the metric gives A = 1 - \\bar{m}/r, where GR has 1 - 2GM/r", "so \\alpha = 2GM/b here and 4GM/b in GR - short by exactly two") }))
+          return Lst(Call(K("Inferences"), "step", []any{ "the flux through any shell", flux_2, via_2, Lst(Get(per_2, "key"), Get(v_2, "key")), "GAUSS'S LAW, and it comes out as an identity rather than a postulate. Count what crosses a shell in one tick: the sites on it, times what is at each, times the share of a step that went outward. `spreading` has all three and `MOVEMENT` neither makes nor destroys, so the product is the SOURCE and is the same at every radius - which is what a flux law says. General relativity gets the same statement out of the Bianchi identity; here it is arithmetic", Lst("shell = " + Str(Call(K("Expr"), "show", []any{ shell_2 })) + "", "what is at each = " + Str(Call(K("Expr"), "show", []any{ Get(per_2, "to") })) + "", "how fast = " + Str(Call(K("Expr"), "show", []any{ Get(v_2, "to") })) + "", "their product = " + Str(Call(K("Expr"), "show", []any{ flux_2 })) + ", which carries no r") }), Call(K("Inferences"), "step", []any{ "\\Phi", pot_2, via_2, Lst(Invoke(mine_2, []any{ "the flux through any shell" })), "THE POTENTIAL. The flux is fixed and the sites it is shared between go as the shell, so what one site is open to falls as `r^{-\\paren{D - 1}}` and its integral - which is what a potential IS - falls one power weaker. Nobody types the exponent: it is the shell's, less one, and at three dimensions it is the `1/r` general relativity has", Lst("the force falls as r^{-\\paren{D - 1}}", "\\Phi = \\int, one power weaker = " + Str(Call(K("Expr"), "show", []any{ pot_2 })) + "") }), Call(K("Inferences"), "step", []any{ "\\nabla^{2}\\Phi", Call(K("Expr"), "num", []any{ 0.0 }), via_2, Lst(Invoke(mine_2, []any{ "the flux through any shell" }), Invoke(mine_2, []any{ "\\Phi" })), "POISSON'S EQUATION, in the vacuum. A potential whose flux is conserved and whose sources are all in one place satisfies `\\nabla^{2}\\Phi = 0` everywhere else - which is what conserving the flux MEANS, read as a differential rather than as an integral. General relativity's weak field limit is `\\nabla^{2}\\Phi = 4\\pi G\\rho`, the same statement with the source put back", Lst("the flux through any shell is the same at every radius", "so the divergence away from the source is nothing") }), Call(K("Inferences"), "step", []any{ "the equation of motion", pull_2, via_2, Lst(Invoke(mine_2, []any{ "\\Phi" })), "THE GEODESIC EQUATION, in its weak field form `a = -\\nabla\\Phi`. General relativity gets this by making a body follow a geodesic of the metric; THESE RULES GET IT WITHOUT ONE - `propel` hands a body the momentum of what arrives at it, and what arrives is the flux, so the acceleration is the gradient of the potential. Two different arguments, the same equation, and neither borrowed from the other", Lst("a = -\\nabla\\Phi = " + Str(Call(K("Expr"), "show", []any{ pull_2 })) + "", "general relativity: the weak field limit of the geodesic equation", "these rules: momentum per tick from what arrives") }))
         }
         return nil
       })) }...)
@@ -13703,6 +13685,125 @@ func init() {
       }
       if true {
         return Call(K("Inferences"), "step", []any{ "b_{c}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ bc_0 }), Call(K("Expr"), "field", []any{ "\\bar{m}" })) }), "where a ray stops coming back", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE SHADOW, off the held metric alone - the one a body's move-or-emit gives, a clock and a ruler held where a body falls. The ruler is laid along the fall, so the metric is `A dt^{2} = B dr^{2} + r^{2}d\\Omega^{2}`, and a null ray turns where `r/\\sqrt{A} = b`; one aimed inside the least value of that never turns - it is kept. So the shadow's edge is that least value, and where it is taken is the photon sphere. With A·B = 1 and A = 1 - r_{s}/r this is Schwarzschild's metric exactly, so the shadow is general relativity's", Lst("a ray turns where r/\\sqrt{A} = b, and at three dimensions \\delta n_{f} = \\bar{m}/r, r_{s} = 2\\bar{m}", "\\bar{m}/b at the turning point = " + Str(Call(K("Expr"), "show", []any{ over_0 })) + "", "largest where its slope is nought: \\delta n_{f} = " + Str(Call(K("Fmt"), "fixed", []any{ sphere_0, 6.0 })) + ", the photon sphere at r = " + Str(Call(K("Fmt"), "fixed", []any{ Div(1.0, sphere_0), 4.0 })) + " \\bar{m}", "b_{c} = " + Str(Call(K("Fmt"), "fixed", []any{ bc_0, 4.0 })) + " \\bar{m}; general relativity's is 3\\sqrt{3} = " + Str(Call(K("Fmt"), "fixed", []any{ gr_0, 4.0 })) + "", Tern(Truthy(Call(K("Fmt"), "finite", []any{ index_0 })), func() any { return "the medium's index read as an isotropic metric instead gives " + Str(Call(K("Fmt"), "fixed", []any{ index_0, 4.0 })) + " \\bar{m}: the same to first order, not to the second - it is not the metric a held clock and ruler read" }, func() any { return "the medium's index gives no metric of its own here" })) })
+      }
+      return nil
+    })
+    c.Static("in_m", func(self any, a1 []any) any {
+      var e_0 any = Arg(a1, 0); _ = e_0; var u_0 any = Arg(a1, 1); _ = u_0;
+      if true {
+        return Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ e_0, "r_{s}", Call(K("Expr"), "num", []any{ 2.0 }) }), "D", Call(K("Expr"), "num", []any{ 3.0 }) }), "r", Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ u_0 }), Neg(1.0) }) }) })
+      }
+      return nil
+    })
+    c.Static("at_nought", func(self any, a1 []any) any {
+      var e_0 any = Arg(a1, 0); _ = e_0; var u_0 any = Arg(a1, 1); _ = u_0; var times_0 any = Arg(a1, 2); _ = times_0;
+      var env_0 any
+      env_0 = Make(Node)
+      _ = env_0
+      SetAt(env_0, u_0, 0.0)
+      Set(env_0, Str("L"), 1.0)
+      var d_0 any
+      d_0 = e_0
+      _ = d_0
+      for i1 := 0.0; i1 < Num(times_0); i1++ {
+        var __1 any = Box(i1)
+        _ = __1
+        d_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "d", []any{ d_0, u_0 }) })
+      }
+      if true {
+        return Call(K("Expr"), "numeric", []any{ d_0, env_0 })
+      }
+      return nil
+    })
+    c.Static("held_tests", func(self any, a1 []any) any {
+      var s_0 any = Arg(a1, 0); _ = s_0; var A_0 any = Arg(a1, 1); _ = A_0; var B_0 any = Arg(a1, 2); _ = B_0;
+      var u_0 any
+      u_0 = "u"
+      _ = u_0
+      var Au_0 any
+      Au_0 = Call(K("Inferences"), "in_m", []any{ Get(A_0, "to"), u_0 })
+      _ = Au_0
+      var Bu_0 any
+      Bu_0 = Call(K("Inferences"), "in_m", []any{ Get(B_0, "to"), u_0 })
+      _ = Bu_0
+      var newton_0 any
+      newton_0 = Sub(0.0, Div(Call(K("Inferences"), "at_nought", []any{ Au_0, u_0, 1.0 }), 2.0))
+      _ = newton_0
+      var gamma_0 any
+      gamma_0 = Div(Call(K("Inferences"), "at_nought", []any{ Bu_0, u_0, 1.0 }), 2.0)
+      _ = gamma_0
+      var beta_0 any
+      beta_0 = Add(gamma_0, Div(Call(K("Inferences"), "at_nought", []any{ Au_0, u_0, 2.0 }), 4.0))
+      _ = beta_0
+      var iA_0 any
+      iA_0 = Call(s_0, "fact", []any{ "is", "A in r" })
+      _ = iA_0
+      var iB_0 any
+      iB_0 = Call(s_0, "fact", []any{ "is", "B in r" })
+      _ = iB_0
+      var dn_0 any
+      dn_0 = "\\delta n_{f}"
+      _ = dn_0
+      var ibeta_0 any
+      ibeta_0 = Tern(Truthy(Eq(iA_0, nil)), func() any { return math.NaN() }, func() any { return Div(Call(K("Inferences"), "at_nought", []any{ Get(iA_0, "to"), dn_0, 2.0 }), 4.0) })
+      _ = ibeta_0
+      var igamma_0 any
+      igamma_0 = Tern(Truthy(Eq(iB_0, nil)), func() any { return math.NaN() }, func() any { return Div(Call(K("Inferences"), "at_nought", []any{ Get(iB_0, "to"), dn_0, 1.0 }), 2.0) })
+      _ = igamma_0
+      var via_0 any
+      via_0 = "the held metric, read for the classical tests"
+      _ = via_0
+      var ppn_0 any
+      ppn_0 = Call(K("Inferences"), "step", []any{ "\\gamma \\aside{PPN}", Call(K("Expr"), "num", []any{ gamma_0 }), via_0, Lst(Get(A_0, "key"), Get(B_0, "key")), "THE POST-NEWTONIAN PARAMETERS, off the held metric's own slopes. A's first slope is Newton's (the potential, once); B's is how much space one unit of the potential curves, \\gamma; and what A has at the second order beyond what the area radius puts there is \\beta. Both are general relativity's ONE - not chosen, read off a clock and a ruler held where a body falls", Lst("A in u = \\bar{m}/r: " + Str(Call(K("Expr"), "show", []any{ Au_0 })) + ", B: " + Str(Call(K("Expr"), "show", []any{ Bu_0 })) + "", "A = 1 - 2U + 2\\paren{\\beta - \\gamma}U^{2}, B = 1 + 2\\gamma U, in the area radius", "Newton: -A'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ newton_0, 6.0 })) + "", "\\gamma = B'/2 = " + Str(Call(K("Fmt"), "fixed", []any{ gamma_0, 6.0 })) + "", "\\beta = \\gamma + A''/4 = " + Str(Call(K("Fmt"), "fixed", []any{ beta_0, 6.0 })) + "", "Cassini: \\gamma - 1 = \\paren{2.1 \\pm 2.3}·10^{-5}; the perihelia: \\beta - 1 below 10^{-4}", Tern(Truthy(Call(K("Fmt"), "finite", []any{ ibeta_0 })), func() any { return "the medium's index read as an isotropic metric: \\gamma = " + Str(Call(K("Fmt"), "fixed", []any{ igamma_0, 4.0 })) + ", \\beta = " + Str(Call(K("Fmt"), "fixed", []any{ ibeta_0, 4.0 })) + " - a held clock does not read it" }, func() any { return "the medium's index gives no metric of its own here" })) })
+      _ = ppn_0
+      var L_0 any
+      L_0 = Call(K("Expr"), "field", []any{ "L" })
+      _ = L_0
+      var q_0 any
+      q_0 = Call(K("Expr"), "mul", []any{ Lst(Au_0, Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "pown", []any{ L_0, Neg(2.0) }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ u_0 }), 2.0 })) })) })
+      _ = q_0
+      var orbit_0 any
+      orbit_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Neg(0.5) }), Call(K("Expr"), "d", []any{ q_0, u_0 })) }), Call(K("Expr"), "field", []any{ u_0 })) }) })
+      _ = orbit_0
+      var mu_0 any
+      mu_0 = Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 0.0 })
+      _ = mu_0
+      var lin_0 any
+      lin_0 = Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 1.0 })
+      _ = lin_0
+      var eps_0 any
+      eps_0 = Div(Call(K("Inferences"), "at_nought", []any{ orbit_0, u_0, 2.0 }), 2.0)
+      _ = eps_0
+      var k_0 any
+      k_0 = Mul(Mul(2.0, eps_0), mu_0)
+      _ = k_0
+      k_0 = Div(M_round((Mul(k_0, Power(10.0, 9.0)))), Power(10.0, 9.0))
+      var m_sun_0 any
+      m_sun_0 = 1476.625
+      _ = m_sun_0
+      var a_m_0 any
+      a_m_0 = 57909050000.0
+      _ = a_m_0
+      var e_m_0 any
+      e_m_0 = 0.205630
+      _ = e_m_0
+      var lap_0 any
+      lap_0 = Div(Mul(Mul(k_0, math.Pi), m_sun_0), (Mul(a_m_0, (Sub(1.0, Mul(e_m_0, e_m_0))))))
+      _ = lap_0
+      var century_0 any
+      century_0 = Mul(Div(Mul(lap_0, 36525.0), 87.9691), 206264.806)
+      _ = century_0
+      var ipp_0 any
+      ipp_0 = Tern(Truthy(Call(K("Fmt"), "finite", []any{ ibeta_0 })), func() any { return Div((Sub(Add(2.0, Mul(2.0, igamma_0)), ibeta_0)), 3.0) }, func() any { return math.NaN() })
+      _ = ipp_0
+      var peri_0 any
+      peri_0 = Call(K("Inferences"), "step", []any{ "\\Delta\\varphi", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ k_0 }), Call(K("Expr"), "field", []any{ "\\pi" }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "pown", []any{ Call(K("Expr"), "field", []any{ "a\\paren{1 - e^{2}}" }), Neg(1.0) })) }), "a bound orbit in the held metric", Lst(Get(A_0, "key"), Get(B_0, "key")), "THE PERIHELION, off the held metric's time part. A body's energy and its turning are kept along its path (A is static and round), so with u = 1/r its orbit obeys `(du/d\\varphi)^{2} = E^{2}/L^{2} - A(u)(1/L^{2} + u^{2})` - and differentiated, `u'' + u = \\mu + \\epsilon u^{2}`. Newton's ellipse is the first term alone; the second, which A's slope times the turning's u^{2} puts there, turns the ellipse a little every lap: `2\\pi\\epsilon\\mu`. That is general relativity's 6\\pi GM/a(1 - e^{2}), and Mercury's 43 seconds of arc a century", Lst("u'' + u = -\\frac{1}{2}\\frac{d}{du}\\left[A(u)\\paren{L^{-2} + u^{2}}\\right] + u = " + Str(Call(K("Expr"), "show", []any{ orbit_0 })) + "", "\\mu = " + Str(Call(K("Fmt"), "fixed", []any{ mu_0, 6.0 })) + "/L^{2}, linear " + Str(Call(K("Fmt"), "fixed", []any{ lin_0, 6.0 })) + ", \\epsilon = " + Str(Call(K("Fmt"), "fixed", []any{ eps_0, 6.0 })) + "\\bar{m}", "a lap: 2\\pi\\epsilon\\mu = " + Str(Call(K("Fmt"), "fixed", []any{ k_0, 6.0 })) + "\\pi\\bar{m}/a\\paren{1 - e^{2}}; general relativity's 6\\pi", "Mercury (GM/c^{2} = 1476.6 m, a = 5.79·10^{10} m, e = 0.2056): " + Str(Call(K("Fmt"), "fixed", []any{ century_0, 2.0 })) + "'' a century; measured 42.98 \\pm 0.04", Tern(Truthy(Call(K("Fmt"), "finite", []any{ ipp_0 })), func() any { return "the medium's index as an isotropic metric would give \\paren{2 + 2\\gamma - \\beta}/3 = " + Str(Call(K("Fmt"), "fixed", []any{ ipp_0, 4.0 })) + " of it" }, func() any { return "the medium's index gives no metric of its own here" })) })
+      _ = peri_0
+      var delay_0 any
+      delay_0 = Call(K("Inferences"), "step", []any{ "\\Delta t \\aside{Shapiro}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "num", []any{ Add(1.0, gamma_0) }), Call(K("Expr"), "field", []any{ "\\bar{m}" }), Call(K("Expr"), "log", []any{ Call(K("Expr"), "field", []any{ "\\frac{4r_{1}r_{2}}{b^{2}}" }) })) }), "light passing a body, timed", Lst(Get(B_0, "key"), Get(A_0, "key")), "THE DELAY, off the held metric: light has no beat, so a stretch of its path costs \\sqrt{B/A} ticks a cell, and past a body that is one more than flat by \\paren{1 + \\gamma}U - the clock's share and the ruler's. Summed along a straight path from r_{1} to r_{2} that grazes at b, the excess is \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}: Shapiro's, with \\gamma = 1", Lst("\\sqrt{B/A} = 1 + \\paren{1 + \\gamma}U + \\ldots, \\gamma = " + Str(Call(K("Fmt"), "fixed", []any{ gamma_0, 6.0 })) + "", "\\int \\paren{1 + \\gamma}\\bar{m}/\\sqrt{b^{2} + z^{2}}\\,dz from -r_{1} to r_{2} = \\paren{1 + \\gamma}\\bar{m}\\ln\\paren{4r_{1}r_{2}/b^{2}}", "Earth to Saturn grazing the sun, there and back: " + Str(Call(K("Fmt"), "fixed", []any{ Mul(Mul(Mul(2.0, (Add(1.0, gamma_0))), 4.925491), M_ln((Div(Mul(Mul(4.0, 149597870700.0), 1433530000000.0), (Mul(695700000.0, 695700000.0)))))), 1.0 })) + " \\mu s") })
+      _ = delay_0
+      if true {
+        return Lst(ppn_0, peri_0, delay_0)
       }
       return nil
     })
@@ -36035,6 +36136,30 @@ func init() {
       return Make(Theorem, Kw("id", "gravity.shadow"), Kw("body", Fn(func(a1 []any) any {
         if true {
           return Make("Asked", []any{ Kw("asks", "the metric decides which rays a body keeps. How wide is the shadow it casts - and is that general relativity's?"), Kw("about", "b_{c}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.perihelion", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.perihelion"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "a bound orbit in the held metric is not quite an ellipse. How far does it turn each lap - and is that Mercury's?"), Kw("about", "\\Delta\\varphi") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.shapiro", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.shapiro"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "light passing a body has to cross the slow clock and the long ruler both. How late does it arrive?"), Kw("about", "\\Delta t \\aside{Shapiro}") }...)
+        }
+        return nil
+      })))
+    })
+    c.StaticField("theorem gravity.ppn", func(self any) any {
+      return Make(Theorem, Kw("id", "gravity.ppn"), Kw("body", Fn(func(a1 []any) any {
+        if true {
+          return Make("Asked", []any{ Kw("asks", "the post-Newtonian parameters say how much space one unit of the potential curves, and how much the potential adds to itself. What are they off the held metric?"), Kw("about", "\\gamma \\aside{PPN}") }...)
         }
         return nil
       })))

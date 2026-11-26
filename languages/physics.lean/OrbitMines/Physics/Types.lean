@@ -1096,8 +1096,10 @@ ray_static "ehrhart" : Inference
 ray_static "screening" : Inference
 ray_static "refracting" : Inference
 ray_static "relativity" : Inference
-ray_static "schwarzschild" : Inference
 ray_static "held_shadow" (s_0 : Store) (A_0 : Fact) (B_0 : Fact) : Step
+ray_static "in_m" (e_0 : Expr) (u_0 : String) : Expr
+ray_static "at_nought" (e_0 : Expr) (u_0 : String) (times_0 : Float) : Float
+ray_static "held_tests" (s_0 : Store) (A_0 : Fact) (B_0 : Fact) : (RList Step)
 ray_static "metric_of" : Inference
 ray_static "accumulating" : Inference
 ray_static "substituting" : Inference
@@ -2625,6 +2627,9 @@ ray_sfield "theorem gravity.closing" : Theorem
 ray_sfield "theorem gravity.made" : Theorem
 ray_sfield "theorem gravity.metric" : Theorem
 ray_sfield "theorem gravity.shadow" : Theorem
+ray_sfield "theorem gravity.perihelion" : Theorem
+ray_sfield "theorem gravity.shapiro" : Theorem
+ray_sfield "theorem gravity.ppn" : Theorem
 ray_sfield "rule S.2" : Rule
 ray_sfield "rule S.v" : Rule
 end G

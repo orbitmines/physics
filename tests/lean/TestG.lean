@@ -1497,7 +1497,7 @@ initialize addTest "tests/theorems.ray:15 on closure" (do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← ωeqv (← dot! (← ωget it "ids") rlength ()) (65 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← dot! (← ωget it \"ids\") rlength ()) (65 : Float))"))
+  return (if truthy (← ωeqv (← dot! (← ωget it "ids") rlength ()) (68 : Float)) then "pass" else "failed: " ++ "(← ωeqv (← dot! (← ωget it \"ids\") rlength ()) (68 : Float))"))
 
 initialize addTest "tests/theorems.ray:16 on closure" (do
   let it := (← ωget (← cls% G) "proved")
@@ -1526,15 +1526,6 @@ initialize addTest "tests/theorems.ray:19 on closure" (do
     sink (← (toValue it).dynGet "tick")
   return (if truthy (← ωeqv (← call! it "concluded" (("gravity.shadow" : String))) ("b_{c} = 5.196152423·\\bar{m}" : String)) then "pass" else "failed: " ++ "(← ωeqv (← call! it \"concluded\" ((\"gravity.shadow\" : String))) (\"b_{c} = 5.196152423·\\\\bar{m}\" : String))"))
 
-initialize addTest "tests/theorems.ray:20 on closure" (do
-  let it := (← ωget (← cls% G) "proved")
-  let mut guard := 0
-  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
-    guard := guard + 1
-    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
-    sink (← (toValue it).dynGet "tick")
-  return (if truthy (← call! it "standing" (("gravity.closing" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.closing\" : String)))"))
-
 initialize addTest "tests/theorems.ray:21 on closure" (do
   let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
@@ -1542,7 +1533,7 @@ initialize addTest "tests/theorems.ray:21 on closure" (do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← call! it "standing" (("gravity.coincidence" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.coincidence\" : String)))"))
+  return (if truthy (← call! it "standing" (("gravity.perihelion" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.perihelion\" : String)))"))
 
 initialize addTest "tests/theorems.ray:22 on closure" (do
   let it := (← ωget (← cls% G) "proved")
@@ -1551,7 +1542,7 @@ initialize addTest "tests/theorems.ray:22 on closure" (do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← call! it "standing" (("gravity.bent" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.bent\" : String)))"))
+  return (if truthy (← call! it "standing" (("gravity.shapiro" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.shapiro\" : String)))"))
 
 initialize addTest "tests/theorems.ray:23 on closure" (do
   let it := (← ωget (← cls% G) "proved")
@@ -1560,7 +1551,7 @@ initialize addTest "tests/theorems.ray:23 on closure" (do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← call! it "standing" (("gravity.standing" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.standing\" : String)))"))
+  return (if truthy (← call! it "standing" (("gravity.ppn" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.ppn\" : String)))"))
 
 initialize addTest "tests/theorems.ray:24 on closure" (do
   let it := (← ωget (← cls% G) "proved")
@@ -1569,9 +1560,54 @@ initialize addTest "tests/theorems.ray:24 on closure" (do
     guard := guard + 1
     if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
     sink (← (toValue it).dynGet "tick")
-  return (if truthy (← call! it "standing" (("gravity.mass" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.mass\" : String)))"))
+  return (if truthy (← call! it "standing" (("gravity.coupling" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.coupling\" : String)))"))
 
 initialize addTest "tests/theorems.ray:25 on closure" (do
+  let it := (← ωget (← cls% G) "proved")
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.closing" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.closing\" : String)))"))
+
+initialize addTest "tests/theorems.ray:26 on closure" (do
+  let it := (← ωget (← cls% G) "proved")
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.coincidence" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.coincidence\" : String)))"))
+
+initialize addTest "tests/theorems.ray:27 on closure" (do
+  let it := (← ωget (← cls% G) "proved")
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.bent" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.bent\" : String)))"))
+
+initialize addTest "tests/theorems.ray:28 on closure" (do
+  let it := (← ωget (← cls% G) "proved")
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.standing" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.standing\" : String)))"))
+
+initialize addTest "tests/theorems.ray:29 on closure" (do
+  let it := (← ωget (← cls% G) "proved")
+  let mut guard := 0
+  while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do
+    guard := guard + 1
+    if guard > 8 || !(← ωhas (toValue it) "tick") then return "skip"
+    sink (← (toValue it).dynGet "tick")
+  return (if truthy (← call! it "standing" (("gravity.mass" : String))) then "pass" else "failed: " ++ "(← call! it \"standing\" ((\"gravity.mass\" : String)))"))
+
+initialize addTest "tests/theorems.ray:30 on closure" (do
   let it := (← ωget (← cls% G) "proved")
   let mut guard := 0
   while !truthy (← ωeqv (← ωget it "theory") ("G" : String)) do

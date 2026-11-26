@@ -113,13 +113,13 @@ class TestG(unittest.TestCase):
         if isinstance(got, BaseException): raise got
         self.assertTrue(got, "it.standing(f\"gravity.horizon\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:15 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: eq(len(it.ids), 65))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:15 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: eq(len(it.ids), 68))
 
     def test_tests_theorems_ray_15_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:15 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "eq(len(it.ids), 65)")
+        self.assertTrue(got, "eq(len(it.ids), 68)")
 
     _want("closure", lambda: G.proved, "tests/theorems.ray:16 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.made"))
 
@@ -145,50 +145,82 @@ class TestG(unittest.TestCase):
         if isinstance(got, BaseException): raise got
         self.assertTrue(got, "eq(it.concluded(f\"gravity.shadow\"), f\"b_{{c}} = 5.196152423·\\\\bar{{m}}\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:20 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.closing"))
-
-    def test_tests_theorems_ray_20_on_closure(self):
-        got = _outcome("closure", "tests/theorems.ray:20 on closure")
-        if got is _SKIP: self.skipTest("the refinement never held")
-        if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "it.standing(f\"gravity.closing\")")
-
-    _want("closure", lambda: G.proved, "tests/theorems.ray:21 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.coincidence"))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:21 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.perihelion"))
 
     def test_tests_theorems_ray_21_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:21 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "it.standing(f\"gravity.coincidence\")")
+        self.assertTrue(got, "it.standing(f\"gravity.perihelion\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:22 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.bent"))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:22 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.shapiro"))
 
     def test_tests_theorems_ray_22_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:22 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "it.standing(f\"gravity.bent\")")
+        self.assertTrue(got, "it.standing(f\"gravity.shapiro\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:23 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.standing"))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:23 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.ppn"))
 
     def test_tests_theorems_ray_23_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:23 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "it.standing(f\"gravity.standing\")")
+        self.assertTrue(got, "it.standing(f\"gravity.ppn\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:24 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.mass"))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:24 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.coupling"))
 
     def test_tests_theorems_ray_24_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:24 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
-        self.assertTrue(got, "it.standing(f\"gravity.mass\")")
+        self.assertTrue(got, "it.standing(f\"gravity.coupling\")")
 
-    _want("closure", lambda: G.proved, "tests/theorems.ray:25 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.newton"))
+    _want("closure", lambda: G.proved, "tests/theorems.ray:25 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.closing"))
 
     def test_tests_theorems_ray_25_on_closure(self):
         got = _outcome("closure", "tests/theorems.ray:25 on closure")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "it.standing(f\"gravity.closing\")")
+
+    _want("closure", lambda: G.proved, "tests/theorems.ray:26 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.coincidence"))
+
+    def test_tests_theorems_ray_26_on_closure(self):
+        got = _outcome("closure", "tests/theorems.ray:26 on closure")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "it.standing(f\"gravity.coincidence\")")
+
+    _want("closure", lambda: G.proved, "tests/theorems.ray:27 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.bent"))
+
+    def test_tests_theorems_ray_27_on_closure(self):
+        got = _outcome("closure", "tests/theorems.ray:27 on closure")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "it.standing(f\"gravity.bent\")")
+
+    _want("closure", lambda: G.proved, "tests/theorems.ray:28 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.standing"))
+
+    def test_tests_theorems_ray_28_on_closure(self):
+        got = _outcome("closure", "tests/theorems.ray:28 on closure")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "it.standing(f\"gravity.standing\")")
+
+    _want("closure", lambda: G.proved, "tests/theorems.ray:29 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.mass"))
+
+    def test_tests_theorems_ray_29_on_closure(self):
+        got = _outcome("closure", "tests/theorems.ray:29 on closure")
+        if got is _SKIP: self.skipTest("the refinement never held")
+        if isinstance(got, BaseException): raise got
+        self.assertTrue(got, "it.standing(f\"gravity.mass\")")
+
+    _want("closure", lambda: G.proved, "tests/theorems.ray:30 on closure", lambda it: eq(it.theory, f"G"), 8, lambda it: it.standing(f"gravity.newton"))
+
+    def test_tests_theorems_ray_30_on_closure(self):
+        got = _outcome("closure", "tests/theorems.ray:30 on closure")
         if got is _SKIP: self.skipTest("the refinement never held")
         if isinstance(got, BaseException): raise got
         self.assertTrue(got, "it.standing(f\"gravity.newton\")")
