@@ -8016,20 +8016,71 @@ enum C_Prover {
       try set(scale_0, "derivation", list(straight_0, lam_0))
       var g_0: V = V.null; g_0 = try call((try K("Expr")), "field", [V.s(cat("g_{N}"))])
       var a_0: V = V.null; a_0 = try call((try K("Expr")), "field", [V.s(cat("a_{0}"))])
+      var felt_0: V = V.null; felt_0 = try call((try K("Expr")), "field", [V.s(cat("g"))])
+      var lasts_0: V = V.null; lasts_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(v_0, try call((try K("Expr")), "pown", [felt_0, try neg(1.0)]))])])
+      var lasting_0: V = V.null; lasting_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\tau \\aside{a heading}")), lasts_0]), V.s(cat("how long a heading lasts")), list(try get(try get(straight_0, "fact"), "key")), V.s(cat("", try str(moved_0), " keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips ", try str(sent_0), " sends with cancel fore and aft; accelerating, they pile up for that long")), list(V.s(cat("what a heading keeps: v = ", try str(try call((try K("Expr")), "show", [v_0])), "")), V.s(cat("\\tau = v/g = ", try str(try call((try K("Expr")), "show", [lasts_0])), "")))])
+      try set(lasting_0, "derivation", list(straight_0))
+      var room_0: V = V.null; room_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "mul", [list(own_0, lasts_0)])])
+      var roomed_0: V = V.null; roomed_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("the room made in a heading")), room_0]), V.s(cat("the room the vacuum makes meanwhile")), list(try get(try get(lasting_0, "fact"), "key"), try get(try get(lam_0, "fact"), "key")), V.s(cat("what settles the mismatch is the room the vacuum makes while it piles up: H_{\\Lambda} a tick, the growth it would have had no mass been there (", try str(met_0), " at every meeting). Over a heading's time that is H_{\\Lambda}v/g - which is a_{0}/g, the scale over what is felt")), list(V.s(cat("H_{\\Lambda} = ", try str(try call((try K("Expr")), "show", [own_0])), "")), V.s(cat("H_{\\Lambda}\\tau = ", try str(try call((try K("Expr")), "show", [room_0])), "")), V.s(cat("= a_{0}/g, a_{0} = vH_{\\Lambda} = ", try str(try call((try K("Expr")), "show", [a0_0])), "")))])
+      try set(roomed_0, "derivation", list(lasting_0, lam_0))
       var half_0: V = V.null; half_0 = try call((try K("Expr")), "mul", [list(g_0, try call((try K("Expr")), "num", [0.5]))])
       var got_0: V = V.null; got_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "add", [list(half_0, try call((try K("Expr")), "pown", [try call((try K("Expr")), "add", [list(try call((try K("Expr")), "mul", [list(half_0, half_0)]), try call((try K("Expr")), "mul", [list(g_0, a_0)]))]), 0.5]))])])
-      var closing_0: V = V.null; closing_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("F_{g} \\aside{closing}")), got_0]), V.s(cat("what is felt, with the mismatch closed")), list(try get(try get(scale_0, "fact"), "key")), V.s(cat("what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling")), list(V.s(cat("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}")), V.s(cat("g^{2} - g_{N}g - g_{N}a_{0} = 0")), V.s(cat("strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3")), V.s(cat("F_{g} = ", try str(try call((try K("Expr")), "show", [got_0])), "")))])
-      try set(closing_0, "derivation", list(scale_0))
+      var check_0: V = V.null; check_0 = makeNode()
+      try set(check_0, Name(try str(V.s(cat("g_{N}")))), 0.37)
+      try set(check_0, Name(try str(V.s(cat("a_{0}")))), 0.91)
+      var root_0: V = V.null; root_0 = try call((try K("Expr")), "numeric", [got_0, check_0])
+      var residual_0: V = V.null; residual_0 = try sub(try sub(try mul(root_0, root_0), try mul(0.37, root_0)), try mul(0.37, 0.91))
+      var deep_0: V = V.null; deep_0 = makeNode()
+      try set(deep_0, Name(try str(V.s(cat("g_{N}")))), 0.00000001)
+      try set(deep_0, Name(try str(V.s(cat("a_{0}")))), 1.0)
+      var weak_0: V = V.null; weak_0 = try div(try call((try K("Expr")), "numeric", [got_0, deep_0]), try m_sqrt(0.00000001))
+      var strong__0: V = V.null; strong__0 = makeNode()
+      try set(strong__0, Name(try str(V.s(cat("g_{N}")))), 100000000.0)
+      try set(strong__0, Name(try str(V.s(cat("a_{0}")))), 1.0)
+      var strong_0: V = V.null; strong_0 = try div(try call((try K("Expr")), "numeric", [got_0, strong__0]), 100000000.0)
+      var closing_0: V = V.null; closing_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("F_{g} \\aside{closing}")), got_0]), V.s(cat("what is felt, with the mismatch closed")), list(try get(try get(roomed_0, "fact"), "key"), try get(try get(scale_0, "fact"), "key")), V.s(cat("what is felt is what arrives, g_{N}, landed on the room made in a heading on top of itself: g = g_{N}\\paren{1 + a_{0}/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_{N}, a weak one the geometric mean \\sqrt{g_{N}a_{0}}, and with g_{N} falling as the shell a speed on a circle stops falling")), list(V.s(cat("g = g_{N}\\paren{1 + H_{\\Lambda}\\tau} = g_{N}\\paren{1 + \\frac{a_{0}}{g}}")), V.s(cat("g^{2} - g_{N}g - g_{N}a_{0} = 0, so F_{g} = ", try str(try call((try K("Expr")), "show", [got_0])), "")), V.s(cat("checked at g_{N} = 0.37, a_{0} = 0.91: the residual is ", try str(try call((try K("Fmt")), "fixed", [residual_0, 12.0])), "")), V.s(cat("weak, g_{N} = 10^{-8}a_{0}: F_{g}/\\sqrt{g_{N}a_{0}} = ", try str(try call((try K("Fmt")), "fixed", [weak_0, 6.0])), "; strong, 10^{8}a_{0}: F_{g}/g_{N} = ", try str(try call((try K("Fmt")), "fixed", [strong_0, 6.0])), "")), V.s(cat("on a circle at D = 3, v^{2}/r = \\sqrt{GMa_{0}}/r, so v^{4} = GMa_{0}: flat, and the Tully-Fisher law")))])
+      try set(closing_0, "derivation", list(roomed_0, scale_0))
       var psi_0: V = V.null; psi_0 = try call((try K("Expr")), "field", [V.s(cat("\\psi"))])
       var w_0: V = V.null; w_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [got_0, g_0])])
-      var made_0: V = V.null; made_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("-\\nabla^{2}\\psi")), try call((try K("Expr")), "field", [V.s(cat("\\nabla\\cdot\\paren{\\paren{", try str(try call((try K("Expr")), "show", [w_0])), "}\\hat{g}_{N}}"))])]), V.s(cat("the space made, as a source")), list(try get(try get(closing_0, "fact"), "key")), V.s(cat("the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", try str(met_0), "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made")), list(V.s(cat("w = F_{g} - g_{N} = ", try str(try call((try K("Expr")), "show", [w_0])), ", along \\hat{g}_{N}")), V.s(cat("made where w changes: \\nabla\\cdot w")), V.s(cat("a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w")))])
+      var rr_0: V = V.null; rr_0 = try call((try K("Expr")), "sym", [V.s(cat("r"))])
+      var w3_0: V = V.null; w3_0 = try call((try K("Expr")), "replace", [try call((try K("Expr")), "replace", [w_0, V.s(cat("g_{N}")), try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "field", [V.s(cat("m"))]), try call((try K("Expr")), "pown", [rr_0, try neg(2.0)]))])]), V.s(cat("a_{0}")), try call((try K("Expr")), "num", [1.0])])
+      var flux_0: V = V.null; flux_0 = try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "pown", [rr_0, 2.0]), w3_0)])
+      var div3_0: V = V.null; div3_0 = try call((try K("Expr")), "simplify", [try call((try K("Expr")), "mul", [list(try call((try K("Expr")), "pown", [rr_0, try neg(2.0)]), try call((try K("Expr")), "d", [flux_0, V.s(cat("r"))]))])])
+      var made_at_0: V = V.null; made_at_0 = try m_join(try m_map(list(0.3, 1.0, 3.0, 10.0), V.fn({ (a3: [V]) throws -> V in
+        var x_2: V = arg(a3, 0);
+        return try call((try K("Fmt")), "fixed", [try call((try K("Expr")), "numeric", [div3_0, try call((try K("Prover")), "at_rm", [x_2])]), 5.0])
+        return V.null
+      })), V.s(cat(", ")))
+      var r0_0: V = V.null; r0_0 = 0.2
+      var r1_0: V = V.null; r1_0 = 8.0
+      var steps_0: V = V.null; steps_0 = 4000.0
+      var summed_0: V = V.null; summed_0 = 0.0
+      do {
+        var i1: Double = 0
+        while i1 < num(steps_0) {
+          var i_1: V = V.num(i1)
+          var x_1: V = V.null; x_1 = try add(r0_0, try div(try mul((try sub(r1_0, r0_0)), (try add(i_1, 0.5))), steps_0))
+          summed_0 = try add(summed_0, try div(try mul(try mul(try mul(try call((try K("Expr")), "numeric", [div3_0, try call((try K("Prover")), "at_rm", [x_1])]), x_1), x_1), (try sub(r1_0, r0_0))), steps_0))
+          i1 += 1
+        }
+      }
+      var carried_0: V = V.null; carried_0 = try sub(try call((try K("Expr")), "numeric", [flux_0, try call((try K("Prover")), "at_rm", [r1_0])]), try call((try K("Expr")), "numeric", [flux_0, try call((try K("Prover")), "at_rm", [r0_0])]))
+      var made_0: V = V.null; made_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("-\\nabla^{2}\\psi")), try call((try K("Expr")), "field", [V.s(cat("\\nabla\\cdot\\paren{\\paren{", try str(try call((try K("Expr")), "show", [w_0])), "}\\hat{g}_{N}}"))])]), V.s(cat("the space made, as a source")), list(try get(try get(closing_0, "fact"), "key")), V.s(cat("the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", try str(met_0), "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence")), list(V.s(cat("w = F_{g} - g_{N} = ", try str(try call((try K("Expr")), "show", [w_0])), ", along \\hat{g}_{N}")), V.s(cat("made where w changes: \\nabla\\cdot w; a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w")), V.s(cat("round one body, D = 3, g_{N} = \\bar{m}/r^{2}, a_{0} = 1: made = r^{-2}\\frac{d}{dr}\\paren{r^{2}w} = ", try str(try call((try K("Expr")), "show", [div3_0])), "")), V.s(cat("made at r = 0.3, 1, 3, 10: ", try str(made_at_0), " - all positive: space is made, not taken")), V.s(cat("summed from r = ", try str(try call((try K("Fmt")), "fixed", [r0_0, 1.0])), " to ", try str(try call((try K("Fmt")), "fixed", [r1_0, 1.0])), ": ", try str(try call((try K("Fmt")), "fixed", [summed_0, 6.0])), ", against what w carries across the two shells ", try str(try call((try K("Fmt")), "fixed", [carried_0, 6.0])), " - so the made space's record is w itself, and the sphere gives the closing back")))])
       try set(made_0, "derivation", list(closing_0, potential_0))
       var field_0: V = V.null; field_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("g \\aside{field}")), try call((try K("Prover")), "neat", [try call((try K("Expr")), "sub", [g_0, try call((try K("Expr")), "field", [V.s(cat("\\nabla\\psi"))])])])]), V.s(cat("what is felt, solved over the whole field")), list(try get(try get(made_0, "fact"), "key"), try get(try get(closing_0, "fact"), "key")), V.s(cat("what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve")), list(V.s(cat("g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w")), V.s(cat("no curl: \\nabla\\times g = 0, as a record's slope")), V.s(cat("a sphere: \\nabla\\psi = -w, so g = F_{g}")), V.s(cat("a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)")))])
       try set(field_0, "derivation", list(made_0))
       var ratio_0: V = V.null; ratio_0 = try call((try K("Prover")), "neat", [try call((try K("Expr")), "div", [a0_0, own_0])])
       var against_0: V = V.null; against_0 = try call((try K("Step")), "of", [try call((try K("Fact")), "stands", [V.s(cat("\\frac{a_{0}}{cH}")), ratio_0]), V.s(cat("the scale against the vacuum's growth")), list(try get(try get(scale_0, "fact"), "key"), try get(try get(lam_0, "fact"), "key")), V.s(cat("a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183")), list(V.s(cat("a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}")), V.s(cat("\\frac{a_{0}}{cH_{vac}} = ", try str(try call((try K("Expr")), "show", [try call((try K("Prover")), "neat", [ratio_0])])), "")), V.s(cat("against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")))])
       try set(against_0, "derivation", list(scale_0))
-      return list(straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0)
+      return list(straight_0, potential_0, lam_0, scale_0, lasting_0, roomed_0, closing_0, made_0, field_0, against_0)
+      return V.null
+    })
+    c.statik("at_rm", { (this_: V, a1: [V]) throws -> V in
+      var x_0: V = arg(a1, 0);
+      var e_0: V = V.null; e_0 = makeNode()
+      try set(e_0, Name(try str(V.s(cat("r")))), x_0)
+      try set(e_0, Name(try str(V.s(cat("m")))), 1.0)
+      return e_0
       return V.null
     })
     c.method("leftover", { (this_: V, a1: [V]) throws -> V in

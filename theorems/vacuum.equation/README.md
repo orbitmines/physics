@@ -373,28 +373,52 @@ a_0 = vH_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}
 
 CREATION fires only at a free point and lights every way of it, so the vacuum pulses: a point fires, its rays leave, and it is free again the tick after. EMISSION sends only on the ticks a source stands - it moves or it emits - so whether what it sends meets the vacuum's lit half or its dark half is a parity, and every tick it moves flips it, the opposite way fore and aft. At a steady speed the flips cancel; while it accelerates they do not, and what cuts them off is the vacuum making room where they are: the rate it would grow at, carried at what a heading keeps straight. That is the scale an acceleration is measured against, the same at every place and every epoch
 
+**\tau \aside{a heading} = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·g}**  
+<sub>theorem · how long a heading lasts</sub>  
+
+```
+what a heading keeps: v = \frac{1}{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}
+\tau = v/g = \frac{1}{\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·g}
+```
+
+MOVEMENT keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips EMISSION sends with cancel fore and aft; accelerating, they pile up for that long
+
+**the room made in a heading = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D·\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·g}**  
+<sub>theorem · the room the vacuum makes meanwhile</sub>  
+
+```
+H_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D}
+H_\Lambda\tau = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{D·\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·g}
+= a_0/g, a_0 = vH_\Lambda = \frac{2·\sigma·F·\rho_\infty^(2)·\paren{1 - \rho_\infty}}{\paren{\frac{DEG·\rho_\infty^(2)}{2·\paren{1 - \rho_\infty}} + 1}·D}
+```
+
+what settles the mismatch is the room the vacuum makes while it piles up: H_\Lambda a tick, the growth it would have had no mass been there (ANNIHILATION at every meeting). Over a heading's time that is H_\Lambdav/g - which is a_0/g, the scale over what is felt
+
 **F_g \aside{closing} = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}**  
 <sub>theorem · what is felt, with the mismatch closed</sub>  
 
 ```
-g = g_N\paren{1 + \frac{a_0}{g}}
-g^(2) - g_Ng - g_Na_0 = 0
-strong: g \to g_N;  weak: g \to \sqrt{g_Na_0}, so v^(4) = G m a_0 at D = 3
-F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
+g = g_N\paren{1 + H_\Lambda\tau} = g_N\paren{1 + \frac{a_0}{g}}
+g^(2) - g_Ng - g_Na_0 = 0, so F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
+checked at g_N = 0.37, a_0 = 0.91: the residual is 0.000000000000
+weak, g_N = 10^(-8)a_0: F_g/\sqrt{g_Na_0} = 1.000050; strong, 10^(8)a_0: F_g/g_N = 1.000000
+on a circle at D = 3, v^(2)/r = \sqrt{GMa_0}/r, so v^(4) = GMa_0: flat, and the Tully-Fisher law
 ```
 
-what is felt is what arrives, g_N, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_0/g of it. So g = g_N\paren{1 + a_0/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \sqrt{g_Na_0}: g_N falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling
+what is felt is what arrives, g_N, landed on the room made in a heading on top of itself: g = g_N\paren{1 + a_0/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_N, a weak one the geometric mean \sqrt{g_Na_0}, and with g_N falling as the shell a speed on a circle stops falling
 
 **-\nabla^(2)\psi = \nabla\cdot\paren{\paren{\sqrt{\frac{g_N^(2)}{4} + g_N·a_0} - \frac{g_N}{2}}\hat{g}_N}**  
 <sub>theorem · the space made, as a source</sub>  
 
 ```
 w = F_g - g_N = \sqrt{\frac{g_N^(2)}{4} + g_N·a_0} - \frac{g_N}{2}, along \hat{g}_N
-made where w changes: \nabla\cdot w
-a source of the record: -\nabla^(2)\psi = \nabla\cdot w
+made where w changes: \nabla\cdot w; a source of the record: -\nabla^(2)\psi = \nabla\cdot w
+round one body, D = 3, g_N = m̄/r^(2), a_0 = 1: made = r^(-2)\frac{d}{dr}\paren{r^(2)w} = \frac{\paren{2·r·\paren{\sqrt{\frac{m^(2)}{4·r^(4)} + \frac{m}{r^(2)}} - \frac{m}{2·r^(2)}} + \paren{\frac{m}{r^(3)} + \frac{\paren{\frac{-2·m}{r^(3)} - \frac{m^(2)}{r^(5)}}}{2·\sqrt{\frac{m^(2)}{4·r^(4)} + \frac{m}{r^(2)}}}}·r^(2)}}{r^(2)}
+made at r = 0.3, 1, 3, 10: 5.71662, 0.89443, 0.10960, 0.00999 - all positive: space is made, not taken
+summed from r = 0.2 to 8.0: 7.477094, against what w carries across the two shells 7.477093 - so the made space's record is w itself, and the sphere gives the closing back
 ```
 
-the closing hands every place w = F_g - g_N on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (ANNIHILATION), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \psi is the one whose flux is what was made
+the closing hands every place w = F_g - g_N on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (ANNIHILATION), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence
 
 **g \aside{field} = g_N - \nabla\psi**  
 <sub>theorem · what is felt, solved over the whole field</sub>  

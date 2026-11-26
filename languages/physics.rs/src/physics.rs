@@ -10088,20 +10088,71 @@ pub mod c_Prover {
       set(&rd(&scale_0), "derivation", &list![rd(&straight_0), rd(&lam_0)]);
       let g_0 = cell(&Value::Null); wr(&g_0, &call(&k!("Expr"), "field", args![sv!["g_{N}"]]));
       let a_0 = cell(&Value::Null); wr(&a_0, &call(&k!("Expr"), "field", args![sv!["a_{0}"]]));
+      let felt_0 = cell(&Value::Null); wr(&felt_0, &call(&k!("Expr"), "field", args![sv!["g"]]));
+      let lasts_0 = cell(&Value::Null); wr(&lasts_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![rd(&v_0), call(&k!("Expr"), "pown", args![rd(&felt_0), neg(&1.0)])]])]));
+      let lasting_0 = cell(&Value::Null); wr(&lasting_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\tau \\aside{a heading}"], rd(&lasts_0)]), sv!["how long a heading lasts"], list![get(&get(&rd(&straight_0), "fact"), "key")], sv!["", &tos(&rd(&moved_0)), " keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips ", &tos(&rd(&sent_0)), " sends with cancel fore and aft; accelerating, they pile up for that long"], list![sv!["what a heading keeps: v = ", &tos(&call(&k!("Expr"), "show", args![rd(&v_0)])), ""], sv!["\\tau = v/g = ", &tos(&call(&k!("Expr"), "show", args![rd(&lasts_0)])), ""]]]));
+      set(&rd(&lasting_0), "derivation", &list![rd(&straight_0)]);
+      let room_0 = cell(&Value::Null); wr(&room_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "mul", args![list![rd(&own_0), rd(&lasts_0)]])]));
+      let roomed_0 = cell(&Value::Null); wr(&roomed_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["the room made in a heading"], rd(&room_0)]), sv!["the room the vacuum makes meanwhile"], list![get(&get(&rd(&lasting_0), "fact"), "key"), get(&get(&rd(&lam_0), "fact"), "key")], sv!["what settles the mismatch is the room the vacuum makes while it piles up: H_{\\Lambda} a tick, the growth it would have had no mass been there (", &tos(&rd(&met_0)), " at every meeting). Over a heading's time that is H_{\\Lambda}v/g - which is a_{0}/g, the scale over what is felt"], list![sv!["H_{\\Lambda} = ", &tos(&call(&k!("Expr"), "show", args![rd(&own_0)])), ""], sv!["H_{\\Lambda}\\tau = ", &tos(&call(&k!("Expr"), "show", args![rd(&room_0)])), ""], sv!["= a_{0}/g, a_{0} = vH_{\\Lambda} = ", &tos(&call(&k!("Expr"), "show", args![rd(&a0_0)])), ""]]]));
+      set(&rd(&roomed_0), "derivation", &list![rd(&lasting_0), rd(&lam_0)]);
       let half_0 = cell(&Value::Null); wr(&half_0, &call(&k!("Expr"), "mul", args![list![rd(&g_0), call(&k!("Expr"), "num", args![0.5])]]));
       let got_0 = cell(&Value::Null); wr(&got_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "add", args![list![rd(&half_0), call(&k!("Expr"), "pown", args![call(&k!("Expr"), "add", args![list![call(&k!("Expr"), "mul", args![list![rd(&half_0), rd(&half_0)]]), call(&k!("Expr"), "mul", args![list![rd(&g_0), rd(&a_0)]])]]), 0.5])]])]));
-      let closing_0 = cell(&Value::Null); wr(&closing_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["F_{g} \\aside{closing}"], rd(&got_0)]), sv!["what is felt, with the mismatch closed"], list![get(&get(&rd(&scale_0), "fact"), "key")], sv!["what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling"], list![sv!["g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"], sv!["g^{2} - g_{N}g - g_{N}a_{0} = 0"], sv!["strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3"], sv!["F_{g} = ", &tos(&call(&k!("Expr"), "show", args![rd(&got_0)])), ""]]]));
-      set(&rd(&closing_0), "derivation", &list![rd(&scale_0)]);
+      let check_0 = cell(&Value::Null); wr(&check_0, &node());
+      set(&rd(&check_0), &tos(&sv!["g_{N}"]), &0.37);
+      set(&rd(&check_0), &tos(&sv!["a_{0}"]), &0.91);
+      let root_0 = cell(&Value::Null); wr(&root_0, &call(&k!("Expr"), "numeric", args![rd(&got_0), rd(&check_0)]));
+      let residual_0 = cell(&Value::Null); wr(&residual_0, &sub(&sub(&mul(&rd(&root_0), &rd(&root_0)), &mul(&0.37, &rd(&root_0))), &mul(&0.37, &0.91)));
+      let deep_0 = cell(&Value::Null); wr(&deep_0, &node());
+      set(&rd(&deep_0), &tos(&sv!["g_{N}"]), &0.00000001);
+      set(&rd(&deep_0), &tos(&sv!["a_{0}"]), &1.0);
+      let weak_0 = cell(&Value::Null); wr(&weak_0, &div(&call(&k!("Expr"), "numeric", args![rd(&got_0), rd(&deep_0)]), &m_sqrt(&0.00000001)));
+      let strong__0 = cell(&Value::Null); wr(&strong__0, &node());
+      set(&rd(&strong__0), &tos(&sv!["g_{N}"]), &100000000.0);
+      set(&rd(&strong__0), &tos(&sv!["a_{0}"]), &1.0);
+      let strong_0 = cell(&Value::Null); wr(&strong_0, &div(&call(&k!("Expr"), "numeric", args![rd(&got_0), rd(&strong__0)]), &100000000.0));
+      let closing_0 = cell(&Value::Null); wr(&closing_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["F_{g} \\aside{closing}"], rd(&got_0)]), sv!["what is felt, with the mismatch closed"], list![get(&get(&rd(&roomed_0), "fact"), "key"), get(&get(&rd(&scale_0), "fact"), "key")], sv!["what is felt is what arrives, g_{N}, landed on the room made in a heading on top of itself: g = g_{N}\\paren{1 + a_{0}/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_{N}, a weak one the geometric mean \\sqrt{g_{N}a_{0}}, and with g_{N} falling as the shell a speed on a circle stops falling"], list![sv!["g = g_{N}\\paren{1 + H_{\\Lambda}\\tau} = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"], sv!["g^{2} - g_{N}g - g_{N}a_{0} = 0, so F_{g} = ", &tos(&call(&k!("Expr"), "show", args![rd(&got_0)])), ""], sv!["checked at g_{N} = 0.37, a_{0} = 0.91: the residual is ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&residual_0), 12.0])), ""], sv!["weak, g_{N} = 10^{-8}a_{0}: F_{g}/\\sqrt{g_{N}a_{0}} = ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&weak_0), 6.0])), "; strong, 10^{8}a_{0}: F_{g}/g_{N} = ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&strong_0), 6.0])), ""], sv!["on a circle at D = 3, v^{2}/r = \\sqrt{GMa_{0}}/r, so v^{4} = GMa_{0}: flat, and the Tully-Fisher law"]]]));
+      set(&rd(&closing_0), "derivation", &list![rd(&roomed_0), rd(&scale_0)]);
       let psi_0 = cell(&Value::Null); wr(&psi_0, &call(&k!("Expr"), "field", args![sv!["\\psi"]]));
       let w_0 = cell(&Value::Null); wr(&w_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![rd(&got_0), rd(&g_0)])]));
-      let made_0 = cell(&Value::Null); wr(&made_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["-\\nabla^{2}\\psi"], call(&k!("Expr"), "field", args![sv!["\\nabla\\cdot\\paren{\\paren{", &tos(&call(&k!("Expr"), "show", args![rd(&w_0)])), "}\\hat{g}_{N}}"]])]), sv!["the space made, as a source"], list![get(&get(&rd(&closing_0), "fact"), "key")], sv!["the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", &tos(&rd(&met_0)), "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made"], list![sv!["w = F_{g} - g_{N} = ", &tos(&call(&k!("Expr"), "show", args![rd(&w_0)])), ", along \\hat{g}_{N}"], sv!["made where w changes: \\nabla\\cdot w"], sv!["a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w"]]]));
+      let rr_0 = cell(&Value::Null); wr(&rr_0, &call(&k!("Expr"), "sym", args![sv!["r"]]));
+      let w3_0 = cell(&Value::Null); wr(&w3_0, &call(&k!("Expr"), "replace", args![call(&k!("Expr"), "replace", args![rd(&w_0), sv!["g_{N}"], call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "field", args![sv!["m"]]), call(&k!("Expr"), "pown", args![rd(&rr_0), neg(&2.0)])]])]), sv!["a_{0}"], call(&k!("Expr"), "num", args![1.0])]));
+      let flux_0 = cell(&Value::Null); wr(&flux_0, &call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "pown", args![rd(&rr_0), 2.0]), rd(&w3_0)]]));
+      let div3_0 = cell(&Value::Null); wr(&div3_0, &call(&k!("Expr"), "simplify", args![call(&k!("Expr"), "mul", args![list![call(&k!("Expr"), "pown", args![rd(&rr_0), neg(&2.0)]), call(&k!("Expr"), "d", args![rd(&flux_0), sv!["r"]])]])]));
+      let made_at_0 = cell(&Value::Null); wr(&made_at_0, &m_join(&m_map(&list![0.3, 1.0, 3.0, 10.0], args![{ let self_: Value = self_.clone(); cl!(div3_0); fnv(move |a3: &[&Value]| -> Value {
+        let self_: &Value = &self_;
+        let x_2 = cell(&arg(a3, 0));
+        return own(&call(&k!("Fmt"), "fixed", args![call(&k!("Expr"), "numeric", args![rd(&div3_0), call(&k!("Prover"), "at_rm", args![rd(&x_2)])]), 5.0]));
+        Value::Null
+      }) }]), args![sv![", "]]));
+      let r0_0 = cell(&Value::Null); wr(&r0_0, &0.2);
+      let r1_0 = cell(&Value::Null); wr(&r1_0, &8.0);
+      let steps_0 = cell(&Value::Null); wr(&steps_0, &4000.0);
+      let summed_0 = cell(&Value::Null); wr(&summed_0, &0.0);
+      for i1 in 0..(num(&rd(&steps_0)).ceil() as i64) {
+        let i_1 = cell(&(i1 as f64));
+        let x_1 = cell(&Value::Null); wr(&x_1, &add(&rd(&r0_0), &div(&mul(&(sub(&rd(&r1_0), &rd(&r0_0))), &(add(&rd(&i_1), &0.5))), &rd(&steps_0))));
+        wr(&summed_0, &add(&rd(&summed_0), &div(&mul(&mul(&mul(&call(&k!("Expr"), "numeric", args![rd(&div3_0), call(&k!("Prover"), "at_rm", args![rd(&x_1)])]), &rd(&x_1)), &rd(&x_1)), &(sub(&rd(&r1_0), &rd(&r0_0)))), &rd(&steps_0))));
+      };
+      let carried_0 = cell(&Value::Null); wr(&carried_0, &sub(&call(&k!("Expr"), "numeric", args![rd(&flux_0), call(&k!("Prover"), "at_rm", args![rd(&r1_0)])]), &call(&k!("Expr"), "numeric", args![rd(&flux_0), call(&k!("Prover"), "at_rm", args![rd(&r0_0)])])));
+      let made_0 = cell(&Value::Null); wr(&made_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["-\\nabla^{2}\\psi"], call(&k!("Expr"), "field", args![sv!["\\nabla\\cdot\\paren{\\paren{", &tos(&call(&k!("Expr"), "show", args![rd(&w_0)])), "}\\hat{g}_{N}}"]])]), sv!["the space made, as a source"], list![get(&get(&rd(&closing_0), "fact"), "key")], sv!["the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", &tos(&rd(&met_0)), "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence"], list![sv!["w = F_{g} - g_{N} = ", &tos(&call(&k!("Expr"), "show", args![rd(&w_0)])), ", along \\hat{g}_{N}"], sv!["made where w changes: \\nabla\\cdot w; a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w"], sv!["round one body, D = 3, g_{N} = \\bar{m}/r^{2}, a_{0} = 1: made = r^{-2}\\frac{d}{dr}\\paren{r^{2}w} = ", &tos(&call(&k!("Expr"), "show", args![rd(&div3_0)])), ""], sv!["made at r = 0.3, 1, 3, 10: ", &tos(&rd(&made_at_0)), " - all positive: space is made, not taken"], sv!["summed from r = ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&r0_0), 1.0])), " to ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&r1_0), 1.0])), ": ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&summed_0), 6.0])), ", against what w carries across the two shells ", &tos(&call(&k!("Fmt"), "fixed", args![rd(&carried_0), 6.0])), " - so the made space's record is w itself, and the sphere gives the closing back"]]]));
       set(&rd(&made_0), "derivation", &list![rd(&closing_0), rd(&potential_0)]);
       let field_0 = cell(&Value::Null); wr(&field_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["g \\aside{field}"], call(&k!("Prover"), "neat", args![call(&k!("Expr"), "sub", args![rd(&g_0), call(&k!("Expr"), "field", args![sv!["\\nabla\\psi"]])])])]), sv!["what is felt, solved over the whole field"], list![get(&get(&rd(&made_0), "fact"), "key"), get(&get(&rd(&closing_0), "fact"), "key")], sv!["what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve"], list![sv!["g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w"], sv!["no curl: \\nabla\\times g = 0, as a record's slope"], sv!["a sphere: \\nabla\\psi = -w, so g = F_{g}"], sv!["a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)"]]]));
       set(&rd(&field_0), "derivation", &list![rd(&made_0)]);
       let ratio_0 = cell(&Value::Null); wr(&ratio_0, &call(&k!("Prover"), "neat", args![call(&k!("Expr"), "div", args![rd(&a0_0), rd(&own_0)])]));
       let against_0 = cell(&Value::Null); wr(&against_0, &call(&k!("Step"), "of", args![call(&k!("Fact"), "stands", args![sv!["\\frac{a_{0}}{cH}"], rd(&ratio_0)]), sv!["the scale against the vacuum's growth"], list![get(&get(&rd(&scale_0), "fact"), "key"), get(&get(&rd(&lam_0), "fact"), "key")], sv!["a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183"], list![sv!["a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}"], sv!["\\frac{a_{0}}{cH_{vac}} = ", &tos(&call(&k!("Expr"), "show", args![call(&k!("Prover"), "neat", args![rd(&ratio_0)])])), ""], sv!["against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}"]]]));
       set(&rd(&against_0), "derivation", &list![rd(&scale_0)]);
-      return own(&list![rd(&straight_0), rd(&potential_0), rd(&lam_0), rd(&scale_0), rd(&closing_0), rd(&made_0), rd(&field_0), rd(&against_0)]);
+      return own(&list![rd(&straight_0), rd(&potential_0), rd(&lam_0), rd(&scale_0), rd(&lasting_0), rd(&roomed_0), rd(&closing_0), rd(&made_0), rd(&field_0), rd(&against_0)]);
+      Value::Null
+    }
+  }
+  pub mod s_at_rm {
+    use crate::rt::*;
+    pub fn f(self_: &Value, a1: &[&Value]) -> Value {
+    let x_0 = cell(&arg(a1, 0));
+      let e_0 = cell(&Value::Null); wr(&e_0, &node());
+      set(&rd(&e_0), &tos(&sv!["r"]), &rd(&x_0));
+      set(&rd(&e_0), &tos(&sv!["m"]), &1.0);
+      return own(&rd(&e_0));
       Value::Null
     }
   }
@@ -10959,6 +11010,7 @@ pub mod c_Prover {
     c.method("relativity_of", m_relativity_of::f);//<
     c.method("expansion_of", m_expansion_of::f);//<
     c.method("scale_of", m_scale_of::f);//<
+    c.statik("at_rm", s_at_rm::f);//<
     c.method("leftover", m_leftover::f);//<
     c.method("model_chain", m_model_chain::f);//<
     c.method("lean", m_lean::f);//<

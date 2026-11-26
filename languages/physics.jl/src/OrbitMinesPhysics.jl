@@ -5995,20 +5995,63 @@ end
     scale_0.derivation = Any[straight_0, lam_0]
     g_0 = field(Expr, Base.string(j"g_{N}"))
     a_0 = field(Expr, Base.string(j"a_{0}"))
+    felt_0 = field(Expr, Base.string(j"g"))
+    lasts_0 = neat(Prover, mul(Expr, Any[v_0, pown(Expr, felt_0, (-1.0))]))
+    lasting_0 = of(Step, stands(Fact, Base.string(j"\\tau \\aside{a heading}"), lasts_0), Base.string(j"how long a heading lasts"), Any[key(fact(straight_0))], Base.string(j"", str(moved_0), j" keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips ", str(sent_0), j" sends with cancel fore and aft; accelerating, they pile up for that long"), Any[Base.string(j"what a heading keeps: v = ", str(show(Expr, v_0)), j""), Base.string(j"\\tau = v/g = ", str(show(Expr, lasts_0)), j"")])
+    lasting_0.derivation = Any[straight_0]
+    room_0 = neat(Prover, mul(Expr, Any[own_0, lasts_0]))
+    roomed_0 = of(Step, stands(Fact, Base.string(j"the room made in a heading"), room_0), Base.string(j"the room the vacuum makes meanwhile"), Any[key(fact(lasting_0)), key(fact(lam_0))], Base.string(j"what settles the mismatch is the room the vacuum makes while it piles up: H_{\\Lambda} a tick, the growth it would have had no mass been there (", str(met_0), j" at every meeting). Over a heading's time that is H_{\\Lambda}v/g - which is a_{0}/g, the scale over what is felt"), Any[Base.string(j"H_{\\Lambda} = ", str(show(Expr, own_0)), j""), Base.string(j"H_{\\Lambda}\\tau = ", str(show(Expr, room_0)), j""), Base.string(j"= a_{0}/g, a_{0} = vH_{\\Lambda} = ", str(show(Expr, a0_0)), j"")])
+    roomed_0.derivation = Any[lasting_0, lam_0]
     half_0 = mul(Expr, Any[g_0, num(Expr, 0.5)])
     got_0 = neat(Prover, add(Expr, Any[half_0, pown(Expr, add(Expr, Any[mul(Expr, Any[half_0, half_0]), mul(Expr, Any[g_0, a_0])]), 0.5)]))
-    closing_0 = of(Step, stands(Fact, Base.string(j"F_{g} \\aside{closing}"), got_0), Base.string(j"what is felt, with the mismatch closed"), Any[key(fact(scale_0))], Base.string(j"what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling"), Any[Base.string(j"g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"), Base.string(j"g^{2} - g_{N}g - g_{N}a_{0} = 0"), Base.string(j"strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3"), Base.string(j"F_{g} = ", str(show(Expr, got_0)), j"")])
-    closing_0.derivation = Any[scale_0]
+    check_0 = Node()
+    setat!(check_0, Base.string(j"g_{N}"), 0.37)
+    setat!(check_0, Base.string(j"a_{0}"), 0.91)
+    root_0 = numeric(Expr, got_0, check_0)
+    residual_0 = (((root_0 * root_0) - (0.37 * root_0)) - (0.37 * 0.91))
+    deep_0 = Node()
+    setat!(deep_0, Base.string(j"g_{N}"), 0.00000001)
+    setat!(deep_0, Base.string(j"a_{0}"), 1.0)
+    weak_0 = (numeric(Expr, got_0, deep_0) / sqrt(0.00000001))
+    strong__0 = Node()
+    setat!(strong__0, Base.string(j"g_{N}"), 100000000.0)
+    setat!(strong__0, Base.string(j"a_{0}"), 1.0)
+    strong_0 = (numeric(Expr, got_0, strong__0) / 100000000.0)
+    closing_0 = of(Step, stands(Fact, Base.string(j"F_{g} \\aside{closing}"), got_0), Base.string(j"what is felt, with the mismatch closed"), Any[key(fact(roomed_0)), key(fact(scale_0))], Base.string(j"what is felt is what arrives, g_{N}, landed on the room made in a heading on top of itself: g = g_{N}\\paren{1 + a_{0}/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_{N}, a weak one the geometric mean \\sqrt{g_{N}a_{0}}, and with g_{N} falling as the shell a speed on a circle stops falling"), Any[Base.string(j"g = g_{N}\\paren{1 + H_{\\Lambda}\\tau} = g_{N}\\paren{1 + \\frac{a_{0}}{g}}"), Base.string(j"g^{2} - g_{N}g - g_{N}a_{0} = 0, so F_{g} = ", str(show(Expr, got_0)), j""), Base.string(j"checked at g_{N} = 0.37, a_{0} = 0.91: the residual is ", str(fixed(Fmt, residual_0, 12.0)), j""), Base.string(j"weak, g_{N} = 10^{-8}a_{0}: F_{g}/\\sqrt{g_{N}a_{0}} = ", str(fixed(Fmt, weak_0, 6.0)), j"; strong, 10^{8}a_{0}: F_{g}/g_{N} = ", str(fixed(Fmt, strong_0, 6.0)), j""), Base.string(j"on a circle at D = 3, v^{2}/r = \\sqrt{GMa_{0}}/r, so v^{4} = GMa_{0}: flat, and the Tully-Fisher law")])
+    closing_0.derivation = Any[roomed_0, scale_0]
     psi_0 = field(Expr, Base.string(j"\\psi"))
     w_0 = neat(Prover, sub(Expr, got_0, g_0))
-    made_0 = of(Step, stands(Fact, Base.string(j"-\\nabla^{2}\\psi"), field(Expr, Base.string(j"\\nabla\\cdot\\paren{\\paren{", str(show(Expr, w_0)), j"}\\hat{g}_{N}}"))), Base.string(j"the space made, as a source"), Any[key(fact(closing_0))], Base.string(j"the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", str(met_0), j"), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made"), Any[Base.string(j"w = F_{g} - g_{N} = ", str(show(Expr, w_0)), j", along \\hat{g}_{N}"), Base.string(j"made where w changes: \\nabla\\cdot w"), Base.string(j"a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w")])
+    rr_0 = sym(Expr, Base.string(j"r"))
+    w3_0 = replace(Expr, replace(Expr, w_0, Base.string(j"g_{N}"), mul(Expr, Any[field(Expr, Base.string(j"m")), pown(Expr, rr_0, (-2.0))])), Base.string(j"a_{0}"), num(Expr, 1.0))
+    flux_0 = mul(Expr, Any[pown(Expr, rr_0, 2.0), w3_0])
+    div3_0 = simplify(Expr, mul(Expr, Any[pown(Expr, rr_0, (-2.0)), d(Expr, flux_0, Base.string(j"r"))]))
+    made_at_0 = join(map(Any[0.3, 1.0, 3.0, 10.0], (function (x_2 = nothing, _...)
+      return fixed(Fmt, numeric(Expr, div3_0, at_rm(Prover, x_2)), 5.0)
+    end)), Base.string(j", "))
+    r0_0 = 0.2
+    r1_0 = 8.0
+    steps_0 = 4000.0
+    summed_0 = 0.0
+    for i1 in 0:(ceil(Int, Rt.num(steps_0)) - 1)
+      i_1 = Float64(i1)
+      x_1 = (r0_0 + ((((r1_0 - r0_0)) * ((i_1 + 0.5))) / steps_0))
+      summed_0 = (summed_0 + ((((numeric(Expr, div3_0, at_rm(Prover, x_1)) * x_1) * x_1) * ((r1_0 - r0_0))) / steps_0))
+    end
+    carried_0 = (numeric(Expr, flux_0, at_rm(Prover, r1_0)) - numeric(Expr, flux_0, at_rm(Prover, r0_0)))
+    made_0 = of(Step, stands(Fact, Base.string(j"-\\nabla^{2}\\psi"), field(Expr, Base.string(j"\\nabla\\cdot\\paren{\\paren{", str(show(Expr, w_0)), j"}\\hat{g}_{N}}"))), Base.string(j"the space made, as a source"), Any[key(fact(closing_0))], Base.string(j"the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (", str(met_0), j"), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence"), Any[Base.string(j"w = F_{g} - g_{N} = ", str(show(Expr, w_0)), j", along \\hat{g}_{N}"), Base.string(j"made where w changes: \\nabla\\cdot w; a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w"), Base.string(j"round one body, D = 3, g_{N} = \\bar{m}/r^{2}, a_{0} = 1: made = r^{-2}\\frac{d}{dr}\\paren{r^{2}w} = ", str(show(Expr, div3_0)), j""), Base.string(j"made at r = 0.3, 1, 3, 10: ", str(made_at_0), j" - all positive: space is made, not taken"), Base.string(j"summed from r = ", str(fixed(Fmt, r0_0, 1.0)), j" to ", str(fixed(Fmt, r1_0, 1.0)), j": ", str(fixed(Fmt, summed_0, 6.0)), j", against what w carries across the two shells ", str(fixed(Fmt, carried_0, 6.0)), j" - so the made space's record is w itself, and the sphere gives the closing back")])
     made_0.derivation = Any[closing_0, potential_0]
     field_0 = of(Step, stands(Fact, Base.string(j"g \\aside{field}"), neat(Prover, sub(Expr, g_0, field(Expr, Base.string(j"\\nabla\\psi"))))), Base.string(j"what is felt, solved over the whole field"), Any[key(fact(made_0)), key(fact(closing_0))], Base.string(j"what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve"), Any[Base.string(j"g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w"), Base.string(j"no curl: \\nabla\\times g = 0, as a record's slope"), Base.string(j"a sphere: \\nabla\\psi = -w, so g = F_{g}"), Base.string(j"a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)")])
     field_0.derivation = Any[made_0]
     ratio_0 = neat(Prover, div(Expr, a0_0, own_0))
     against_0 = of(Step, stands(Fact, Base.string(j"\\frac{a_{0}}{cH}"), ratio_0), Base.string(j"the scale against the vacuum's growth"), Any[key(fact(scale_0)), key(fact(lam_0))], Base.string(j"a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183"), Any[Base.string(j"a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}"), Base.string(j"\\frac{a_{0}}{cH_{vac}} = ", str(show(Expr, neat(Prover, ratio_0))), j""), Base.string(j"against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}")])
     against_0.derivation = Any[scale_0]
-    return Any[straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0]
+    return Any[straight_0, potential_0, lam_0, scale_0, lasting_0, roomed_0, closing_0, made_0, field_0, against_0]
+  end
+  function at_rm(self::Type{<:__class__}, x_0 = nothing, _...)
+    e_0 = Node()
+    setat!(e_0, Base.string(j"r"), x_0)
+    setat!(e_0, Base.string(j"m"), 1.0)
+    return e_0
   end
   function leftover(self::__class__, rays_c_0 = nothing, _...)
     m_0 = label(MASS(Prover))

@@ -12088,24 +12088,112 @@ func init() {
       var a_0 any
       a_0 = Call(K("Expr"), "field", []any{ "a_{0}" })
       _ = a_0
+      var felt_0 any
+      felt_0 = Call(K("Expr"), "field", []any{ "g" })
+      _ = felt_0
+      var lasts_0 any
+      lasts_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(v_0, Call(K("Expr"), "pown", []any{ felt_0, Neg(1.0) })) }) })
+      _ = lasts_0
+      var lasting_0 any
+      lasting_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "\\tau \\aside{a heading}", lasts_0 }), "how long a heading lasts", Lst(Get(Get(straight_0, "fact"), "key")), "" + Str(moved_0) + " keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips " + Str(sent_0) + " sends with cancel fore and aft; accelerating, they pile up for that long", Lst("what a heading keeps: v = " + Str(Call(K("Expr"), "show", []any{ v_0 })) + "", "\\tau = v/g = " + Str(Call(K("Expr"), "show", []any{ lasts_0 })) + "") })
+      _ = lasting_0
+      Set(lasting_0, "derivation", Lst(straight_0))
+      var room_0 any
+      room_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "mul", []any{ Lst(own_0, lasts_0) }) })
+      _ = room_0
+      var roomed_0 any
+      roomed_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "the room made in a heading", room_0 }), "the room the vacuum makes meanwhile", Lst(Get(Get(lasting_0, "fact"), "key"), Get(Get(lam_0, "fact"), "key")), "what settles the mismatch is the room the vacuum makes while it piles up: H_{\\Lambda} a tick, the growth it would have had no mass been there (" + Str(met_0) + " at every meeting). Over a heading's time that is H_{\\Lambda}v/g - which is a_{0}/g, the scale over what is felt", Lst("H_{\\Lambda} = " + Str(Call(K("Expr"), "show", []any{ own_0 })) + "", "H_{\\Lambda}\\tau = " + Str(Call(K("Expr"), "show", []any{ room_0 })) + "", "= a_{0}/g, a_{0} = vH_{\\Lambda} = " + Str(Call(K("Expr"), "show", []any{ a0_0 })) + "") })
+      _ = roomed_0
+      Set(roomed_0, "derivation", Lst(lasting_0, lam_0))
       var half_0 any
       half_0 = Call(K("Expr"), "mul", []any{ Lst(g_0, Call(K("Expr"), "num", []any{ 0.5 })) })
       _ = half_0
       var got_0 any
       got_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "add", []any{ Lst(half_0, Call(K("Expr"), "pown", []any{ Call(K("Expr"), "add", []any{ Lst(Call(K("Expr"), "mul", []any{ Lst(half_0, half_0) }), Call(K("Expr"), "mul", []any{ Lst(g_0, a_0) })) }), 0.5 })) }) })
       _ = got_0
+      var check_0 any
+      check_0 = Make(Node)
+      _ = check_0
+      Set(check_0, Str("g_{N}"), 0.37)
+      Set(check_0, Str("a_{0}"), 0.91)
+      var root_0 any
+      root_0 = Call(K("Expr"), "numeric", []any{ got_0, check_0 })
+      _ = root_0
+      var residual_0 any
+      residual_0 = Sub(Sub(Mul(root_0, root_0), Mul(0.37, root_0)), Mul(0.37, 0.91))
+      _ = residual_0
+      var deep_0 any
+      deep_0 = Make(Node)
+      _ = deep_0
+      Set(deep_0, Str("g_{N}"), 0.00000001)
+      Set(deep_0, Str("a_{0}"), 1.0)
+      var weak_0 any
+      weak_0 = Div(Call(K("Expr"), "numeric", []any{ got_0, deep_0 }), M_sqrt(0.00000001))
+      _ = weak_0
+      var strong__0 any
+      strong__0 = Make(Node)
+      _ = strong__0
+      Set(strong__0, Str("g_{N}"), 100000000.0)
+      Set(strong__0, Str("a_{0}"), 1.0)
+      var strong_0 any
+      strong_0 = Div(Call(K("Expr"), "numeric", []any{ got_0, strong__0 }), 100000000.0)
+      _ = strong_0
       var closing_0 any
-      closing_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "F_{g} \\aside{closing}", got_0 }), "what is felt, with the mismatch closed", Lst(Get(Get(scale_0, "fact"), "key")), "what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling", Lst("g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0", "strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3", "F_{g} = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "") })
+      closing_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "F_{g} \\aside{closing}", got_0 }), "what is felt, with the mismatch closed", Lst(Get(Get(roomed_0, "fact"), "key"), Get(Get(scale_0, "fact"), "key")), "what is felt is what arrives, g_{N}, landed on the room made in a heading on top of itself: g = g_{N}\\paren{1 + a_{0}/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_{N}, a weak one the geometric mean \\sqrt{g_{N}a_{0}}, and with g_{N} falling as the shell a speed on a circle stops falling", Lst("g = g_{N}\\paren{1 + H_{\\Lambda}\\tau} = g_{N}\\paren{1 + \\frac{a_{0}}{g}}", "g^{2} - g_{N}g - g_{N}a_{0} = 0, so F_{g} = " + Str(Call(K("Expr"), "show", []any{ got_0 })) + "", "checked at g_{N} = 0.37, a_{0} = 0.91: the residual is " + Str(Call(K("Fmt"), "fixed", []any{ residual_0, 12.0 })) + "", "weak, g_{N} = 10^{-8}a_{0}: F_{g}/\\sqrt{g_{N}a_{0}} = " + Str(Call(K("Fmt"), "fixed", []any{ weak_0, 6.0 })) + "; strong, 10^{8}a_{0}: F_{g}/g_{N} = " + Str(Call(K("Fmt"), "fixed", []any{ strong_0, 6.0 })) + "", "on a circle at D = 3, v^{2}/r = \\sqrt{GMa_{0}}/r, so v^{4} = GMa_{0}: flat, and the Tully-Fisher law") })
       _ = closing_0
-      Set(closing_0, "derivation", Lst(scale_0))
+      Set(closing_0, "derivation", Lst(roomed_0, scale_0))
       var psi_0 any
       psi_0 = Call(K("Expr"), "field", []any{ "\\psi" })
       _ = psi_0
       var w_0 any
       w_0 = Call(K("Prover"), "neat", []any{ Call(K("Expr"), "sub", []any{ got_0, g_0 }) })
       _ = w_0
+      var rr_0 any
+      rr_0 = Call(K("Expr"), "sym", []any{ "r" })
+      _ = rr_0
+      var w3_0 any
+      w3_0 = Call(K("Expr"), "replace", []any{ Call(K("Expr"), "replace", []any{ w_0, "g_{N}", Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "field", []any{ "m" }), Call(K("Expr"), "pown", []any{ rr_0, Neg(2.0) })) }) }), "a_{0}", Call(K("Expr"), "num", []any{ 1.0 }) })
+      _ = w3_0
+      var flux_0 any
+      flux_0 = Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ rr_0, 2.0 }), w3_0) })
+      _ = flux_0
+      var div3_0 any
+      div3_0 = Call(K("Expr"), "simplify", []any{ Call(K("Expr"), "mul", []any{ Lst(Call(K("Expr"), "pown", []any{ rr_0, Neg(2.0) }), Call(K("Expr"), "d", []any{ flux_0, "r" })) }) })
+      _ = div3_0
+      var made_at_0 any
+      made_at_0 = M_join(M_map(Lst(0.3, 1.0, 3.0, 10.0), Fn(func(a3 []any) any {
+        var x_2 any = Arg(a3, 0); _ = x_2;
+        if true {
+          return Call(K("Fmt"), "fixed", []any{ Call(K("Expr"), "numeric", []any{ div3_0, Call(K("Prover"), "at_rm", []any{ x_2 }) }), 5.0 })
+        }
+        return nil
+      })), ", ")
+      _ = made_at_0
+      var r0_0 any
+      r0_0 = 0.2
+      _ = r0_0
+      var r1_0 any
+      r1_0 = 8.0
+      _ = r1_0
+      var steps_0 any
+      steps_0 = 4000.0
+      _ = steps_0
+      var summed_0 any
+      summed_0 = 0.0
+      _ = summed_0
+      for i1 := 0.0; i1 < Num(steps_0); i1++ {
+        var i_1 any = Box(i1)
+        _ = i_1
+        var x_1 any
+        x_1 = Add(r0_0, Div(Mul((Sub(r1_0, r0_0)), (Add(i_1, 0.5))), steps_0))
+        _ = x_1
+        summed_0 = Add(summed_0, Div(Mul(Mul(Mul(Call(K("Expr"), "numeric", []any{ div3_0, Call(K("Prover"), "at_rm", []any{ x_1 }) }), x_1), x_1), (Sub(r1_0, r0_0))), steps_0))
+      }
+      var carried_0 any
+      carried_0 = Sub(Call(K("Expr"), "numeric", []any{ flux_0, Call(K("Prover"), "at_rm", []any{ r1_0 }) }), Call(K("Expr"), "numeric", []any{ flux_0, Call(K("Prover"), "at_rm", []any{ r0_0 }) }))
+      _ = carried_0
       var made_0 any
-      made_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "-\\nabla^{2}\\psi", Call(K("Expr"), "field", []any{ "\\nabla\\cdot\\paren{\\paren{" + Str(Call(K("Expr"), "show", []any{ w_0 })) + "}\\hat{g}_{N}}" }) }), "the space made, as a source", Lst(Get(Get(closing_0, "fact"), "key")), "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" + Str(met_0) + "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made", Lst("w = F_{g} - g_{N} = " + Str(Call(K("Expr"), "show", []any{ w_0 })) + ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w", "a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w") })
+      made_0 = Call(K("Step"), "of", []any{ Call(K("Fact"), "stands", []any{ "-\\nabla^{2}\\psi", Call(K("Expr"), "field", []any{ "\\nabla\\cdot\\paren{\\paren{" + Str(Call(K("Expr"), "show", []any{ w_0 })) + "}\\hat{g}_{N}}" }) }), "the space made, as a source", Lst(Get(Get(closing_0, "fact"), "key")), "the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (" + Str(met_0) + "), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence", Lst("w = F_{g} - g_{N} = " + Str(Call(K("Expr"), "show", []any{ w_0 })) + ", along \\hat{g}_{N}", "made where w changes: \\nabla\\cdot w; a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w", "round one body, D = 3, g_{N} = \\bar{m}/r^{2}, a_{0} = 1: made = r^{-2}\\frac{d}{dr}\\paren{r^{2}w} = " + Str(Call(K("Expr"), "show", []any{ div3_0 })) + "", "made at r = 0.3, 1, 3, 10: " + Str(made_at_0) + " - all positive: space is made, not taken", "summed from r = " + Str(Call(K("Fmt"), "fixed", []any{ r0_0, 1.0 })) + " to " + Str(Call(K("Fmt"), "fixed", []any{ r1_0, 1.0 })) + ": " + Str(Call(K("Fmt"), "fixed", []any{ summed_0, 6.0 })) + ", against what w carries across the two shells " + Str(Call(K("Fmt"), "fixed", []any{ carried_0, 6.0 })) + " - so the made space's record is w itself, and the sphere gives the closing back") })
       _ = made_0
       Set(made_0, "derivation", Lst(closing_0, potential_0))
       var field_0 any
@@ -12120,7 +12208,19 @@ func init() {
       _ = against_0
       Set(against_0, "derivation", Lst(scale_0))
       if true {
-        return Lst(straight_0, potential_0, lam_0, scale_0, closing_0, made_0, field_0, against_0)
+        return Lst(straight_0, potential_0, lam_0, scale_0, lasting_0, roomed_0, closing_0, made_0, field_0, against_0)
+      }
+      return nil
+    })
+    c.Static("at_rm", func(self any, a1 []any) any {
+      var x_0 any = Arg(a1, 0); _ = x_0;
+      var e_0 any
+      e_0 = Make(Node)
+      _ = e_0
+      Set(e_0, Str("r"), x_0)
+      Set(e_0, Str("m"), 1.0)
+      if true {
+        return e_0
       }
       return nil
     })

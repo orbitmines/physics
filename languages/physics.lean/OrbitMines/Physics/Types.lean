@@ -1048,6 +1048,7 @@ ray_method "walk_of" (s_0 : Store) : Expr
 ray_method "relativity_of" (s_0 : Store) (left_0 : Step) (mass_0 : Step) : (RList Step)
 ray_method "expansion_of" (s_0 : Store) (settles_0 : Step) : (RList Step)
 ray_method "scale_of" (hub_0 : Step) (settles_0 : Step) : (RList Step)
+ray_static "at_rm" (x_0 : Float) : object
 ray_method "leftover" (rays_c_0 : Step) : Step
 ray_method "model_chain" (s_0 : Store) (rays_l_0 : Step) (space_l_0 : Step) (spaced_0 : Step) (folded_0 : Step) (one_0 : Step) : (RList Step)
 ray_method "lean" (rec_0 : Step) : Step

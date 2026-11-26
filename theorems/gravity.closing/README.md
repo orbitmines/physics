@@ -34,12 +34,13 @@ the rules, read as a line: every rule of the theory is a term, the reading havin
 <sub>theorem · what is felt, with the mismatch closed</sub>  
 
 ```
-g = g_N\paren{1 + \frac{a_0}{g}}
-g^(2) - g_Ng - g_Na_0 = 0
-strong: g \to g_N;  weak: g \to \sqrt{g_Na_0}, so v^(4) = G m a_0 at D = 3
-F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
+g = g_N\paren{1 + H_\Lambda\tau} = g_N\paren{1 + \frac{a_0}{g}}
+g^(2) - g_Ng - g_Na_0 = 0, so F_g = \frac{g_N}{2} + \sqrt{\frac{g_N^(2)}{4} + g_N·a_0}
+checked at g_N = 0.37, a_0 = 0.91: the residual is 0.000000000000
+weak, g_N = 10^(-8)a_0: F_g/\sqrt{g_Na_0} = 1.000050; strong, 10^(8)a_0: F_g/g_N = 1.000000
+on a circle at D = 3, v^(2)/r = \sqrt{GMa_0}/r, so v^(4) = GMa_0: flat, and the Tully-Fisher law
 ```
 
-what is felt is what arrives, g_N, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_0/g of it. So g = g_N\paren{1 + a_0/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \sqrt{g_Na_0}: g_N falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling
+what is felt is what arrives, g_N, landed on the room made in a heading on top of itself: g = g_N\paren{1 + a_0/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_N, a weak one the geometric mean \sqrt{g_Na_0}, and with g_N falling as the shell a speed on a circle stops falling
 
 #### what the runs found

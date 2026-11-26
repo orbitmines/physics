@@ -6292,20 +6292,62 @@ export class Prover extends Node {
     scale.derivation = [straight, lam];
     let g = Expr.field(`g_{N}`);
     let a = Expr.field(`a_{0}`);
+    let felt = Expr.field(`g`);
+    let lasts = Prover.neat(Expr.mul([v, Expr.pown(felt, (-1))]));
+    let lasting = Step.of(Fact.stands(`\\tau \\aside{a heading}`, lasts), `how long a heading lasts`, [straight.fact.key], `${moved} keeps v of a heading a step, so a body's rays go where its motion goes only until its speed has turned by v - at an acceleration g, a time v/g. Steady, it never turns and the flips ${sent} sends with cancel fore and aft; accelerating, they pile up for that long`, [`what a heading keeps: v = ${Expr.show(v)}`, `\\tau = v/g = ${Expr.show(lasts)}`]);
+    lasting.derivation = [straight];
+    let room = Prover.neat(Expr.mul([own, lasts]));
+    let roomed = Step.of(Fact.stands(`the room made in a heading`, room), `the room the vacuum makes meanwhile`, [lasting.fact.key, lam.fact.key], `what settles the mismatch is the room the vacuum makes while it piles up: H_{\\Lambda} a tick, the growth it would have had no mass been there (${met} at every meeting). Over a heading's time that is H_{\\Lambda}v/g - which is a_{0}/g, the scale over what is felt`, [`H_{\\Lambda} = ${Expr.show(own)}`, `H_{\\Lambda}\\tau = ${Expr.show(room)}`, `= a_{0}/g, a_{0} = vH_{\\Lambda} = ${Expr.show(a0)}`]);
+    roomed.derivation = [lasting, lam];
     let half = Expr.mul([g, Expr.num(0.5)]);
     let got = Prover.neat(Expr.add([half, Expr.pown(Expr.add([Expr.mul([half, half]), Expr.mul([g, a])]), 0.5)]));
-    let closing = Step.of(Fact.stands(`F_{g} \\aside{closing}`, got), `what is felt, with the mismatch closed`, [scale.fact.key], `what is felt is what arrives, g_{N}, and the mismatch an acceleration has piled up on it, measured against the vacuum's own rate: a_{0}/g of it. So g = g_{N}\\paren{1 + a_{0}/g}, with g on both sides because what a body accelerates at is what it feels - and solved, a strong field gives the arrival back and a weak one the geometric mean of the arrival and the scale, \\sqrt{g_{N}a_{0}}: g_{N} falls as the shell, so its root falls one power of the distance in three dimensions and a speed on a circle stops falling`, [`g = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `g^{2} - g_{N}g - g_{N}a_{0} = 0`, `strong: g \\to g_{N};  weak: g \\to \\sqrt{g_{N}a_{0}}, so v^{4} = G m a_{0} at D = 3`, `F_{g} = ${Expr.show(got)}`]);
-    closing.derivation = [scale];
+    let check = ({});
+    check[`g_{N}`] = 0.37;
+    check[`a_{0}`] = 0.91;
+    let root = Expr.numeric(got, check);
+    let residual = sub(sub(mul(root, root), mul(0.37, root)), mul(0.37, 0.91));
+    let deep = ({});
+    deep[`g_{N}`] = 0.00000001;
+    deep[`a_{0}`] = 1;
+    let weak = div(Expr.numeric(got, deep), Math.sqrt(0.00000001));
+    let strong_ = ({});
+    strong_[`g_{N}`] = 100000000;
+    strong_[`a_{0}`] = 1;
+    let strong = div(Expr.numeric(got, strong_), 100000000);
+    let closing = Step.of(Fact.stands(`F_{g} \\aside{closing}`, got), `what is felt, with the mismatch closed`, [roomed.fact.key, scale.fact.key], `what is felt is what arrives, g_{N}, landed on the room made in a heading on top of itself: g = g_{N}\\paren{1 + a_{0}/g} - g on both sides, because what a body accelerates at is what it feels. Solved, it is the root that gives the arrival back where the scale is nothing: a strong field gives g_{N}, a weak one the geometric mean \\sqrt{g_{N}a_{0}}, and with g_{N} falling as the shell a speed on a circle stops falling`, [`g = g_{N}\\paren{1 + H_{\\Lambda}\\tau} = g_{N}\\paren{1 + \\frac{a_{0}}{g}}`, `g^{2} - g_{N}g - g_{N}a_{0} = 0, so F_{g} = ${Expr.show(got)}`, `checked at g_{N} = 0.37, a_{0} = 0.91: the residual is ${Fmt.fixed(residual, 12)}`, `weak, g_{N} = 10^{-8}a_{0}: F_{g}/\\sqrt{g_{N}a_{0}} = ${Fmt.fixed(weak, 6)}; strong, 10^{8}a_{0}: F_{g}/g_{N} = ${Fmt.fixed(strong, 6)}`, `on a circle at D = 3, v^{2}/r = \\sqrt{GMa_{0}}/r, so v^{4} = GMa_{0}: flat, and the Tully-Fisher law`]);
+    closing.derivation = [roomed, scale];
     let psi = Expr.field(`\\psi`);
     let w = Prover.neat(Expr.sub(got, g));
-    let made = Step.of(Fact.stands(`-\\nabla^{2}\\psi`, Expr.field(`\\nabla\\cdot\\paren{\\paren{${Expr.show(w)}}\\hat{g}_{N}}`)), `the space made, as a source`, [closing.fact.key], `the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (${met}), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made`, [`w = F_{g} - g_{N} = ${Expr.show(w)}, along \\hat{g}_{N}`, `made where w changes: \\nabla\\cdot w`, `a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w`]);
+    let rr = Expr.sym(`r`);
+    let w3 = Expr.replace(Expr.replace(w, `g_{N}`, Expr.mul([Expr.field(`m`), Expr.pown(rr, (-2))])), `a_{0}`, Expr.num(1));
+    let flux = Expr.mul([Expr.pown(rr, 2), w3]);
+    let div3 = Expr.simplify(Expr.mul([Expr.pown(rr, (-2)), Expr.d(flux, `r`)]));
+    let made_at = [0.3, 1, 3, 10].map(((x: any) => {
+      return Fmt.fixed(Expr.numeric(div3, Prover.at_rm(x)), 5);
+    })).join(`, `);
+    let r0 = 0.2;
+    let r1 = 8;
+    let steps = 4000;
+    let summed = 0;
+    for (let i = 0; i < steps; i++) {
+      let x = add(r0, div(mul((sub(r1, r0)), (add(i, 0.5))), steps));
+      summed = add(summed, div(mul(mul(mul(Expr.numeric(div3, Prover.at_rm(x)), x), x), (sub(r1, r0))), steps));
+    };
+    let carried = sub(Expr.numeric(flux, Prover.at_rm(r1)), Expr.numeric(flux, Prover.at_rm(r0)));
+    let made = Step.of(Fact.stands(`-\\nabla^{2}\\psi`, Expr.field(`\\nabla\\cdot\\paren{\\paren{${Expr.show(w)}}\\hat{g}_{N}}`)), `the space made, as a source`, [closing.fact.key], `the closing hands every place w = F_{g} - g_{N} on top of what arrives, along it. Where w changes, the vacuum made room: the body's rays meet the vacuum's at the edge of its influence and each meeting leaves a point behind (${met}), and as much is made as w changes - its divergence. Space made is a source of the record like any other: what it holds walks out the way a body's own record does, so its record \\psi is the one whose flux is what was made. Round one body it is made everywhere outward, most where the arrival is weakest against the scale - the edge of the body's influence`, [`w = F_{g} - g_{N} = ${Expr.show(w)}, along \\hat{g}_{N}`, `made where w changes: \\nabla\\cdot w; a source of the record: -\\nabla^{2}\\psi = \\nabla\\cdot w`, `round one body, D = 3, g_{N} = \\bar{m}/r^{2}, a_{0} = 1: made = r^{-2}\\frac{d}{dr}\\paren{r^{2}w} = ${Expr.show(div3)}`, `made at r = 0.3, 1, 3, 10: ${made_at} - all positive: space is made, not taken`, `summed from r = ${Fmt.fixed(r0, 1)} to ${Fmt.fixed(r1, 1)}: ${Fmt.fixed(summed, 6)}, against what w carries across the two shells ${Fmt.fixed(carried, 6)} - so the made space's record is w itself, and the sphere gives the closing back`]);
     made.derivation = [closing, potential];
     let field = Step.of(Fact.stands(`g \\aside{field}`, Prover.neat(Expr.sub(g, Expr.field(`\\nabla\\psi`)))), `what is felt, solved over the whole field`, [made.fact.key, closing.fact.key], `what is felt is a record's slope, so it is what arrives and the slope of the record of the space made - not the closing read at a place, which would have curl wherever the field is not round. Round a single body the made space is a shell, its record is w itself, and the closing comes back exactly; round a disc it does not, and two places that receive the same arrival can feel differently. That is a galaxy's own curve`, [`g = g_{N} - \\nabla\\psi, -\\nabla^{2}\\psi = \\nabla\\cdot w`, `no curl: \\nabla\\times g = 0, as a record's slope`, `a sphere: \\nabla\\psi = -w, so g = F_{g}`, `a disc: \\nabla\\psi \\neq -w - solved over the field (Felt)`]);
     field.derivation = [made];
     let ratio = Prover.neat(Expr.div(a0, own));
     let against = Step.of(Fact.stands(`\\frac{a_{0}}{cH}`, ratio), `the scale against the vacuum's growth`, [scale.fact.key, lam.fact.key], `a_{0} is v times the rate the vacuum would grow at, so against c-bar times that rate it is v alone - a count of the tiling, the same at every epoch. What is measured is against H_{0}, the rate the world is seen to grow at with its matter in it: the vacuum's own growth, had the mass not been there, is \\sqrt{\\Omega_{\\Lambda}} of it - so a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}. Measured it is 0.155 to 0.183`, [`a_{0} = vH_{vac}, cH_{vac} = \\bar{c}H_{vac}`, `\\frac{a_{0}}{cH_{vac}} = ${Expr.show(Prover.neat(ratio))}`, `against what is measured: a_{0}/cH_{0} = v\\sqrt{\\Omega_{\\Lambda}}, \\Omega_{\\Lambda} = \\paren{H_{vac}/H_{0}}^{2}`]);
     against.derivation = [scale];
-    return [straight, potential, lam, scale, closing, made, field, against];
+    return [straight, potential, lam, scale, lasting, roomed, closing, made, field, against];
+  }
+  static at_rm(x: number): object {
+    let e = ({});
+    e[`r`] = x;
+    e[`m`] = 1;
+    return e;
   }
   leftover(rays_c: Step): (Step | null) {
     let m = Prover.MASS.label;
